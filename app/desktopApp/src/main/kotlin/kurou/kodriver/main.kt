@@ -8,6 +8,7 @@ import kurou.kodriver.data.repository.Rf2TelemetryRepository
 import kurou.kodriver.domain.usecase.CheckTelemetryConnectionUseCase
 import kurou.kodriver.domain.usecase.DisconnectTelemetryUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryUseCase
+import kurou.kodriver.presentation.DesktopScreen
 import kurou.kodriver.presentation.TelemetryViewModel
 
 fun main() = application {
@@ -23,6 +24,6 @@ fun main() = application {
                 disconnect = DisconnectTelemetryUseCase(repository),
             )
         }
-        App()
+        DesktopScreen(viewModel)
     }
 }
