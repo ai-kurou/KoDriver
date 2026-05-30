@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +29,6 @@ enum class AppDestination(
     val icon: ImageVector,
 ) {
     Dashboard("ダッシュボード", Icons.Default.Home),
-    Tyres("タイヤ", Icons.Default.Star),
     Settings("設定", Icons.Default.Settings),
 }
 
@@ -54,7 +52,6 @@ fun DesktopScreen(viewModel: TelemetryViewModel) {
         ) {
             when (currentDestination) {
                 AppDestination.Dashboard -> DashboardContent(uiState, viewModel::reconnect)
-                AppDestination.Tyres -> PlaceholderContent("タイヤ情報")
                 AppDestination.Settings -> PlaceholderContent("設定")
             }
         }
