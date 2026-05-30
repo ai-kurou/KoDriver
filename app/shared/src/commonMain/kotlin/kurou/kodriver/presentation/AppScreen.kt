@@ -28,16 +28,16 @@ enum class AppDestination(
     val label: String,
     val icon: ImageVector,
 ) {
-    Dashboard("読み上げ", Icons.Default.HeadsetMic),
+    Readout("読み上げ", Icons.Default.HeadsetMic),
     Overlay("オーバーレイ", Icons.Default.PictureInPicture),
-    Settings("その他", Icons.Default.MoreHoriz),
+    More("その他", Icons.Default.MoreHoriz),
 }
 
 @Composable
 fun AppScreen(
     dashboardContent: @Composable () -> Unit = { PlaceholderContent("読み上げ") },
 ) {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Dashboard) }
+    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
     MaterialTheme {
         NavigationSuiteScaffold(
@@ -53,9 +53,9 @@ fun AppScreen(
             }
         ) {
             when (currentDestination) {
-                AppDestination.Dashboard -> dashboardContent()
+                AppDestination.Readout -> dashboardContent()
                 AppDestination.Overlay -> PlaceholderContent("オーバーレイ")
-                AppDestination.Settings -> PlaceholderContent("その他")
+                AppDestination.More -> PlaceholderContent("その他")
             }
         }
     }
