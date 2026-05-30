@@ -1,9 +1,17 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ListItem
+import androidx.compose.ui.unit.dp
+import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.lmu
+import org.jetbrains.compose.resources.painterResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -70,7 +78,20 @@ fun ReadoutContent(uiState: LmuUiState, onReconnect: () -> Unit) {
         directive = navigator.scaffoldDirective,
         scaffoldState = navigator.scaffoldState,
         listPane = {
-            PlaceholderContent("リスト")
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                item {
+                    ListItem(
+                        headlineContent = { Text("Le Mans Ultimate") },
+                        leadingContent = {
+                            Image(
+                                painter = painterResource(Res.drawable.lmu),
+                                contentDescription = "Le Mans Ultimate",
+                                modifier = Modifier.size(40.dp),
+                            )
+                        },
+                    )
+                }
+            }
         },
         detailPane = {
             PlaceholderContent("詳細")
