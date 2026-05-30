@@ -27,7 +27,7 @@ fun main() = application {
                 checkConnection = CheckLmuConnectionUseCase(repository),
                 disconnect = DisconnectLmuUseCase(repository),
                 ttsEngine = TtsEngine { WindowsTts.speak(it) },
-            )
+            ).also { it.startObserving() }
         }
         val uiState by viewModel.uiState.collectAsState()
         AppScreen(

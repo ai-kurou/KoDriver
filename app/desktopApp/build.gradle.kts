@@ -13,6 +13,10 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.androidx.lifecycle.viewmodelCompose)
 
+    testImplementation(libs.kotlin.testJunit)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutinesTest)
+
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)

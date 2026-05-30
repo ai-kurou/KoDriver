@@ -24,11 +24,7 @@ class LmuViewModel(
     // 200km/h到達アナウンス用。195km/h未満に落ちるまで再発話しない
     private var speed200Announced = false
 
-    init {
-        startObserving()
-    }
-
-    private fun startObserving() {
+    internal fun startObserving() {
         viewModelScope.launch {
             observeLmu()
                 .catch { e -> _uiState.value = LmuUiState.Error(e.message ?: "Unknown error") }
@@ -57,4 +53,5 @@ class LmuViewModel(
         super.onCleared()
         viewModelScope.launch { disconnect() }
     }
+
 }
