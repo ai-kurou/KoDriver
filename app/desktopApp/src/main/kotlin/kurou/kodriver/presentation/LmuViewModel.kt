@@ -2,6 +2,8 @@ package kurou.kodriver.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,7 +53,8 @@ class LmuViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        viewModelScope.launch { disconnect() }
+        // viewModelScope は onCleared() より先にキャンセルされるため独立スコープを使う
+        CoroutineScope(SupervisorJob()).launch { disconnect() }
     }
 
 }
