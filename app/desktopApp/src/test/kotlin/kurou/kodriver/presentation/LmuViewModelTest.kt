@@ -209,29 +209,18 @@ class LmuViewModelTest {
     // ---- reconnect ----
 
     @Test
-    fun `reconnectを呼ぶとuiStateがConnectingに戻る`() = runTest {
-        val sharedFlow = MutableSharedFlow<LmuTelemetryData>(extraBufferCapacity = 1)
-        val vm = makeViewModel(stream = sharedFlow)
-
-        sharedFlow.emit(makeTelemetry())
-        assertIs<LmuUiState.Connected>(vm.uiState.value)
-
-        vm.reconnect()
-
-        assertEquals(LmuUiState.Connecting, vm.uiState.value)
-    }
-
-    @Test
-    fun `reconnect後に新しいデータを受信できる`() = runTest {
+    fun `reconnectするとConnectingに戻り新しいデータを受信できる`() = runTest {
         val sharedFlow = MutableSharedFlow<LmuTelemetryData>(extraBufferCapacity = 10)
         val vm = makeViewModel(stream = sharedFlow)
 
         sharedFlow.emit(makeTelemetry(speedX = 1.0))
+        assertIs<LmuUiState.Connected>(vm.uiState.value)
+
         vm.reconnect()
+        assertEquals(LmuUiState.Connecting, vm.uiState.value)
 
         val newData = makeTelemetry(speedX = 99.0)
         sharedFlow.emit(newData)
-
         assertEquals(LmuUiState.Connected(newData), vm.uiState.value)
     }
 }
