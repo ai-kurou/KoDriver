@@ -9,13 +9,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
 import kurou.kodriver.domain.usecase.DisconnectLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 
 class LmuViewModel(
     private val observeLmu: ObserveLmuUseCase,
-    private val checkConnection: CheckLmuConnectionUseCase,
     private val disconnect: DisconnectLmuUseCase,
     private val ttsEngine: TtsEngine = TtsEngine {},
 ) : ViewModel() {

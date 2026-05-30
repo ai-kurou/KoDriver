@@ -7,7 +7,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kurou.kodriver.data.repository.LmuRepositoryImpl
-import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
 import kurou.kodriver.domain.usecase.DisconnectLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.presentation.AppScreen
@@ -24,7 +23,6 @@ fun main() = application {
         val viewModel = viewModel {
             LmuViewModel(
                 observeLmu = ObserveLmuUseCase(repository),
-                checkConnection = CheckLmuConnectionUseCase(repository),
                 disconnect = DisconnectLmuUseCase(repository),
                 ttsEngine = TtsEngine { WindowsTts.speak(it) },
             ).also { it.startObserving() }

@@ -18,7 +18,6 @@ import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.repository.LmuRepository
-import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
 import kurou.kodriver.domain.usecase.DisconnectLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import org.junit.After
@@ -73,7 +72,6 @@ class LmuViewModelTest {
         }
         return LmuViewModel(
             observeLmu = ObserveLmuUseCase(repo),
-            checkConnection = CheckLmuConnectionUseCase(repo),
             disconnect = DisconnectLmuUseCase(repo),
             ttsEngine = ttsEngine,
         )
