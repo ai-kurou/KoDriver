@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.HeadsetMic
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,8 +29,9 @@ enum class AppDestination(
     val label: String,
     val icon: ImageVector,
 ) {
-    Dashboard("ダッシュボード", Icons.Default.Home),
-    Settings("設定", Icons.Default.Settings),
+    Dashboard("読み上げ", Icons.Default.HeadsetMic),
+    Overlay("オーバーレイ", Icons.Default.PictureInPicture),
+    Settings("その他", Icons.Default.MoreHoriz),
 }
 
 @Composable
@@ -52,7 +54,8 @@ fun DesktopScreen(viewModel: TelemetryViewModel) {
         ) {
             when (currentDestination) {
                 AppDestination.Dashboard -> DashboardContent(uiState, viewModel::reconnect)
-                AppDestination.Settings -> PlaceholderContent("設定")
+                AppDestination.Overlay -> PlaceholderContent("オーバーレイ")
+                AppDestination.Settings -> PlaceholderContent("その他")
             }
         }
     }
