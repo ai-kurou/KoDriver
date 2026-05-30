@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 
 @Composable
 fun DesktopScreen(viewModel: TelemetryViewModel) {
@@ -32,7 +33,7 @@ fun DesktopScreen(viewModel: TelemetryViewModel) {
                     Button(onClick = viewModel::reconnect) { Text("再接続") }
                 }
                 is TelemetryUiState.Connected -> Text(
-                    text = "${state.data.vehicle.speedKmh.toInt()} km/h",
+                    text = "${state.data.vehicle.speedKmh.roundToInt()} km/h",
                     fontSize = 96.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
