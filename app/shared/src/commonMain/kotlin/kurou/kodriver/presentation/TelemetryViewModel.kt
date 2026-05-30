@@ -15,7 +15,7 @@ class TelemetryViewModel(
     private val observeTelemetry: ObserveTelemetryUseCase,
     private val checkConnection: CheckTelemetryConnectionUseCase,
     private val disconnect: DisconnectTelemetryUseCase,
-    private val speak: (String) -> Unit = {},
+    private val ttsEngine: TtsEngine = TtsEngine {},
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<TelemetryUiState>(TelemetryUiState.Connecting)
@@ -42,7 +42,7 @@ class TelemetryViewModel(
     private fun checkSpeedAnnouncement(speedKmh: Double) {
         if (!speed200Announced && speedKmh >= 200.0) {
             speed200Announced = true
-            speak("時速200kmに達しました")
+            ttsEngine.speak("時速200kmに達しました")
         } else if (speed200Announced && speedKmh < 195.0) {
             speed200Announced = false
         }

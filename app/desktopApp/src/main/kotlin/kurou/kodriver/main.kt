@@ -8,8 +8,9 @@ import kurou.kodriver.data.repository.LmuTelemetryRepository
 import kurou.kodriver.domain.usecase.CheckTelemetryConnectionUseCase
 import kurou.kodriver.domain.usecase.DisconnectTelemetryUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryUseCase
-import kurou.kodriver.presentation.DesktopScreen
+import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.TelemetryViewModel
+import kurou.kodriver.presentation.TtsEngine
 
 fun main() = application {
     Window(
@@ -22,9 +23,9 @@ fun main() = application {
                 observeTelemetry = ObserveTelemetryUseCase(repository),
                 checkConnection = CheckTelemetryConnectionUseCase(repository),
                 disconnect = DisconnectTelemetryUseCase(repository),
-                speak = WindowsTts::speak,
+                ttsEngine = TtsEngine { WindowsTts.speak(it) },
             )
         }
-        DesktopScreen(viewModel)
+        AppScreen(viewModel)
     }
 }

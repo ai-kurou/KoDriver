@@ -35,7 +35,7 @@ enum class AppDestination(
 }
 
 @Composable
-fun DesktopScreen(viewModel: TelemetryViewModel) {
+fun AppScreen(viewModel: TelemetryViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Dashboard) }
 
