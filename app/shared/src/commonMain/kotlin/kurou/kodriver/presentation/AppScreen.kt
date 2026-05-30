@@ -14,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,8 +34,9 @@ enum class AppDestination(
 }
 
 @Composable
-fun AppScreen(viewModel: TelemetryViewModel) {
-    val uiState by viewModel.uiState.collectAsState()
+fun AppScreen(
+    dashboardContent: @Composable () -> Unit = { PlaceholderContent("読み上げ") },
+) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Dashboard) }
 
     MaterialTheme {
@@ -53,7 +53,7 @@ fun AppScreen(viewModel: TelemetryViewModel) {
             }
         ) {
             when (currentDestination) {
-                AppDestination.Dashboard -> DashboardContent(uiState, viewModel::reconnect)
+                AppDestination.Dashboard -> dashboardContent()
                 AppDestination.Overlay -> PlaceholderContent("オーバーレイ")
                 AppDestination.Settings -> PlaceholderContent("その他")
             }
@@ -62,7 +62,7 @@ fun AppScreen(viewModel: TelemetryViewModel) {
 }
 
 @Composable
-private fun DashboardContent(uiState: TelemetryUiState, onReconnect: () -> Unit) {
+fun DashboardContent(uiState: TelemetryUiState, onReconnect: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()

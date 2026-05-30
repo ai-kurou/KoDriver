@@ -1,5 +1,7 @@
 package kurou.kodriver
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -9,6 +11,7 @@ import kurou.kodriver.domain.usecase.CheckTelemetryConnectionUseCase
 import kurou.kodriver.domain.usecase.DisconnectTelemetryUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryUseCase
 import kurou.kodriver.presentation.AppScreen
+import kurou.kodriver.presentation.DashboardContent
 import kurou.kodriver.presentation.TelemetryViewModel
 import kurou.kodriver.presentation.TtsEngine
 
@@ -26,6 +29,9 @@ fun main() = application {
                 ttsEngine = TtsEngine { WindowsTts.speak(it) },
             )
         }
-        AppScreen(viewModel)
+        val uiState by viewModel.uiState.collectAsState()
+        AppScreen(
+            dashboardContent = { DashboardContent(uiState, viewModel::reconnect) },
+        )
     }
 }

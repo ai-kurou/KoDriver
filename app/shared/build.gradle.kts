@@ -50,7 +50,6 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(compose.materialIconsExtended)
         }
         commonTest.dependencies {
