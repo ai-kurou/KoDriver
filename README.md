@@ -1,51 +1,74 @@
 # KoDriver
 
-This is a Kotlin Multiplatform project targeting Android, Web, Desktop (JVM), Server.
+Le Mans Ultimate（LMU）のテレメトリデータをリアルタイムで表示する Compose Multiplatform デスクトップアプリ。
 
-* [/app/shared](./app/shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./app/shared/src/commonMain/kotlin) is for code that's common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple's CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./app/shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./app/shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+> **注意**: テレメトリ読み取りは Windows 専用です。共有メモリ（`LMU_Data`）へのアクセスに JNA / `OpenFileMappingA` を使用しています。
 
-* [/core](./core/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./core/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
+## 機能
 
-* [/server](./server/src/main/kotlin) is for the Ktor server application.
+- 走行中のデータをリアルタイム表示
+- Windows TTS でアナウンス
+- シミュレーターが未起動の場合は自動リトライ接続（1秒間隔）
 
-### Running the apps
+## プロジェクト構成
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+```
+KoDriver/
+├── core/           ドメイン層 + JVM データ層（KMP: JVM / JS / wasmJS / Android）
+├── app/
+│   ├── shared/     Compose Multiplatform 共通 UI
+│   ├── desktopApp/ デスクトップアプリ本体
+│   ├── androidApp/ Android アプリ
+│   └── webApp/     Web アプリ
+└── server/         Ktor サーバー
+```
 
-- Android app: `./gradlew :app:androidApp:assembleDebug`
-- Desktop app:
-  - Hot reload: `./gradlew :app:desktopApp:hotRun --auto`
-  - Standard run: `./gradlew :app:desktopApp:run`
-- Server: `./gradlew :server:run`
-- Web app:
-  - Wasm target (faster, modern browsers): `./gradlew :app:webApp:wasmJsBrowserDevelopmentRun`
-  - JS target (slower, supports older browsers): `./gradlew :app:webApp:jsBrowserDevelopmentRun`
+## テレメトリデータモデル
 
-### Running tests
+`TelemetryData` は以下のサブモデルで構成されています。
 
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+| モデル | 主なフィールド |
+|---|---|
+| `EngineData` | rpm, maxRpm, gear |
+| `InputsData` | throttle, brake, clutch, steering |
+| `TyreData` | 各輪の温度(K), ブレーキ温度(°C), 空気圧(kPa), 摩耗 |
+| `FuelData` | 現在量(L), 容量(L) |
+| `TimingData` | ラップ番号（ラップタイムは未実装） |
+| `VehicleData` | 位置, ローカル速度 → `speedKmh` プロパティ |
 
-- Android tests: `./gradlew :app:shared:testAndroidHostTest`
-- Desktop tests: `./gradlew :app:shared:jvmTest`
-- Server tests: `./gradlew :server:test`
-- Web tests:
-  - Wasm target: `./gradlew :app:shared:wasmJsTest`
-  - JS target: `./gradlew :app:shared:jsTest`
+## 実行
+
+```bash
+# 標準起動
+./gradlew :app:desktopApp:run
+
+# ホットリロード
+./gradlew :app:desktopApp:hotRun --auto
+```
+
+## ビルド（Windows MSI）
+
+```bash
+./gradlew :app:desktopApp:packageMsi
+```
+
+GitHub Actions の `build-windows.yml` ワークフロー（`workflow_dispatch`）を使用して Windows 環境でビルドすることもできます。成果物は 30 日間 Artifact として保存されます。
+
+## テスト
+
+```bash
+./gradlew :app:shared:jvmTest
+./gradlew :server:test
+```
+
+## 技術スタック
+
+- **Kotlin** 2.3.21 / Kotlin Multiplatform
+- **Compose Multiplatform** 1.11.0
+- **JNA** 5.17.0（Windows 共有メモリアクセス）
+- **kotlinx-coroutines** 1.11.0
+- **Ktor** 3.4.3
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
-
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+詳細なアーキテクチャ・開発ガイドは [CLAUDE.md](./CLAUDE.md) を参照してください。

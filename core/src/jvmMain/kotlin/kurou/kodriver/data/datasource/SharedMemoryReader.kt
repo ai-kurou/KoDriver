@@ -12,13 +12,6 @@ internal class SharedMemoryReader(
     private var handle: HANDLE? = null
     private var mappedPointer: Pointer? = null
 
-    companion object {
-        const val RF2_TELEMETRY_SEGMENT = "rFactor2SMMP_Telemetry"
-        const val RF2_SCORING_SEGMENT = "rFactor2SMMP_Scoring"
-        const val RF2_TELEMETRY_SIZE = 524_288
-        const val RF2_SCORING_SIZE = 524_288
-    }
-
     fun open(): Boolean {
         if (!System.getProperty("os.name").contains("Windows", ignoreCase = true)) return false
 
