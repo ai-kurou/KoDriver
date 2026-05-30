@@ -18,7 +18,8 @@ class LmuTelemetryRepository(
 
     private val reader = Rf2SharedMemoryReader(
         segmentName = "LMU_Data",
-        sizeBytes = 524_288,
+        // LMUObjectOut サイズ: generic(332) + paths(1300) + scoring(126832) + telemetry(196356) = 324820
+        sizeBytes = 324_820,
     )
 
     override fun telemetryStream(): Flow<TelemetryData> = flow {
