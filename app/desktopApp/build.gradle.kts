@@ -26,7 +26,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "kurou.kodriver"
+            packageName = "KoDriver"
             packageVersion = "0.0.0"
             windows {
                 shortcut = true
