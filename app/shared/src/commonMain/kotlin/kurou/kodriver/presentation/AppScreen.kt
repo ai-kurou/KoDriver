@@ -36,7 +36,7 @@ enum class AppDestination(
 
 @Composable
 fun AppScreen(
-    dashboardContent: @Composable () -> Unit = { PlaceholderContent("読み上げ") },
+    readoutContent: @Composable () -> Unit = { PlaceholderContent("読み上げ") },
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
@@ -54,7 +54,7 @@ fun AppScreen(
             }
         ) {
             when (currentDestination) {
-                AppDestination.Readout -> dashboardContent()
+                AppDestination.Readout -> readoutContent()
                 AppDestination.More -> PlaceholderContent("その他")
             }
         }
@@ -63,7 +63,7 @@ fun AppScreen(
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun DashboardContent(uiState: LmuUiState, onReconnect: () -> Unit) {
+fun ReadoutContent(uiState: LmuUiState, onReconnect: () -> Unit) {
     val navigator = rememberListDetailPaneScaffoldNavigator()
 
     ListDetailPaneScaffold(
