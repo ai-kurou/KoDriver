@@ -5,7 +5,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLE
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-internal class Rf2SharedMemoryReader(
+internal class SharedMemoryReader(
     private val segmentName: String,
     private val sizeBytes: Int,
 ) {

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kurou.kodriver.data.datasource.Rf2SharedMemoryReader
+import kurou.kodriver.data.datasource.SharedMemoryReader
 import kurou.kodriver.data.mapper.TelemetryMapper
 import kurou.kodriver.domain.model.TelemetryData
 import kurou.kodriver.domain.repository.TelemetryRepository
@@ -16,9 +16,9 @@ class Rf2TelemetryRepository(
     private val reconnectIntervalMs: Long = 1_000L,
 ) : TelemetryRepository {
 
-    private val reader = Rf2SharedMemoryReader(
-        segmentName = Rf2SharedMemoryReader.RF2_TELEMETRY_SEGMENT,
-        sizeBytes = Rf2SharedMemoryReader.RF2_TELEMETRY_SIZE,
+    private val reader = SharedMemoryReader(
+        segmentName = SharedMemoryReader.RF2_TELEMETRY_SEGMENT,
+        sizeBytes = SharedMemoryReader.RF2_TELEMETRY_SIZE,
     )
 
     override fun telemetryStream(): Flow<TelemetryData> = flow {

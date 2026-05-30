@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kurou.kodriver.data.datasource.Rf2SharedMemoryReader
+import kurou.kodriver.data.datasource.SharedMemoryReader
 import kurou.kodriver.data.mapper.LmuTelemetryMapper
 import kurou.kodriver.domain.model.TelemetryData
 import kurou.kodriver.domain.repository.TelemetryRepository
@@ -16,7 +16,7 @@ class LmuTelemetryRepository(
     private val reconnectIntervalMs: Long = 1_000L,
 ) : TelemetryRepository {
 
-    private val reader = Rf2SharedMemoryReader(
+    private val reader = SharedMemoryReader(
         segmentName = "LMU_Data",
         // LMUObjectOut サイズ: generic(332) + paths(1300) + scoring(126832) + telemetry(196356) = 324820
         sizeBytes = 324_820,
