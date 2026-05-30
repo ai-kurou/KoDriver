@@ -167,25 +167,7 @@ class LmuViewModelTest {
     }
 
     @Test
-    fun `200km-h到達後は195km-h未満に落ちるまで再発話しない`() = runTest {
-        val spokenMessages = mutableListOf<String>()
-        val flow = MutableSharedFlow<LmuTelemetryData>(extraBufferCapacity = 10)
-        val vm = makeViewModel(
-            stream = flow,
-            ttsEngine = TtsEngine { spokenMessages += it },
-        )
-
-        // 200km/h 超 → 発話
-        flow.emit(makeTelemetry(speedX = 55.56))
-        assertEquals(1, spokenMessages.size)
-
-        // 200km/h 超で継続 → 再発話しない
-        flow.emit(makeTelemetry(speedX = 60.0))
-        assertEquals(1, spokenMessages.size)
-    }
-
-    @Test
-    fun `195km-h未満に落ちたあと再び200km-hを超えると再発話する`() = runTest {
+    fun `200km-h到達後は195km-h未満に落ちるまで再発話せず落下後は再発話する`() = runTest {
         val spokenMessages = mutableListOf<String>()
         val sharedFlow = MutableSharedFlow<LmuTelemetryData>(extraBufferCapacity = 10)
         val vm = makeViewModel(
@@ -193,8 +175,12 @@ class LmuViewModelTest {
             ttsEngine = TtsEngine { spokenMessages += it },
         )
 
-        // 1回目の 200km/h 到達
+        // 1回目の 200km/h 到達 → 発話
         sharedFlow.emit(makeTelemetry(speedX = 55.56))
+        assertEquals(1, spokenMessages.size)
+
+        // 200km/h 超で継続 → 再発話しない
+        sharedFlow.emit(makeTelemetry(speedX = 60.0))
         assertEquals(1, spokenMessages.size)
 
         // 195km/h 未満に低下（フラグリセット）
