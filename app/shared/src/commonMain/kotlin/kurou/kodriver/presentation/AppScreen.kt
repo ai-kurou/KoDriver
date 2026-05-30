@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +28,6 @@ enum class AppDestination(
     val icon: ImageVector,
 ) {
     Readout("読み上げ", Icons.Default.HeadsetMic),
-    Overlay("オーバーレイ", Icons.Default.PictureInPicture),
     More("その他", Icons.Default.MoreHoriz),
 }
 
@@ -54,7 +52,6 @@ fun AppScreen(
         ) {
             when (currentDestination) {
                 AppDestination.Readout -> dashboardContent()
-                AppDestination.Overlay -> PlaceholderContent("オーバーレイ")
                 AppDestination.More -> PlaceholderContent("その他")
             }
         }
