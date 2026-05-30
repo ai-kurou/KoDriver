@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-data class TelemetryData(
+data class LmuTelemetryData(
     val timestampMs: Long,
     val engine: EngineData,
     val inputs: InputsData,

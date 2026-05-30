@@ -62,7 +62,7 @@ fun AppScreen(
 }
 
 @Composable
-fun DashboardContent(uiState: TelemetryUiState, onReconnect: () -> Unit) {
+fun DashboardContent(uiState: LmuUiState, onReconnect: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -70,12 +70,12 @@ fun DashboardContent(uiState: TelemetryUiState, onReconnect: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         when (uiState) {
-            is TelemetryUiState.Connecting -> Text("接続中...", fontSize = 24.sp)
-            is TelemetryUiState.Error -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            is LmuUiState.Connecting -> Text("接続中...", fontSize = 24.sp)
+            is LmuUiState.Error -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("エラー: ${uiState.message}", fontSize = 18.sp, color = MaterialTheme.colorScheme.error)
                 Button(onClick = onReconnect) { Text("再接続") }
             }
-            is TelemetryUiState.Connected -> Text(
+            is LmuUiState.Connected -> Text(
                 text = "${uiState.data.vehicle.speedKmh.roundToInt()} km/h",
                 fontSize = 96.sp,
                 color = MaterialTheme.colorScheme.onBackground,

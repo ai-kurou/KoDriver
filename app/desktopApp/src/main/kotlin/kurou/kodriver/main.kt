@@ -6,13 +6,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kurou.kodriver.data.repository.LmuTelemetryRepository
-import kurou.kodriver.domain.usecase.CheckTelemetryConnectionUseCase
-import kurou.kodriver.domain.usecase.DisconnectTelemetryUseCase
-import kurou.kodriver.domain.usecase.ObserveTelemetryUseCase
+import kurou.kodriver.data.repository.LmuRepositoryImpl
+import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
+import kurou.kodriver.domain.usecase.DisconnectLmuUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.DashboardContent
-import kurou.kodriver.presentation.TelemetryViewModel
+import kurou.kodriver.presentation.LmuViewModel
 import kurou.kodriver.presentation.TtsEngine
 
 fun main() = application {
@@ -20,12 +20,12 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "KoDriver",
     ) {
-        val repository = remember { LmuTelemetryRepository() }
+        val repository = remember { LmuRepositoryImpl() }
         val viewModel = viewModel {
-            TelemetryViewModel(
-                observeTelemetry = ObserveTelemetryUseCase(repository),
-                checkConnection = CheckTelemetryConnectionUseCase(repository),
-                disconnect = DisconnectTelemetryUseCase(repository),
+            LmuViewModel(
+                observeLmu = ObserveLmuUseCase(repository),
+                checkConnection = CheckLmuConnectionUseCase(repository),
+                disconnect = DisconnectLmuUseCase(repository),
                 ttsEngine = TtsEngine { WindowsTts.speak(it) },
             )
         }

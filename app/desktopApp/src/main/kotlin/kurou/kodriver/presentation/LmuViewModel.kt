@@ -7,19 +7,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.usecase.CheckTelemetryConnectionUseCase
-import kurou.kodriver.domain.usecase.DisconnectTelemetryUseCase
-import kurou.kodriver.domain.usecase.ObserveTelemetryUseCase
+import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
+import kurou.kodriver.domain.usecase.DisconnectLmuUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 
-class TelemetryViewModel(
-    private val observeTelemetry: ObserveTelemetryUseCase,
-    private val checkConnection: CheckTelemetryConnectionUseCase,
-    private val disconnect: DisconnectTelemetryUseCase,
+class LmuViewModel(
+    private val observeLmu: ObserveLmuUseCase,
+    private val checkConnection: CheckLmuConnectionUseCase,
+    private val disconnect: DisconnectLmuUseCase,
     private val ttsEngine: TtsEngine = TtsEngine {},
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<TelemetryUiState>(TelemetryUiState.Connecting)
-    val uiState: StateFlow<TelemetryUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<LmuUiState>(LmuUiState.Connecting)
+    val uiState: StateFlow<LmuUiState> = _uiState.asStateFlow()
 
     // 200km/h到達アナウンス用。195km/h未満に落ちるまで再発話しない
     private var speed200Announced = false
@@ -30,10 +30,10 @@ class TelemetryViewModel(
 
     private fun startObserving() {
         viewModelScope.launch {
-            observeTelemetry()
-                .catch { e -> _uiState.value = TelemetryUiState.Error(e.message ?: "Unknown error") }
+            observeLmu()
+                .catch { e -> _uiState.value = LmuUiState.Error(e.message ?: "Unknown error") }
                 .collect { data ->
-                    _uiState.value = TelemetryUiState.Connected(data)
+                    _uiState.value = LmuUiState.Connected(data)
                     checkSpeedAnnouncement(data.vehicle.speedKmh)
                 }
         }
@@ -49,7 +49,7 @@ class TelemetryViewModel(
     }
 
     fun reconnect() {
-        _uiState.value = TelemetryUiState.Connecting
+        _uiState.value = LmuUiState.Connecting
         startObserving()
     }
 

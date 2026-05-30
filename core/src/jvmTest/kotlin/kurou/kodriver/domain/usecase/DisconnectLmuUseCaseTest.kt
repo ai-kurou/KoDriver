@@ -5,12 +5,12 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class DisconnectTelemetryUseCaseTest {
+class DisconnectLmuUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのdisconnectを呼ぶ`() = runBlocking {
-        val repo = FakeTelemetryRepository()
-        val useCase = DisconnectTelemetryUseCase(repo)
+        val repo = FakeLmuRepository()
+        val useCase = DisconnectLmuUseCase(repo)
 
         useCase()
 
@@ -19,7 +19,7 @@ class DisconnectTelemetryUseCaseTest {
 
     @Test
     fun `invokeを呼ぶ前はdisconnectが呼ばれていない`() {
-        val repo = FakeTelemetryRepository()
+        val repo = FakeLmuRepository()
 
         assertFalse(repo.disconnectCalled)
     }

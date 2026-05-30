@@ -4,7 +4,7 @@ import kurou.kodriver.domain.model.*
 import java.nio.ByteBuffer
 
 /**
- * LMU 共有メモリ (LMU_Data) の ByteBuffer を TelemetryData に変換する。
+ * LMU 共有メモリ (LMU_Data) の ByteBuffer を LmuTelemetryData に変換する。
  *
  * オフセットは pyLMUSharedMemory (TinyPedal/pyLMUSharedMemory) の
  * lmu_data.py に定義された ctypes 構造体レイアウト (_pack_=4) から算出。
@@ -42,7 +42,7 @@ import java.nio.ByteBuffer
  *   mTemperature[3]      : +128 (Kelvin, 中央値=+136)
  *   mWear                : +152
  */
-internal object LmuTelemetryMapper {
+internal object LmuMapper {
 
     private const val TELEMETRY_BASE = 128464
 
@@ -74,11 +74,11 @@ internal object LmuTelemetryMapper {
     private const val OFF_WHEEL_TEMPERATURE = 128
     private const val OFF_WHEEL_WEAR = 152
 
-    fun map(buffer: ByteBuffer): TelemetryData {
+    fun map(buffer: ByteBuffer): LmuTelemetryData {
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
         val vehicleBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
 
-        return TelemetryData(
+        return LmuTelemetryData(
             timestampMs = System.currentTimeMillis(),
             engine = EngineData(
                 rpm = buffer.getDouble(vehicleBase + OFF_ENGINE_RPM),

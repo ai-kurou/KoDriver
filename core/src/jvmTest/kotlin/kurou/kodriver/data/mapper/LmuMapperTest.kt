@@ -7,9 +7,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class LmuTelemetryMapperTest {
+class LmuMapperTest {
 
-    // オフセット定数（LmuTelemetryMapper と一致）
+    // オフセット定数（LmuMapper と一致）
     private companion object {
         const val TELEMETRY_BASE = 128464
         const val OFF_PLAYER_VEHICLE_IDX = 1
@@ -59,7 +59,7 @@ class LmuTelemetryMapperTest {
         buf.putDouble(vb + OFF_ENGINE_RPM, 8_500.0)
         buf.putDouble(vb + OFF_ENGINE_MAX_RPM, 9_500.0)
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(5, result.engine.gear)
         assertEquals(8_500.0, result.engine.rpm)
@@ -75,7 +75,7 @@ class LmuTelemetryMapperTest {
         buf.putDouble(vb + OFF_UNFILTERED_CLUTCH, 0.0)
         buf.putDouble(vb + OFF_UNFILTERED_STEERING, -0.3)
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(0.75, result.inputs.throttle)
         assertEquals(0.1, result.inputs.brake)
@@ -90,7 +90,7 @@ class LmuTelemetryMapperTest {
         buf.putDouble(vb + OFF_FUEL, 45.5)
         buf.putDouble(vb + OFF_FUEL_CAPACITY, 100.0)
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(45.5, result.fuel.currentLiters)
         assertEquals(100.0, result.fuel.capacityLiters)
@@ -102,14 +102,14 @@ class LmuTelemetryMapperTest {
         val buf = emptyBuffer()
         buf.putInt(vb + OFF_LAP_NUMBER, 7)
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(7, result.timing.currentLap)
     }
 
     @Test
     fun `ラップタイムフィールドは未実装のためゼロである`() {
-        val result = LmuTelemetryMapper.map(emptyBuffer())
+        val result = LmuMapper.map(emptyBuffer())
 
         assertEquals(0L, result.timing.currentLapTimeMs)
         assertEquals(0L, result.timing.lastLapTimeMs)
@@ -126,7 +126,7 @@ class LmuTelemetryMapperTest {
         buf.putDouble(vb + OFF_POS_Y, 200.0)
         buf.putDouble(vb + OFF_POS_Z, 300.0)
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(100.0, result.vehicle.positionX)
         assertEquals(200.0, result.vehicle.positionY)
@@ -142,7 +142,7 @@ class LmuTelemetryMapperTest {
         buf.putDouble(vb + OFF_LOCAL_VEL_Y, 4.0)
         buf.putDouble(vb + OFF_LOCAL_VEL_Z, 0.0)
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(5.0, result.vehicle.speedMs, 1e-9)
         assertEquals(18.0, result.vehicle.speedKmh, 1e-9)
@@ -161,7 +161,7 @@ class LmuTelemetryMapperTest {
             buf.putDouble(wb + OFF_WHEEL_WEAR, 0.9 - i * 0.05)
         }
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(4, result.tyres.wheels.size)
         WheelIndex.entries.forEachIndexed { i, wheel ->
@@ -183,14 +183,14 @@ class LmuTelemetryMapperTest {
         buf.putInt(vb0 + OFF_GEAR, 1)   // playerIdx=0 スロット（読まれないはず）
         buf.putInt(vb1 + OFF_GEAR, 6)   // playerIdx=1 スロット（読まれるはず）
 
-        val result = LmuTelemetryMapper.map(buf)
+        val result = LmuMapper.map(buf)
 
         assertEquals(6, result.engine.gear)
     }
 
     @Test
     fun `タイヤマップに全WheelIndexが含まれる`() {
-        val result = LmuTelemetryMapper.map(emptyBuffer())
+        val result = LmuMapper.map(emptyBuffer())
 
         assertTrue(WheelIndex.FRONT_LEFT in result.tyres.wheels)
         assertTrue(WheelIndex.FRONT_RIGHT in result.tyres.wheels)

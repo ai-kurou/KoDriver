@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kurou.kodriver.data.datasource.SharedMemoryReader
-import kurou.kodriver.data.mapper.LmuTelemetryMapper
-import kurou.kodriver.domain.model.TelemetryData
-import kurou.kodriver.domain.repository.TelemetryRepository
+import kurou.kodriver.data.mapper.LmuMapper
+import kurou.kodriver.domain.model.LmuTelemetryData
+import kurou.kodriver.domain.repository.LmuRepository
 
-class LmuTelemetryRepository(
+class LmuRepositoryImpl(
     private val pollingIntervalMs: Long = 16L,
     private val reconnectIntervalMs: Long = 1_000L,
-) : TelemetryRepository {
+) : LmuRepository {
 
     private val reader = SharedMemoryReader(
         segmentName = "LMU_Data",
@@ -22,7 +22,7 @@ class LmuTelemetryRepository(
         sizeBytes = 324_820,
     )
 
-    override fun telemetryStream(): Flow<TelemetryData> = flow {
+    override fun telemetryStream(): Flow<LmuTelemetryData> = flow {
         try {
             while (true) {
                 if (!reader.isOpen()) {
@@ -31,7 +31,7 @@ class LmuTelemetryRepository(
                         continue
                     }
                 }
-                reader.readBuffer()?.let { emit(LmuTelemetryMapper.map(it)) }
+                reader.readBuffer()?.let { emit(LmuMapper.map(it)) }
                 delay(pollingIntervalMs)
             }
         } finally {

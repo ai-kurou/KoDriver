@@ -1,10 +1,10 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.TelemetryData
+import kurou.kodriver.domain.model.LmuTelemetryData
 
-interface TelemetryRepository {
-    fun telemetryStream(): Flow<TelemetryData>
+interface LmuRepository {
+    fun telemetryStream(): Flow<LmuTelemetryData>
     suspend fun isConnected(): Boolean
     suspend fun disconnect()
 }
