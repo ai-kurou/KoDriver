@@ -84,32 +84,26 @@ class LmuViewModelTest {
         ttsEngine: TtsEngine = TtsEngine {},
     ) = buildViewModel(stream, isConnected, ttsEngine).also { it.startObserving() }
 
-    // ---- 初期状態 ----
+    // ---- 初期状態・データ受信 ----
 
     @Test
-    fun `startObserving呼び出し前の初期状態はConnecting`() = runTest {
-        // init{} を持たないため、構築直後は副作用ゼロで Connecting のまま
-        val vm = buildViewModel(stream = MutableSharedFlow())
+    fun `startObserving前はConnectingでemit後は最新データがuiStateに反映される`() = runTest {
+        val sharedFlow = MutableSharedFlow<LmuTelemetryData>(extraBufferCapacity = 10)
+        val vm = buildViewModel(stream = sharedFlow)
 
+        // startObserving 前は Connecting
         assertEquals(LmuUiState.Connecting, vm.uiState.value)
-    }
 
-    // ---- データ受信 ----
+        vm.startObserving()
 
-    @Test
-    fun `telemetryStreamがデータを1件emitするとConnectedになる`() = runTest {
-        val data = makeTelemetry(speedX = 10.0)
-        val vm = makeViewModel(stream = flowOf(data))
-
-        assertEquals(LmuUiState.Connected(data), vm.uiState.value)
-    }
-
-    @Test
-    fun `最後にemitされたデータがuiStateに反映される`() = runTest {
+        // 1件目の emit → Connected に遷移
         val first = makeTelemetry(speedX = 5.0)
-        val last = makeTelemetry(speedX = 20.0)
-        val vm = makeViewModel(stream = flowOf(first, last))
+        sharedFlow.emit(first)
+        assertEquals(LmuUiState.Connected(first), vm.uiState.value)
 
+        // 2件目の emit → 最新データに更新
+        val last = makeTelemetry(speedX = 20.0)
+        sharedFlow.emit(last)
         assertEquals(LmuUiState.Connected(last), vm.uiState.value)
     }
 
