@@ -11,6 +11,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,8 +61,28 @@ fun AppScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun DashboardContent(uiState: LmuUiState, onReconnect: () -> Unit) {
+    val navigator = rememberListDetailPaneScaffoldNavigator()
+
+    ListDetailPaneScaffold(
+        directive = navigator.scaffoldDirective,
+        scaffoldState = navigator.scaffoldState,
+        listPane = {
+            PlaceholderContent("リスト")
+        },
+        detailPane = {
+            PlaceholderContent("詳細")
+        },
+        extraPane = {
+            SpeedPane(uiState = uiState, onReconnect = onReconnect)
+        },
+    )
+}
+
+@Composable
+private fun SpeedPane(uiState: LmuUiState, onReconnect: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
