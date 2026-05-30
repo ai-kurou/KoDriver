@@ -47,5 +47,10 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        val jvmTest by getting {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+            }
+        }
     }
 }
