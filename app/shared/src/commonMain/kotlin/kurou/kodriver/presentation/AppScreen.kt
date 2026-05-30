@@ -2,36 +2,40 @@ package kurou.kodriver.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ListItem
-import androidx.compose.ui.unit.dp
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.lmu
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.lmu
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import kotlin.math.roundToInt
 
 enum class AppDestination(
@@ -73,6 +77,7 @@ fun AppScreen(
 @Composable
 fun ReadoutContent(uiState: LmuUiState, onReconnect: () -> Unit) {
     val navigator = rememberListDetailPaneScaffoldNavigator()
+    val scope = rememberCoroutineScope()
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
@@ -88,6 +93,11 @@ fun ReadoutContent(uiState: LmuUiState, onReconnect: () -> Unit) {
                                 contentDescription = "Le Mans Ultimate",
                                 modifier = Modifier.size(40.dp),
                             )
+                        },
+                        modifier = Modifier.clickable {
+                            scope.launch {
+                                navigator.navigateTo(ListDetailPaneScaffoldRole.Detail)
+                            }
                         },
                     )
                 }
