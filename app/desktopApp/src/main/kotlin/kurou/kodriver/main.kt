@@ -22,6 +22,7 @@ fun main() = application {
                 observeTelemetry = ObserveTelemetryUseCase(repository),
                 checkConnection = CheckTelemetryConnectionUseCase(repository),
                 disconnect = DisconnectTelemetryUseCase(repository),
+                speak = WindowsTts::speak,
             )
         }
         DesktopScreen(viewModel)
