@@ -1,0 +1,5 @@
+digraph G {
+":server" -> ":core"
+":app:androidApp" -> ":app:shared"
+":app:desktopApp" -> ":app:shared" [color=red style=bold]
+}
