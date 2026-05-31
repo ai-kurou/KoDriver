@@ -18,4 +18,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - run: ./gradlew :core:jvmTest :app:shared:jvmTest :app:desktopApp:test :server:test
+      - run: ./gradlew koverXmlReport
+
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/kover/report.xml
