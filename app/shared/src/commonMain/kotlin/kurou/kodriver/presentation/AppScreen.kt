@@ -90,7 +90,7 @@ fun ReadoutContent(
     val scope = rememberCoroutineScope()
     val navigateBack = { scope.launch { navigator.navigateBack() } }
     val paneExpansionState = rememberPaneExpansionState(
-        anchors = listOf(PaneExpansionAnchor.Proportion(0.5f)),
+        anchors = listOf(PaneExpansionAnchor.Offset.fromStart(300.dp)),
         initialAnchoredIndex = 0,
     )
 
