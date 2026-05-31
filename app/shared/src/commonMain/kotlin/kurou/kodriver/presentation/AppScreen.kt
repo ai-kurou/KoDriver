@@ -20,6 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
+import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
@@ -81,12 +83,17 @@ fun ReadoutContent(
     val navigator = rememberListDetailPaneScaffoldNavigator()
     val scope = rememberCoroutineScope()
     val navigateBack = { scope.launch { navigator.navigateBack() } }
+    val paneExpansionState = rememberPaneExpansionState(
+        anchors = listOf(PaneExpansionAnchor.Proportion(0.5f)),
+        initialAnchoredIndex = 0,
+    )
 
     backHandler(navigator.canNavigateBack()) { navigateBack() }
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
         scaffoldState = navigator.scaffoldState,
+        paneExpansionState = paneExpansionState,
         listPane = {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
@@ -115,26 +122,7 @@ fun ReadoutContent(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 }
-                PlaceholderContent(
-                    title = "detailPane",
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable {
-                            scope.launch {
-                                navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
-                            }
-                        },
-                )
-            }
-        },
-        extraPane = {
-            Column(modifier = Modifier.fillMaxSize()) {
-                if (navigator.canNavigateBack()) {
-                    IconButton(onClick = { navigateBack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
-                    }
-                }
-                PlaceholderContent(title = "extraPane", modifier = Modifier.weight(1f))
+                PlaceholderContent(title = "detailPane", modifier = Modifier.weight(1f))
             }
         },
     )
