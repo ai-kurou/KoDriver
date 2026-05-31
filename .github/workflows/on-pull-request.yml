@@ -18,7 +18,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - run: ./gradlew :core:lintDebug :app:shared:lintDebug
+      - run: ./gradlew :app:androidApp:lintDebug
 
   detekt:
     runs-on: ubuntu-latest
