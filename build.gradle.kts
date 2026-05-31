@@ -7,5 +7,13 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinJvm) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
+    alias(libs.plugins.kover)
     alias(libs.plugins.ktor) apply false
+}
+
+dependencies {
+    kover(project(":core"))
+    kover(project(":app:shared"))
+    kover(project(":app:desktopApp"))
+    kover(project(":server"))
 }

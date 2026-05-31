@@ -17,6 +17,7 @@ jna = "5.17.0"
 kotlinx-coroutines = "1.11.0"
 ktor = "3.4.3"
 koin = "4.1.0"
+kover = "0.9.8"
 logback = "1.5.32"
 material3 = "1.11.0-alpha07"
 
@@ -62,4 +63,5 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
