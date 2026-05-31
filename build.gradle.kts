@@ -58,7 +58,6 @@ moduleGraphAssert {
 tasks.register("generateModuleGraphImages") {
     group = "documentation"
     description = "Generates SVG module dependency graphs and updates each module's README.md"
-    notCompatibleWithConfigurationCache("Uses Project references at execution time")
 
     doLast {
         val dotBinary = listOf("/opt/homebrew/bin/dot", "/usr/bin/dot", "/usr/local/bin/dot")
