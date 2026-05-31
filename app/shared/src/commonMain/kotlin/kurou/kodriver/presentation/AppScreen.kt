@@ -6,7 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -55,21 +57,25 @@ fun AppScreen(
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
     MaterialTheme {
-        NavigationSuiteScaffold(
-            navigationSuiteItems = {
-                AppDestination.entries.forEach { dest ->
-                    item(
-                        icon = { Icon(dest.icon, contentDescription = dest.label) },
-                        label = { Text(dest.label) },
-                        selected = currentDestination == dest,
-                        onClick = { currentDestination = dest },
-                    )
+        Box(modifier = Modifier.navigationBarsPadding()) {
+            NavigationSuiteScaffold(
+                navigationSuiteItems = {
+                    AppDestination.entries.forEach { dest ->
+                        item(
+                            icon = { Icon(dest.icon, contentDescription = dest.label) },
+                            label = { Text(dest.label) },
+                            selected = currentDestination == dest,
+                            onClick = { currentDestination = dest },
+                        )
+                    }
+                },
+            ) {
+                Box(modifier = Modifier.statusBarsPadding()) {
+                    when (currentDestination) {
+                        AppDestination.Readout -> readoutContent()
+                        AppDestination.More -> PlaceholderContent("その他")
+                    }
                 }
-            }
-        ) {
-            when (currentDestination) {
-                AppDestination.Readout -> readoutContent()
-                AppDestination.More -> PlaceholderContent("その他")
             }
         }
     }
