@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,7 +37,6 @@ import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.lmu
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.roundToInt
 
 enum class AppDestination(
     val label: String,
@@ -75,9 +75,14 @@ fun AppScreen(
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ReadoutContent(uiState: LmuUiState, onReconnect: () -> Unit) {
+fun ReadoutContent(
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+) {
     val navigator = rememberListDetailPaneScaffoldNavigator()
     val scope = rememberCoroutineScope()
+    val navigateBack = { scope.launch { navigator.navigateBack() } }
+
+    backHandler(navigator.canNavigateBack()) { navigateBack() }
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
@@ -104,41 +109,41 @@ fun ReadoutContent(uiState: LmuUiState, onReconnect: () -> Unit) {
             }
         },
         detailPane = {
-            PlaceholderContent("詳細")
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (navigator.canNavigateBack()) {
+                    IconButton(onClick = { navigateBack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                    }
+                }
+                PlaceholderContent(
+                    title = "詳細",
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            scope.launch {
+                                navigator.navigateTo(ListDetailPaneScaffoldRole.Extra)
+                            }
+                        },
+                )
+            }
         },
         extraPane = {
-            SpeedPane(uiState = uiState, onReconnect = onReconnect)
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (navigator.canNavigateBack()) {
+                    IconButton(onClick = { navigateBack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                    }
+                }
+                PlaceholderContent(title = "スピード", modifier = Modifier.weight(1f))
+            }
         },
     )
 }
 
 @Composable
-private fun SpeedPane(uiState: LmuUiState, onReconnect: () -> Unit) {
+private fun PlaceholderContent(title: String, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center,
-    ) {
-        when (uiState) {
-            is LmuUiState.Connecting -> Text("接続中...", fontSize = 24.sp)
-            is LmuUiState.Error -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("エラー: ${uiState.message}", fontSize = 18.sp, color = MaterialTheme.colorScheme.error)
-                Button(onClick = onReconnect) { Text("再接続") }
-            }
-            is LmuUiState.Connected -> Text(
-                text = "${uiState.data.vehicle.speedKmh.roundToInt()} km/h",
-                fontSize = 96.sp,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PlaceholderContent(title: String) {
-    Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
