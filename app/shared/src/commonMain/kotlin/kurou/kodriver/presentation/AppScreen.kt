@@ -116,7 +116,7 @@ fun ReadoutContent(
                     }
                 }
                 PlaceholderContent(
-                    title = "詳細",
+                    title = "detailPane",
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
@@ -134,7 +134,7 @@ fun ReadoutContent(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 }
-                PlaceholderContent(title = "スピード", modifier = Modifier.weight(1f))
+                PlaceholderContent(title = "extraPane", modifier = Modifier.weight(1f))
             }
         },
     )
