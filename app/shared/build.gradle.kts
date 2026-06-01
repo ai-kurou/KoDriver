@@ -45,6 +45,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
         }
+        jvmMain.dependencies {
+            implementation(libs.compose.uiTooling)
+        }
         commonMain.dependencies {
             api(projects.core)
             implementation(libs.compose.runtime)
