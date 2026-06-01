@@ -34,6 +34,17 @@ subprojects {
     dependencies {
         "detektPlugins"(rootProject.libs.detekt.formatting)
     }
+    pluginManager.withPlugin("org.jetbrains.kotlinx.kover") {
+        extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension> {
+            reports {
+                filters {
+                    excludes {
+                        annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+                    }
+                }
+            }
+        }
+    }
 }
 
 moduleGraphAssert {

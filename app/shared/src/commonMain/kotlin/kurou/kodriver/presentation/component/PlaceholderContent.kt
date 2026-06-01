@@ -26,7 +26,5 @@ internal fun PlaceholderContent(title: String, modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun PlaceholderContentPreview() {
-    MaterialTheme {
-        PlaceholderContent("プレースホルダー")
-    }
+    PlaceholderContent("プレースホルダー")
 }
