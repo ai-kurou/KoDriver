@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.lmu
@@ -25,4 +27,12 @@ internal fun LmuListItem(onClick: () -> Unit) {
         },
         modifier = Modifier.clickable(onClick = onClick),
     )
+}
+
+@Preview
+@Composable
+fun LmuListItemPreview() {
+    MaterialTheme {
+        LmuListItem(onClick = {})
+    }
 }

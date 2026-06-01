@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.presentation.component.PlaceholderContent
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -73,5 +75,27 @@ internal fun ReadoutDetailPane(
             }
         }
         PlaceholderContent(title = "detailPane", modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview
+@Composable
+fun ReadoutContentPreview() {
+    ReadoutContent()
+}
+
+@Preview
+@Composable
+fun ReadoutListPanePreview() {
+    MaterialTheme {
+        ReadoutListPane(onItemClick = {})
+    }
+}
+
+@Preview
+@Composable
+fun ReadoutDetailPanePreview() {
+    MaterialTheme {
+        ReadoutDetailPane(canNavigateBack = true, onBack = {})
     }
 }

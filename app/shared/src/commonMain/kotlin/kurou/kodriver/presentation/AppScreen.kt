@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import kurou.kodriver.presentation.component.PlaceholderContent
 import kurou.kodriver.presentation.readout.ReadoutContent
+import androidx.compose.ui.tooling.preview.Preview
 
 enum class AppDestination(
     val label: String,
@@ -57,4 +58,10 @@ fun AppScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun AppScreenPreview() {
+    AppScreen()
 }
