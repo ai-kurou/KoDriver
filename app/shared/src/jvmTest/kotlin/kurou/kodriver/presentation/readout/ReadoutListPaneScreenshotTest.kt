@@ -17,7 +17,7 @@ class ReadoutListPaneScreenshotTest {
     val rule = createComposeRule()
 
     @Test
-    fun `スクリーンショット`() {
+    fun `デフォルト`() {
         rule.setContent {
             MaterialTheme {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {

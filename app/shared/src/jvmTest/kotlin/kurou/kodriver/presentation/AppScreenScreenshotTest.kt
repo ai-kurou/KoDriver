@@ -31,7 +31,7 @@ class AppScreenScreenshotTest {
     )
 
     @Test
-    fun `読み上げタブ_スクリーンショット`() {
+    fun `読み上げタブ`() {
         rule.setContent {
             Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                 AppScreen(readoutContent = { ReadoutContent(scaffoldDirective = twoPaneDirective) })
@@ -41,7 +41,7 @@ class AppScreenScreenshotTest {
     }
 
     @Test
-    fun `その他タブ_スクリーンショット`() {
+    fun `その他タブ`() {
         rule.setContent {
             Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                 AppScreen(readoutContent = { ReadoutContent(scaffoldDirective = twoPaneDirective) })

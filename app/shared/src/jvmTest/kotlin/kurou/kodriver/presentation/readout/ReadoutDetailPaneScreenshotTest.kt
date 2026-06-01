@@ -17,7 +17,7 @@ class ReadoutDetailPaneScreenshotTest {
     val rule = createComposeRule()
 
     @Test
-    fun `戻るボタンあり_スクリーンショット`() {
+    fun `戻るボタンあり`() {
         rule.setContent {
             MaterialTheme {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
@@ -29,7 +29,7 @@ class ReadoutDetailPaneScreenshotTest {
     }
 
     @Test
-    fun `戻るボタンなし_スクリーンショット`() {
+    fun `戻るボタンなし`() {
         rule.setContent {
             MaterialTheme {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {

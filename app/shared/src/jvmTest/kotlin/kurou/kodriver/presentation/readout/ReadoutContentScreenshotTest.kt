@@ -28,7 +28,7 @@ class ReadoutContentScreenshotTest {
     )
 
     @Test
-    fun `一覧と詳細の同時表示_スクリーンショット`() {
+    fun `一覧と詳細の同時表示`() {
         rule.setContent {
             MaterialTheme {
                 ReadoutContent(
