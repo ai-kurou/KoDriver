@@ -160,6 +160,16 @@ tasks.register("generateModuleGraphImages") {
     }
 }
 
+kover {
+    reports {
+        filters {
+            excludes {
+                annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+            }
+        }
+    }
+}
+
 dependencies {
     kover(project(":core"))
     kover(project(":app:shared"))
