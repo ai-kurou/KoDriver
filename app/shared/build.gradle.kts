@@ -90,7 +90,7 @@ val isVerifyMode = startTaskNames.any { it.contains("verifyRoborazziJvmTest") }
 
 tasks.withType<Test>().configureEach {
     systemProperty("skiko.renderApi", "SOFTWARE_FAST")
-    systemProperty("roborazzi.output.dir", "${projectDir}/src/jvmTest/snapshots")
+    systemProperty("roborazzi.output.dir", "$projectDir/src/jvmTest/snapshots")
     if (isRecordMode) systemProperty("roborazzi.test.record", "true")
     if (isVerifyMode) systemProperty("roborazzi.test.verify", "true")
 }
