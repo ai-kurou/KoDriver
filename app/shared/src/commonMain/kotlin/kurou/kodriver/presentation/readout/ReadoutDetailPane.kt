@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import kurou.kodriver.presentation.component.PlaceholderContent
 
 @Composable
@@ -24,5 +25,11 @@ internal fun ReadoutDetailPane(
         }
         PlaceholderContent(title = "detailPane", modifier = Modifier.weight(1f))
     }
+}
+
+@Preview
+@Composable
+fun ReadoutDetailPanePreview() {
+    ReadoutDetailPane(canNavigateBack = true, onBack = {})
 }
 
