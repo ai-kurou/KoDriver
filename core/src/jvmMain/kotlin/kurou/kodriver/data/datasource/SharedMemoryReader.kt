@@ -8,11 +8,11 @@ import java.nio.ByteOrder
 internal class SharedMemoryReader(
     private val segmentName: String,
     private val sizeBytes: Int,
-) {
+) : MemoryReader {
     private var handle: HANDLE? = null
     private var mappedPointer: Pointer? = null
 
-    fun open(): Boolean {
+    override fun open(): Boolean {
         if (!System.getProperty("os.name").contains("Windows", ignoreCase = true)) return false
 
         val h = Kernel32Ext.INSTANCE.OpenFileMappingA(
@@ -37,14 +37,14 @@ internal class SharedMemoryReader(
         return true
     }
 
-    fun readBuffer(): ByteBuffer? {
+    override fun readBuffer(): ByteBuffer? {
         val ptr = mappedPointer ?: return null
         return ptr.getByteBuffer(0, sizeBytes.toLong()).order(ByteOrder.LITTLE_ENDIAN)
     }
 
-    fun isOpen(): Boolean = handle != null && mappedPointer != null
+    override fun isOpen(): Boolean = handle != null && mappedPointer != null
 
-    fun close() {
+    override fun close() {
         mappedPointer?.let { Kernel32Ext.INSTANCE.UnmapViewOfFile(it) }
         handle?.let { Kernel32Ext.INSTANCE.CloseHandle(it) }
         mappedPointer = null
