@@ -19,8 +19,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.presentation.component.PlaceholderContent
 import kotlinx.coroutines.launch
+import kurou.kodriver.presentation.component.PlaceholderContent
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
