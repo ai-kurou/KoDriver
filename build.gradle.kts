@@ -29,6 +29,7 @@ subprojects {
     }
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         ignoreFailures = false
+        exclude { it.file.absolutePath.contains("/build/generated/") }
     }
     dependencies {
         "detektPlugins"(rootProject.libs.detekt.formatting)

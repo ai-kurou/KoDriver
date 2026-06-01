@@ -7,7 +7,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kurou.kodriver.presentation.AppScreen
-import kurou.kodriver.presentation.ReadoutContent
+import kurou.kodriver.presentation.readout.ReadoutContent
 import java.awt.Dimension
 
 fun main() = application {
