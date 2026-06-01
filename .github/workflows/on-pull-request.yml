@@ -71,7 +71,7 @@ jobs:
           files: build/reports/kover/report.xml
 
   screenshot-test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
