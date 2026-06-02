@@ -8,6 +8,8 @@ dependencies {
     implementation(libs.kotlinx.coroutinesCore)
     implementation(libs.jna)
     implementation(libs.jna.platform)
+    implementation(libs.androidx.datastore.preferences)
 
     testImplementation(libs.kotlin.testJunit)
+    testImplementation(libs.kotlinx.coroutinesTest)
 }
