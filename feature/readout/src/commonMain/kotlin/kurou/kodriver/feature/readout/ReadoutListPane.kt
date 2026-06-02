@@ -125,6 +125,7 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                                 IconButton(
                                     onClick = { items.add(index - 1, items.removeAt(index)) },
                                     enabled = index > 0,
+                                    modifier = Modifier.size(36.dp),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.KeyboardArrowUp,
@@ -134,6 +135,7 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                                 IconButton(
                                     onClick = { items.add(index + 1, items.removeAt(index)) },
                                     enabled = index < items.lastIndex,
+                                    modifier = Modifier.size(36.dp),
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.KeyboardArrowDown,
