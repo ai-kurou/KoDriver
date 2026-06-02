@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.readout
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -20,6 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kodriver.feature.readout.generated.resources.Res
+import kodriver.feature.readout.generated.resources.lmu
+import org.jetbrains.compose.resources.painterResource
 
 private val simulators = listOf("Le Mans Ultimate")
 
@@ -42,6 +47,13 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("シミュレーター") },
+                leadingIcon = {
+                    Image(
+                        painter = painterResource(Res.drawable.lmu),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
             )
@@ -56,6 +68,13 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                             selected = simulator
                             expanded = false
                             onItemClick()
+                        },
+                        leadingIcon = {
+                            Image(
+                                painter = painterResource(Res.drawable.lmu),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                            )
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                     )
