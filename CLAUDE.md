@@ -187,6 +187,18 @@ private val _selected: StateFlow<String?> = repository.observe()
     .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 ```
 
+### MutableStateFlow の更新
+
+`MutableStateFlow` の値を更新するときは **必ず `update { }` を使うこと**。`.value = ...` の直接代入は競合状態を招く恐れがある。
+
+```kotlin
+// NG
+_state.value = _state.value.copy(count = _state.value.count + 1)
+
+// OK
+_state.update { it.copy(count = it.count + 1) }
+```
+
 ### Coroutines のエラーハンドリング
 
 `runCatching` および `mapCatching` は `CancellationException` を捕捉するため、structured concurrency を破壊する恐れがある。**使用禁止**。

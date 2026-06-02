@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -62,30 +63,31 @@ class ReadoutViewModel(
 
     fun moveItemUp(index: Int) {
         if (index <= 0) return
-        val current = effectiveItemsState
-        _itemsState.value = current.copy(
-            items = current.items.toMutableList().also { it.add(index - 1, it.removeAt(index)) },
-        )
+        _itemsState.update { state ->
+            val current = effectiveItemsStateFrom(state)
+            current.copy(items = current.items.toMutableList().also { it.add(index - 1, it.removeAt(index)) })
+        }
     }
 
     fun moveItemDown(index: Int) {
-        val current = effectiveItemsState
-        if (index >= current.items.lastIndex) return
-        _itemsState.value = current.copy(
-            items = current.items.toMutableList().also { it.add(index + 1, it.removeAt(index)) },
-        )
+        _itemsState.update { state ->
+            val current = effectiveItemsStateFrom(state)
+            if (index >= current.items.lastIndex) return@update state
+            current.copy(items = current.items.toMutableList().also { it.add(index + 1, it.removeAt(index)) })
+        }
     }
 
     fun onSwitchChanged(label: String, checked: Boolean) {
-        val current = effectiveItemsState
-        _itemsState.value = current.copy(switchStates = current.switchStates + (label to checked))
+        _itemsState.update { state ->
+            effectiveItemsStateFrom(state).let { current ->
+                current.copy(switchStates = current.switchStates + (label to checked))
+            }
+        }
     }
 
-    private val effectiveItemsState: ItemsState
-        get() {
-            val selected = _selectedSimulator.value
-            val state = _itemsState.value
-            return if (state.simulator == selected) state
-            else ItemsState(selected, simulatorItems[selected].orEmpty(), emptyMap())
-        }
+    private fun effectiveItemsStateFrom(state: ItemsState): ItemsState {
+        val selected = _selectedSimulator.value
+        return if (state.simulator == selected) state
+        else ItemsState(selected, simulatorItems[selected].orEmpty(), emptyMap())
+    }
 }
