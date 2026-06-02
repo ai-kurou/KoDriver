@@ -3,6 +3,7 @@ package kurou.kodriver.feature.readout
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,12 @@ class ReadoutContentTest {
 
         assertFalse(backEnabled)
 
+        // ドロップダウンを開く
         rule.onNodeWithText("Le Mans Ultimate").performClick()
+        rule.waitForIdle()
+
+        // ドロップダウンのアイテムを選択して遷移
+        rule.onAllNodesWithText("Le Mans Ultimate")[1].performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)

@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.readout
 
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -37,6 +38,7 @@ fun ReadoutContent(
         directive = navigator.scaffoldDirective,
         scaffoldState = navigator.scaffoldState,
         paneExpansionState = paneExpansionState,
+        paneExpansionDragHandle = { VerticalDivider() },
         modifier = modifier,
         listPane = {
             ReadoutListPane(onItemClick = {
