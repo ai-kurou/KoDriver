@@ -55,16 +55,18 @@ moduleGraphAssert {
         ":app:webApp -> :app:shared",
         ":app:shared -> :feature:other",
         ":app:shared -> :feature:readout",
-        ":feature:other -> :core",
-        ":feature:readout -> :core",
-        ":server -> :core",
+        ":feature:other -> :core:domain",
+        ":feature:readout -> :core:domain",
+        ":server -> :core:domain",
+        ":core:data -> :core:domain",
     )
     restricted = arrayOf(
-        ":core -X> :app:.*",
-        ":core -X> :feature:.*",
-        ":core -X> :server",
+        ":core:.* -X> :app:.*",
+        ":core:.* -X> :feature:.*",
+        ":core:.* -X> :server",
+        ":core:domain -X> :core:data",
         ":feature:.* -X> :app:.*",
-        ":app:shared -X> :core",
+        ":app:shared -X> :core:.*",
         ":app:shared -X> :app:androidApp",
         ":app:shared -X> :app:desktopApp",
         ":app:shared -X> :app:webApp",
@@ -207,7 +209,8 @@ kover {
 }
 
 dependencies {
-    kover(project(":core"))
+    kover(project(":core:domain"))
+    kover(project(":core:data"))
     kover(project(":feature:other"))
     kover(project(":feature:readout"))
     kover(project(":app:shared"))
