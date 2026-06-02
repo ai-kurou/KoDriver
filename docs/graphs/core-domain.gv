@@ -1,5 +1,8 @@
 digraph G {
   ":server" -> ":core:domain"
+  ":app:shared" -> ":feature:other"
+  ":app:shared" -> ":feature:readout"
+  ":app:shared" -> ":core:domain"
   ":core:data" -> ":core:domain"
   ":feature:other" -> ":core:domain"
   ":feature:readout" -> ":core:domain"

@@ -1,4 +1,7 @@
 digraph G {
+  ":app:desktopApp" -> ":app:shared"
+  ":app:desktopApp" -> ":feature:readout"
   ":app:shared" -> ":feature:readout"
+  ":app:shared" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
 }
