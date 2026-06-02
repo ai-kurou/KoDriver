@@ -20,9 +20,11 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,6 +47,7 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(simulators[0]) }
     val items = simulatorItems[selected].orEmpty()
+    val switchStates = remember { mutableStateMapOf<String, Boolean>() }
 
     Column(
         modifier = Modifier
@@ -106,7 +109,15 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
                 ) {
-                    ListItem(headlineContent = { Text(label) })
+                    ListItem(
+                        headlineContent = { Text(label) },
+                        trailingContent = {
+                            Switch(
+                                checked = switchStates[label] != false,
+                                onCheckedChange = { switchStates[label] = it },
+                            )
+                        },
+                    )
                 }
             }
         }
