@@ -51,4 +51,11 @@ class ReadoutPreferencesRepositoryImplTest {
         assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("Le Mans Ultimate").first())
         assertEquals(mapOf("車両接近" to false), repository.observeReadoutEnabledStates("rFactor 2").first())
     }
+
+    @Test
+    fun `ラベルに等号が含まれていても正しく保存・取得できる`() = testScope.runTest {
+        repository.saveReadoutEnabledState("Le Mans Ultimate", "a=b", true)
+
+        assertEquals(mapOf("a=b" to true), repository.observeReadoutEnabledStates("Le Mans Ultimate").first())
+    }
 }
