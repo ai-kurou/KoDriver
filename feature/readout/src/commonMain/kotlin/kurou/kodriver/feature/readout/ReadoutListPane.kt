@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation.readout
+package kurou.kodriver.feature.readout
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
