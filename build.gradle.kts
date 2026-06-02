@@ -119,7 +119,7 @@ tasks.register("generateModuleGraphImages") {
                     appendLine("  \"$from\" -> \"$to\"")
                 }
                 append("}")
-            }
+            },
         )
 
         runCommand(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg")
