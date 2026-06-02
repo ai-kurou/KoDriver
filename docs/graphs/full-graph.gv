@@ -2,7 +2,9 @@ digraph G {
   ":server" -> ":core"
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
+  ":app:shared" -> ":feature:other"
   ":app:shared" -> ":feature:readout"
   ":app:webApp" -> ":app:shared"
+  ":feature:other" -> ":core"
   ":feature:readout" -> ":core"
 }

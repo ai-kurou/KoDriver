@@ -27,17 +27,29 @@
 <path fill="none" stroke="black" d="M128.5,-145.98C159.01,-134.92 200.58,-119.84 232.47,-108.27"/>
 <polygon fill="black" stroke="black" points="233.83,-111.5 242.03,-104.8 231.44,-104.92 233.83,-111.5"/>
 </g>
-<!-- :feature:readout -->
+<!-- :feature:other -->
 <g id="node4" class="node">
+<title>:feature:other</title>
+<ellipse fill="none" stroke="black" cx="190.09" cy="-18" rx="75.29" ry="18"/>
+<text text-anchor="middle" x="190.09" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:other</text>
+</g>
+<!-- :app:shared&#45;&gt;:feature:other -->
+<g id="edge3" class="edge">
+<title>:app:shared&#45;&gt;:feature:other</title>
+<path fill="none" stroke="black" d="M259.22,-72.76C247.38,-63.55 232.37,-51.88 219.37,-41.77"/>
+<polygon fill="black" stroke="black" points="221.21,-38.77 211.16,-35.39 216.91,-44.29 221.21,-38.77"/>
+</g>
+<!-- :feature:readout -->
+<g id="node5" class="node">
 <title>:feature:readout</title>
-<ellipse fill="none" stroke="black" cx="280.09" cy="-18" rx="86.38" ry="18"/>
-<text text-anchor="middle" x="280.09" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:readout</text>
+<ellipse fill="none" stroke="black" cx="370.09" cy="-18" rx="86.38" ry="18"/>
+<text text-anchor="middle" x="370.09" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:readout</text>
 </g>
 <!-- :app:shared&#45;&gt;:feature:readout -->
-<g id="edge3" class="edge">
+<g id="edge4" class="edge">
 <title>:app:shared&#45;&gt;:feature:readout</title>
-<path fill="none" stroke="black" d="M280.09,-71.7C280.09,-63.98 280.09,-54.71 280.09,-46.11"/>
-<polygon fill="black" stroke="black" points="283.59,-46.1 280.09,-36.1 276.59,-46.1 283.59,-46.1"/>
+<path fill="none" stroke="black" d="M300.97,-72.76C312.72,-63.62 327.6,-52.05 340.54,-41.99"/>
+<polygon fill="black" stroke="black" points="342.96,-44.54 348.71,-35.63 338.66,-39.01 342.96,-44.54"/>
 </g>
 <!-- :app:desktopApp -->
 <g id="node3" class="node">
@@ -52,13 +64,13 @@
 <polygon fill="black" stroke="black" points="283.59,-118.1 280.09,-108.1 276.59,-118.1 283.59,-118.1"/>
 </g>
 <!-- :app:webApp -->
-<g id="node5" class="node">
+<g id="node6" class="node">
 <title>:app:webApp</title>
 <ellipse fill="none" stroke="black" cx="457.09" cy="-162" rx="70.69" ry="18"/>
 <text text-anchor="middle" x="457.09" y="-158.3" font-family="Times,serif" font-size="14.00">:app:webApp</text>
 </g>
 <!-- :app:webApp&#45;&gt;:app:shared -->
-<g id="edge4" class="edge">
+<g id="edge5" class="edge">
 <title>:app:webApp&#45;&gt;:app:shared</title>
 <path fill="none" stroke="black" d="M420.42,-146.5C392.85,-135.59 354.93,-120.6 325.46,-108.94"/>
 <polygon fill="black" stroke="black" points="326.4,-105.55 315.81,-105.13 323.82,-112.06 326.4,-105.55"/>
