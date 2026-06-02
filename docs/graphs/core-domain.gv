@@ -1,0 +1,6 @@
+digraph G {
+  ":server" -> ":core:domain"
+  ":core:data" -> ":core:domain"
+  ":feature:other" -> ":core:domain"
+  ":feature:readout" -> ":core:domain"
+}

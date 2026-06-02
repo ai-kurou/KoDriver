@@ -9,11 +9,11 @@
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
 <title>G</title>
 <polygon fill="white" stroke="transparent" points="-4,4 -4,-112 145.69,-112 145.69,4 -4,4"/>
-<!-- :server -->
+<!-- :core:data -->
 <g id="node1" class="node">
-<title>:server</title>
-<ellipse fill="none" stroke="black" cx="70.84" cy="-90" rx="43.59" ry="18"/>
-<text text-anchor="middle" x="70.84" y="-86.3" font-family="Times,serif" font-size="14.00">:server</text>
+<title>:core:data</title>
+<ellipse fill="none" stroke="black" cx="70.84" cy="-90" rx="57.39" ry="18"/>
+<text text-anchor="middle" x="70.84" y="-86.3" font-family="Times,serif" font-size="14.00">:core:data</text>
 </g>
 <!-- :core:domain -->
 <g id="node2" class="node">
@@ -21,9 +21,9 @@
 <ellipse fill="none" stroke="black" cx="70.84" cy="-18" rx="70.69" ry="18"/>
 <text text-anchor="middle" x="70.84" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
-<!-- :server&#45;&gt;:core:domain -->
+<!-- :core:data&#45;&gt;:core:domain -->
 <g id="edge1" class="edge">
-<title>:server&#45;&gt;:core:domain</title>
+<title>:core:data&#45;&gt;:core:domain</title>
 <path fill="none" stroke="black" d="M70.84,-71.7C70.84,-63.98 70.84,-54.71 70.84,-46.11"/>
 <polygon fill="black" stroke="black" points="74.34,-46.1 70.84,-36.1 67.34,-46.1 74.34,-46.1"/>
 </g>

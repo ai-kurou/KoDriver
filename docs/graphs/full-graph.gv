@@ -1,10 +1,11 @@
 digraph G {
-  ":server" -> ":core"
+  ":server" -> ":core:domain"
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
   ":app:shared" -> ":feature:other"
   ":app:shared" -> ":feature:readout"
   ":app:webApp" -> ":app:shared"
-  ":feature:other" -> ":core"
-  ":feature:readout" -> ":core"
+  ":core:data" -> ":core:domain"
+  ":feature:other" -> ":core:domain"
+  ":feature:readout" -> ":core:domain"
 }
