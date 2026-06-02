@@ -165,6 +165,28 @@ detekt の主な閾値（`config/detekt/detekt.yml`）:
 - `core:data` は `kotlinJvm` プラグインを使用するため、ソースパスは `src/main/kotlin`（`src/jvmMain/kotlin` は `kotlinMultiplatform` 専用）。
 - `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
 
+### ViewModel の設計規則
+
+- **`uiState: StateFlow<XxxUiState>` を唯一の公開状態にすること。** 個別の `StateFlow`（例: `selectedSimulator`）を `public` で追加してはならない。UI は `uiState` だけを参照すれば済む設計にする。
+- **`init {}` を使わず、宣言的に状態を組み立てること。** 外部ソース（Repository など）からの Flow は `stateIn` で StateFlow 化し、派生状態は `combine` で組み立てる。副作用のない読み取りは `private val` のカスタム getter（`get() { ... }`）で表現する。
+
+```kotlin
+// NG: public な個別 StateFlow
+val selectedSimulator: StateFlow<String?> = ...
+
+// OK: uiState に集約
+val uiState: StateFlow<XxxUiState> = ...
+
+// NG: init {} でコルーチンを起動して状態を同期
+init {
+    viewModelScope.launch { flow.collect { _state.value = it } }
+}
+
+// OK: stateIn で宣言的に StateFlow 化
+private val _selected: StateFlow<String?> = repository.observe()
+    .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+```
+
 ### Coroutines のエラーハンドリング
 
 `runCatching` および `mapCatching` は `CancellationException` を捕捉するため、structured concurrency を破壊する恐れがある。**使用禁止**。
