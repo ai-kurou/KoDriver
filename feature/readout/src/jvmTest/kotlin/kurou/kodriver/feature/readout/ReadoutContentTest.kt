@@ -45,11 +45,11 @@ class ReadoutContentTest {
         assertFalse(backEnabled)
 
         // ドロップダウンを開く
-        rule.onNodeWithText("シミュレータを選択").performClick()
+        rule.onNodeWithText("Le Mans Ultimate").performClick()
         rule.waitForIdle()
 
         // ドロップダウンのアイテムを選択してリストを表示
-        rule.onNodeWithText("Le Mans Ultimate").performClick()
+        rule.onAllNodesWithText("Le Mans Ultimate")[1].performClick()
         rule.waitForIdle()
 
         // LazyColumn のアイテムをタップして詳細ペインへ遷移
