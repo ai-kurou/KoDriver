@@ -112,13 +112,15 @@ tasks.register("generateModuleGraphImages") {
         }
 
         val fullGvFile = file("$graphsDir/full-graph.gv")
-        fullGvFile.writeText(buildString {
-            appendLine("digraph G {")
-            parsedEdges.forEach { (from, to, _) ->
-                appendLine("  \"$from\" -> \"$to\"")
+        fullGvFile.writeText(
+            buildString {
+                appendLine("digraph G {")
+                parsedEdges.forEach { (from, to, _) ->
+                    appendLine("  \"$from\" -> \"$to\"")
+                }
+                append("}")
             }
-            append("}")
-        })
+        )
 
         runCommand(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg")
         println("Generated: docs/graphs/full-graph.svg")
