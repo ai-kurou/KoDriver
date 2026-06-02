@@ -49,7 +49,6 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.core)
             implementation(projects.feature.readout)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

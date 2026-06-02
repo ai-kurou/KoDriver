@@ -94,15 +94,33 @@ tasks.register("generateModuleGraphImages") {
             check(result == 0) { "Command failed (exit $result): ${args.joinToString(" ")}" }
         }
 
-        val fullGvFile = file("$graphsDir/full-graph.gv")
-        runCommand("./gradlew", "generateModulesGraphvizText",
-            "-Pmodules.graph.output.gv=${fullGvFile.absolutePath}")
+        // Gradle プロジェクト構造から直接依存を収集（KMP sourceSets の依存も正しく検出）
+        val seen = mutableSetOf<Pair<String, String>>()
+        val parsedEdges = mutableListOf<Triple<String, String, String>>()
+        rootProject.subprojects.forEach { proj ->
+            proj.configurations.forEach { config ->
+                config.dependencies
+                    .filterIsInstance<org.gradle.api.artifacts.ProjectDependency>()
+                    .forEach { dep ->
+                        val from = proj.path
+                        val to = dep.path
+                        if (from != to && seen.add(Pair(from, to))) {
+                            parsedEdges.add(Triple(from, to, ""))
+                        }
+                    }
+            }
+        }
 
-        val fullGv = fullGvFile.readText()
-        val edgeRegex = Regex(""""(:[^"]+)"\s*->\s*"(:[^"]+)"(.*)""")
-        val parsedEdges = edgeRegex.findAll(fullGv).map { m ->
-            Triple(m.groupValues[1], m.groupValues[2], m.groupValues[3].trim())
-        }.toList()
+        val fullGvFile = file("$graphsDir/full-graph.gv")
+        fullGvFile.writeText(
+            buildString {
+                appendLine("digraph G {")
+                parsedEdges.forEach { (from, to, _) ->
+                    appendLine("  \"$from\" -> \"$to\"")
+                }
+                append("}")
+            },
+        )
 
         runCommand(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg")
         println("Generated: docs/graphs/full-graph.svg")
