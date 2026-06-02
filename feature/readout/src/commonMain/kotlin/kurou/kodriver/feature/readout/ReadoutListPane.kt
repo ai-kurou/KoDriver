@@ -1,16 +1,21 @@
 package kurou.kodriver.feature.readout
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -28,11 +33,16 @@ import org.jetbrains.compose.resources.painterResource
 
 private val simulators = listOf("Le Mans Ultimate")
 
+private val simulatorItems: Map<String, List<String>> = mapOf(
+    "Le Mans Ultimate" to listOf("車両接近"),
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReadoutListPane(onItemClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(simulators[0]) }
+    val items = simulatorItems[selected].orEmpty()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         ExposedDropdownMenuBox(
@@ -64,7 +74,6 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                         onClick = {
                             selected = simulator
                             expanded = false
-                            onItemClick()
                         },
                         leadingIcon = {
                             Image(
@@ -78,7 +87,15 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                 }
             }
         }
-        LazyColumn(modifier = Modifier.fillMaxSize()) {}
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(items) { label ->
+                ListItem(
+                    headlineContent = { Text(label) },
+                    modifier = Modifier.clickable { onItemClick() },
+                )
+            }
+        }
     }
 }
 
