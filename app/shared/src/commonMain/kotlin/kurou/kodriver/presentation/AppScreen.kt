@@ -18,8 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.readout.ReadoutContent
-import kurou.kodriver.presentation.component.PlaceholderContent
 
 enum class AppDestination(
     val label: String,
@@ -53,7 +53,7 @@ fun AppScreen(
                 Box(modifier = Modifier.statusBarsPadding()) {
                     when (currentDestination) {
                         AppDestination.Readout -> readoutContent()
-                        AppDestination.More -> PlaceholderContent("その他")
+                        AppDestination.More -> OtherContent()
                     }
                 }
             }

@@ -53,7 +53,9 @@ moduleGraphAssert {
         ":app:androidApp -> :app:shared",
         ":app:desktopApp -> :app:shared",
         ":app:webApp -> :app:shared",
+        ":app:shared -> :feature:other",
         ":app:shared -> :feature:readout",
+        ":feature:other -> :core",
         ":feature:readout -> :core",
         ":server -> :core",
     )
@@ -206,6 +208,7 @@ kover {
 
 dependencies {
     kover(project(":core"))
+    kover(project(":feature:other"))
     kover(project(":feature:readout"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))
