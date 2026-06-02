@@ -106,7 +106,7 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(items) { label ->
+            items(items, key = { it }) { label ->
                 ElevatedCard(
                     onClick = onItemClick,
                     modifier = Modifier
