@@ -58,6 +58,9 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(compose.materialIconsExtended)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -68,6 +71,7 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
+            implementation(libs.kotlinx.coroutinesTest)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)

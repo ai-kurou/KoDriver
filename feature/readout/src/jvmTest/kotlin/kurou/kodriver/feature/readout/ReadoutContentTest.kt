@@ -3,10 +3,11 @@ package kurou.kodriver.feature.readout
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -27,6 +28,14 @@ class ReadoutContentTest {
         excludedBounds = emptyList(),
     )
 
+    private fun createViewModel(): ReadoutViewModel {
+        val repo = FakeSimulatorPreferencesRepository()
+        return ReadoutViewModel(
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(repo),
+            saveSelectedSimulator = SaveSelectedSimulatorUseCase(repo),
+        )
+    }
+
     @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
@@ -39,17 +48,18 @@ class ReadoutContentTest {
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
+                viewModel = createViewModel(),
             )
         }
 
         assertFalse(backEnabled)
 
         // ドロップダウンを開く
-        rule.onNodeWithText("Le Mans Ultimate").performClick()
+        rule.onNodeWithText("シミュレータを選択").performClick()
         rule.waitForIdle()
 
         // ドロップダウンのアイテムを選択してリストを表示
-        rule.onAllNodesWithText("Le Mans Ultimate")[1].performClick()
+        rule.onNodeWithText("Le Mans Ultimate").performClick()
         rule.waitForIdle()
 
         // LazyColumn のアイテムをタップして詳細ペインへ遷移

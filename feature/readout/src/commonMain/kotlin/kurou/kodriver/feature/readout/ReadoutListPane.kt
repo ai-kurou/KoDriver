@@ -10,16 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -29,8 +29,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,21 +39,17 @@ import kodriver.feature.readout.generated.resources.Res
 import kodriver.feature.readout.generated.resources.lmu
 import org.jetbrains.compose.resources.painterResource
 
-private val simulators = listOf("Le Mans Ultimate")
-
-private val simulatorItems: Map<String, List<String>> = mapOf(
-    "Le Mans Ultimate" to listOf("車両接近", "残りラップ数"),
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ReadoutListPane(onItemClick: () -> Unit) {
+internal fun ReadoutListPane(
+    uiState: ReadoutListUiState,
+    onSimulatorSelected: (String) -> Unit,
+    onMoveUp: (Int) -> Unit,
+    onMoveDown: (Int) -> Unit,
+    onSwitchChanged: (String, Boolean) -> Unit,
+    onItemClick: () -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf(simulators[0]) }
-    val items = remember(selected) {
-        mutableStateListOf(*simulatorItems[selected].orEmpty().toTypedArray())
-    }
-    val switchStates = remember { mutableStateMapOf<String, Boolean>() }
 
     Column(
         modifier = Modifier
@@ -67,16 +61,20 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
             onExpandedChange = { expanded = it },
         ) {
             OutlinedTextField(
-                value = selected,
+                value = uiState.selectedSimulator ?: "シミュレータを選択",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("シミュレーター") },
-                leadingIcon = {
-                    Image(
-                        painter = painterResource(Res.drawable.lmu),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                    )
+                leadingIcon = if (uiState.selectedSimulator != null) {
+                    {
+                        Image(
+                            painter = painterResource(Res.drawable.lmu),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                } else {
+                    null
                 },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
@@ -85,11 +83,11 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
             ) {
-                simulators.forEach { simulator ->
+                uiState.simulators.forEach { simulator ->
                     DropdownMenuItem(
                         text = { Text(simulator) },
                         onClick = {
-                            selected = simulator
+                            onSimulatorSelected(simulator)
                             expanded = false
                         },
                         leadingIcon = {
@@ -106,7 +104,8 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(items, key = { it }) { label ->
+            items(uiState.items, key = { it }) { label ->
+                val index = uiState.items.indexOf(label)
                 ElevatedCard(
                     onClick = onItemClick,
                     modifier = Modifier
@@ -120,10 +119,9 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                     ListItem(
                         headlineContent = { Text(label) },
                         leadingContent = {
-                            val index = items.indexOf(label)
                             Column {
                                 IconButton(
-                                    onClick = { items.add(index - 1, items.removeAt(index)) },
+                                    onClick = { onMoveUp(index) },
                                     enabled = index > 0,
                                     modifier = Modifier.size(36.dp),
                                 ) {
@@ -133,8 +131,8 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                                     )
                                 }
                                 IconButton(
-                                    onClick = { items.add(index + 1, items.removeAt(index)) },
-                                    enabled = index < items.lastIndex,
+                                    onClick = { onMoveDown(index) },
+                                    enabled = index < uiState.items.lastIndex,
                                     modifier = Modifier.size(36.dp),
                                 ) {
                                     Icon(
@@ -146,8 +144,8 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                         },
                         trailingContent = {
                             Switch(
-                                checked = switchStates[label] != false,
-                                onCheckedChange = { switchStates[label] = it },
+                                checked = uiState.switchStates[label] != false,
+                                onCheckedChange = { onSwitchChanged(label, it) },
                             )
                         },
                     )
@@ -160,5 +158,16 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
 @Preview
 @Composable
 fun ReadoutListPanePreview() {
-    ReadoutListPane(onItemClick = {})
+    ReadoutListPane(
+        uiState = ReadoutListUiState(
+            simulators = listOf("Le Mans Ultimate"),
+            selectedSimulator = "Le Mans Ultimate",
+            items = listOf("車両接近", "残りラップ数"),
+        ),
+        onSimulatorSelected = {},
+        onMoveUp = {},
+        onMoveDown = {},
+        onSwitchChanged = { _, _ -> },
+        onItemClick = {},
+    )
 }

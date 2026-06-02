@@ -11,11 +11,14 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -23,7 +26,9 @@ fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    viewModel: ReadoutViewModel = koinViewModel(),
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = scaffoldDirective)
     val scope = rememberCoroutineScope()
     val navigateBack = { scope.launch { navigator.navigateBack() } }
@@ -41,9 +46,16 @@ fun ReadoutContent(
         paneExpansionDragHandle = { VerticalDivider() },
         modifier = modifier,
         listPane = {
-            ReadoutListPane(onItemClick = {
-                scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail) }
-            })
+            ReadoutListPane(
+                uiState = uiState,
+                onSimulatorSelected = viewModel::onSimulatorSelected,
+                onMoveUp = viewModel::moveItemUp,
+                onMoveDown = viewModel::moveItemDown,
+                onSwitchChanged = viewModel::onSwitchChanged,
+                onItemClick = {
+                    scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail) }
+                },
+            )
         },
         detailPane = {
             ReadoutDetailPane(

@@ -71,6 +71,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.compose.material3.adaptive.layout)
+            implementation(projects.core.domain)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
