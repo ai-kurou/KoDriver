@@ -17,13 +17,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +52,9 @@ private val simulatorItems: Map<String, List<String>> = mapOf(
 internal fun ReadoutListPane(onItemClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf(simulators[0]) }
-    val items = simulatorItems[selected].orEmpty()
+    val items = remember(selected) {
+        mutableStateListOf(*simulatorItems[selected].orEmpty().toTypedArray())
+    }
     val switchStates = remember { mutableStateMapOf<String, Boolean>() }
 
     Column(
@@ -111,6 +119,29 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
                 ) {
                     ListItem(
                         headlineContent = { Text(label) },
+                        leadingContent = {
+                            val index = items.indexOf(label)
+                            Column {
+                                IconButton(
+                                    onClick = { items.add(index - 1, items.removeAt(index)) },
+                                    enabled = index > 0,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.KeyboardArrowUp,
+                                        contentDescription = "上に移動",
+                                    )
+                                }
+                                IconButton(
+                                    onClick = { items.add(index + 1, items.removeAt(index)) },
+                                    enabled = index < items.lastIndex,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.KeyboardArrowDown,
+                                        contentDescription = "下に移動",
+                                    )
+                                }
+                            }
+                        },
                         trailingContent = {
                             Switch(
                                 checked = switchStates[label] != false,
