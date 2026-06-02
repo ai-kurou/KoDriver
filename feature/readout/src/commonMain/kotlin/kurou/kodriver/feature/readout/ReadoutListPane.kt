@@ -98,7 +98,10 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
             items(items) { label ->
                 ElevatedCard(
                     onClick = onItemClick,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .animateItem(),
                     colors = CardDefaults.elevatedCardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
