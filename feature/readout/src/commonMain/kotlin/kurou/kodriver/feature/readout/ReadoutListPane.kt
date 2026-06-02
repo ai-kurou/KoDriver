@@ -44,7 +44,7 @@ import org.jetbrains.compose.resources.painterResource
 private val simulators = listOf("Le Mans Ultimate")
 
 private val simulatorItems: Map<String, List<String>> = mapOf(
-    "Le Mans Ultimate" to listOf("車両接近"),
+    "Le Mans Ultimate" to listOf("車両接近", "残りラップ数"),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
