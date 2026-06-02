@@ -9,45 +9,39 @@ plugins {
 
 kotlin {
     jvm()
-    
+
     js {
         browser()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
     }
-    
-    androidLibrary {
-       namespace = "kurou.kodriver.core"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
 
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
-       lint {
-           abortOnError = true
-           warningsAsErrors = false
-       }
+    androidLibrary {
+        namespace = "kurou.kodriver.core.domain"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+        lint {
+            abortOnError = true
+            warningsAsErrors = false
+        }
     }
-    
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutinesCore)
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.jna)
-                implementation(libs.jna.platform)
-            }
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

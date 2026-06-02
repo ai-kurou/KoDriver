@@ -180,8 +180,8 @@ class LmuMapperTest {
         val vb1 = vehicleBase(playerIdx = 1)
         val buf = emptyBuffer(playerIdx = 1)
 
-        buf.putInt(vb0 + OFF_GEAR, 1)   // playerIdx=0 スロット（読まれないはず）
-        buf.putInt(vb1 + OFF_GEAR, 6)   // playerIdx=1 スロット（読まれるはず）
+        buf.putInt(vb0 + OFF_GEAR, 1) // playerIdx=0 スロット（読まれないはず）
+        buf.putInt(vb1 + OFF_GEAR, 6) // playerIdx=1 スロット（読まれるはず）
 
         val result = LmuMapper.map(buf)
 
