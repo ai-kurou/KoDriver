@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import kurou.kodriver.data.dataModule
 import kurou.kodriver.feature.readout.readoutModule
 import kurou.kodriver.presentation.AppScreen
 import org.koin.core.context.startKoin
@@ -13,7 +14,7 @@ import java.awt.Dimension
 
 fun main() {
     startKoin {
-        modules(desktopDataModule, readoutModule)
+        modules(dataModule, readoutModule)
     }
     application {
         val windowState = rememberWindowState(size = DpSize(1200.dp, 700.dp))
