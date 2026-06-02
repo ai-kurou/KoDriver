@@ -4,5 +4,5 @@ data class ReadoutListUiState(
     val selectedSimulator: String? = null,
     val simulators: List<String> = emptyList(),
     val items: List<String> = emptyList(),
-    val switchStates: Map<String, Boolean> = emptyMap(),
+    val readoutEnabledStates: Map<String, Boolean> = emptyMap(),
 )
