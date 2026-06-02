@@ -48,8 +48,12 @@ class ReadoutContentTest {
         rule.onNodeWithText("Le Mans Ultimate").performClick()
         rule.waitForIdle()
 
-        // ドロップダウンのアイテムを選択して遷移
+        // ドロップダウンのアイテムを選択してリストを表示
         rule.onAllNodesWithText("Le Mans Ultimate")[1].performClick()
+        rule.waitForIdle()
+
+        // LazyColumn のアイテムをタップして詳細ペインへ遷移
+        rule.onNodeWithText("車両接近").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)
