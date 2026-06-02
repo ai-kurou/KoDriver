@@ -1,4 +1,4 @@
 digraph G {
-  ":server" -> ":core"
+  ":app:shared" -> ":feature:readout"
   ":feature:readout" -> ":core"
 }

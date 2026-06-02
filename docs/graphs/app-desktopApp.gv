@@ -1,3 +1,3 @@
 digraph G {
-  ":app:desktopApp" -> ":app:shared" [color=red style=bold]
+  ":app:desktopApp" -> ":app:shared"
 }
