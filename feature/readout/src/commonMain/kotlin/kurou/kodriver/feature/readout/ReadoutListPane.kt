@@ -51,7 +51,7 @@ private val simulatorItems: Map<String, List<String>> = mapOf(
 @Composable
 internal fun ReadoutListPane(onItemClick: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf<String?>(null) }
+    var selected by remember { mutableStateOf(simulators[0]) }
     val items = remember(selected) {
         mutableStateListOf(*simulatorItems[selected].orEmpty().toTypedArray())
     }
@@ -67,20 +67,16 @@ internal fun ReadoutListPane(onItemClick: () -> Unit) {
             onExpandedChange = { expanded = it },
         ) {
             OutlinedTextField(
-                value = selected ?: "シミュレータを選択",
+                value = selected,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("シミュレーター") },
-                leadingIcon = if (selected != null) {
-                    {
-                        Image(
-                            painter = painterResource(Res.drawable.lmu),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                } else {
-                    null
+                leadingIcon = {
+                    Image(
+                        painter = painterResource(Res.drawable.lmu),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
                 },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
                 modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
