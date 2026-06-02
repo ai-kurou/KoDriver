@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation.readout
+package kurou.kodriver.feature.readout
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo

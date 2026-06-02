@@ -7,7 +7,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kurou.kodriver.presentation.AppScreen
-import kurou.kodriver.presentation.readout.ReadoutContent
 import java.awt.Dimension
 
 fun main() = application {
@@ -18,8 +17,6 @@ fun main() = application {
         state = windowState,
     ) {
         SideEffect { window.minimumSize = Dimension(900, 600) }
-        AppScreen(
-            readoutContent = { ReadoutContent() },
-        )
+        AppScreen()
     }
 }

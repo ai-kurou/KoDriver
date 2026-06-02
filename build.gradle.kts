@@ -48,22 +48,27 @@ subprojects {
 }
 
 moduleGraphAssert {
-    maxHeight = 2
+    maxHeight = 3
     allowed = arrayOf(
         ":app:androidApp -> :app:shared",
         ":app:desktopApp -> :app:shared",
         ":app:webApp -> :app:shared",
-        ":app:shared -> :core",
+        ":app:shared -> :feature:readout",
+        ":feature:readout -> :core",
         ":server -> :core",
     )
     restricted = arrayOf(
         ":core -X> :app:.*",
+        ":core -X> :feature:.*",
         ":core -X> :server",
+        ":feature:.* -X> :app:.*",
+        ":app:shared -X> :core",
         ":app:shared -X> :app:androidApp",
         ":app:shared -X> :app:desktopApp",
         ":app:shared -X> :app:webApp",
         ":app:shared -X> :server",
         ":server -X> :app:.*",
+        ":server -X> :feature:.*",
     )
 }
 
@@ -183,6 +188,7 @@ kover {
 
 dependencies {
     kover(project(":core"))
+    kover(project(":feature:readout"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))
     kover(project(":server"))

@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation.readout
+package kurou.kodriver.feature.readout
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.presentation.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
 

@@ -11,36 +11,36 @@ plugins {
 
 kotlin {
     jvm()
-    
+
     js {
         browser()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
     }
-    
-    androidLibrary {
-       namespace = "kurou.kodriver.app.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
 
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
-       lint {
-           abortOnError = true
-           warningsAsErrors = false
-       }
+    androidLibrary {
+        namespace = "kurou.kodriver.feature.readout"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+        lint {
+            abortOnError = true
+            warningsAsErrors = false
+        }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -50,15 +50,13 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.core)
-            implementation(projects.feature.readout)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
-            implementation(libs.compose.material3.adaptive.navigation.suite)
-            implementation(libs.compose.ui)
+            implementation(libs.compose.material3.adaptive.layout)
+            implementation(libs.compose.material3.adaptive.navigation)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(compose.materialIconsExtended)
         }
         commonTest.dependencies {
@@ -70,7 +68,6 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
-            implementation(libs.compose.material3.adaptive.layout)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
@@ -78,11 +75,14 @@ kotlin {
     }
 }
 
+compose.resources {
+    packageOfResClass = "kodriver.feature.readout.generated.resources"
+}
+
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
 
-// Gradle はコンフィギュレーション時にタスク名を解決するため、実行時ではなくここで判定する
 val startTaskNames = gradle.startParameter.taskNames
 val isRecordMode = startTaskNames.any { it.contains("recordRoborazziJvmTest") }
 val isVerifyMode = startTaskNames.any { it.contains("verifyRoborazziJvmTest") }

@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation
+package kurou.kodriver.feature.readout
 
 import kurou.kodriver.domain.model.LmuTelemetryData
 

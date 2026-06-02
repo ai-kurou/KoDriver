@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation.readout
+package kurou.kodriver.feature.readout
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.lmu
+import kodriver.feature.readout.generated.resources.Res
+import kodriver.feature.readout.generated.resources.lmu
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -33,4 +33,3 @@ internal fun LmuListItem(onClick: () -> Unit) {
 fun LmuListItemPreview() {
     LmuListItem(onClick = {})
 }
-

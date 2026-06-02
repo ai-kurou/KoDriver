@@ -18,8 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.presentation.component.PlaceholderContent
-import kurou.kodriver.presentation.readout.ReadoutContent
 
 enum class AppDestination(
     val label: String,
@@ -31,7 +31,8 @@ enum class AppDestination(
 
 @Composable
 fun AppScreen(
-    readoutContent: @Composable () -> Unit = { ReadoutContent() },
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    readoutContent: @Composable () -> Unit = { ReadoutContent(backHandler = backHandler) },
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
