@@ -7,7 +7,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.junit.After
 import org.junit.Before
@@ -19,16 +21,20 @@ import kotlin.test.assertNull
 class ReadoutViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeSimulatorPreferencesRepository
+    private lateinit var simulatorRepository: FakeSimulatorPreferencesRepository
+    private lateinit var readoutRepository: FakeReadoutPreferencesRepository
     private lateinit var viewModel: ReadoutViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeSimulatorPreferencesRepository()
+        simulatorRepository = FakeSimulatorPreferencesRepository()
+        readoutRepository = FakeReadoutPreferencesRepository()
         viewModel = ReadoutViewModel(
-            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(repository),
-            saveSelectedSimulator = SaveSelectedSimulatorUseCase(repository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
+            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
+            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
         )
     }
 
@@ -68,5 +74,22 @@ class ReadoutViewModelTest {
         viewModel.moveItemDown(0)
 
         assertEquals(listOf("残りラップ数", "車両接近"), viewModel.uiState.first().items)
+    }
+
+    @Test
+    fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() = runTest {
+        viewModel.onSimulatorSelected("Le Mans Ultimate")
+        viewModel.onReadoutEnabledChanged("車両接近", false)
+
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates["車両接近"])
+    }
+
+    @Test
+    fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() = runTest {
+        readoutRepository.saveReadoutEnabledState("Le Mans Ultimate", "残りラップ数", false)
+
+        viewModel.onSimulatorSelected("Le Mans Ultimate")
+
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates["残りラップ数"])
     }
 }
