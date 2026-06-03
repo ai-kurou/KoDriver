@@ -15,7 +15,7 @@ class SimulatorPreferencesDataStoreFactoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Test
-    fun `simulator_preferences_pbに書き込まれる`() = testScope.runTest {
+    fun `シミュレータ設定が正しいファイルに書き込まれる`() = testScope.runTest {
         val dataStore = createSimulatorPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(selectedSimulator = "lmu") }
 

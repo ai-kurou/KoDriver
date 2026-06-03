@@ -16,7 +16,7 @@ class ReadoutPreferencesDataStoreFactoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Test
-    fun `readout_preferences_pbに書き込まれる`() = testScope.runTest {
+    fun `readout設定が正しいファイルに書き込まれる`() = testScope.runTest {
         val dataStore = createReadoutPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { prefs ->
             prefs.copy(simulatorStates = prefs.simulatorStates + ("lmu" to SimulatorReadoutState()))
