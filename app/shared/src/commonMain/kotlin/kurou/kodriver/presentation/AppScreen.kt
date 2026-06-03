@@ -18,15 +18,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.nav_more
+import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.readout.ReadoutContent
+import org.jetbrains.compose.resources.stringResource
 
 enum class AppDestination(
-    val label: String,
     val icon: ImageVector,
 ) {
-    Readout("読み上げ", Icons.Default.HeadsetMic),
-    More("その他", Icons.Default.MoreHoriz),
+    Readout(Icons.Default.HeadsetMic),
+    More(Icons.Default.MoreHoriz),
+}
+
+@Composable
+private fun AppDestination.label(): String = when (this) {
+    AppDestination.Readout -> stringResource(Res.string.nav_readout)
+    AppDestination.More -> stringResource(Res.string.nav_more)
 }
 
 @Composable
@@ -42,8 +51,8 @@ fun AppScreen(
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
                         item(
-                            icon = { Icon(dest.icon, contentDescription = dest.label) },
-                            label = { Text(dest.label) },
+                            icon = { Icon(dest.icon, contentDescription = dest.label()) },
+                            label = { Text(dest.label()) },
                             selected = currentDestination == dest,
                             onClick = { currentDestination = dest },
                         )
