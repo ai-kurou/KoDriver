@@ -26,8 +26,32 @@ class ReadoutListPaneScreenshotTest {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu"),
-                                simulatorDisplayNames = mapOf("lmu" to "Le Mans Ultimate"),
-                                itemDisplayNames = mapOf("vehicle_approach" to "車両接近", "laps_remaining" to "残りラップ数"),
+                            ),
+                            onSimulatorSelected = {},
+                            onMoveUp = {},
+                            onMoveDown = {},
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onItemClick = {},
+                        )
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `シミュレータ選択済みでアイテム表示`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                        ReadoutListPane(
+                            uiState = ReadoutListUiState(
+                                simulators = listOf("lmu"),
+                                selectedSimulator = "lmu",
+                                items = listOf("vehicle_approach", "laps_remaining"),
+                                readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
                             ),
                             onSimulatorSelected = {},
                             onMoveUp = {},

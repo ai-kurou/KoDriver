@@ -92,4 +92,46 @@ class ReadoutViewModelTest {
 
         assertEquals(false, viewModel.uiState.first().readoutEnabledStates["laps_remaining"])
     }
+
+    @Test
+    fun `moveItemUpで先頭アイテムは移動しない`() = runTest {
+        viewModel.onSimulatorSelected("lmu")
+        viewModel.moveItemUp(0)
+
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), viewModel.uiState.first().items)
+    }
+
+    @Test
+    fun `moveItemDownで末尾アイテムは移動しない`() = runTest {
+        viewModel.onSimulatorSelected("lmu")
+        viewModel.moveItemDown(1)
+
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), viewModel.uiState.first().items)
+    }
+
+    @Test
+    fun `未知のシミュレータを選択するとアイテムが空になる`() = runTest {
+        viewModel.onSimulatorSelected("unknown_simulator")
+
+        val state = viewModel.uiState.first()
+        assertEquals("unknown_simulator", state.selectedSimulator)
+        assertEquals(emptyList(), state.items)
+    }
+
+    @Test
+    fun `初期状態でsimulatorsリストにlmuが含まれる`() = runTest {
+        val state = viewModel.uiState.first()
+
+        assertEquals(listOf("lmu"), state.simulators)
+    }
+
+    @Test
+    fun `シミュレータ選択後に別シミュレータへ再選択するとアイテムが更新される`() = runTest {
+        viewModel.onSimulatorSelected("lmu")
+        viewModel.moveItemDown(0)
+        viewModel.onSimulatorSelected("lmu")
+
+        val state = viewModel.uiState.first()
+        assertEquals(listOf("laps_remaining", "vehicle_approach"), state.items)
+    }
 }
