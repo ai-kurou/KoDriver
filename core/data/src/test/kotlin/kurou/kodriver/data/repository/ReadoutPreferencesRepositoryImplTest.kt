@@ -43,6 +43,14 @@ class ReadoutPreferencesRepositoryImplTest {
     }
 
     @Test
+    fun `未保存のシミュレータへの初回保存はemptyMapから開始され既存データを引き継がない`() = testScope.runTest {
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+        repository.saveReadoutEnabledState("rFactor 2", "laps_remaining", false)
+
+        assertEquals(mapOf("laps_remaining" to false), repository.observeReadoutEnabledStates("rFactor 2").first())
+    }
+
+    @Test
     fun `複数アイテムを独立して保存・取得できる`() = testScope.runTest {
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
         repository.saveReadoutEnabledState("lmu", "laps_remaining", false)
