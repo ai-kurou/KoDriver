@@ -11,88 +11,49 @@
 ![Android](https://img.shields.io/badge/Android-API%2028%2B-green?logo=android)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF?logo=kotlin)
 
-Le Mans Ultimate（LMU）のテレメトリデータをリアルタイムで表示する Compose Multiplatform デスクトップアプリ。
-
-> **注意**: テレメトリ読み取りは Windows 専用です。共有メモリ（`LMU_Data`）へのアクセスに JNA / `OpenFileMappingA` を使用しています。
+Le Mans Ultimate（LMU）の走行情報を Windows TTS でリアルタイムにアナウンスする Compose Multiplatform アプリ。
 
 ## 機能
 
-- 走行中のデータをリアルタイム表示
-- シミュレーターが未起動の場合は自動リトライ接続（1秒間隔）
-- Windows TTS でアナウンス（未実装）
+- アナウンスする項目の選択・有効/無効の切り替え
+- アナウンス優先度のドラッグ&リオーダー
+- Windows TTS でのリアルタイムアナウンス（未実装）
 
-## プロジェクト構成
+## 動作要件
+
+- Windows 10 以降
+- Le Mans Ultimate（インストール済み）
+
+## インストール
+
+[Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の MSI インストーラーをダウンロードして実行してください。
+
+LMU が起動していない状態でアプリを起動しても問題ありません。LMU の起動を検知すると自動的に接続します。
+
+## アーキテクチャ
+
+Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 
 ```
-KoDriver/
-├── core/
-│   ├── domain/     ドメインモデル・リポジトリ抽象（KMP: JVM / JS / wasmJS / Android）
-│   └── data/       JVM データ層（JNA 共有メモリ + DataStore）※ JVM 専用
-├── feature/
-│   ├── readout/    アナウンス設定 UI
-│   └── other/      その他画面（未実装）
-├── app/
-│   ├── shared/     Compose Multiplatform 共通 UI（ナビゲーション骨格）
-│   ├── desktopApp/ デスクトップアプリ本体
-│   ├── androidApp/ Android アプリ（基本実装済み）
-│   └── webApp/     Web アプリ（未実装）
-└── server/         Ktor サーバー（未実装）
+:app:desktopApp → :app:shared → :feature:* → :core:domain ← :core:data
 ```
 
-## テレメトリデータモデル
-
-`LmuTelemetryData` は以下のサブモデルで構成されています。
-
-| モデル | 主なフィールド |
+| モジュール | 役割 |
 |---|---|
-| `EngineData` | rpm, maxRpm, gear |
-| `InputsData` | throttle, brake, clutch, steering |
-| `TyreData` | 各輪の温度(K), ブレーキ温度(°C), 空気圧(kPa), 摩耗 |
-| `FuelData` | 現在量(L), 容量(L) |
-| `TimingData` | ラップ番号（ラップタイムは未実装） |
-| `VehicleData` | 位置, ローカル速度 → `speedKmh` プロパティ |
+| `:app:desktopApp` | デスクトップアプリ エントリーポイント |
+| `:app:shared` | Compose Multiplatform 共通 UI |
+| `:core:domain` | リポジトリ抽象・ユースケース |
+| `:core:data` | 共有メモリ読み取り・DataStore（JVM 専用） |
+| `:feature:readout` | アナウンス設定 UI |
 
-## 実行
+## Contributing
 
-```bash
-# 標準起動
-./gradlew :app:desktopApp:run
+このプロジェクトはプルリクエストを受け付けていません。
+[GPL-3.0 ライセンス](LICENSE) の範囲内で自由にフォーク・改変・再配布できます。
 
-# ホットリロード
-./gradlew :app:desktopApp:hotRun --auto
-```
+## ライセンス
 
-## ビルド（Windows MSI）
-
-```bash
-./gradlew :app:desktopApp:packageMsi
-```
-
-GitHub Actions の `build-windows.yml` ワークフロー（`workflow_dispatch`）を使用して Windows 環境でビルドすることもできます。成果物は 30 日間 Artifact として保存されます。
-
-## テスト
-
-```bash
-./gradlew :core:domain:jvmTest
-./gradlew :core:data:test
-./gradlew :feature:readout:jvmTest
-./gradlew :app:shared:jvmTest
-./gradlew :server:test
-```
-
-## 技術スタック
-
-- **Kotlin** 2.3.21 / Kotlin Multiplatform
-- **Compose Multiplatform** 1.11.0
-- **JNA** 5.17.0（Windows 共有メモリアクセス）
-- **kotlinx-coroutines** 1.11.0
-- **Ktor** 3.4.3
-- **detekt** 1.23.8（静的解析）
-- **Kover** 0.9.8（コードカバレッジ）
-
----
-
-詳細なアーキテクチャ・開発ガイドは [CLAUDE.md](./CLAUDE.md) を参照してください。
+[GPL-3.0](LICENSE)
 
 <!-- MODULE-GRAPH-START -->
 ## Module Graph
