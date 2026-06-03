@@ -36,8 +36,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readout.generated.resources.Res
+import kodriver.feature.readout.generated.resources.item_laps_remaining
+import kodriver.feature.readout.generated.resources.item_vehicle_approach
 import kodriver.feature.readout.generated.resources.lmu
+import kodriver.feature.readout.generated.resources.move_down
+import kodriver.feature.readout.generated.resources.move_up
+import kodriver.feature.readout.generated.resources.select_simulator_hint
+import kodriver.feature.readout.generated.resources.simulator_label
+import kodriver.feature.readout.generated.resources.simulator_name_lmu
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+private fun simulatorDisplayName(simulatorId: String): String = when (simulatorId) {
+    "lmu" -> stringResource(Res.string.simulator_name_lmu)
+    else -> simulatorId
+}
+
+@Composable
+private fun itemDisplayName(itemId: String): String = when (itemId) {
+    "vehicle_approach" -> stringResource(Res.string.item_vehicle_approach)
+    "laps_remaining" -> stringResource(Res.string.item_laps_remaining)
+    else -> itemId
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,11 +83,11 @@ internal fun ReadoutListPane(
         ) {
             OutlinedTextField(
                 value = uiState.selectedSimulator
-                ?.let { uiState.simulatorDisplayNames[it] ?: it }
-                ?: "シミュレータを選択",
+                    ?.let { simulatorDisplayName(it) }
+                    ?: stringResource(Res.string.select_simulator_hint),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("シミュレーター") },
+                label = { Text(stringResource(Res.string.simulator_label)) },
                 leadingIcon = if (uiState.selectedSimulator != null) {
                     {
                         Image(
@@ -87,7 +108,7 @@ internal fun ReadoutListPane(
             ) {
                 uiState.simulators.forEach { simulator ->
                     DropdownMenuItem(
-                        text = { Text(uiState.simulatorDisplayNames[simulator] ?: simulator) },
+                        text = { Text(simulatorDisplayName(simulator)) },
                         onClick = {
                             onSimulatorSelected(simulator)
                             expanded = false
@@ -119,7 +140,7 @@ internal fun ReadoutListPane(
                     ),
                 ) {
                     ListItem(
-                        headlineContent = { Text(uiState.itemDisplayNames[label] ?: label) },
+                        headlineContent = { Text(itemDisplayName(label)) },
                         leadingContent = {
                             Column {
                                 IconButton(
@@ -129,7 +150,7 @@ internal fun ReadoutListPane(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.KeyboardArrowUp,
-                                        contentDescription = "上に移動",
+                                        contentDescription = stringResource(Res.string.move_up),
                                     )
                                 }
                                 IconButton(
@@ -139,7 +160,7 @@ internal fun ReadoutListPane(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.KeyboardArrowDown,
-                                        contentDescription = "下に移動",
+                                        contentDescription = stringResource(Res.string.move_down),
                                     )
                                 }
                             }
@@ -163,10 +184,8 @@ fun ReadoutListPanePreview() {
     ReadoutListPane(
         uiState = ReadoutListUiState(
             simulators = listOf("lmu"),
-            simulatorDisplayNames = mapOf("lmu" to "Le Mans Ultimate"),
             selectedSimulator = "lmu",
             items = listOf("vehicle_approach", "laps_remaining"),
-            itemDisplayNames = mapOf("vehicle_approach" to "車両接近", "laps_remaining" to "残りラップ数"),
         ),
         onSimulatorSelected = {},
         onMoveUp = {},

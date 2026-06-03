@@ -17,20 +17,9 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
-private val simulatorItems: Map<String, Map<String, String>> = mapOf(
-    "lmu" to mapOf(
-        "vehicle_approach" to "車両接近",
-        "laps_remaining" to "残りラップ数",
-    ),
+private val simulatorItems: Map<String, List<String>> = mapOf(
+    "lmu" to listOf("vehicle_approach", "laps_remaining"),
 )
-
-private val simulatorDisplayNames: Map<String, String> = mapOf(
-    "lmu" to "Le Mans Ultimate",
-)
-
-private val itemDisplayNames: Map<String, String> = simulatorItems.values
-    .flatMap { it.entries }
-    .associate { it.key to it.value }
 
 private val simulators: List<String> = simulatorItems.keys.toList()
 
@@ -65,13 +54,11 @@ class ReadoutViewModel(
         _readoutEnabledStates,
     ) { selected, itemsState, readoutEnabledStates ->
         val items = if (itemsState.simulator == selected) itemsState.items
-        else simulatorItems[selected]?.keys?.toList().orEmpty()
+        else simulatorItems[selected].orEmpty()
         ReadoutListUiState(
             selectedSimulator = selected,
             simulators = simulators,
-            simulatorDisplayNames = simulatorDisplayNames,
             items = items,
-            itemDisplayNames = itemDisplayNames,
             readoutEnabledStates = readoutEnabledStates,
         )
     }.stateIn(
@@ -112,6 +99,6 @@ class ReadoutViewModel(
     private fun effectiveItemsStateFrom(state: ItemsState): ItemsState {
         val selected = _selectedSimulator.value
         return if (state.simulator == selected) state
-        else ItemsState(selected, simulatorItems[selected]?.keys?.toList().orEmpty())
+        else ItemsState(selected, simulatorItems[selected].orEmpty())
     }
 }

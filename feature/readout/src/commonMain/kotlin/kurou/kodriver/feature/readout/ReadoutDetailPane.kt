@@ -15,6 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import kodriver.feature.readout.generated.resources.Res
+import kodriver.feature.readout.generated.resources.navigate_back
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ReadoutDetailPane(
@@ -25,7 +28,7 @@ internal fun ReadoutDetailPane(
     Column(modifier = modifier.fillMaxSize()) {
         if (canNavigateBack) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.navigate_back))
             }
         }
         Box(
