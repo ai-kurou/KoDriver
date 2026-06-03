@@ -36,6 +36,13 @@ class ReadoutPreferencesRepositoryImplTest {
     }
 
     @Test
+    fun `他シミュレータにデータがあっても未保存のシミュレータはemptyMapを返す`() = testScope.runTest {
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+
+        assertTrue(repository.observeReadoutEnabledStates("rFactor 2").first().isEmpty())
+    }
+
+    @Test
     fun `複数アイテムを独立して保存・取得できる`() = testScope.runTest {
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
         repository.saveReadoutEnabledState("lmu", "laps_remaining", false)
