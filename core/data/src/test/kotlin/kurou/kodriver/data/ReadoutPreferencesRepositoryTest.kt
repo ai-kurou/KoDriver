@@ -17,7 +17,7 @@ class ReadoutPreferencesRepositoryTest {
     @Test
     fun `readout_preferences_preferences_pbに書き込まれる`() = testScope.runTest {
         val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "車両接近", true)
+        repository.saveReadoutEnabledState("lmu", "車両接近", true)
 
         assertTrue(tempDir.resolve("readout_preferences.preferences_pb").exists())
     }

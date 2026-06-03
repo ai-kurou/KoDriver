@@ -25,37 +25,37 @@ class ReadoutPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertTrue(repository.observeReadoutEnabledStates("Le Mans Ultimate").first().isEmpty())
+        assertTrue(repository.observeReadoutEnabledStates("lmu").first().isEmpty())
 
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "車両接近", true)
-        assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("Le Mans Ultimate").first())
+        repository.saveReadoutEnabledState("lmu", "車両接近", true)
+        assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("lmu").first())
 
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "車両接近", false)
-        assertEquals(mapOf("車両接近" to false), repository.observeReadoutEnabledStates("Le Mans Ultimate").first())
+        repository.saveReadoutEnabledState("lmu", "車両接近", false)
+        assertEquals(mapOf("車両接近" to false), repository.observeReadoutEnabledStates("lmu").first())
     }
 
     @Test
     fun `複数アイテムを独立して保存・取得できる`() = testScope.runTest {
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "車両接近", true)
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "残りラップ数", false)
+        repository.saveReadoutEnabledState("lmu", "車両接近", true)
+        repository.saveReadoutEnabledState("lmu", "残りラップ数", false)
 
-        val states = repository.observeReadoutEnabledStates("Le Mans Ultimate").first()
+        val states = repository.observeReadoutEnabledStates("lmu").first()
         assertEquals(mapOf("車両接近" to true, "残りラップ数" to false), states)
     }
 
     @Test
     fun `シミュレーターごとに独立した状態を保存できる`() = testScope.runTest {
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "車両接近", true)
+        repository.saveReadoutEnabledState("lmu", "車両接近", true)
         repository.saveReadoutEnabledState("rFactor 2", "車両接近", false)
 
-        assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("Le Mans Ultimate").first())
+        assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("lmu").first())
         assertEquals(mapOf("車両接近" to false), repository.observeReadoutEnabledStates("rFactor 2").first())
     }
 
     @Test
     fun `ラベルに等号が含まれていても正しく保存・取得できる`() = testScope.runTest {
-        repository.saveReadoutEnabledState("Le Mans Ultimate", "a=b", true)
+        repository.saveReadoutEnabledState("lmu", "a=b", true)
 
-        assertEquals(mapOf("a=b" to true), repository.observeReadoutEnabledStates("Le Mans Ultimate").first())
+        assertEquals(mapOf("a=b" to true), repository.observeReadoutEnabledStates("lmu").first())
     }
 }

@@ -17,7 +17,7 @@ class SimulatorPreferencesRepositoryTest {
     @Test
     fun `simulator_preferences_preferences_pbに書き込まれる`() = testScope.runTest {
         val repository = createSimulatorPreferencesRepository(tempDir.absolutePath)
-        repository.saveSelectedSimulator("Le Mans Ultimate")
+        repository.saveSelectedSimulator("lmu")
 
         assertTrue(tempDir.resolve("simulator_preferences.preferences_pb").exists())
     }

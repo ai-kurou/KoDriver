@@ -18,7 +18,11 @@ import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private val simulatorItems: Map<String, List<String>> = mapOf(
-    "Le Mans Ultimate" to listOf("車両接近", "残りラップ数"),
+    "lmu" to listOf("車両接近", "残りラップ数"),
+)
+
+private val simulatorDisplayNames: Map<String, String> = mapOf(
+    "lmu" to "Le Mans Ultimate",
 )
 
 private val simulators: List<String> = simulatorItems.keys.toList()
@@ -58,6 +62,7 @@ class ReadoutViewModel(
         ReadoutListUiState(
             selectedSimulator = selected,
             simulators = simulators,
+            simulatorDisplayNames = simulatorDisplayNames,
             items = items,
             readoutEnabledStates = readoutEnabledStates,
         )

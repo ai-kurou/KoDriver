@@ -13,8 +13,8 @@ class SaveSelectedSimulatorUseCaseTest {
         val saveUseCase = SaveSelectedSimulatorUseCase(repo)
         val observeUseCase = ObserveSelectedSimulatorUseCase(repo)
 
-        saveUseCase("Le Mans Ultimate")
+        saveUseCase("lmu")
 
-        assertEquals("Le Mans Ultimate", observeUseCase().first())
+        assertEquals("lmu", observeUseCase().first())
     }
 }
