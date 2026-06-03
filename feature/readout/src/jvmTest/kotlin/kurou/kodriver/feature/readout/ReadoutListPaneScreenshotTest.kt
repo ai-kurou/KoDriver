@@ -25,7 +25,8 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("Le Mans Ultimate"),
+                                simulators = listOf("lmu"),
+                                simulatorDisplayNames = mapOf("lmu" to "Le Mans Ultimate"),
                             ),
                             onSimulatorSelected = {},
                             onMoveUp = {},

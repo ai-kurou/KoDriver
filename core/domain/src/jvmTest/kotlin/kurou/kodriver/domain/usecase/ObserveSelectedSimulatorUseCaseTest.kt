@@ -15,7 +15,7 @@ class ObserveSelectedSimulatorUseCaseTest {
 
         assertNull(useCase().first())
 
-        repo.saveSelectedSimulator("Le Mans Ultimate")
-        assertEquals("Le Mans Ultimate", useCase().first())
+        repo.saveSelectedSimulator("lmu")
+        assertEquals("lmu", useCase().first())
     }
 }

@@ -61,7 +61,9 @@ internal fun ReadoutListPane(
             onExpandedChange = { expanded = it },
         ) {
             OutlinedTextField(
-                value = uiState.selectedSimulator ?: "シミュレータを選択",
+                value = uiState.selectedSimulator
+                ?.let { uiState.simulatorDisplayNames[it] ?: it }
+                ?: "シミュレータを選択",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("シミュレーター") },
@@ -85,7 +87,7 @@ internal fun ReadoutListPane(
             ) {
                 uiState.simulators.forEach { simulator ->
                     DropdownMenuItem(
-                        text = { Text(simulator) },
+                        text = { Text(uiState.simulatorDisplayNames[simulator] ?: simulator) },
                         onClick = {
                             onSimulatorSelected(simulator)
                             expanded = false
@@ -160,8 +162,9 @@ internal fun ReadoutListPane(
 fun ReadoutListPanePreview() {
     ReadoutListPane(
         uiState = ReadoutListUiState(
-            simulators = listOf("Le Mans Ultimate"),
-            selectedSimulator = "Le Mans Ultimate",
+            simulators = listOf("lmu"),
+            simulatorDisplayNames = mapOf("lmu" to "Le Mans Ultimate"),
+            selectedSimulator = "lmu",
             items = listOf("車両接近", "残りラップ数"),
         ),
         onSimulatorSelected = {},

@@ -13,10 +13,10 @@ class SaveReadoutEnabledStateUseCaseTest {
         val saveUseCase = SaveReadoutEnabledStateUseCase(repo)
         val observeUseCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        saveUseCase("Le Mans Ultimate", "車両接近", true)
-        assertEquals(mapOf("車両接近" to true), observeUseCase("Le Mans Ultimate").first())
+        saveUseCase("lmu", "車両接近", true)
+        assertEquals(mapOf("車両接近" to true), observeUseCase("lmu").first())
 
-        saveUseCase("Le Mans Ultimate", "車両接近", false)
-        assertEquals(mapOf("車両接近" to false), observeUseCase("Le Mans Ultimate").first())
+        saveUseCase("lmu", "車両接近", false)
+        assertEquals(mapOf("車両接近" to false), observeUseCase("lmu").first())
     }
 }
