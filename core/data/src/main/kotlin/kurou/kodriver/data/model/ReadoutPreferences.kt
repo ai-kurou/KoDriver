@@ -14,4 +14,5 @@ data class ReadoutPreferences(
 @Serializable
 data class SimulatorReadoutState(
     @ProtoNumber(1) val enabledStates: Map<String, Boolean> = emptyMap(),
+    @ProtoNumber(2) val itemOrder: List<String> = emptyList(),
 )
