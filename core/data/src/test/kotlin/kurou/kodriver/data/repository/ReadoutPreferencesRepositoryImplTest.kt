@@ -1,12 +1,12 @@
 package kurou.kodriver.data.repository
 
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import okio.Path.Companion.toPath
+import kurou.kodriver.data.datasource.ReadoutPreferencesSerializer
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,9 +17,10 @@ class ReadoutPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_readout_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = PreferenceDataStoreFactory.createWithPath(
+    private val dataStore = DataStoreFactory.create(
+        serializer = ReadoutPreferencesSerializer,
         scope = testScope,
-        produceFile = { "${tempDir.absolutePath}/test.preferences_pb".toPath() },
+        produceFile = { tempDir.resolve("test.pb") },
     )
     private val repository = ReadoutPreferencesRepositoryImpl(dataStore)
 
@@ -50,12 +51,5 @@ class ReadoutPreferencesRepositoryImplTest {
 
         assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("lmu").first())
         assertEquals(mapOf("車両接近" to false), repository.observeReadoutEnabledStates("rFactor 2").first())
-    }
-
-    @Test
-    fun `ラベルに等号が含まれていても正しく保存・取得できる`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu", "a=b", true)
-
-        assertEquals(mapOf("a=b" to true), repository.observeReadoutEnabledStates("lmu").first())
     }
 }

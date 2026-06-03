@@ -1,9 +1,12 @@
 package kurou.kodriver.data.datasource
 
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import okio.Path.Companion.toPath
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import kurou.kodriver.data.model.SimulatorPreferences
+import java.io.File
 
-fun createSimulatorPreferencesDataStore(directory: String) =
-    PreferenceDataStoreFactory.createWithPath {
-        "$directory/simulator_preferences.preferences_pb".toPath()
-    }
+fun createSimulatorPreferencesDataStore(directory: String): DataStore<SimulatorPreferences> =
+    DataStoreFactory.create(
+        serializer = SimulatorPreferencesSerializer,
+        produceFile = { File("$directory/simulator_preferences.pb") },
+    )

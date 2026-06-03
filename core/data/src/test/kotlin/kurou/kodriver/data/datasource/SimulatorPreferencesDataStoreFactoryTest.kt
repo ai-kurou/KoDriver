@@ -1,7 +1,5 @@
 package kurou.kodriver.data.datasource
 
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -17,10 +15,10 @@ class SimulatorPreferencesDataStoreFactoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Test
-    fun `simulator_preferences_preferences_pbに書き込まれる`() = testScope.runTest {
+    fun `simulator_preferences_pbに書き込まれる`() = testScope.runTest {
         val dataStore = createSimulatorPreferencesDataStore(tempDir.absolutePath)
-        dataStore.edit { it[stringPreferencesKey("key")] = "value" }
+        dataStore.updateData { it.copy(selectedSimulator = "lmu") }
 
-        assertTrue(tempDir.resolve("simulator_preferences.preferences_pb").exists())
+        assertTrue(tempDir.resolve("simulator_preferences.pb").exists())
     }
 }
