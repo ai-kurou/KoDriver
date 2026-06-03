@@ -49,8 +49,7 @@ fun ReadoutContent(
             ReadoutListPane(
                 uiState = uiState,
                 onSimulatorSelected = viewModel::onSimulatorSelected,
-                onMoveUp = viewModel::moveItemUp,
-                onMoveDown = viewModel::moveItemDown,
+                onMove = viewModel::moveItem,
                 onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
                 onItemClick = {
                     scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail) }

@@ -28,8 +28,7 @@ class ReadoutListPaneScreenshotTest {
                                 simulators = listOf("lmu"),
                             ),
                             onSimulatorSelected = {},
-                            onMoveUp = {},
-                            onMoveDown = {},
+                            onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
                             onItemClick = {},
                         )
