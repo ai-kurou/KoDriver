@@ -18,6 +18,7 @@ import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import org.junit.Rule
 import org.junit.Test
 
@@ -30,7 +31,7 @@ class AppScreenScreenshotTest {
         val simulatorRepo = object : SimulatorPreferencesRepository {
             private val flow = MutableStateFlow<String?>(null)
             override fun selectedSimulator(): Flow<String?> = flow
-            override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
+            override suspend fun saveSelectedSimulator(simulator: String) { flow.update { simulator } }
         }
         val readoutRepo = object : ReadoutPreferencesRepository {
             override fun observeReadoutEnabledStates(simulator: String): Flow<Map<String, Boolean>> =
