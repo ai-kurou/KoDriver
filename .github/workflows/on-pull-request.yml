@@ -83,10 +83,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - run: ./gradlew :app:shared:verifyRoborazziJvmTest
+      - run: ./gradlew :feature:readout:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
 
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshot-diffs
-          path: app/shared/src/jvmTest/snapshots/*.png
+          path: |
+            feature/readout/src/jvmTest/snapshots/*.png
+            app/shared/src/jvmTest/snapshots/*.png

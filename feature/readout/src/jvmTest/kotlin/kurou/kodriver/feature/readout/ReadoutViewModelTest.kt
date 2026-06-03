@@ -61,17 +61,9 @@ class ReadoutViewModelTest {
     }
 
     @Test
-    fun `moveItemUpで先頭以外のアイテムを上に移動できる`() = runTest {
+    fun `moveItemでアイテムの順序を変更できる`() = runTest {
         viewModel.onSimulatorSelected("lmu")
-        viewModel.moveItemUp(1)
-
-        assertEquals(listOf("laps_remaining", "vehicle_approach"), viewModel.uiState.first().items)
-    }
-
-    @Test
-    fun `moveItemDownで末尾以外のアイテムを下に移動できる`() = runTest {
-        viewModel.onSimulatorSelected("lmu")
-        viewModel.moveItemDown(0)
+        viewModel.moveItem(0, 1)
 
         assertEquals(listOf("laps_remaining", "vehicle_approach"), viewModel.uiState.first().items)
     }

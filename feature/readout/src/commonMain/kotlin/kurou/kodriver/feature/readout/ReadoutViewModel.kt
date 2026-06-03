@@ -73,19 +73,10 @@ class ReadoutViewModel(
         }
     }
 
-    fun moveItemUp(index: Int) {
-        if (index <= 0) return
+    fun moveItem(fromIndex: Int, toIndex: Int) {
         _itemsState.update { state ->
             val current = effectiveItemsStateFrom(state)
-            current.copy(items = current.items.toMutableList().also { it.add(index - 1, it.removeAt(index)) })
-        }
-    }
-
-    fun moveItemDown(index: Int) {
-        _itemsState.update { state ->
-            val current = effectiveItemsStateFrom(state)
-            if (index >= current.items.lastIndex) return@update state
-            current.copy(items = current.items.toMutableList().also { it.add(index + 1, it.removeAt(index)) })
+            current.copy(items = current.items.toMutableList().also { it.add(toIndex, it.removeAt(fromIndex)) })
         }
     }
 
