@@ -1,7 +1,6 @@
 reviews:
   auto_review:
     enabled: false
-
-code_generation:
-  auto_fix:
-    enabled: false
+  finishing_touches:
+    unit_tests:
+      enabled: false
