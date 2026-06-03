@@ -46,7 +46,7 @@ internal fun ReadoutListPane(
     onSimulatorSelected: (String) -> Unit,
     onMoveUp: (Int) -> Unit,
     onMoveDown: (Int) -> Unit,
-    onSwitchChanged: (String, Boolean) -> Unit,
+    onReadoutEnabledChanged: (String, Boolean) -> Unit,
     onItemClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -144,8 +144,8 @@ internal fun ReadoutListPane(
                         },
                         trailingContent = {
                             Switch(
-                                checked = uiState.switchStates[label] != false,
-                                onCheckedChange = { onSwitchChanged(label, it) },
+                                checked = uiState.readoutEnabledStates[label] != false,
+                                onCheckedChange = { onReadoutEnabledChanged(label, it) },
                             )
                         },
                     )
@@ -167,7 +167,7 @@ fun ReadoutListPanePreview() {
         onSimulatorSelected = {},
         onMoveUp = {},
         onMoveDown = {},
-        onSwitchChanged = { _, _ -> },
+        onReadoutEnabledChanged = { _, _ -> },
         onItemClick = {},
     )
 }

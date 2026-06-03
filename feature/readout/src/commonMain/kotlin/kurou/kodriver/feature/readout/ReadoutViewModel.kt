@@ -21,7 +21,7 @@ private val simulators: List<String> = simulatorItems.keys.toList()
 private data class ItemsState(
     val simulator: String?,
     val items: List<String>,
-    val switchStates: Map<String, Boolean>,
+    val readoutEnabledStates: Map<String, Boolean>,
 )
 
 class ReadoutViewModel(
@@ -38,8 +38,8 @@ class ReadoutViewModel(
         _selectedSimulator,
         _itemsState,
     ) { selected, itemsState ->
-        val (items, switchStates) = if (itemsState.simulator == selected) {
-            itemsState.items to itemsState.switchStates
+        val (items, readoutEnabledStates) = if (itemsState.simulator == selected) {
+            itemsState.items to itemsState.readoutEnabledStates
         } else {
             simulatorItems[selected].orEmpty() to emptyMap()
         }
@@ -47,7 +47,7 @@ class ReadoutViewModel(
             selectedSimulator = selected,
             simulators = simulators,
             items = items,
-            switchStates = switchStates,
+            readoutEnabledStates = readoutEnabledStates,
         )
     }.stateIn(
         viewModelScope,
@@ -77,10 +77,10 @@ class ReadoutViewModel(
         }
     }
 
-    fun onSwitchChanged(label: String, checked: Boolean) {
+    fun onReadoutEnabledChanged(label: String, enabled: Boolean) {
         _itemsState.update { state ->
             effectiveItemsStateFrom(state).let { current ->
-                current.copy(switchStates = current.switchStates + (label to checked))
+                current.copy(readoutEnabledStates = current.readoutEnabledStates + (label to enabled))
             }
         }
     }

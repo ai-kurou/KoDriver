@@ -30,7 +30,7 @@ class ReadoutListPaneScreenshotTest {
                             onSimulatorSelected = {},
                             onMoveUp = {},
                             onMoveDown = {},
-                            onSwitchChanged = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
                             onItemClick = {},
                         )
                     }
