@@ -6,7 +6,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.data.model.ReadoutPreferences
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -17,8 +16,6 @@ internal object ReadoutPreferencesSerializer : Serializer<ReadoutPreferences> {
     override suspend fun readFrom(input: InputStream): ReadoutPreferences =
         try {
             ProtoBuf.decodeFromByteArray(ReadoutPreferences.serializer(), input.readBytes())
-        } catch (e: IOException) {
-            throw CorruptionException("Cannot read ReadoutPreferences.", e)
         } catch (e: SerializationException) {
             throw CorruptionException("Cannot read ReadoutPreferences.", e)
         }

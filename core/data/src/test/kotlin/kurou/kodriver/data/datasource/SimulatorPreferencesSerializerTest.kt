@@ -7,8 +7,6 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.data.model.SimulatorPreferences
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -32,17 +30,6 @@ class SimulatorPreferencesSerializerTest {
 
         assertFailsWith<CorruptionException> {
             SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
-        }
-    }
-
-    @Test
-    fun `IOExceptionはCorruptionExceptionをスローする`() = runTest {
-        val throwingStream = object : InputStream() {
-            override fun read(): Int = throw IOException("read error")
-        }
-
-        assertFailsWith<CorruptionException> {
-            SimulatorPreferencesSerializer.readFrom(throwingStream)
         }
     }
 

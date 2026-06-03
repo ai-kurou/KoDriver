@@ -6,7 +6,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.data.model.SimulatorPreferences
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -17,8 +16,6 @@ internal object SimulatorPreferencesSerializer : Serializer<SimulatorPreferences
     override suspend fun readFrom(input: InputStream): SimulatorPreferences =
         try {
             ProtoBuf.decodeFromByteArray(SimulatorPreferences.serializer(), input.readBytes())
-        } catch (e: IOException) {
-            throw CorruptionException("Cannot read SimulatorPreferences.", e)
         } catch (e: SerializationException) {
             throw CorruptionException("Cannot read SimulatorPreferences.", e)
         }
