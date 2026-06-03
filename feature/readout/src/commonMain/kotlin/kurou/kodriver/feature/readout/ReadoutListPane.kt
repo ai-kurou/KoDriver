@@ -25,7 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -148,7 +148,7 @@ internal fun ReadoutListPane(
                             headlineContent = { Text(itemDisplayName(item)) },
                             leadingContent = {
                                 Icon(
-                                    imageVector = Icons.Filled.DragHandle,
+                                    imageVector = Icons.Filled.DragIndicator,
                                     contentDescription = stringResource(Res.string.drag_handle),
                                     modifier = Modifier.draggableHandle(),
                                 )
