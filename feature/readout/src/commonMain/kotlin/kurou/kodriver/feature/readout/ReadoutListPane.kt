@@ -119,7 +119,7 @@ internal fun ReadoutListPane(
                     ),
                 ) {
                     ListItem(
-                        headlineContent = { Text(label) },
+                        headlineContent = { Text(uiState.itemDisplayNames[label] ?: label) },
                         leadingContent = {
                             Column {
                                 IconButton(
@@ -165,7 +165,8 @@ fun ReadoutListPanePreview() {
             simulators = listOf("lmu"),
             simulatorDisplayNames = mapOf("lmu" to "Le Mans Ultimate"),
             selectedSimulator = "lmu",
-            items = listOf("車両接近", "残りラップ数"),
+            items = listOf("vehicle_approach", "laps_remaining"),
+            itemDisplayNames = mapOf("vehicle_approach" to "車両接近", "laps_remaining" to "残りラップ数"),
         ),
         onSimulatorSelected = {},
         onMoveUp = {},

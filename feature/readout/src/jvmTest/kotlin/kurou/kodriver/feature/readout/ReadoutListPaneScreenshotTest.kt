@@ -27,6 +27,7 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu"),
                                 simulatorDisplayNames = mapOf("lmu" to "Le Mans Ultimate"),
+                                itemDisplayNames = mapOf("vehicle_approach" to "車両接近", "laps_remaining" to "残りラップ数"),
                             ),
                             onSimulatorSelected = {},
                             onMoveUp = {},
