@@ -18,8 +18,8 @@ class ReadoutPreferencesRepositoryTest {
     @Test
     fun `readout設定が正しいファイルに書き込まれる`() = testScope.runTest {
         val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
-        repository.saveReadoutEnabledState("lmu", "車両接近", true)
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
 
-        assertEquals(mapOf("車両接近" to true), repository.observeReadoutEnabledStates("lmu").first())
+        assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
     }
 }

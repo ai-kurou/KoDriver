@@ -15,10 +15,10 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
         assertTrue(useCase("lmu").first().isEmpty())
 
-        repo.saveReadoutEnabledState("lmu", "車両接近", true)
-        repo.saveReadoutEnabledState("rFactor 2", "車両接近", false)
+        repo.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+        repo.saveReadoutEnabledState("rFactor 2", "vehicle_approach", false)
 
-        assertEquals(mapOf("車両接近" to true), useCase("lmu").first())
-        assertEquals(mapOf("車両接近" to false), useCase("rFactor 2").first())
+        assertEquals(mapOf("vehicle_approach" to true), useCase("lmu").first())
+        assertEquals(mapOf("vehicle_approach" to false), useCase("rFactor 2").first())
     }
 }

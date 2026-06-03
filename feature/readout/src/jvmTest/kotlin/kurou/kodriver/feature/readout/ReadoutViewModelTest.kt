@@ -57,7 +57,7 @@ class ReadoutViewModelTest {
 
         val state = viewModel.uiState.first()
         assertEquals("lmu", state.selectedSimulator)
-        assertEquals(listOf("車両接近", "残りラップ数"), state.items)
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), state.items)
     }
 
     @Test
@@ -65,7 +65,7 @@ class ReadoutViewModelTest {
         viewModel.onSimulatorSelected("lmu")
         viewModel.moveItemUp(1)
 
-        assertEquals(listOf("残りラップ数", "車両接近"), viewModel.uiState.first().items)
+        assertEquals(listOf("laps_remaining", "vehicle_approach"), viewModel.uiState.first().items)
     }
 
     @Test
@@ -73,23 +73,23 @@ class ReadoutViewModelTest {
         viewModel.onSimulatorSelected("lmu")
         viewModel.moveItemDown(0)
 
-        assertEquals(listOf("残りラップ数", "車両接近"), viewModel.uiState.first().items)
+        assertEquals(listOf("laps_remaining", "vehicle_approach"), viewModel.uiState.first().items)
     }
 
     @Test
     fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() = runTest {
         viewModel.onSimulatorSelected("lmu")
-        viewModel.onReadoutEnabledChanged("車両接近", false)
+        viewModel.onReadoutEnabledChanged("vehicle_approach", false)
 
-        assertEquals(false, viewModel.uiState.first().readoutEnabledStates["車両接近"])
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates["vehicle_approach"])
     }
 
     @Test
     fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() = runTest {
-        readoutRepository.saveReadoutEnabledState("lmu", "残りラップ数", false)
+        readoutRepository.saveReadoutEnabledState("lmu", "laps_remaining", false)
 
         viewModel.onSimulatorSelected("lmu")
 
-        assertEquals(false, viewModel.uiState.first().readoutEnabledStates["残りラップ数"])
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates["laps_remaining"])
     }
 }
