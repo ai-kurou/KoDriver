@@ -1,12 +1,12 @@
 package kurou.kodriver.data.repository
 
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import okio.Path.Companion.toPath
+import kurou.kodriver.data.datasource.SimulatorPreferencesSerializer
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,9 +17,10 @@ class SimulatorPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_simulator_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = PreferenceDataStoreFactory.createWithPath(
+    private val dataStore = DataStoreFactory.create(
+        serializer = SimulatorPreferencesSerializer,
         scope = testScope,
-        produceFile = { "${tempDir.absolutePath}/test.preferences_pb".toPath() },
+        produceFile = { tempDir.resolve("test.pb") },
     )
     private val repository = SimulatorPreferencesRepositoryImpl(dataStore)
 

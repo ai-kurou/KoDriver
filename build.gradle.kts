@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.ktor) apply false
     alias(libs.plugins.modulesGraphAssert)
+    alias(libs.plugins.kotlinxSerialization) apply false
 }
 
 val isCI = System.getenv("CI") != null

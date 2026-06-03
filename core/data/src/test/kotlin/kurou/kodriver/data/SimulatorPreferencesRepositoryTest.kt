@@ -1,12 +1,13 @@
 package kurou.kodriver.data
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import java.nio.file.Files
 import kotlin.test.Test
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SimulatorPreferencesRepositoryTest {
@@ -15,10 +16,10 @@ class SimulatorPreferencesRepositoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Test
-    fun `simulator_preferences_preferences_pbに書き込まれる`() = testScope.runTest {
+    fun `simulator_preferences_pbに書き込まれる`() = testScope.runTest {
         val repository = createSimulatorPreferencesRepository(tempDir.absolutePath)
         repository.saveSelectedSimulator("lmu")
 
-        assertTrue(tempDir.resolve("simulator_preferences.preferences_pb").exists())
+        assertEquals("lmu", repository.selectedSimulator().first())
     }
 }
