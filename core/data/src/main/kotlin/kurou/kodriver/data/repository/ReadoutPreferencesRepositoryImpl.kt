@@ -18,8 +18,21 @@ internal class ReadoutPreferencesRepositoryImpl(
 
     override suspend fun saveReadoutEnabledState(simulator: String, label: String, enabled: Boolean) {
         dataStore.updateData { prefs ->
-            val current = prefs.simulatorStates[simulator]?.enabledStates ?: emptyMap()
-            val newState = SimulatorReadoutState(enabledStates = current + (label to enabled))
+            val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
+            val newState = current.copy(enabledStates = current.enabledStates + (label to enabled))
+            prefs.copy(simulatorStates = prefs.simulatorStates + (simulator to newState))
+        }
+    }
+
+    override fun observeReadoutOrder(simulator: String): Flow<List<String>> =
+        dataStore.data.map { prefs ->
+            prefs.simulatorStates[simulator]?.itemOrder ?: emptyList()
+        }
+
+    override suspend fun saveReadoutOrder(simulator: String, order: List<String>) {
+        dataStore.updateData { prefs ->
+            val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
+            val newState = current.copy(itemOrder = order)
             prefs.copy(simulatorStates = prefs.simulatorStates + (simulator to newState))
         }
     }

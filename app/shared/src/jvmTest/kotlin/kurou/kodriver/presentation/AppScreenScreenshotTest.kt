@@ -43,6 +43,9 @@ class AppScreenScreenshotTest {
             override fun observeReadoutEnabledStates(simulator: String): Flow<Map<String, Boolean>> =
                 MutableStateFlow(emptyMap())
             override suspend fun saveReadoutEnabledState(simulator: String, label: String, enabled: Boolean) = Unit
+            override fun observeReadoutOrder(simulator: String): Flow<List<String>> =
+                MutableStateFlow(emptyList())
+            override suspend fun saveReadoutOrder(simulator: String, order: List<String>) = Unit
         }
         return ReadoutViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepo),
