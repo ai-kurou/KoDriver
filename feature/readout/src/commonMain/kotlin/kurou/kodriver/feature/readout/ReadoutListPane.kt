@@ -41,7 +41,6 @@ import kodriver.feature.readout.generated.resources.item_vehicle_approach
 import kodriver.feature.readout.generated.resources.lmu
 import kodriver.feature.readout.generated.resources.move_down
 import kodriver.feature.readout.generated.resources.move_up
-import kodriver.feature.readout.generated.resources.navigate_back
 import kodriver.feature.readout.generated.resources.select_simulator_hint
 import kodriver.feature.readout.generated.resources.simulator_label
 import kodriver.feature.readout.generated.resources.simulator_name_lmu
