@@ -67,4 +67,80 @@ class ReadoutPreferencesRepositoryImplTest {
         assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
         assertEquals(mapOf("vehicle_approach" to false), repository.observeReadoutEnabledStates("rFactor 2").first())
     }
+
+    @Test
+    fun `順序の初期値は空リスト・保存した順序を返す・上書きで更新される`() = testScope.runTest {
+        assertTrue(repository.observeReadoutOrder("lmu").first().isEmpty())
+
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), repository.observeReadoutOrder("lmu").first())
+
+        repository.saveReadoutOrder("lmu", listOf("laps_remaining", "vehicle_approach"))
+        assertEquals(listOf("laps_remaining", "vehicle_approach"), repository.observeReadoutOrder("lmu").first())
+    }
+
+    @Test
+    fun `順序とenabledStatesは互いに独立して保存される`() = testScope.runTest {
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
+
+        assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), repository.observeReadoutOrder("lmu").first())
+    }
+
+    @Test
+    fun `他シミュレータに順序があっても未保存のシミュレータは空リストを返す`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach"))
+
+        assertTrue(repository.observeReadoutOrder("rFactor 2").first().isEmpty())
+    }
+
+    @Test
+    fun `未保存のシミュレータへの初回の順序保存はemptyListから開始され既存データを引き継がない`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
+        repository.saveReadoutOrder("rFactor 2", listOf("laps_remaining"))
+
+        assertEquals(listOf("laps_remaining"), repository.observeReadoutOrder("rFactor 2").first())
+    }
+
+    @Test
+    fun `シミュレーターごとに独立した順序を保存できる`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
+        repository.saveReadoutOrder("rFactor 2", listOf("laps_remaining", "vehicle_approach"))
+
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(listOf("laps_remaining", "vehicle_approach"), repository.observeReadoutOrder("rFactor 2").first())
+    }
+
+    @Test
+    fun `enabledState保存時に既存の順序が保持される`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+
+        assertEquals(listOf("vehicle_approach", "laps_remaining"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
+    }
+
+    @Test
+    fun `空リストで上書きすると順序が空になる`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
+        repository.saveReadoutOrder("lmu", emptyList())
+
+        assertTrue(repository.observeReadoutOrder("lmu").first().isEmpty())
+    }
+
+    @Test
+    fun `順序の保存がenabledStatesに影響しない`() = testScope.runTest {
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", false)
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach"))
+
+        assertEquals(mapOf("vehicle_approach" to false), repository.observeReadoutEnabledStates("lmu").first())
+    }
+
+    @Test
+    fun `1件のみの順序リストを保存・取得できる`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach"))
+
+        assertEquals(listOf("vehicle_approach"), repository.observeReadoutOrder("lmu").first())
+    }
 }
