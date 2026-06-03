@@ -38,4 +38,29 @@ class ReadoutListPaneScreenshotTest {
         }
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `シミュレータ選択済みでアイテム表示`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                        ReadoutListPane(
+                            uiState = ReadoutListUiState(
+                                simulators = listOf("lmu"),
+                                selectedSimulator = "lmu",
+                                items = listOf("vehicle_approach", "laps_remaining"),
+                                readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
+                            ),
+                            onSimulatorSelected = {},
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onItemClick = {},
+                        )
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
 }
