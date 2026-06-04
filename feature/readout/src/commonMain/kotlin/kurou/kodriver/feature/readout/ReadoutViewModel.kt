@@ -70,15 +70,13 @@ class ReadoutViewModel(
     ) { selected, persisted, local ->
         val defaultItems = simulatorItems[selected].orEmpty()
         when {
+            // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
+            local.simulator == selected -> local.items
             persisted.isNotEmpty() -> {
-                if (local.simulator == selected) {
-                    _localOrder.update { LocalOrderState(null, emptyList()) }
-                }
                 val ordered = persisted.filter { it in defaultItems }
                 val unordered = defaultItems.filter { it !in persisted }
                 ordered + unordered
             }
-            local.simulator == selected -> local.items
             else -> defaultItems
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
