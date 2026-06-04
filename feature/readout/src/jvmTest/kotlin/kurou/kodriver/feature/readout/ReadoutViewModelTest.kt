@@ -108,4 +108,27 @@ class ReadoutViewModelTest {
             readoutRepository.observeReadoutOrder("lmu").first(),
         )
     }
+
+    @Test
+    fun `onItemSelectedでアイテムが選択される`() = runTest {
+        viewModel.onItemSelected("vehicle_approach")
+
+        assertEquals("vehicle_approach", viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `同じアイテムを再度選択すると選択解除される`() = runTest {
+        viewModel.onItemSelected("vehicle_approach")
+        viewModel.onItemSelected("vehicle_approach")
+
+        assertNull(viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `clearSelectedItemで選択状態が解除される`() = runTest {
+        viewModel.onItemSelected("vehicle_approach")
+        viewModel.clearSelectedItem()
+
+        assertNull(viewModel.uiState.first().selectedItem)
+    }
 }

@@ -30,7 +30,7 @@ class ReadoutListPaneScreenshotTest {
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
-                            onItemClick = {},
+                            onItemClick = { _ -> },
                         )
                     }
                 }
@@ -55,7 +55,33 @@ class ReadoutListPaneScreenshotTest {
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
-                            onItemClick = {},
+                            onItemClick = { _ -> },
+                        )
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `アイテム選択済みでハイライト表示`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                        ReadoutListPane(
+                            uiState = ReadoutListUiState(
+                                simulators = listOf("lmu"),
+                                selectedSimulator = "lmu",
+                                items = listOf("vehicle_approach", "laps_remaining"),
+                                readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
+                                selectedItem = "vehicle_approach",
+                            ),
+                            onSimulatorSelected = {},
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onItemClick = { _ -> },
                         )
                     }
                 }

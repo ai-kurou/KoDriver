@@ -61,6 +61,8 @@ class ReadoutViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    private val _selectedItem = MutableStateFlow<String?>(null)
+
     private val _effectiveOrder: StateFlow<List<String>> = combine(
         _selectedSimulator,
         _persistedOrder,
@@ -85,12 +87,14 @@ class ReadoutViewModel(
         _selectedSimulator,
         _effectiveOrder,
         _readoutEnabledStates,
-    ) { selected, items, readoutEnabledStates ->
+        _selectedItem,
+    ) { selected, items, readoutEnabledStates, selectedItem ->
         ReadoutListUiState(
             selectedSimulator = selected,
             simulators = simulators,
             items = items,
             readoutEnabledStates = readoutEnabledStates,
+            selectedItem = selectedItem,
         )
     }.stateIn(
         viewModelScope,
@@ -112,6 +116,14 @@ class ReadoutViewModel(
         viewModelScope.launch {
             saveReadoutOrder(selected, newItems)
         }
+    }
+
+    fun onItemSelected(item: String) {
+        _selectedItem.update { if (it == item) null else item }
+    }
+
+    fun clearSelectedItem() {
+        _selectedItem.update { null }
     }
 
     fun onReadoutEnabledChanged(label: String, enabled: Boolean) {
