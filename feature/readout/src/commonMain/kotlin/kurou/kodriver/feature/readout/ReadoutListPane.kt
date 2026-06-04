@@ -22,6 +22,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
@@ -29,6 +30,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +74,7 @@ internal fun ReadoutListPane(
     onSimulatorSelected: (String) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (String, Boolean) -> Unit,
-    onItemClick: () -> Unit,
+    onItemClick: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -140,17 +142,23 @@ internal fun ReadoutListPane(
         ) {
             itemsIndexed(uiState.items, key = { _, it -> it }) { index, item ->
                 ReorderableItem(reorderableState, key = item) {
+                    val isSelected = item == uiState.selectedItem
                     ElevatedCard(
-                        onClick = onItemClick,
+                        onClick = { onItemClick(item) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
-                        colors = CardDefaults.elevatedCardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        ),
+                        colors = if (isSelected) {
+                            CardDefaults.elevatedCardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            )
+                        } else {
+                            CardDefaults.elevatedCardColors()
+                        },
                     ) {
                         ListItem(
                             headlineContent = { Text(itemDisplayName(item)) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                             leadingContent = {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -164,10 +172,10 @@ internal fun ReadoutListPane(
                                     Text(
                                         text = "${index + 1}",
                                         style = MaterialTheme.typography.labelLarge,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.widthIn(min = 20.dp),
                                     )
+
                                 }
                             },
                             trailingContent = {
@@ -196,6 +204,6 @@ fun ReadoutListPanePreview() {
         onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
-        onItemClick = {},
+        onItemClick = { _ -> },
     )
 }
