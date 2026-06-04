@@ -15,7 +15,6 @@ kotlin {
 dependencies {
     implementation(projects.app.shared)
     implementation(projects.core.domain)
-    implementation(projects.feature.readout)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)

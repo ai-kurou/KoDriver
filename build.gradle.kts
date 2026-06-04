@@ -53,7 +53,6 @@ moduleGraphAssert {
     allowed = arrayOf(
         ":app:androidApp -> :app:shared",
         ":app:androidApp -> :core:domain",
-        ":app:androidApp -> :feature:readout",
         ":app:desktopApp -> :app:shared",
         ":app:desktopApp -> :core:data",
         ":app:webApp -> :app:shared",
@@ -70,6 +69,8 @@ moduleGraphAssert {
         ":core:.* -X> :server",
         ":core:domain -X> :core:data",
         ":feature:.* -X> :app:.*",
+        ":app:androidApp -X> :feature:.*",
+        ":app:desktopApp -X> :feature:.*",
         ":app:shared -X> :core:.*",
         ":app:shared -X> :app:androidApp",
         ":app:shared -X> :app:desktopApp",
