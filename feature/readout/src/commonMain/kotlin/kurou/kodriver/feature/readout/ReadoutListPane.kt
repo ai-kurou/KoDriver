@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.readout
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -143,18 +145,21 @@ internal fun ReadoutListPane(
             itemsIndexed(uiState.items, key = { _, it -> it }) { index, item ->
                 ReorderableItem(reorderableState, key = item) {
                     val isSelected = item == uiState.selectedItem
+                    val cardContainerColor by animateColorAsState(
+                        targetValue = if (isSelected) {
+                            MaterialTheme.colorScheme.secondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerLow
+                        },
+                        animationSpec = tween(durationMillis = 500),
+                        label = "cardContainerColor",
+                    )
                     ElevatedCard(
                         onClick = { onItemClick(item) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
-                        colors = if (isSelected) {
-                            CardDefaults.elevatedCardColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            )
-                        } else {
-                            CardDefaults.elevatedCardColors()
-                        },
+                        colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
                     ) {
                         ListItem(
                             headlineContent = { Text(itemDisplayName(item)) },

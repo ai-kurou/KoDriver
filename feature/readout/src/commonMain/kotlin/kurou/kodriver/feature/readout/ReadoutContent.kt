@@ -31,7 +31,10 @@ fun ReadoutContent(
     val uiState by viewModel.uiState.collectAsState()
     val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = scaffoldDirective)
     val scope = rememberCoroutineScope()
-    val navigateBack = { scope.launch { navigator.navigateBack() } }
+    val navigateBack = {
+        scope.launch { navigator.navigateBack() }
+        viewModel.clearSelectedItem()
+    }
     val paneExpansionState = rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,

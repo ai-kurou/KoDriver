@@ -122,6 +122,10 @@ class ReadoutViewModel(
         _selectedItem.update { if (it == item) null else item }
     }
 
+    fun clearSelectedItem() {
+        _selectedItem.update { null }
+    }
+
     fun onReadoutEnabledChanged(label: String, enabled: Boolean) {
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {

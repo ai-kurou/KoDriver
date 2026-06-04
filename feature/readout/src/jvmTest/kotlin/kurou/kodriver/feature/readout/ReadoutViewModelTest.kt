@@ -123,4 +123,12 @@ class ReadoutViewModelTest {
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
+
+    @Test
+    fun `clearSelectedItemで選択状態が解除される`() = runTest {
+        viewModel.onItemSelected("vehicle_approach")
+        viewModel.clearSelectedItem()
+
+        assertNull(viewModel.uiState.first().selectedItem)
+    }
 }
