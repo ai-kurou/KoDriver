@@ -56,7 +56,6 @@ moduleGraphAssert {
         ":app:androidApp -> :feature:readout",
         ":app:desktopApp -> :app:shared",
         ":app:desktopApp -> :core:data",
-        ":app:desktopApp -> :feature:readout",
         ":app:webApp -> :app:shared",
         ":app:shared -> :feature:other",
         ":app:shared -> :feature:readout",
