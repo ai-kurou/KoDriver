@@ -123,7 +123,7 @@ jobs:
 
       - run: ./gradlew :app:desktopApp:test
 
-  instrumented-test:
+  android-test:
     runs-on: ubuntu-latest
 
     steps:
