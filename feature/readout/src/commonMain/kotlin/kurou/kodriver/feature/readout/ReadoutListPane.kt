@@ -175,7 +175,6 @@ internal fun ReadoutListPane(
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.widthIn(min = 20.dp),
                                     )
-
                                 }
                             },
                             trailingContent = {
