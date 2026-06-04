@@ -4,12 +4,15 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
 }
 
 dependencies {
     implementation(projects.app.shared)
-    implementation(projects.core.data)
+    implementation(projects.core.domain)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.kotlinx.serialization.protobuf)
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)

@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 
-val dataModule = module {
+val desktopDataModule = module {
     single<SimulatorPreferencesRepository> {
         createSimulatorPreferencesRepository(directory = kodriverDirectory)
     }
