@@ -72,7 +72,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.compose.material3.adaptive.layout)
-            implementation(projects.core.domain)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
@@ -82,6 +81,7 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    add("jvmTestImplementation", testFixtures(projects.feature.readout))
 }
 
 // Gradle はコンフィギュレーション時にタスク名を解決するため、実行時ではなくここで判定する
