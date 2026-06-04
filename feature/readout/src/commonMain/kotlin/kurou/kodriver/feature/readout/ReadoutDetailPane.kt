@@ -45,6 +45,6 @@ internal fun ReadoutDetailPane(
 
 @Preview
 @Composable
-fun ReadoutDetailPanePreview() {
+private fun ReadoutDetailPanePreview() {
     ReadoutDetailPane(canNavigateBack = true, onBack = {})
 }

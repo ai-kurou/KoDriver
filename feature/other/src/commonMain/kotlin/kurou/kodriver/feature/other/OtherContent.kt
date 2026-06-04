@@ -25,6 +25,6 @@ fun OtherContent(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-fun OtherContentPreview() {
+private fun OtherContentPreview() {
     OtherContent()
 }

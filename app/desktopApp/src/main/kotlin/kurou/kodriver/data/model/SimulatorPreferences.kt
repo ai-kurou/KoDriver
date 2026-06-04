@@ -6,6 +6,6 @@ import kotlinx.serialization.protobuf.ProtoNumber
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-data class SimulatorPreferences(
+internal data class SimulatorPreferences(
     @ProtoNumber(1) val selectedSimulator: String = "",
 )

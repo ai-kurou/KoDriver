@@ -202,7 +202,7 @@ internal fun ReadoutListPane(
 
 @Preview
 @Composable
-fun ReadoutListPanePreview() {
+private fun ReadoutListPanePreview() {
     ReadoutListPane(
         uiState = ReadoutListUiState(
             simulators = listOf("lmu"),

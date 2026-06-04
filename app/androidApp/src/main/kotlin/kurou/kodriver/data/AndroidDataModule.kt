@@ -9,7 +9,7 @@ import org.koin.dsl.module
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
 private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
 
-fun androidDataModule(context: Context) = module {
+internal fun androidDataModule(context: Context) = module {
     single<SimulatorPreferencesRepository> {
         AndroidSimulatorPreferencesRepository(context.simulatorDataStore)
     }
