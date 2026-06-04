@@ -43,6 +43,13 @@ kotlin {
     }
 
     sourceSets {
+        val nonAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        jvmMain.get().dependsOn(nonAndroidMain)
+        jsMain.get().dependsOn(nonAndroidMain)
+        wasmJsMain.get().dependsOn(nonAndroidMain)
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
         }

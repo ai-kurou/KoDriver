@@ -13,7 +13,6 @@ import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -30,7 +29,7 @@ fun ReadoutContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     viewModel: ReadoutViewModel = koinViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateInLifecycle()
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
         scaffoldDirective = if (uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1)
             scaffoldDirective.copy(maxHorizontalPartitions = 1)
