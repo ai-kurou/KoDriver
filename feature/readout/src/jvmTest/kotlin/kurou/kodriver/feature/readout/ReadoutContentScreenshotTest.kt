@@ -9,8 +9,10 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +30,8 @@ class ReadoutContentScreenshotTest {
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepo),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepo),
+            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
+            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepo),
         )
     }
 

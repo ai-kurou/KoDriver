@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private val simulatorItems: Map<String, List<String>> = mapOf(
@@ -23,7 +25,7 @@ private val simulatorItems: Map<String, List<String>> = mapOf(
 
 private val simulators: List<String> = simulatorItems.keys.toList()
 
-private data class ItemsState(
+private data class LocalOrderState(
     val simulator: String?,
     val items: List<String>,
 )
@@ -33,12 +35,23 @@ class ReadoutViewModel(
     private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
     private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    private val saveReadoutOrder: SaveReadoutOrderUseCase,
 ) : ViewModel() {
 
     private val _selectedSimulator: StateFlow<String?> = observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val _itemsState = MutableStateFlow(ItemsState(null, emptyList()))
+    // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
+    private val _localOrder = MutableStateFlow(LocalOrderState(null, emptyList()))
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _persistedOrder: StateFlow<List<String>> = _selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator != null) observeReadoutOrder(simulator)
+            else flowOf(emptyList())
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _readoutEnabledStates: StateFlow<Map<String, Boolean>> = _selectedSimulator
@@ -48,13 +61,28 @@ class ReadoutViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    private val _effectiveOrder: StateFlow<List<String>> = combine(
+        _selectedSimulator,
+        _persistedOrder,
+        _localOrder,
+    ) { selected, persisted, local ->
+        val defaultItems = simulatorItems[selected].orEmpty()
+        when {
+            local.simulator == selected -> local.items
+            persisted.isNotEmpty() -> {
+                val ordered = persisted.filter { it in defaultItems }
+                val unordered = defaultItems.filter { it !in persisted }
+                ordered + unordered
+            }
+            else -> defaultItems
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     val uiState: StateFlow<ReadoutListUiState> = combine(
         _selectedSimulator,
-        _itemsState,
+        _effectiveOrder,
         _readoutEnabledStates,
-    ) { selected, itemsState, readoutEnabledStates ->
-        val items = if (itemsState.simulator == selected) itemsState.items
-        else simulatorItems[selected].orEmpty()
+    ) { selected, items, readoutEnabledStates ->
         ReadoutListUiState(
             selectedSimulator = selected,
             simulators = simulators,
@@ -74,9 +102,12 @@ class ReadoutViewModel(
     }
 
     fun moveItem(fromIndex: Int, toIndex: Int) {
-        _itemsState.update { state ->
-            val current = effectiveItemsStateFrom(state)
-            current.copy(items = current.items.toMutableList().also { it.add(toIndex, it.removeAt(fromIndex)) })
+        val selected = _selectedSimulator.value ?: return
+        val newItems = _effectiveOrder.value.toMutableList()
+            .also { it.add(toIndex, it.removeAt(fromIndex)) }
+        _localOrder.update { LocalOrderState(selected, newItems) }
+        viewModelScope.launch {
+            saveReadoutOrder(selected, newItems)
         }
     }
 
@@ -85,11 +116,5 @@ class ReadoutViewModel(
         viewModelScope.launch {
             saveReadoutEnabledState(simulator, label, enabled)
         }
-    }
-
-    private fun effectiveItemsStateFrom(state: ItemsState): ItemsState {
-        val selected = _selectedSimulator.value
-        return if (state.simulator == selected) state
-        else ItemsState(selected, simulatorItems[selected].orEmpty())
     }
 }
