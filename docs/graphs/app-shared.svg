@@ -5,10 +5,10 @@
  -->
 <!-- Title: G Pages: 1 -->
 <svg width="536pt" height="260pt"
- viewBox="0.00 0.00 536.48 260.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ viewBox="0.00 0.00 535.94 260.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
 <title>G</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 532.48,-256 532.48,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 531.94,-256 531.94,4 -4,4"/>
 <!-- :app:androidApp -->
 <g id="node1" class="node">
 <title>:app:androidApp</title>
@@ -18,92 +18,104 @@
 <!-- :app:shared -->
 <g id="node2" class="node">
 <title>:app:shared</title>
-<ellipse fill="none" stroke="black" cx="294.09" cy="-162" rx="65.79" ry="18"/>
-<text text-anchor="middle" x="294.09" y="-158.3" font-family="Times,serif" font-size="14.00">:app:shared</text>
+<ellipse fill="none" stroke="black" cx="312.09" cy="-162" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="312.09" y="-158.3" font-family="Times,serif" font-size="14.00">:app:shared</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:app:shared -->
 <g id="edge1" class="edge">
 <title>:app:androidApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M130.49,-218.33C163.86,-207.04 210,-191.44 244.77,-179.68"/>
-<polygon fill="black" stroke="black" points="245.91,-182.99 254.26,-176.47 243.67,-176.36 245.91,-182.99"/>
+<path fill="none" stroke="black" d="M133.17,-218.67C170.11,-207.17 221.94,-191.05 260.31,-179.11"/>
+<polygon fill="black" stroke="black" points="261.74,-182.33 270.25,-176.02 259.66,-175.65 261.74,-182.33"/>
+</g>
+<!-- :core:domain -->
+<g id="node3" class="node">
+<title>:core:domain</title>
+<ellipse fill="none" stroke="black" cx="259.09" cy="-18" rx="70.69" ry="18"/>
+<text text-anchor="middle" x="259.09" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
+</g>
+<!-- :app:androidApp&#45;&gt;:core:domain -->
+<g id="edge2" class="edge">
+<title>:app:androidApp&#45;&gt;:core:domain</title>
+<path fill="none" stroke="black" d="M78.98,-215.91C65.2,-184.06 41.68,-115 74.09,-72 88.33,-53.11 143.42,-38.9 189.82,-29.97"/>
+<polygon fill="black" stroke="black" points="190.68,-33.37 199.87,-28.09 189.4,-26.49 190.68,-33.37"/>
 </g>
 <!-- :feature:readout -->
 <g id="node4" class="node">
 <title>:feature:readout</title>
-<ellipse fill="none" stroke="black" cx="424.09" cy="-90" rx="86.38" ry="18"/>
-<text text-anchor="middle" x="424.09" y="-86.3" font-family="Times,serif" font-size="14.00">:feature:readout</text>
+<ellipse fill="none" stroke="black" cx="169.09" cy="-90" rx="86.38" ry="18"/>
+<text text-anchor="middle" x="169.09" y="-86.3" font-family="Times,serif" font-size="14.00">:feature:readout</text>
 </g>
-<!-- :app:shared&#45;&gt;:feature:readout -->
-<g id="edge5" class="edge">
-<title>:app:shared&#45;&gt;:feature:readout</title>
-<path fill="none" stroke="black" d="M322.62,-145.64C341.03,-135.73 365.21,-122.71 385.34,-111.87"/>
-<polygon fill="black" stroke="black" points="387.13,-114.88 394.28,-107.06 383.81,-108.71 387.13,-114.88"/>
-</g>
-<!-- :feature:other -->
-<g id="node5" class="node">
-<title>:feature:other</title>
-<ellipse fill="none" stroke="black" cx="207.09" cy="-90" rx="75.29" ry="18"/>
-<text text-anchor="middle" x="207.09" y="-86.3" font-family="Times,serif" font-size="14.00">:feature:other</text>
-</g>
-<!-- :app:shared&#45;&gt;:feature:other -->
-<g id="edge4" class="edge">
-<title>:app:shared&#45;&gt;:feature:other</title>
-<path fill="none" stroke="black" d="M273.91,-144.76C262.47,-135.55 247.96,-123.88 235.39,-113.77"/>
-<polygon fill="black" stroke="black" points="237.45,-110.93 227.46,-107.39 233.06,-116.39 237.45,-110.93"/>
-</g>
-<!-- :core:domain -->
-<g id="node6" class="node">
-<title>:core:domain</title>
-<ellipse fill="none" stroke="black" cx="310.09" cy="-18" rx="70.69" ry="18"/>
-<text text-anchor="middle" x="310.09" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
+<!-- :app:androidApp&#45;&gt;:feature:readout -->
+<g id="edge3" class="edge">
+<title>:app:androidApp&#45;&gt;:feature:readout</title>
+<path fill="none" stroke="black" d="M96.98,-215.87C111.21,-191.24 137.54,-145.64 154.14,-116.88"/>
+<polygon fill="black" stroke="black" points="157.2,-118.6 159.17,-108.19 151.13,-115.1 157.2,-118.6"/>
 </g>
 <!-- :app:shared&#45;&gt;:core:domain -->
-<g id="edge6" class="edge">
+<g id="edge8" class="edge">
 <title>:app:shared&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M296.02,-143.87C298.75,-119.67 303.76,-75.21 307.01,-46.39"/>
-<polygon fill="black" stroke="black" points="310.51,-46.52 308.16,-36.19 303.56,-45.73 310.51,-46.52"/>
+<path fill="none" stroke="black" d="M365.51,-151.52C390.51,-144.12 418.03,-131.04 433.09,-108 441.85,-94.61 442.62,-84.86 433.09,-72 411.37,-42.67 373.78,-29.02 339.1,-22.87"/>
+<polygon fill="black" stroke="black" points="339.35,-19.37 328.93,-21.26 338.26,-26.28 339.35,-19.37"/>
 </g>
-<!-- :app:desktopApp -->
-<g id="node3" class="node">
-<title>:app:desktopApp</title>
-<ellipse fill="none" stroke="black" cx="440.09" cy="-234" rx="88.28" ry="18"/>
-<text text-anchor="middle" x="440.09" y="-230.3" font-family="Times,serif" font-size="14.00">:app:desktopApp</text>
+<!-- :app:shared&#45;&gt;:feature:readout -->
+<g id="edge7" class="edge">
+<title>:app:shared&#45;&gt;:feature:readout</title>
+<path fill="none" stroke="black" d="M281.42,-145.98C260.64,-135.81 232.96,-122.26 210.27,-111.16"/>
+<polygon fill="black" stroke="black" points="211.73,-107.97 201.21,-106.72 208.65,-114.26 211.73,-107.97"/>
 </g>
-<!-- :app:desktopApp&#45;&gt;:app:shared -->
-<g id="edge2" class="edge">
-<title>:app:desktopApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M406.96,-217.12C385.52,-206.83 357.45,-193.38 334.67,-182.46"/>
-<polygon fill="black" stroke="black" points="336.12,-179.27 325.59,-178.1 333.09,-185.58 336.12,-179.27"/>
+<!-- :feature:other -->
+<g id="node6" class="node">
+<title>:feature:other</title>
+<ellipse fill="none" stroke="black" cx="349.09" cy="-90" rx="75.29" ry="18"/>
+<text text-anchor="middle" x="349.09" y="-86.3" font-family="Times,serif" font-size="14.00">:feature:other</text>
 </g>
-<!-- :app:desktopApp&#45;&gt;:feature:readout -->
-<g id="edge3" class="edge">
-<title>:app:desktopApp&#45;&gt;:feature:readout</title>
-<path fill="none" stroke="black" d="M438.16,-215.87C435.44,-191.67 430.43,-147.21 427.18,-118.39"/>
-<polygon fill="black" stroke="black" points="430.63,-117.73 426.03,-108.19 423.67,-118.52 430.63,-117.73"/>
+<!-- :app:shared&#45;&gt;:feature:other -->
+<g id="edge6" class="edge">
+<title>:app:shared&#45;&gt;:feature:other</title>
+<path fill="none" stroke="black" d="M321.05,-144.05C325.3,-136.01 330.48,-126.2 335.23,-117.23"/>
+<polygon fill="black" stroke="black" points="338.38,-118.75 339.96,-108.28 332.19,-115.48 338.38,-118.75"/>
 </g>
 <!-- :feature:readout&#45;&gt;:core:domain -->
-<g id="edge9" class="edge">
+<g id="edge11" class="edge">
 <title>:feature:readout&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M397.65,-72.76C381.86,-63.07 361.62,-50.64 344.58,-40.17"/>
-<polygon fill="black" stroke="black" points="346.35,-37.16 336,-34.91 342.69,-43.12 346.35,-37.16"/>
+<path fill="none" stroke="black" d="M190.42,-72.41C202.28,-63.19 217.19,-51.59 230.09,-41.55"/>
+<polygon fill="black" stroke="black" points="232.48,-44.13 238.23,-35.23 228.18,-38.61 232.48,-44.13"/>
+</g>
+<!-- :app:desktopApp -->
+<g id="node5" class="node">
+<title>:app:desktopApp</title>
+<ellipse fill="none" stroke="black" cx="280.09" cy="-234" rx="88.28" ry="18"/>
+<text text-anchor="middle" x="280.09" y="-230.3" font-family="Times,serif" font-size="14.00">:app:desktopApp</text>
+</g>
+<!-- :app:desktopApp&#45;&gt;:app:shared -->
+<g id="edge4" class="edge">
+<title>:app:desktopApp&#45;&gt;:app:shared</title>
+<path fill="none" stroke="black" d="M287.84,-216.05C291.48,-208.09 295.9,-198.41 299.97,-189.51"/>
+<polygon fill="black" stroke="black" points="303.22,-190.83 304.19,-180.28 296.85,-187.91 303.22,-190.83"/>
+</g>
+<!-- :app:desktopApp&#45;&gt;:feature:readout -->
+<g id="edge5" class="edge">
+<title>:app:desktopApp&#45;&gt;:feature:readout</title>
+<path fill="none" stroke="black" d="M266.02,-215.92C257.56,-205.58 246.62,-192.1 237.09,-180 220.24,-158.6 201.47,-133.97 187.93,-116.06"/>
+<polygon fill="black" stroke="black" points="190.55,-113.72 181.73,-107.84 184.96,-117.93 190.55,-113.72"/>
 </g>
 <!-- :feature:other&#45;&gt;:core:domain -->
-<g id="edge8" class="edge">
+<g id="edge10" class="edge">
 <title>:feature:other&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M230.98,-72.76C244.89,-63.31 262.62,-51.26 277.76,-40.97"/>
-<polygon fill="black" stroke="black" points="280.03,-43.66 286.33,-35.15 276.09,-37.87 280.03,-43.66"/>
+<path fill="none" stroke="black" d="M327.76,-72.41C315.91,-63.19 300.99,-51.59 288.09,-41.55"/>
+<polygon fill="black" stroke="black" points="290,-38.61 279.96,-35.23 285.7,-44.13 290,-38.61"/>
 </g>
 <!-- :app:webApp -->
 <g id="node7" class="node">
 <title>:app:webApp</title>
-<ellipse fill="none" stroke="black" cx="263.09" cy="-234" rx="70.69" ry="18"/>
-<text text-anchor="middle" x="263.09" y="-230.3" font-family="Times,serif" font-size="14.00">:app:webApp</text>
+<ellipse fill="none" stroke="black" cx="457.09" cy="-234" rx="70.69" ry="18"/>
+<text text-anchor="middle" x="457.09" y="-230.3" font-family="Times,serif" font-size="14.00">:app:webApp</text>
 </g>
 <!-- :app:webApp&#45;&gt;:app:shared -->
-<g id="edge7" class="edge">
+<g id="edge9" class="edge">
 <title>:app:webApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M270.6,-216.05C274.12,-208.09 278.41,-198.41 282.35,-189.51"/>
-<polygon fill="black" stroke="black" points="285.59,-190.84 286.44,-180.28 279.19,-188 285.59,-190.84"/>
+<path fill="none" stroke="black" d="M425.63,-217.81C404.11,-207.42 375.39,-193.56 352.22,-182.37"/>
+<polygon fill="black" stroke="black" points="353.52,-179.11 343,-177.92 350.48,-185.42 353.52,-179.11"/>
 </g>
 </g>
 </svg>
