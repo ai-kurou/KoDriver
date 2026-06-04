@@ -7,10 +7,12 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,7 +31,20 @@ fun ReadoutContent(
     viewModel: ReadoutViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val navigator = rememberListDetailPaneScaffoldNavigator(scaffoldDirective = scaffoldDirective)
+    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
+        scaffoldDirective = if (uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1)
+            scaffoldDirective.copy(maxHorizontalPartitions = 1)
+        else
+            scaffoldDirective,
+        initialDestinationHistory = if (uiState.selectedItem != null) {
+            listOf(
+                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+            )
+        } else {
+            listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+        },
+    )
     val scope = rememberCoroutineScope()
     val navigateBack = {
         scope.launch { navigator.navigateBack() }
@@ -39,6 +54,15 @@ fun ReadoutContent(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,
     )
+
+    LaunchedEffect(uiState.selectedItem) {
+        navigator.navigateTo(
+            if (uiState.selectedItem != null)
+                ListDetailPaneScaffoldRole.Detail
+            else
+                ListDetailPaneScaffoldRole.List
+        )
+    }
 
     backHandler(navigator.canNavigateBack()) { navigateBack() }
 
@@ -56,7 +80,6 @@ fun ReadoutContent(
                 onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
                 onItemClick = { item ->
                     viewModel.onItemSelected(item)
-                    scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail) }
                 },
             )
         },
