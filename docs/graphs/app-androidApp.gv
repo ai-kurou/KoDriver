@@ -1,8 +1,5 @@
 digraph G {
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:domain"
-  ":app:androidApp" -> ":feature:readout"
-  ":app:shared" -> ":feature:readout"
   ":app:shared" -> ":core:domain"
-  ":feature:readout" -> ":core:domain"
 }
