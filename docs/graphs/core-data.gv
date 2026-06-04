@@ -1,4 +1,5 @@
 digraph G {
   ":app:desktopApp" -> ":core:data"
+  ":app:desktopApp" -> ":core:domain"
   ":core:data" -> ":core:domain"
 }
