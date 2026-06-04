@@ -218,6 +218,7 @@ dependencies {
     kover(project(":core:data"))
     kover(project(":feature:other"))
     kover(project(":feature:readout"))
+    kover(project(":app:androidApp"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))
     kover(project(":server"))
