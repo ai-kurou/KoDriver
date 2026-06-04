@@ -13,8 +13,10 @@ import kodriver.feature.readout.generated.resources.Res
 import kodriver.feature.readout.generated.resources.item_vehicle_approach
 import kodriver.feature.readout.generated.resources.select_simulator_hint
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.jetbrains.compose.resources.stringResource
 import org.junit.Rule
@@ -45,6 +47,8 @@ class ReadoutContentTest {
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepo),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepo),
+            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
+            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepo),
         )
     }
 

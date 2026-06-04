@@ -8,8 +8,10 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import org.junit.After
 import org.junit.Before
@@ -35,6 +37,8 @@ class ReadoutViewModelTest {
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
+            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
+            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
         )
     }
 
@@ -83,5 +87,25 @@ class ReadoutViewModelTest {
         viewModel.onSimulatorSelected("lmu")
 
         assertEquals(false, viewModel.uiState.first().readoutEnabledStates["laps_remaining"])
+    }
+
+    @Test
+    fun `シミュレータを選択するとRepositoryから永続化済みの順序が読み込まれる`() = runTest {
+        readoutRepository.saveReadoutOrder("lmu", listOf("laps_remaining", "vehicle_approach"))
+
+        viewModel.onSimulatorSelected("lmu")
+
+        assertEquals(listOf("laps_remaining", "vehicle_approach"), viewModel.uiState.first().items)
+    }
+
+    @Test
+    fun `moveItemで変更した順序がRepositoryに保存される`() = runTest {
+        viewModel.onSimulatorSelected("lmu")
+        viewModel.moveItem(0, 1)
+
+        assertEquals(
+            listOf("laps_remaining", "vehicle_approach"),
+            readoutRepository.observeReadoutOrder("lmu").first(),
+        )
     }
 }

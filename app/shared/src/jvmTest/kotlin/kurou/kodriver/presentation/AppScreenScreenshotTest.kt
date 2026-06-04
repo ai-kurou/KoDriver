@@ -16,8 +16,10 @@ import kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutViewModel
@@ -52,6 +54,8 @@ class AppScreenScreenshotTest {
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepo),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepo),
+            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
+            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepo),
         )
     }
 
