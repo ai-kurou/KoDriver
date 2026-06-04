@@ -51,6 +51,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.other)
             implementation(projects.feature.readout)
+            implementation(libs.koin.core)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
