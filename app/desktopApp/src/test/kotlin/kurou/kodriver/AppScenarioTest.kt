@@ -13,8 +13,8 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
-import kurou.kodriver.feature.readout.readoutModule
 import kurou.kodriver.presentation.AppScreen
+import kurou.kodriver.presentation.appModules
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -51,7 +51,7 @@ class AppScenarioTest {
     @Before
     fun setUp() {
         startKoin {
-            modules(testDataModule, readoutModule)
+            modules(listOf(testDataModule) + appModules)
         }
     }
 

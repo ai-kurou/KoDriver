@@ -25,7 +25,6 @@ dependencies {
     testImplementation(libs.compose.uiTestJunit4)
     testImplementation(compose.desktop.currentOs)
     testImplementation(projects.core.domain)
-    testImplementation(projects.feature.readout)
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)
