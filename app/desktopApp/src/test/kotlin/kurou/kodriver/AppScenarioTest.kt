@@ -23,13 +23,15 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import java.nio.file.Files
+import java.nio.file.Path
 
 class AppScenarioTest {
 
     @get:Rule
     val rule = createComposeRule()
 
-    private val tempDir = Files.createTempDirectory("kodriver-test").toString()
+    private val tempDirPath: Path = Files.createTempDirectory("kodriver-test")
+    private val tempDir = tempDirPath.toString()
 
     private val testDataModule = module {
         single<SimulatorPreferencesRepository> {
@@ -56,6 +58,7 @@ class AppScenarioTest {
     @After
     fun tearDown() {
         stopKoin()
+        tempDirPath.toFile().deleteRecursively()
     }
 
     @Test
