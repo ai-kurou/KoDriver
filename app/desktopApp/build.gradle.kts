@@ -22,6 +22,9 @@ dependencies {
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutinesTest)
+    testImplementation(libs.compose.uiTest)
+    testImplementation(libs.compose.uiTestJunit4)
+    testImplementation(compose.desktop.currentOs)
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)
@@ -30,6 +33,10 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(libs.compose.ui)
     implementation(libs.compose.uiToolingPreview)
+}
+
+tasks.withType<Test>().configureEach {
+    systemProperty("skiko.renderApi", "SOFTWARE_FAST")
 }
 
 compose.desktop {
