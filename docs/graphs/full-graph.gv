@@ -6,7 +6,6 @@ digraph G {
   ":app:desktopApp" -> ":core:domain"
   ":app:shared" -> ":feature:other"
   ":app:shared" -> ":feature:readout"
-  ":app:shared" -> ":core:domain"
   ":app:webApp" -> ":app:shared"
   ":core:data" -> ":core:domain"
   ":feature:other" -> ":core:domain"
