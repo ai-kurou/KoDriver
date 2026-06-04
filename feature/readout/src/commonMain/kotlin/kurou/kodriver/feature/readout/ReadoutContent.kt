@@ -27,7 +27,23 @@ fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    viewModel: ReadoutViewModel = koinViewModel(),
+) {
+    ReadoutContent(
+        modifier = modifier,
+        scaffoldDirective = scaffoldDirective,
+        backHandler = backHandler,
+        viewModel = koinViewModel(),
+    )
+}
+
+@Suppress("LongParameterList")
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+internal fun ReadoutContent(
+    modifier: Modifier = Modifier,
+    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    viewModel: ReadoutViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsStateInLifecycle()
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -93,6 +109,6 @@ fun ReadoutContent(
 
 @Preview
 @Composable
-fun ReadoutContentPreview() {
+private fun ReadoutContentPreview() {
     ReadoutContent()
 }

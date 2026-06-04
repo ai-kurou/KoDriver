@@ -26,7 +26,7 @@ import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.readout.ReadoutContent
 import org.jetbrains.compose.resources.stringResource
 
-enum class AppDestination(
+internal enum class AppDestination(
     val icon: ImageVector,
 ) {
     Readout(Icons.Default.HeadsetMic),
@@ -74,6 +74,6 @@ fun AppScreen(
 
 @Preview
 @Composable
-fun AppScreenPreview() {
+private fun AppScreenPreview() {
     AppScreen()
 }
