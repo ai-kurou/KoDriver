@@ -24,6 +24,10 @@ detekt {
 }
 
 subprojects {
+    // macOS でテスト用 JVM が Dock に表示されて画面フォーカスが奪われるのを防ぐ
+    tasks.withType<Test>().configureEach {
+        jvmArgs("-Dapple.awt.UIElement=true")
+    }
     apply(plugin = "io.gitlab.arturbosch.detekt")
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         autoCorrect = !isCI
