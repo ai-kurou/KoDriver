@@ -110,6 +110,18 @@ class ReadoutViewModelTest {
     }
 
     @Test
+    fun `連続moveItemではRepository更新より最後のmoveItem結果を優先して表示する`() = runTest {
+        viewModel.onSimulatorSelected("lmu")
+        viewModel.moveItem(0, 1) // [laps_remaining, vehicle_approach]
+        viewModel.moveItem(0, 1) // [vehicle_approach, laps_remaining]（初期順序に戻る）
+
+        assertEquals(
+            listOf("vehicle_approach", "laps_remaining"),
+            viewModel.uiState.first().items,
+        )
+    }
+
+    @Test
     fun `onItemSelectedでアイテムが選択される`() = runTest {
         viewModel.onItemSelected("vehicle_approach")
 
