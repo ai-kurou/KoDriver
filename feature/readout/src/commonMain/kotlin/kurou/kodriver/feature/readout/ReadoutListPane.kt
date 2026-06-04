@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -112,7 +113,8 @@ internal fun ReadoutListPane(
                     null
                 },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                    .testTag("simulator_dropdown_trigger"),
             )
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -133,6 +135,7 @@ internal fun ReadoutListPane(
                             )
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        modifier = Modifier.testTag("simulator_item_$simulator"),
                     )
                 }
             }
@@ -158,7 +161,8 @@ internal fun ReadoutListPane(
                         onClick = { onItemClick(item) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                            .padding(vertical = 4.dp)
+                            .testTag("readout_item_$index"),
                         colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
                     ) {
                         ListItem(

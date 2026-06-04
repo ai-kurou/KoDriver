@@ -16,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import kodriver.app.shared.generated.resources.Res
@@ -55,6 +56,7 @@ fun AppScreen(
                             label = { Text(dest.label()) },
                             selected = currentDestination == dest,
                             onClick = { currentDestination = dest },
+                            modifier = Modifier.testTag("nav_${dest.name.lowercase()}"),
                         )
                     }
                 },
