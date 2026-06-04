@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
@@ -46,7 +45,7 @@ fun AppScreen(
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
-    MaterialTheme {
+    KoDriverTheme {
         Box(modifier = Modifier.navigationBarsPadding()) {
             NavigationSuiteScaffold(
                 navigationSuiteItems = {
