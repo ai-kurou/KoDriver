@@ -52,6 +52,8 @@ moduleGraphAssert {
     maxHeight = 3
     allowed = arrayOf(
         ":app:androidApp -> :app:shared",
+        ":app:androidApp -> :core:domain",
+        ":app:androidApp -> :feature:readout",
         ":app:desktopApp -> :app:shared",
         ":app:desktopApp -> :core:data",
         ":app:desktopApp -> :feature:readout",
