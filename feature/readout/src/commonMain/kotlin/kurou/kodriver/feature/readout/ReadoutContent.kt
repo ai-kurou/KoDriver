@@ -60,7 +60,7 @@ fun ReadoutContent(
             if (uiState.selectedItem != null)
                 ListDetailPaneScaffoldRole.Detail
             else
-                ListDetailPaneScaffoldRole.List
+                ListDetailPaneScaffoldRole.List,
         )
     }
 
