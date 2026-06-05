@@ -1,6 +1,7 @@
 package kurou.kodriver
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.data.createReadoutPreferencesRepository
@@ -84,6 +85,9 @@ class AppTest {
         rule.onNodeWithTag("simulator_item_lmu").performClick()
         rule.waitForIdle()
 
+        rule.waitUntil(timeoutMillis = 5_000L) {
+            rule.onAllNodesWithTag("readout_item_0").fetchSemanticsNodes().isNotEmpty()
+        }
         rule.onNodeWithTag("readout_item_0").performClick()
         rule.waitForIdle()
 
