@@ -11,10 +11,10 @@ private val LightColorScheme = lightColorScheme(
     primaryContainer = Yellow90,
     onPrimaryContainer = Yellow10,
 
-    secondary = Amber40,
+    secondary = Lime40,
     onSecondary = Neutral99,
-    secondaryContainer = Amber90,
-    onSecondaryContainer = Amber10,
+    secondaryContainer = Lime90,
+    onSecondaryContainer = Lime10,
 
     tertiary = Neon40,
     onTertiary = Neutral99,
@@ -45,10 +45,10 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = Yellow30,
     onPrimaryContainer = Yellow90,
 
-    secondary = Amber80,
-    onSecondary = Amber20,
-    secondaryContainer = Amber30,
-    onSecondaryContainer = Amber90,
+    secondary = Lime80,
+    onSecondary = Lime20,
+    secondaryContainer = Lime30,
+    onSecondaryContainer = Lime90,
 
     tertiary = Neon80,
     onTertiary = Neon20,
