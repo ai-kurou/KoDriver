@@ -117,9 +117,9 @@ class AnnouncerViewModelTest {
         buildViewModel(channel, tts)
 
         channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))  // 1回目
-        channel.send(noProximity())                  // 離脱
-        channel.send(leftProximity(vehicleId = 1))  // 再接近
+        channel.send(leftProximity(vehicleId = 1)) // 1回目
+        channel.send(noProximity()) // 離脱
+        channel.send(leftProximity(vehicleId = 1)) // 再接近
 
         assertEquals(listOf("Car left.", "Car left."), tts.spokenTexts)
     }
@@ -131,8 +131,8 @@ class AnnouncerViewModelTest {
         buildViewModel(channel, tts)
 
         channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))                         // 車両1が入る
-        channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))       // 車両2も入る
+        channel.send(leftProximity(vehicleId = 1)) // 車両1が入る
+        channel.send(leftProximity(vehicleId = 1, extraLeftId = 2)) // 車両2も入る
 
         assertEquals(listOf("Car left.", "Car left."), tts.spokenTexts)
     }
