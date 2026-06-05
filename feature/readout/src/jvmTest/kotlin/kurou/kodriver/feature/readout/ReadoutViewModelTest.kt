@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.ReadoutItemType
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -125,7 +126,7 @@ class ReadoutViewModelTest {
     fun `onItemSelectedでアイテムが選択される`() = runTest {
         viewModel.onItemSelected("vehicle_approach")
 
-        assertEquals("vehicle_approach", viewModel.uiState.first().selectedItem)
+        assertEquals(ReadoutItemType.VehicleApproach, viewModel.uiState.first().selectedItem)
     }
 
     @Test

@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.readout
 
 import androidx.compose.animation.animateColorAsState
+import kurou.kodriver.domain.model.ReadoutItemType
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -147,7 +148,7 @@ internal fun ReadoutListPane(
         ) {
             itemsIndexed(uiState.items, key = { _, it -> it }) { index, item ->
                 ReorderableItem(reorderableState, key = item) {
-                    val isSelected = item == uiState.selectedItem
+                    val isSelected = ReadoutItemType.fromId(item) == uiState.selectedItem
                     val cardContainerColor by animateColorAsState(
                         targetValue = if (isSelected) {
                             MaterialTheme.colorScheme.secondaryContainer

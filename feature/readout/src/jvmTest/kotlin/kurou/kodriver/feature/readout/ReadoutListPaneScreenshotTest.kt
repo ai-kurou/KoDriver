@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.ReadoutItemType
 import org.junit.Rule
 import org.junit.Test
 
@@ -76,7 +77,7 @@ class ReadoutListPaneScreenshotTest {
                                 selectedSimulator = "lmu",
                                 items = listOf("vehicle_approach", "laps_remaining"),
                                 readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
-                                selectedItem = "vehicle_approach",
+                                selectedItem = ReadoutItemType.VehicleApproach,
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },

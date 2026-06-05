@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutItemType
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -61,7 +62,7 @@ internal class ReadoutViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    private val _selectedItem = MutableStateFlow<String?>(null)
+    private val _selectedItem = MutableStateFlow<ReadoutItemType?>(null)
 
     private val _effectiveOrder: StateFlow<List<String>> = combine(
         _selectedSimulator,
@@ -117,7 +118,8 @@ internal class ReadoutViewModel(
     }
 
     fun onItemSelected(item: String) {
-        _selectedItem.update { if (it == item) null else item }
+        val type = ReadoutItemType.fromId(item) ?: return
+        _selectedItem.update { if (it == type) null else type }
     }
 
     fun clearSelectedItem() {

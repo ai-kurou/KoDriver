@@ -20,7 +20,7 @@ class ReadoutDetailPaneScreenshotTest {
         rule.setContent {
             MaterialTheme {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                    ReadoutDetailPane(canNavigateBack = true, onBack = {})
+                    ReadoutDetailPane(canNavigateBack = true, onBack = {}, content = {})
                 }
             }
         }
@@ -32,7 +32,7 @@ class ReadoutDetailPaneScreenshotTest {
         rule.setContent {
             MaterialTheme {
                 Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                    ReadoutDetailPane(canNavigateBack = false, onBack = {})
+                    ReadoutDetailPane(canNavigateBack = false, onBack = {}, content = {})
                 }
             }
         }
