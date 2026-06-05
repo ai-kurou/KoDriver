@@ -59,8 +59,8 @@ internal fun fakeProximityData(
     lateralDistanceLeftMeters: Double = Double.MAX_VALUE,
     lateralDistanceRightMeters: Double = Double.MAX_VALUE,
 ) = ProximityData(
-    isSideBySideLeft = isSideBySideLeft,
-    isSideBySideRight = isSideBySideRight,
+    sideBySideLeftVehicleIds = if (isSideBySideLeft) setOf(1) else emptySet(),
+    sideBySideRightVehicleIds = if (isSideBySideRight) setOf(2) else emptySet(),
     lateralDistanceLeftMeters = lateralDistanceLeftMeters,
     lateralDistanceRightMeters = lateralDistanceRightMeters,
 )
