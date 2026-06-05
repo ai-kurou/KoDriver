@@ -66,7 +66,7 @@ class AnnouncerViewModelTest {
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
 
-        assertEquals(listOf("CarLeft"), tts.spokenTexts)
+        assertEquals(listOf("Car left."), tts.spokenTexts)
     }
 
     @Test
@@ -78,7 +78,7 @@ class AnnouncerViewModelTest {
         channel.send(noProximity())
         channel.send(rightProximity(vehicleId = 1))
 
-        assertEquals(listOf("CarRight"), tts.spokenTexts)
+        assertEquals(listOf("Car right."), tts.spokenTexts)
     }
 
     @Test
@@ -90,7 +90,7 @@ class AnnouncerViewModelTest {
         channel.send(noProximity())
         channel.send(bothProximity(leftId = 1, rightId = 2))
 
-        assertEquals(listOf("CarLeft", "CarRight"), tts.spokenTexts)
+        assertEquals(listOf("Car left.", "Car right."), tts.spokenTexts)
     }
 
     @Test
@@ -121,7 +121,7 @@ class AnnouncerViewModelTest {
         channel.send(noProximity())                  // 離脱
         channel.send(leftProximity(vehicleId = 1))  // 再接近
 
-        assertEquals(listOf("CarLeft", "CarLeft"), tts.spokenTexts)
+        assertEquals(listOf("Car left.", "Car left."), tts.spokenTexts)
     }
 
     @Test
@@ -134,7 +134,7 @@ class AnnouncerViewModelTest {
         channel.send(leftProximity(vehicleId = 1))                         // 車両1が入る
         channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))       // 車両2も入る
 
-        assertEquals(listOf("CarLeft", "CarLeft"), tts.spokenTexts)
+        assertEquals(listOf("Car left.", "Car left."), tts.spokenTexts)
     }
 
     @Test

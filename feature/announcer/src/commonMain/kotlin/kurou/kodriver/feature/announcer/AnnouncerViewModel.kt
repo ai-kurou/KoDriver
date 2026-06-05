@@ -49,11 +49,11 @@ class AnnouncerViewModel(
 
             when {
                 newLeftVehicle && newRightVehicle -> {
-                    ttsEngine.speak("CarLeft")
-                    ttsEngine.speak("CarRight")
+                    ttsEngine.speak("Car left.")
+                    ttsEngine.speak("Car right.")
                 }
-                newLeftVehicle -> ttsEngine.speak("CarLeft")
-                newRightVehicle -> ttsEngine.speak("CarRight")
+                newLeftVehicle -> ttsEngine.speak("Car left.")
+                newRightVehicle -> ttsEngine.speak("Car right.")
             }
         }
         .launchIn(viewModelScope)
