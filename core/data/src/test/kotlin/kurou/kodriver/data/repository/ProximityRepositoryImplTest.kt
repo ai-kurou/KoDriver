@@ -8,7 +8,9 @@ import kotlinx.coroutines.runBlocking
 import kurou.kodriver.data.datasource.MemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -44,12 +46,14 @@ class ProximityRepositoryImplTest {
             openResult = false,
         )
         val repo = ProximityRepositoryImpl(pollingIntervalMs = 1, reconnectIntervalMs = 1, reader = reader)
+        val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.proximityStream().collect { } }
+        val job = launch { repo.proximityStream().collect { emitCount.incrementAndGet() } }
         delay(50)
         job.cancelAndJoin()
 
         assertTrue(reader.closeCalled)
+        assertEquals(0, emitCount.get())
     }
 
     // -------------------------------------------------------------------------
