@@ -2,25 +2,25 @@ package kurou.kodriver.presentation
 
 import androidx.compose.ui.graphics.Color
 
-// Primary – Neon Yellow（蛍光黄色）
-val Yellow10 = Color(0xFF1A1500)
-val Yellow20 = Color(0xFF352A00)
-val Yellow30 = Color(0xFF503F00)
-val Yellow40 = Color(0xFF6B5500)
-val Yellow80 = Color(0xFFFFE000)
-val Yellow90 = Color(0xFFFFF176)
-val Yellow95 = Color(0xFFFFFAC2)
-val Yellow99 = Color(0xFFFFFDF5)
+// Primary – Neon Yellow-Green（蛍光黄緑）
+val Yellow10 = Color(0xFF121900)
+val Yellow20 = Color(0xFF253300)
+val Yellow30 = Color(0xFF384D00)
+val Yellow40 = Color(0xFF4C6600)
+val Yellow80 = Color(0xFFBFFF00)
+val Yellow90 = Color(0xFFE0FF8C)
+val Yellow95 = Color(0xFFEFFFBB)
+val Yellow99 = Color(0xFFF8FFED)
 
-// Secondary – Amber
-val Amber10 = Color(0xFF1F1100)
-val Amber20 = Color(0xFF3D2200)
-val Amber30 = Color(0xFF5C3400)
-val Amber40 = Color(0xFF7A4600)
-val Amber80 = Color(0xFFFFB74D)
-val Amber90 = Color(0xFFFFDDB3)
-val Amber95 = Color(0xFFFFEED8)
-val Amber99 = Color(0xFFFFFBFF)
+// Secondary – Lime Green（黄緑）
+val Lime10 = Color(0xFF0D1A00)
+val Lime20 = Color(0xFF1A3300)
+val Lime30 = Color(0xFF284D00)
+val Lime40 = Color(0xFF366600)
+val Lime80 = Color(0xFF80FF4D)
+val Lime90 = Color(0xFFB8FFAA)
+val Lime95 = Color(0xFFDAFFD0)
+val Lime99 = Color(0xFFF2FFF0)
 
 // Tertiary – Fluorescent Lime (accent)
 val Neon10 = Color(0xFF0A1400)
