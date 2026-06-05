@@ -19,7 +19,8 @@ import kotlin.math.sin
 internal class SharedMemoryProximityRepository(
     private val pollingIntervalMs: Long = 16L,
     private val reconnectIntervalMs: Long = 1_000L,
-    private val vehicleLengthMeters: Double = 4.5,
+    private val longitudinalThresholdMeters: Double = 1.0,
+    private val lateralMinimumMeters: Double = 1.0,
     private val reader: MemoryReader = SharedMemoryReader(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
@@ -63,7 +64,7 @@ internal class SharedMemoryProximityRepository(
 
         val sinYaw = sin(plrOriYaw)
         val cosYaw = cos(plrOriYaw)
-        val sideBySideThreshold = vehicleLengthMeters * 1.2
+        val sideBySideThreshold = longitudinalThresholdMeters
 
         var nearestLeftMeters = Double.MAX_VALUE
         var nearestRightMeters = Double.MAX_VALUE
@@ -85,6 +86,7 @@ internal class SharedMemoryProximityRepository(
             if (abs(relY) >= sideBySideThreshold) continue
 
             val absRelX = abs(relX)
+            if (absRelX < lateralMinimumMeters) continue
             if (relX < 0) {
                 if (absRelX < nearestLeftMeters) nearestLeftMeters = absRelX
             } else {

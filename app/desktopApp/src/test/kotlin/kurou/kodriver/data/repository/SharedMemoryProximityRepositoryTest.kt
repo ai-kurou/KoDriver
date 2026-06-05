@@ -70,7 +70,6 @@ class SharedMemoryProximityRepositoryTest {
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -90,7 +89,6 @@ class SharedMemoryProximityRepositoryTest {
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -112,7 +110,6 @@ class SharedMemoryProximityRepositoryTest {
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -128,7 +125,7 @@ class SharedMemoryProximityRepositoryTest {
 
     @Test
     fun `前後方向の距離がしきい値を超える車両は並走判定しない`() = runBlocking {
-        // relY = -(-10.0) = 10.0 > 4.5*1.2=5.4 → スキップ
+        // relY = -(-10.0) = 10.0 > threshold=1.0 → スキップ
         val buffer = buildBuffer(
             activeVehicles = 2,
             playerIdx = 0,
@@ -136,7 +133,6 @@ class SharedMemoryProximityRepositoryTest {
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -148,16 +144,15 @@ class SharedMemoryProximityRepositoryTest {
 
     @Test
     fun `前後方向の距離がしきい値ちょうどの車両は並走判定しない`() = runBlocking {
-        val vehicleLength = 4.5
-        // relY = 5.4 >= threshold=5.4 → スキップ (>= で判定)
+        // relY = 1.0 >= threshold=1.0 → スキップ (>= で判定)
         val buffer = buildBuffer(
             activeVehicles = 2,
             playerIdx = 0,
-            opponents = listOf(VehiclePos(posX = -3.0, posZ = -5.4)),
+            opponents = listOf(VehiclePos(posX = -3.0, posZ = -1.0)),
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = vehicleLength,
+            longitudinalThresholdMeters = 1.0,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -199,6 +194,68 @@ class SharedMemoryProximityRepositoryTest {
     }
 
     // -------------------------------------------------------------------------
+    // 横方向最小距離: 真前/真後ろにいる車は並走判定しない
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun `真前にいる車は横方向最小距離未満のため並走判定しない`() = runBlocking {
+        // relX = 0.5 < lateralMinimumMeters=1.0 → スキップ
+        val buffer = buildBuffer(
+            activeVehicles = 2,
+            playerIdx = 0,
+            opponents = listOf(VehiclePos(posX = 0.5, posZ = 0.5)),
+        )
+        val repo = SharedMemoryProximityRepository(
+            pollingIntervalMs = 1,
+            lateralMinimumMeters = 1.0,
+            reader = FakeProximityMemoryReader(buffer),
+        )
+
+        val result = repo.proximityStream().first()
+
+        assertFalse(result.isSideBySideLeft)
+        assertFalse(result.isSideBySideRight)
+    }
+
+    @Test
+    fun `横方向最小距離ちょうどの車は並走判定する`() = runBlocking {
+        // relX = 1.0 == lateralMinimumMeters=1.0 → 1.0 < 1.0 は false → スキップされない (並走と判定)
+        val buffer = buildBuffer(
+            activeVehicles = 2,
+            playerIdx = 0,
+            opponents = listOf(VehiclePos(posX = 1.0, posZ = 0.0)),
+        )
+        val repo = SharedMemoryProximityRepository(
+            pollingIntervalMs = 1,
+            lateralMinimumMeters = 1.0,
+            reader = FakeProximityMemoryReader(buffer),
+        )
+
+        val result = repo.proximityStream().first()
+
+        assertTrue(result.isSideBySideRight)
+    }
+
+    @Test
+    fun `横方向最小距離を超える車は並走判定する`() = runBlocking {
+        // relX = 1.1 > lateralMinimumMeters=1.0 → 並走と判定
+        val buffer = buildBuffer(
+            activeVehicles = 2,
+            playerIdx = 0,
+            opponents = listOf(VehiclePos(posX = 1.1, posZ = 0.0)),
+        )
+        val repo = SharedMemoryProximityRepository(
+            pollingIntervalMs = 1,
+            lateralMinimumMeters = 1.0,
+            reader = FakeProximityMemoryReader(buffer),
+        )
+
+        val result = repo.proximityStream().first()
+
+        assertTrue(result.isSideBySideRight)
+    }
+
+    // -------------------------------------------------------------------------
     // 横方向距離
     // -------------------------------------------------------------------------
 
@@ -212,7 +269,6 @@ class SharedMemoryProximityRepositoryTest {
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -235,7 +291,6 @@ class SharedMemoryProximityRepositoryTest {
         )
         val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
