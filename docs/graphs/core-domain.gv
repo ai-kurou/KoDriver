@@ -5,4 +5,5 @@ digraph G {
   ":core:data" -> ":core:domain"
   ":feature:other" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
+  ":feature:readout-vehicle-approach" -> ":core:domain"
 }

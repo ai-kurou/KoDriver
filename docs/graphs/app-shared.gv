@@ -3,5 +3,6 @@ digraph G {
   ":app:desktopApp" -> ":app:shared"
   ":app:shared" -> ":feature:other"
   ":app:shared" -> ":feature:readout"
+  ":app:shared" -> ":feature:readout-vehicle-approach"
   ":app:webApp" -> ":app:shared"
 }
