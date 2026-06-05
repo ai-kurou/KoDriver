@@ -21,8 +21,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.readout.ReadoutContent
+import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
 import org.jetbrains.compose.resources.stringResource
 
 internal enum class AppDestination(
@@ -41,7 +43,17 @@ private fun AppDestination.label(): String = when (this) {
 @Composable
 fun AppScreen(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    readoutContent: @Composable () -> Unit = { ReadoutContent(backHandler = backHandler) },
+    readoutContent: @Composable () -> Unit = {
+        ReadoutContent(
+            backHandler = backHandler,
+            detailContent = { itemType ->
+                when (itemType) {
+                    ReadoutItemType.VehicleApproach -> VehicleApproachDetailPane()
+                    ReadoutItemType.LapsRemaining -> {}
+                }
+            },
+        )
+    },
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 

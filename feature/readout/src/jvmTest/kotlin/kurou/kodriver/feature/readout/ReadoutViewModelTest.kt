@@ -48,15 +48,10 @@ class ReadoutViewModelTest {
     }
 
     @Test
-    fun `初期状態はシミュレータ未選択でアイテムが空`() = runTest {
-        val state = viewModel.uiState.first()
+    fun `シミュレータ未選択時はアイテムが空で選択後に読み込まれる`() = runTest {
+        assertNull(viewModel.uiState.first().selectedSimulator)
+        assertEquals(emptyList(), viewModel.uiState.first().items)
 
-        assertNull(state.selectedSimulator)
-        assertEquals(emptyList(), state.items)
-    }
-
-    @Test
-    fun `シミュレータを選択するとアイテムが読み込まれる`() = runTest {
         viewModel.onSimulatorSelected("lmu")
 
         val state = viewModel.uiState.first()
@@ -125,7 +120,7 @@ class ReadoutViewModelTest {
     fun `onItemSelectedでアイテムが選択される`() = runTest {
         viewModel.onItemSelected("vehicle_approach")
 
-        assertEquals("vehicle_approach", viewModel.uiState.first().selectedItem)
+        assertEquals(ReadoutItemType.VehicleApproach, viewModel.uiState.first().selectedItem)
     }
 
     @Test

@@ -76,7 +76,7 @@ class ReadoutListPaneScreenshotTest {
                                 selectedSimulator = "lmu",
                                 items = listOf("vehicle_approach", "laps_remaining"),
                                 readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
-                                selectedItem = "vehicle_approach",
+                                selectedItem = ReadoutItemType.VehicleApproach,
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },

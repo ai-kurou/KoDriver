@@ -27,11 +27,13 @@ fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    detailContent: @Composable (ReadoutItemType) -> Unit = {},
 ) {
     ReadoutContent(
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
+        detailContent = detailContent,
         viewModel = koinViewModel(),
     )
 }
@@ -43,6 +45,7 @@ internal fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    detailContent: @Composable (ReadoutItemType) -> Unit = {},
     viewModel: ReadoutViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsStateInLifecycle()
@@ -99,10 +102,13 @@ internal fun ReadoutContent(
             )
         },
         detailPane = {
-            ReadoutDetailPane(
-                canNavigateBack = navigator.canNavigateBack(),
-                onBack = { navigateBack() },
-            )
+            uiState.selectedItem?.let { selectedItem ->
+                ReadoutDetailPane(
+                    canNavigateBack = navigator.canNavigateBack(),
+                    onBack = { navigateBack() },
+                    content = { detailContent(selectedItem) },
+                )
+            }
         },
     )
 }

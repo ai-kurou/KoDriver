@@ -5,5 +5,5 @@ internal data class ReadoutListUiState(
     val simulators: List<String> = emptyList(),
     val items: List<String> = emptyList(),
     val readoutEnabledStates: Map<String, Boolean> = emptyMap(),
-    val selectedItem: String? = null,
+    val selectedItem: ReadoutItemType? = null,
 )
