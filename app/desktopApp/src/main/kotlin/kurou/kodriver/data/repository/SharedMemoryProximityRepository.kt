@@ -16,7 +16,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal class ProximityRepositoryImpl(
+internal class SharedMemoryProximityRepository(
     private val pollingIntervalMs: Long = 16L,
     private val reconnectIntervalMs: Long = 1_000L,
     private val vehicleLengthMeters: Double = 4.5,
