@@ -42,16 +42,18 @@ class AnnouncerViewModel(
             if (current == null) return@onEach
             if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
 
-            val leftJustAppeared = prev?.isSideBySideLeft != true && current.isSideBySideLeft
-            val rightJustAppeared = prev?.isSideBySideRight != true && current.isSideBySideRight
+            val prevLeftIds = prev?.sideBySideLeftVehicleIds ?: emptySet()
+            val prevRightIds = prev?.sideBySideRightVehicleIds ?: emptySet()
+            val newLeftVehicle = (current.sideBySideLeftVehicleIds - prevLeftIds).isNotEmpty()
+            val newRightVehicle = (current.sideBySideRightVehicleIds - prevRightIds).isNotEmpty()
 
             when {
-                leftJustAppeared && rightJustAppeared -> {
+                newLeftVehicle && newRightVehicle -> {
                     ttsEngine.speak("CarLeft")
                     ttsEngine.speak("CarRight")
                 }
-                leftJustAppeared -> ttsEngine.speak("CarLeft")
-                rightJustAppeared -> ttsEngine.speak("CarRight")
+                newLeftVehicle -> ttsEngine.speak("CarLeft")
+                newRightVehicle -> ttsEngine.speak("CarRight")
             }
         }
         .launchIn(viewModelScope)

@@ -68,6 +68,8 @@ internal class SharedMemoryProximityRepository(
 
         var nearestLeftMeters = Double.MAX_VALUE
         var nearestRightMeters = Double.MAX_VALUE
+        val leftVehicleIds = mutableSetOf<Int>()
+        val rightVehicleIds = mutableSetOf<Int>()
 
         for (i in 0 until activeVehicles) {
             if (i == playerIdx) continue
@@ -88,15 +90,17 @@ internal class SharedMemoryProximityRepository(
             val absRelX = abs(relX)
             if (absRelX < lateralMinimumMeters) continue
             if (relX < 0) {
+                leftVehicleIds.add(i)
                 if (absRelX < nearestLeftMeters) nearestLeftMeters = absRelX
             } else {
+                rightVehicleIds.add(i)
                 if (absRelX < nearestRightMeters) nearestRightMeters = absRelX
             }
         }
 
         return ProximityData(
-            isSideBySideLeft = nearestLeftMeters < Double.MAX_VALUE,
-            isSideBySideRight = nearestRightMeters < Double.MAX_VALUE,
+            sideBySideLeftVehicleIds = leftVehicleIds,
+            sideBySideRightVehicleIds = rightVehicleIds,
             lateralDistanceLeftMeters = nearestLeftMeters,
             lateralDistanceRightMeters = nearestRightMeters,
         )

@@ -64,7 +64,7 @@ class AnnouncerViewModelTest {
         buildViewModel(channel, tts)
 
         channel.send(noProximity())
-        channel.send(noProximity().copy(isSideBySideLeft = true))
+        channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(listOf("CarLeft"), tts.spokenTexts)
     }
@@ -76,7 +76,7 @@ class AnnouncerViewModelTest {
         buildViewModel(channel, tts)
 
         channel.send(noProximity())
-        channel.send(noProximity().copy(isSideBySideRight = true))
+        channel.send(rightProximity(vehicleId = 1))
 
         assertEquals(listOf("CarRight"), tts.spokenTexts)
     }
@@ -88,7 +88,7 @@ class AnnouncerViewModelTest {
         buildViewModel(channel, tts)
 
         channel.send(noProximity())
-        channel.send(noProximity().copy(isSideBySideLeft = true, isSideBySideRight = true))
+        channel.send(bothProximity(leftId = 1, rightId = 2))
 
         assertEquals(listOf("CarLeft", "CarRight"), tts.spokenTexts)
     }
@@ -101,13 +101,40 @@ class AnnouncerViewModelTest {
 
         // 接近開始 → CarLeft が発話される
         channel.send(noProximity())
-        channel.send(noProximity().copy(isSideBySideLeft = true))
+        channel.send(leftProximity(vehicleId = 1))
         val spokenAfterFirstApproach = tts.spokenTexts.toList()
 
-        // 継続して並走 → 追加発話なし
-        channel.send(noProximity().copy(isSideBySideLeft = true))
+        // 同一車両が継続して並走 → 追加発話なし
+        channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(spokenAfterFirstApproach, tts.spokenTexts)
+    }
+
+    @Test
+    fun `並走から離脱後に同じ車が再度並走するとアナウンスする`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(channel, tts)
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))  // 1回目
+        channel.send(noProximity())                  // 離脱
+        channel.send(leftProximity(vehicleId = 1))  // 再接近
+
+        assertEquals(listOf("CarLeft", "CarLeft"), tts.spokenTexts)
+    }
+
+    @Test
+    fun `別の車両が新たに並走ゾーンに入るとアナウンスする`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(channel, tts)
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))                         // 車両1が入る
+        channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))       // 車両2も入る
+
+        assertEquals(listOf("CarLeft", "CarLeft"), tts.spokenTexts)
     }
 
     @Test
@@ -121,17 +148,38 @@ class AnnouncerViewModelTest {
         )
 
         channel.send(noProximity())
-        channel.send(noProximity().copy(isSideBySideLeft = true))
+        channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<String>(), tts.spokenTexts)
     }
 }
 
 private fun noProximity() = ProximityData(
-    isSideBySideLeft = false,
-    isSideBySideRight = false,
+    sideBySideLeftVehicleIds = emptySet(),
+    sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
     lateralDistanceRightMeters = Double.MAX_VALUE,
+)
+
+private fun leftProximity(vehicleId: Int, extraLeftId: Int? = null) = ProximityData(
+    sideBySideLeftVehicleIds = setOfNotNull(vehicleId, extraLeftId),
+    sideBySideRightVehicleIds = emptySet(),
+    lateralDistanceLeftMeters = 3.0,
+    lateralDistanceRightMeters = Double.MAX_VALUE,
+)
+
+private fun rightProximity(vehicleId: Int) = ProximityData(
+    sideBySideLeftVehicleIds = emptySet(),
+    sideBySideRightVehicleIds = setOf(vehicleId),
+    lateralDistanceLeftMeters = Double.MAX_VALUE,
+    lateralDistanceRightMeters = 3.0,
+)
+
+private fun bothProximity(leftId: Int, rightId: Int) = ProximityData(
+    sideBySideLeftVehicleIds = setOf(leftId),
+    sideBySideRightVehicleIds = setOf(rightId),
+    lateralDistanceLeftMeters = 3.0,
+    lateralDistanceRightMeters = 3.0,
 )
 
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
