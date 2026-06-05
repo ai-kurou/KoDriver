@@ -163,6 +163,38 @@ class ProximityRepositoryImplTest {
     }
 
     // -------------------------------------------------------------------------
+    // 境界チェック
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun `playerIdx が activeVehicles 以上の場合は emit しない`() = runBlocking {
+        // activeVehicles=1, playerIdx=2 → 2 >= 1 → スキップ
+        val buffer = buildBuffer(activeVehicles = 1, playerIdx = 2)
+        val fakeReader = FakeProximityMemoryReader(buffer)
+        val repo = ProximityRepositoryImpl(
+            pollingIntervalMs = 1,
+            reader = fakeReader,
+        )
+
+        val job = launch { repo.proximityStream().collect { } }
+        delay(50)
+        job.cancelAndJoin()
+
+        assertTrue(fakeReader.closeCalled)
+    }
+
+    @Test
+    fun `activeVehicles がバッファ範囲を超える値でもクランプされ例外が出ない`() = runBlocking {
+        // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
+        // BufferUnderflowException が発生しないことを確認
+        val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
+        val repo = ProximityRepositoryImpl(pollingIntervalMs = 1, reader = FakeProximityMemoryReader(buffer))
+
+        repo.proximityStream().first()
+        Unit
+    }
+
+    // -------------------------------------------------------------------------
     // 横方向距離
     // -------------------------------------------------------------------------
 

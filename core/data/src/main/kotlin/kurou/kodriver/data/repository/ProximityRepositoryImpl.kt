@@ -36,9 +36,11 @@ internal class ProximityRepositoryImpl(
                     }
                 }
                 reader.readBuffer()?.let { buffer ->
-                    val activeVehicles = buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF
+                    val maxCount = maxVehicleCount(buffer)
+                    val activeVehicles = (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
+                        .coerceAtMost(maxCount)
                     val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
-                    if (activeVehicles > 0) {
+                    if (activeVehicles > 0 && playerIdx < activeVehicles) {
                         emit(computeProximity(buffer, activeVehicles, playerIdx))
                     }
                 }
@@ -114,5 +116,10 @@ internal class ProximityRepositoryImpl(
         // mOri[2] は3行目: 232 + 2*24 = 280
         private const val OFF_ORI_ROW2_X = 280
         private const val OFF_ORI_ROW2_Z = 296
+
+        fun maxVehicleCount(buffer: ByteBuffer): Int {
+            val headerSize = TELEMETRY_BASE + OFF_TELEM_INFO + OFF_ORI_ROW2_Z + Double.SIZE_BYTES
+            return maxOf(0, (buffer.limit() - headerSize) / VEHICLE_STRIDE)
+        }
     }
 }
