@@ -5,10 +5,8 @@ sealed class ReadoutItemType(val id: String) {
     data object LapsRemaining : ReadoutItemType("laps_remaining")
 
     companion object {
-        fun fromId(id: String): ReadoutItemType? = when (id) {
-            "vehicle_approach" -> VehicleApproach
-            "laps_remaining" -> LapsRemaining
-            else -> null
-        }
+        private val entries = listOf(VehicleApproach, LapsRemaining)
+
+        fun fromId(id: String): ReadoutItemType? = entries.find { it.id == id }
     }
 }
