@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.domain.model.ReadoutItemType
+import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane

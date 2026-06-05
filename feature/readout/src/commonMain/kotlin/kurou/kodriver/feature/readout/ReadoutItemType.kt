@@ -1,4 +1,4 @@
-package kurou.kodriver.domain.model
+package kurou.kodriver.feature.readout
 
 sealed class ReadoutItemType(val id: String) {
     data object VehicleApproach : ReadoutItemType("vehicle_approach")

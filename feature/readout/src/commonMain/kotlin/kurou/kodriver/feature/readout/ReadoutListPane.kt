@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.readout
 
 import androidx.compose.animation.animateColorAsState
-import kurou.kodriver.domain.model.ReadoutItemType
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

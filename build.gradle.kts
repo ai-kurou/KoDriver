@@ -62,8 +62,10 @@ moduleGraphAssert {
         ":app:webApp -> :app:shared",
         ":app:shared -> :feature:other",
         ":app:shared -> :feature:readout",
+        ":app:shared -> :feature:readout-vehicle-approach",
         ":feature:other -> :core:domain",
         ":feature:readout -> :core:domain",
+        ":feature:readout-vehicle-approach -> :core:domain",
         ":server -> :core:domain",
         ":core:data -> :core:domain",
     )
