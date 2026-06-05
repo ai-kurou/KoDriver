@@ -254,7 +254,7 @@ private fun buildBuffer(
     buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, playerIdx.toByte())
 
     val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
-    buffer.putDouble(plrBase + OFF_ORI_ROW2_X, 0.0)   // atan2(0,-1)=PI
+    buffer.putDouble(plrBase + OFF_ORI_ROW2_X, 0.0) // atan2(0,-1)=PI
     buffer.putDouble(plrBase + OFF_ORI_ROW2_Z, -1.0)
 
     for ((i, opp) in opponents.withIndex()) {
@@ -294,6 +294,3 @@ private class FakeProximityMemoryReader(
         opened = false
     }
 }
-
-
-

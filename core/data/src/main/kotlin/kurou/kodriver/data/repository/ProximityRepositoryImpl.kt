@@ -9,6 +9,7 @@ import kurou.kodriver.data.datasource.MemoryReader
 import kurou.kodriver.data.datasource.SharedMemoryReader
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.repository.ProximityRepository
+import java.nio.ByteBuffer
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -37,56 +38,8 @@ internal class ProximityRepositoryImpl(
                 reader.readBuffer()?.let { buffer ->
                     val activeVehicles = buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF
                     val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
-
                     if (activeVehicles > 0) {
-                        val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
-                        val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
-                        val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
-                        // mOri[2] は進行方向ベクトル。atan2(x, z) でヨー角を得る (TinyPedal: oriyaw2rad)
-                        val plrOriYaw = atan2(
-                            buffer.getDouble(plrBase + OFF_ORI_ROW2_X),
-                            buffer.getDouble(plrBase + OFF_ORI_ROW2_Z),
-                        ) - PI  // TinyPedalと同じ: レーダー表示向けに180度回転
-
-                        val sinYaw = sin(plrOriYaw)
-                        val cosYaw = cos(plrOriYaw)
-                        val sideBySideThreshold = vehicleLengthMeters * 1.2
-
-                        var nearestLeftMeters = Double.MAX_VALUE
-                        var nearestRightMeters = Double.MAX_VALUE
-
-                        for (i in 0 until activeVehicles) {
-                            if (i == playerIdx) continue
-
-                            val optBase = TELEMETRY_BASE + OFF_TELEM_INFO + i * VEHICLE_STRIDE
-                            val optPosX = buffer.getDouble(optBase + OFF_POS_X)
-                            val optPosY = -buffer.getDouble(optBase + OFF_POS_Z)
-
-                            val dx = optPosX - plrPosX
-                            val dy = optPosY - plrPosY
-
-                            // プレイヤー座標系へ回転 (TinyPedal: rotate_coordinate)
-                            val relX = cosYaw * dx - sinYaw * dy  // 負=左, 正=右
-                            val relY = cosYaw * dy + sinYaw * dx  // 負=前, 正=後
-
-                            if (abs(relY) >= sideBySideThreshold) continue
-
-                            val absRelX = abs(relX)
-                            if (relX < 0) {
-                                if (absRelX < nearestLeftMeters) nearestLeftMeters = absRelX
-                            } else {
-                                if (absRelX < nearestRightMeters) nearestRightMeters = absRelX
-                            }
-                        }
-
-                        emit(
-                            ProximityData(
-                                isSideBySideLeft = nearestLeftMeters < Double.MAX_VALUE,
-                                isSideBySideRight = nearestRightMeters < Double.MAX_VALUE,
-                                lateralDistanceLeftMeters = nearestLeftMeters,
-                                lateralDistanceRightMeters = nearestRightMeters,
-                            )
-                        )
+                        emit(computeProximity(buffer, activeVehicles, playerIdx))
                     }
                 }
                 delay(pollingIntervalMs)
@@ -95,6 +48,55 @@ internal class ProximityRepositoryImpl(
             reader.close()
         }
     }.flowOn(Dispatchers.IO)
+
+    private fun computeProximity(buffer: ByteBuffer, activeVehicles: Int, playerIdx: Int): ProximityData {
+        val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+        val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
+        val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
+        // mOri[2] は進行方向ベクトル。atan2(x, z) でヨー角を得る (TinyPedal: oriyaw2rad)
+        val plrOriYaw = atan2(
+            buffer.getDouble(plrBase + OFF_ORI_ROW2_X),
+            buffer.getDouble(plrBase + OFF_ORI_ROW2_Z),
+        ) - PI // TinyPedalと同じ: レーダー表示向けに180度回転
+
+        val sinYaw = sin(plrOriYaw)
+        val cosYaw = cos(plrOriYaw)
+        val sideBySideThreshold = vehicleLengthMeters * 1.2
+
+        var nearestLeftMeters = Double.MAX_VALUE
+        var nearestRightMeters = Double.MAX_VALUE
+
+        for (i in 0 until activeVehicles) {
+            if (i == playerIdx) continue
+
+            val optBase = TELEMETRY_BASE + OFF_TELEM_INFO + i * VEHICLE_STRIDE
+            val optPosX = buffer.getDouble(optBase + OFF_POS_X)
+            val optPosY = -buffer.getDouble(optBase + OFF_POS_Z)
+
+            val dx = optPosX - plrPosX
+            val dy = optPosY - plrPosY
+
+            // プレイヤー座標系へ回転 (TinyPedal: rotate_coordinate)
+            val relX = cosYaw * dx - sinYaw * dy // 負=左, 正=右
+            val relY = cosYaw * dy + sinYaw * dx // 負=前, 正=後
+
+            if (abs(relY) >= sideBySideThreshold) continue
+
+            val absRelX = abs(relX)
+            if (relX < 0) {
+                if (absRelX < nearestLeftMeters) nearestLeftMeters = absRelX
+            } else {
+                if (absRelX < nearestRightMeters) nearestRightMeters = absRelX
+            }
+        }
+
+        return ProximityData(
+            isSideBySideLeft = nearestLeftMeters < Double.MAX_VALUE,
+            isSideBySideRight = nearestRightMeters < Double.MAX_VALUE,
+            lateralDistanceLeftMeters = nearestLeftMeters,
+            lateralDistanceRightMeters = nearestRightMeters,
+        )
+    }
 
     companion object {
         private const val TELEMETRY_BASE = 128_464
