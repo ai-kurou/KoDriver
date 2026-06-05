@@ -46,9 +46,12 @@ class AnnouncerViewModel(
             val rightJustAppeared = prev?.isSideBySideRight != true && current.isSideBySideRight
 
             when {
-                leftJustAppeared && rightJustAppeared -> ttsEngine.speak("両側")
-                leftJustAppeared -> ttsEngine.speak("左")
-                rightJustAppeared -> ttsEngine.speak("右")
+                leftJustAppeared && rightJustAppeared -> {
+                    ttsEngine.speak("CarLeft")
+                    ttsEngine.speak("CarRight")
+                }
+                leftJustAppeared -> ttsEngine.speak("CarLeft")
+                rightJustAppeared -> ttsEngine.speak("CarRight")
             }
         }
         .launchIn(viewModelScope)
