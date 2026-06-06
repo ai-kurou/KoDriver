@@ -12,7 +12,7 @@ internal class WindowsTtsEngine : TextToSpeechEngine {
             "-Command",
             "Add-Type -AssemblyName System.Speech; " +
                 "\$tts = New-Object System.Speech.Synthesis.SpeechSynthesizer; " +
-                "\$tts.SpeakAsync('$safeText')",
+                "\$tts.Speak('$safeText')",
         ).start()
     }
 
