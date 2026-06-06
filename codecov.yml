@@ -3,3 +3,7 @@ coverage:
     patch:
       default:
         informational: true
+
+ignore:
+  - "**/*Module.kt"
+  - "**/*Modules.kt"
