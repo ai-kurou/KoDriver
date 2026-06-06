@@ -45,6 +45,7 @@ subprojects {
                 filters {
                     excludes {
                         annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+                        classes("*Module", "*Modules")
                     }
                 }
             }
@@ -217,7 +218,7 @@ kover {
         filters {
             excludes {
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
-                classes("*.*Module", "*.*Modules")
+                classes("*Module", "*Modules")
             }
         }
     }
