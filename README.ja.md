@@ -46,6 +46,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:domain` | リポジトリ抽象・ユースケース |
 | `:core:data` | 共有メモリ読み取り・DataStore（JVM 専用） |
 | `:feature:readout` | アナウンス設定 UI |
+| `:feature:readout-vehicle-approach` | 車両接近アナウンス詳細 UI |
+| `:feature:narrator` | 音声再生エンジン（WAV TTS） |
 
 ## Contributing
 
