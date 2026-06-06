@@ -21,7 +21,7 @@ internal class SharedMemoryProximityRepository(
     private val reconnectIntervalMs: Long = 1_000L,
     private val longitudinalThresholdMeters: Double = 1.0,
     private val lateralMinimumMeters: Double = 1.0,
-    private val lateralMaximumMeters: Double = 7.5,
+    private val lateralMaximumMeters: Double = 5.0,
     private val reader: MemoryReader = SharedMemoryReader(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
