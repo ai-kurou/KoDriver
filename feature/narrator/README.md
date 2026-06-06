@@ -1,7 +1,7 @@
-# announcer
+# narrator
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
-![Module Graph](../../docs/graphs/feature-announcer.svg)
+![Module Graph](../../docs/graphs/feature-narrator.svg)
 <!-- MODULE-GRAPH-END -->
