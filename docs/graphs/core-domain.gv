@@ -1,8 +1,12 @@
 digraph G {
   ":server" -> ":core:domain"
   ":app:androidApp" -> ":core:domain"
+  ":app:androidApp" -> ":feature:announcer"
   ":app:desktopApp" -> ":core:domain"
+  ":app:desktopApp" -> ":feature:readout"
+  ":app:desktopApp" -> ":feature:announcer"
   ":core:data" -> ":core:domain"
+  ":feature:announcer" -> ":core:domain"
   ":feature:other" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:domain"
