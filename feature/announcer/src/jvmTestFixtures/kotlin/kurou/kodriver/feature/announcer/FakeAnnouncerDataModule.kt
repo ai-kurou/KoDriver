@@ -16,5 +16,6 @@ class FakeProximityRepository : ProximityRepository {
 }
 
 internal class NoOpSoundPlayer : SoundPlayer {
+    override val isPlaying: Boolean = false
     override fun play(bytes: ByteArray) = Unit
 }

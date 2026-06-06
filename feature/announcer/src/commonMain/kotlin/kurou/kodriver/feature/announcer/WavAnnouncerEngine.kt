@@ -36,6 +36,7 @@ internal class WavAnnouncerEngine(
     }
 
     override fun speak(text: String) {
+        if (soundPlayer.isPlaying) return
         sounds[text]?.let { soundPlayer.play(it) }
     }
 

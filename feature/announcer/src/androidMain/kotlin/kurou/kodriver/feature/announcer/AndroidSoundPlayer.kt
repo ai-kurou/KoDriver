@@ -5,6 +5,11 @@ import android.media.MediaPlayer
 import java.io.File
 
 internal class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
+    private var currentPlayer: MediaPlayer? = null
+
+    override val isPlaying: Boolean
+        get() = try { currentPlayer?.isPlaying == true } catch (_: Exception) { false }
+
     override fun play(bytes: ByteArray) {
         try {
             val temp = File.createTempFile("snd_", ".wav", context.cacheDir)
@@ -15,7 +20,9 @@ internal class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
             player.setOnCompletionListener {
                 it.release()
                 temp.delete()
+                currentPlayer = null
             }
+            currentPlayer = player
             player.prepareAsync()
         } catch (_: Exception) {
         }
