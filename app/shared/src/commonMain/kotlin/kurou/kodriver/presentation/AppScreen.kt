@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.feature.announcer.AnnouncerEffect
+import kurou.kodriver.feature.narrator.NarratorEffect
 import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.readout.ReadoutContent
@@ -58,7 +58,7 @@ fun AppScreen(
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
-    AnnouncerEffect()
+    NarratorEffect()
 
     KoDriverTheme {
         Box(modifier = Modifier.navigationBarsPadding()) {

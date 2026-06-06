@@ -60,11 +60,11 @@ moduleGraphAssert {
         ":app:desktopApp -> :app:shared",
         ":app:desktopApp -> :core:domain",
         ":app:webApp -> :app:shared",
-        ":app:shared -> :feature:announcer",
+        ":app:shared -> :feature:narrator",
         ":app:shared -> :feature:other",
         ":app:shared -> :feature:readout",
         ":app:shared -> :feature:readout-vehicle-approach",
-        ":feature:announcer -> :core:domain",
+        ":feature:narrator -> :core:domain",
         ":feature:other -> :core:domain",
         ":feature:readout -> :core:domain",
         ":feature:readout-vehicle-approach -> :core:domain",
@@ -225,7 +225,7 @@ kover {
 dependencies {
     kover(project(":core:domain"))
     kover(project(":core:data"))
-    kover(project(":feature:announcer"))
+    kover(project(":feature:narrator"))
     kover(project(":feature:other"))
     kover(project(":feature:readout"))
     kover(project(":app:androidApp"))
