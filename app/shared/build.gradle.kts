@@ -50,7 +50,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.feature.announcer)
+            implementation(projects.feature.narrator)
             implementation(projects.feature.other)
             implementation(projects.feature.readout)
             implementation(projects.feature.readoutVehicleApproach)
@@ -85,7 +85,7 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.app.shared))
-    testFixturesImplementation(projects.feature.announcer)
+    testFixturesImplementation(projects.feature.narrator)
     testFixturesImplementation(projects.feature.readout)
     testFixturesImplementation(projects.core.domain)
     testFixturesImplementation(libs.koin.core)
