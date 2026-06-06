@@ -19,7 +19,7 @@ import kotlin.math.sin
 internal class SharedMemoryProximityRepository(
     private val pollingIntervalMs: Long = 16L,
     private val reconnectIntervalMs: Long = 1_000L,
-    private val longitudinalThresholdMeters: Double = 0.5,
+    private val longitudinalThresholdMeters: Double = 1.0,
     private val lateralMinimumMeters: Double = 1.0,
     private val lateralMaximumMeters: Double = 5.0,
     private val reader: MemoryReader = SharedMemoryReader(
