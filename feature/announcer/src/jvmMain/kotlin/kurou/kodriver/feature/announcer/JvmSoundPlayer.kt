@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
 
-internal class JvmSoundPlayer : SoundPlayer {
+class JvmSoundPlayer : SoundPlayer {
     private var currentClip: javax.sound.sampled.Clip? = null
 
     override val isPlaying: Boolean

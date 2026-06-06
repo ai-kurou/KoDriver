@@ -15,7 +15,7 @@ class FakeProximityRepository : ProximityRepository {
     override fun proximityStream(): Flow<ProximityData> = emptyFlow()
 }
 
-internal class NoOpSoundPlayer : SoundPlayer {
+class NoOpSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean = false
     override fun play(bytes: ByteArray) = Unit
 }

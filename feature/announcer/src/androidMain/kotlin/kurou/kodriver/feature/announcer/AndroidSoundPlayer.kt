@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import java.io.File
 
-internal class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
+class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
     private var currentPlayer: MediaPlayer? = null
 
     override val isPlaying: Boolean
