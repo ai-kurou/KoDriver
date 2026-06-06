@@ -2,7 +2,6 @@ package kurou.kodriver.feature.announcer
 
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 
 class WavAnnouncerEngineTest {
 
