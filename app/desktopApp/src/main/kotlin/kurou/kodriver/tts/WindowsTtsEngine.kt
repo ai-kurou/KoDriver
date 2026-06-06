@@ -12,10 +12,14 @@ internal class WindowsTtsEngine : TextToSpeechEngine {
         """
         Add-Type -AssemblyName System.Speech
         ${'$'}tts = New-Object System.Speech.Synthesis.SpeechSynthesizer
+        ${'$'}jaVoice = ${'$'}tts.GetInstalledVoices() | Where-Object { ${'$'}_.VoiceInfo.Culture.Name -eq 'ja-JP' } | Select-Object -First 1
+        if (${'$'}jaVoice) { ${'$'}tts.SelectVoice(${'$'}jaVoice.VoiceInfo.Name) }
         while (${'$'}true) {
             ${'$'}line = [Console]::ReadLine()
             if (${'$'}line -eq ${'$'}null) { break }
-            ${'$'}tts.SpeakAsync(${'$'}line)
+            if (${'$'}tts.State -eq [System.Speech.Synthesis.SynthesizerState]::Ready) {
+                ${'$'}tts.SpeakAsync(${'$'}line)
+            }
         }
         """.trimIndent(),
     ).start()
