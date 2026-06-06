@@ -3,5 +3,6 @@ digraph G {
   ":app:desktopApp" -> ":core:domain"
   ":app:desktopApp" -> ":feature:readout"
   ":app:shared" -> ":feature:readout"
+  ":app:shared" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
 }
