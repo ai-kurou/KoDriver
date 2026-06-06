@@ -33,7 +33,7 @@ dependencies {
     testImplementation(compose.desktop.currentOs)
     testImplementation(projects.core.domain)
     testImplementation(testFixtures(projects.feature.readout))
-    testImplementation(testFixtures(projects.feature.announcer))
+    testImplementation(testFixtures(projects.app.shared))
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)

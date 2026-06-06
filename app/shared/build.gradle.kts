@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -84,7 +85,10 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.feature.readout))
-    add("jvmTestImplementation", testFixtures(projects.feature.announcer))
+    add("jvmTestImplementation", testFixtures(projects.app.shared))
+    testFixturesImplementation(projects.feature.announcer)
+    testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(libs.koin.core)
 }
 
 // Gradle はコンフィギュレーション時にタスク名を解決するため、実行時ではなくここで判定する
