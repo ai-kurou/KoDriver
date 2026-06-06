@@ -1,6 +1,6 @@
 # KoDriver
 
-[English](README.md)
+[日本語](README.md)
 
 [![On Main Merge](https://github.com/ai-kurou/KoDriver/actions/workflows/on-main-merge.yml/badge.svg?branch=main)](https://github.com/ai-kurou/KoDriver/actions/workflows/on-main-merge.yml)
 [![codecov](https://codecov.io/gh/ai-kurou/KoDriver/graph/badge.svg?token=DSR32EAS87)](https://codecov.io/gh/ai-kurou/KoDriver)
@@ -12,54 +12,54 @@
 [![GitHub Release](https://img.shields.io/github/v/release/ai-kurou/KoDriver)](https://github.com/ai-kurou/KoDriver/releases)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF?logo=kotlin)
 
-Le Mans Ultimate（LMU）の走行情報を Windows TTS でリアルタイムにアナウンスする Compose Multiplatform アプリ。
+A Compose Multiplatform app that announces real-time driving information from Le Mans Ultimate (LMU) via Windows TTS.
 
-## 機能
+## Features
 
-- アナウンスする項目の選択・有効/無効の切り替え
-- アナウンス優先度のドラッグ&リオーダー
-- Windows TTS でのリアルタイムアナウンス（未実装）
+- Select announcements and toggle each item on/off
+- Drag & reorder announcement priority
+- Real-time announcements via Windows TTS (not yet implemented)
 
-## 動作要件
+## Requirements
 
-- Windows 10 以降
-- Le Mans Ultimate（インストール済み）
+- Windows 10 or later
+- Le Mans Ultimate (installed)
 
-## インストール
+## Installation
 
-[Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の MSI インストーラーをダウンロードして実行してください。
+Download the latest MSI installer from [Releases](https://github.com/ai-kurou/KoDriver/releases) and run it.
 
-LMU が起動していない状態でアプリを起動しても問題ありません。LMU の起動を検知すると自動的に接続します。
+The app can be launched without LMU running. It will automatically connect once LMU is detected.
 
-## アーキテクチャ
+## Architecture
 
-Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
+Multi-module Clean Architecture with Kotlin Multiplatform.
 
 ```
 :app:desktopApp → :app:shared → :feature:* → :core:domain ← :core:data
 ```
 
-| モジュール | 役割 |
+| Module | Role |
 |---|---|
-| `:app:desktopApp` | デスクトップアプリ エントリーポイント |
-| `:app:shared` | Compose Multiplatform 共通 UI |
-| `:core:domain` | リポジトリ抽象・ユースケース |
-| `:core:data` | 共有メモリ読み取り・DataStore（JVM 専用） |
-| `:feature:readout` | アナウンス設定 UI |
-| `:feature:readout-vehicle-approach` | 車両接近アナウンス詳細 UI |
-| `:feature:narrator` | 音声再生エンジン（WAV TTS） |
+| `:app:desktopApp` | Desktop app entry point |
+| `:app:shared` | Compose Multiplatform shared UI |
+| `:core:domain` | Repository interfaces & use cases |
+| `:core:data` | Shared memory reader & DataStore (JVM only) |
+| `:feature:readout` | Announcement settings UI |
+| `:feature:readout-vehicle-approach` | Vehicle approach announcement detail UI |
+| `:feature:narrator` | Audio playback engine (WAV TTS) |
 
 ## Contributing
 
-このプロジェクトはプルリクエストを受け付けていません。
-[GPL-3.0 ライセンス](LICENSE) の範囲内で自由にフォーク・改変・再配布できます。
+This project does not accept pull requests.
+You are free to fork, modify, and redistribute this project under the terms of the [GPL-3.0 license](LICENSE).
 
-## ライセンス
+## License
 
 [GPL-3.0](LICENSE)
 
 <!-- MODULE-GRAPH-START -->
-## モジュール図
+## Module Graph
 
 ![Module Graph](docs/graphs/full-graph.svg)
 <!-- MODULE-GRAPH-END -->
