@@ -57,8 +57,4 @@ class AnnouncerViewModel(
             }
         }
         .launchIn(viewModelScope)
-
-    override fun onCleared() {
-        ttsEngine.stop()
-    }
 }
