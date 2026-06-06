@@ -12,8 +12,9 @@ internal class WindowsTtsEngine : TextToSpeechEngine {
         """
         Add-Type -AssemblyName System.Speech
         ${'$'}tts = New-Object System.Speech.Synthesis.SpeechSynthesizer
-        ${'$'}jaVoice = ${'$'}tts.GetInstalledVoices() | Where-Object { ${'$'}_.VoiceInfo.Culture.Name -eq 'ja-JP' } | Select-Object -First 1
-        if (${'$'}jaVoice) { ${'$'}tts.SelectVoice(${'$'}jaVoice.VoiceInfo.Name) }
+        try {
+            ${'$'}tts.SelectVoiceByHints([System.Speech.Synthesis.VoiceGender]::NotSet, [System.Speech.Synthesis.VoiceAge]::NotSet, 0, [System.Globalization.CultureInfo]::GetCultureInfo('ja-JP'))
+        } catch {}
         while (${'$'}true) {
             ${'$'}line = [Console]::ReadLine()
             if (${'$'}line -eq ${'$'}null) { break }
