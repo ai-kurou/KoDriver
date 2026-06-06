@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.feature.readout.ReadoutContent
+import kurou.kodriver.feature.announcer.fakeAnnouncerDataModule
 import kurou.kodriver.feature.readout.fakeReadoutDataModule
 import org.jetbrains.compose.resources.stringResource
 import org.junit.AfterClass
@@ -29,7 +30,7 @@ class AppScreenScreenshotTest {
         @BeforeClass
         @JvmStatic
         fun setUpKoin() {
-            startKoin { modules(listOf(fakeReadoutDataModule) + appModules) }
+            startKoin { modules(listOf(fakeReadoutDataModule, fakeAnnouncerDataModule) + appModules) }
         }
 
         @AfterClass

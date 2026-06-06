@@ -49,6 +49,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            implementation(projects.feature.announcer)
             implementation(projects.feature.other)
             implementation(projects.feature.readout)
             implementation(projects.feature.readoutVehicleApproach)
@@ -83,6 +84,7 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.feature.readout))
+    add("jvmTestImplementation", testFixtures(projects.feature.announcer))
 }
 
 // Gradle はコンフィギュレーション時にタスク名を解決するため、実行時ではなくここで判定する
