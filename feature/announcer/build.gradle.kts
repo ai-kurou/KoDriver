@@ -53,6 +53,8 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.domain)
             implementation(libs.compose.runtime)
+            implementation(libs.compose.components.resources)
+            implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.koin.compose.viewmodel)
         }
@@ -65,6 +67,10 @@ kotlin {
             implementation(libs.kotlinx.coroutinesTest)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.feature.announcer.generated.resources"
 }
 
 dependencies {
