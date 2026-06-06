@@ -59,7 +59,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 [GPL-3.0](LICENSE)
 
 <!-- MODULE-GRAPH-START -->
-## モジュール図
+## Module Graph
 
 ![Module Graph](docs/graphs/full-graph.svg)
 <!-- MODULE-GRAPH-END -->
