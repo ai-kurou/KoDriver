@@ -1,0 +1,5 @@
+digraph G {
+  ":app:shared" -> ":feature:narrator"
+  ":app:shared" -> ":core:domain"
+  ":feature:narrator" -> ":core:domain"
+}
