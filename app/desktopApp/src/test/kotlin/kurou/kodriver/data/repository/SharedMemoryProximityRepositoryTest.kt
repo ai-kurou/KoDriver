@@ -21,7 +21,7 @@ import kotlin.test.assertTrue
  *   relX = opp.posX  (負=左, 正=右)
  *   relY = -opp.posZ (負=前, 正=後)
  */
-class ProximityRepositoryImplTest {
+class SharedMemoryProximityRepositoryTest {
 
     // -------------------------------------------------------------------------
     // フロー制御
@@ -30,7 +30,7 @@ class ProximityRepositoryImplTest {
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
         val reader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 1, playerIdx = 0))
-        val repo = ProximityRepositoryImpl(pollingIntervalMs = 1, reader = reader)
+        val repo = SharedMemoryProximityRepository(pollingIntervalMs = 1, reader = reader)
 
         val job = launch { repo.proximityStream().collect { } }
         delay(50)
@@ -45,7 +45,7 @@ class ProximityRepositoryImplTest {
             buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
             openResult = false,
         )
-        val repo = ProximityRepositoryImpl(pollingIntervalMs = 1, reconnectIntervalMs = 1, reader = reader)
+        val repo = SharedMemoryProximityRepository(pollingIntervalMs = 1, reconnectIntervalMs = 1, reader = reader)
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.proximityStream().collect { emitCount.incrementAndGet() } }
@@ -68,9 +68,9 @@ class ProximityRepositoryImplTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
+            longitudinalThresholdMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -88,9 +88,9 @@ class ProximityRepositoryImplTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = 3.0, posZ = 0.0)),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
+            longitudinalThresholdMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -110,9 +110,9 @@ class ProximityRepositoryImplTest {
                 VehiclePos(posX = 3.0, posZ = 0.0),
             ),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
+            longitudinalThresholdMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -134,9 +134,9 @@ class ProximityRepositoryImplTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = -10.0)),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
+            longitudinalThresholdMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -155,9 +155,9 @@ class ProximityRepositoryImplTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = -5.4)),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = vehicleLength,
+            longitudinalThresholdMeters = vehicleLength,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -175,7 +175,7 @@ class ProximityRepositoryImplTest {
         // activeVehicles=1, playerIdx=2 → 2 >= 1 → スキップ
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 2)
         val fakeReader = FakeProximityMemoryReader(buffer)
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
             reader = fakeReader,
         )
@@ -192,7 +192,7 @@ class ProximityRepositoryImplTest {
         // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
         // BufferUnderflowException が発生しないことを確認
         val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
-        val repo = ProximityRepositoryImpl(pollingIntervalMs = 1, reader = FakeProximityMemoryReader(buffer))
+        val repo = SharedMemoryProximityRepository(pollingIntervalMs = 1, reader = FakeProximityMemoryReader(buffer))
 
         repo.proximityStream().first()
         Unit
@@ -210,9 +210,9 @@ class ProximityRepositoryImplTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
+            longitudinalThresholdMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -233,9 +233,9 @@ class ProximityRepositoryImplTest {
                 VehiclePos(posX = -5.0, posZ = 0.0),
             ),
         )
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
-            vehicleLengthMeters = 4.5,
+            longitudinalThresholdMeters = 4.5,
             reader = FakeProximityMemoryReader(buffer),
         )
 
@@ -247,7 +247,7 @@ class ProximityRepositoryImplTest {
     @Test
     fun `並走車がいない場合は横距離が MAX_VALUE になる`() = runBlocking {
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 0)
-        val repo = ProximityRepositoryImpl(
+        val repo = SharedMemoryProximityRepository(
             pollingIntervalMs = 1,
             reader = FakeProximityMemoryReader(buffer),
         )

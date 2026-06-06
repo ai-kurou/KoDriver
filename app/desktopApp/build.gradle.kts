@@ -13,6 +13,8 @@ dependencies {
     implementation(projects.core.domain)
     implementation(libs.androidx.datastore.core)
     implementation(libs.kotlinx.serialization.protobuf)
+    implementation(libs.jna)
+    implementation(libs.jna.platform)
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
@@ -24,10 +26,14 @@ dependencies {
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutinesTest)
+    testImplementation(libs.jna)
+    testImplementation(libs.jna.platform)
     testImplementation(libs.compose.uiTest)
     testImplementation(libs.compose.uiTestJunit4)
     testImplementation(compose.desktop.currentOs)
     testImplementation(projects.core.domain)
+    testImplementation(testFixtures(projects.feature.readout))
+    testImplementation(testFixtures(projects.feature.announcer))
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)
