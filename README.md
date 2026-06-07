@@ -37,6 +37,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 
 ```
 :app:desktopApp → :app:shared → :feature:* → :core:domain ← :core:data
+                                            ↘ :core:designsystem
 ```
 
 | モジュール | 役割 |
@@ -45,6 +46,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:shared` | Compose Multiplatform 共通 UI |
 | `:core:domain` | リポジトリ抽象・ユースケース |
 | `:core:data` | 共有メモリ読み取り・DataStore（JVM 専用） |
+| `:core:designsystem` | 共通 Composable コンポーネント |
 | `:feature:readout` | アナウンス設定 UI |
 | `:feature:readout-vehicle-approach` | 車両接近アナウンス詳細 UI |
 | `:feature:narrator` | 音声再生エンジン（WAV TTS） |
