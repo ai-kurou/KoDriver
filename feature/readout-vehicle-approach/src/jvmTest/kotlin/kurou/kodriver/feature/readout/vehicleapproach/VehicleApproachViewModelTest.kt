@@ -7,8 +7,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.usecase.ObserveProximityUseCase
+import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -18,14 +20,19 @@ import kotlin.test.assertEquals
 class VehicleApproachViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeProximityRepository
+    private lateinit var thresholdsRepository: FakeProximityThresholdsRepository
     private lateinit var viewModel: VehicleApproachViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeProximityRepository()
-        viewModel = VehicleApproachViewModel(ObserveProximityUseCase(repository))
+        thresholdsRepository = FakeProximityThresholdsRepository()
+        viewModel = VehicleApproachViewModel(
+            observeLateralThreshold = ObserveLateralThresholdUseCase(thresholdsRepository),
+            observeLongitudinalThreshold = ObserveLongitudinalThresholdUseCase(thresholdsRepository),
+            saveLateralThreshold = SaveLateralThresholdUseCase(thresholdsRepository),
+            saveLongitudinalThreshold = SaveLongitudinalThresholdUseCase(thresholdsRepository),
+        )
     }
 
     @After
@@ -34,21 +41,22 @@ class VehicleApproachViewModelTest {
     }
 
     @Test
-    fun `初期状態はデフォルトの UiState を返す`() = runTest {
-        assertEquals(VehicleApproachUiState(), viewModel.uiState.first())
+    fun `初期状態はリポジトリのデフォルト値を反映した UiState を返す`() = runTest {
+        assertEquals(
+            VehicleApproachUiState(lateralThresholdMeters = 2.0, longitudinalThresholdMeters = 10.0),
+            viewModel.uiState.first(),
+        )
     }
 
     @Test
-    fun `ProximityData を受信しても UiState は変化しない`() = runTest {
-        val before = viewModel.uiState.first()
-        repository.emit(
-            ProximityData(
-                sideBySideLeftVehicleIds = setOf(1),
-                sideBySideRightVehicleIds = setOf(2),
-                lateralDistanceLeftMeters = 1.5,
-                lateralDistanceRightMeters = 2.0,
-            ),
-        )
-        assertEquals(before, viewModel.uiState.first())
+    fun `onLateralThresholdChanged を呼ぶと UiState の lateralThresholdMeters が更新される`() = runTest {
+        viewModel.onLateralThresholdChanged(3.5)
+        assertEquals(3.5, viewModel.uiState.first().lateralThresholdMeters)
+    }
+
+    @Test
+    fun `onLongitudinalThresholdChanged を呼ぶと UiState の longitudinalThresholdMeters が更新される`() = runTest {
+        viewModel.onLongitudinalThresholdChanged(15.0)
+        assertEquals(15.0, viewModel.uiState.first().longitudinalThresholdMeters)
     }
 }
