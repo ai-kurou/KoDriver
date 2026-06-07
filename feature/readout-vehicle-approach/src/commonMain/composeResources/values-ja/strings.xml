@@ -1,0 +1,7 @@
+<resources>
+    <string name="vehicle_approach_title">車両接近</string>
+    <string name="vehicle_approach_description">周囲の車両が接近した際に音声でお知らせします。</string>
+    <string name="vehicle_approach_threshold_subtitle">閾値設定</string>
+    <string name="vehicle_approach_longitudinal_label">前後: %1$.1f m</string>
+    <string name="vehicle_approach_lateral_label">左右: %1$.1f m</string>
+</resources>
