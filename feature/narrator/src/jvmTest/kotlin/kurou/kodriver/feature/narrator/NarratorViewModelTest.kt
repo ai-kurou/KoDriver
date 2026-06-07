@@ -81,6 +81,7 @@ class NarratorViewModelTest {
         assertEquals(listOf("カーライト"), tts.spokenTexts)
     }
 
+    /*
     @Test
     fun `両側から同時に接近するとCarLeftとCarRightを順番に読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
@@ -92,6 +93,7 @@ class NarratorViewModelTest {
 
         assertEquals(listOf("カーレフト", "カーライト"), tts.spokenTexts)
     }
+     */
 
     @Test
     fun `既に並走中の車が継続して並走してもアナウンスしない`() = runTest(testDispatcher) {

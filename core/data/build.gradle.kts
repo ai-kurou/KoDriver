@@ -30,14 +30,25 @@ kotlin {
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.koin.core)
         }
-        jvmMain.dependencies {
-            implementation(libs.androidx.datastore.core)
-            implementation(libs.kotlinx.serialization.protobuf)
-            implementation(libs.jna)
-            implementation(libs.jna.platform)
+        val jvmAndroidMain by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(libs.androidx.datastore.core)
+                implementation(libs.kotlinx.serialization.protobuf)
+            }
         }
-        androidMain.dependencies {
-            implementation(libs.androidx.datastore.preferences.android)
+        jvmMain {
+            dependsOn(jvmAndroidMain)
+            dependencies {
+                implementation(libs.jna)
+                implementation(libs.jna.platform)
+            }
+        }
+        androidMain {
+            dependsOn(jvmAndroidMain)
+            dependencies {
+                implementation(libs.androidx.datastore.preferences.android)
+            }
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)

@@ -1,0 +1,7 @@
+<resources>
+    <string name="vehicle_approach_title">Vehicle Approach</string>
+    <string name="vehicle_approach_description">Announces when surrounding vehicles are approaching.</string>
+    <string name="vehicle_approach_threshold_subtitle">Threshold Settings</string>
+    <string name="vehicle_approach_longitudinal_label">Front/Rear: %1$.1f m</string>
+    <string name="vehicle_approach_lateral_label">Left/Right: %1$.1f m</string>
+</resources>
