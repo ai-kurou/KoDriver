@@ -8,6 +8,7 @@ import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
@@ -27,6 +28,9 @@ internal val desktopDataModule = module {
     }
     single<ReadoutPreferencesRepository> {
         createReadoutPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<ProximityThresholdsRepository> {
+        createProximityThresholdsRepository(directory = kodriverDirectory)
     }
 }
 
