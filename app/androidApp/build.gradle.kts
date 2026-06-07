@@ -14,18 +14,14 @@ kotlin {
 }
 dependencies {
     implementation(projects.app.shared)
-    implementation(projects.core.domain)
+    implementation(projects.core.data)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.koin.core)
-    implementation(libs.androidx.datastore.preferences.android)
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
-
-    testImplementation(libs.kotlin.testJunit)
-    testImplementation(libs.kotlinx.coroutinesTest)
 
     androidTestImplementation(libs.androidx.testExt.junit)
     androidTestImplementation(libs.compose.uiTestJunit4)
