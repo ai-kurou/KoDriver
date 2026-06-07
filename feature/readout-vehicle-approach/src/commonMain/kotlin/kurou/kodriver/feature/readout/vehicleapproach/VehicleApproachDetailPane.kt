@@ -50,7 +50,7 @@ internal fun VehicleApproachDetailPaneContent(
         DetailPaneSubtitle(text = "閾値設定")
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
-            valueRange = 1f..5f,
+            valueRange = 0.1f..2f,
             labelFormatter = { "縦方向: ${"%.1f".format(it)} m" },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
         )
