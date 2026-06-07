@@ -39,6 +39,7 @@ internal fun VehicleApproachDetailPaneContent(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         DetailPaneTitle(title = "車両接近")
+        DetailPaneDescription(text = "周囲の車両が接近した際に音声でお知らせします。")
     }
 }
 
@@ -51,6 +52,19 @@ internal fun DetailPaneTitle(
         text = title,
         style = MaterialTheme.typography.headlineSmall,
         modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    )
+}
+
+@Composable
+internal fun DetailPaneDescription(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
     )
 }
 
