@@ -67,6 +67,8 @@ moduleGraphAssert {
         ":app:shared -> :feature:.*",
         // feature → core:domain
         ":feature:.* -> :core:domain",
+        // feature → core:designsystem（共通 UI コンポーネントの利用）
+        ":feature:.* -> :core:designsystem",
         // インフラ・サーバー → core:domain
         ":core:data -> :core:domain",
         ":server -> :core:domain",
@@ -230,9 +232,11 @@ kover {
 dependencies {
     kover(project(":core:domain"))
     kover(project(":core:data"))
+    kover(project(":core:designsystem"))
     kover(project(":feature:narrator"))
     kover(project(":feature:other"))
     kover(project(":feature:readout"))
+    kover(project(":feature:readout-vehicle-approach"))
     kover(project(":app:androidApp"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))
