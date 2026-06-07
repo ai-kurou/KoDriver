@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -57,9 +58,42 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.koin.compose.viewmodel)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+        jvmTest.dependencies {
+            implementation(libs.compose.uiTest)
+            implementation(libs.compose.uiTestJunit4)
+            implementation(libs.kotlin.testJunit)
+            implementation(compose.desktop.currentOs)
+            implementation(libs.roborazzi.composeDesktop)
+        }
     }
 }
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+val startTaskNames = gradle.startParameter.taskNames
+val isRecordMode = startTaskNames.any { it.contains("recordRoborazziJvmTest") }
+val isVerifyMode = startTaskNames.any { it.contains("verifyRoborazziJvmTest") }
+
+tasks.withType<Test>().configureEach {
+    systemProperty("skiko.renderApi", "SOFTWARE_FAST")
+    systemProperty("roborazzi.output.dir", "$projectDir/src/jvmTest/snapshots")
+    if (isRecordMode) systemProperty("roborazzi.test.record", "true")
+    if (isVerifyMode) systemProperty("roborazzi.test.verify", "true")
+}
+
+tasks.register("recordRoborazziJvmTest") {
+    group = "roborazzi"
+    description = "スクリーンショットのゴールデン画像を更新する"
+    dependsOn("jvmTest")
+}
+
+tasks.register("verifyRoborazziJvmTest") {
+    group = "roborazzi"
+    description = "スクリーンショットをゴールデン画像と比較する"
+    dependsOn("jvmTest")
 }
