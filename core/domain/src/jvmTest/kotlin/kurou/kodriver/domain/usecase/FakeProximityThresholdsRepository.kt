@@ -8,7 +8,7 @@ import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 
 internal class FakeProximityThresholdsRepository(
     initialLongitudinal: Double = 10.0,
-    initialLateral: Double = 2.0,
+    initialLateral: Double = 5.0,
 ) : ProximityThresholdsRepository {
     private data class State(val longitudinal: Double, val lateral: Double)
 

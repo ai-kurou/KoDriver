@@ -16,11 +16,11 @@ class ProximityThresholdsRepositoryFactoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Test
-    fun `デフォルト値は縦方向1m・横方向2m`() = testScope.runTest {
+    fun `デフォルト値は縦方向1m・横方向5m`() = testScope.runTest {
         val repository = createProximityThresholdsRepository(tempDir.absolutePath)
 
         assertEquals(1.0, repository.observeLongitudinalThresholdMeters().first())
-        assertEquals(2.0, repository.observeLateralThresholdMeters().first())
+        assertEquals(5.0, repository.observeLateralThresholdMeters().first())
     }
 
     @Test

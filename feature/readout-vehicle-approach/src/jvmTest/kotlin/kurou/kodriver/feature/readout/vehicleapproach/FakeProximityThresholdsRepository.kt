@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 
 internal class FakeProximityThresholdsRepository(
-    initialLateral: Double = 2.0,
+    initialLateral: Double = 5.0,
     initialLongitudinal: Double = 1.0,
 ) : ProximityThresholdsRepository {
     private data class State(val lateral: Double, val longitudinal: Double)

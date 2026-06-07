@@ -8,5 +8,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 @Serializable
 internal data class ProximityThresholdsPreferences(
     @ProtoNumber(1) val longitudinalThresholdMeters: Double = 1.0,
-    @ProtoNumber(2) val lateralThresholdMeters: Double = 2.0,
+    @ProtoNumber(2) val lateralThresholdMeters: Double = 5.0,
 )

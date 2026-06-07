@@ -43,7 +43,7 @@ class VehicleApproachViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映した UiState を返す`() = runTest {
         assertEquals(
-            VehicleApproachUiState(lateralThresholdMeters = 2.0, longitudinalThresholdMeters = 1.0),
+            VehicleApproachUiState(lateralThresholdMeters = 5.0, longitudinalThresholdMeters = 1.0),
             viewModel.uiState.first(),
         )
     }
