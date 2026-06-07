@@ -9,7 +9,7 @@ fun OtherContent(modifier: Modifier = Modifier) {
     OtherListPane(modifier = modifier)
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun OtherContentPreview() {
     OtherContent()

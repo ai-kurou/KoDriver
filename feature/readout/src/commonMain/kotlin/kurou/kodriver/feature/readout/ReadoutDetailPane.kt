@@ -30,7 +30,7 @@ internal fun ReadoutDetailPane(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ReadoutDetailPanePreview() {
     ReadoutDetailPane(canNavigateBack = true, onBack = {}, content = {})

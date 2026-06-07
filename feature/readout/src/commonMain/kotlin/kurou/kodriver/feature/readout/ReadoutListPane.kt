@@ -200,7 +200,7 @@ internal fun ReadoutListPane(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ReadoutListPanePreview() {
     ReadoutListPane(
