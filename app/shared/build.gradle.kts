@@ -85,11 +85,10 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.app.shared))
-    testFixturesImplementation(projects.feature.narrator)
-    testFixturesImplementation(projects.feature.readout)
-    testFixturesImplementation(projects.core.domain)
-    testFixturesImplementation(libs.koin.core)
-    testFixturesImplementation(libs.kotlinx.coroutinesCore)
+    add("jvmTestImplementation", testFixtures(projects.feature.narrator))
+    add("jvmTestImplementation", testFixtures(projects.feature.readout))
+    testFixturesImplementation(testFixtures(projects.feature.narrator))
+    testFixturesImplementation(testFixtures(projects.feature.readout))
 }
 
 // Gradle はコンフィギュレーション時にタスク名を解決するため、実行時ではなくここで判定する
