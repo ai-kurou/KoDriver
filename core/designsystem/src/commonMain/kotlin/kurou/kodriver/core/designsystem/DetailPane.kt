@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 
 @Composable
 fun DetailPaneTitle(
@@ -58,7 +59,7 @@ fun ThresholdSlider(
     labelFormatter: (Float) -> String,
     onValueChangeFinished: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    steps: Int = ((valueRange.endInclusive - valueRange.start) / 0.1f).toInt() - 1,
+    steps: Int = (((valueRange.endInclusive - valueRange.start) / 0.1f).roundToInt() - 1).coerceAtLeast(0),
 ) {
     var sliderValue by remember(value) { mutableStateOf(value) }
     Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
