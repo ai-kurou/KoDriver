@@ -86,7 +86,7 @@ fun AppScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun AppScreenPreview() {
     AppScreen()
