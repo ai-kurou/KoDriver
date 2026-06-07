@@ -16,7 +16,7 @@ import org.koin.dsl.module
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
 
-internal val desktopDataModule = module {
+val desktopDataModule = module {
     single<LmuRepository> {
         if (isWindows) LmuRepositoryImpl() else NoOpLmuRepository()
     }

@@ -4,17 +4,12 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
 }
 
 dependencies {
     implementation(projects.app.shared)
-    implementation(projects.core.domain)
-    implementation(libs.androidx.datastore.core)
-    implementation(libs.kotlinx.serialization.protobuf)
-    implementation(libs.jna)
-    implementation(libs.jna.platform)
+    implementation(projects.core.data)
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
@@ -26,8 +21,6 @@ dependencies {
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutinesTest)
-    testImplementation(libs.jna)
-    testImplementation(libs.jna.platform)
     testImplementation(libs.compose.uiTest)
     testImplementation(libs.compose.uiTestJunit4)
     testImplementation(compose.desktop.currentOs)

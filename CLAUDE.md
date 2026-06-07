@@ -32,24 +32,40 @@ KoDriver/
 ```
 commonMain/domain/
   model/          LmuTelemetryData, EngineData, FuelData, TimingData, TyreData,
-                  VehicleData, InputsData, WheelIndex
-  repository/     LmuRepository, ReadoutPreferencesRepository, SimulatorPreferencesRepository（interface）
+                  VehicleData, InputsData, ProximityData, ReadoutItemKey
+  repository/     LmuRepository, ProximityRepository, ProximityThresholdsRepository,
+                  ReadoutPreferencesRepository, SimulatorPreferencesRepository（interface）
   usecase/        ObserveLmuUseCase, DisconnectLmuUseCase,
                   ObserveReadoutEnabledStatesUseCase, SaveReadoutEnabledStateUseCase,
-                  ObserveSelectedSimulatorUseCase, SaveSelectedSimulatorUseCase
+                  ObserveReadoutOrderUseCase, SaveReadoutOrderUseCase,
+                  ObserveSelectedSimulatorUseCase, SaveSelectedSimulatorUseCase,
+                  ObserveProximityUseCase,
+                  ObserveLateralThresholdUseCase, SaveLateralThresholdUseCase,
+                  ObserveLongitudinalThresholdUseCase, SaveLongitudinalThresholdUseCase
+  engine/         TextToSpeechEngine（interface）
 ```
 
 ### `core:data` モジュール（JVM 専用 / `kotlinJvm` プラグイン）
 
 ```
 src/main/kotlin/kurou/kodriver/data/
+  DesktopDataModule.kt        Koin モジュール定義（composition root から参照）
+  ProximityThresholdsRepository.kt  ファクトリ関数
+  ReadoutPreferencesRepository.kt   ファクトリ関数
+  SimulatorPreferencesRepository.kt ファクトリ関数
   datasource/     SharedMemoryReader（JNA で Windows File Mapping を open/read/close）
+                  MemoryReader（インターフェース）
                   Kernel32Ext（JNA インターフェース）
-                  ReadoutPreferencesSerializer, SimulatorPreferencesSerializer（DataStore ProtoBuf）
-                  ReadoutPreferencesDataStoreFactory, SimulatorPreferencesDataStoreFactory
+                  ReadoutPreferencesSerializer, SimulatorPreferencesSerializer,
+                  ProximityThresholdsSerializer（DataStore ProtoBuf）
+                  ReadoutPreferencesDataStoreFactory, SimulatorPreferencesDataStoreFactory,
+                  ProximityThresholdsDataStoreFactory
   mapper/         LmuMapper（LMU バイナリ → LmuTelemetryData）
-  model/          ReadoutPreferences, SimulatorPreferences（ProtoBuf モデル）
-  repository/     LmuRepositoryImpl, ReadoutPreferencesRepositoryImpl, SimulatorPreferencesRepositoryImpl
+  model/          ReadoutPreferences, SimulatorPreferences,
+                  ProximityThresholdsPreferences（ProtoBuf モデル）
+  repository/     LmuRepositoryImpl, ReadoutPreferencesRepositoryImpl,
+                  SimulatorPreferencesRepositoryImpl, ProximityThresholdsRepositoryImpl,
+                  SharedMemoryProximityRepository
 
 src/test/kotlin/   ← kotlinJvm プラグイン時のテストパス（kotlinMultiplatform の jvmTest とは異なる）
 ```
