@@ -20,5 +20,7 @@ fun androidDataModule(context: Context) = module {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
     }
     single<ProximityRepository> { EmptyProximityRepository() }
-    single<ProximityThresholdsRepository> { EmptyProximityThresholdsRepository() }
+    single<ProximityThresholdsRepository> {
+        createProximityThresholdsRepository(context.filesDir.absolutePath)
+    }
 }
