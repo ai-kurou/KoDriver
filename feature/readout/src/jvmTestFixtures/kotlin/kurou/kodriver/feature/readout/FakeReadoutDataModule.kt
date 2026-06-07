@@ -23,7 +23,7 @@ private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepos
 
 private class FakeProximityThresholdsRepositoryImpl : ProximityThresholdsRepository {
     private val lateral = MutableStateFlow(2.0)
-    private val longitudinal = MutableStateFlow(10.0)
+    private val longitudinal = MutableStateFlow(1.0)
     override fun observeLateralThresholdMeters(): Flow<Double> = lateral
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinal
     override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.value = meters }
