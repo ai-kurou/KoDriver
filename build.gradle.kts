@@ -81,8 +81,9 @@ moduleGraphAssert {
         ":app:shared -X> :app:.*",
         ":app:shared -X> :core:.*",
         ":app:shared -X> :server",
-        // feature（上位 app への参照禁止）
+        // feature（上位 app・他 feature への参照禁止）
         ":feature:.* -X> :app:.*",
+        ":feature:.* -X> :feature:.*",
         // core（上位層への参照禁止・逆方向依存禁止）
         ":core:domain -X> :core:data",
         ":core:.* -X> :feature:.*",
