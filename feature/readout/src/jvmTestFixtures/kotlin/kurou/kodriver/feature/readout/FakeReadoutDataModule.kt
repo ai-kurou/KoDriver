@@ -26,8 +26,8 @@ private class FakeProximityThresholdsRepositoryImpl : ProximityThresholdsReposit
     private val longitudinal = MutableStateFlow(1.0)
     override fun observeLateralThresholdMeters(): Flow<Double> = lateral
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinal
-    override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.value = meters }
-    override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.value = meters }
+    override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.update { meters } }
+    override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.update { meters } }
 }
 
 private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepository {
