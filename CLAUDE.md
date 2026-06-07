@@ -45,11 +45,11 @@ commonMain/domain/
   engine/         TextToSpeechEngine（interface）
 ```
 
-### `core:data` モジュール（JVM 専用 / `kotlinJvm` プラグイン）
+### `core:data` モジュール（KMP: JVM / Android）
 
 ```
-src/main/kotlin/kurou/kodriver/data/
-  DesktopDataModule.kt        Koin モジュール定義（composition root から参照）
+src/jvmMain/kotlin/kurou/kodriver/data/
+  DesktopDataModule.kt        Koin モジュール定義（desktopApp composition root から参照）
   ProximityThresholdsRepository.kt  ファクトリ関数
   ReadoutPreferencesRepository.kt   ファクトリ関数
   SimulatorPreferencesRepository.kt ファクトリ関数
@@ -67,7 +67,15 @@ src/main/kotlin/kurou/kodriver/data/
                   SimulatorPreferencesRepositoryImpl, ProximityThresholdsRepositoryImpl,
                   SharedMemoryProximityRepository
 
-src/test/kotlin/   ← kotlinJvm プラグイン時のテストパス（kotlinMultiplatform の jvmTest とは異なる）
+src/androidMain/kotlin/kurou/kodriver/data/
+  AndroidDataModule.kt        Koin モジュール定義（androidApp composition root から参照）
+  AndroidReadoutPreferencesRepository.kt   （Preferences DataStore 実装）
+  AndroidSimulatorPreferencesRepository.kt （Preferences DataStore 実装）
+  EmptyProximityRepository.kt              （Android では LMU 非対応のため空実装）
+  EmptyProximityThresholdsRepository.kt    （Android では閾値永続化非対応のため空実装）
+
+src/jvmTest/kotlin/    JVM ユニットテスト
+src/androidUnitTest/kotlin/  Android ユニットテスト
 ```
 
 ### `core:designsystem` モジュール（KMP）
@@ -225,7 +233,7 @@ detekt の主な閾値（`config/detekt/detekt.yml`）:
 - Compose の状態管理は `StateFlow` + `ViewModel`（`ReadoutViewModel` を参照）。
 - `LmuRepository` は `Flow<LmuTelemetryData>` を emit する cold flow として実装する。ポーリング間隔デフォルトは 16ms（≈60fps）。
 - 共有メモリのパースロジックは `internal object XxxMapper` に隔離し、ドメイン層には持ち込まない。
-- `core:data` は `kotlinJvm` プラグインを使用するため、ソースパスは `src/main/kotlin`（`src/jvmMain/kotlin` は `kotlinMultiplatform` 専用）。
+- `core:data` は `kotlinMultiplatform` プラグイン（JVM + Android ターゲット）を使用する。JVM 実装は `src/jvmMain/kotlin`、Android 実装は `src/androidMain/kotlin` に置く。
 - `@Preview` 関数は実体の `@Composable` と同一ファイルに記述する。`@Preview` のインポートは `androidx.compose.ui.tooling.preview.Preview` を使う（`org.jetbrains.compose.ui.tooling.preview.Preview` は commonMain で解決されないため使用不可）。
 - DataStore のキーには **ASCII の内部 ID を使うこと**。日本語などのマルチバイト文字をキーに使うと、表示名の変更でデータが孤立する。内部 ID（例: `"vehicle_approach"`）と表示名（例: `"車両接近"`）は `XxxViewModel` 内の `xxxDisplayNames: Map<String, String>` で分離する。
 
