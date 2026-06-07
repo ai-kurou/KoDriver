@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -78,4 +79,6 @@ compose.resources {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+    testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(libs.koin.core)
 }
