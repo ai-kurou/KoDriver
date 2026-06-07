@@ -42,7 +42,7 @@ internal fun VehicleApproachDetailPaneContent(
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun VehicleApproachDetailPanePreview() {
     VehicleApproachDetailPaneContent(uiState = VehicleApproachUiState())

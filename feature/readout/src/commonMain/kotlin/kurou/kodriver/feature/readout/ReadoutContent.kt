@@ -113,7 +113,7 @@ internal fun ReadoutContent(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ReadoutContentPreview() {
     ReadoutContent()
