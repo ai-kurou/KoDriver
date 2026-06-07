@@ -56,36 +56,39 @@ moduleGraphAssert {
     maxHeight = 3
     configurations = setOf("api", "implementation", "testFixturesApi", "testFixturesImplementation")
     allowed = arrayOf(
+        // app エントリーポイント → app:shared
         ":app:androidApp -> :app:shared",
-        ":app:androidApp -> :core:domain",
         ":app:desktopApp -> :app:shared",
-        ":app:desktopApp -> :core:domain",
         ":app:webApp -> :app:shared",
-        ":app:shared -> :feature:narrator",
-        ":app:shared -> :feature:other",
-        ":app:shared -> :feature:readout",
-        ":app:shared -> :feature:readout-vehicle-approach",
-        ":feature:narrator -> :core:domain",
-        ":feature:other -> :core:domain",
-        ":feature:readout -> :core:domain",
-        ":feature:readout-vehicle-approach -> :core:domain",
-        ":server -> :core:domain",
+        // app エントリーポイント → core:domain（DI 設定のための直接参照）
+        ":app:androidApp -> :core:domain",
+        ":app:desktopApp -> :core:domain",
+        // app:shared → feature
+        ":app:shared -> :feature:.*",
+        // feature → core:domain
+        ":feature:.* -> :core:domain",
+        // インフラ・サーバー → core:domain
         ":core:data -> :core:domain",
+        ":server -> :core:domain",
     )
     restricted = arrayOf(
-        ":core:.* -X> :app:.*",
-        ":core:.* -X> :feature:.*",
-        ":core:.* -X> :server",
-        ":core:domain -X> :core:data",
-        ":feature:.* -X> :app:.*",
+        // app エントリーポイント（feature・data 層への直接参照禁止）
         ":app:androidApp -X> :feature:.*",
+        ":app:androidApp -X> :core:data",
         ":app:desktopApp -X> :feature:.*",
         ":app:desktopApp -X> :core:data",
+        // app:shared（上位 app・core・server への参照禁止）
+        ":app:shared -X> :app:.*",
         ":app:shared -X> :core:.*",
-        ":app:shared -X> :app:androidApp",
-        ":app:shared -X> :app:desktopApp",
-        ":app:shared -X> :app:webApp",
         ":app:shared -X> :server",
+        // feature（上位 app への参照禁止）
+        ":feature:.* -X> :app:.*",
+        // core（上位層への参照禁止・逆方向依存禁止）
+        ":core:domain -X> :core:data",
+        ":core:.* -X> :feature:.*",
+        ":core:.* -X> :app:.*",
+        ":core:.* -X> :server",
+        // server（app・feature への参照禁止）
         ":server -X> :app:.*",
         ":server -X> :feature:.*",
     )
