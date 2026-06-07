@@ -1,4 +1,4 @@
 digraph G {
   ":app:androidApp" -> ":app:shared"
-  ":app:androidApp" -> ":core:domain"
+  ":app:androidApp" -> ":core:data"
 }
