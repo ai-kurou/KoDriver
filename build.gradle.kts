@@ -73,6 +73,7 @@ moduleGraphAssert {
         ":core:domain -X> :core:data",
         ":feature:.* -X> :app:.*",
         ":app:androidApp -X> :feature:.*",
+        ":app:androidApp -X> :core:data",
         ":app:desktopApp -X> :feature:.*",
         ":app:desktopApp -X> :core:data",
         ":app:shared -X> :core:.*",
