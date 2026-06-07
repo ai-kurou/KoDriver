@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
@@ -11,12 +12,22 @@ import org.koin.dsl.module
 val fakeReadoutDataModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
+    single<ProximityThresholdsRepository> { FakeProximityThresholdsRepositoryImpl() }
 }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
     private val flow = MutableStateFlow<String?>(null)
     override fun selectedSimulator(): Flow<String?> = flow
     override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
+}
+
+private class FakeProximityThresholdsRepositoryImpl : ProximityThresholdsRepository {
+    private val lateral = MutableStateFlow(2.0)
+    private val longitudinal = MutableStateFlow(10.0)
+    override fun observeLateralThresholdMeters(): Flow<Double> = lateral
+    override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinal
+    override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.value = meters }
+    override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.value = meters }
 }
 
 private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepository {
