@@ -12,104 +12,92 @@
 <!-- :app:androidApp -->
 <g id="node1" class="node">
 <title>:app:androidApp</title>
-<ellipse fill="none" stroke="black" cx="518.69" cy="-162" rx="87.18" ry="18"/>
-<text text-anchor="middle" x="518.69" y="-158.3" font-family="Times,serif" font-size="14.00">:app:androidApp</text>
+<ellipse fill="none" stroke="black" cx="168.04" cy="-162" rx="87.18" ry="18"/>
+<text text-anchor="middle" x="168.04" y="-158.3" font-family="Times,serif" font-size="14.00">:app:androidApp</text>
 </g>
 <!-- :app:shared -->
 <g id="node2" class="node">
 <title>:app:shared</title>
-<ellipse fill="none" stroke="black" cx="518.69" cy="-90" rx="65.79" ry="18"/>
-<text text-anchor="middle" x="518.69" y="-86.3" font-family="Times,serif" font-size="14.00">:app:shared</text>
+<ellipse fill="none" stroke="black" cx="361.04" cy="-90" rx="65.79" ry="18"/>
+<text text-anchor="middle" x="361.04" y="-86.3" font-family="Times,serif" font-size="14.00">:app:shared</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:app:shared -->
 <g id="edge1" class="edge">
 <title>:app:androidApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M518.69,-143.7C518.69,-135.98 518.69,-126.71 518.69,-118.11"/>
-<polygon fill="black" stroke="black" points="522.19,-118.1 518.69,-108.1 515.19,-118.1 522.19,-118.1"/>
+<path fill="none" stroke="black" d="M209.45,-145.98C239.96,-134.92 281.53,-119.84 313.42,-108.27"/>
+<polygon fill="black" stroke="black" points="314.78,-111.5 322.98,-104.8 312.39,-104.92 314.78,-111.5"/>
 </g>
 <!-- :feature:narrator -->
 <g id="node4" class="node">
 <title>:feature:narrator</title>
-<ellipse fill="none" stroke="black" cx="801.69" cy="-18" rx="89.08" ry="18"/>
-<text text-anchor="middle" x="801.69" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:narrator</text>
+<ellipse fill="none" stroke="black" cx="89.04" cy="-18" rx="89.08" ry="18"/>
+<text text-anchor="middle" x="89.04" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:narrator</text>
 </g>
 <!-- :app:shared&#45;&gt;:feature:narrator -->
-<g id="edge5" class="edge">
+<g id="edge3" class="edge">
 <title>:app:shared&#45;&gt;:feature:narrator</title>
-<path fill="none" stroke="black" d="M565.73,-77.36C612.84,-65.71 685.64,-47.7 737.91,-34.77"/>
-<polygon fill="black" stroke="black" points="738.89,-38.14 747.75,-32.34 737.21,-31.34 738.89,-38.14"/>
-</g>
-<!-- :feature:readout -->
-<g id="node5" class="node">
-<title>:feature:readout</title>
-<ellipse fill="none" stroke="black" cx="608.69" cy="-18" rx="86.38" ry="18"/>
-<text text-anchor="middle" x="608.69" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:readout</text>
-</g>
-<!-- :app:shared&#45;&gt;:feature:readout -->
-<g id="edge7" class="edge">
-<title>:app:shared&#45;&gt;:feature:readout</title>
-<path fill="none" stroke="black" d="M539.56,-72.76C551.32,-63.62 566.19,-52.05 579.13,-41.99"/>
-<polygon fill="black" stroke="black" points="581.55,-44.54 587.3,-35.63 577.26,-39.01 581.55,-44.54"/>
+<path fill="none" stroke="black" d="M314.9,-77.13C270,-65.57 201.44,-47.93 151.64,-35.11"/>
+<polygon fill="black" stroke="black" points="152.5,-31.72 141.94,-32.61 150.75,-38.5 152.5,-31.72"/>
 </g>
 <!-- :feature:other -->
-<g id="node6" class="node">
+<g id="node5" class="node">
 <title>:feature:other</title>
-<ellipse fill="none" stroke="black" cx="428.69" cy="-18" rx="75.29" ry="18"/>
-<text text-anchor="middle" x="428.69" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:other</text>
+<ellipse fill="none" stroke="black" cx="271.04" cy="-18" rx="75.29" ry="18"/>
+<text text-anchor="middle" x="271.04" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:other</text>
 </g>
 <!-- :app:shared&#45;&gt;:feature:other -->
-<g id="edge6" class="edge">
+<g id="edge4" class="edge">
 <title>:app:shared&#45;&gt;:feature:other</title>
-<path fill="none" stroke="black" d="M497.81,-72.76C485.97,-63.55 470.96,-51.88 457.96,-41.77"/>
-<polygon fill="black" stroke="black" points="459.8,-38.77 449.76,-35.39 455.5,-44.29 459.8,-38.77"/>
+<path fill="none" stroke="black" d="M340.17,-72.76C328.33,-63.55 313.32,-51.88 300.32,-41.77"/>
+<polygon fill="black" stroke="black" points="302.16,-38.77 292.11,-35.39 297.86,-44.29 302.16,-38.77"/>
+</g>
+<!-- :feature:readout -->
+<g id="node6" class="node">
+<title>:feature:readout</title>
+<ellipse fill="none" stroke="black" cx="451.04" cy="-18" rx="86.38" ry="18"/>
+<text text-anchor="middle" x="451.04" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:readout</text>
+</g>
+<!-- :app:shared&#45;&gt;:feature:readout -->
+<g id="edge5" class="edge">
+<title>:app:shared&#45;&gt;:feature:readout</title>
+<path fill="none" stroke="black" d="M381.92,-72.76C393.67,-63.62 408.55,-52.05 421.49,-41.99"/>
+<polygon fill="black" stroke="black" points="423.91,-44.54 429.66,-35.63 419.61,-39.01 423.91,-44.54"/>
 </g>
 <!-- :feature:readout&#45;vehicle&#45;approach -->
 <g id="node7" class="node">
 <title>:feature:readout&#45;vehicle&#45;approach</title>
-<ellipse fill="none" stroke="black" cx="167.69" cy="-18" rx="167.87" ry="18"/>
-<text text-anchor="middle" x="167.69" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:readout&#45;vehicle&#45;approach</text>
+<ellipse fill="none" stroke="black" cx="723.04" cy="-18" rx="167.87" ry="18"/>
+<text text-anchor="middle" x="723.04" y="-14.3" font-family="Times,serif" font-size="14.00">:feature:readout&#45;vehicle&#45;approach</text>
 </g>
 <!-- :app:shared&#45;&gt;:feature:readout&#45;vehicle&#45;approach -->
-<g id="edge8" class="edge">
+<g id="edge6" class="edge">
 <title>:app:shared&#45;&gt;:feature:readout&#45;vehicle&#45;approach</title>
-<path fill="none" stroke="black" d="M467.27,-78.75C411.21,-67.57 320.58,-49.49 253.66,-36.15"/>
-<polygon fill="black" stroke="black" points="254.04,-32.65 243.55,-34.13 252.67,-39.52 254.04,-32.65"/>
+<path fill="none" stroke="black" d="M413.29,-78.9C471.33,-67.67 565.99,-49.37 635.41,-35.94"/>
+<polygon fill="black" stroke="black" points="636.31,-39.34 645.46,-34 634.98,-32.46 636.31,-39.34"/>
 </g>
 <!-- :app:desktopApp -->
 <g id="node3" class="node">
 <title>:app:desktopApp</title>
-<ellipse fill="none" stroke="black" cx="711.69" cy="-162" rx="88.28" ry="18"/>
-<text text-anchor="middle" x="711.69" y="-158.3" font-family="Times,serif" font-size="14.00">:app:desktopApp</text>
+<ellipse fill="none" stroke="black" cx="361.04" cy="-162" rx="88.28" ry="18"/>
+<text text-anchor="middle" x="361.04" y="-158.3" font-family="Times,serif" font-size="14.00">:app:desktopApp</text>
 </g>
 <!-- :app:desktopApp&#45;&gt;:app:shared -->
 <g id="edge2" class="edge">
 <title>:app:desktopApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M670.28,-145.98C639.77,-134.92 598.2,-119.84 566.31,-108.27"/>
-<polygon fill="black" stroke="black" points="567.34,-104.92 556.74,-104.8 564.95,-111.5 567.34,-104.92"/>
-</g>
-<!-- :app:desktopApp&#45;&gt;:feature:narrator -->
-<g id="edge3" class="edge">
-<title>:app:desktopApp&#45;&gt;:feature:narrator</title>
-<path fill="none" stroke="black" d="M722.54,-143.87C738.15,-119.24 767.06,-73.64 785.28,-44.88"/>
-<polygon fill="black" stroke="black" points="788.39,-46.51 790.79,-36.19 782.48,-42.76 788.39,-46.51"/>
-</g>
-<!-- :app:desktopApp&#45;&gt;:feature:readout -->
-<g id="edge4" class="edge">
-<title>:app:desktopApp&#45;&gt;:feature:readout</title>
-<path fill="none" stroke="black" d="M699.47,-144.15C681.5,-119.39 647.84,-72.97 626.93,-44.16"/>
-<polygon fill="black" stroke="black" points="629.59,-41.86 620.89,-35.82 623.93,-45.97 629.59,-41.86"/>
+<path fill="none" stroke="black" d="M361.04,-143.7C361.04,-135.98 361.04,-126.71 361.04,-118.11"/>
+<polygon fill="black" stroke="black" points="364.54,-118.1 361.04,-108.1 357.54,-118.1 364.54,-118.1"/>
 </g>
 <!-- :app:webApp -->
 <g id="node8" class="node">
 <title>:app:webApp</title>
-<ellipse fill="none" stroke="black" cx="342.69" cy="-162" rx="70.69" ry="18"/>
-<text text-anchor="middle" x="342.69" y="-158.3" font-family="Times,serif" font-size="14.00">:app:webApp</text>
+<ellipse fill="none" stroke="black" cx="538.04" cy="-162" rx="70.69" ry="18"/>
+<text text-anchor="middle" x="538.04" y="-158.3" font-family="Times,serif" font-size="14.00">:app:webApp</text>
 </g>
 <!-- :app:webApp&#45;&gt;:app:shared -->
-<g id="edge9" class="edge">
+<g id="edge7" class="edge">
 <title>:app:webApp&#45;&gt;:app:shared</title>
-<path fill="none" stroke="black" d="M379.15,-146.5C406.47,-135.63 444.02,-120.7 473.29,-109.06"/>
-<polygon fill="black" stroke="black" points="474.87,-112.19 482.87,-105.25 472.28,-105.69 474.87,-112.19"/>
+<path fill="none" stroke="black" d="M501.37,-146.5C473.8,-135.59 435.88,-120.6 406.41,-108.94"/>
+<polygon fill="black" stroke="black" points="407.35,-105.55 396.76,-105.13 404.77,-112.06 407.35,-105.55"/>
 </g>
 </g>
 </svg>

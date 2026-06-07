@@ -1,8 +1,6 @@
 digraph G {
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
-  ":app:desktopApp" -> ":feature:narrator"
-  ":app:desktopApp" -> ":feature:readout"
   ":app:shared" -> ":feature:narrator"
   ":app:shared" -> ":feature:other"
   ":app:shared" -> ":feature:readout"

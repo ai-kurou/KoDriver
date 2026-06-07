@@ -2,8 +2,6 @@ digraph G {
   ":server" -> ":core:domain"
   ":app:androidApp" -> ":core:domain"
   ":app:desktopApp" -> ":core:domain"
-  ":app:desktopApp" -> ":feature:narrator"
-  ":app:desktopApp" -> ":feature:readout"
   ":core:data" -> ":core:domain"
   ":feature:narrator" -> ":core:domain"
   ":feature:other" -> ":core:domain"
