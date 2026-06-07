@@ -54,6 +54,7 @@ subprojects {
 
 moduleGraphAssert {
     maxHeight = 3
+    configurations = setOf("api", "implementation", "testFixturesApi", "testFixturesImplementation")
     allowed = arrayOf(
         ":app:androidApp -> :app:shared",
         ":app:androidApp -> :core:domain",
