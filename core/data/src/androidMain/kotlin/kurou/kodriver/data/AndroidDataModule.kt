@@ -12,6 +12,7 @@ private val Context.simulatorDataStore by preferencesDataStore("simulator_prefer
 private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
 
 fun androidDataModule(context: Context) = module {
+    single<Context> { context }
     single<SimulatorPreferencesRepository> {
         AndroidSimulatorPreferencesRepository(context.simulatorDataStore)
     }
