@@ -13,7 +13,11 @@ class ProximityThresholdsSerializerTest {
 
     @Test
     fun `デフォルト値は縦方向10m・横方向2m`() {
-        assertEquals(ProximityThresholdsPreferences(longitudinalThresholdMeters = 10.0, lateralThresholdMeters = 2.0), ProximityThresholdsSerializer.defaultValue)
+        val expected = ProximityThresholdsPreferences(
+            longitudinalThresholdMeters = 10.0,
+            lateralThresholdMeters = 2.0,
+        )
+        assertEquals(expected, ProximityThresholdsSerializer.defaultValue)
     }
 
     @Test
