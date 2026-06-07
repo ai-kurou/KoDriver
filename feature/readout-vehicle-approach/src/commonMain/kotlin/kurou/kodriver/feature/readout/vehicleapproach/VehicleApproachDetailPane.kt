@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.DetailPaneTitle
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -38,11 +39,12 @@ internal fun VehicleApproachDetailPaneContent(
     Column(modifier = modifier.fillMaxSize()) {
         DetailPaneTitle(title = "車両接近")
         DetailPaneDescription(text = "周囲の車両が接近した際に音声でお知らせします。")
+        DetailPaneSubtitle(text = "閾値設定")
     }
 }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun VehicleApproachDetailPanePreview() {
     VehicleApproachDetailPaneContent(uiState = VehicleApproachUiState())

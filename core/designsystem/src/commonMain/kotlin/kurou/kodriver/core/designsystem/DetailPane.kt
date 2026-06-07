@@ -31,3 +31,15 @@ fun DetailPaneDescription(
         modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
     )
 }
+
+@Composable
+fun DetailPaneSubtitle(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+    )
+}
