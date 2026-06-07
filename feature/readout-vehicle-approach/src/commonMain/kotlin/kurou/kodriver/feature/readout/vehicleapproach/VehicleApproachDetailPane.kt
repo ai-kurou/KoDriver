@@ -2,19 +2,15 @@ package kurou.kodriver.feature.readout.vehicleapproach
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.DetailPaneTitle
+import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
@@ -64,26 +60,6 @@ internal fun VehicleApproachDetailPaneContent(
             value = uiState.lateralThresholdMeters.toFloat(),
             valueRange = 0.5f..5f,
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
-        )
-    }
-}
-
-@Composable
-private fun ThresholdSlider(
-    label: String,
-    value: Float,
-    valueRange: ClosedFloatingPointRange<Float>,
-    onValueChangeFinished: (Float) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var sliderValue = value
-    Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(text = label)
-        Slider(
-            value = sliderValue,
-            onValueChange = { sliderValue = it },
-            valueRange = valueRange,
-            onValueChangeFinished = { onValueChangeFinished(sliderValue) },
         )
     }
 }
