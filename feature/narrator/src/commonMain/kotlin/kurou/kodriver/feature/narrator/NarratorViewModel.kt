@@ -48,10 +48,13 @@ class NarratorViewModel(
             val newRightVehicle = (current.sideBySideRightVehicleIds - prevRightIds).isNotEmpty()
 
             when {
+                // 両方同時の場合は読み上げないで一旦様子見る
+                /*
                 newLeftVehicle && newRightVehicle -> {
                     ttsEngine.speak("カーレフト")
                     ttsEngine.speak("カーライト")
                 }
+                 */
                 newLeftVehicle -> ttsEngine.speak("カーレフト")
                 newRightVehicle -> ttsEngine.speak("カーライト")
             }
