@@ -60,9 +60,10 @@ moduleGraphAssert {
         ":app:androidApp -> :app:shared",
         ":app:desktopApp -> :app:shared",
         ":app:webApp -> :app:shared",
-        // app エントリーポイント → core:domain（DI 設定のための直接参照）
+        // app エントリーポイント → core:domain（Android DI 設定のための直接参照）
         ":app:androidApp -> :core:domain",
-        ":app:desktopApp -> :core:domain",
+        // app:desktopApp → core:data（composition root で DI バインドするための参照）
+        ":app:desktopApp -> :core:data",
         // app:shared → feature
         ":app:shared -> :feature:.*",
         // feature → core:domain
@@ -74,11 +75,10 @@ moduleGraphAssert {
         ":server -> :core:domain",
     )
     restricted = arrayOf(
-        // app エントリーポイント（feature・data 層への直接参照禁止）
+        // app エントリーポイント（feature 層への直接参照禁止）
         ":app:androidApp -X> :feature:.*",
         ":app:androidApp -X> :core:data",
         ":app:desktopApp -X> :feature:.*",
-        ":app:desktopApp -X> :core:data",
         // app:shared（上位 app・core・server への参照禁止）
         ":app:shared -X> :app:.*",
         ":app:shared -X> :core:.*",
