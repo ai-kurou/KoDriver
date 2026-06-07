@@ -67,6 +67,8 @@ moduleGraphAssert {
         ":app:shared -> :feature:.*",
         // feature → core:domain
         ":feature:.* -> :core:domain",
+        // feature → core:designsystem（共通 UI コンポーネントの利用）
+        ":feature:.* -> :core:designsystem",
         // インフラ・サーバー → core:domain
         ":core:data -> :core:domain",
         ":server -> :core:domain",
