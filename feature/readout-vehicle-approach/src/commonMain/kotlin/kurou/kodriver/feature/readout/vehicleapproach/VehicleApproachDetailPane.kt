@@ -12,7 +12,6 @@ import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.DetailPaneTitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.roundToInt
 
 @Composable
 fun VehicleApproachDetailPane(
@@ -50,15 +49,15 @@ internal fun VehicleApproachDetailPaneContent(
         DetailPaneDescription(text = "周囲の車両が接近した際に音声でお知らせします。")
         DetailPaneSubtitle(text = "閾値設定")
         ThresholdSlider(
-            label = "縦方向: ${uiState.longitudinalThresholdMeters.roundToInt()} m",
             value = uiState.longitudinalThresholdMeters.toFloat(),
             valueRange = 1f..10f,
+            labelFormatter = { "縦方向: ${"%.1f".format(it)} m" },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
         )
         ThresholdSlider(
-            label = "横方向: ${"%.1f".format(uiState.lateralThresholdMeters)} m",
             value = uiState.lateralThresholdMeters.toFloat(),
             valueRange = 0.5f..5f,
+            labelFormatter = { "横方向: ${"%.1f".format(it)} m" },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
         )
     }

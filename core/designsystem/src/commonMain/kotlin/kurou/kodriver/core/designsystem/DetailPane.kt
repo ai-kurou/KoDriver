@@ -53,19 +53,21 @@ fun DetailPaneSubtitle(
 
 @Composable
 fun ThresholdSlider(
-    label: String,
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
+    labelFormatter: (Float) -> String,
     onValueChangeFinished: (Float) -> Unit,
     modifier: Modifier = Modifier,
+    steps: Int = ((valueRange.endInclusive - valueRange.start) / 0.1f).toInt() - 1,
 ) {
     var sliderValue by remember(value) { mutableStateOf(value) }
     Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(text = label)
+        Text(text = labelFormatter(sliderValue))
         Slider(
             value = sliderValue,
             onValueChange = { sliderValue = it },
             valueRange = valueRange,
+            steps = steps,
             onValueChangeFinished = { onValueChangeFinished(sliderValue) },
         )
     }
