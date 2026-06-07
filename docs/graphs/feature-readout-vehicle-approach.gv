@@ -1,5 +1,4 @@
 digraph G {
   ":app:shared" -> ":feature:readout-vehicle-approach"
-  ":app:shared" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:domain"
 }
