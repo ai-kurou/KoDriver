@@ -21,7 +21,7 @@ val desktopDataModule = module {
         if (isWindows) LmuRepositoryImpl() else NoOpLmuRepository()
     }
     single<ProximityRepository> {
-        if (isWindows) SharedMemoryProximityRepository() else NoOpProximityRepository()
+        if (isWindows) SharedMemoryProximityRepository(thresholdsRepository = get()) else NoOpProximityRepository()
     }
     single<SimulatorPreferencesRepository> {
         createSimulatorPreferencesRepository(directory = kodriverDirectory)
