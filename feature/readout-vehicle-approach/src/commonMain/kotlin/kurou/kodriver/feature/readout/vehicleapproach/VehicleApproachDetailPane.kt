@@ -59,13 +59,13 @@ internal fun VehicleApproachDetailPaneContent(
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_threshold_subtitle))
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
-            valueRange = 0.1f..2f,
+            valueRange = 0.1f..5f,
             labelFormatter = { longitudinalLabel.format(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
         )
         ThresholdSlider(
             value = uiState.lateralThresholdMeters.toFloat(),
-            valueRange = 0.5f..5f,
+            valueRange = 2f..8f,
             labelFormatter = { lateralLabel.format(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
         )
