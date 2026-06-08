@@ -26,6 +26,7 @@ robolectric = "4.15.1"
 modulesGraphAssert = "2.9.1"
 logback = "1.5.32"
 material3 = "1.11.0-alpha07"
+compose-material-icons-extended = "1.7.3"
 reorderable = "3.1.0"
 
 [libraries]
@@ -72,6 +73,7 @@ detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-form
 roborazzi-composeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons-extended" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

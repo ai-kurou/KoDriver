@@ -2,9 +2,9 @@ package kurou.kodriver.feature.narrator
 
 import android.content.Context
 import android.media.MediaPlayer
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
     private var currentPlayer: MediaPlayer? = null

@@ -34,6 +34,10 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("readout_item_0").performClick()
         composeTestRule.waitForIdle()
 
+        // はてなマークをタップ
+        composeTestRule.onNodeWithTag("vehicle_approach_help_button").performClick()
+        composeTestRule.waitForIdle()
+
         // その他タブをタップ
         composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()

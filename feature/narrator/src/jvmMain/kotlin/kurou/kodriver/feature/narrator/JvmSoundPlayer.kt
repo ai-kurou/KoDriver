@@ -1,10 +1,10 @@
 package kurou.kodriver.feature.narrator
 
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
-import kotlinx.coroutines.suspendCancellableCoroutine
 
 class JvmSoundPlayer : SoundPlayer {
     private var currentClip: javax.sound.sampled.Clip? = null
