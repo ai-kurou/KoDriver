@@ -64,9 +64,15 @@ fun AppScreen(
         )
     },
 ) {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
-
     NarratorEffect()
+    AppScreenContent(readoutContent = readoutContent)
+}
+
+@Composable
+internal fun AppScreenContent(
+    readoutContent: @Composable () -> Unit = {},
+) {
+    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
     KoDriverTheme {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -114,6 +120,6 @@ fun AppScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun AppScreenPreview() {
-    AppScreen()
+private fun AppScreenContentPreview() {
+    AppScreenContent()
 }
