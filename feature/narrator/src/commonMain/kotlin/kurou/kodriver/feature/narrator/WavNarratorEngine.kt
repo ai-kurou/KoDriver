@@ -47,7 +47,6 @@ internal class WavNarratorEngine(
         scope.launch {
             noiseSound?.let { soundPlayer.play(it) }
             soundPlayer.play(mainSound)
-            noiseSound?.let { soundPlayer.play(it) }
         }
     }
 
