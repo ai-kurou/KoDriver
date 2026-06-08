@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.narrator
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,12 +31,16 @@ internal class WavNarratorEngine(
             textToFile.forEach { (text, path) ->
                 try {
                     loaded[text] = Res.readBytes(path)
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (_: Exception) {
                 }
             }
             sounds = loaded
             try {
                 noiseSound = Res.readBytes("files/noise.wav")
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: Exception) {
             }
         }
