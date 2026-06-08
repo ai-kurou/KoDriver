@@ -2,6 +2,11 @@ package kurou.kodriver.feature.readout.vehicleapproach
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -56,7 +61,18 @@ internal fun VehicleApproachDetailPaneContent(
     Column(modifier = modifier.fillMaxSize()) {
         DetailPaneTitle(title = stringResource(Res.string.vehicle_approach_title))
         DetailPaneDescription(text = stringResource(Res.string.vehicle_approach_description))
-        DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_threshold_subtitle))
+        DetailPaneSubtitle(
+            text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
+            trailingContent = {
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector = Icons.Outlined.HelpOutline,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            },
+        )
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
             valueRange = 0.1f..5f,
