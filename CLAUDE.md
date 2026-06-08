@@ -17,7 +17,7 @@ KoDriver/
 ├── feature/
 │   ├── readout/                  アナウンス設定 UI（ReadoutViewModel, ReadoutContent, ReadoutListPane, ReadoutDetailPane）
 │   ├── readout-vehicle-approach/ 車両接近アナウンス詳細 UI（VehicleApproachDetailPane）
-│   ├── narrator/                 音声再生エンジン（WavNarratorEngine, SoundPlayer, NarratorViewModel）
+│   ├── narrator/                 音声再生エンジン（WavNarratorEngine, SoundPlayer, LmuNarratorViewModel）
 │   └── other/                   その他画面（未実装）
 ├── app/
 │   ├── shared/     Compose Multiplatform 共通 UI（ナビゲーション骨格）

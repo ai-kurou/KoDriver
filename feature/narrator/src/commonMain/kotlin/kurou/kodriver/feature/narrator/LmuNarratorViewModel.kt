@@ -19,7 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class NarratorViewModel(
+class LmuNarratorViewModel(
     observeProximityUseCase: ObserveProximityUseCase,
     observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
     observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
