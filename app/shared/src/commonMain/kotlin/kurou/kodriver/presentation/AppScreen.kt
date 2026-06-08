@@ -3,6 +3,7 @@ package kurou.kodriver.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -92,6 +93,7 @@ internal fun AppScreenContent(
                             Modifier
                                 .fillMaxWidth()
                                 .wrapContentWidth(Alignment.CenterHorizontally)
+                                .padding(4.dp)
                                 .widthIn(max = 240.dp)
                                 .testTag("nav_${dest.name.lowercase()}")
                         } else {
