@@ -1,8 +1,11 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -16,10 +19,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
@@ -77,12 +82,21 @@ fun AppScreen(
                 layoutType = layoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
+                        val itemModifier = if (layoutType == NavigationSuiteType.NavigationDrawer) {
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentWidth(Alignment.CenterHorizontally)
+                                .widthIn(max = 240.dp)
+                                .testTag("nav_${dest.name.lowercase()}")
+                        } else {
+                            Modifier.testTag("nav_${dest.name.lowercase()}")
+                        }
                         item(
                             icon = { Icon(dest.icon, contentDescription = dest.label()) },
                             label = { Text(dest.label()) },
                             selected = currentDestination == dest,
                             onClick = { currentDestination = dest },
-                            modifier = Modifier.testTag("nav_${dest.name.lowercase()}"),
+                            modifier = itemModifier,
                         )
                     }
                 },
