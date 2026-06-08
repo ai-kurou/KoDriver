@@ -25,3 +25,13 @@ internal val twoPaneDirective = PaneScaffoldDirective(
     defaultPanePreferredWidth = 360.dp,
     excludedBounds = emptyList(),
 )
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+internal val singlePaneDirective = PaneScaffoldDirective(
+    maxHorizontalPartitions = 1,
+    horizontalPartitionSpacerSize = 0.dp,
+    maxVerticalPartitions = 1,
+    verticalPartitionSpacerSize = 0.dp,
+    defaultPanePreferredWidth = 360.dp,
+    excludedBounds = emptyList(),
+)

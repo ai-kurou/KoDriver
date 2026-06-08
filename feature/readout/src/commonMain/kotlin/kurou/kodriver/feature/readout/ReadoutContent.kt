@@ -29,12 +29,19 @@ fun ReadoutContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     detailContent: @Composable (ReadoutItemType) -> Unit = {},
 ) {
+    val viewModel: ReadoutViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateInLifecycle()
     ReadoutContent(
+        uiState = uiState,
+        onSimulatorSelected = viewModel::onSimulatorSelected,
+        onMove = viewModel::moveItem,
+        onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
+        onItemSelected = viewModel::onItemSelected,
+        onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
         detailContent = detailContent,
-        viewModel = koinViewModel(),
     )
 }
 
@@ -42,13 +49,17 @@ fun ReadoutContent(
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 internal fun ReadoutContent(
+    uiState: ReadoutListUiState,
+    onSimulatorSelected: (String) -> Unit,
+    onMove: (Int, Int) -> Unit,
+    onReadoutEnabledChanged: (String, Boolean) -> Unit,
+    onItemSelected: (String) -> Unit,
+    onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     detailContent: @Composable (ReadoutItemType) -> Unit = {},
-    viewModel: ReadoutViewModel,
 ) {
-    val uiState by viewModel.uiState.collectAsStateInLifecycle()
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
         scaffoldDirective = if (uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1)
             scaffoldDirective.copy(maxHorizontalPartitions = 1)
@@ -66,7 +77,7 @@ internal fun ReadoutContent(
     val scope = rememberCoroutineScope()
     val navigateBack = {
         scope.launch { navigator.navigateBack() }
-        viewModel.clearSelectedItem()
+        onClearSelectedItem()
     }
     val paneExpansionState = rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
@@ -93,12 +104,10 @@ internal fun ReadoutContent(
         listPane = {
             ReadoutListPane(
                 uiState = uiState,
-                onSimulatorSelected = viewModel::onSimulatorSelected,
-                onMove = viewModel::moveItem,
-                onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
-                onItemClick = { item ->
-                    viewModel.onItemSelected(item)
-                },
+                onSimulatorSelected = onSimulatorSelected,
+                onMove = onMove,
+                onReadoutEnabledChanged = onReadoutEnabledChanged,
+                onItemClick = onItemSelected,
             )
         },
         detailPane = {
@@ -116,5 +125,16 @@ internal fun ReadoutContent(
 @Preview(showBackground = true)
 @Composable
 private fun ReadoutContentPreview() {
-    ReadoutContent()
+    ReadoutContent(
+        uiState = ReadoutListUiState(
+            simulators = listOf("lmu"),
+            selectedSimulator = "lmu",
+            items = listOf("vehicle_approach", "laps_remaining"),
+        ),
+        onSimulatorSelected = {},
+        onMove = { _, _ -> },
+        onReadoutEnabledChanged = { _, _ -> },
+        onItemSelected = {},
+        onClearSelectedItem = {},
+    )
 }

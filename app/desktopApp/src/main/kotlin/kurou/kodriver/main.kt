@@ -17,13 +17,13 @@ fun main() {
         modules(listOf(desktopDataModule) + appModules)
     }
     application {
-        val windowState = rememberWindowState(size = DpSize(1200.dp, 700.dp))
+        val windowState = rememberWindowState(size = DpSize(600.dp, 500.dp))
         Window(
             onCloseRequest = ::exitApplication,
             title = "KoDriver",
             state = windowState,
         ) {
-            SideEffect { window.minimumSize = Dimension(900, 600) }
+            SideEffect { window.minimumSize = Dimension(600, 500) }
             AppScreen()
         }
     }
