@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.narrator
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -17,6 +18,8 @@ internal class WavNarratorEngine(
     private var sounds: Map<String, ByteArray> = emptyMap()
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+    private var noiseSound: ByteArray? = null
+
     private val textToFile = mapOf(
         "カーレフト" to "files/car_left.wav",
         "カーライト" to "files/car_right.wav",
@@ -28,16 +31,28 @@ internal class WavNarratorEngine(
             textToFile.forEach { (text, path) ->
                 try {
                     loaded[text] = Res.readBytes(path)
+                } catch (e: CancellationException) {
+                    throw e
                 } catch (_: Exception) {
                 }
             }
             sounds = loaded
+            try {
+                noiseSound = Res.readBytes("files/noise.wav")
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+            }
         }
     }
 
     override fun speak(text: String) {
         if (soundPlayer.isPlaying) return
-        sounds[text]?.let { soundPlayer.play(it) }
+        val mainSound = sounds[text] ?: return
+        scope.launch {
+            noiseSound?.let { soundPlayer.play(it) }
+            soundPlayer.play(mainSound)
+        }
     }
 
     override fun stop() = Unit

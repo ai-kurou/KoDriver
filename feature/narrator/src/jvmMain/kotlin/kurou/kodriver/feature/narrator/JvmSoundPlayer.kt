@@ -3,6 +3,8 @@ package kurou.kodriver.feature.narrator
 import java.io.ByteArrayInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.LineEvent
+import kotlin.coroutines.resume
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class JvmSoundPlayer : SoundPlayer {
     private var currentClip: javax.sound.sampled.Clip? = null
@@ -10,7 +12,7 @@ class JvmSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean
         get() = currentClip?.isRunning == true
 
-    override fun play(bytes: ByteArray) {
+    override suspend fun play(bytes: ByteArray) = suspendCancellableCoroutine { cont ->
         try {
             val stream = AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes))
             val clip = AudioSystem.getClip()
@@ -19,11 +21,14 @@ class JvmSoundPlayer : SoundPlayer {
                 if (event.type == LineEvent.Type.STOP) {
                     clip.close()
                     currentClip = null
+                    if (cont.isActive) cont.resume(Unit)
                 }
             }
             currentClip = clip
             clip.start()
+            cont.invokeOnCancellation { clip.stop() }
         } catch (_: Exception) {
+            cont.resume(Unit)
         }
     }
 }
