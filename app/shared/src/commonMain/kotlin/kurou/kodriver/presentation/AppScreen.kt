@@ -8,7 +8,9 @@ import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
@@ -61,8 +64,17 @@ fun AppScreen(
     NarratorEffect()
 
     KoDriverTheme {
+        val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+        val layoutType = when {
+            windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ->
+                NavigationSuiteType.NavigationDrawer
+            windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
+                NavigationSuiteType.NavigationRail
+            else -> NavigationSuiteType.NavigationBar
+        }
         Box(modifier = Modifier.navigationBarsPadding()) {
             NavigationSuiteScaffold(
+                layoutType = layoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
                         item(
