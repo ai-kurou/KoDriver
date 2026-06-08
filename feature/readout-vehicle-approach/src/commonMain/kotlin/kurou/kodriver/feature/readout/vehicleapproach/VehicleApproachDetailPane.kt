@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,7 +109,10 @@ internal fun VehicleApproachDetailPaneContent(
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
             trailingContent = {
-                IconButton(onClick = { showHelpSheet = true }) {
+                IconButton(
+                    onClick = { showHelpSheet = true },
+                    modifier = Modifier.testTag("vehicle_approach_help_button"),
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                         contentDescription = null,
