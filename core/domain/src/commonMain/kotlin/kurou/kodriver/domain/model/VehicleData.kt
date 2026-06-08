@@ -11,7 +11,11 @@ data class VehicleData(
     val positionZ: Double,
 ) {
     val speedMs: Double
-        get() = sqrt(localVelocityX * localVelocityX + localVelocityY * localVelocityY + localVelocityZ * localVelocityZ)
+        get() = sqrt(
+            localVelocityX * localVelocityX +
+                localVelocityY * localVelocityY +
+                localVelocityZ * localVelocityZ,
+        )
 
     val speedKmh: Double
         get() = speedMs * 3.6

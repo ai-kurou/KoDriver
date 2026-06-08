@@ -13,8 +13,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
-import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.narrator.fakeNarratorDataModule
+import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.fakeReadoutDataModule
 import org.jetbrains.compose.resources.stringResource
 import org.junit.AfterClass

@@ -36,6 +36,14 @@ subprojects {
         ignoreFailures = false
         exclude { it.file.absolutePath.contains("/build/generated/") }
     }
+    // KMP では commonMain のソースセットは detektMetadataCommonMain タスクで解析される。
+    // detekt タスクがこれを依存に含めないと commonMain が未検査になるため明示的に追加する。
+    afterEvaluate {
+        tasks.findByName("detekt")?.dependsOn(
+            tasks.withType<io.gitlab.arturbosch.detekt.Detekt>()
+                .matching { it.name != "detekt" },
+        )
+    }
     dependencies {
         "detektPlugins"(rootProject.libs.detekt.formatting)
     }

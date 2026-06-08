@@ -28,10 +28,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneSubtitle
-import kurou.kodriver.core.designsystem.DetailPaneTitle
-import kurou.kodriver.core.designsystem.ThresholdSlider
 import kodriver.feature.readout.vehicleapproach.generated.resources.Res
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_description
@@ -40,6 +36,10 @@ import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_appr
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_longitudinal_label
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_threshold_subtitle
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_title
+import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.DetailPaneTitle
+import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
