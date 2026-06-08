@@ -80,6 +80,7 @@ formatting:
     active: true
   ImportOrdering:
     active: true
+    layout: '*,java.**,javax.**,kotlin.**,^'
   Indentation:
     active: false
     indentSize: 4
