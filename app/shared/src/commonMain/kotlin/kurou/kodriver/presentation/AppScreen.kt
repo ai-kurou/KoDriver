@@ -37,7 +37,7 @@ import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
 import org.jetbrains.compose.resources.stringResource
 
-internal enum class AppDestination(
+private enum class AppDestination(
     val icon: ImageVector,
 ) {
     Readout(Icons.Default.HeadsetMic),
@@ -70,7 +70,7 @@ fun AppScreen(
 }
 
 @Composable
-internal fun AppScreenContent(
+private fun AppScreenContent(
     readoutContent: @Composable () -> Unit = {},
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
