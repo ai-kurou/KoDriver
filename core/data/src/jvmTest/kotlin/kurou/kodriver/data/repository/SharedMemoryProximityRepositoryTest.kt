@@ -33,7 +33,11 @@ class SharedMemoryProximityRepositoryTest {
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
         val reader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 1, playerIdx = 0))
-        val repo = SharedMemoryProximityRepository(thresholdsRepository = FakeProximityThresholdsRepository(), pollingIntervalMs = 1, reader = reader)
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(),
+            pollingIntervalMs = 1,
+            reader = reader,
+        )
 
         val job = launch { repo.proximityStream().collect { } }
         delay(50)
@@ -48,7 +52,12 @@ class SharedMemoryProximityRepositoryTest {
             buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
             openResult = false,
         )
-        val repo = SharedMemoryProximityRepository(thresholdsRepository = FakeProximityThresholdsRepository(), pollingIntervalMs = 1, reconnectIntervalMs = 1, reader = reader)
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(),
+            pollingIntervalMs = 1,
+            reconnectIntervalMs = 1,
+            reader = reader,
+        )
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.proximityStream().collect { emitCount.incrementAndGet() } }
@@ -196,7 +205,11 @@ class SharedMemoryProximityRepositoryTest {
         // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
         // BufferUnderflowException が発生しないことを確認
         val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
-        val repo = SharedMemoryProximityRepository(thresholdsRepository = FakeProximityThresholdsRepository(), pollingIntervalMs = 1, reader = FakeProximityMemoryReader(buffer))
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(),
+            pollingIntervalMs = 1,
+            reader = FakeProximityMemoryReader(buffer),
+        )
 
         repo.proximityStream().first()
         Unit
