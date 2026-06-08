@@ -4,11 +4,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,6 +55,7 @@ internal fun VehicleApproachDetailPane(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun VehicleApproachDetailPaneContent(
     uiState: VehicleApproachUiState,
@@ -58,13 +65,23 @@ internal fun VehicleApproachDetailPaneContent(
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
+    var showHelpSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    if (showHelpSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showHelpSheet = false },
+            sheetState = sheetState,
+        ) {}
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         DetailPaneTitle(title = stringResource(Res.string.vehicle_approach_title))
         DetailPaneDescription(text = stringResource(Res.string.vehicle_approach_description))
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
             trailingContent = {
-                IconButton(onClick = {}) {
+                IconButton(onClick = { showHelpSheet = true }) {
                     Icon(
                         imageVector = Icons.Outlined.HelpOutline,
                         contentDescription = null,
