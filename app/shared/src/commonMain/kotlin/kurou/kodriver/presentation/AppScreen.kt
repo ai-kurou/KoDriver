@@ -52,6 +52,7 @@ private fun AppDestination.label(): String = when (this) {
 
 @Composable
 fun AppScreen(
+    layoutType: NavigationSuiteType? = null,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
@@ -66,18 +67,19 @@ fun AppScreen(
     },
 ) {
     NarratorEffect()
-    AppScreenContent(readoutContent = readoutContent)
+    AppScreenContent(layoutType = layoutType, readoutContent = readoutContent)
 }
 
 @Composable
 private fun AppScreenContent(
+    layoutType: NavigationSuiteType? = null,
     readoutContent: @Composable () -> Unit = {},
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
     KoDriverTheme {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        val layoutType = when {
+        val resolvedLayoutType = layoutType ?: when {
             windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ->
                 NavigationSuiteType.NavigationDrawer
             windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
@@ -86,10 +88,10 @@ private fun AppScreenContent(
         }
         Box(modifier = Modifier.navigationBarsPadding()) {
             NavigationSuiteScaffold(
-                layoutType = layoutType,
+                layoutType = resolvedLayoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
-                        val itemModifier = if (layoutType == NavigationSuiteType.NavigationDrawer) {
+                        val itemModifier = if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
                             Modifier
                                 .fillMaxWidth()
                                 .wrapContentWidth(Alignment.CenterHorizontally)
