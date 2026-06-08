@@ -55,7 +55,7 @@ fun VehicleApproachDetailPane(
 }
 
 @Composable
-internal fun VehicleApproachDetailPane(
+private fun VehicleApproachDetailPane(
     modifier: Modifier = Modifier,
     viewModel: VehicleApproachViewModel,
 ) {
