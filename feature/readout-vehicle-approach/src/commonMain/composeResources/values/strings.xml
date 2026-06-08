@@ -4,4 +4,5 @@
     <string name="vehicle_approach_threshold_subtitle">Threshold Settings</string>
     <string name="vehicle_approach_longitudinal_label">Front/Rear: %1$.1f m</string>
     <string name="vehicle_approach_lateral_label">Left/Right: %1$.1f m</string>
+    <string name="vehicle_approach_help_description">Thresholds are measured center-to-center between your vehicle and surrounding vehicles. A vehicle within range is considered approaching and will be announced.\n\nNote: Racing cars are generally under 5 m in length and 2 m in width.</string>
 </resources>

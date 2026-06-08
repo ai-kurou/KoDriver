@@ -2,8 +2,10 @@ package kurou.kodriver.feature.readout.vehicleapproach
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
@@ -12,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +33,7 @@ import kurou.kodriver.core.designsystem.ThresholdSlider
 import kodriver.feature.readout.vehicleapproach.generated.resources.Res
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_description
+import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_help_description
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_lateral_label
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_longitudinal_label
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_threshold_subtitle
@@ -86,6 +90,14 @@ internal fun VehicleApproachDetailPaneContent(
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(Res.string.vehicle_approach_help_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 
