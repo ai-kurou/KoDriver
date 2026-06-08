@@ -48,7 +48,7 @@ class AppScreenScreenshotTest {
     fun `NavigationDrawer 読み上げタブ`() {
         composeRule.setContent {
             Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                AppScreen(
+                AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = twoPaneDirective)
@@ -66,7 +66,7 @@ class AppScreenScreenshotTest {
         composeRule.setContent {
             navMore = stringResource(Res.string.nav_more)
             Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                AppScreen(
+                AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = twoPaneDirective)
@@ -83,7 +83,7 @@ class AppScreenScreenshotTest {
     fun `NavigationRail 読み上げタブ`() {
         composeRule.setContent {
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreen(
+                AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
@@ -101,7 +101,7 @@ class AppScreenScreenshotTest {
         composeRule.setContent {
             navMore = stringResource(Res.string.nav_more)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreen(
+                AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
@@ -118,7 +118,7 @@ class AppScreenScreenshotTest {
     fun `NavigationBar 読み上げタブ`() {
         composeRule.setContent {
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                AppScreen(
+                AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
@@ -136,7 +136,7 @@ class AppScreenScreenshotTest {
         composeRule.setContent {
             navMore = stringResource(Res.string.nav_more)
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                AppScreen(
+                AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)

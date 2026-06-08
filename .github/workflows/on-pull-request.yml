@@ -148,4 +148,4 @@ jobs:
         with:
           api-level: 36
           arch: x86_64
-          script: ./gradlew --no-build-cache connectedDebugAndroidTest
+          script: ./gradlew connectedDebugAndroidTest

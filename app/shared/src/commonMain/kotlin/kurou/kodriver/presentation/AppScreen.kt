@@ -52,7 +52,6 @@ private fun AppDestination.label(): String = when (this) {
 
 @Composable
 fun AppScreen(
-    layoutType: NavigationSuiteType? = null,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
@@ -67,11 +66,11 @@ fun AppScreen(
     },
 ) {
     NarratorEffect()
-    AppScreenContent(layoutType = layoutType, readoutContent = readoutContent)
+    AppScreenContent(readoutContent = readoutContent)
 }
 
 @Composable
-private fun AppScreenContent(
+internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
     readoutContent: @Composable () -> Unit = {},
 ) {
