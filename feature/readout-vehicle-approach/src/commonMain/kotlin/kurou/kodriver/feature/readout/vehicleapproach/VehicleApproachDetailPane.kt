@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,7 +89,7 @@ internal fun VehicleApproachDetailPaneContent(
                 painter = painterResource(Res.drawable.vehicle_approach),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                modifier = Modifier.fillMaxWidth(0.7f).align(Alignment.CenterHorizontally).padding(horizontal = 16.dp),
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
