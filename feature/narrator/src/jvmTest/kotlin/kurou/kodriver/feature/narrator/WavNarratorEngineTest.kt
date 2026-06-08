@@ -41,7 +41,7 @@ private class FakeSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean get() = isPlayingValue
 
     var playCallCount = 0
-    override fun play(bytes: ByteArray) {
+    override suspend fun play(bytes: ByteArray) {
         playCallCount++
     }
 }

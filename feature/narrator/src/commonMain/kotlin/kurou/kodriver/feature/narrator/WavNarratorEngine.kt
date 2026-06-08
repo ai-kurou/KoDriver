@@ -17,6 +17,8 @@ internal class WavNarratorEngine(
     private var sounds: Map<String, ByteArray> = emptyMap()
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+    private var noiseSound: ByteArray? = null
+
     private val textToFile = mapOf(
         "カーレフト" to "files/car_left.wav",
         "カーライト" to "files/car_right.wav",
@@ -32,12 +34,21 @@ internal class WavNarratorEngine(
                 }
             }
             sounds = loaded
+            try {
+                noiseSound = Res.readBytes("files/noise.wav")
+            } catch (_: Exception) {
+            }
         }
     }
 
     override fun speak(text: String) {
         if (soundPlayer.isPlaying) return
-        sounds[text]?.let { soundPlayer.play(it) }
+        val mainSound = sounds[text] ?: return
+        scope.launch {
+            noiseSound?.let { soundPlayer.play(it) }
+            soundPlayer.play(mainSound)
+            noiseSound?.let { soundPlayer.play(it) }
+        }
     }
 
     override fun stop() = Unit
