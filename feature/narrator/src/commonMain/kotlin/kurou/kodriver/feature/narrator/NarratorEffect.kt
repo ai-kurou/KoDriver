@@ -5,5 +5,5 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun NarratorEffect() {
-    koinViewModel<NarratorViewModel>()
+    koinViewModel<LmuNarratorViewModel>()
 }

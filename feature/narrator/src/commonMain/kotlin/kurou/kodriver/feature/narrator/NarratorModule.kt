@@ -9,7 +9,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val narratorModule: Module = module {
-    viewModelOf(::NarratorViewModel)
+    viewModelOf(::LmuNarratorViewModel)
     factory { ObserveProximityUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }

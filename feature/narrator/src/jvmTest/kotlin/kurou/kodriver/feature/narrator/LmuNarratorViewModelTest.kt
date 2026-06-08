@@ -26,7 +26,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class NarratorViewModelTest {
+class LmuNarratorViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -44,7 +44,7 @@ class NarratorViewModelTest {
         proximityChannel: Channel<ProximityData>,
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<String, Boolean> = emptyMap(),
-    ) = NarratorViewModel(
+    ) = LmuNarratorViewModel(
         observeProximityUseCase = ObserveProximityUseCase(
             FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
         ),
