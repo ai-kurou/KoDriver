@@ -32,6 +32,7 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.narrator.NarratorEffect
 import kurou.kodriver.feature.other.OtherContent
+import kurou.kodriver.feature.other.OtherItemType
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
@@ -64,15 +65,26 @@ fun AppScreen(
             },
         )
     },
+    otherContent: @Composable () -> Unit = {
+        OtherContent(
+            backHandler = backHandler,
+            detailContent = { itemType ->
+                when (itemType) {
+                    OtherItemType.License -> LicenseDetailPane()
+                }
+            },
+        )
+    },
 ) {
     NarratorEffect()
-    AppScreenContent(readoutContent = readoutContent)
+    AppScreenContent(readoutContent = readoutContent, otherContent = otherContent)
 }
 
 @Composable
 internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
     readoutContent: @Composable () -> Unit = {},
+    otherContent: @Composable () -> Unit = {},
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
 
@@ -113,7 +125,7 @@ internal fun AppScreenContent(
                 Box(modifier = Modifier.statusBarsPadding()) {
                     when (currentDestination) {
                         AppDestination.Readout -> readoutContent()
-                        AppDestination.More -> OtherContent()
+                        AppDestination.More -> otherContent()
                     }
                 }
             }
