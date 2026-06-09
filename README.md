@@ -57,6 +57,15 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 このプロジェクトはプルリクエストを受け付けていません。
 [GPL-3.0 ライセンス](LICENSE) の範囲内で自由にフォーク・改変・再配布できます。
 
+## クレジット
+
+このアプリは音声合成ソフトウェア `VOICEVOX` を利用しています。
+
+- VOICEVOX:剣崎雌雄
+- VOICEVOX 公式サイト: <https://voicevox.hiroshiba.jp/>
+- VOICEVOX ソフトウェア利用規約: <https://voicevox.hiroshiba.jp/term/>
+- 剣崎雌雄 利用規約: <https://voicevox.hiroshiba.jp/product/kenzaki_mesuo/>
+
 ## ライセンス
 
 [GPL-3.0](LICENSE)

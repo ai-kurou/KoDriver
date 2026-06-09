@@ -56,6 +56,15 @@ Multi-module Clean Architecture with Kotlin Multiplatform.
 This project does not accept pull requests.
 You are free to fork, modify, and redistribute this project under the terms of the [GPL-3.0 license](LICENSE).
 
+## Credits
+
+This app uses the `VOICEVOX` speech synthesis software.
+
+- `VOICEVOX:Kenzaki Mesuo` (`VOICEVOX:剣崎雌雄`)
+- VOICEVOX official website: <https://voicevox.hiroshiba.jp/>
+- VOICEVOX software terms: <https://voicevox.hiroshiba.jp/term/>
+- Kenzaki Mesuo terms: <https://voicevox.hiroshiba.jp/product/kenzaki_mesuo/>
+
 ## License
 
 [GPL-3.0](LICENSE)
