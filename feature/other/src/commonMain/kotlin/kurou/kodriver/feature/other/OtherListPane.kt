@@ -2,13 +2,18 @@ package kurou.kodriver.feature.other
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kodriver.feature.other.generated.resources.Res
 import kodriver.feature.other.generated.resources.item_license
 import org.jetbrains.compose.resources.stringResource
@@ -23,12 +28,19 @@ private fun otherItemDisplayName(itemId: String): String = when (itemId) {
 
 @Composable
 internal fun OtherListPane(modifier: Modifier = Modifier) {
-    LazyColumn(modifier = modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(vertical = 8.dp),
+    ) {
         items(listOf(LICENSE_ITEM_ID), key = { it }) { item ->
-            ListItem(
-                headlineContent = { Text(otherItemDisplayName(item)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Surface(color = MaterialTheme.colorScheme.surface) {
+                ListItem(
+                    headlineContent = { Text(otherItemDisplayName(item)) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            HorizontalDivider()
         }
     }
 }
