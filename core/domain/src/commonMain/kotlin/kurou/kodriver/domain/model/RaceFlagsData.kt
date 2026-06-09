@@ -26,7 +26,8 @@ data class RaceFlagsData(
     val playerCountLapFlag: CountLapFlag,
 )
 
-// rFactor/rF2 系 shared memory の GamePhase をベースにしたセッション状態。
+// rFactor/rF2 系 shared memory の ScoringInfo.mGamePhase に対応する値。
+// LMU でも同系統の shared memory レイアウトを使っている前提で解釈している。
 enum class SessionPhase(val rawValue: Int) {
     GARAGE(0),
     WARM_UP(1),
@@ -48,7 +49,7 @@ enum class SessionPhase(val rawValue: Int) {
     }
 }
 
-// rFactor/rF2 系 shared memory の YellowFlagState をベースにしたセッション黄旗状態。
+// rFactor/rF2 系 shared memory の ScoringInfo.mYellowFlagState に対応する値。
 enum class SessionYellowFlagState(val rawValue: Int) {
     INVALID(-1),
     NONE(0),
@@ -67,7 +68,8 @@ enum class SessionYellowFlagState(val rawValue: Int) {
     }
 }
 
-// セクター単位の旗状態。通常はクリアか黄旗の二値で扱う。
+// shared memory の ScoringInfo.mSectorFlag[3] に対応する値。
+// 通常は 0=クリア、1=黄旗として使われるため、その前提で enum 化している。
 enum class SectorFlagState(val rawValue: Int) {
     CLEAR(0),
     YELLOW(1),
@@ -79,7 +81,8 @@ enum class SectorFlagState(val rawValue: Int) {
     }
 }
 
-// 車両個別の旗指示。mFlag の代表的な意味をコード上で読めるようにしたもの。
+// shared memory の VehicleScoringInfo.mFlag に対応する値。
+// 車両個別に提示される主要な旗指示を読みやすくしたもの。
 enum class PrimaryFlag(val rawValue: Int) {
     NONE(0),
     BLUE(1),
@@ -97,7 +100,8 @@ enum class PrimaryFlag(val rawValue: Int) {
     }
 }
 
-// その周回を正式ラップとして数えるかどうかに関するフラグ。
+// shared memory の VehicleScoringInfo.mCountLapFlag に対応する値。
+// その周回を正式ラップとして数えるかどうかを表す。
 enum class CountLapFlag(val rawValue: Int) {
     DO_NOT_COUNT(0),
     COUNT(1),
