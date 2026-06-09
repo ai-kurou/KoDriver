@@ -3,9 +3,12 @@ package kurou.kodriver.data
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.data.repository.LmuRepositoryImpl
+import kurou.kodriver.data.repository.SharedMemoryFlagRepository
 import kurou.kodriver.data.repository.SharedMemoryProximityRepository
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.ProximityData
+import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
@@ -22,6 +25,9 @@ val desktopDataModule = module {
     }
     single<ProximityRepository> {
         if (isWindows) SharedMemoryProximityRepository(thresholdsRepository = get()) else NoOpProximityRepository()
+    }
+    single<FlagRepository> {
+        if (isWindows) SharedMemoryFlagRepository() else NoOpFlagRepository()
     }
     single<SimulatorPreferencesRepository> {
         createSimulatorPreferencesRepository(directory = kodriverDirectory)
@@ -42,4 +48,8 @@ private class NoOpLmuRepository : LmuRepository {
 
 private class NoOpProximityRepository : ProximityRepository {
     override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+}
+
+private class NoOpFlagRepository : FlagRepository {
+    override fun flagStream(): Flow<RaceFlagsData> = emptyFlow()
 }

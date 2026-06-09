@@ -1,0 +1,45 @@
+package kurou.kodriver.domain.usecase
+
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class ObserveRaceFlagsUseCaseTest {
+
+    @Test
+    fun `invokeはリポジトリのflagStreamを返す`() = runBlocking {
+        val expected = fakeRaceFlagsData(gamePhase = 5, yellowFlagState = 2, playerFlag = 6)
+        val repo = FakeFlagRepository(stream = flowOf(expected))
+        val useCase = ObserveRaceFlagsUseCase(repo)
+
+        val result = useCase().first()
+
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `invokeは空のフローをそのまま返す`() = runBlocking {
+        val repo = FakeFlagRepository(stream = flowOf())
+        val useCase = ObserveRaceFlagsUseCase(repo)
+
+        val results = buildList { useCase().collect { add(it) } }
+
+        assertTrue(results.isEmpty())
+    }
+
+    @Test
+    fun `複数のデータを順番通りに流す`() = runBlocking {
+        val data1 = fakeRaceFlagsData(gamePhase = 1)
+        val data2 = fakeRaceFlagsData(gamePhase = 2)
+        val data3 = fakeRaceFlagsData(gamePhase = 3)
+        val repo = FakeFlagRepository(stream = flowOf(data1, data2, data3))
+        val useCase = ObserveRaceFlagsUseCase(repo)
+
+        val results = buildList { useCase().collect { add(it) } }
+
+        assertEquals(listOf(data1, data2, data3), results)
+    }
+}
