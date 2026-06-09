@@ -28,6 +28,7 @@ logback = "1.5.32"
 material3 = "1.11.0-alpha07"
 compose-material-icons-extended = "1.7.3"
 reorderable = "3.1.0"
+aboutLibraries = "14.2.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -74,6 +75,7 @@ roborazzi-composeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-c
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons-extended" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -87,3 +89,4 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 modulesGraphAssert = { id = "com.jraska.module.graph.assertion", version.ref = "modulesGraphAssert" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

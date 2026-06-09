@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
@@ -54,6 +55,7 @@ kotlin {
             implementation(projects.feature.other)
             implementation(projects.feature.readout)
             implementation(projects.feature.readoutVehicleApproach)
+            implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
