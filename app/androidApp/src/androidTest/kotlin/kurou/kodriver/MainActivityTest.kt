@@ -2,7 +2,6 @@ package kurou.kodriver
 
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -13,12 +12,6 @@ import org.junit.runner.RunWith
 class MainActivityTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
-
-    @Test
-    fun `MainActivity起動後_画面が描画される`() {
-        composeTestRule.waitForIdle()
-        composeTestRule.onRoot().assertExists()
-    }
 
     @Test
     fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動する`() {
@@ -40,6 +33,10 @@ class MainActivityTest {
 
         // その他タブをタップ
         composeTestRule.onNodeWithTag("nav_more").performClick()
+        composeTestRule.waitForIdle()
+
+        // ライセンス項目をタップ
+        composeTestRule.onNodeWithTag("other_item_0").performClick()
         composeTestRule.waitForIdle()
     }
 }
