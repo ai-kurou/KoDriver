@@ -2,7 +2,12 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.SectorFlagState
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.FlagRepository
 
 internal class FakeFlagRepository(
@@ -12,16 +17,16 @@ internal class FakeFlagRepository(
 }
 
 internal fun fakeRaceFlagsData(
-    gamePhase: Int = 0,
-    yellowFlagState: Int = 0,
-    playerFlag: Int = 0,
+    gamePhase: SessionPhase = SessionPhase.GARAGE,
+    yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
+    playerFlag: PrimaryFlag = PrimaryFlag.NONE,
 ) = RaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = yellowFlagState,
-    sectorFlags = listOf(0, 0, 0),
+    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
     startLight = 0,
     numRedLights = 0,
     playerFlag = playerFlag,
     playerUnderYellow = false,
-    playerCountLapFlag = 0,
+    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT,
 )

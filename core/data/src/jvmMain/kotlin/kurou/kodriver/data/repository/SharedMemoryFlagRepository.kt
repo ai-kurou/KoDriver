@@ -7,7 +7,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kurou.kodriver.data.datasource.MemoryReader
 import kurou.kodriver.data.datasource.SharedMemoryReader
+import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.SectorFlagState
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.FlagRepository
 import java.nio.ByteBuffer
 
@@ -44,18 +49,20 @@ internal class SharedMemoryFlagRepository(
         val playerVehicleBase = findPlayerVehicleBase(buffer, vehicleCount) ?: return null
 
         return RaceFlagsData(
-            gamePhase = buffer.get(SCORING_BASE + OFF_GAME_PHASE).toInt() and 0xFF,
-            yellowFlagState = buffer.get(SCORING_BASE + OFF_YELLOW_FLAG_STATE).toInt(),
+            gamePhase = SessionPhase.fromRaw(buffer.get(SCORING_BASE + OFF_GAME_PHASE).toInt() and 0xFF),
+            yellowFlagState = SessionYellowFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_YELLOW_FLAG_STATE).toInt()),
             sectorFlags = listOf(
-                buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS).toInt(),
-                buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 1).toInt(),
-                buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 2).toInt(),
+                SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS).toInt()),
+                SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 1).toInt()),
+                SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 2).toInt()),
             ),
             startLight = buffer.get(SCORING_BASE + OFF_START_LIGHT).toInt() and 0xFF,
             numRedLights = buffer.get(SCORING_BASE + OFF_NUM_RED_LIGHTS).toInt() and 0xFF,
-            playerFlag = buffer.get(playerVehicleBase + OFF_PLAYER_FLAG).toInt() and 0xFF,
+            playerFlag = PrimaryFlag.fromRaw(buffer.get(playerVehicleBase + OFF_PLAYER_FLAG).toInt() and 0xFF),
             playerUnderYellow = buffer.get(playerVehicleBase + OFF_PLAYER_UNDER_YELLOW).toInt() != 0,
-            playerCountLapFlag = buffer.get(playerVehicleBase + OFF_PLAYER_COUNT_LAP_FLAG).toInt() and 0xFF,
+            playerCountLapFlag = CountLapFlag.fromRaw(
+                buffer.get(playerVehicleBase + OFF_PLAYER_COUNT_LAP_FLAG).toInt() and 0xFF,
+            ),
         )
     }
 

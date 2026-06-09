@@ -5,6 +5,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.SectorFlagState
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicInteger
@@ -37,14 +42,14 @@ class SharedMemoryFlagRepositoryTest {
 
         val result = repo.flagStream().first()
 
-        assertEquals(4, result.gamePhase)
-        assertEquals(2, result.yellowFlagState)
-        assertEquals(listOf(0, 2, 0), result.sectorFlags)
+        assertEquals(SessionPhase.COUNTDOWN, result.gamePhase)
+        assertEquals(SessionYellowFlagState.PIT_CLOSED, result.yellowFlagState)
+        assertEquals(listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR), result.sectorFlags)
         assertEquals(3, result.startLight)
         assertEquals(5, result.numRedLights)
-        assertEquals(6, result.playerFlag)
+        assertEquals(PrimaryFlag.CHECKERED, result.playerFlag)
         assertTrue(result.playerUnderYellow)
-        assertEquals(1, result.playerCountLapFlag)
+        assertEquals(CountLapFlag.COUNT, result.playerCountLapFlag)
     }
 
     @Test
