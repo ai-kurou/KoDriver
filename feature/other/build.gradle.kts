@@ -42,6 +42,13 @@ kotlin {
     }
 
     sourceSets {
+        val nonAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        jvmMain.get().dependsOn(nonAndroidMain)
+        jsMain.get().dependsOn(nonAndroidMain)
+        wasmJsMain.get().dependsOn(nonAndroidMain)
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
         }
@@ -53,14 +60,49 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
+            implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        jvmTest.dependencies {
+            implementation(libs.compose.uiTest)
+            implementation(libs.compose.uiTestJunit4)
+            implementation(libs.kotlin.testJunit)
+            implementation(compose.desktop.currentOs)
+            implementation(libs.roborazzi.composeDesktop)
+        }
     }
+}
+
+compose.resources {
+    packageOfResClass = "kodriver.feature.other.generated.resources"
 }
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+val startTaskNames = gradle.startParameter.taskNames
+val isRecordMode = startTaskNames.any { it.contains("recordRoborazziJvmTest") }
+val isVerifyMode = startTaskNames.any { it.contains("verifyRoborazziJvmTest") }
+
+tasks.withType<Test>().configureEach {
+    systemProperty("skiko.renderApi", "SOFTWARE_FAST")
+    systemProperty("roborazzi.output.dir", "$projectDir/src/jvmTest/snapshots")
+    if (isRecordMode) systemProperty("roborazzi.test.record", "true")
+    if (isVerifyMode) systemProperty("roborazzi.test.verify", "true")
+}
+
+tasks.register("recordRoborazziJvmTest") {
+    group = "roborazzi"
+    description = "スクリーンショットのゴールデン画像を更新する"
+    dependsOn("jvmTest")
+}
+
+tasks.register("verifyRoborazziJvmTest") {
+    group = "roborazzi"
+    description = "スクリーンショットをゴールデン画像と比較する"
+    dependsOn("jvmTest")
 }
