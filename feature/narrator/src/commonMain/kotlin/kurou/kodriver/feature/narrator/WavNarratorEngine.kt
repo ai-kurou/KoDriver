@@ -23,6 +23,10 @@ internal class WavNarratorEngine(
     private val textToFile = mapOf(
         "カーレフト" to "files/car_left.wav",
         "カーライト" to "files/car_right.wav",
+        "ブルーフラッグ" to "files/blue_flag.wav",
+        "イエローフラッグ" to "files/yellow_flag.wav",
+        "フルコースイエロー" to "files/full_course_yellow.wav",
+        "セッションストップ" to "files/session_stopped.wav",
     )
 
     init {
