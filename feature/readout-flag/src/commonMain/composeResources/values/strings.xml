@@ -1,0 +1,4 @@
+<resources>
+    <string name="flag_title">フラッグ</string>
+    <string name="flag_description">青旗・黄旗・フルコースイエローなどのフラッグ状況を音声でお知らせします。</string>
+</resources>

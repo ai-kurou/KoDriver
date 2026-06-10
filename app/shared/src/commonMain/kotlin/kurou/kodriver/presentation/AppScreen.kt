@@ -35,6 +35,7 @@ import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.other.OtherItemType
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType
+import kurou.kodriver.feature.readout.flag.FlagDetailPane
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,7 +61,7 @@ fun AppScreen(
             detailContent = { itemType ->
                 when (itemType) {
                     ReadoutItemType.VehicleApproach -> VehicleApproachDetailPane()
-                    ReadoutItemType.Flag -> {}
+                    ReadoutItemType.Flag -> FlagDetailPane()
                 }
             },
         )

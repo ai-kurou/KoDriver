@@ -4,46 +4,48 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
-    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
-    `java-test-fixtures`
 }
 
 kotlin {
     jvm()
-    
+
     js {
         browser()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
     }
-    
-    androidLibrary {
-       namespace = "kurou.kodriver.app.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
 
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
-       lint {
-           abortOnError = true
-           warningsAsErrors = false
-       }
+    androidLibrary {
+        namespace = "kurou.kodriver.feature.readout.flag"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        lint {
+            abortOnError = true
+            warningsAsErrors = false
+        }
     }
-    
+
     sourceSets {
+        val nonAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        jvmMain.get().dependsOn(nonAndroidMain)
+        jsMain.get().dependsOn(nonAndroidMain)
+        wasmJsMain.get().dependsOn(nonAndroidMain)
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
         }
@@ -51,22 +53,12 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.feature.narrator)
-            implementation(projects.feature.other)
-            implementation(projects.feature.readout)
-            implementation(projects.feature.readoutVehicleApproach)
-            implementation(projects.feature.readoutFlag)
-            implementation(libs.aboutlibraries.compose.m3)
-            implementation(libs.koin.core)
+            implementation(projects.core.designsystem)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
-            implementation(libs.compose.material3.adaptive.navigation.suite)
-            implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.compose.material.icons.extended)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -77,22 +69,18 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
-            implementation(libs.compose.material3.adaptive.layout)
-        }
-        jsMain.dependencies {
-            implementation(libs.wrappers.browser)
         }
     }
 }
 
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
-    add("jvmTestImplementation", testFixtures(projects.app.shared))
-    testFixturesApi(testFixtures(projects.feature.narrator))
-    testFixturesApi(testFixtures(projects.feature.readout))
+compose.resources {
+    packageOfResClass = "kodriver.feature.readout.flag.generated.resources"
 }
 
-// Gradle はコンフィギュレーション時にタスク名を解決するため、実行時ではなくここで判定する
+dependencies {
+    androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
 val startTaskNames = gradle.startParameter.taskNames
 val isRecordMode = startTaskNames.any { it.contains("recordRoborazziJvmTest") }
 val isVerifyMode = startTaskNames.any { it.contains("verifyRoborazziJvmTest") }
