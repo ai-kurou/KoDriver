@@ -68,6 +68,7 @@ private fun VehicleApproachDetailPane(
         uiState = uiState,
         onLongitudinalThresholdChanged = viewModel::onLongitudinalThresholdChanged,
         onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
+        onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         modifier = modifier,
     )
 }
@@ -78,13 +79,13 @@ internal fun VehicleApproachDetailPaneContent(
     uiState: VehicleApproachUiState,
     onLongitudinalThresholdChanged: (Double) -> Unit = {},
     onLateralThresholdChanged: (Double) -> Unit = {},
+    onSkipFirstLapChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
     var showHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
-    var skipFirstLap by remember { mutableStateOf(false) }
 
     if (showHelpSheet) {
         ModalBottomSheet(
@@ -150,8 +151,8 @@ internal fun VehicleApproachDetailPaneContent(
                 modifier = Modifier.weight(1f),
             )
             Switch(
-                checked = skipFirstLap,
-                onCheckedChange = { skipFirstLap = it },
+                checked = uiState.skipFirstLap,
+                onCheckedChange = onSkipFirstLapChanged,
                 modifier = Modifier.testTag("vehicle_approach_skip_first_lap_switch"),
             )
         }
