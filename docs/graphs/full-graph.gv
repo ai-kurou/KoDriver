@@ -9,11 +9,13 @@ digraph G {
   ":app:shared" -> ":feature:other"
   ":app:shared" -> ":feature:readout"
   ":app:shared" -> ":feature:readout-vehicle-approach"
+  ":app:shared" -> ":feature:readout-flag"
   ":app:webApp" -> ":app:shared"
   ":core:data" -> ":core:domain"
   ":feature:narrator" -> ":core:domain"
   ":feature:other" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
+  ":feature:readout-flag" -> ":core:designsystem"
   ":feature:readout-vehicle-approach" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:designsystem"
 }

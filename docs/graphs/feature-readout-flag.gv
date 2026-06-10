@@ -1,4 +1,4 @@
 digraph G {
+  ":app:shared" -> ":feature:readout-flag"
   ":feature:readout-flag" -> ":core:designsystem"
-  ":feature:readout-vehicle-approach" -> ":core:designsystem"
 }
