@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
@@ -21,10 +22,12 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuNarratorViewModel(
@@ -33,6 +36,8 @@ class LmuNarratorViewModel(
     observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
     observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
     observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
+    observeLmuUseCase: ObserveLmuUseCase,
+    observeSkipFirstLapUseCase: ObserveSkipFirstLapUseCase,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
@@ -45,6 +50,13 @@ class LmuNarratorViewModel(
     ) { readoutStates, flagStates -> readoutStates + flagStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    private val currentLap = observeLmuUseCase()
+        .map { it.timing.currentLap }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+    private val skipFirstLap = observeSkipFirstLapUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     @Suppress("UnusedPrivateProperty")
     private val proximityJob = observeProximityUseCase()
         .scan(null as ProximityData? to null as ProximityData?) { acc, current ->
@@ -54,6 +66,7 @@ class LmuNarratorViewModel(
         .onEach { (prev, current) ->
             if (current == null) return@onEach
             if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
+            if (skipFirstLap.value && currentLap.value == 1) return@onEach
 
             val prevLeftIds = prev?.sideBySideLeftVehicleIds ?: emptySet()
             val prevRightIds = prev?.sideBySideRightVehicleIds ?: emptySet()
