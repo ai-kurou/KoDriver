@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package kurou.kodriver.data
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
@@ -54,6 +56,13 @@ class AndroidReadoutPreferencesRepositoryTest {
         repository.saveReadoutOrder("lmu", listOf("laps_remaining", "vehicle_approach"))
 
         assertEquals(listOf("laps_remaining", "vehicle_approach"), repository.observeReadoutOrder("lmu").first())
+    }
+
+    @Test
+    fun `空のorderを保存すると空リストを返す`() = runTest(testDispatcher) {
+        repository.saveReadoutOrder("lmu", emptyList())
+
+        assertEquals(emptyList(), repository.observeReadoutOrder("lmu").first())
     }
 
     @Test

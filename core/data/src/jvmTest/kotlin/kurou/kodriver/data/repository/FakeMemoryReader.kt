@@ -6,19 +6,28 @@ import java.nio.ByteOrder
 
 internal class FakeMemoryReader(
     initialOpen: Boolean = false,
-    private val openResult: Boolean = true,
+    openResults: List<Boolean> = listOf(true),
+    private val returnNullBuffer: Boolean = false,
 ) : MemoryReader {
 
     private var opened = initialOpen
+    private val remainingOpenResults = ArrayDeque(openResults)
     var closeCalled = false
+    var openCallCount = 0
+        private set
 
     override fun open(): Boolean {
-        opened = openResult
-        return openResult
+        openCallCount++
+        opened = remainingOpenResults.removeFirstOrNull() ?: false
+        return opened
     }
 
     override fun readBuffer(): ByteBuffer? =
-        if (opened) ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN) else null
+        if (opened && !returnNullBuffer) {
+            ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN)
+        } else {
+            null
+        }
 
     override fun isOpen(): Boolean = opened
 
