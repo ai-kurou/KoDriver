@@ -47,8 +47,9 @@ internal fun OtherListPane(
             .padding(vertical = 8.dp),
     ) {
         itemsIndexed(uiState.items, key = { _, item -> item }) { index, item ->
+            val itemType = OtherItemType.fromId(item)
             Surface(
-                color = if (OtherItemType.fromId(item) == uiState.selectedItem) {
+                color = if (itemType == uiState.selectedItem) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
                     MaterialTheme.colorScheme.surface
@@ -56,7 +57,7 @@ internal fun OtherListPane(
             ) {
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
-                    leadingContent = when (OtherItemType.fromId(item)) {
+                    leadingContent = when (itemType) {
                         OtherItemType.GitHubRepository -> {
                             {
                                 Icon(
@@ -77,7 +78,7 @@ internal fun OtherListPane(
 
                         null -> null
                     },
-                    trailingContent = when (OtherItemType.fromId(item)) {
+                    trailingContent = when (itemType) {
                         OtherItemType.GitHubRepository -> {
                             {
                                 Icon(
@@ -98,7 +99,7 @@ internal fun OtherListPane(
 
                         null -> null
                     },
-                    colors = if (OtherItemType.fromId(item) == uiState.selectedItem) {
+                    colors = if (itemType == uiState.selectedItem) {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
