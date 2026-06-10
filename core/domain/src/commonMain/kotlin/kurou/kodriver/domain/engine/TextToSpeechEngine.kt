@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.engine
 
 interface TextToSpeechEngine {
-    fun speak(text: String)
+    fun speak(event: SpeechEvent)
     fun stop()
 }

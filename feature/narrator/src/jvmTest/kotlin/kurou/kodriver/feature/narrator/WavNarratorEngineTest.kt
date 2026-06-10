@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.narrator
 
+import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -11,14 +12,7 @@ class WavNarratorEngineTest {
     @Test
     fun `isPlaying が true のとき speak しても play が呼ばれない`() {
         fakePlayer.isPlayingValue = true
-        engine.speak("カーレフト")
-        assertEquals(0, fakePlayer.playCallCount)
-    }
-
-    @Test
-    fun `isPlaying が false で未登録テキストを speak しても play が呼ばれない`() {
-        fakePlayer.isPlayingValue = false
-        engine.speak("未登録テキスト")
+        engine.speak(SpeechEvent.CarLeft)
         assertEquals(0, fakePlayer.playCallCount)
     }
 
@@ -28,10 +22,10 @@ class WavNarratorEngineTest {
     }
 
     @Test
-    fun `isPlaying が false で登録済みテキストを speak しても sounds 未ロード時は play が呼ばれない`() {
+    fun `isPlaying が false で登録済みイベントを speak しても sounds 未ロード時は play が呼ばれない`() {
         fakePlayer.isPlayingValue = false
         // テスト環境では Res.readBytes() が失敗するため sounds は空
-        engine.speak("カーレフト")
+        engine.speak(SpeechEvent.CarLeft)
         assertEquals(0, fakePlayer.playCallCount)
     }
 }

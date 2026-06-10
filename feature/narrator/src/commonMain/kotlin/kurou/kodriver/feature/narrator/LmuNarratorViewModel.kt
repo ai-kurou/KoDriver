@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
@@ -67,8 +68,8 @@ class LmuNarratorViewModel(
                     ttsEngine.speak("カーライト")
                 }
                  */
-                newLeftVehicle -> ttsEngine.speak("カーレフト")
-                newRightVehicle -> ttsEngine.speak("カーライト")
+                newLeftVehicle -> ttsEngine.speak(SpeechEvent.CarLeft)
+                newRightVehicle -> ttsEngine.speak(SpeechEvent.CarRight)
             }
         }
         .launchIn(viewModelScope)
@@ -88,7 +89,7 @@ class LmuNarratorViewModel(
     private fun announceFlags(prev: RaceFlagsData?, current: RaceFlagsData) {
         if (enabledStates.value[ReadoutItemKey.BLUE_FLAG] != false) {
             if (prev?.playerFlag != PrimaryFlag.BLUE && current.playerFlag == PrimaryFlag.BLUE) {
-                ttsEngine.speak("ブルーフラッグ")
+                ttsEngine.speak(SpeechEvent.BlueFlag)
             }
         }
 
@@ -99,7 +100,7 @@ class LmuNarratorViewModel(
                     prevSectors.getOrNull(i) != SectorFlagState.YELLOW
             }
             if (newYellowSector) {
-                ttsEngine.speak("イエローフラッグ")
+                ttsEngine.speak(SpeechEvent.YellowFlag)
             }
         }
 
@@ -107,7 +108,7 @@ class LmuNarratorViewModel(
             if (prev?.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
                 current.gamePhase == SessionPhase.FULL_COURSE_YELLOW
             ) {
-                ttsEngine.speak("フルコースイエロー")
+                ttsEngine.speak(SpeechEvent.FullCourseYellow)
             }
         }
 
@@ -115,7 +116,7 @@ class LmuNarratorViewModel(
             if (prev?.gamePhase != SessionPhase.RED_FLAG &&
                 current.gamePhase == SessionPhase.RED_FLAG
             ) {
-                ttsEngine.speak("セッションストップ")
+                ttsEngine.speak(SpeechEvent.SessionStop)
             }
         }
     }
