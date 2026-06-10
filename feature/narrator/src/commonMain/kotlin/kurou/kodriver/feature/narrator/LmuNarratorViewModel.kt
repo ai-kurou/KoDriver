@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -18,6 +19,7 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -29,13 +31,17 @@ class LmuNarratorViewModel(
     observeRaceFlagsUseCase: ObserveRaceFlagsUseCase,
     observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
     observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
+    observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
-    private val enabledStates = observeSelectedSimulatorUseCase()
-        .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else observeReadoutEnabledStatesUseCase(simulator)
-        }
+    private val enabledStates = combine(
+        observeSelectedSimulatorUseCase()
+            .flatMapLatest { simulator ->
+                if (simulator == null) emptyFlow() else observeReadoutEnabledStatesUseCase(simulator)
+            },
+        observeFlagEnabledStatesUseCase(),
+    ) { readoutStates, flagStates -> readoutStates + flagStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     @Suppress("UnusedPrivateProperty")
