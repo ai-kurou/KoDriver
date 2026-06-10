@@ -118,3 +118,49 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/kover/report.xml
+
+  screenshot-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4.4.3
+
+      - run: ./gradlew :feature:readout:verifyRoborazziJvmTest :feature:readout-vehicle-approach:verifyRoborazziJvmTest :feature:readout-flag:verifyRoborazziJvmTest :feature:other:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: failure()
+        with:
+          name: screenshot-diffs
+          path: |
+            feature/readout/src/jvmTest/snapshots/*.png
+            feature/readout-vehicle-approach/src/jvmTest/snapshots/*.png
+            feature/readout-flag/src/jvmTest/snapshots/*.png
+            feature/other/src/jvmTest/snapshots/*.png
+            app/shared/src/jvmTest/snapshots/*.png
+
+  # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
+  android-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4.4.3
+
+      - run: ./gradlew :app:androidApp:assembleDebug
