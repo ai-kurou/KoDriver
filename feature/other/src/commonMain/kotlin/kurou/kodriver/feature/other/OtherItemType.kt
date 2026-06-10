@@ -4,6 +4,7 @@ enum class OtherItemType(
     val id: String,
 ) {
     GitHubRepository("github_repository"),
+    ReleasePage("release_page"),
     License("license"),
     ;
 
