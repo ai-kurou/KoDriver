@@ -25,7 +25,7 @@ internal class WavNarratorEngine(
         "カーライト" to "files/car_right.wav",
         "ブルーフラッグ" to "files/blue_flag.wav",
         "イエローフラッグ" to "files/yellow_flag.wav",
-        "フルコースイエロー" to "files/full_cource_yellow.wav",
+        "フルコースイエロー" to "files/full_course_yellow.wav",
         "セッションストップ" to "files/session_stopped.wav",
     )
 
