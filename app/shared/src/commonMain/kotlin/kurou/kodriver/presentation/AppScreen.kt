@@ -71,6 +71,7 @@ fun AppScreen(
             detailContent = { itemType ->
                 when (itemType) {
                     OtherItemType.GitHubRepository -> {}
+                    OtherItemType.ReleasePage -> {}
                     OtherItemType.License -> LicenseDetailPane()
                 }
             },

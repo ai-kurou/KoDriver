@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -26,11 +27,13 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.other.generated.resources.Res
 import kodriver.feature.other.generated.resources.item_github_repository
 import kodriver.feature.other.generated.resources.item_license
+import kodriver.feature.other.generated.resources.item_release_page
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
     OtherItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
+    OtherItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
     OtherItemType.License.id -> stringResource(Res.string.item_license)
     else -> itemId
 }
@@ -67,6 +70,15 @@ internal fun OtherListPane(
                             }
                         }
 
+                        OtherItemType.ReleasePage -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.NewReleases,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
                         OtherItemType.License -> {
                             {
                                 Icon(
@@ -79,7 +91,9 @@ internal fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
-                        OtherItemType.GitHubRepository -> {
+                        OtherItemType.GitHubRepository,
+                        OtherItemType.ReleasePage,
+                        -> {
                             {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Outlined.OpenInNew,

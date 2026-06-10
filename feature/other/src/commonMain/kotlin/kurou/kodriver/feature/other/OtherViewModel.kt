@@ -13,7 +13,7 @@ internal class OtherViewModel : ViewModel() {
 
     fun onItemSelected(itemId: String) {
         val itemType = OtherItemType.fromId(itemId) ?: return
-        if (itemType == OtherItemType.GitHubRepository) return
+        if (itemType == OtherItemType.GitHubRepository || itemType == OtherItemType.ReleasePage) return
         _uiState.update { current ->
             current.copy(selectedItem = if (current.selectedItem == itemType) null else itemType)
         }

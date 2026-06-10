@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
+private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -40,6 +41,7 @@ fun OtherContent(
         uiState = uiState,
         onItemSelected = viewModel::onItemSelected,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
+        onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
@@ -54,6 +56,7 @@ internal fun OtherContent(
     uiState: OtherListUiState,
     onItemSelected: (String) -> Unit,
     onOpenGitHubRepository: () -> Unit = {},
+    onOpenReleasePage: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -107,10 +110,10 @@ internal fun OtherContent(
             OtherListPane(
                 uiState = uiState,
                 onItemClick = { itemId ->
-                    if (itemId == OtherItemType.GitHubRepository.id) {
-                        onOpenGitHubRepository()
-                    } else {
-                        onItemSelected(itemId)
+                    when (itemId) {
+                        OtherItemType.GitHubRepository.id -> onOpenGitHubRepository()
+                        OtherItemType.ReleasePage.id -> onOpenReleasePage()
+                        else -> onItemSelected(itemId)
                     }
                 },
             )

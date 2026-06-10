@@ -27,6 +27,15 @@ class OtherViewModelTest {
     }
 
     @Test
+    fun `リリースページを選択しても状態は変わらない`() = runTest {
+        val initialState = viewModel.uiState.first()
+
+        viewModel.onItemSelected(OtherItemType.ReleasePage.id)
+
+        assertEquals(initialState, viewModel.uiState.first())
+    }
+
+    @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
         viewModel.onItemSelected(OtherItemType.License.id)
 
