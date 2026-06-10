@@ -20,10 +20,12 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -53,6 +55,7 @@ class LmuNarratorViewModelTest {
         flagChannel: Channel<RaceFlagsData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<String, Boolean> = emptyMap(),
+        flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
     ) = LmuNarratorViewModel(
         observeProximityUseCase = ObserveProximityUseCase(
             FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
@@ -65,6 +68,9 @@ class LmuNarratorViewModelTest {
         ),
         observeReadoutEnabledStatesUseCase = ObserveReadoutEnabledStatesUseCase(
             FakeAllEnabledReadoutPreferencesRepository(enabledOverrides),
+        ),
+        observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
+            FakeFlagPreferencesRepository(flagEnabledOverrides),
         ),
         ttsEngine = ttsEngine,
     )
@@ -227,7 +233,7 @@ class LmuNarratorViewModelTest {
         buildViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.BLUE_FLAG to false),
+            flagEnabledOverrides = mapOf(ReadoutItemKey.BLUE_FLAG to false),
         )
 
         flagChannel.send(clearFlags())
@@ -306,4 +312,13 @@ private class FakeAllEnabledReadoutPreferencesRepository(
     override suspend fun saveReadoutEnabledState(simulator: String, label: String, enabled: Boolean) = Unit
     override fun observeReadoutOrder(simulator: String): Flow<List<String>> = emptyFlow()
     override suspend fun saveReadoutOrder(simulator: String, order: List<String>) = Unit
+}
+
+private class FakeFlagPreferencesRepository(
+    private val enabledOverrides: Map<String, Boolean> = emptyMap(),
+) : FlagPreferencesRepository {
+    override fun observeFlagEnabledStates(): Flow<Map<String, Boolean>> =
+        MutableStateFlow(enabledOverrides)
+
+    override suspend fun saveFlagEnabledState(key: String, enabled: Boolean) = Unit
 }
