@@ -29,15 +29,19 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 
+data class VehicleApproachUseCases(
+    val observeProximity: ObserveProximityUseCase,
+    val observeLmu: ObserveLmuUseCase,
+    val observeSkipFirstLap: ObserveSkipFirstLapUseCase,
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuNarratorViewModel(
-    observeProximityUseCase: ObserveProximityUseCase,
+    vehicleApproachUseCases: VehicleApproachUseCases,
     observeRaceFlagsUseCase: ObserveRaceFlagsUseCase,
     observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
     observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
     observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
-    observeLmuUseCase: ObserveLmuUseCase,
-    observeSkipFirstLapUseCase: ObserveSkipFirstLapUseCase,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
@@ -50,15 +54,15 @@ class LmuNarratorViewModel(
     ) { readoutStates, flagStates -> readoutStates + flagStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    private val currentLap = observeLmuUseCase()
+    private val currentLap = vehicleApproachUseCases.observeLmu()
         .map { it.timing.currentLap }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    private val skipFirstLap = observeSkipFirstLapUseCase()
+    private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     @Suppress("UnusedPrivateProperty")
-    private val proximityJob = observeProximityUseCase()
+    private val proximityJob = vehicleApproachUseCases.observeProximity()
         .scan(null as ProximityData? to null as ProximityData?) { acc, current ->
             acc.second to current
         }

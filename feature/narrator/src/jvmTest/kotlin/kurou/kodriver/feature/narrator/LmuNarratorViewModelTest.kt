@@ -71,8 +71,16 @@ class LmuNarratorViewModelTest {
         flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
         skipFirstLap: Boolean = false,
     ) = LmuNarratorViewModel(
-        observeProximityUseCase = ObserveProximityUseCase(
-            FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+        vehicleApproachUseCases = VehicleApproachUseCases(
+            observeProximity = ObserveProximityUseCase(
+                FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+            ),
+            observeLmu = ObserveLmuUseCase(
+                FakeChannelLmuRepository(telemetryChannel.receiveAsFlow()),
+            ),
+            observeSkipFirstLap = ObserveSkipFirstLapUseCase(
+                FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
+            ),
         ),
         observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
             FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
@@ -85,12 +93,6 @@ class LmuNarratorViewModelTest {
         ),
         observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
             FakeFlagPreferencesRepository(flagEnabledOverrides),
-        ),
-        observeLmuUseCase = ObserveLmuUseCase(
-            FakeChannelLmuRepository(telemetryChannel.receiveAsFlow()),
-        ),
-        observeSkipFirstLapUseCase = ObserveSkipFirstLapUseCase(
-            FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
         ),
         ttsEngine = ttsEngine,
     )
