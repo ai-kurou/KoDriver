@@ -1,10 +1,13 @@
 package kurou.kodriver.data.repository
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.data.datasource.SharedLmuMemorySource
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -18,6 +21,17 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SharedMemoryFlagRepositoryTest {
+
+    private fun makeSource(
+        reader: FakeStaticMemoryReader,
+        pollingIntervalMs: Long = 1L,
+        reconnectIntervalMs: Long = 1L,
+    ) = SharedLmuMemorySource(
+        pollingIntervalMs = pollingIntervalMs,
+        reconnectIntervalMs = reconnectIntervalMs,
+        reader = reader,
+        scope = CoroutineScope(SupervisorJob()),
+    )
 
     @Test
     fun `共有メモリからセッション旗とプレイヤー旗を読み取る`() = runBlocking {
@@ -35,10 +49,7 @@ class SharedMemoryFlagRepositoryTest {
                 ),
             ),
         )
-        val repo = SharedMemoryFlagRepository(
-            pollingIntervalMs = 1,
-            reader = reader,
-        )
+        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
 
         val result = repo.flagStream().first()
 
@@ -55,10 +66,7 @@ class SharedMemoryFlagRepositoryTest {
     @Test
     fun `player が見つからない間は emit しない`() = runBlocking {
         val reader = FakeStaticMemoryReader(buildFlagsBuffer(FlagBufferConfig(hasPlayer = false)))
-        val repo = SharedMemoryFlagRepository(
-            pollingIntervalMs = 1,
-            reader = reader,
-        )
+        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
@@ -66,7 +74,6 @@ class SharedMemoryFlagRepositoryTest {
         job.cancelAndJoin()
 
         assertEquals(0, emitCount.get())
-        assertTrue(reader.closeCalled)
     }
 
     @Test
@@ -76,11 +83,7 @@ class SharedMemoryFlagRepositoryTest {
             initialOpen = false,
             openResult = false,
         )
-        val repo = SharedMemoryFlagRepository(
-            pollingIntervalMs = 1,
-            reconnectIntervalMs = 1,
-            reader = reader,
-        )
+        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
@@ -88,20 +91,18 @@ class SharedMemoryFlagRepositoryTest {
         job.cancelAndJoin()
 
         assertEquals(0, emitCount.get())
-        assertTrue(reader.closeCalled)
     }
 
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
         val reader = FakeStaticMemoryReader(buildFlagsBuffer())
-        val repo = SharedMemoryFlagRepository(
-            pollingIntervalMs = 1,
-            reader = reader,
-        )
+        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
 
         val job = launch { repo.flagStream().collect { } }
         delay(50)
         job.cancelAndJoin()
+        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
+        delay(100)
 
         assertTrue(reader.closeCalled)
     }

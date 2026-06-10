@@ -1,12 +1,8 @@
 package kurou.kodriver.data.repository
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kurou.kodriver.data.datasource.MemoryReader
-import kurou.kodriver.data.datasource.SharedMemoryReader
+import kotlinx.coroutines.flow.mapNotNull
+import kurou.kodriver.data.datasource.SharedLmuMemorySource
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -17,32 +13,11 @@ import kurou.kodriver.domain.repository.FlagRepository
 import java.nio.ByteBuffer
 
 internal class SharedMemoryFlagRepository(
-    private val pollingIntervalMs: Long = 16L,
-    private val reconnectIntervalMs: Long = 1_000L,
-    private val reader: MemoryReader = SharedMemoryReader(
-        segmentName = "LMU_Data",
-        sizeBytes = 324_820,
-    ),
+    private val source: SharedLmuMemorySource,
 ) : FlagRepository {
 
-    override fun flagStream(): Flow<RaceFlagsData> = flow {
-        try {
-            while (true) {
-                if (!reader.isOpen()) {
-                    if (!reader.open()) {
-                        delay(reconnectIntervalMs)
-                        continue
-                    }
-                }
-                reader.readBuffer()?.let { buffer ->
-                    readFlags(buffer)?.let { emit(it) }
-                }
-                delay(pollingIntervalMs)
-            }
-        } finally {
-            reader.close()
-        }
-    }.flowOn(Dispatchers.IO)
+    override fun flagStream(): Flow<RaceFlagsData> =
+        source.bufferFlow.mapNotNull { readFlags(it) }
 
     private fun readFlags(buffer: ByteBuffer): RaceFlagsData? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_NUM_VEHICLES).coerceIn(0, MAX_VEHICLES)
