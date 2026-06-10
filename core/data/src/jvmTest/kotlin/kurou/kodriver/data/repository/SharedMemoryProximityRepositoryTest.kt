@@ -61,8 +61,7 @@ class SharedMemoryProximityRepositoryTest {
         val job = launch { repo.proximityStream().collect { } }
         delay(50)
         job.cancelAndJoin()
-        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
-        delay(100)
+        reader.closed.await()
 
         assertTrue(reader.closeCalled)
     }
@@ -82,6 +81,7 @@ class SharedMemoryProximityRepositoryTest {
         val job = launch { repo.proximityStream().collect { emitCount++ } }
         delay(50)
         job.cancelAndJoin()
+        reader.closed.await()
 
         assertTrue(reader.closeCalled)
         assertEqual(0, emitCount)
@@ -102,8 +102,7 @@ class SharedMemoryProximityRepositoryTest {
         val job = launch { repo.proximityStream().collect { emitCount++ } }
         delay(50)
         job.cancelAndJoin()
-        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
-        delay(100)
+        reader.closed.await()
 
         assertEquals(0, emitCount)
         assertTrue(reader.closeCalled)
@@ -493,6 +492,7 @@ private class FakeProximityMemoryReader(
 ) : MemoryReader {
 
     var closeCalled = false
+    val closed = CompletableDeferred<Unit>()
     private var opened = openResult
 
     override fun open(): Boolean {
@@ -512,5 +512,6 @@ private class FakeProximityMemoryReader(
     override fun close() {
         closeCalled = true
         opened = false
+        closed.complete(Unit)
     }
 }
