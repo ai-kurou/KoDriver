@@ -1,4 +1,5 @@
 digraph G {
   ":app:shared" -> ":feature:readout-flag"
+  ":feature:readout-flag" -> ":core:domain"
   ":feature:readout-flag" -> ":core:designsystem"
 }

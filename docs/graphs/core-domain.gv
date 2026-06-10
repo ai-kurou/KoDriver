@@ -6,5 +6,6 @@ digraph G {
   ":feature:narrator" -> ":core:domain"
   ":feature:other" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
+  ":feature:readout-flag" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:domain"
 }
