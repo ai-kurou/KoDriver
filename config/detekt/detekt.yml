@@ -51,6 +51,7 @@ naming:
     excludes:
       - "**/test/**"
       - "**/androidTest/**"
+      - "**/androidUnitTest/**"
       - "**/jvmTest/**"
 
 performance:
