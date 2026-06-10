@@ -30,7 +30,7 @@ internal fun fakeLmuTelemetryData(speedX: Double = 0.0) = LmuTelemetryData(
     fuel = FuelData(currentLiters = 0.0, capacityLiters = 0.0),
     timing = TimingData(
         currentLapTimeMs = 0L, lastLapTimeMs = 0L, bestLapTimeMs = 0L,
-        sector1Ms = 0L, sector2Ms = 0L, currentLap = 0,
+        sector1Ms = 0L, sector2Ms = 0L, currentLap = 0, maxLaps = 0,
     ),
     vehicle = VehicleData(
         localVelocityX = speedX, localVelocityY = 0.0, localVelocityZ = 0.0,
