@@ -7,4 +7,5 @@ data class TimingData(
     val sector1Ms: Long,
     val sector2Ms: Long,
     val currentLap: Int,
+    val maxLaps: Int,
 )

@@ -18,10 +18,17 @@ import java.nio.ByteBuffer
  * lmu_data.py に定義された ctypes 構造体レイアウト (_pack_=4) から算出。
  *
  * LMUObjectOut レイアウト:
- *   generic  (LMUGeneric)      : 332 bytes
- *   paths    (LMUPathData)     : 1300 bytes
- *   scoring  (LMUScoringData)  : 126832 bytes
- *   telemetry (LMUTelemetryData): 196356 bytes
+ *   generic  (LMUGeneric)      : 332 bytes  → 先頭オフセット 0
+ *   paths    (LMUPathData)     : 1300 bytes → 先頭オフセット 332
+ *   scoring  (LMUScoringData)  : 126832 bytes → 先頭オフセット 1632
+ *   telemetry (LMUTelemetryData): 196356 bytes → 先頭オフセット 128464
+ *
+ * LMUScoringInfo オフセット (1632 から, _pack_=4):
+ *   mTrackName (c_char*64)     : +0
+ *   mSession   (c_int)         : +64
+ *   mCurrentET (c_double)      : +68
+ *   mEndET     (c_double)      : +76
+ *   mMaxLaps   (c_int)         : +84
  *
  * LMUTelemetryData オフセット (128464 から):
  *   [+0] activeVehicles (uint8)
@@ -51,6 +58,9 @@ import java.nio.ByteBuffer
  *   mWear                : +152
  */
 internal object LmuMapper {
+
+    private const val SCORING_BASE = 1632
+    private const val OFF_SCORING_MAX_LAPS = 84
 
     private const val TELEMETRY_BASE = 128464
 
@@ -111,6 +121,7 @@ internal object LmuMapper {
                 sector1Ms = 0L,
                 sector2Ms = 0L,
                 currentLap = buffer.getInt(vehicleBase + OFF_LAP_NUMBER),
+                maxLaps = buffer.getInt(SCORING_BASE + OFF_SCORING_MAX_LAPS),
             ),
             vehicle = VehicleData(
                 localVelocityX = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_X),
