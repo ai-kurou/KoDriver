@@ -18,6 +18,7 @@ import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
@@ -52,6 +53,9 @@ val desktopDataModule = module {
     }
     single<FlagPreferencesRepository> {
         createFlagPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<VehicleApproachPreferencesRepository> {
+        createVehicleApproachPreferencesRepository(directory = kodriverDirectory)
     }
 }
 
