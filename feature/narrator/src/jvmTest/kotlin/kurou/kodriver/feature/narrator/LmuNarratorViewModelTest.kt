@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -86,7 +87,7 @@ class LmuNarratorViewModelTest {
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
 
-        assertEquals(listOf("カーレフト"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
     @Test
@@ -98,7 +99,7 @@ class LmuNarratorViewModelTest {
         channel.send(noProximity())
         channel.send(rightProximity(vehicleId = 1))
 
-        assertEquals(listOf("カーライト"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarRight), tts.spokenTexts)
     }
 
     @Test
@@ -127,7 +128,7 @@ class LmuNarratorViewModelTest {
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
 
-        assertEquals(listOf("カーレフト", "カーレフト"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
     @Test
@@ -140,7 +141,7 @@ class LmuNarratorViewModelTest {
         channel.send(leftProximity(vehicleId = 1))
         channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))
 
-        assertEquals(listOf("カーレフト", "カーレフト"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
     @Test
@@ -156,7 +157,7 @@ class LmuNarratorViewModelTest {
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
 
-        assertEquals(emptyList<String>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
     // --- 旗アナウンス ---
@@ -170,7 +171,7 @@ class LmuNarratorViewModelTest {
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-        assertEquals(listOf("ブルーフラッグ"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
     }
 
     @Test
@@ -183,7 +184,7 @@ class LmuNarratorViewModelTest {
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-        assertEquals(listOf("ブルーフラッグ"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
     }
 
     @Test
@@ -199,7 +200,7 @@ class LmuNarratorViewModelTest {
             ),
         )
 
-        assertEquals(listOf("イエローフラッグ"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.YellowFlag), tts.spokenTexts)
     }
 
     @Test
@@ -211,7 +212,7 @@ class LmuNarratorViewModelTest {
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(gamePhase = SessionPhase.FULL_COURSE_YELLOW))
 
-        assertEquals(listOf("フルコースイエロー"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.FullCourseYellow), tts.spokenTexts)
     }
 
     @Test
@@ -223,7 +224,7 @@ class LmuNarratorViewModelTest {
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
 
-        assertEquals(listOf("セッションストップ"), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.SessionStop), tts.spokenTexts)
     }
 
     @Test
@@ -239,7 +240,7 @@ class LmuNarratorViewModelTest {
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-        assertEquals(emptyList<String>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 }
 
@@ -279,8 +280,8 @@ private fun clearFlags(
 )
 
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
-    val spokenTexts = mutableListOf<String>()
-    override fun speak(text: String) { spokenTexts.add(text) }
+    val spokenTexts = mutableListOf<SpeechEvent>()
+    override fun speak(event: SpeechEvent) { spokenTexts.add(event) }
     override fun stop() = Unit
 }
 
