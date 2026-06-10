@@ -7,5 +7,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 internal data class VehicleApproachPreferences(
-    @ProtoNumber(1) val skipFirstLap: Boolean = false,
+    @ProtoNumber(1) val skipFirstLap: Boolean = true,
 )

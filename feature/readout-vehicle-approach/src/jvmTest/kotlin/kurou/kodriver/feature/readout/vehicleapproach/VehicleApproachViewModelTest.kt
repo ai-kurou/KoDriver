@@ -52,7 +52,7 @@ class VehicleApproachViewModelTest {
             VehicleApproachUiState(
                 lateralThresholdMeters = 5.0,
                 longitudinalThresholdMeters = 1.0,
-                skipFirstLap = false,
+                skipFirstLap = true,
             ),
             viewModel.uiState.first(),
         )

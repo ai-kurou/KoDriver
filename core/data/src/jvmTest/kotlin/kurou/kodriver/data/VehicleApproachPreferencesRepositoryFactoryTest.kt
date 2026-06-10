@@ -17,10 +17,10 @@ class VehicleApproachPreferencesRepositoryFactoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @Test
-    fun `デフォルト値は skipFirstLap が false`() = testScope.runTest {
+    fun `デフォルト値は skipFirstLap が true`() = testScope.runTest {
         val repository = createVehicleApproachPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(false, repository.observeSkipFirstLap().first())
+        assertEquals(true, repository.observeSkipFirstLap().first())
     }
 
     @Test

@@ -14,7 +14,7 @@ class VehicleApproachPreferencesSerializerTest {
     @Test
     fun `デフォルト値は skipFirstLap が false`() {
         assertEquals(
-            VehicleApproachPreferences(skipFirstLap = false),
+            VehicleApproachPreferences(skipFirstLap = true),
             VehicleApproachPreferencesSerializer.defaultValue,
         )
     }

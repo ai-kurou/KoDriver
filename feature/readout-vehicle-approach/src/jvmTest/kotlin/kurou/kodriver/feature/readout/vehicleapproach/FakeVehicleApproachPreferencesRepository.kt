@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 
 internal class FakeVehicleApproachPreferencesRepository(
-    initialSkipFirstLap: Boolean = false,
+    initialSkipFirstLap: Boolean = true,
 ) : VehicleApproachPreferencesRepository {
     private val state = MutableStateFlow(initialSkipFirstLap)
 

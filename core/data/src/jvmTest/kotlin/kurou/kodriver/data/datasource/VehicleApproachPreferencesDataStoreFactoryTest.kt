@@ -17,7 +17,7 @@ class VehicleApproachPreferencesDataStoreFactoryTest {
     @Test
     fun `vehicle_approach_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
         val dataStore = createVehicleApproachPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(skipFirstLap = true) }
+        dataStore.updateData { it.copy(skipFirstLap = false) }
 
         assertTrue(tempDir.resolve("vehicle_approach_preferences.pb").exists())
     }

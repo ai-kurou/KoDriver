@@ -7,8 +7,8 @@ import kotlin.test.assertNotEquals
 class VehicleApproachPreferencesTest {
 
     @Test
-    fun `デフォルト値は skipFirstLap が false`() {
-        assertEquals(false, VehicleApproachPreferences().skipFirstLap)
+    fun `デフォルト値は skipFirstLap が true`() {
+        assertEquals(true, VehicleApproachPreferences().skipFirstLap)
     }
 
     @Test

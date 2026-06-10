@@ -24,8 +24,8 @@ class VehicleApproachPreferencesRepositoryImplTest {
     private val repository = VehicleApproachPreferencesRepositoryImpl(dataStore)
 
     @Test
-    fun `skipFirstLap の初期値は false`() = testScope.runTest {
-        assertEquals(false, repository.observeSkipFirstLap().first())
+    fun `skipFirstLap の初期値は true`() = testScope.runTest {
+        assertEquals(true, repository.observeSkipFirstLap().first())
     }
 
     @Test
