@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.ReadoutItemKey
 import org.junit.Rule
 import org.junit.Test
 
@@ -23,7 +24,17 @@ class FlagDetailPaneScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        FlagDetailPane()
+                        FlagDetailPaneContent(
+                            uiState = FlagUiState(
+                                enabledStates = mapOf(
+                                    ReadoutItemKey.BLUE_FLAG to true,
+                                    ReadoutItemKey.SECTOR_YELLOW_FLAG to true,
+                                    ReadoutItemKey.FULL_COURSE_YELLOW to true,
+                                    ReadoutItemKey.RED_FLAG to true,
+                                ),
+                            ),
+                            onFlagEnabledChanged = { _, _ -> },
+                        )
                     }
                 }
             }
