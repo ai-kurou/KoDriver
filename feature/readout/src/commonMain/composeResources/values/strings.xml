@@ -3,7 +3,7 @@
     <string name="select_simulator_hint">Select Simulator</string>
     <string name="simulator_name_lmu">Le Mans Ultimate</string>
     <string name="item_vehicle_approach">Vehicle Approach</string>
-    <string name="item_laps_remaining">Laps Remaining</string>
+    <string name="item_flag">Flag</string>
     <string name="drag_handle">Drag to reorder</string>
     <string name="navigate_back">Back</string>
 </resources>

@@ -60,7 +60,7 @@ fun AppScreen(
             detailContent = { itemType ->
                 when (itemType) {
                     ReadoutItemType.VehicleApproach -> VehicleApproachDetailPane()
-                    ReadoutItemType.LapsRemaining -> {}
+                    ReadoutItemType.Flag -> {}
                 }
             },
         )

@@ -45,7 +45,7 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf("lmu"),
                     selectedSimulator = "lmu",
-                    items = listOf("vehicle_approach", "laps_remaining"),
+                    items = listOf("vehicle_approach", "flag"),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},

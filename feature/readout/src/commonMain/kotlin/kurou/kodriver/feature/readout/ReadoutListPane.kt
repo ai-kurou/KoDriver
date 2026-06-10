@@ -46,7 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readout.generated.resources.Res
 import kodriver.feature.readout.generated.resources.drag_handle
-import kodriver.feature.readout.generated.resources.item_laps_remaining
+import kodriver.feature.readout.generated.resources.item_flag
 import kodriver.feature.readout.generated.resources.item_vehicle_approach
 import kodriver.feature.readout.generated.resources.lmu
 import kodriver.feature.readout.generated.resources.select_simulator_hint
@@ -66,7 +66,7 @@ private fun simulatorDisplayName(simulatorId: String): String = when (simulatorI
 @Composable
 private fun itemDisplayName(itemId: String): String = when (itemId) {
     "vehicle_approach" -> stringResource(Res.string.item_vehicle_approach)
-    "laps_remaining" -> stringResource(Res.string.item_laps_remaining)
+    "flag" -> stringResource(Res.string.item_flag)
     else -> itemId
 }
 
@@ -207,7 +207,7 @@ private fun ReadoutListPanePreview() {
         uiState = ReadoutListUiState(
             simulators = listOf("lmu"),
             selectedSimulator = "lmu",
-            items = listOf("vehicle_approach", "laps_remaining"),
+            items = listOf("vehicle_approach", "flag"),
         ),
         onSimulatorSelected = {},
         onMove = { _, _ -> },

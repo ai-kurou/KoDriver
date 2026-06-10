@@ -13,10 +13,10 @@ class SaveReadoutOrderUseCaseTest {
         val saveUseCase = SaveReadoutOrderUseCase(repo)
         val observeUseCase = ObserveReadoutOrderUseCase(repo)
 
-        saveUseCase("lmu", listOf("vehicle_approach", "laps_remaining"))
-        assertEquals(listOf("vehicle_approach", "laps_remaining"), observeUseCase("lmu").first())
+        saveUseCase("lmu", listOf("vehicle_approach", "flag"))
+        assertEquals(listOf("vehicle_approach", "flag"), observeUseCase("lmu").first())
 
-        saveUseCase("lmu", listOf("laps_remaining", "vehicle_approach"))
-        assertEquals(listOf("laps_remaining", "vehicle_approach"), observeUseCase("lmu").first())
+        saveUseCase("lmu", listOf("flag", "vehicle_approach"))
+        assertEquals(listOf("flag", "vehicle_approach"), observeUseCase("lmu").first())
     }
 }

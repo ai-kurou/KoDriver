@@ -42,20 +42,20 @@ class AndroidReadoutPreferencesRepositoryTest {
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu").first())
 
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
-        repository.saveReadoutEnabledState("lmu", "laps_remaining", false)
+        repository.saveReadoutEnabledState("lmu", "flag", false)
 
         val states = repository.observeReadoutEnabledStates("lmu").first()
         assertEquals(true, states["vehicle_approach"])
-        assertEquals(false, states["laps_remaining"])
+        assertEquals(false, states["flag"])
     }
 
     @Test
     fun `orderは初期状態で空を返し保存後に順序を返す`() = runTest(testDispatcher) {
         assertEquals(emptyList(), repository.observeReadoutOrder("lmu").first())
 
-        repository.saveReadoutOrder("lmu", listOf("laps_remaining", "vehicle_approach"))
+        repository.saveReadoutOrder("lmu", listOf("flag", "vehicle_approach"))
 
-        assertEquals(listOf("laps_remaining", "vehicle_approach"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(listOf("flag", "vehicle_approach"), repository.observeReadoutOrder("lmu").first())
     }
 
     @Test

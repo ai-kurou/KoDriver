@@ -12,8 +12,8 @@ class ReadoutItemTypeTest {
     }
 
     @Test
-    fun `laps_remaining は LapsRemaining を返す`() {
-        assertEquals(ReadoutItemType.LapsRemaining, ReadoutItemType.fromId("laps_remaining"))
+    fun `flag は Flag を返す`() {
+        assertEquals(ReadoutItemType.Flag, ReadoutItemType.fromId("flag"))
     }
 
     @Test
