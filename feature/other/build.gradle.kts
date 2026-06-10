@@ -70,6 +70,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
