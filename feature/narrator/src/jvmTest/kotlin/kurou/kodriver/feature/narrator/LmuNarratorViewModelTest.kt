@@ -14,6 +14,10 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.EngineData
+import kurou.kodriver.domain.model.FuelData
+import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -21,10 +25,6 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
-import kurou.kodriver.domain.model.EngineData
-import kurou.kodriver.domain.model.FuelData
-import kurou.kodriver.domain.model.InputsData
-import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleData
