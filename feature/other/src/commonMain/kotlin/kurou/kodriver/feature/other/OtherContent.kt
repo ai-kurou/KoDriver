@@ -17,10 +17,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -32,9 +35,11 @@ fun OtherContent(
 ) {
     val viewModel: OtherViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val uriHandler = LocalUriHandler.current
     OtherContent(
         uiState = uiState,
         onItemSelected = viewModel::onItemSelected,
+        onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
@@ -48,6 +53,7 @@ fun OtherContent(
 internal fun OtherContent(
     uiState: OtherListUiState,
     onItemSelected: (String) -> Unit,
+    onOpenGitHubRepository: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -100,7 +106,13 @@ internal fun OtherContent(
         listPane = {
             OtherListPane(
                 uiState = uiState,
-                onItemClick = onItemSelected,
+                onItemClick = { itemId ->
+                    if (itemId == OtherItemType.GitHubRepository.id) {
+                        onOpenGitHubRepository()
+                    } else {
+                        onItemSelected(itemId)
+                    }
+                },
             )
         },
         detailPane = {

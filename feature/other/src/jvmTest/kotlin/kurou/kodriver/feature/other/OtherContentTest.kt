@@ -32,13 +32,18 @@ class OtherContentTest {
     @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
+        var githubRepositoryOpened = false
         var capturedOnBack: (() -> Unit)? = null
         var selectedItem by mutableStateOf<OtherItemType?>(null)
 
         rule.setContent {
             OtherContent(
                 uiState = OtherListUiState(selectedItem = selectedItem),
-                onItemSelected = { selectedItem = OtherItemType.fromId(it) },
+                onItemSelected = {
+                    val itemType = OtherItemType.fromId(it)
+                    selectedItem = itemType
+                },
+                onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 backHandler = { enabled, onBack ->
@@ -52,6 +57,12 @@ class OtherContentTest {
         assertFalse(backEnabled)
 
         rule.onNodeWithTag("other_item_0").performClick()
+        rule.waitForIdle()
+
+        assertTrue(githubRepositoryOpened)
+        assertFalse(backEnabled)
+
+        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)

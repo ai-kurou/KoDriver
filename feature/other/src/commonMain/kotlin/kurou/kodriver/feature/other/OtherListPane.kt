@@ -18,11 +18,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.other.generated.resources.Res
+import kodriver.feature.other.generated.resources.item_github_repository
 import kodriver.feature.other.generated.resources.item_license
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
+    OtherItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
     OtherItemType.License.id -> stringResource(Res.string.item_license)
     else -> itemId
 }

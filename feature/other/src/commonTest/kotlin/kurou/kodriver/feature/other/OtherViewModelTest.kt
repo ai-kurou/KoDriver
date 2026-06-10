@@ -13,7 +13,17 @@ class OtherViewModelTest {
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
         assertEquals(OtherItemType.entries.map { it.id }, viewModel.uiState.first().items)
+        assertEquals(OtherItemType.GitHubRepository.id, viewModel.uiState.first().items.first())
         assertNull(viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `GitHubレポジトリを選択しても状態は変わらない`() = runTest {
+        val initialState = viewModel.uiState.first()
+
+        viewModel.onItemSelected(OtherItemType.GitHubRepository.id)
+
+        assertEquals(initialState, viewModel.uiState.first())
     }
 
     @Test
