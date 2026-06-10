@@ -49,8 +49,8 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu"),
                                 selectedSimulator = "lmu",
-                                items = listOf("vehicle_approach", "laps_remaining"),
-                                readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
+                                items = listOf("vehicle_approach", "flag"),
+                                readoutEnabledStates = mapOf("vehicle_approach" to true, "flag" to false),
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
@@ -74,8 +74,8 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu"),
                                 selectedSimulator = "lmu",
-                                items = listOf("vehicle_approach", "laps_remaining"),
-                                readoutEnabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
+                                items = listOf("vehicle_approach", "flag"),
+                                readoutEnabledStates = mapOf("vehicle_approach" to true, "flag" to false),
                                 selectedItem = ReadoutItemType.VehicleApproach,
                             ),
                             onSimulatorSelected = {},

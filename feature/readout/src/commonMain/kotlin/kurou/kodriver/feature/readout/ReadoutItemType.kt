@@ -4,10 +4,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 
 sealed class ReadoutItemType(val id: String) {
     data object VehicleApproach : ReadoutItemType(ReadoutItemKey.VEHICLE_APPROACH)
-    data object LapsRemaining : ReadoutItemType(ReadoutItemKey.LAPS_REMAINING)
+    data object Flag : ReadoutItemType(ReadoutItemKey.FLAG)
 
     companion object {
-        private val entries = listOf(VehicleApproach, LapsRemaining)
+        private val entries = listOf(VehicleApproach, Flag)
 
         fun fromId(id: String): ReadoutItemType? = entries.find { it.id == id }
     }

@@ -43,7 +43,7 @@ class ReadoutPreferencesSerializerTest {
         val original = ReadoutPreferences(
             simulatorStates = mapOf(
                 "lmu" to SimulatorReadoutState(
-                    enabledStates = mapOf("vehicle_approach" to true, "laps_remaining" to false),
+                    enabledStates = mapOf("vehicle_approach" to true, "flag" to false),
                 ),
             ),
         )

@@ -15,10 +15,10 @@ class ObserveReadoutOrderUseCaseTest {
 
         assertTrue(useCase("lmu").first().isEmpty())
 
-        repo.saveReadoutOrder("lmu", listOf("vehicle_approach", "laps_remaining"))
-        repo.saveReadoutOrder("rFactor 2", listOf("laps_remaining"))
+        repo.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag"))
+        repo.saveReadoutOrder("rFactor 2", listOf("flag"))
 
-        assertEquals(listOf("vehicle_approach", "laps_remaining"), useCase("lmu").first())
-        assertEquals(listOf("laps_remaining"), useCase("rFactor 2").first())
+        assertEquals(listOf("vehicle_approach", "flag"), useCase("lmu").first())
+        assertEquals(listOf("flag"), useCase("rFactor 2").first())
     }
 }
