@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.HorizontalDivider
@@ -75,17 +76,29 @@ internal fun OtherListPane(
 
                         null -> null
                     },
+                    trailingContent = if (OtherItemType.fromId(item) == OtherItemType.GitHubRepository) {
+                        {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                                contentDescription = null,
+                            )
+                        }
+                    } else {
+                        null
+                    },
                     colors = if (OtherItemType.fromId(item) == uiState.selectedItem) {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
                             leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            trailingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     } else {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surface,
                             headlineColor = MaterialTheme.colorScheme.onSurface,
                             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
                     modifier = Modifier
