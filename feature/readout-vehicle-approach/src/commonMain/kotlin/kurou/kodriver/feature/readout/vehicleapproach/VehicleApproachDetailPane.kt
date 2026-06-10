@@ -2,6 +2,7 @@ package kurou.kodriver.feature.readout.vehicleapproach
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -31,9 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.readout.vehicleapproach.generated.resources.Res
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_description
+import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_first_lap_subtitle
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_help_description
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_lateral_label
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_longitudinal_label
+import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_threshold_subtitle
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_title
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -80,6 +84,7 @@ internal fun VehicleApproachDetailPaneContent(
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
     var showHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    var skipFirstLap by remember { mutableStateOf(false) }
 
     if (showHelpSheet) {
         ModalBottomSheet(
@@ -133,6 +138,23 @@ internal fun VehicleApproachDetailPaneContent(
             labelFormatter = { lateralLabel.format(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
         )
+        DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.vehicle_approach_skip_first_lap_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Switch(
+                checked = skipFirstLap,
+                onCheckedChange = { skipFirstLap = it },
+                modifier = Modifier.testTag("vehicle_approach_skip_first_lap_switch"),
+            )
+        }
     }
 }
 
