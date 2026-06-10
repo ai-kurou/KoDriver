@@ -1,5 +1,5 @@
 <resources>
-    <string name="item_github_repository">GitHub Repository</string>
-    <string name="item_license">License</string>
-    <string name="navigate_back">Navigate back</string>
+    <string name="item_github_repository">GitHubレポジトリ</string>
+    <string name="item_license">ライセンス</string>
+    <string name="navigate_back">戻る</string>
 </resources>

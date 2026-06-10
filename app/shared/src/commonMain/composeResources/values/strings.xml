@@ -1,4 +1,4 @@
 <resources>
-    <string name="nav_readout">Readout</string>
-    <string name="nav_more">More</string>
+    <string name="nav_readout">読み上げ</string>
+    <string name="nav_more">その他</string>
 </resources>

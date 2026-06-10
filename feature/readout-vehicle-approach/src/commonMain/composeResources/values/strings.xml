@@ -1,8 +1,8 @@
 <resources>
-    <string name="vehicle_approach_title">Vehicle Approach</string>
-    <string name="vehicle_approach_description">Announces when surrounding vehicles are approaching.</string>
-    <string name="vehicle_approach_threshold_subtitle">Threshold Settings</string>
-    <string name="vehicle_approach_longitudinal_label">Front/Rear: %1$.1f m</string>
-    <string name="vehicle_approach_lateral_label">Left/Right: %1$.1f m</string>
-    <string name="vehicle_approach_help_description">Thresholds are measured center-to-center between your vehicle and surrounding vehicles. A vehicle within range is considered approaching and will be announced.\n\nNote: Racing cars are generally under 5 m in length and 2 m in width.</string>
+    <string name="vehicle_approach_title">車両接近</string>
+    <string name="vehicle_approach_description">周囲の車両が接近した際に音声でお知らせします。</string>
+    <string name="vehicle_approach_threshold_subtitle">閾値設定</string>
+    <string name="vehicle_approach_longitudinal_label">前後: %1$.1f m</string>
+    <string name="vehicle_approach_lateral_label">左右: %1$.1f m</string>
+    <string name="vehicle_approach_help_description">閾値は自車中心から相手車両中心までの距離です。この範囲内に入ると車両接近と判定され読み上げられます。\n\n※車両は一般的に全長 5 m 以下、全幅 2 m 以下となっています。</string>
 </resources>

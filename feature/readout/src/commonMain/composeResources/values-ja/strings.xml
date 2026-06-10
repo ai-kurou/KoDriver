@@ -1,9 +1,0 @@
-<resources>
-    <string name="simulator_label">シミュレーター</string>
-    <string name="select_simulator_hint">シミュレータを選択</string>
-    <string name="simulator_name_lmu">Le Mans Ultimate</string>
-    <string name="item_vehicle_approach">車両接近</string>
-    <string name="item_flag">フラッグ</string>
-    <string name="drag_handle">ドラッグして並び替え</string>
-    <string name="navigate_back">戻る</string>
-</resources>
