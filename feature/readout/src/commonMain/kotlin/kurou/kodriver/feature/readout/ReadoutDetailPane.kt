@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import kodriver.feature.readout.generated.resources.Res
 import kodriver.feature.readout.generated.resources.navigate_back
@@ -22,7 +23,7 @@ internal fun ReadoutDetailPane(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         if (canNavigateBack) {
-            IconButton(onClick = onBack) {
+            IconButton(onClick = onBack, modifier = Modifier.testTag("readout_detail_back")) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.navigate_back))
             }
         }

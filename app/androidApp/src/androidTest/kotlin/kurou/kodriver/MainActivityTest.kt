@@ -14,7 +14,7 @@ class MainActivityTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動する`() {
+    fun `シミュレータ選択後に読み上げ項目を順にタップしその他タブへ移動する`() {
         // シミュレータドロップダウンをタップして展開
         composeTestRule.onNodeWithTag("simulator_dropdown_trigger").performClick()
         composeTestRule.waitForIdle()
@@ -23,8 +23,16 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("simulator_item_lmu").performClick()
         composeTestRule.waitForIdle()
 
-        // 読み上げ優先度リストの最上部（インデックス0）をタップ
+        // フラッグ（インデックス0）をタップ
         composeTestRule.onNodeWithTag("readout_item_0").performClick()
+        composeTestRule.waitForIdle()
+
+        // 詳細ペインから戻る
+        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.waitForIdle()
+
+        // 車両接近（インデックス1）をタップ
+        composeTestRule.onNodeWithTag("readout_item_1").performClick()
         composeTestRule.waitForIdle()
 
         // はてなマークをタップ
