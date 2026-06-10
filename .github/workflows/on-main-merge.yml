@@ -147,6 +147,7 @@ jobs:
             feature/other/src/jvmTest/snapshots/*.png
             app/shared/src/jvmTest/snapshots/*.png
 
+  # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
     runs-on: ubuntu-latest
 
