@@ -6,7 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -41,8 +47,9 @@ internal fun OtherListPane(
             .padding(vertical = 8.dp),
     ) {
         itemsIndexed(uiState.items, key = { _, item -> item }) { index, item ->
+            val itemType = OtherItemType.fromId(item)
             Surface(
-                color = if (OtherItemType.fromId(item) == uiState.selectedItem) {
+                color = if (itemType == uiState.selectedItem) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
                     MaterialTheme.colorScheme.surface
@@ -50,15 +57,61 @@ internal fun OtherListPane(
             ) {
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
-                    colors = if (OtherItemType.fromId(item) == uiState.selectedItem) {
+                    leadingContent = when (itemType) {
+                        OtherItemType.GitHubRepository -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.Code,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        OtherItemType.License -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.Description,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        null -> null
+                    },
+                    trailingContent = when (itemType) {
+                        OtherItemType.GitHubRepository -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        OtherItemType.License -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.ChevronRight,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        null -> null
+                    },
+                    colors = if (itemType == uiState.selectedItem) {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            trailingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
                         )
                     } else {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.surface,
                             headlineColor = MaterialTheme.colorScheme.onSurface,
+                            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
                     modifier = Modifier
