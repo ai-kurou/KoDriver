@@ -53,6 +53,8 @@ class SharedMemoryProximityRepositoryTest {
         val job = launch { repo.proximityStream().collect { } }
         delay(50)
         job.cancelAndJoin()
+        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
+        delay(100)
 
         assertTrue(reader.closeCalled)
     }
@@ -199,6 +201,8 @@ class SharedMemoryProximityRepositoryTest {
         val job = launch { repo.proximityStream().collect { } }
         delay(50)
         job.cancelAndJoin()
+        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
+        delay(100)
 
         assertTrue(fakeReader.closeCalled)
     }
