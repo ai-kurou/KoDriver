@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.HorizontalDivider
@@ -76,15 +77,26 @@ internal fun OtherListPane(
 
                         null -> null
                     },
-                    trailingContent = if (OtherItemType.fromId(item) == OtherItemType.GitHubRepository) {
-                        {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                contentDescription = null,
-                            )
+                    trailingContent = when (OtherItemType.fromId(item)) {
+                        OtherItemType.GitHubRepository -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                                    contentDescription = null,
+                                )
+                            }
                         }
-                    } else {
-                        null
+
+                        OtherItemType.License -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.ChevronRight,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        null -> null
                     },
                     colors = if (OtherItemType.fromId(item) == uiState.selectedItem) {
                         ListItemDefaults.colors(
