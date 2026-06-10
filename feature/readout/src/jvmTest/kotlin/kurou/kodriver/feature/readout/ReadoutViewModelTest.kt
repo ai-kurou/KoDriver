@@ -68,11 +68,25 @@ class ReadoutViewModelTest {
     }
 
     @Test
+    fun `シミュレータ未選択時はmoveItemで順序を保存しない`() = runTest {
+        viewModel.moveItem(0, 1)
+
+        assertEquals(emptyList(), readoutRepository.observeReadoutOrder("lmu").first())
+    }
+
+    @Test
     fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() = runTest {
         viewModel.onSimulatorSelected("lmu")
         viewModel.onReadoutEnabledChanged("vehicle_approach", false)
 
         assertEquals(false, viewModel.uiState.first().readoutEnabledStates["vehicle_approach"])
+    }
+
+    @Test
+    fun `シミュレータ未選択時はON_OFF状態を保存しない`() = runTest {
+        viewModel.onReadoutEnabledChanged("vehicle_approach", false)
+
+        assertEquals(emptyMap(), readoutRepository.observeReadoutEnabledStates("lmu").first())
     }
 
     @Test
@@ -121,6 +135,13 @@ class ReadoutViewModelTest {
         viewModel.onItemSelected("vehicle_approach")
 
         assertEquals(ReadoutItemType.VehicleApproach, viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `存在しないアイテムを選択しても選択状態は変わらない`() = runTest {
+        viewModel.onItemSelected("unknown")
+
+        assertNull(viewModel.uiState.first().selectedItem)
     }
 
     @Test
