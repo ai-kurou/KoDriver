@@ -11,6 +11,7 @@ import kurou.kodriver.data.repository.SharedMemoryProximityRepository
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
@@ -48,6 +49,9 @@ val desktopDataModule = module {
     }
     single<ProximityThresholdsRepository> {
         createProximityThresholdsRepository(directory = kodriverDirectory)
+    }
+    single<FlagPreferencesRepository> {
+        createFlagPreferencesRepository(directory = kodriverDirectory)
     }
 }
 
