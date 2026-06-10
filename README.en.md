@@ -36,20 +36,25 @@ The app can be launched without LMU running. It will automatically connect once 
 Multi-module Clean Architecture with Kotlin Multiplatform.
 
 ```
-:app:desktopApp → :app:shared → :feature:* → :core:domain ← :core:data
-                                            ↘ :core:designsystem
+:app:desktopApp ┬→ :app:shared → :feature:* → :core:domain
+                └→ :core:data ────────────────────────↑
+                         :feature:* → :core:designsystem
 ```
 
 | Module | Role |
 |---|---|
 | `:app:desktopApp` | Desktop app entry point |
+| `:app:androidApp` | Android app entry point |
+| `:app:webApp` | Web app (not yet implemented) |
 | `:app:shared` | Compose Multiplatform shared UI |
 | `:core:domain` | Repository interfaces & use cases |
-| `:core:data` | Shared memory reader & DataStore (JVM only) |
+| `:core:data` | Shared memory reader & DataStore (JVM / Android) |
 | `:core:designsystem` | Shared Composable components |
 | `:feature:readout` | Announcement settings UI |
 | `:feature:readout-vehicle-approach` | Vehicle approach announcement detail UI |
 | `:feature:narrator` | Audio playback engine (WAV TTS) |
+| `:feature:other` | Other settings and license information UI |
+| `:server` | Ktor server (not yet implemented) |
 
 ## Contributing
 
