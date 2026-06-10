@@ -27,6 +27,10 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("readout_item_0").performClick()
         composeTestRule.waitForIdle()
 
+        // 詳細ペインから戻る
+        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.waitForIdle()
+
         // 車両接近（インデックス1）をタップ
         composeTestRule.onNodeWithTag("readout_item_1").performClick()
         composeTestRule.waitForIdle()
