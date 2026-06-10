@@ -10,6 +10,7 @@ permissions:
 jobs:
   detekt:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -27,6 +28,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -44,6 +46,7 @@ jobs:
 
   module-graph-assert:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -61,6 +64,7 @@ jobs:
 
   update-module-graph:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: module-graph-assert
     permissions:
       contents: write
@@ -99,6 +103,7 @@ jobs:
 
   unit-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -121,6 +126,7 @@ jobs:
 
   screenshot-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
@@ -150,6 +156,7 @@ jobs:
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
