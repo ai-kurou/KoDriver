@@ -2,6 +2,7 @@ package kurou.kodriver.data
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
@@ -24,5 +25,8 @@ fun androidDataModule(context: Context) = module {
     single<ProximityRepository> { EmptyProximityRepository() }
     single<ProximityThresholdsRepository> {
         createProximityThresholdsRepository(context.filesDir.absolutePath)
+    }
+    single<FlagPreferencesRepository> {
+        createFlagPreferencesRepository(context.filesDir.absolutePath)
     }
 }
