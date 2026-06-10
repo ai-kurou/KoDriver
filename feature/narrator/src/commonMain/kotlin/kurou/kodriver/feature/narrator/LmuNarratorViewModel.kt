@@ -105,9 +105,9 @@ class LmuNarratorViewModel(
             }
         }
 
-        if (enabledStates.value[ReadoutItemKey.SESSION_STOPPED] != false) {
-            if (prev?.gamePhase != SessionPhase.SESSION_STOPPED &&
-                current.gamePhase == SessionPhase.SESSION_STOPPED
+        if (enabledStates.value[ReadoutItemKey.RED_FLAG] != false) {
+            if (prev?.gamePhase != SessionPhase.RED_FLAG &&
+                current.gamePhase == SessionPhase.RED_FLAG
             ) {
                 ttsEngine.speak("セッションストップ")
             }

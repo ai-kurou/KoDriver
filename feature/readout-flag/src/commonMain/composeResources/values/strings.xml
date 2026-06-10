@@ -1,0 +1,9 @@
+<resources>
+    <string name="flag_title">フラッグ</string>
+    <string name="flag_description">ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。</string>
+    <string name="flag_switch_subtitle">フラッグ別設定</string>
+    <string name="flag_blue">ブルーフラッグ</string>
+    <string name="flag_yellow">イエローフラッグ</string>
+    <string name="flag_full_course_yellow">フルコースイエロー</string>
+    <string name="flag_red">レッドフラッグ</string>
+</resources>
