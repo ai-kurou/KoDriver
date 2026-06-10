@@ -18,7 +18,7 @@ class RaceFlagsDataTest {
         assertEquals(SessionPhase.COUNTDOWN, SessionPhase.fromRaw(4))
         assertEquals(SessionPhase.GREEN_FLAG, SessionPhase.fromRaw(5))
         assertEquals(SessionPhase.FULL_COURSE_YELLOW, SessionPhase.fromRaw(6))
-        assertEquals(SessionPhase.SESSION_STOPPED, SessionPhase.fromRaw(7))
+        assertEquals(SessionPhase.RED_FLAG, SessionPhase.fromRaw(7))
         assertEquals(SessionPhase.SESSION_OVER, SessionPhase.fromRaw(8))
         assertEquals(SessionPhase.PAUSED_OR_HEARTBEAT, SessionPhase.fromRaw(9))
     }

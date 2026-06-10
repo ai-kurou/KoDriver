@@ -215,7 +215,7 @@ class LmuNarratorViewModelTest {
         buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
 
         flagChannel.send(clearFlags())
-        flagChannel.send(clearFlags(gamePhase = SessionPhase.SESSION_STOPPED))
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
 
         assertEquals(listOf("セッションストップ"), tts.spokenTexts)
     }

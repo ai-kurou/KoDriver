@@ -36,7 +36,7 @@ enum class SessionPhase(val rawValue: Int) {
     COUNTDOWN(4),
     GREEN_FLAG(5),
     FULL_COURSE_YELLOW(6),
-    SESSION_STOPPED(7),
+    RED_FLAG(7),
     SESSION_OVER(8),
     PAUSED_OR_HEARTBEAT(9),
     UNKNOWN(Int.MIN_VALUE),
