@@ -38,7 +38,12 @@ class OtherContentTest {
         rule.setContent {
             OtherContent(
                 uiState = OtherListUiState(selectedItem = selectedItem),
-                onItemSelected = { selectedItem = OtherItemType.fromId(it) },
+                onItemSelected = {
+                    val itemType = OtherItemType.fromId(it)
+                    if (itemType != OtherItemType.GitHubRepository) {
+                        selectedItem = itemType
+                    }
+                },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 backHandler = { enabled, onBack ->
@@ -52,6 +57,11 @@ class OtherContentTest {
         assertFalse(backEnabled)
 
         rule.onNodeWithTag("other_item_0").performClick()
+        rule.waitForIdle()
+
+        assertFalse(backEnabled)
+
+        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)

@@ -70,6 +70,7 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
+                    OtherItemType.GitHubRepository -> {}
                     OtherItemType.License -> LicenseDetailPane()
                 }
             },
