@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -22,6 +24,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -125,7 +129,28 @@ internal fun AppScreenContent(
                     }
                 },
             ) {
-                Box(modifier = Modifier.statusBarsPadding()) {
+                val dividerColor = DividerDefaults.color
+                val dividerThickness = DividerDefaults.Thickness
+                val contentModifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .then(
+                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                            Modifier
+                        } else {
+                            Modifier.drawWithContent {
+                                drawContent()
+                                val strokeWidth = dividerThickness.toPx()
+                                drawLine(
+                                    color = dividerColor,
+                                    start = Offset(strokeWidth / 2, 0f),
+                                    end = Offset(strokeWidth / 2, size.height),
+                                    strokeWidth = strokeWidth,
+                                )
+                            }
+                        },
+                    )
+                Box(modifier = contentModifier) {
                     when (currentDestination) {
                         AppDestination.Readout -> readoutContent()
                         AppDestination.More -> otherContent()
