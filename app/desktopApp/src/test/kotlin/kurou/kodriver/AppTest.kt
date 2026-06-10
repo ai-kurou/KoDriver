@@ -4,8 +4,10 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.data.createFlagPreferencesRepository
 import kurou.kodriver.data.createReadoutPreferencesRepository
 import kurou.kodriver.data.createSimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -44,6 +46,9 @@ class AppTest {
                 }
                 single<ReadoutPreferencesRepository> {
                     createReadoutPreferencesRepository(directory = tempDir)
+                }
+                single<FlagPreferencesRepository> {
+                    createFlagPreferencesRepository(directory = tempDir)
                 }
                 factory { ObserveSelectedSimulatorUseCase(get()) }
                 factory { SaveSelectedSimulatorUseCase(get()) }
