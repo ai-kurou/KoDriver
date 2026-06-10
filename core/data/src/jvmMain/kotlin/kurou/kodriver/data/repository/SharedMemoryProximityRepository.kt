@@ -1,15 +1,11 @@
 package kurou.kodriver.data.repository
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kurou.kodriver.data.datasource.MemoryReader
-import kurou.kodriver.data.datasource.SharedMemoryReader
+import kotlinx.coroutines.flow.mapNotNull
+import kurou.kodriver.data.datasource.SharedLmuMemorySource
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
@@ -23,13 +19,8 @@ import kotlin.math.sin
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class SharedMemoryProximityRepository(
     private val thresholdsRepository: ProximityThresholdsRepository,
-    private val pollingIntervalMs: Long = 16L,
-    private val reconnectIntervalMs: Long = 1_000L,
     private val lateralMinimumMeters: Double = 1.0,
-    private val reader: MemoryReader = SharedMemoryReader(
-        segmentName = "LMU_Data",
-        sizeBytes = 324_820,
-    ),
+    private val source: SharedLmuMemorySource,
 ) : ProximityRepository {
 
     override fun proximityStream(): Flow<ProximityData> =
@@ -44,38 +35,17 @@ internal class SharedMemoryProximityRepository(
     private fun rawProximityFlow(
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
-    ): Flow<ProximityData> = flow {
-        try {
-            while (true) {
-                if (!reader.isOpen()) {
-                    if (!reader.open()) {
-                        delay(reconnectIntervalMs)
-                        continue
-                    }
-                }
-                reader.readBuffer()?.let { buffer ->
-                    val maxCount = maxVehicleCount(buffer)
-                    val activeVehicles = (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
-                        .coerceAtMost(maxCount)
-                    val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
-                    if (activeVehicles > 0 && playerIdx < activeVehicles) {
-                        emit(
-                            computeProximity(
-                                buffer,
-                                activeVehicles,
-                                playerIdx,
-                                longitudinalThresholdMeters,
-                                lateralMaximumMeters,
-                            ),
-                        )
-                    }
-                }
-                delay(pollingIntervalMs)
-            }
-        } finally {
-            reader.close()
+    ): Flow<ProximityData> = source.bufferFlow.mapNotNull { buffer ->
+        val maxCount = maxVehicleCount(buffer)
+        val activeVehicles = (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
+            .coerceAtMost(maxCount)
+        val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
+        if (activeVehicles > 0 && playerIdx < activeVehicles) {
+            computeProximity(buffer, activeVehicles, playerIdx, longitudinalThresholdMeters, lateralMaximumMeters)
+        } else {
+            null
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     private fun computeProximity(
         buffer: ByteBuffer,
