@@ -20,7 +20,7 @@ import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private val simulatorItems: Map<String, List<String>> = mapOf(
-    "lmu" to listOf("vehicle_approach", "flag"),
+    "lmu" to listOf("flag", "vehicle_approach"),
 )
 
 private val simulators: List<String> = simulatorItems.keys.toList()

@@ -56,7 +56,7 @@ class ReadoutViewModelTest {
 
         val state = viewModel.uiState.first()
         assertEquals("lmu", state.selectedSimulator)
-        assertEquals(listOf("vehicle_approach", "flag"), state.items)
+        assertEquals(listOf("flag", "vehicle_approach"), state.items)
     }
 
     @Test
@@ -64,7 +64,7 @@ class ReadoutViewModelTest {
         viewModel.onSimulatorSelected("lmu")
         viewModel.moveItem(0, 1)
 
-        assertEquals(listOf("flag", "vehicle_approach"), viewModel.uiState.first().items)
+        assertEquals(listOf("vehicle_approach", "flag"), viewModel.uiState.first().items)
     }
 
     @Test
@@ -113,7 +113,7 @@ class ReadoutViewModelTest {
         viewModel.moveItem(0, 1)
 
         assertEquals(
-            listOf("flag", "vehicle_approach"),
+            listOf("vehicle_approach", "flag"),
             readoutRepository.observeReadoutOrder("lmu").first(),
         )
     }
@@ -121,11 +121,11 @@ class ReadoutViewModelTest {
     @Test
     fun `連続moveItemではRepository更新より最後のmoveItem結果を優先して表示する`() = runTest {
         viewModel.onSimulatorSelected("lmu")
-        viewModel.moveItem(0, 1) // [flag, vehicle_approach]
-        viewModel.moveItem(0, 1) // [vehicle_approach, flag]（初期順序に戻る）
+        viewModel.moveItem(0, 1) // [vehicle_approach, flag]
+        viewModel.moveItem(0, 1) // [flag, vehicle_approach]（初期順序に戻る）
 
         assertEquals(
-            listOf("vehicle_approach", "flag"),
+            listOf("flag", "vehicle_approach"),
             viewModel.uiState.first().items,
         )
     }
