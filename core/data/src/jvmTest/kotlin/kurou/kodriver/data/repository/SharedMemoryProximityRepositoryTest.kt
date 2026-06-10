@@ -1,10 +1,17 @@
 package kurou.kodriver.data.repository
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.data.datasource.MemoryReader
@@ -66,6 +73,27 @@ class SharedMemoryProximityRepositoryTest {
 
         assertTrue(reader.closeCalled)
         assertEquals(0, emitCount.get())
+    }
+
+    @Test
+    fun `readBuffer が null の間は emit しない`() = runBlocking {
+        val reader = FakeProximityMemoryReader(
+            buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
+            returnNullBuffer = true,
+        )
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(),
+            pollingIntervalMs = 1,
+            reader = reader,
+        )
+        val emitCount = AtomicInteger(0)
+
+        val job = launch { repo.proximityStream().collect { emitCount.incrementAndGet() } }
+        delay(50)
+        job.cancelAndJoin()
+
+        assertEquals(0, emitCount.get())
+        assertTrue(reader.closeCalled)
     }
 
     // -------------------------------------------------------------------------
@@ -201,6 +229,23 @@ class SharedMemoryProximityRepositoryTest {
     }
 
     @Test
+    fun `activeVehicles が0の場合は emit しない`() = runBlocking {
+        val fakeReader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 0, playerIdx = 0))
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(),
+            pollingIntervalMs = 1,
+            reader = fakeReader,
+        )
+        val emitCount = AtomicInteger(0)
+
+        val job = launch { repo.proximityStream().collect { emitCount.incrementAndGet() } }
+        delay(50)
+        job.cancelAndJoin()
+
+        assertEquals(0, emitCount.get())
+    }
+
+    @Test
     fun `activeVehicles がバッファ範囲を超える値でもクランプされ例外が出ない`() = runBlocking {
         // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
         // BufferUnderflowException が発生しないことを確認
@@ -213,6 +258,11 @@ class SharedMemoryProximityRepositoryTest {
 
         repo.proximityStream().first()
         Unit
+    }
+
+    @Test
+    fun `ヘッダー未満のバッファでは最大車両数は0になる`() {
+        assertEquals(0, SharedMemoryProximityRepository.maxVehicleCount(ByteBuffer.allocate(1)))
     }
 
     // -------------------------------------------------------------------------
@@ -262,6 +312,87 @@ class SharedMemoryProximityRepositoryTest {
     }
 
     @Test
+    fun `右に複数台いる場合は最近接の横距離を返す`() = runBlocking {
+        val buffer = buildBuffer(
+            activeVehicles = 3,
+            playerIdx = 0,
+            opponents = listOf(
+                VehiclePos(posX = 3.0, posZ = 0.0),
+                VehiclePos(posX = 5.0, posZ = 0.0),
+            ),
+        )
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
+            pollingIntervalMs = 1,
+            reader = FakeProximityMemoryReader(buffer),
+        )
+
+        val result = repo.proximityStream().first()
+
+        assertEquals(3.0, result.lateralDistanceRightMeters)
+    }
+
+    @Test
+    fun `横方向の最小値未満と最大値超過の車両は並走判定しない`() = runBlocking {
+        val buffer = buildBuffer(
+            activeVehicles = 3,
+            playerIdx = 0,
+            opponents = listOf(
+                VehiclePos(posX = -0.5, posZ = 0.0),
+                VehiclePos(posX = 6.0, posZ = 0.0),
+            ),
+        )
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = FakeProximityThresholdsRepository(
+                longitudinal = 4.5,
+                lateral = 5.0,
+            ),
+            pollingIntervalMs = 1,
+            reader = FakeProximityMemoryReader(buffer),
+        )
+
+        val result = repo.proximityStream().first()
+
+        assertFalse(result.isSideBySideLeft)
+        assertFalse(result.isSideBySideRight)
+    }
+
+    @Test
+    fun `横方向閾値が更新されると新しい閾値で判定する`() = runBlocking {
+        val thresholds = MutableProximityThresholdsRepository(lateral = 2.0)
+        val repo = SharedMemoryProximityRepository(
+            thresholdsRepository = thresholds,
+            pollingIntervalMs = 1,
+            reader = FakeProximityMemoryReader(
+                buildBuffer(
+                    activeVehicles = 2,
+                    playerIdx = 0,
+                    opponents = listOf(VehiclePos(posX = 3.0, posZ = 0.0)),
+                ),
+            ),
+        )
+        val results = mutableListOf<Boolean>()
+        val firstResultReceived = CompletableDeferred<Unit>()
+
+        val job = launch {
+            repo.proximityStream()
+                .map { it.isSideBySideRight }
+                .distinctUntilChanged()
+                .onEach {
+                    results += it
+                    if (results.size == 1) firstResultReceived.complete(Unit)
+                }
+                .take(2)
+                .toList()
+        }
+        firstResultReceived.await()
+        thresholds.saveLateralThresholdMeters(4.0)
+        job.join()
+
+        assertEquals(listOf(false, true), results)
+    }
+
+    @Test
     fun `並走車がいない場合は横距離が MAX_VALUE になる`() = runBlocking {
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 0)
         val repo = SharedMemoryProximityRepository(
@@ -289,6 +420,25 @@ private class FakeProximityThresholdsRepository(
     override fun observeLateralThresholdMeters(): Flow<Double> = flowOf(lateral)
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) = Unit
     override suspend fun saveLateralThresholdMeters(meters: Double) = Unit
+}
+
+private class MutableProximityThresholdsRepository(
+    longitudinal: Double = 1.0,
+    lateral: Double = 5.0,
+) : ProximityThresholdsRepository {
+    private val longitudinalFlow = MutableStateFlow(longitudinal)
+    private val lateralFlow = MutableStateFlow(lateral)
+
+    override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinalFlow
+    override fun observeLateralThresholdMeters(): Flow<Double> = lateralFlow
+
+    override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
+        longitudinalFlow.value = meters
+    }
+
+    override suspend fun saveLateralThresholdMeters(meters: Double) {
+        lateralFlow.value = meters
+    }
 }
 
 private data class VehiclePos(val posX: Double = 0.0, val posZ: Double = 0.0)
@@ -334,6 +484,7 @@ private fun buildBuffer(
 private class FakeProximityMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
+    private val returnNullBuffer: Boolean = false,
 ) : MemoryReader {
 
     var closeCalled = false
@@ -345,7 +496,7 @@ private class FakeProximityMemoryReader(
     }
 
     override fun readBuffer(): ByteBuffer? {
-        if (!opened) return null
+        if (!opened || returnNullBuffer) return null
         // duplicate() はバッキングアレイを共有するが、スレッド間の可視性が不確定なため
         // 毎回独立したコピーを返す
         return ByteBuffer.wrap(buffer.array().copyOf()).order(ByteOrder.LITTLE_ENDIAN)

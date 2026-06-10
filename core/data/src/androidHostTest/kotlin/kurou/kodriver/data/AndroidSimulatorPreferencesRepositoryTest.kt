@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package kurou.kodriver.data
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory

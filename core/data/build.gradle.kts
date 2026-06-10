@@ -18,6 +18,9 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
         lint {
             abortOnError = true
             warningsAsErrors = false
@@ -55,11 +58,13 @@ kotlin {
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutinesTest)
         }
-        androidUnitTest.dependencies {
-            implementation(libs.kotlin.testJunit)
-            implementation(libs.junit)
-            implementation(libs.kotlinx.coroutinesTest)
-            implementation(libs.androidx.datastore.preferences)
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.kotlinx.coroutinesTest)
+                implementation(libs.androidx.datastore.preferences)
+            }
         }
     }
 }
