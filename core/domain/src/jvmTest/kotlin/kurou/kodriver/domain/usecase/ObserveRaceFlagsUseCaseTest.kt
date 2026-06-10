@@ -17,7 +17,7 @@ class ObserveRaceFlagsUseCaseTest {
         val expected = fakeRaceFlagsData(
             gamePhase = SessionPhase.GREEN_FLAG,
             yellowFlagState = SessionYellowFlagState.PIT_CLOSED,
-            playerFlag = PrimaryFlag.CHECKERED,
+            playerFlag = PrimaryFlag.BLUE,
         )
         val repo = FakeFlagRepository(stream = flowOf(expected))
         val useCase = ObserveRaceFlagsUseCase(repo)

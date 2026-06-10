@@ -26,8 +26,8 @@ data class RaceFlagsData(
     val playerCountLapFlag: CountLapFlag,
 )
 
-// rFactor/rF2 系 shared memory の ScoringInfo.mGamePhase に対応する値。
-// LMU でも同系統の shared memory レイアウトを使っている前提で解釈している。
+// LMU shared memory の ScoringInfo.mGamePhase に対応する値。
+// pyLMUSharedMemory lmu_enum.py の LMUGamePhase に基づく（値 0〜9）。
 enum class SessionPhase(val rawValue: Int) {
     GARAGE(0),
     WARM_UP(1),
@@ -39,8 +39,6 @@ enum class SessionPhase(val rawValue: Int) {
     SESSION_STOPPED(7),
     SESSION_OVER(8),
     PAUSED_OR_HEARTBEAT(9),
-    UNDER_YELLOW_FLAG(10),
-    UNDER_BLUE_FLAG(11),
     UNKNOWN(Int.MIN_VALUE),
     ;
 
@@ -81,17 +79,11 @@ enum class SectorFlagState(val rawValue: Int) {
     }
 }
 
-// shared memory の VehicleScoringInfo.mFlag に対応する値。
-// 車両個別に提示される主要な旗指示を読みやすくしたもの。
+// LMU shared memory の VehicleScoringInfo.mFlag に対応する値。
+// pyLMUSharedMemory lmu_enum.py の LMUPrimaryFlag に基づく（Green=0, Blue=6 の2値のみ）。
 enum class PrimaryFlag(val rawValue: Int) {
-    NONE(0),
-    BLUE(1),
-    YELLOW(2),
-    BLACK(3),
-    WHITE(4),
-    GREEN(5),
-    CHECKERED(6),
-    PENALTY(7),
+    GREEN(0),
+    BLUE(6),
     UNKNOWN(Int.MIN_VALUE),
     ;
 
@@ -100,11 +92,12 @@ enum class PrimaryFlag(val rawValue: Int) {
     }
 }
 
-// shared memory の VehicleScoringInfo.mCountLapFlag に対応する値。
-// その周回を正式ラップとして数えるかどうかを表す。
+// LMU shared memory の VehicleScoringInfo.mCountLapFlag に対応する値。
+// pyLMUSharedMemory lmu_enum.py の LMUCountLapFlag に基づく。
 enum class CountLapFlag(val rawValue: Int) {
-    DO_NOT_COUNT(0),
-    COUNT(1),
+    DO_NOT_COUNT_LAP_OR_TIME(0),
+    COUNT_LAP_BUT_NOT_TIME(1),
+    COUNT_LAP_AND_TIME(2),
     UNKNOWN(Int.MIN_VALUE),
     ;
 

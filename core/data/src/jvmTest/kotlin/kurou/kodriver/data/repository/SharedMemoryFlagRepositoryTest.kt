@@ -47,9 +47,9 @@ class SharedMemoryFlagRepositoryTest {
         assertEquals(listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR), result.sectorFlags)
         assertEquals(3, result.startLight)
         assertEquals(5, result.numRedLights)
-        assertEquals(PrimaryFlag.CHECKERED, result.playerFlag)
+        assertEquals(PrimaryFlag.BLUE, result.playerFlag)
         assertTrue(result.playerUnderYellow)
-        assertEquals(CountLapFlag.COUNT, result.playerCountLapFlag)
+        assertEquals(CountLapFlag.COUNT_LAP_BUT_NOT_TIME, result.playerCountLapFlag)
     }
 
     @Test

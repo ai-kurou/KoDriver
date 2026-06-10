@@ -19,7 +19,7 @@ internal class FakeFlagRepository(
 internal fun fakeRaceFlagsData(
     gamePhase: SessionPhase = SessionPhase.GARAGE,
     yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
-    playerFlag: PrimaryFlag = PrimaryFlag.NONE,
+    playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
 ) = RaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = yellowFlagState,
@@ -28,5 +28,5 @@ internal fun fakeRaceFlagsData(
     numRedLights = 0,
     playerFlag = playerFlag,
     playerUnderYellow = false,
-    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT,
+    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
