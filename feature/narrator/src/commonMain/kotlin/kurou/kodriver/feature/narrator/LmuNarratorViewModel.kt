@@ -74,11 +74,15 @@ class LmuNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     @Suppress("UnusedPrivateProperty")
-    private val proximityJob = vehicleApproachUseCases.observeProximity()
-        .scan(null as ProximityData? to null as ProximityData?) { acc, current ->
-            acc.second to current
+    private val proximityJob = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator != LMU_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            vehicleApproachUseCases.observeProximity()
+                .scan(null as ProximityData? to null as ProximityData?) { acc, current ->
+                    acc.second to current
+                }
+                .drop(1)
         }
-        .drop(1)
         .onEach { (prev, current) ->
             if (current == null) return@onEach
             if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
@@ -104,11 +108,15 @@ class LmuNarratorViewModel(
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val flagJob = observeRaceFlagsUseCase()
-        .scan(null as RaceFlagsData? to null as RaceFlagsData?) { acc, current ->
-            acc.second to current
+    private val flagJob = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator != LMU_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            observeRaceFlagsUseCase()
+                .scan(null as RaceFlagsData? to null as RaceFlagsData?) { acc, current ->
+                    acc.second to current
+                }
+                .drop(1)
         }
-        .drop(1)
         .onEach { (prev, current) ->
             if (current == null) return@onEach
             announceFlags(prev, current)
@@ -148,6 +156,10 @@ class LmuNarratorViewModel(
                 speakWithPriority(SpeechEvent.SessionStop)
             }
         }
+    }
+
+    private companion object {
+        const val LMU_SIMULATOR_KEY = "lmu"
     }
 
     /**

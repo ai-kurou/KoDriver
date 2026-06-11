@@ -73,6 +73,7 @@ class LmuNarratorViewModelTest {
         flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
         orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
+        simulator: String? = "lmu",
     ): LmuNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
         return LmuNarratorViewModel(
@@ -91,7 +92,7 @@ class LmuNarratorViewModelTest {
                 FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
             ),
             observeSelectedSimulatorUseCase = ObserveSelectedSimulatorUseCase(
-                FakeConstantSimulatorRepository("lmu"),
+                FakeConstantSimulatorRepository(simulator),
             ),
             observeReadoutEnabledStatesUseCase = ObserveReadoutEnabledStatesUseCase(readoutRepo),
             observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
@@ -100,6 +101,32 @@ class LmuNarratorViewModelTest {
             observeReadoutOrderUseCase = ObserveReadoutOrderUseCase(readoutRepo),
             ttsEngine = ttsEngine,
         )
+    }
+
+    // --- シミュレータ選択 ---
+
+    @Test
+    fun `LMU非選択時は接近アナウンスをしない`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = "other")
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `LMU非選択時は旗アナウンスをしない`() = runTest(testDispatcher) {
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = "other")
+
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
     // --- 接近アナウンス ---
