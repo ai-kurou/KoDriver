@@ -35,8 +35,9 @@ class FakeLmuRepository : LmuRepository {
 }
 
 class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepository {
-    override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(true)
-    override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
+    private val skipFirstLapFlow = MutableStateFlow(true)
+    override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
+    override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.value = skip }
 }
 
 class NoOpSoundPlayer : SoundPlayer {
