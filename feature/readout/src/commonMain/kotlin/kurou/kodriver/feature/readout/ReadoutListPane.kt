@@ -48,6 +48,7 @@ import kodriver.feature.readout.generated.resources.Res
 import kodriver.feature.readout.generated.resources.drag_handle
 import kodriver.feature.readout.generated.resources.item_flag
 import kodriver.feature.readout.generated.resources.item_vehicle_approach
+import kodriver.feature.readout.generated.resources.item_vehicle_damage
 import kodriver.feature.readout.generated.resources.lmu
 import kodriver.feature.readout.generated.resources.select_simulator_hint
 import kodriver.feature.readout.generated.resources.simulator_label
@@ -67,6 +68,7 @@ private fun simulatorDisplayName(simulatorId: String): String = when (simulatorI
 private fun itemDisplayName(itemId: String): String = when (itemId) {
     "vehicle_approach" -> stringResource(Res.string.item_vehicle_approach)
     "flag" -> stringResource(Res.string.item_flag)
+    "vehicle_damage" -> stringResource(Res.string.item_vehicle_damage)
     else -> itemId
 }
 
@@ -207,7 +209,7 @@ private fun ReadoutListPanePreview() {
         uiState = ReadoutListUiState(
             simulators = listOf("lmu"),
             selectedSimulator = "lmu",
-            items = listOf("vehicle_approach", "flag"),
+            items = listOf("vehicle_approach", "flag", "vehicle_damage"),
         ),
         onSimulatorSelected = {},
         onMove = { _, _ -> },

@@ -80,6 +80,7 @@ fun AppScreen(
                 when (itemType) {
                     ReadoutItemType.VehicleApproach -> VehicleApproachDetailPane()
                     ReadoutItemType.Flag -> FlagDetailPane()
+                    ReadoutItemType.VehicleDamage -> {}
                 }
             },
         )
