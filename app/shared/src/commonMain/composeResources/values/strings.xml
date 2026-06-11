@@ -2,5 +2,5 @@
     <string name="nav_readout">読み上げ</string>
     <string name="nav_more">その他</string>
     <string name="lmu_connected">LMUに接続しました</string>
-    <string name="lmu_disconnected">LMUとの再接続を待機しています</string>
+    <string name="lmu_disconnected">LMUとの接続を待機しています</string>
 </resources>

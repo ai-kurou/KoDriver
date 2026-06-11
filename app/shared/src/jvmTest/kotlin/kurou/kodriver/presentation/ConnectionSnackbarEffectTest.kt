@@ -69,6 +69,6 @@ class ConnectionSnackbarEffectTest {
 
     private companion object {
         const val CONNECTED_MESSAGE = "LMUに接続しました"
-        const val DISCONNECTED_MESSAGE = "LMUとの接続が切れました。再接続を待機しています"
+        const val DISCONNECTED_MESSAGE = "LMUとの接続を待機しています"
     }
 }
