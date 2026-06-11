@@ -1,0 +1,3 @@
+digraph G {
+  ":feature:lmu-connection" -> ":core:domain"
+}
