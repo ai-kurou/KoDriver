@@ -14,6 +14,10 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.EngineData
+import kurou.kodriver.domain.model.FuelData
+import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -21,16 +25,23 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.TimingData
+import kurou.kodriver.domain.model.TyreData
+import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -54,12 +65,22 @@ class LmuNarratorViewModelTest {
     private fun buildViewModel(
         proximityChannel: Channel<ProximityData> = Channel(Channel.UNLIMITED),
         flagChannel: Channel<RaceFlagsData> = Channel(Channel.UNLIMITED),
+        telemetryChannel: Channel<LmuTelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<String, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
+        skipFirstLap: Boolean = false,
     ) = LmuNarratorViewModel(
-        observeProximityUseCase = ObserveProximityUseCase(
-            FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+        vehicleApproachUseCases = VehicleApproachUseCases(
+            observeProximity = ObserveProximityUseCase(
+                FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+            ),
+            observeLmu = ObserveLmuUseCase(
+                FakeChannelLmuRepository(telemetryChannel.receiveAsFlow()),
+            ),
+            observeSkipFirstLap = ObserveSkipFirstLapUseCase(
+                FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
+            ),
         ),
         observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
             FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
@@ -158,6 +179,63 @@ class LmuNarratorViewModelTest {
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `1周目スキップONかつ現在ラップが1のときはアナウンスしない`() = runTest(testDispatcher) {
+        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
+        val telemetryChannel = Channel<LmuTelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = proximityChannel,
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            skipFirstLap = true,
+        )
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1))
+        proximityChannel.send(noProximity())
+        proximityChannel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `1周目スキップONでも2周目以降はアナウンスする`() = runTest(testDispatcher) {
+        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
+        val telemetryChannel = Channel<LmuTelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = proximityChannel,
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            skipFirstLap = true,
+        )
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2))
+        proximityChannel.send(noProximity())
+        proximityChannel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
+    }
+
+    @Test
+    fun `1周目スキップOFFのときは1周目でもアナウンスする`() = runTest(testDispatcher) {
+        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
+        val telemetryChannel = Channel<LmuTelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = proximityChannel,
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            skipFirstLap = false,
+        )
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1))
+        proximityChannel.send(noProximity())
+        proximityChannel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
     // --- 旗アナウンス ---
@@ -323,3 +401,43 @@ private class FakeFlagPreferencesRepository(
 
     override suspend fun saveFlagEnabledState(key: String, enabled: Boolean) = Unit
 }
+
+private class FakeChannelLmuRepository(
+    private val stream: Flow<LmuTelemetryData>,
+) : LmuRepository {
+    override fun telemetryStream(): Flow<LmuTelemetryData> = stream
+    override suspend fun isConnected(): Boolean = true
+    override suspend fun disconnect() = Unit
+}
+
+private class FakeConstantVehicleApproachPreferencesRepository(
+    private val skipFirstLap: Boolean,
+) : VehicleApproachPreferencesRepository {
+    override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
+    override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
+}
+
+private fun fakeTelemetryData(currentLap: Int) = LmuTelemetryData(
+    timestampMs = 0L,
+    engine = EngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+    inputs = InputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+    tyres = TyreData(wheels = emptyMap()),
+    fuel = FuelData(currentLiters = 0.0, capacityLiters = 0.0),
+    timing = TimingData(
+        currentLapTimeMs = 0L,
+        lastLapTimeMs = 0L,
+        bestLapTimeMs = 0L,
+        sector1Ms = 0L,
+        sector2Ms = 0L,
+        currentLap = currentLap,
+        maxLaps = 0,
+    ),
+    vehicle = VehicleData(
+        localVelocityX = 0.0,
+        localVelocityY = 0.0,
+        localVelocityZ = 0.0,
+        positionX = 0.0,
+        positionY = 0.0,
+        positionZ = 0.0,
+    ),
+)
