@@ -9,6 +9,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -23,6 +24,7 @@ val narratorModule: Module = module {
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveSkipFirstLapUseCase(get()) }
+    factory { ObserveVehicleDamageUseCase(get()) }
     factory { VehicleApproachUseCases(get(), get(), get()) }
     single<TextToSpeechEngine> { WavNarratorEngine(get()) }
     includes(platformSoundModule)

@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
@@ -27,6 +28,7 @@ fun androidDataModule(context: Context) = module {
     single<FlagRepository> { EmptyFlagRepository() }
     single<LmuRepository> { EmptyLmuRepository() }
     single<ProximityRepository> { EmptyProximityRepository() }
+    single<VehicleDamageRepository> { EmptyVehicleDamageRepository() }
     single<ProximityThresholdsRepository> {
         createProximityThresholdsRepository(context.filesDir.absolutePath)
     }
