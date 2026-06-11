@@ -21,6 +21,12 @@ internal class WavNarratorEngine(
 
     private var noiseSound: ByteArray? = null
 
+    override val currentReadoutItemKey: String?
+        get() = if (soundPlayer.isPlaying) _currentReadoutItemKey else null
+
+    @Volatile
+    private var _currentReadoutItemKey: String? = null
+
     private val eventToFile = mapOf(
         SpeechEvent.CarLeft to "files/car_left.wav",
         SpeechEvent.CarRight to "files/car_right.wav",
@@ -55,8 +61,13 @@ internal class WavNarratorEngine(
         if (soundPlayer.isPlaying) return
         val mainSound = sounds[event] ?: return
         scope.launch {
-            noiseSound?.let { soundPlayer.play(it) }
-            soundPlayer.play(mainSound)
+            _currentReadoutItemKey = event.readoutItemKey
+            try {
+                noiseSound?.let { soundPlayer.play(it) }
+                soundPlayer.play(mainSound)
+            } finally {
+                _currentReadoutItemKey = null
+            }
         }
     }
 

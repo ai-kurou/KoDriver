@@ -281,6 +281,7 @@ private fun clearFlags(
 
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
     val spokenTexts = mutableListOf<SpeechEvent>()
+    override val currentReadoutItemKey: String? = null
     override fun speak(event: SpeechEvent) { spokenTexts.add(event) }
     override fun stop() = Unit
 }
