@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
 
@@ -20,33 +22,43 @@ internal class SharedLmuMemorySource(
     ),
     scope: CoroutineScope,
 ) {
+    private val readerMutex = Mutex()
+
     val bufferFlow: Flow<ByteBuffer> = flow {
         try {
             while (true) {
-                if (!reader.isOpen()) {
-                    if (!reader.open()) {
-                        delay(reconnectIntervalMs)
-                        continue
+                val buffer = readerMutex.withLock {
+                    if (!reader.isOpen() && !reader.open()) {
+                        null
+                    } else {
+                        reader.readBuffer()
                     }
                 }
-                reader.readBuffer()?.let { emit(it) }
-                delay(pollingIntervalMs)
+                if (buffer == null) {
+                    delay(reconnectIntervalMs)
+                } else {
+                    emit(buffer)
+                    delay(pollingIntervalMs)
+                }
             }
         } finally {
-            reader.close()
+            readerMutex.withLock { reader.close() }
         }
     }
         .flowOn(Dispatchers.IO)
         .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     suspend fun isConnected(): Boolean = withContext(Dispatchers.IO) {
-        if (reader.isOpen()) return@withContext true
-        val opened = reader.open()
-        if (!opened) reader.close()
-        opened
+        readerMutex.withLock {
+            if (!reader.isOpen() && !reader.open()) {
+                reader.close()
+                return@withLock false
+            }
+            reader.readBuffer() != null
+        }
     }
 
     suspend fun disconnect() = withContext(Dispatchers.IO) {
-        reader.close()
+        readerMutex.withLock { reader.close() }
     }
 }

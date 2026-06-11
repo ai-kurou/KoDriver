@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -23,6 +24,7 @@ fun androidDataModule(context: Context) = module {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
     }
     single<FlagRepository> { EmptyFlagRepository() }
+    single<LmuRepository> { EmptyLmuRepository() }
     single<ProximityRepository> { EmptyProximityRepository() }
     single<ProximityThresholdsRepository> {
         createProximityThresholdsRepository(context.filesDir.absolutePath)
