@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            implementation(projects.feature.lmuConnection)
             implementation(projects.feature.narrator)
             implementation(projects.feature.other)
             implementation(projects.feature.readout)
@@ -67,6 +68,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.compose.material.icons.extended)
+            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

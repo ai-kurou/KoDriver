@@ -70,7 +70,7 @@ class SharedLmuMemorySourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `isOpen が true のとき isConnected は true を返す`() = runBlocking {
+    fun `isOpen が true かつバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
         val reader = FakeMemoryReader(initialOpen = true)
         val source = makeSource(reader)
 
@@ -78,7 +78,7 @@ class SharedLmuMemorySourceTest {
     }
 
     @Test
-    fun `isOpen が false かつ open 成功のとき isConnected は true を返す`() = runBlocking {
+    fun `isOpen が false かつ open 後にバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
         val reader = FakeMemoryReader(initialOpen = false, openResult = true)
         val source = makeSource(reader)
 
@@ -92,6 +92,14 @@ class SharedLmuMemorySourceTest {
 
         assertFalse(source.isConnected())
         assertTrue(reader.closeCalled)
+    }
+
+    @Test
+    fun `open 済みでもバッファを読み取れないとき isConnected は false を返す`() = runBlocking {
+        val reader = FakeMemoryReader(initialOpen = true, returnNullBuffer = true)
+        val source = makeSource(reader)
+
+        assertFalse(source.isConnected())
     }
 
     // -------------------------------------------------------------------------
@@ -116,6 +124,7 @@ class SharedLmuMemorySourceTest {
 private class FakeMemoryReader(
     initialOpen: Boolean = false,
     private val openResult: Boolean = true,
+    private val returnNullBuffer: Boolean = false,
 ) : MemoryReader {
 
     private var opened = initialOpen
@@ -127,7 +136,11 @@ private class FakeMemoryReader(
     }
 
     override fun readBuffer(): ByteBuffer? =
-        if (opened) ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN) else null
+        if (opened && !returnNullBuffer) {
+            ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN)
+        } else {
+            null
+        }
 
     override fun isOpen(): Boolean = opened
 

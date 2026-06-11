@@ -4,10 +4,14 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.data.createFlagPreferencesRepository
 import kurou.kodriver.data.createReadoutPreferencesRepository
 import kurou.kodriver.data.createSimulatorPreferencesRepository
+import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -50,6 +54,7 @@ class AppTest {
                 single<FlagPreferencesRepository> {
                     createFlagPreferencesRepository(directory = tempDir)
                 }
+                single<LmuRepository> { TestLmuRepository }
                 factory { ObserveSelectedSimulatorUseCase(get()) }
                 factory { SaveSelectedSimulatorUseCase(get()) }
                 factory { ObserveReadoutEnabledStatesUseCase(get()) }
@@ -99,4 +104,10 @@ class AppTest {
         rule.onNodeWithTag("nav_more").performClick()
         rule.waitForIdle()
     }
+}
+
+private object TestLmuRepository : LmuRepository {
+    override fun telemetryStream(): Flow<LmuTelemetryData> = emptyFlow()
+    override suspend fun isConnected(): Boolean = false
+    override suspend fun disconnect() = Unit
 }
