@@ -14,13 +14,18 @@ import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.lmu_connected
+import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
@@ -89,6 +96,17 @@ fun AppScreen(
 ) {
     val connectionViewModel: LmuConnectionViewModel = koinViewModel()
     val connectionUiState by connectionViewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val connectedMessage = stringResource(Res.string.lmu_connected)
+    val disconnectedMessage = stringResource(Res.string.lmu_disconnected)
+
+    ConnectionSnackbarEffect(
+        isConnectionChecked = connectionUiState.isConnectionChecked,
+        isConnected = connectionUiState.isConnected,
+        snackbarHostState = snackbarHostState,
+        connectedMessage = connectedMessage,
+        disconnectedMessage = disconnectedMessage,
+    )
 
     NarratorEffect()
     AppScreenContent(
@@ -97,15 +115,35 @@ fun AppScreen(
         } else {
             ConnectionStatus.Waiting
         },
+        snackbarHostState = snackbarHostState,
         readoutContent = readoutContent,
         otherContent = otherContent,
     )
 }
 
 @Composable
+internal fun ConnectionSnackbarEffect(
+    isConnectionChecked: Boolean,
+    isConnected: Boolean,
+    snackbarHostState: SnackbarHostState,
+    connectedMessage: String,
+    disconnectedMessage: String,
+) {
+    LaunchedEffect(isConnectionChecked, isConnected) {
+        if (isConnectionChecked) {
+            snackbarHostState.showSnackbar(
+                message = if (isConnected) connectedMessage else disconnectedMessage,
+                duration = SnackbarDuration.Short,
+            )
+        }
+    }
+}
+
+@Composable
 internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
     connectionStatus: ConnectionStatus = ConnectionStatus.Waiting,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
@@ -177,6 +215,20 @@ internal fun AppScreenContent(
                 layoutType = resolvedLayoutType,
                 status = connectionStatus,
                 modifier = Modifier.align(Alignment.BottomStart),
+            )
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                            96.dp
+                        } else {
+                            16.dp
+                        },
+                    ),
             )
         }
     }
