@@ -40,6 +40,7 @@ internal class WavNarratorEngine(
         SpeechEvent.YellowFlag to "files/yellow_flag.wav",
         SpeechEvent.FullCourseYellow to "files/full_course_yellow.wav",
         SpeechEvent.SessionStop to "files/session_stopped.wav",
+        SpeechEvent.Overheating to "files/gp2_gp2.wav",
     )
 
     init {

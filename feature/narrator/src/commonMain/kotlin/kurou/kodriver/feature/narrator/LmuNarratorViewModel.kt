@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
@@ -29,11 +30,13 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 
 data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
     val observeLmu: ObserveLmuUseCase,
     val observeSkipFirstLap: ObserveSkipFirstLapUseCase,
+    val observeVehicleDamage: ObserveVehicleDamageUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -103,6 +106,24 @@ class LmuNarratorViewModel(
                  */
                 newLeftVehicle -> speakWithPriority(SpeechEvent.CarLeft)
                 newRightVehicle -> speakWithPriority(SpeechEvent.CarRight)
+            }
+        }
+        .launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val overheatingJob = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator != LMU_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            vehicleApproachUseCases.observeVehicleDamage()
+                .scan(null as VehicleDamageData? to null as VehicleDamageData?) { acc, current ->
+                    acc.second to current
+                }
+                .drop(1)
+        }
+        .onEach { (prev, current) ->
+            if (current == null) return@onEach
+            if (prev?.overheating != true && current.overheating) {
+                speakWithPriority(SpeechEvent.Overheating)
             }
         }
         .launchIn(viewModelScope)

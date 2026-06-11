@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
+import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
@@ -34,6 +35,7 @@ import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
@@ -42,6 +44,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -67,6 +70,7 @@ class LmuNarratorViewModelTest {
     private fun buildViewModel(
         proximityChannel: Channel<ProximityData> = Channel(Channel.UNLIMITED),
         flagChannel: Channel<RaceFlagsData> = Channel(Channel.UNLIMITED),
+        damageChannel: Channel<VehicleDamageData> = Channel(Channel.UNLIMITED),
         telemetryChannel: Channel<LmuTelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<String, Boolean> = emptyMap(),
@@ -86,6 +90,9 @@ class LmuNarratorViewModelTest {
                 ),
                 observeSkipFirstLap = ObserveSkipFirstLapUseCase(
                     FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
+                ),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(
+                    FakeChannelVehicleDamageRepository(damageChannel.receiveAsFlow()),
                 ),
             ),
             observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
@@ -368,6 +375,45 @@ class LmuNarratorViewModelTest {
         assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
     }
 
+    // --- オーバーヒート ---
+
+    @Test
+    fun `オーバーヒートがfalseからtrueに変化するとOverheatingを読み上げる`() = runTest(testDispatcher) {
+        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(damageChannel = damageChannel, ttsEngine = tts)
+
+        damageChannel.send(noDamage())
+        damageChannel.send(noDamage(overheating = true))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), tts.spokenTexts)
+    }
+
+    @Test
+    fun `オーバーヒートが継続中は再度読み上げない`() = runTest(testDispatcher) {
+        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(damageChannel = damageChannel, ttsEngine = tts)
+
+        damageChannel.send(noDamage())
+        damageChannel.send(noDamage(overheating = true))
+        damageChannel.send(noDamage(overheating = true))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), tts.spokenTexts)
+    }
+
+    @Test
+    fun `LMU非選択時はオーバーヒートアナウンスをしない`() = runTest(testDispatcher) {
+        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(damageChannel = damageChannel, ttsEngine = tts, simulator = "other")
+
+        damageChannel.send(noDamage())
+        damageChannel.send(noDamage(overheating = true))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
     @Test
     fun `BLUE_FLAGが無効のときは青旗を読み上げない`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
@@ -495,6 +541,18 @@ private class FakeConstantVehicleApproachPreferencesRepository(
     override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
 }
+
+private class FakeChannelVehicleDamageRepository(
+    private val stream: Flow<VehicleDamageData>,
+) : VehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<VehicleDamageData> = stream
+}
+
+private fun noDamage(overheating: Boolean = false) = VehicleDamageData(
+    overheating = overheating,
+    partDetached = false,
+    lastImpactMagnitude = 0.0,
+)
 
 private fun fakeTelemetryData(currentLap: Int) = LmuTelemetryData(
     timestampMs = 0L,

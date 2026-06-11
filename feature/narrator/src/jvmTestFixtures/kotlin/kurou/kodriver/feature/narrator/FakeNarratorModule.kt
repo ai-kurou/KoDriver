@@ -6,10 +6,12 @@ import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
 val fakeNarratorDataModule = module {
@@ -17,6 +19,7 @@ val fakeNarratorDataModule = module {
     single<FlagRepository> { FakeFlagRepository() }
     single<LmuRepository> { FakeLmuRepository() }
     single<VehicleApproachPreferencesRepository> { FakeVehicleApproachPreferencesRepository() }
+    single<VehicleDamageRepository> { FakeVehicleDamageRepository() }
     single<SoundPlayer> { NoOpSoundPlayer() }
 }
 
@@ -38,6 +41,10 @@ class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepos
     private val skipFirstLapFlow = MutableStateFlow(true)
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.value = skip }
+}
+
+class FakeVehicleDamageRepository : VehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
 }
 
 class NoOpSoundPlayer : SoundPlayer {

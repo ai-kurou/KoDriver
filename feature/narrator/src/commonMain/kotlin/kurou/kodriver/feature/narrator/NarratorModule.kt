@@ -25,7 +25,7 @@ val narratorModule: Module = module {
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveSkipFirstLapUseCase(get()) }
     factory { ObserveVehicleDamageUseCase(get()) }
-    factory { VehicleApproachUseCases(get(), get(), get()) }
+    factory { VehicleApproachUseCases(get(), get(), get(), get()) }
     single<TextToSpeechEngine> { WavNarratorEngine(get()) }
     includes(platformSoundModule)
 }
