@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation
+package kurou.kodriver.feature.lmuconnection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
 
-internal data class LmuConnectionUiState(
+data class LmuConnectionUiState(
     val isConnected: Boolean = false,
 )
 
-internal class LmuConnectionViewModel(
+class LmuConnectionViewModel(
     private val checkLmuConnection: CheckLmuConnectionUseCase,
 ) : ViewModel() {
 

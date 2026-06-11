@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation
+package kurou.kodriver.feature.lmuconnection
 
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +15,8 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -26,12 +26,12 @@ class LmuConnectionViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         Dispatchers.setMain(dispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }
@@ -89,6 +89,7 @@ private class FakeConnectionRepository(
     var failureCount: Int = 0,
 ) : LmuRepository {
     override fun telemetryStream(): Flow<LmuTelemetryData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean {
         if (failureCount > 0) {
             failureCount--
@@ -96,5 +97,6 @@ private class FakeConnectionRepository(
         }
         return isConnected
     }
+
     override suspend fun disconnect() = Unit
 }

@@ -36,6 +36,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.narrator.NarratorEffect
 import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.other.OtherItemType
