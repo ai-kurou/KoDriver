@@ -15,6 +15,7 @@ KoDriver/
 │   ├── data/          データ層（JVM: JNA 共有メモリ + DataStore、Android: DataStore + 空実装）
 │   └── designsystem/  共通 Composable コンポーネント（KMP）
 ├── feature/
+│   ├── lmu-connection/           LMU 接続状態の監視
 │   ├── readout/                  アナウンス設定 UI（ReadoutViewModel, ReadoutContent, ReadoutListPane, ReadoutDetailPane）
 │   ├── readout-vehicle-approach/ 車両接近アナウンス詳細 UI（VehicleApproachDetailPane）
 │   ├── narrator/                 音声再生エンジン（WavNarratorEngine, SoundPlayer, LmuNarratorViewModel）
@@ -84,6 +85,10 @@ src/androidUnitTest/kotlin/  Android ユニットテスト
 commonMain/
   DetailPane.kt   DetailPaneTitle, DetailPaneDescription（詳細ペイン共通 Composable）
 ```
+
+### `feature:lmu-connection` モジュール（KMP）
+
+LMU 接続状態の監視を担当する feature モジュール。接続判定のユースケース、ViewModel、Koin モジュールはこのモジュールに配置する。
 
 ### `feature:readout` モジュール（KMP）
 

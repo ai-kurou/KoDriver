@@ -50,6 +50,7 @@ Multi-module Clean Architecture with Kotlin Multiplatform.
 | `:core:domain` | Repository interfaces & use cases |
 | `:core:data` | Shared memory reader & DataStore (JVM / Android) |
 | `:core:designsystem` | Shared Composable components |
+| `:feature:lmu-connection` | LMU connection status monitoring |
 | `:feature:readout` | Announcement settings UI |
 | `:feature:readout-vehicle-approach` | Vehicle approach announcement detail UI |
 | `:feature:narrator` | Audio playback engine (WAV TTS) |
