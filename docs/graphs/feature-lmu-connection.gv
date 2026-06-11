@@ -1,3 +1,4 @@
 digraph G {
+  ":app:shared" -> ":feature:lmu-connection"
   ":feature:lmu-connection" -> ":core:domain"
 }
