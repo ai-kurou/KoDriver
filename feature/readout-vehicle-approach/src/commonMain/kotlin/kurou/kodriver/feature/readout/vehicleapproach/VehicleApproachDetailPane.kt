@@ -129,7 +129,7 @@ internal fun VehicleApproachDetailPaneContent(
         )
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
-            valueRange = 0.1f..5f,
+            valueRange = 0.1f..10f,
             labelFormatter = { longitudinalLabel.format(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
         )

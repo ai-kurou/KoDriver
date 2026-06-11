@@ -5,6 +5,6 @@
     <string name="vehicle_approach_longitudinal_label">前後: %1$.1f m</string>
     <string name="vehicle_approach_lateral_label">左右: %1$.1f m</string>
     <string name="vehicle_approach_help_description">閾値は自車中心から相手車両中心までの距離です。この範囲内に入ると車両接近と判定され読み上げられます。\n\n※車両は一般的に全長 5 m 以下、全幅 2 m 以下となっています。</string>
-    <string name="vehicle_approach_first_lap_subtitle">最初の 1 周は読み上げない</string>
-    <string name="vehicle_approach_skip_first_lap_subtitle">スタート直後の読み上げをスキップします。</string>
+    <string name="vehicle_approach_first_lap_subtitle">1周目はスキップ</string>
+    <string name="vehicle_approach_skip_first_lap_subtitle">スタート直後は車両が密集するため、1周目の読み上げをスキップします。</string>
 </resources>

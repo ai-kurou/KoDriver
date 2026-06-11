@@ -25,7 +25,7 @@ class ProximityThresholdsRepositoryImplTest {
 
     @Test
     fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(2.5, repository.observeLongitudinalThresholdMeters().first())
+        assertEquals(5.0, repository.observeLongitudinalThresholdMeters().first())
 
         repository.saveLongitudinalThresholdMeters(50.0)
         assertEquals(50.0, repository.observeLongitudinalThresholdMeters().first())

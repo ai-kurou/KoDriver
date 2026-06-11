@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuconnection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -11,6 +12,7 @@ import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
 
 data class LmuConnectionUiState(
     val isConnected: Boolean = false,
+    val isConnectionChecked: Boolean = false,
 )
 
 class LmuConnectionViewModel(
@@ -19,8 +21,19 @@ class LmuConnectionViewModel(
 
     val uiState: StateFlow<LmuConnectionUiState> = flow {
         while (true) {
-            val isConnected = runCatching { checkLmuConnection() }.getOrDefault(false)
-            emit(LmuConnectionUiState(isConnected = isConnected))
+            val isConnected = try {
+                checkLmuConnection()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                false
+            }
+            emit(
+                LmuConnectionUiState(
+                    isConnected = isConnected,
+                    isConnectionChecked = true,
+                ),
+            )
             delay(CONNECTION_CHECK_INTERVAL_MS)
         }
     }.stateIn(
