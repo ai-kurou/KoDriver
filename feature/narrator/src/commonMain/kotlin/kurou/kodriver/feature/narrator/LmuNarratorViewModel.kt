@@ -59,7 +59,7 @@ class LmuNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     @Suppress("UnusedPrivateProperty")
     private val proximityJob = vehicleApproachUseCases.observeProximity()
