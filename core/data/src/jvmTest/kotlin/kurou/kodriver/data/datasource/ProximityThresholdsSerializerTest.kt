@@ -12,9 +12,9 @@ import kotlin.test.assertFailsWith
 class ProximityThresholdsSerializerTest {
 
     @Test
-    fun `デフォルト値は縦方向2_5m・横方向5m`() {
+    fun `デフォルト値は縦方向5m・横方向5m`() {
         val expected = ProximityThresholdsPreferences(
-            longitudinalThresholdMeters = 2.5,
+            longitudinalThresholdMeters = 5.0,
             lateralThresholdMeters = 5.0,
         )
         assertEquals(expected, ProximityThresholdsSerializer.defaultValue)
