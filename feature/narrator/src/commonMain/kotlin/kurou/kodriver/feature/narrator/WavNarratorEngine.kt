@@ -65,6 +65,7 @@ internal class WavNarratorEngine(
 
     override fun speak(event: SpeechEvent) {
         val mainSound = sounds[event] ?: return
+        if (soundPlayer.isPlaying) return
         playJob?.cancel()
         playJob = scope.launch {
             _currentReadoutItemKey = event.readoutItemKey
