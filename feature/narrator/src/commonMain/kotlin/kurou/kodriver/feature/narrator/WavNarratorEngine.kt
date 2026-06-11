@@ -3,6 +3,7 @@ package kurou.kodriver.feature.narrator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -21,6 +22,16 @@ internal class WavNarratorEngine(
     private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
 
     private var noiseSound: ByteArray? = null
+
+    private var playJob: Job? = null
+
+    @Volatile
+    private var _currentReadoutItemKey: String? = null
+
+    // playJob がアクティブな間だけ再生中のキーを返す。
+    // キャンセル後に古いジョブが _currentReadoutItemKey を上書きしないよう playJob で二重確認する。
+    override val currentReadoutItemKey: String?
+        get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
     private val eventToFile = mapOf(
         SpeechEvent.CarLeft to "files/car_left.wav",
@@ -53,13 +64,19 @@ internal class WavNarratorEngine(
     }
 
     override fun speak(event: SpeechEvent) {
-        if (soundPlayer.isPlaying) return
         val mainSound = sounds[event] ?: return
-        scope.launch {
+        if (soundPlayer.isPlaying) return
+        playJob?.cancel()
+        playJob = scope.launch {
+            _currentReadoutItemKey = event.readoutItemKey
             noiseSound?.let { soundPlayer.play(it) }
             soundPlayer.play(mainSound)
+            _currentReadoutItemKey = null
         }
     }
 
-    override fun stop() = Unit
+    override fun stop() {
+        playJob?.cancel()
+        playJob = null
+    }
 }

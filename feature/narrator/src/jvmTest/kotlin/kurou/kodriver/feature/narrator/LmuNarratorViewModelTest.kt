@@ -5,7 +5,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -40,6 +39,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import org.junit.After
@@ -48,6 +48,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class LmuNarratorViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -62,6 +63,7 @@ class LmuNarratorViewModelTest {
         Dispatchers.resetMain()
     }
 
+    @Suppress("LongParameterList")
     private fun buildViewModel(
         proximityChannel: Channel<ProximityData> = Channel(Channel.UNLIMITED),
         flagChannel: Channel<RaceFlagsData> = Channel(Channel.UNLIMITED),
@@ -69,33 +71,36 @@ class LmuNarratorViewModelTest {
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<String, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
+        orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
-    ) = LmuNarratorViewModel(
-        vehicleApproachUseCases = VehicleApproachUseCases(
-            observeProximity = ObserveProximityUseCase(
-                FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+    ): LmuNarratorViewModel {
+        val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
+        return LmuNarratorViewModel(
+            vehicleApproachUseCases = VehicleApproachUseCases(
+                observeProximity = ObserveProximityUseCase(
+                    FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+                ),
+                observeLmu = ObserveLmuUseCase(
+                    FakeChannelLmuRepository(telemetryChannel.receiveAsFlow()),
+                ),
+                observeSkipFirstLap = ObserveSkipFirstLapUseCase(
+                    FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
+                ),
             ),
-            observeLmu = ObserveLmuUseCase(
-                FakeChannelLmuRepository(telemetryChannel.receiveAsFlow()),
+            observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
+                FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
             ),
-            observeSkipFirstLap = ObserveSkipFirstLapUseCase(
-                FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
+            observeSelectedSimulatorUseCase = ObserveSelectedSimulatorUseCase(
+                FakeConstantSimulatorRepository("lmu"),
             ),
-        ),
-        observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
-            FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
-        ),
-        observeSelectedSimulatorUseCase = ObserveSelectedSimulatorUseCase(
-            FakeConstantSimulatorRepository("lmu"),
-        ),
-        observeReadoutEnabledStatesUseCase = ObserveReadoutEnabledStatesUseCase(
-            FakeAllEnabledReadoutPreferencesRepository(enabledOverrides),
-        ),
-        observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
-            FakeFlagPreferencesRepository(flagEnabledOverrides),
-        ),
-        ttsEngine = ttsEngine,
-    )
+            observeReadoutEnabledStatesUseCase = ObserveReadoutEnabledStatesUseCase(readoutRepo),
+            observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
+                FakeFlagPreferencesRepository(flagEnabledOverrides),
+            ),
+            observeReadoutOrderUseCase = ObserveReadoutOrderUseCase(readoutRepo),
+            ttsEngine = ttsEngine,
+        )
+    }
 
     // --- 接近アナウンス ---
 
@@ -305,6 +310,37 @@ class LmuNarratorViewModelTest {
         assertEquals(listOf<SpeechEvent>(SpeechEvent.SessionStop), tts.spokenTexts)
     }
 
+    // --- 優先度 ---
+
+    @Test
+    fun `フラグ読み上げ中に車両接近イベントが来ても読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = PriorityAwareTextToSpeechEngine(
+            initialKey = ReadoutItemKey.FLAG,
+        )
+        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `車両接近読み上げ中にフラグイベントが来ると読み上げを停止して割り込む`() = runTest(testDispatcher) {
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val tts = PriorityAwareTextToSpeechEngine(
+            initialKey = ReadoutItemKey.VEHICLE_APPROACH,
+        )
+        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
+
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
+
+        assertEquals(true, tts.stopCalled)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
+    }
+
     @Test
     fun `BLUE_FLAGが無効のときは青旗を読み上げない`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
@@ -359,8 +395,23 @@ private fun clearFlags(
 
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
     val spokenTexts = mutableListOf<SpeechEvent>()
+    override val currentReadoutItemKey: String? = null
     override fun speak(event: SpeechEvent) { spokenTexts.add(event) }
     override fun stop() = Unit
+}
+
+/** 優先度テスト用: 再生中キーを手動で制御できる TTS エンジン */
+private class PriorityAwareTextToSpeechEngine(
+    initialKey: String? = null,
+) : TextToSpeechEngine {
+    val spokenTexts = mutableListOf<SpeechEvent>()
+    var stopCalled = false
+    override var currentReadoutItemKey: String? = initialKey
+    override fun speak(event: SpeechEvent) { spokenTexts.add(event) }
+    override fun stop() {
+        stopCalled = true
+        currentReadoutItemKey = null
+    }
 }
 
 private class FakeChannelProximityRepository(
@@ -384,12 +435,13 @@ private class FakeConstantSimulatorRepository(
 
 private class FakeAllEnabledReadoutPreferencesRepository(
     private val enabledOverrides: Map<String, Boolean> = emptyMap(),
+    private val orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
 ) : ReadoutPreferencesRepository {
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<String, Boolean>> =
         MutableStateFlow(enabledOverrides)
 
     override suspend fun saveReadoutEnabledState(simulator: String, label: String, enabled: Boolean) = Unit
-    override fun observeReadoutOrder(simulator: String): Flow<List<String>> = emptyFlow()
+    override fun observeReadoutOrder(simulator: String): Flow<List<String>> = MutableStateFlow(orderOverride)
     override suspend fun saveReadoutOrder(simulator: String, order: List<String>) = Unit
 }
 

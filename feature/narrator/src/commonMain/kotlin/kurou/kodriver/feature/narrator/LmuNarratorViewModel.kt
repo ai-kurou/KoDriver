@@ -26,6 +26,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 
@@ -42,17 +43,28 @@ class LmuNarratorViewModel(
     observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
     observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
     observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
+    observeReadoutOrderUseCase: ObserveReadoutOrderUseCase,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
+    private val selectedSimulator = observeSelectedSimulatorUseCase()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     private val enabledStates = combine(
-        observeSelectedSimulatorUseCase()
+        selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator == null) emptyFlow() else observeReadoutEnabledStatesUseCase(simulator)
             },
         observeFlagEnabledStatesUseCase(),
     ) { readoutStates, flagStates -> readoutStates + flagStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    // index が小さいほど優先度が高い（リスト上位 = 高優先）
+    private val readoutOrder = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator == null) emptyFlow() else observeReadoutOrderUseCase(simulator)
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val currentLap = vehicleApproachUseCases.observeLmu()
         .map { it.timing.currentLap }
@@ -81,12 +93,12 @@ class LmuNarratorViewModel(
                 // 両方同時の場合は読み上げないで一旦様子見る
                 /*
                 newLeftVehicle && newRightVehicle -> {
-                    ttsEngine.speak("カーレフト")
-                    ttsEngine.speak("カーライト")
+                    speakWithPriority(SpeechEvent.CarLeft)
+                    speakWithPriority(SpeechEvent.CarRight)
                 }
                  */
-                newLeftVehicle -> ttsEngine.speak(SpeechEvent.CarLeft)
-                newRightVehicle -> ttsEngine.speak(SpeechEvent.CarRight)
+                newLeftVehicle -> speakWithPriority(SpeechEvent.CarLeft)
+                newRightVehicle -> speakWithPriority(SpeechEvent.CarRight)
             }
         }
         .launchIn(viewModelScope)
@@ -106,7 +118,7 @@ class LmuNarratorViewModel(
     private fun announceFlags(prev: RaceFlagsData?, current: RaceFlagsData) {
         if (enabledStates.value[ReadoutItemKey.BLUE_FLAG] != false) {
             if (prev?.playerFlag != PrimaryFlag.BLUE && current.playerFlag == PrimaryFlag.BLUE) {
-                ttsEngine.speak(SpeechEvent.BlueFlag)
+                speakWithPriority(SpeechEvent.BlueFlag)
             }
         }
 
@@ -117,7 +129,7 @@ class LmuNarratorViewModel(
                     prevSectors.getOrNull(i) != SectorFlagState.YELLOW
             }
             if (newYellowSector) {
-                ttsEngine.speak(SpeechEvent.YellowFlag)
+                speakWithPriority(SpeechEvent.YellowFlag)
             }
         }
 
@@ -125,7 +137,7 @@ class LmuNarratorViewModel(
             if (prev?.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
                 current.gamePhase == SessionPhase.FULL_COURSE_YELLOW
             ) {
-                ttsEngine.speak(SpeechEvent.FullCourseYellow)
+                speakWithPriority(SpeechEvent.FullCourseYellow)
             }
         }
 
@@ -133,8 +145,25 @@ class LmuNarratorViewModel(
             if (prev?.gamePhase != SessionPhase.RED_FLAG &&
                 current.gamePhase == SessionPhase.RED_FLAG
             ) {
-                ttsEngine.speak(SpeechEvent.SessionStop)
+                speakWithPriority(SpeechEvent.SessionStop)
             }
         }
+    }
+
+    /**
+     * 優先度を考慮して読み上げる。
+     * - 再生中のアイテムより優先度が高い（order の index が小さい）場合: 現在の再生を停止して割り込む
+     * - 再生中のアイテムと同じか優先度が低い場合: 無視する
+     */
+    private fun speakWithPriority(event: SpeechEvent) {
+        val order = readoutOrder.value
+        val currentKey = ttsEngine.currentReadoutItemKey
+        if (currentKey != null) {
+            val currentIndex = order.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
+            val newIndex = order.indexOf(event.readoutItemKey).takeIf { it != -1 } ?: Int.MAX_VALUE
+            if (newIndex >= currentIndex) return
+            ttsEngine.stop()
+        }
+        ttsEngine.speak(event)
     }
 }
