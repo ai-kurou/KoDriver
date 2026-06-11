@@ -45,7 +45,16 @@ class LmuConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertTrue(viewModel.uiState.value.isConnected)
+        assertTrue(viewModel.uiState.value.isConnectionChecked)
         collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `初回確認前は未確認状態とする`() = runTest {
+        val repository = FakeConnectionRepository(isConnected = false)
+        val viewModel = LmuConnectionViewModel(CheckLmuConnectionUseCase(repository))
+
+        assertFalse(viewModel.uiState.value.isConnectionChecked)
     }
 
     @Test
