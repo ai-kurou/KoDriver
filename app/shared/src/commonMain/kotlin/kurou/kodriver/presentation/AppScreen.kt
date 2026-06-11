@@ -113,10 +113,10 @@ fun AppScreen(
 
     NarratorEffect()
     AppScreenContent(
-        connectionStatus = if (connectionUiState.isConnected) {
-            ConnectionStatus.Connected
-        } else {
-            ConnectionStatus.Waiting
+        connectionStatus = when {
+            !connectionUiState.isConnectionChecked -> ConnectionStatus.Hidden
+            connectionUiState.isConnected -> ConnectionStatus.Connected
+            else -> ConnectionStatus.Waiting
         },
         snackbarHostState = snackbarHostState,
         readoutContent = readoutContent,

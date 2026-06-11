@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 internal enum class ConnectionStatus {
+    Hidden,
     Waiting,
     Connected,
 }
@@ -23,6 +24,7 @@ internal fun ConnectionStatusIndicator(
     modifier: Modifier = Modifier,
 ) {
     when (status) {
+        ConnectionStatus.Hidden -> Unit
         ConnectionStatus.Waiting -> CircularProgressIndicator(
             modifier = modifier
                 .size(16.dp)

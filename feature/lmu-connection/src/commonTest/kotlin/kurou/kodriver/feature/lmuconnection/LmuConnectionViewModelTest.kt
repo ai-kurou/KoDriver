@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -14,7 +15,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.repository.LmuRepository
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckLmuConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -37,9 +40,10 @@ class LmuConnectionViewModelTest {
     }
 
     @Test
-    fun `初回確認結果を接続状態へ反映する`() = runTest {
-        val repository = FakeConnectionRepository(isConnected = true)
-        val viewModel = LmuConnectionViewModel(CheckLmuConnectionUseCase(repository))
+    fun `LMU選択時に接続確認結果を反映する`() = runTest {
+        val connectionRepository = FakeConnectionRepository(isConnected = true)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -50,22 +54,72 @@ class LmuConnectionViewModelTest {
     }
 
     @Test
-    fun `初回確認前は未確認状態とする`() = runTest {
-        val repository = FakeConnectionRepository(isConnected = false)
-        val viewModel = LmuConnectionViewModel(CheckLmuConnectionUseCase(repository))
+    fun `LMU非選択時は未接続・未確認状態を返す`() = runTest {
+        val connectionRepository = FakeConnectionRepository(isConnected = true)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "other")
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.value.isConnected)
+        assertFalse(viewModel.uiState.value.isConnectionChecked)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `LMU選択前は未確認状態とする`() = runTest {
+        val connectionRepository = FakeConnectionRepository(isConnected = false)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = null)
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
 
         assertFalse(viewModel.uiState.value.isConnectionChecked)
     }
 
     @Test
-    fun `一定間隔で接続状態を更新する`() = runTest {
-        val repository = FakeConnectionRepository(isConnected = false)
-        val viewModel = LmuConnectionViewModel(CheckLmuConnectionUseCase(repository))
+    fun `LMU選択に切り替えると接続確認を開始する`() = runTest {
+        val connectionRepository = FakeConnectionRepository(isConnected = true)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "other")
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+        dispatcher.scheduler.runCurrent()
+        assertFalse(viewModel.uiState.value.isConnectionChecked)
+
+        simulatorRepository.saveSelectedSimulator("lmu")
+        dispatcher.scheduler.runCurrent()
+
+        assertTrue(viewModel.uiState.value.isConnected)
+        assertTrue(viewModel.uiState.value.isConnectionChecked)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() = runTest {
+        val connectionRepository = FakeConnectionRepository(isConnected = true)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+        dispatcher.scheduler.runCurrent()
+        assertTrue(viewModel.uiState.value.isConnected)
+
+        simulatorRepository.saveSelectedSimulator("other")
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.value.isConnected)
+        assertFalse(viewModel.uiState.value.isConnectionChecked)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `LMU選択時に一定間隔で接続状態を更新する`() = runTest {
+        val connectionRepository = FakeConnectionRepository(isConnected = false)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertFalse(viewModel.uiState.value.isConnected)
 
-        repository.isConnected = true
+        connectionRepository.isConnected = true
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
@@ -75,22 +129,28 @@ class LmuConnectionViewModelTest {
 
     @Test
     fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
-        val repository = FakeConnectionRepository(
-            isConnected = false,
-            failureCount = 1,
-        )
-        val viewModel = LmuConnectionViewModel(CheckLmuConnectionUseCase(repository))
+        val connectionRepository = FakeConnectionRepository(isConnected = false, failureCount = 1)
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertFalse(viewModel.uiState.value.isConnected)
 
-        repository.isConnected = true
+        connectionRepository.isConnected = true
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
         assertTrue(viewModel.uiState.value.isConnected)
         collectionJob.cancelAndJoin()
     }
+
+    private fun createViewModel(
+        connectionRepository: LmuRepository,
+        simulatorRepository: SimulatorPreferencesRepository,
+    ) = LmuConnectionViewModel(
+        checkLmuConnection = CheckLmuConnectionUseCase(connectionRepository),
+        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+    )
 }
 
 private class FakeConnectionRepository(
@@ -108,4 +168,13 @@ private class FakeConnectionRepository(
     }
 
     override suspend fun disconnect() = Unit
+}
+
+private class FakeSimulatorPreferencesRepository(
+    initial: String? = null,
+) : SimulatorPreferencesRepository {
+    private val flow = MutableStateFlow(initial)
+
+    override fun selectedSimulator(): Flow<String?> = flow
+    override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
 }
