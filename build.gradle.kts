@@ -239,6 +239,7 @@ dependencies {
     kover(project(":core:domain"))
     kover(project(":core:data"))
     kover(project(":core:designsystem"))
+    kover(project(":feature:lmu-connection"))
     kover(project(":feature:narrator"))
     kover(project(":feature:other"))
     kover(project(":feature:readout"))

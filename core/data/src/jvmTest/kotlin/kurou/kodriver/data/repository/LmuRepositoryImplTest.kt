@@ -28,7 +28,7 @@ class LmuRepositoryImplTest {
     )
 
     @Test
-    fun `reader が open 済みのとき isConnected は true を返す`() = runBlocking {
+    fun `reader が open 済みかつデータを読み取れるとき isConnected は true を返す`() = runBlocking {
         val fake = FakeMemoryReader(initialOpen = true)
         val repo = LmuRepositoryImpl(source = makeSource(fake))
 
@@ -36,7 +36,7 @@ class LmuRepositoryImplTest {
     }
 
     @Test
-    fun `reader が未 open かつ open 成功のとき isConnected は true を返す`() = runBlocking {
+    fun `reader が未 open かつ open 後にデータを読み取れるとき isConnected は true を返す`() = runBlocking {
         val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(true))
         val repo = LmuRepositoryImpl(source = makeSource(fake))
 
@@ -50,6 +50,14 @@ class LmuRepositoryImplTest {
 
         assertFalse(repo.isConnected())
         assertTrue(fake.closeCalled)
+    }
+
+    @Test
+    fun `reader が open 済みでもデータを読み取れないとき isConnected は false を返す`() = runBlocking {
+        val fake = FakeMemoryReader(initialOpen = true, returnNullBuffer = true)
+        val repo = LmuRepositoryImpl(source = makeSource(fake))
+
+        assertFalse(repo.isConnected())
     }
 
     @Test

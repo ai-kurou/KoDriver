@@ -25,6 +25,7 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuRepository> { EmptyLmuRepository() }
     single<FlagRepository> { EmptyFlagRepository() }
+    single<LmuRepository> { EmptyLmuRepository() }
     single<ProximityRepository> { EmptyProximityRepository() }
     single<ProximityThresholdsRepository> {
         createProximityThresholdsRepository(context.filesDir.absolutePath)

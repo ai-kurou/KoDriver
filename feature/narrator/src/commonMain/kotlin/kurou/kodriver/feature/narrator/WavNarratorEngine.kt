@@ -14,11 +14,12 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @OptIn(ExperimentalResourceApi::class)
 internal class WavNarratorEngine(
     private val soundPlayer: SoundPlayer,
+    private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
 
     // ロード完了後は不変のマップに差し替えるため、読み取り競合は無害
     private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private var noiseSound: ByteArray? = null
 
@@ -46,7 +47,7 @@ internal class WavNarratorEngine(
             val loaded = mutableMapOf<SpeechEvent, ByteArray>()
             eventToFile.forEach { (event, path) ->
                 try {
-                    loaded[event] = Res.readBytes(path)
+                    loaded[event] = resourceLoader(path)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
@@ -54,7 +55,7 @@ internal class WavNarratorEngine(
             }
             sounds = loaded
             try {
-                noiseSound = Res.readBytes("files/noise.wav")
+                noiseSound = resourceLoader("files/noise.wav")
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {

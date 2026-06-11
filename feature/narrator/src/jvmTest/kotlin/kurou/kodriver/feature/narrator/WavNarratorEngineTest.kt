@@ -1,41 +1,114 @@
 package kurou.kodriver.feature.narrator
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import org.junit.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WavNarratorEngineTest {
 
-    private val fakePlayer = FakeSoundPlayer()
-    private val engine = WavNarratorEngine(fakePlayer)
-
     @Test
-    fun `isPlaying が true のとき speak しても play が呼ばれない`() {
-        fakePlayer.isPlayingValue = true
+    fun `再生中は音声を再生しない`() = runTest {
+        val player = FakeSoundPlayer(isPlaying = true)
+        val engine = createEngine(player)
+        runCurrent()
+
         engine.speak(SpeechEvent.CarLeft)
-        assertEquals(0, fakePlayer.playCallCount)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
     }
 
     @Test
-    fun `stop を呼んでも例外が発生しない`() {
-        engine.stop()
+    fun `イベント音声が未ロードなら音声を再生しない`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == NOISE_PATH) NOISE_SOUND else error("load failed")
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
     }
 
     @Test
-    fun `isPlaying が false で登録済みイベントを speak しても sounds 未ロード時は play が呼ばれない`() {
-        fakePlayer.isPlayingValue = false
-        // テスト環境では Res.readBytes() が失敗するため sounds は空
+    fun `ノイズとイベント音声を順番に再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
         engine.speak(SpeechEvent.CarLeft)
-        assertEquals(0, fakePlayer.playCallCount)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(NOISE_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `ノイズが未ロードでもイベント音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                when (path) {
+                    CAR_LEFT_PATH -> CAR_LEFT_SOUND
+                    NOISE_PATH -> error("load failed")
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(1, player.playedSounds.size)
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.single())
+    }
+
+    private fun TestScope.createEngine(
+        player: FakeSoundPlayer,
+        resourceLoader: suspend (String) -> ByteArray = { path ->
+            when (path) {
+                CAR_LEFT_PATH -> CAR_LEFT_SOUND
+                NOISE_PATH -> NOISE_SOUND
+                else -> EVENT_SOUND
+            }
+        },
+    ): WavNarratorEngine = WavNarratorEngine(
+        soundPlayer = player,
+        resourceLoader = resourceLoader,
+        scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
+    )
+
+    private companion object {
+        const val CAR_LEFT_PATH = "files/car_left.wav"
+        const val NOISE_PATH = "files/noise.wav"
+        val CAR_LEFT_SOUND = byteArrayOf(1)
+        val EVENT_SOUND = byteArrayOf(2)
+        val NOISE_SOUND = byteArrayOf(3)
     }
 }
 
-private class FakeSoundPlayer : SoundPlayer {
-    var isPlayingValue: Boolean = false
-    override val isPlaying: Boolean get() = isPlayingValue
+private class FakeSoundPlayer(
+    override val isPlaying: Boolean = false,
+) : SoundPlayer {
+    val playedSounds = mutableListOf<ByteArray>()
 
-    var playCallCount = 0
     override suspend fun play(bytes: ByteArray) {
-        playCallCount++
+        playedSounds += bytes
     }
 }

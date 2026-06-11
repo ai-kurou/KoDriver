@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
@@ -30,10 +31,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.narrator.NarratorEffect
 import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.other.OtherItemType
@@ -42,6 +45,7 @@ import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.readout.flag.FlagDetailPane
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 private enum class AppDestination(
     val icon: ImageVector,
@@ -83,13 +87,25 @@ fun AppScreen(
         )
     },
 ) {
+    val connectionViewModel: LmuConnectionViewModel = koinViewModel()
+    val connectionUiState by connectionViewModel.uiState.collectAsStateWithLifecycle()
+
     NarratorEffect()
-    AppScreenContent(readoutContent = readoutContent, otherContent = otherContent)
+    AppScreenContent(
+        connectionStatus = if (connectionUiState.isConnected) {
+            ConnectionStatus.Connected
+        } else {
+            ConnectionStatus.Waiting
+        },
+        readoutContent = readoutContent,
+        otherContent = otherContent,
+    )
 }
 
 @Composable
 internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
+    connectionStatus: ConnectionStatus = ConnectionStatus.Waiting,
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
@@ -157,12 +173,45 @@ internal fun AppScreenContent(
                     }
                 }
             }
+            ConnectionStatusPlacement(
+                layoutType = resolvedLayoutType,
+                status = connectionStatus,
+                modifier = Modifier.align(Alignment.BottomStart),
+            )
         }
+    }
+}
+
+@Composable
+private fun ConnectionStatusPlacement(
+    layoutType: NavigationSuiteType,
+    status: ConnectionStatus,
+    modifier: Modifier = Modifier,
+) {
+    val navigationWidth = when (layoutType) {
+        NavigationSuiteType.NavigationRail -> 80.dp
+        NavigationSuiteType.NavigationDrawer -> 360.dp
+        else -> null
+    }
+    Box(
+        modifier = modifier
+            .then(navigationWidth?.let { Modifier.width(it) } ?: Modifier)
+            .padding(
+                start = if (layoutType == NavigationSuiteType.NavigationBar) 16.dp else 0.dp,
+                bottom = if (layoutType == NavigationSuiteType.NavigationBar) 96.dp else 24.dp,
+            ),
+        contentAlignment = if (layoutType == NavigationSuiteType.NavigationBar) {
+            Alignment.BottomStart
+        } else {
+            Alignment.BottomCenter
+        },
+    ) {
+        ConnectionStatusIndicator(status = status)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun AppScreenContentPreview() {
-    AppScreenContent()
+    AppScreenContent(connectionStatus = ConnectionStatus.Connected)
 }
