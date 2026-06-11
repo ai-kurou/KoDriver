@@ -8,9 +8,11 @@ import kurou.kodriver.data.datasource.SharedLmuMemorySource
 import kurou.kodriver.data.repository.LmuRepositoryImpl
 import kurou.kodriver.data.repository.SharedMemoryFlagRepository
 import kurou.kodriver.data.repository.SharedMemoryProximityRepository
+import kurou.kodriver.data.repository.SharedMemoryVehicleDamageRepository
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuRepository
@@ -19,6 +21,7 @@ import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
@@ -41,6 +44,9 @@ val desktopDataModule = module {
     }
     single<FlagRepository> {
         if (isWindows) SharedMemoryFlagRepository(source = get()) else NoOpFlagRepository()
+    }
+    single<VehicleDamageRepository> {
+        if (isWindows) SharedMemoryVehicleDamageRepository(source = get()) else NoOpVehicleDamageRepository()
     }
     single<SimulatorPreferencesRepository> {
         createSimulatorPreferencesRepository(directory = kodriverDirectory)
@@ -71,4 +77,8 @@ private class NoOpProximityRepository : ProximityRepository {
 
 private class NoOpFlagRepository : FlagRepository {
     override fun flagStream(): Flow<RaceFlagsData> = emptyFlow()
+}
+
+private class NoOpVehicleDamageRepository : VehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
 }
