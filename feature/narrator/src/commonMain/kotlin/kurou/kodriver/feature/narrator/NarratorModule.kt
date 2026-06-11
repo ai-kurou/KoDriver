@@ -5,6 +5,7 @@ import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
@@ -17,6 +18,7 @@ val narratorModule: Module = module {
     factory { ObserveRaceFlagsUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
+    factory { ObserveReadoutOrderUseCase(get()) }
     single<TextToSpeechEngine> { WavNarratorEngine(get()) }
     includes(platformSoundModule)
 }
