@@ -23,6 +23,7 @@ fun androidDataModule(context: Context) = module {
     single<ReadoutPreferencesRepository> {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
     }
+    single<LmuRepository> { EmptyLmuRepository() }
     single<FlagRepository> { EmptyFlagRepository() }
     single<LmuRepository> { EmptyLmuRepository() }
     single<ProximityRepository> { EmptyProximityRepository() }
