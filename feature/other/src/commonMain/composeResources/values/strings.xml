@@ -1,6 +1,3 @@
 <resources>
-    <string name="item_github_repository">GitHubレポジトリ</string>
-    <string name="item_release_page">リリースページ</string>
-    <string name="item_license">ライセンス</string>
     <string name="navigate_back">戻る</string>
 </resources>

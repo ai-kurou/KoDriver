@@ -48,7 +48,6 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.narrator.NarratorEffect
-import kurou.kodriver.feature.other.OtherContent
 import kurou.kodriver.feature.other.OtherItemType
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType

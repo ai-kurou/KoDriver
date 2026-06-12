@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.presentation
 
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -20,9 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.feature.other.generated.resources.Res
-import kodriver.feature.other.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.Res
+import kodriver.feature.otherlist.generated.resources.item_license
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.other.OtherDetailPane
+import kurou.kodriver.feature.other.OtherItemType
+import kurou.kodriver.feature.other.OtherListPane
+import kurou.kodriver.feature.other.OtherListUiState
+import kurou.kodriver.feature.other.OtherViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

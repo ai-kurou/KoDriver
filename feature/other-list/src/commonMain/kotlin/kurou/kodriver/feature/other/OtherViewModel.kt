@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-internal class OtherViewModel : ViewModel() {
+class OtherViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(OtherListUiState())
     val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()

@@ -24,10 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.feature.other.generated.resources.Res
-import kodriver.feature.other.generated.resources.item_github_repository
-import kodriver.feature.other.generated.resources.item_license
-import kodriver.feature.other.generated.resources.item_release_page
+import kodriver.feature.otherlist.generated.resources.Res
+import kodriver.feature.otherlist.generated.resources.item_github_repository
+import kodriver.feature.otherlist.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.item_release_page
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -39,7 +39,7 @@ private fun otherItemDisplayName(itemId: String): String = when (itemId) {
 }
 
 @Composable
-internal fun OtherListPane(
+fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,

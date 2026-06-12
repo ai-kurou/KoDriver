@@ -1,0 +1,5 @@
+<resources>
+    <string name="item_github_repository">GitHubレポジトリ</string>
+    <string name="item_release_page">リリースページ</string>
+    <string name="item_license">ライセンス</string>
+</resources>
