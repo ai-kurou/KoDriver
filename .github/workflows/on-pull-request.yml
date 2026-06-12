@@ -3,6 +3,8 @@ name: Pull Request
 on:
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - '**/snapshots/*.png'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
