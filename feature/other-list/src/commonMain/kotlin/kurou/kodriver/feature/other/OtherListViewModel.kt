@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class OtherViewModel : ViewModel() {
+class OtherListViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(OtherListUiState())
     val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
 
     fun onItemSelected(itemId: String) {
-        val itemType = OtherItemType.fromId(itemId) ?: return
-        if (itemType == OtherItemType.GitHubRepository || itemType == OtherItemType.ReleasePage) return
+        val itemType = OtherListItemType.fromId(itemId) ?: return
+        if (itemType == OtherListItemType.GitHubRepository || itemType == OtherListItemType.ReleasePage) return
         _uiState.update { current ->
             current.copy(selectedItem = if (current.selectedItem == itemType) null else itemType)
         }

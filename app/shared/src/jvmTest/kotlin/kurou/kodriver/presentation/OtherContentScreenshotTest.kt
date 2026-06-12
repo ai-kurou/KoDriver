@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.feature.other.OtherItemType
+import kurou.kodriver.feature.other.OtherListItemType
 import kurou.kodriver.feature.other.OtherListUiState
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +30,7 @@ class OtherContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                         OtherContent(
-                            uiState = OtherListUiState(selectedItem = OtherItemType.License),
+                            uiState = OtherListUiState(selectedItem = OtherListItemType.License),
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,

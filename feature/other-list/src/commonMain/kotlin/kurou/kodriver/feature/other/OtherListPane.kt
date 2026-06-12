@@ -32,9 +32,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
-    OtherItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
-    OtherItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
-    OtherItemType.License.id -> stringResource(Res.string.item_license)
+    OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
+    OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
+    OtherListItemType.License.id -> stringResource(Res.string.item_license)
     else -> itemId
 }
 
@@ -50,7 +50,7 @@ fun OtherListPane(
             .padding(vertical = 8.dp),
     ) {
         itemsIndexed(uiState.items, key = { _, item -> item }) { index, item ->
-            val itemType = OtherItemType.fromId(item)
+            val itemType = OtherListItemType.fromId(item)
             Surface(
                 color = if (itemType == uiState.selectedItem) {
                     MaterialTheme.colorScheme.secondaryContainer
@@ -61,7 +61,7 @@ fun OtherListPane(
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
                     leadingContent = when (itemType) {
-                        OtherItemType.GitHubRepository -> {
+                        OtherListItemType.GitHubRepository -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.Code,
@@ -70,7 +70,7 @@ fun OtherListPane(
                             }
                         }
 
-                        OtherItemType.ReleasePage -> {
+                        OtherListItemType.ReleasePage -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.NewReleases,
@@ -79,7 +79,7 @@ fun OtherListPane(
                             }
                         }
 
-                        OtherItemType.License -> {
+                        OtherListItemType.License -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.Description,
@@ -91,8 +91,8 @@ fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
-                        OtherItemType.GitHubRepository,
-                        OtherItemType.ReleasePage,
+                        OtherListItemType.GitHubRepository,
+                        OtherListItemType.ReleasePage,
                         -> {
                             {
                                 Icon(
@@ -102,7 +102,7 @@ fun OtherListPane(
                             }
                         }
 
-                        OtherItemType.License -> {
+                        OtherListItemType.License -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.ChevronRight,

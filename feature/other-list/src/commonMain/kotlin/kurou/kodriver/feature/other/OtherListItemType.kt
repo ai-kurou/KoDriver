@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.other
 
-enum class OtherItemType(
+enum class OtherListItemType(
     val id: String,
 ) {
     GitHubRepository("github_repository"),
@@ -9,6 +9,6 @@ enum class OtherItemType(
     ;
 
     companion object {
-        fun fromId(id: String): OtherItemType? = entries.firstOrNull { it.id == id }
+        fun fromId(id: String): OtherListItemType? = entries.firstOrNull { it.id == id }
     }
 }

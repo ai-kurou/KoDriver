@@ -9,7 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.feature.other.OtherItemType
+import kurou.kodriver.feature.other.OtherListItemType
 import kurou.kodriver.feature.other.OtherListUiState
 import org.junit.Rule
 import org.junit.Test
@@ -37,13 +37,13 @@ class OtherContentTest {
         var githubRepositoryOpened = false
         var releasePageOpened = false
         var capturedOnBack: (() -> Unit)? = null
-        var selectedItem by mutableStateOf<OtherItemType?>(null)
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
 
         rule.setContent {
             OtherContent(
                 uiState = OtherListUiState(selectedItem = selectedItem),
                 onItemSelected = {
-                    val itemType = OtherItemType.fromId(it)
+                    val itemType = OtherListItemType.fromId(it)
                     selectedItem = itemType
                 },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },

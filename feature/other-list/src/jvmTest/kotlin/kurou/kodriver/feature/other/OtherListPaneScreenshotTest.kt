@@ -42,7 +42,7 @@ class OtherListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         OtherListPane(
-                            uiState = OtherListUiState(selectedItem = OtherItemType.License),
+                            uiState = OtherListUiState(selectedItem = OtherListItemType.License),
                             onItemClick = {},
                         )
                     }

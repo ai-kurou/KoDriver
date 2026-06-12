@@ -48,7 +48,7 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.narrator.NarratorEffect
-import kurou.kodriver.feature.other.OtherItemType
+import kurou.kodriver.feature.other.OtherListItemType
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.readout.flag.FlagDetailPane
@@ -90,9 +90,9 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
-                    OtherItemType.GitHubRepository -> {}
-                    OtherItemType.ReleasePage -> {}
-                    OtherItemType.License -> LicenseDetailPane()
+                    OtherListItemType.GitHubRepository -> {}
+                    OtherListItemType.ReleasePage -> {}
+                    OtherListItemType.License -> LicenseDetailPane()
                 }
             },
         )
