@@ -39,6 +39,14 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("vehicle_approach_help_button").performClick()
         composeTestRule.waitForIdle()
 
+        // 詳細ペインから戻る
+        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.waitForIdle()
+
+        // 車両故障（インデックス2）をタップ
+        composeTestRule.onNodeWithTag("readout_item_2").performClick()
+        composeTestRule.waitForIdle()
+
         // その他タブをタップ
         composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()
