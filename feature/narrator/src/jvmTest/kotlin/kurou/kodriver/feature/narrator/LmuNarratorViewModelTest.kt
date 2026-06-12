@@ -95,24 +95,28 @@ class LmuNarratorViewModelTest {
                 observeSkipFirstLap = ObserveSkipFirstLapUseCase(
                     FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
                 ),
+            ),
+            vehicleDamageUseCases = VehicleDamageUseCases(
                 observeVehicleDamage = ObserveVehicleDamageUseCase(
                     FakeChannelVehicleDamageRepository(damageChannel.receiveAsFlow()),
                 ),
+                observeVehicleDamageEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(
+                    FakeVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
+                ),
+            ),
+            readoutListUseCases = ReadoutListUseCases(
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(
+                    FakeConstantSimulatorRepository(simulator),
+                ),
+                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
+                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
             ),
             observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
                 FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
             ),
-            observeSelectedSimulatorUseCase = ObserveSelectedSimulatorUseCase(
-                FakeConstantSimulatorRepository(simulator),
-            ),
-            observeReadoutEnabledStatesUseCase = ObserveReadoutEnabledStatesUseCase(readoutRepo),
             observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
                 FakeFlagPreferencesRepository(flagEnabledOverrides),
             ),
-            observeVehicleDamageEnabledStatesUseCase = ObserveVehicleDamageEnabledStatesUseCase(
-                FakeVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
-            ),
-            observeReadoutOrderUseCase = ObserveReadoutOrderUseCase(readoutRepo),
             ttsEngine = ttsEngine,
         )
     }

@@ -11,6 +11,7 @@ import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -19,6 +20,7 @@ val fakeNarratorDataModule = module {
     single<FlagRepository> { FakeFlagRepository() }
     single<LmuRepository> { FakeLmuRepository() }
     single<VehicleApproachPreferencesRepository> { FakeVehicleApproachPreferencesRepository() }
+    single<VehicleDamagePreferencesRepository> { FakeVehicleDamagePreferencesRepository() }
     single<VehicleDamageRepository> { FakeVehicleDamageRepository() }
     single<SoundPlayer> { NoOpSoundPlayer() }
 }
@@ -41,6 +43,11 @@ class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepos
     private val skipFirstLapFlow = MutableStateFlow(true)
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.value = skip }
+}
+
+class FakeVehicleDamagePreferencesRepository : VehicleDamagePreferencesRepository {
+    override fun observeEnabledStates(): Flow<Map<String, Boolean>> = MutableStateFlow(emptyMap())
+    override suspend fun saveEnabledState(key: String, enabled: Boolean) = Unit
 }
 
 class FakeVehicleDamageRepository : VehicleDamageRepository {

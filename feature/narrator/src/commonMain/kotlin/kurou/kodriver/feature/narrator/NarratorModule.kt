@@ -18,7 +18,6 @@ import org.koin.dsl.module
 val narratorModule: Module = module {
     viewModelOf(::LmuNarratorViewModel)
     factory { ObserveFlagEnabledStatesUseCase(get()) }
-    factory { ObserveVehicleDamageEnabledStatesUseCase(get()) }
     factory { ObserveLmuUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
     factory { ObserveRaceFlagsUseCase(get()) }
@@ -26,8 +25,11 @@ val narratorModule: Module = module {
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveSkipFirstLapUseCase(get()) }
+    factory { ObserveVehicleDamageEnabledStatesUseCase(get()) }
     factory { ObserveVehicleDamageUseCase(get()) }
-    factory { VehicleApproachUseCases(get(), get(), get(), get()) }
+    factory { VehicleApproachUseCases(get(), get(), get()) }
+    factory { VehicleDamageUseCases(get(), get()) }
+    factory { ReadoutListUseCases(get(), get(), get()) }
     single<TextToSpeechEngine> { WavNarratorEngine(get()) }
     includes(platformSoundModule)
 }

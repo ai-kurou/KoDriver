@@ -37,38 +37,46 @@ data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
     val observeLmu: ObserveLmuUseCase,
     val observeSkipFirstLap: ObserveSkipFirstLapUseCase,
+)
+
+data class VehicleDamageUseCases(
     val observeVehicleDamage: ObserveVehicleDamageUseCase,
+    val observeVehicleDamageEnabledStates: ObserveVehicleDamageEnabledStatesUseCase,
+)
+
+data class ReadoutListUseCases(
+    val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val observeReadoutOrder: ObserveReadoutOrderUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
+    vehicleDamageUseCases: VehicleDamageUseCases,
+    readoutListUseCases: ReadoutListUseCases,
     observeRaceFlagsUseCase: ObserveRaceFlagsUseCase,
-    observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
-    observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
     observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
-    observeVehicleDamageEnabledStatesUseCase: ObserveVehicleDamageEnabledStatesUseCase,
-    observeReadoutOrderUseCase: ObserveReadoutOrderUseCase,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
-    private val selectedSimulator = observeSelectedSimulatorUseCase()
+    private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val enabledStates = combine(
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else observeReadoutEnabledStatesUseCase(simulator)
+                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator)
             },
         observeFlagEnabledStatesUseCase(),
-        observeVehicleDamageEnabledStatesUseCase(),
+        vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
     ) { readoutStates, flagStates, vehicleDamageStates -> readoutStates + flagStates + vehicleDamageStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
     private val readoutOrder = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else observeReadoutOrderUseCase(simulator)
+            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -117,7 +125,7 @@ class LmuNarratorViewModel(
     private val overheatingJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != LMU_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
-            vehicleApproachUseCases.observeVehicleDamage()
+            vehicleDamageUseCases.observeVehicleDamage()
                 .scan(null as VehicleDamageData? to null as VehicleDamageData?) { acc, current ->
                     acc.second to current
                 }
