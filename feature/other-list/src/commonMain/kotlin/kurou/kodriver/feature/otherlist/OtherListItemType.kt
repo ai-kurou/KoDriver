@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 enum class OtherListItemType(
     val id: String,

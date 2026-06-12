@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

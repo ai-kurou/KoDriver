@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

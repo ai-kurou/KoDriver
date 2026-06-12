@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import com.github.takahirom.roborazzi.RoborazziOptions

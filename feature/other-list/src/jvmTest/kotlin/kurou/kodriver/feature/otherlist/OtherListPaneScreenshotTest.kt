@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize

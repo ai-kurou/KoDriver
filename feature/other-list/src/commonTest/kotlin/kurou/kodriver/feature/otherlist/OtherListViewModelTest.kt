@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
