@@ -18,12 +18,10 @@ import kodriver.feature.readout.flag.generated.resources.flag_full_course_yellow
 import kodriver.feature.readout.flag.generated.resources.flag_red
 import kodriver.feature.readout.flag.generated.resources.flag_session_stop
 import kodriver.feature.readout.flag.generated.resources.flag_switch_subtitle
-import kodriver.feature.readout.flag.generated.resources.flag_title
 import kodriver.feature.readout.flag.generated.resources.flag_yellow
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
-import kurou.kodriver.core.designsystem.DetailPaneTitle
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -70,7 +68,6 @@ internal fun FlagDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneTitle(title = stringResource(Res.string.flag_title))
         DetailPaneDescription(text = stringResource(Res.string.flag_description))
         DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
         flagSwitchItems.forEach { item ->
