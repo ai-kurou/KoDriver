@@ -171,7 +171,7 @@ internal fun AppScreenContent(
                         val itemModifier = if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
                             Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
+                                .padding(4.dp)
                                 .testTag("nav_${dest.name.lowercase()}")
                         } else {
                             Modifier.testTag("nav_${dest.name.lowercase()}")
