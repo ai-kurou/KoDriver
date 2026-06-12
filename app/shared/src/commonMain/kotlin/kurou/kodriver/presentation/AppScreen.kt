@@ -165,6 +165,7 @@ internal fun AppScreenContent(
         }
         Box(modifier = Modifier.navigationBarsPadding()) {
             NavigationSuiteScaffold(
+                modifier = Modifier.padding(top = 4.dp),
                 layoutType = resolvedLayoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
