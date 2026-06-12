@@ -74,10 +74,12 @@ internal fun FlagDetailPaneContent(
         DetailPaneDescription(text = stringResource(Res.string.flag_description))
         DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
         flagSwitchItems.forEach { item ->
+            val chipLabel = stringResource(item.chipLabelRes)
             DetailPaneCard(
                 title = stringResource(item.labelRes),
                 checked = uiState.enabledStates[item.key] ?: true,
-                chipLabels = listOf(stringResource(item.chipLabelRes)),
+                chipLabels = listOf(chipLabel),
+                selectedChipLabels = setOf(chipLabel),
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item.key, enabled) },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
