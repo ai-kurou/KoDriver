@@ -1,6 +1,7 @@
 <resources>
     <string name="vehicle_damage_title">車両故障</string>
     <string name="vehicle_damage_description">車両の故障状況を音声でお知らせします。</string>
-    <string name="vehicle_damage_overheat_subtitle">オーバーヒート</string>
-    <string name="vehicle_damage_overheat_switch_label">オーバーヒート時にアナウンスする</string>
+    <string name="vehicle_damage_overheat_subtitle">故障別設定</string>
+    <string name="vehicle_damage_overheat_switch_label">オーバーヒート</string>
+    <string name="vehicle_damage_overheat_chip_label">GP2 GP2 エンジン ahhhh</string>
 </resources>
