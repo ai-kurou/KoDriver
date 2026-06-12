@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.other
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,8 +44,10 @@ internal fun OtherDetailPane(
                 },
             )
         },
-    ) {
-        content()
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            content()
+        }
     }
 }
 
