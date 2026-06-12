@@ -1,16 +1,12 @@
 package kurou.kodriver.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 internal enum class ConnectionStatus {
     Hidden,
@@ -25,24 +21,23 @@ internal fun ConnectionStatusIndicator(
 ) {
     when (status) {
         ConnectionStatus.Hidden -> Unit
-        ConnectionStatus.Waiting -> CircularProgressIndicator(
+        ConnectionStatus.Waiting -> LinearProgressIndicator(
             modifier = modifier
-                .size(16.dp)
-                .testTag("connection_status"),
+                .fillMaxWidth()
+                .testTag(CONNECTION_STATUS_TEST_TAG),
             color = MaterialTheme.colorScheme.secondary,
-            strokeWidth = 2.5.dp,
         )
-        ConnectionStatus.Connected -> Box(
+        ConnectionStatus.Connected -> LinearProgressIndicator(
+            progress = { 1f },
             modifier = modifier
-                .size(14.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondary,
-                    shape = CircleShape,
-                )
-                .testTag("connection_status"),
+                .fillMaxWidth()
+                .testTag(CONNECTION_STATUS_TEST_TAG),
+            color = MaterialTheme.colorScheme.secondary,
         )
     }
 }
+
+internal const val CONNECTION_STATUS_TEST_TAG = "connection_status"
 
 @Preview(showBackground = true)
 @Composable
