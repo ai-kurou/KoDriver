@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,22 +24,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.feature.other.generated.resources.Res
-import kodriver.feature.other.generated.resources.item_github_repository
-import kodriver.feature.other.generated.resources.item_license
-import kodriver.feature.other.generated.resources.item_release_page
+import kodriver.feature.otherlist.generated.resources.Res
+import kodriver.feature.otherlist.generated.resources.item_github_repository
+import kodriver.feature.otherlist.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.item_release_page
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
-    OtherItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
-    OtherItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
-    OtherItemType.License.id -> stringResource(Res.string.item_license)
+    OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
+    OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
+    OtherListItemType.License.id -> stringResource(Res.string.item_license)
     else -> itemId
 }
 
 @Composable
-internal fun OtherListPane(
+fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -50,7 +50,7 @@ internal fun OtherListPane(
             .padding(vertical = 8.dp),
     ) {
         itemsIndexed(uiState.items, key = { _, item -> item }) { index, item ->
-            val itemType = OtherItemType.fromId(item)
+            val itemType = OtherListItemType.fromId(item)
             Surface(
                 color = if (itemType == uiState.selectedItem) {
                     MaterialTheme.colorScheme.secondaryContainer
@@ -61,7 +61,7 @@ internal fun OtherListPane(
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
                     leadingContent = when (itemType) {
-                        OtherItemType.GitHubRepository -> {
+                        OtherListItemType.GitHubRepository -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.Code,
@@ -70,7 +70,7 @@ internal fun OtherListPane(
                             }
                         }
 
-                        OtherItemType.ReleasePage -> {
+                        OtherListItemType.ReleasePage -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.NewReleases,
@@ -79,7 +79,7 @@ internal fun OtherListPane(
                             }
                         }
 
-                        OtherItemType.License -> {
+                        OtherListItemType.License -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.Description,
@@ -91,8 +91,8 @@ internal fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
-                        OtherItemType.GitHubRepository,
-                        OtherItemType.ReleasePage,
+                        OtherListItemType.GitHubRepository,
+                        OtherListItemType.ReleasePage,
                         -> {
                             {
                                 Icon(
@@ -102,7 +102,7 @@ internal fun OtherListPane(
                             }
                         }
 
-                        OtherItemType.License -> {
+                        OtherListItemType.License -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.ChevronRight,

@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.presentation
 
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -20,9 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.feature.other.generated.resources.Res
-import kodriver.feature.other.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.Res
+import kodriver.feature.otherlist.generated.resources.item_license
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.other.OtherDetailPane
+import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.OtherListPane
+import kurou.kodriver.feature.otherlist.OtherListUiState
+import kurou.kodriver.feature.otherlist.OtherListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -35,9 +40,9 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    detailContent: @Composable (OtherItemType) -> Unit = {},
+    detailContent: @Composable (OtherListItemType) -> Unit = {},
 ) {
-    val viewModel: OtherViewModel = koinViewModel()
+    val viewModel: OtherListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
     OtherContent(
@@ -64,7 +69,7 @@ internal fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    detailContent: @Composable (OtherItemType) -> Unit = {},
+    detailContent: @Composable (OtherListItemType) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
         scaffoldDirective = if (uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1) {
@@ -114,8 +119,8 @@ internal fun OtherContent(
                 uiState = uiState,
                 onItemClick = { itemId ->
                     when (itemId) {
-                        OtherItemType.GitHubRepository.id -> onOpenGitHubRepository()
-                        OtherItemType.ReleasePage.id -> onOpenReleasePage()
+                        OtherListItemType.GitHubRepository.id -> onOpenGitHubRepository()
+                        OtherListItemType.ReleasePage.id -> onOpenReleasePage()
                         else -> onItemSelected(itemId)
                     }
                 },
@@ -124,7 +129,7 @@ internal fun OtherContent(
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
                 val title = when (selectedItem) {
-                    OtherItemType.License -> stringResource(Res.string.item_license)
+                    OtherListItemType.License -> stringResource(Res.string.item_license)
                     else -> selectedItem.id
                 }
                 OtherDetailPane(

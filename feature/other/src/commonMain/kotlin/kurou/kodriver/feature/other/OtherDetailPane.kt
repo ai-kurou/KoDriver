@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun OtherDetailPane(
+fun OtherDetailPane(
     title: String,
     canNavigateBack: Boolean,
     onBack: () -> Unit,

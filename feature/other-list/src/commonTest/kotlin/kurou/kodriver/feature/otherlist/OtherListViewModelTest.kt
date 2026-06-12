@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -6,14 +6,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class OtherViewModelTest {
+class OtherListViewModelTest {
 
-    private val viewModel = OtherViewModel()
+    private val viewModel = OtherListViewModel()
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
-        assertEquals(OtherItemType.entries.map { it.id }, viewModel.uiState.first().items)
-        assertEquals(OtherItemType.GitHubRepository.id, viewModel.uiState.first().items.first())
+        assertEquals(OtherListItemType.entries.map { it.id }, viewModel.uiState.first().items)
+        assertEquals(OtherListItemType.GitHubRepository.id, viewModel.uiState.first().items.first())
         assertNull(viewModel.uiState.first().selectedItem)
     }
 
@@ -21,7 +21,7 @@ class OtherViewModelTest {
     fun `GitHubレポジトリを選択しても状態は変わらない`() = runTest {
         val initialState = viewModel.uiState.first()
 
-        viewModel.onItemSelected(OtherItemType.GitHubRepository.id)
+        viewModel.onItemSelected(OtherListItemType.GitHubRepository.id)
 
         assertEquals(initialState, viewModel.uiState.first())
     }
@@ -30,18 +30,18 @@ class OtherViewModelTest {
     fun `リリースページを選択しても状態は変わらない`() = runTest {
         val initialState = viewModel.uiState.first()
 
-        viewModel.onItemSelected(OtherItemType.ReleasePage.id)
+        viewModel.onItemSelected(OtherListItemType.ReleasePage.id)
 
         assertEquals(initialState, viewModel.uiState.first())
     }
 
     @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
-        viewModel.onItemSelected(OtherItemType.License.id)
+        viewModel.onItemSelected(OtherListItemType.License.id)
 
-        assertEquals(OtherItemType.License, viewModel.uiState.first().selectedItem)
+        assertEquals(OtherListItemType.License, viewModel.uiState.first().selectedItem)
 
-        viewModel.onItemSelected(OtherItemType.License.id)
+        viewModel.onItemSelected(OtherListItemType.License.id)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -57,7 +57,7 @@ class OtherViewModelTest {
 
     @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
-        viewModel.onItemSelected(OtherItemType.License.id)
+        viewModel.onItemSelected(OtherListItemType.License.id)
 
         viewModel.clearSelectedItem()
 

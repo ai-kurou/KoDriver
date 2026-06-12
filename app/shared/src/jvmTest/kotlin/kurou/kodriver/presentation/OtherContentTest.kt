@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.presentation
 
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
@@ -9,6 +9,8 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.OtherListUiState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -35,13 +37,13 @@ class OtherContentTest {
         var githubRepositoryOpened = false
         var releasePageOpened = false
         var capturedOnBack: (() -> Unit)? = null
-        var selectedItem by mutableStateOf<OtherItemType?>(null)
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
 
         rule.setContent {
             OtherContent(
                 uiState = OtherListUiState(selectedItem = selectedItem),
                 onItemSelected = {
-                    val itemType = OtherItemType.fromId(it)
+                    val itemType = OtherListItemType.fromId(it)
                     selectedItem = itemType
                 },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
