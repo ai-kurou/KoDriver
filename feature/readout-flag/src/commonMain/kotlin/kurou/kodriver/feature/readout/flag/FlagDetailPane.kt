@@ -3,6 +3,8 @@ package kurou.kodriver.feature.readout.flag
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -63,7 +65,11 @@ internal fun FlagDetailPaneContent(
     onFlagEnabledChanged: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneTitle(title = stringResource(Res.string.flag_title))
         DetailPaneDescription(text = stringResource(Res.string.flag_description))
         DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
