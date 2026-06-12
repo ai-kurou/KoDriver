@@ -1,0 +1,4 @@
+<resources>
+    <string name="vehicle_damage_title">車両故障</string>
+    <string name="vehicle_damage_description">エンジン・サスペンション・ギアボックスなどの車両故障状況を音声でお知らせします。</string>
+</resources>
