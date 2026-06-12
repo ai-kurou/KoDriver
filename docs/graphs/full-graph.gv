@@ -11,6 +11,7 @@ digraph G {
   ":app:shared" -> ":feature:readout"
   ":app:shared" -> ":feature:readout-vehicle-approach"
   ":app:shared" -> ":feature:readout-flag"
+  ":app:shared" -> ":feature:readout-vehicle-damage"
   ":app:webApp" -> ":app:shared"
   ":core:data" -> ":core:domain"
   ":feature:lmu-connection" -> ":core:domain"
@@ -21,4 +22,6 @@ digraph G {
   ":feature:readout-flag" -> ":core:designsystem"
   ":feature:readout-vehicle-approach" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:designsystem"
+  ":feature:readout-vehicle-damage" -> ":core:domain"
+  ":feature:readout-vehicle-damage" -> ":core:designsystem"
 }

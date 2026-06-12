@@ -1,0 +1,5 @@
+digraph G {
+  ":app:shared" -> ":feature:readout-vehicle-damage"
+  ":feature:readout-vehicle-damage" -> ":core:domain"
+  ":feature:readout-vehicle-damage" -> ":core:designsystem"
+}

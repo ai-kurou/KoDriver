@@ -9,4 +9,5 @@ digraph G {
   ":feature:readout" -> ":core:domain"
   ":feature:readout-flag" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:domain"
+  ":feature:readout-vehicle-damage" -> ":core:domain"
 }
