@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +28,7 @@ fun DetailPaneCard(
     chipLabels: List<String>,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    selectedChipLabels: Set<String> = emptySet(),
     onChipClick: (String) -> Unit = {},
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
@@ -50,9 +54,21 @@ fun DetailPaneCard(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
             ) {
                 chipLabels.forEach { label ->
-                    SuggestionChip(
+                    val selected = label in selectedChipLabels
+                    FilterChip(
+                        selected = selected,
                         onClick = { onChipClick(label) },
                         label = { Text(text = label) },
+                        leadingIcon = if (selected) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                )
+                            }
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -68,6 +84,7 @@ private fun DetailPaneCardPreview() {
             title = "車両接近",
             checked = true,
             chipLabels = listOf("カーレフト", "カーライト"),
+            selectedChipLabels = setOf("カーレフト"),
             onCheckedChange = {},
             modifier = Modifier.padding(16.dp),
         )
