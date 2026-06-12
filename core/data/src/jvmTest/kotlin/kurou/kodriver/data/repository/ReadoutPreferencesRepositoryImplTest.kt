@@ -54,9 +54,10 @@ class ReadoutPreferencesRepositoryImplTest {
     fun `複数アイテムを独立して保存・取得できる`() = testScope.runTest {
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
         repository.saveReadoutEnabledState("lmu", "flag", false)
+        repository.saveReadoutEnabledState("lmu", "vehicle_damage", true)
 
         val states = repository.observeReadoutEnabledStates("lmu").first()
-        assertEquals(mapOf("vehicle_approach" to true, "flag" to false), states)
+        assertEquals(mapOf("vehicle_approach" to true, "flag" to false, "vehicle_damage" to true), states)
     }
 
     @Test
@@ -72,20 +73,33 @@ class ReadoutPreferencesRepositoryImplTest {
     fun `順序の初期値は空リスト・保存した順序を返す・上書きで更新される`() = testScope.runTest {
         assertTrue(repository.observeReadoutOrder("lmu").first().isEmpty())
 
-        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag"))
-        assertEquals(listOf("vehicle_approach", "flag"), repository.observeReadoutOrder("lmu").first())
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
+        assertEquals(
+            listOf("vehicle_approach", "flag", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
 
-        repository.saveReadoutOrder("lmu", listOf("flag", "vehicle_approach"))
-        assertEquals(listOf("flag", "vehicle_approach"), repository.observeReadoutOrder("lmu").first())
+        repository.saveReadoutOrder("lmu", listOf("flag", "vehicle_damage", "vehicle_approach"))
+        assertEquals(
+            listOf("flag", "vehicle_damage", "vehicle_approach"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
     }
 
     @Test
     fun `順序とenabledStatesは互いに独立して保存される`() = testScope.runTest {
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
-        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag"))
+        repository.saveReadoutEnabledState("lmu", "vehicle_damage", false)
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
 
-        assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
-        assertEquals(listOf("vehicle_approach", "flag"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            mapOf("vehicle_approach" to true, "vehicle_damage" to false),
+            repository.observeReadoutEnabledStates("lmu").first(),
+        )
+        assertEquals(
+            listOf("vehicle_approach", "flag", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
     }
 
     @Test
@@ -114,10 +128,13 @@ class ReadoutPreferencesRepositoryImplTest {
 
     @Test
     fun `enabledState保存時に既存の順序が保持される`() = testScope.runTest {
-        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag"))
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
 
-        assertEquals(listOf("vehicle_approach", "flag"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            listOf("vehicle_approach", "flag", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
         assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
     }
 }
