@@ -30,6 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 
 data class VehicleApproachUseCases(
@@ -46,6 +47,7 @@ class LmuNarratorViewModel(
     observeSelectedSimulatorUseCase: ObserveSelectedSimulatorUseCase,
     observeReadoutEnabledStatesUseCase: ObserveReadoutEnabledStatesUseCase,
     observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
+    observeVehicleDamageEnabledStatesUseCase: ObserveVehicleDamageEnabledStatesUseCase,
     observeReadoutOrderUseCase: ObserveReadoutOrderUseCase,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
@@ -59,7 +61,8 @@ class LmuNarratorViewModel(
                 if (simulator == null) emptyFlow() else observeReadoutEnabledStatesUseCase(simulator)
             },
         observeFlagEnabledStatesUseCase(),
-    ) { readoutStates, flagStates -> readoutStates + flagStates }
+        observeVehicleDamageEnabledStatesUseCase(),
+    ) { readoutStates, flagStates, vehicleDamageStates -> readoutStates + flagStates + vehicleDamageStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
@@ -122,6 +125,7 @@ class LmuNarratorViewModel(
         }
         .onEach { (prev, current) ->
             if (current == null) return@onEach
+            if (enabledStates.value[ReadoutItemKey.OVERHEAT] == false) return@onEach
             if (prev?.overheating != true && current.overheating) {
                 speakWithPriority(SpeechEvent.Overheating)
             }

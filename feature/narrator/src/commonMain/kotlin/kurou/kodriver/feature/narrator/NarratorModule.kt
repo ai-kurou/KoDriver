@@ -9,6 +9,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
@@ -17,6 +18,7 @@ import org.koin.dsl.module
 val narratorModule: Module = module {
     viewModelOf(::LmuNarratorViewModel)
     factory { ObserveFlagEnabledStatesUseCase(get()) }
+    factory { ObserveVehicleDamageEnabledStatesUseCase(get()) }
     factory { ObserveLmuUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
     factory { ObserveRaceFlagsUseCase(get()) }
