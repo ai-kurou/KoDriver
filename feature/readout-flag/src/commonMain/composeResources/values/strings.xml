@@ -6,4 +6,5 @@
     <string name="flag_yellow">イエローフラッグ</string>
     <string name="flag_full_course_yellow">フルコースイエロー</string>
     <string name="flag_red">レッドフラッグ</string>
+    <string name="flag_session_stop">セッションストップ</string>
 </resources>

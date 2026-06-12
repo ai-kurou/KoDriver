@@ -1,16 +1,12 @@
 package kurou.kodriver.feature.readout.flag
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,9 +16,11 @@ import kodriver.feature.readout.flag.generated.resources.flag_blue
 import kodriver.feature.readout.flag.generated.resources.flag_description
 import kodriver.feature.readout.flag.generated.resources.flag_full_course_yellow
 import kodriver.feature.readout.flag.generated.resources.flag_red
+import kodriver.feature.readout.flag.generated.resources.flag_session_stop
 import kodriver.feature.readout.flag.generated.resources.flag_switch_subtitle
 import kodriver.feature.readout.flag.generated.resources.flag_title
 import kodriver.feature.readout.flag.generated.resources.flag_yellow
+import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.DetailPaneTitle
@@ -31,13 +29,21 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private data class FlagSwitchItem(val key: String, val labelRes: StringResource)
+private data class FlagSwitchItem(
+    val key: String,
+    val labelRes: StringResource,
+    val chipLabelRes: StringResource,
+)
 
 private val flagSwitchItems = listOf(
-    FlagSwitchItem(ReadoutItemKey.BLUE_FLAG, Res.string.flag_blue),
-    FlagSwitchItem(ReadoutItemKey.SECTOR_YELLOW_FLAG, Res.string.flag_yellow),
-    FlagSwitchItem(ReadoutItemKey.FULL_COURSE_YELLOW, Res.string.flag_full_course_yellow),
-    FlagSwitchItem(ReadoutItemKey.RED_FLAG, Res.string.flag_red),
+    FlagSwitchItem(ReadoutItemKey.BLUE_FLAG, Res.string.flag_blue, Res.string.flag_blue),
+    FlagSwitchItem(ReadoutItemKey.SECTOR_YELLOW_FLAG, Res.string.flag_yellow, Res.string.flag_yellow),
+    FlagSwitchItem(
+        ReadoutItemKey.FULL_COURSE_YELLOW,
+        Res.string.flag_full_course_yellow,
+        Res.string.flag_full_course_yellow,
+    ),
+    FlagSwitchItem(ReadoutItemKey.RED_FLAG, Res.string.flag_red, Res.string.flag_session_stop),
 )
 
 @Composable
@@ -59,37 +65,25 @@ internal fun FlagDetailPaneContent(
     onFlagEnabledChanged: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneTitle(title = stringResource(Res.string.flag_title))
         DetailPaneDescription(text = stringResource(Res.string.flag_description))
         DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
         flagSwitchItems.forEach { item ->
-            FlagSwitchRow(
-                label = stringResource(item.labelRes),
+            val chipLabel = stringResource(item.chipLabelRes)
+            DetailPaneCard(
+                title = stringResource(item.labelRes),
                 checked = uiState.enabledStates[item.key] ?: true,
+                chipLabels = listOf(chipLabel),
+                selectedChipLabels = setOf(chipLabel),
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item.key, enabled) },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
-    }
-}
-
-@Composable
-private fun FlagSwitchRow(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
