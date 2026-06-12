@@ -168,10 +168,7 @@ internal fun AppScreenContent(
                 layoutType = resolvedLayoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
-                        val itemModifier = if (
-                            resolvedLayoutType == NavigationSuiteType.NavigationDrawer ||
-                            resolvedLayoutType == NavigationSuiteType.NavigationRail
-                        ) {
+                        val itemModifier = if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
                             Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp)
