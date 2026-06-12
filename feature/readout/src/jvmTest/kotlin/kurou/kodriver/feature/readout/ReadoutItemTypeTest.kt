@@ -17,6 +17,11 @@ class ReadoutItemTypeTest {
     }
 
     @Test
+    fun `vehicle_damage は VehicleDamage を返す`() {
+        assertEquals(ReadoutItemType.VehicleDamage, ReadoutItemType.fromId("vehicle_damage"))
+    }
+
+    @Test
     fun `不明な ID は null を返す`() {
         assertNull(ReadoutItemType.fromId("unknown"))
     }
