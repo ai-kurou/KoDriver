@@ -53,6 +53,8 @@ Multi-module Clean Architecture with Kotlin Multiplatform.
 | `:feature:lmu-connection` | LMU connection status monitoring |
 | `:feature:readout` | Announcement settings UI |
 | `:feature:readout-vehicle-approach` | Vehicle approach announcement detail UI |
+| `:feature:readout-vehicle-damage` | Vehicle damage announcement detail UI |
+| `:feature:readout-flag` | Flag announcement detail UI |
 | `:feature:narrator` | Audio playback engine (WAV TTS) |
 | `:feature:other` | Other settings and license information UI |
 | `:server` | Ktor server (not yet implemented) |

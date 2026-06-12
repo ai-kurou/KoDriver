@@ -54,6 +54,7 @@ import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.readout.flag.FlagDetailPane
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
+import kurou.kodriver.feature.readout.vehicledamage.VehicleDamageDetailPane
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,7 +81,7 @@ fun AppScreen(
                 when (itemType) {
                     ReadoutItemType.VehicleApproach -> VehicleApproachDetailPane()
                     ReadoutItemType.Flag -> FlagDetailPane()
-                    ReadoutItemType.VehicleDamage -> {}
+                    ReadoutItemType.VehicleDamage -> VehicleDamageDetailPane()
                 }
             },
         )
