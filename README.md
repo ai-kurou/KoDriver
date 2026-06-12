@@ -10,13 +10,13 @@
 [![GitHub Release](https://img.shields.io/github/v/release/ai-kurou/KoDriver)](https://github.com/ai-kurou/KoDriver/releases)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF?logo=kotlin)
 
-Le Mans Ultimate（LMU）の走行情報を Windows TTS でリアルタイムにアナウンスする Compose Multiplatform アプリ。
+Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
 ## 機能
 
 - アナウンスする項目の選択・有効/無効の切り替え
 - アナウンス優先度のドラッグ&リオーダー
-- Windows TTS でのリアルタイムアナウンス（未実装）
+- WAV 音声ファイルによるリアルタイムアナウンス
 
 ## 動作要件
 
@@ -45,7 +45,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-connection` | LMU 接続状態の監視 |
 | `:feature:readout` | アナウンス設定 UI |
 | `:feature:readout-vehicle-approach` | 車両接近アナウンス詳細 UI |
-| `:feature:narrator` | 音声再生エンジン（WAV TTS） |
+| `:feature:narrator` | WAV 音声再生エンジン |
 | `:feature:other` | その他画面・ライセンス表示 |
 | `:server` | Ktor サーバー（未実装） |
 
