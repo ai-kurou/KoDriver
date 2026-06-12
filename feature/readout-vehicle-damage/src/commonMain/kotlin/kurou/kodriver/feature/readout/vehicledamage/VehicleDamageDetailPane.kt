@@ -9,8 +9,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.readout.vehicledamage.generated.resources.Res
 import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_description
+import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_overheat_subtitle
 import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_title
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.DetailPaneTitle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -35,6 +37,7 @@ internal fun VehicleDamageDetailPaneContent(
     Column(modifier = modifier.fillMaxSize()) {
         DetailPaneTitle(title = stringResource(Res.string.vehicle_damage_title))
         DetailPaneDescription(text = stringResource(Res.string.vehicle_damage_description))
+        DetailPaneSubtitle(text = stringResource(Res.string.vehicle_damage_overheat_subtitle))
     }
 }
 
