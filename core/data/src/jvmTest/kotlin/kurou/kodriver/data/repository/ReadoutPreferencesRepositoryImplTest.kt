@@ -74,10 +74,16 @@ class ReadoutPreferencesRepositoryImplTest {
         assertTrue(repository.observeReadoutOrder("lmu").first().isEmpty())
 
         repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
-        assertEquals(listOf("vehicle_approach", "flag", "vehicle_damage"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            listOf("vehicle_approach", "flag", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
 
         repository.saveReadoutOrder("lmu", listOf("flag", "vehicle_damage", "vehicle_approach"))
-        assertEquals(listOf("flag", "vehicle_damage", "vehicle_approach"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            listOf("flag", "vehicle_damage", "vehicle_approach"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
     }
 
     @Test
@@ -86,8 +92,14 @@ class ReadoutPreferencesRepositoryImplTest {
         repository.saveReadoutEnabledState("lmu", "vehicle_damage", false)
         repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
 
-        assertEquals(mapOf("vehicle_approach" to true, "vehicle_damage" to false), repository.observeReadoutEnabledStates("lmu").first())
-        assertEquals(listOf("vehicle_approach", "flag", "vehicle_damage"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            mapOf("vehicle_approach" to true, "vehicle_damage" to false),
+            repository.observeReadoutEnabledStates("lmu").first(),
+        )
+        assertEquals(
+            listOf("vehicle_approach", "flag", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
     }
 
     @Test
@@ -119,7 +131,10 @@ class ReadoutPreferencesRepositoryImplTest {
         repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
         repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
 
-        assertEquals(listOf("vehicle_approach", "flag", "vehicle_damage"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            listOf("vehicle_approach", "flag", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
         assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
     }
 }

@@ -57,7 +57,10 @@ class AndroidReadoutPreferencesRepositoryTest {
 
         repository.saveReadoutOrder("lmu", listOf("flag", "vehicle_approach", "vehicle_damage"))
 
-        assertEquals(listOf("flag", "vehicle_approach", "vehicle_damage"), repository.observeReadoutOrder("lmu").first())
+        assertEquals(
+            listOf("flag", "vehicle_approach", "vehicle_damage"),
+            repository.observeReadoutOrder("lmu").first(),
+        )
     }
 
     @Test
