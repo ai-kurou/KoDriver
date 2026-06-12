@@ -8,4 +8,5 @@ object ReadoutItemKey {
     const val FULL_COURSE_YELLOW = "full_course_yellow"
     const val RED_FLAG = "red_flag"
     const val VEHICLE_DAMAGE = "vehicle_damage"
+    const val OVERHEAT = "overheat"
 }

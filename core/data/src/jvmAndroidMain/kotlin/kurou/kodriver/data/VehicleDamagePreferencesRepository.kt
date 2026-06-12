@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createVehicleDamagePreferencesDataStore
+import kurou.kodriver.data.repository.VehicleDamagePreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
+
+fun createVehicleDamagePreferencesRepository(directory: String): VehicleDamagePreferencesRepository =
+    VehicleDamagePreferencesRepositoryImpl(createVehicleDamagePreferencesDataStore(directory))

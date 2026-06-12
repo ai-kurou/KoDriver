@@ -6,6 +6,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -35,6 +36,7 @@ import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuUseCase
@@ -44,6 +46,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.junit.After
 import org.junit.Before
@@ -75,6 +78,7 @@ class LmuNarratorViewModelTest {
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<String, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
+        vehicleDamageEnabledOverrides: Map<String, Boolean> = emptyMap(),
         orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
         simulator: String? = "lmu",
@@ -91,21 +95,30 @@ class LmuNarratorViewModelTest {
                 observeSkipFirstLap = ObserveSkipFirstLapUseCase(
                     FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
                 ),
+            ),
+            vehicleDamageUseCases = VehicleDamageUseCases(
                 observeVehicleDamage = ObserveVehicleDamageUseCase(
                     FakeChannelVehicleDamageRepository(damageChannel.receiveAsFlow()),
                 ),
+                observeVehicleDamageEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(
+                    FakeVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
+                ),
             ),
-            observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
-                FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
+            readoutListUseCases = ReadoutListUseCases(
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(
+                    FakeConstantSimulatorRepository(simulator),
+                ),
+                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
+                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
             ),
-            observeSelectedSimulatorUseCase = ObserveSelectedSimulatorUseCase(
-                FakeConstantSimulatorRepository(simulator),
+            flagUseCases = FlagUseCases(
+                observeRaceFlags = ObserveRaceFlagsUseCase(
+                    FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
+                ),
+                observeFlagEnabledStates = ObserveFlagEnabledStatesUseCase(
+                    FakeFlagPreferencesRepository(flagEnabledOverrides),
+                ),
             ),
-            observeReadoutEnabledStatesUseCase = ObserveReadoutEnabledStatesUseCase(readoutRepo),
-            observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
-                FakeFlagPreferencesRepository(flagEnabledOverrides),
-            ),
-            observeReadoutOrderUseCase = ObserveReadoutOrderUseCase(readoutRepo),
             ttsEngine = ttsEngine,
         )
     }
@@ -415,6 +428,22 @@ class LmuNarratorViewModelTest {
     }
 
     @Test
+    fun `OVERHEATが無効のときはオーバーヒートを読み上げない`() = runTest(testDispatcher) {
+        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            damageChannel = damageChannel,
+            ttsEngine = tts,
+            vehicleDamageEnabledOverrides = mapOf(ReadoutItemKey.OVERHEAT to false),
+        )
+
+        damageChannel.send(noDamage())
+        damageChannel.send(noDamage(overheating = true))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `BLUE_FLAGが無効のときは青旗を読み上げない`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -540,6 +569,16 @@ private class FakeConstantVehicleApproachPreferencesRepository(
 ) : VehicleApproachPreferencesRepository {
     override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
+}
+
+private class FakeVehicleDamagePreferencesRepository(
+    initialStates: Map<String, Boolean> = emptyMap(),
+) : VehicleDamagePreferencesRepository {
+    private val states = MutableStateFlow(initialStates)
+    override fun observeEnabledStates(): Flow<Map<String, Boolean>> = states
+    override suspend fun saveEnabledState(key: String, enabled: Boolean) {
+        states.update { it + (key to enabled) }
+    }
 }
 
 private class FakeChannelVehicleDamageRepository(
