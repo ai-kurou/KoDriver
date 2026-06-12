@@ -115,11 +115,6 @@ fun AppScreen(
 
     NarratorEffect()
     AppScreenContent(
-        connectionStatus = when {
-            !connectionUiState.isConnectionChecked -> ConnectionStatus.Hidden
-            connectionUiState.isConnected -> ConnectionStatus.Connected
-            else -> ConnectionStatus.Waiting
-        },
         snackbarHostState = snackbarHostState,
         readoutContent = readoutContent,
         otherContent = otherContent,
@@ -147,7 +142,6 @@ internal fun ConnectionSnackbarEffect(
 @Composable
 internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
-    connectionStatus: ConnectionStatus = ConnectionStatus.Waiting,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
@@ -238,11 +232,6 @@ internal fun AppScreenContent(
                     }
                 }
             }
-            ConnectionStatusPlacement(
-                layoutType = resolvedLayoutType,
-                status = connectionStatus,
-                modifier = Modifier.align(Alignment.BottomStart),
-            )
             SnackbarHost(
                 hostState = snackbarHostState,
                 modifier = Modifier
@@ -261,36 +250,8 @@ internal fun AppScreenContent(
     }
 }
 
-@Composable
-private fun ConnectionStatusPlacement(
-    layoutType: NavigationSuiteType,
-    status: ConnectionStatus,
-    modifier: Modifier = Modifier,
-) {
-    val navigationWidth = when (layoutType) {
-        NavigationSuiteType.NavigationRail -> 80.dp
-        NavigationSuiteType.NavigationDrawer -> 360.dp
-        else -> null
-    }
-    Box(
-        modifier = modifier
-            .then(navigationWidth?.let { Modifier.width(it) } ?: Modifier)
-            .padding(
-                start = if (layoutType == NavigationSuiteType.NavigationBar) 16.dp else 0.dp,
-                bottom = if (layoutType == NavigationSuiteType.NavigationBar) 96.dp else 24.dp,
-            ),
-        contentAlignment = if (layoutType == NavigationSuiteType.NavigationBar) {
-            Alignment.BottomStart
-        } else {
-            Alignment.BottomCenter
-        },
-    ) {
-        ConnectionStatusIndicator(status = status)
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun AppScreenContentPreview() {
-    AppScreenContent(connectionStatus = ConnectionStatus.Connected)
+    AppScreenContent()
 }
