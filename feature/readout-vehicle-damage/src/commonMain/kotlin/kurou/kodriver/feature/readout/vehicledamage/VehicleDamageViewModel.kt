@@ -1,11 +1,30 @@
 package kurou.kodriver.feature.readout.vehicledamage
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.SaveVehicleDamageEnabledStateUseCase
 
-internal class VehicleDamageViewModel : ViewModel() {
+internal class VehicleDamageViewModel(
+    observeEnabledStates: ObserveVehicleDamageEnabledStatesUseCase,
+    private val saveEnabledState: SaveVehicleDamageEnabledStateUseCase,
+) : ViewModel() {
 
-    val uiState: StateFlow<VehicleDamageUiState> = MutableStateFlow(VehicleDamageUiState()).asStateFlow()
+    val uiState: StateFlow<VehicleDamageUiState> = observeEnabledStates()
+        .map { states ->
+            VehicleDamageUiState(
+                overheatEnabled = states[ReadoutItemKey.OVERHEAT] ?: true,
+            )
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VehicleDamageUiState())
+
+    fun onOverheatEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch { saveEnabledState(ReadoutItemKey.OVERHEAT, enabled) }
+    }
 }

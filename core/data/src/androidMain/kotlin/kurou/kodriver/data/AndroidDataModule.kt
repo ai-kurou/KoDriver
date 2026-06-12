@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -37,5 +38,8 @@ fun androidDataModule(context: Context) = module {
     }
     single<VehicleApproachPreferencesRepository> {
         createVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<VehicleDamagePreferencesRepository> {
+        createVehicleDamagePreferencesRepository(context.filesDir.absolutePath)
     }
 }
