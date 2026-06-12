@@ -19,8 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
+private const val DisabledContentAlpha = 0.38f
 
 @Composable
 fun DetailPaneCard(
@@ -44,23 +47,31 @@ fun DetailPaneCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .alpha(if (checked) 1f else DisabledContentAlpha),
                 )
                 Switch(
                     checked = checked,
                     onCheckedChange = null,
                 )
             }
-            HorizontalDivider()
+            HorizontalDivider(
+                modifier = Modifier.alpha(if (checked) 1f else DisabledContentAlpha),
+            )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(if (checked) 1f else DisabledContentAlpha)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 chipLabels.forEach { label ->
                     val selected = label in selectedChipLabels
                     FilterChip(
                         selected = selected,
+                        enabled = checked,
                         onClick = { onChipClick(label) },
                         label = { Text(text = label) },
                         leadingIcon = if (selected) {
@@ -84,13 +95,23 @@ fun DetailPaneCard(
 @Composable
 private fun DetailPaneCardPreview() {
     MaterialTheme {
-        DetailPaneCard(
-            title = "車両接近",
-            checked = true,
-            chipLabels = listOf("カーレフト", "カーライト"),
-            selectedChipLabels = setOf("カーレフト"),
-            onCheckedChange = {},
-            modifier = Modifier.padding(16.dp),
-        )
+        Column {
+            DetailPaneCard(
+                title = "車両接近",
+                checked = true,
+                chipLabels = listOf("カーレフト", "カーライト"),
+                selectedChipLabels = setOf("カーレフト"),
+                onCheckedChange = {},
+                modifier = Modifier.padding(16.dp),
+            )
+            DetailPaneCard(
+                title = "車両接近",
+                checked = false,
+                chipLabels = listOf("カーレフト", "カーライト"),
+                selectedChipLabels = setOf("カーレフト"),
+                onCheckedChange = {},
+                modifier = Modifier.padding(16.dp),
+            )
+        }
     }
 }
