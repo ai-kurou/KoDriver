@@ -20,19 +20,35 @@ class FlagDetailPaneScreenshotTest {
 
     @Test
     fun `デフォルト`() {
+        captureFlagDetailPane(
+            enabledStates = mapOf(
+                ReadoutItemKey.BLUE_FLAG to true,
+                ReadoutItemKey.SECTOR_YELLOW_FLAG to true,
+                ReadoutItemKey.FULL_COURSE_YELLOW to true,
+                ReadoutItemKey.RED_FLAG to true,
+            ),
+        )
+    }
+
+    @Test
+    fun `全カード無効`() {
+        captureFlagDetailPane(
+            enabledStates = mapOf(
+                ReadoutItemKey.BLUE_FLAG to false,
+                ReadoutItemKey.SECTOR_YELLOW_FLAG to false,
+                ReadoutItemKey.FULL_COURSE_YELLOW to false,
+                ReadoutItemKey.RED_FLAG to false,
+            ),
+        )
+    }
+
+    private fun captureFlagDetailPane(enabledStates: Map<String, Boolean>) {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         FlagDetailPaneContent(
-                            uiState = FlagUiState(
-                                enabledStates = mapOf(
-                                    ReadoutItemKey.BLUE_FLAG to true,
-                                    ReadoutItemKey.SECTOR_YELLOW_FLAG to true,
-                                    ReadoutItemKey.FULL_COURSE_YELLOW to true,
-                                    ReadoutItemKey.RED_FLAG to true,
-                                ),
-                            ),
+                            uiState = FlagUiState(enabledStates = enabledStates),
                             onFlagEnabledChanged = { _, _ -> },
                         )
                     }
