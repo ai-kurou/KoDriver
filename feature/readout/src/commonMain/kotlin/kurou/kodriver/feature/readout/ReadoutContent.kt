@@ -18,7 +18,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kodriver.feature.readout.generated.resources.Res
+import kodriver.feature.readout.generated.resources.item_flag
+import kodriver.feature.readout.generated.resources.item_vehicle_approach
+import kodriver.feature.readout.generated.resources.item_vehicle_damage
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -112,7 +117,13 @@ internal fun ReadoutContent(
         },
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
+                val title = when (selectedItem) {
+                    ReadoutItemType.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+                    ReadoutItemType.Flag -> stringResource(Res.string.item_flag)
+                    ReadoutItemType.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+                }
                 ReadoutDetailPane(
+                    title = title,
                     canNavigateBack = navigator.canNavigateBack(),
                     onBack = { navigateBack() },
                     content = { detailContent(selectedItem) },

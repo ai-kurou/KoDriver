@@ -39,10 +39,8 @@ import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_appr
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_longitudinal_label
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_threshold_subtitle
-import kodriver.feature.readout.vehicleapproach.generated.resources.vehicle_approach_title
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
-import kurou.kodriver.core.designsystem.DetailPaneTitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -110,7 +108,6 @@ internal fun VehicleApproachDetailPaneContent(
     }
 
     Column(modifier = modifier.fillMaxSize()) {
-        DetailPaneTitle(title = stringResource(Res.string.vehicle_approach_title))
         DetailPaneDescription(text = stringResource(Res.string.vehicle_approach_description))
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),

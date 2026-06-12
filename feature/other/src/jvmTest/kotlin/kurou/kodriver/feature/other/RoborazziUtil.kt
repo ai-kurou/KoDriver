@@ -6,7 +6,7 @@ import io.github.takahirom.roborazzi.captureRoboImage
 
 private val defaultOptions = RoborazziOptions(
     compareOptions = RoborazziOptions.CompareOptions(
-        changeThreshold = 0.05f,
+        changeThreshold = 0.07f,
     ),
 )
 

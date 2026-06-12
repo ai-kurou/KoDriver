@@ -20,7 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kodriver.feature.other.generated.resources.Res
+import kodriver.feature.other.generated.resources.item_license
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
@@ -120,7 +123,12 @@ internal fun OtherContent(
         },
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
+                val title = when (selectedItem) {
+                    OtherItemType.License -> stringResource(Res.string.item_license)
+                    else -> selectedItem.id
+                }
                 OtherDetailPane(
+                    title = title,
                     canNavigateBack = navigator.canNavigateBack(),
                     onBack = { navigateBack() },
                 ) {
