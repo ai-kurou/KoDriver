@@ -168,10 +168,13 @@ internal fun AppScreenContent(
                 layoutType = resolvedLayoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
-                        val itemModifier = if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
+                        val itemModifier = if (
+                            resolvedLayoutType == NavigationSuiteType.NavigationDrawer ||
+                            resolvedLayoutType == NavigationSuiteType.NavigationRail
+                        ) {
                             Modifier
                                 .fillMaxWidth()
-                                .padding(4.dp)
+                                .padding(8.dp)
                                 .testTag("nav_${dest.name.lowercase()}")
                         } else {
                             Modifier.testTag("nav_${dest.name.lowercase()}")
