@@ -50,13 +50,17 @@ data class ReadoutListUseCases(
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
 )
 
+data class FlagUseCases(
+    val observeRaceFlags: ObserveRaceFlagsUseCase,
+    val observeFlagEnabledStates: ObserveFlagEnabledStatesUseCase,
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
     vehicleDamageUseCases: VehicleDamageUseCases,
     readoutListUseCases: ReadoutListUseCases,
-    observeRaceFlagsUseCase: ObserveRaceFlagsUseCase,
-    observeFlagEnabledStatesUseCase: ObserveFlagEnabledStatesUseCase,
+    flagUseCases: FlagUseCases,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
@@ -68,7 +72,7 @@ class LmuNarratorViewModel(
             .flatMapLatest { simulator ->
                 if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator)
             },
-        observeFlagEnabledStatesUseCase(),
+        flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
     ) { readoutStates, flagStates, vehicleDamageStates -> readoutStates + flagStates + vehicleDamageStates }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
@@ -144,7 +148,7 @@ class LmuNarratorViewModel(
     private val flagJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != LMU_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
-            observeRaceFlagsUseCase()
+            flagUseCases.observeRaceFlags()
                 .scan(null as RaceFlagsData? to null as RaceFlagsData?) { acc, current ->
                     acc.second to current
                 }

@@ -21,6 +21,7 @@ val narratorModule: Module = module {
     factory { ObserveLmuUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
     factory { ObserveRaceFlagsUseCase(get()) }
+    factory { FlagUseCases(get(), get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }

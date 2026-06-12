@@ -111,11 +111,13 @@ class LmuNarratorViewModelTest {
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
             ),
-            observeRaceFlagsUseCase = ObserveRaceFlagsUseCase(
-                FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
-            ),
-            observeFlagEnabledStatesUseCase = ObserveFlagEnabledStatesUseCase(
-                FakeFlagPreferencesRepository(flagEnabledOverrides),
+            flagUseCases = FlagUseCases(
+                observeRaceFlags = ObserveRaceFlagsUseCase(
+                    FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
+                ),
+                observeFlagEnabledStates = ObserveFlagEnabledStatesUseCase(
+                    FakeFlagPreferencesRepository(flagEnabledOverrides),
+                ),
             ),
             ttsEngine = ttsEngine,
         )
