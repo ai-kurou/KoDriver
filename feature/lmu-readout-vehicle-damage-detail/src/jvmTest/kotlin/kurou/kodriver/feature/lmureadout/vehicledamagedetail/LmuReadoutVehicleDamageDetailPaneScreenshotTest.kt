@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
-class LmuLmuReadoutVehicleDamageDetailPaneScreenshotTest {
+class LmuReadoutVehicleDamageDetailPaneScreenshotTest {
 
     @get:Rule
     val rule = createComposeRule()
@@ -23,7 +23,7 @@ class LmuLmuReadoutVehicleDamageDetailPaneScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        LmuLmuReadoutVehicleDamageDetailPaneContent(
+                        LmuReadoutVehicleDamageDetailPaneContent(
                             uiState = LmuReadoutVehicleDamageDetailUiState(),
                         )
                     }

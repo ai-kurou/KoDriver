@@ -127,11 +127,13 @@ jobs:
   screenshot-test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
-          persist-credentials: false
+          token: ${{ secrets.GH_PAT }}
 
       - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
         with:
@@ -140,18 +142,28 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4.4.3
 
-      - run: ./gradlew :feature:readout:verifyRoborazziJvmTest :feature:readout-vehicle-approach:verifyRoborazziJvmTest :feature:readout-flag-detail:verifyRoborazziJvmTest :feature:other-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
+      - name: Install Japanese fonts
+        run: sudo apt-get install -y fonts-noto-cjk
 
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: failure()
-        with:
-          name: screenshot-diffs
-          path: |
-            feature/readout/src/jvmTest/snapshots/*.png
-            feature/readout-vehicle-approach/src/jvmTest/snapshots/*.png
-            feature/readout-flag-detail/src/jvmTest/snapshots/*.png
-            feature/other-detail/src/jvmTest/snapshots/*.png
-            app/shared/src/jvmTest/snapshots/*.png
+      - name: Record golden images
+        run: ./gradlew :feature:readout:recordRoborazziJvmTest :feature:readout-vehicle-approach:recordRoborazziJvmTest :feature:readout-flag-detail:recordRoborazziJvmTest :feature:other-detail:recordRoborazziJvmTest :feature:other-list:recordRoborazziJvmTest :feature:lmu-readout-vehicle-damage-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
+
+      - name: Commit updated golden images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "feature/readout/src/jvmTest/snapshots/*.png"
+          git add "feature/readout-vehicle-approach/src/jvmTest/snapshots/*.png"
+          git add "feature/readout-flag-detail/src/jvmTest/snapshots/*.png"
+          git add "feature/other-detail/src/jvmTest/snapshots/*.png"
+          git add "feature/other-list/src/jvmTest/snapshots/*.png"
+          git add "feature/lmu-readout-vehicle-damage-detail/src/jvmTest/snapshots/*.png"
+          git add "app/shared/src/jvmTest/snapshots/*.png"
+          git diff --staged --quiet || git commit -m "chore: update golden images [skip ci]"
+          git push
+
+      - name: Verify screenshot tests
+        run: ./gradlew :feature:readout:verifyRoborazziJvmTest :feature:readout-vehicle-approach:verifyRoborazziJvmTest :feature:readout-flag-detail:verifyRoborazziJvmTest :feature:other-detail:verifyRoborazziJvmTest :feature:other-list:verifyRoborazziJvmTest :feature:lmu-readout-vehicle-damage-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
 
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
