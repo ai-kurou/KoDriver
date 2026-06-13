@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicleapproach
+package kurou.kodriver.feature.lmureadout.vehicleapproachdetail
 
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase

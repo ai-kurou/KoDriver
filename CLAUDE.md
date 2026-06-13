@@ -19,7 +19,7 @@ KoDriver/
 │   ├── lmu-narrator/             WAV 音声再生とアナウンス制御
 │   ├── other-detail/             その他画面の詳細表示
 │   ├── other-list/               その他画面の一覧表示・選択状態管理
-│   ├── readout/                  アナウンス設定の一覧 UI・状態管理
+│   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
 │   ├── lmu-readout-flag-detail/          フラグアナウンスの詳細設定
 │   ├── lmu-readout-vehicle-approach-detail/ 車両接近アナウンスの詳細設定
 │   └── lmu-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定

@@ -48,10 +48,10 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.lmunarrator.LmuNarratorEffect
+import kurou.kodriver.feature.lmureadout.flagdetail.LmuReadoutFlagDetailPane
+import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
-import kurou.kodriver.feature.readout.flagdetail.LmuReadoutFlagDetailPane
-import kurou.kodriver.feature.readout.vehicleapproach.LmuReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import org.jetbrains.compose.resources.stringResource

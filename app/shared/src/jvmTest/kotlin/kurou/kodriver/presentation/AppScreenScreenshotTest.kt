@@ -14,7 +14,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
-import kurou.kodriver.feature.lmunarrator.fakeLmuNarratorDataModule
+import kurou.kodriver.feature.lmunarrator.fakeLmuNarratorModule
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import org.jetbrains.compose.resources.stringResource
@@ -31,7 +31,7 @@ class AppScreenScreenshotTest {
         @BeforeClass
         @JvmStatic
         fun setUpKoin() {
-            startKoin { modules(listOf(fakeReadoutListModule, fakeLmuNarratorDataModule) + appModules) }
+            startKoin { modules(listOf(fakeReadoutListModule, fakeLmuNarratorModule) + appModules) }
         }
 
         @AfterClass
