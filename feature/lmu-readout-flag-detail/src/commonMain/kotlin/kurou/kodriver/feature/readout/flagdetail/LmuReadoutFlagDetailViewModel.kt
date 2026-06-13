@@ -18,17 +18,17 @@ private val flagKeys = listOf(
     ReadoutItemKey.RED_FLAG,
 )
 
-internal class FlagDetailViewModel(
+internal class LmuReadoutFlagDetailViewModel(
     observeFlagEnabledStates: ObserveFlagEnabledStatesUseCase,
     private val saveFlagEnabledState: SaveFlagEnabledStateUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<FlagDetailUiState> = observeFlagEnabledStates()
+    val uiState: StateFlow<LmuReadoutFlagDetailUiState> = observeFlagEnabledStates()
         .map { storedStates ->
             val enabledStates = flagKeys.associateWith { storedStates[it] ?: true }
-            FlagDetailUiState(enabledStates = enabledStates)
+            LmuReadoutFlagDetailUiState(enabledStates = enabledStates)
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FlagDetailUiState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuReadoutFlagDetailUiState())
 
     fun onFlagEnabledChanged(key: String, enabled: Boolean) {
         viewModelScope.launch { saveFlagEnabledState(key, enabled) }
