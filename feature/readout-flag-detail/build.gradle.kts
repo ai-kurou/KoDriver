@@ -22,7 +22,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.readout.flag"
+        namespace = "kurou.kodriver.feature.readout.flagdetail"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -77,7 +77,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.readout.flag.generated.resources"
+    packageOfResClass = "kodriver.feature.readout.flagdetail.generated.resources"
 }
 
 dependencies {

@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.flag
+package kurou.kodriver.feature.readout.flagdetail
 
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.SaveFlagEnabledStateUseCase
