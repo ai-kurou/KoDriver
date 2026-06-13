@@ -18,7 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LmuLmuReadoutVehicleDamageDetailViewModelTest {
+class LmuReadoutVehicleDamageDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakeVehicleDamagePreferencesRepository

@@ -15,7 +15,7 @@ import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
-val fakeLmuNarratorDataModule = module {
+val fakeLmuNarratorModule = module {
     single<ProximityRepository> { FakeProximityRepository() }
     single<FlagRepository> { FakeFlagRepository() }
     single<LmuRepository> { FakeLmuRepository() }
