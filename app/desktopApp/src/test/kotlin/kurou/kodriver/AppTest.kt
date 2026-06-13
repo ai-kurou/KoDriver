@@ -20,7 +20,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
-import kurou.kodriver.feature.narrator.fakeNarratorDataModule
+import kurou.kodriver.feature.lmunarrator.fakeLmuNarratorDataModule
 import kurou.kodriver.feature.readout.fakeReadoutDataModule
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
@@ -63,7 +63,7 @@ class AppTest {
                 factory { SaveReadoutOrderUseCase(get()) }
             }
             startKoin {
-                modules(listOf(fakeNarratorDataModule, fakeReadoutDataModule, scenarioDataModule) + appModules)
+                modules(listOf(fakeLmuNarratorDataModule, fakeReadoutDataModule, scenarioDataModule) + appModules)
             }
         }
 
