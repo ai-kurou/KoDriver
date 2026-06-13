@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.VehicleDamagePreferencesSerializer
 import java.nio.file.Files
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,6 +25,11 @@ class VehicleDamagePreferencesRepositoryImplTest {
         produceFile = { tempDir.resolve("test.pb") },
     )
     private val repository = VehicleDamagePreferencesRepositoryImpl(dataStore)
+
+    @AfterTest
+    fun tearDown() {
+        tempDir.deleteRecursively()
+    }
 
     @Test
     fun `enabledStates の初期値は空Map`() = testScope.runTest {

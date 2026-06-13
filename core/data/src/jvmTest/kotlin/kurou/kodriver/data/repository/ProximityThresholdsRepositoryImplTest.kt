@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.ProximityThresholdsSerializer
 import java.nio.file.Files
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,6 +23,11 @@ class ProximityThresholdsRepositoryImplTest {
         produceFile = { tempDir.resolve("test.pb") },
     )
     private val repository = ProximityThresholdsRepositoryImpl(dataStore)
+
+    @AfterTest
+    fun tearDown() {
+        tempDir.deleteRecursively()
+    }
 
     @Test
     fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
