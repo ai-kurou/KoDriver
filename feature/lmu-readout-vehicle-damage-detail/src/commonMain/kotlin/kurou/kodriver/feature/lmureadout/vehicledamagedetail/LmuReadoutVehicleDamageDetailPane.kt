@@ -26,7 +26,7 @@ fun LmuReadoutVehicleDamageDetailPane(
 ) {
     val viewModel: LmuReadoutVehicleDamageDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LmuLmuReadoutVehicleDamageDetailPaneContent(
+    LmuReadoutVehicleDamageDetailPaneContent(
         uiState = uiState,
         onOverheatEnabledChanged = viewModel::onOverheatEnabledChanged,
         modifier = modifier,
@@ -34,7 +34,7 @@ fun LmuReadoutVehicleDamageDetailPane(
 }
 
 @Composable
-internal fun LmuLmuReadoutVehicleDamageDetailPaneContent(
+internal fun LmuReadoutVehicleDamageDetailPaneContent(
     uiState: LmuReadoutVehicleDamageDetailUiState,
     onOverheatEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
@@ -57,5 +57,5 @@ internal fun LmuLmuReadoutVehicleDamageDetailPaneContent(
 @Preview(showBackground = true)
 @Composable
 private fun LmuReadoutVehicleDamageDetailPanePreview() {
-    LmuLmuReadoutVehicleDamageDetailPaneContent(uiState = LmuReadoutVehicleDamageDetailUiState())
+    LmuReadoutVehicleDamageDetailPaneContent(uiState = LmuReadoutVehicleDamageDetailUiState())
 }
