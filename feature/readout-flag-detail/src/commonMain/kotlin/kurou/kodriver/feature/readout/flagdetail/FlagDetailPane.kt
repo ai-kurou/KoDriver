@@ -48,7 +48,7 @@ private val flagSwitchItems = listOf(
 fun FlagDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: FlagViewModel = koinViewModel()
+    val viewModel: FlagDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     FlagDetailPaneContent(
         uiState = uiState,
@@ -59,7 +59,7 @@ fun FlagDetailPane(
 
 @Composable
 internal fun FlagDetailPaneContent(
-    uiState: FlagUiState,
+    uiState: FlagDetailUiState,
     onFlagEnabledChanged: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -88,7 +88,7 @@ internal fun FlagDetailPaneContent(
 @Composable
 private fun FlagDetailPanePreview() {
     FlagDetailPaneContent(
-        uiState = FlagUiState(
+        uiState = FlagDetailUiState(
             enabledStates = mapOf(
                 ReadoutItemKey.BLUE_FLAG to true,
                 ReadoutItemKey.SECTOR_YELLOW_FLAG to true,

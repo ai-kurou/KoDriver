@@ -48,7 +48,7 @@ class FlagDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         FlagDetailPaneContent(
-                            uiState = FlagUiState(enabledStates = enabledStates),
+                            uiState = FlagDetailUiState(enabledStates = enabledStates),
                             onFlagEnabledChanged = { _, _ -> },
                         )
                     }
