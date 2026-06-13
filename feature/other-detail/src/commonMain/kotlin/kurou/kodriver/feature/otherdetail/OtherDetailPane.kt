@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.other
+package kurou.kodriver.feature.otherdetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +14,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import kodriver.feature.other.generated.resources.Res
-import kodriver.feature.other.generated.resources.navigate_back
+import kodriver.feature.otherdetail.generated.resources.Res
+import kodriver.feature.otherdetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_license
 import kotlinx.coroutines.launch
-import kurou.kodriver.feature.other.OtherDetailPane
+import kurou.kodriver.feature.otherdetail.OtherDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListPane
 import kurou.kodriver.feature.otherlist.OtherListUiState

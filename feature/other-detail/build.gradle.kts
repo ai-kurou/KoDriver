@@ -22,7 +22,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.other"
+        namespace = "kurou.kodriver.feature.otherdetail"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -84,7 +84,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.other.generated.resources"
+    packageOfResClass = "kodriver.feature.otherdetail.generated.resources"
 }
 
 dependencies {
