@@ -4,11 +4,11 @@ digraph G {
   ":app:desktopApp" -> ":core:domain"
   ":core:data" -> ":core:domain"
   ":feature:lmu-connection" -> ":core:domain"
+  ":feature:lmu-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:narrator" -> ":core:domain"
   ":feature:other-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
   ":feature:readout-flag-detail" -> ":core:domain"
   ":feature:readout-vehicle-approach" -> ":core:domain"
-  ":feature:readout-vehicle-damage" -> ":core:domain"
 }

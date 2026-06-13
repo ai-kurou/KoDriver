@@ -8,6 +8,6 @@ digraph G {
   ":app:shared" -> ":feature:readout"
   ":app:shared" -> ":feature:readout-vehicle-approach"
   ":app:shared" -> ":feature:readout-flag-detail"
-  ":app:shared" -> ":feature:readout-vehicle-damage"
+  ":app:shared" -> ":feature:lmu-readout-vehicle-damage-detail"
   ":app:webApp" -> ":app:shared"
 }
