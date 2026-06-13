@@ -1,0 +1,5 @@
+digraph G {
+  ":app:shared" -> ":feature:readout-flag-detail"
+  ":feature:readout-flag-detail" -> ":core:domain"
+  ":feature:readout-flag-detail" -> ":core:designsystem"
+}

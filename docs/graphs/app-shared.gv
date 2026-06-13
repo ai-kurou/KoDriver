@@ -7,7 +7,7 @@ digraph G {
   ":app:shared" -> ":feature:other-list"
   ":app:shared" -> ":feature:readout"
   ":app:shared" -> ":feature:readout-vehicle-approach"
-  ":app:shared" -> ":feature:readout-flag"
+  ":app:shared" -> ":feature:readout-flag-detail"
   ":app:shared" -> ":feature:readout-vehicle-damage"
   ":app:webApp" -> ":app:shared"
 }
