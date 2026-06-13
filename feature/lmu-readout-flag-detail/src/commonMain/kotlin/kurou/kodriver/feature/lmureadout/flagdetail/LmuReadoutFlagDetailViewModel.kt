@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.flagdetail
+package kurou.kodriver.feature.lmureadout.flagdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

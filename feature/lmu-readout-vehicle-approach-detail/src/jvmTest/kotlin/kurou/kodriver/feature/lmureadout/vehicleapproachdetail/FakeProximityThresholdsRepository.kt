@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicleapproach
+package kurou.kodriver.feature.lmureadout.vehicleapproachdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

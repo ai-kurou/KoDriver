@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicleapproach
+package kurou.kodriver.feature.lmureadout.vehicleapproachdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

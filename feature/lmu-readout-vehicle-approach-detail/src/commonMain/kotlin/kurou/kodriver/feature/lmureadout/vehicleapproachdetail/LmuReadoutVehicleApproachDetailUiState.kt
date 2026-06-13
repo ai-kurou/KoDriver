@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicleapproach
+package kurou.kodriver.feature.lmureadout.vehicleapproachdetail
 
 internal data class LmuReadoutVehicleApproachDetailUiState(
     val lateralThresholdMeters: Double = 5.0,

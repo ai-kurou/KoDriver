@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.flagdetail
+package kurou.kodriver.feature.lmureadout.vehicleapproachdetail
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import com.github.takahirom.roborazzi.RoborazziOptions
