@@ -17,7 +17,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -40,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,6 +74,13 @@ private fun itemDisplayName(itemId: String): String = when (itemId) {
     "flag" -> stringResource(Res.string.item_flag)
     "vehicle_damage" -> stringResource(Res.string.item_vehicle_damage)
     else -> itemId
+}
+
+private fun itemIcon(itemId: String): ImageVector = when (itemId) {
+    "vehicle_approach" -> Icons.Filled.DirectionsCar
+    "flag" -> Icons.Filled.Flag
+    "vehicle_damage" -> Icons.Filled.Build
+    else -> Icons.Filled.DirectionsCar
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -185,6 +196,10 @@ internal fun ReadoutListPane(
                                         style = MaterialTheme.typography.labelLarge,
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier.widthIn(min = 20.dp),
+                                    )
+                                    Icon(
+                                        imageVector = itemIcon(item),
+                                        contentDescription = null,
                                     )
                                 }
                             },
