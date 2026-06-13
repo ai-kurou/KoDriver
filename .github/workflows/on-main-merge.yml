@@ -98,6 +98,7 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: update module graph images [skip ci]"
+            git pull --rebase origin main
             git push
           fi
 
@@ -160,6 +161,7 @@ jobs:
           git add "feature/lmu-readout-vehicle-damage-detail/src/jvmTest/snapshots/*.png"
           git add "app/shared/src/jvmTest/snapshots/*.png"
           git diff --staged --quiet || git commit -m "chore: update golden images [skip ci]"
+          git pull --rebase origin main
           git push
 
       - name: Verify screenshot tests
