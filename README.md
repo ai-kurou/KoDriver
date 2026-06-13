@@ -43,7 +43,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:data` | 共有メモリ読み取り・DataStore（JVM / Android） |
 | `:core:designsystem` | 共通 Composable コンポーネント |
 | `:feature:lmu-connection` | LMU 接続状態の監視 |
-| `:feature:readout` | アナウンス設定 UI |
+| `:feature:readout-list` | アナウンス設定 UI |
 | `:feature:lmu-readout-vehicle-approach-detail` | 車両接近アナウンス詳細 UI |
 | `:feature:lmu-readout-vehicle-damage-detail` | 車両故障アナウンス詳細 UI |
 | `:feature:lmu-readout-flag-detail` | フラグアナウンス詳細 UI |

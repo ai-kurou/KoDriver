@@ -50,10 +50,10 @@ import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.lmunarrator.LmuNarratorEffect
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
-import kurou.kodriver.feature.readout.ReadoutContent
-import kurou.kodriver.feature.readout.ReadoutItemType
 import kurou.kodriver.feature.readout.flagdetail.LmuReadoutFlagDetailPane
 import kurou.kodriver.feature.readout.vehicleapproach.LmuReadoutVehicleApproachDetailPane
+import kurou.kodriver.feature.readoutlist.ReadoutContent
+import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -78,9 +78,9 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
-                    ReadoutItemType.VehicleApproach -> LmuReadoutVehicleApproachDetailPane()
-                    ReadoutItemType.Flag -> LmuReadoutFlagDetailPane()
-                    ReadoutItemType.VehicleDamage -> LmuReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.VehicleApproach -> LmuReadoutVehicleApproachDetailPane()
+                    ReadoutListItemType.Flag -> LmuReadoutFlagDetailPane()
+                    ReadoutListItemType.VehicleDamage -> LmuReadoutVehicleDamageDetailPane()
                 }
             },
         )

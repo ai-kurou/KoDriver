@@ -1,0 +1,151 @@
+package kurou.kodriver.feature.readoutlist
+
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.PaneExpansionAnchor
+import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldDestinationItem
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
+import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import kodriver.feature.readoutlist.generated.resources.Res
+import kodriver.feature.readoutlist.generated.resources.item_flag
+import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
+import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun ReadoutContent(
+    modifier: Modifier = Modifier,
+    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    detailContent: @Composable (ReadoutListItemType) -> Unit = {},
+) {
+    val viewModel: ReadoutListViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateInLifecycle()
+    ReadoutContent(
+        uiState = uiState,
+        onSimulatorSelected = viewModel::onSimulatorSelected,
+        onMove = viewModel::moveItem,
+        onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
+        onItemSelected = viewModel::onItemSelected,
+        onClearSelectedItem = viewModel::clearSelectedItem,
+        modifier = modifier,
+        scaffoldDirective = scaffoldDirective,
+        backHandler = backHandler,
+        detailContent = detailContent,
+    )
+}
+
+@Suppress("LongParameterList")
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+internal fun ReadoutContent(
+    uiState: ReadoutListUiState,
+    onSimulatorSelected: (String) -> Unit,
+    onMove: (Int, Int) -> Unit,
+    onReadoutEnabledChanged: (String, Boolean) -> Unit,
+    onItemSelected: (String) -> Unit,
+    onClearSelectedItem: () -> Unit,
+    modifier: Modifier = Modifier,
+    scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    detailContent: @Composable (ReadoutListItemType) -> Unit = {},
+) {
+    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
+        scaffoldDirective = if (uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1)
+            scaffoldDirective.copy(maxHorizontalPartitions = 1)
+        else
+            scaffoldDirective,
+        initialDestinationHistory = if (uiState.selectedItem != null) {
+            listOf(
+                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+            )
+        } else {
+            listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+        },
+    )
+    val scope = rememberCoroutineScope()
+    val navigateBack = {
+        scope.launch { navigator.navigateBack() }
+        onClearSelectedItem()
+    }
+    val paneExpansionState = rememberPaneExpansionState(
+        anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
+        initialAnchoredIndex = 0,
+    )
+
+    LaunchedEffect(uiState.selectedItem) {
+        navigator.navigateTo(
+            if (uiState.selectedItem != null)
+                ListDetailPaneScaffoldRole.Detail
+            else
+                ListDetailPaneScaffoldRole.List,
+        )
+    }
+
+    backHandler(navigator.canNavigateBack()) { navigateBack() }
+
+    ListDetailPaneScaffold(
+        directive = navigator.scaffoldDirective,
+        scaffoldState = navigator.scaffoldState,
+        paneExpansionState = paneExpansionState,
+        paneExpansionDragHandle = { VerticalDivider() },
+        modifier = modifier,
+        listPane = {
+            ReadoutListPane(
+                uiState = uiState,
+                onSimulatorSelected = onSimulatorSelected,
+                onMove = onMove,
+                onReadoutEnabledChanged = onReadoutEnabledChanged,
+                onItemClick = onItemSelected,
+            )
+        },
+        detailPane = {
+            uiState.selectedItem?.let { selectedItem ->
+                val title = when (selectedItem) {
+                    ReadoutListItemType.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+                    ReadoutListItemType.Flag -> stringResource(Res.string.item_flag)
+                    ReadoutListItemType.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+                }
+                ReadoutDetailPane(
+                    title = title,
+                    canNavigateBack = navigator.canNavigateBack(),
+                    onBack = { navigateBack() },
+                    content = { detailContent(selectedItem) },
+                )
+            }
+        },
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ReadoutContentPreview() {
+    ReadoutContent(
+        uiState = ReadoutListUiState(
+            simulators = listOf("lmu"),
+            selectedSimulator = "lmu",
+            items = listOf("vehicle_approach", "flag", "vehicle_damage"),
+        ),
+        onSimulatorSelected = {},
+        onMove = { _, _ -> },
+        onReadoutEnabledChanged = { _, _ -> },
+        onItemSelected = {},
+        onClearSelectedItem = {},
+    )
+}

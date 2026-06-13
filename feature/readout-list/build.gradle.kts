@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
-    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
@@ -13,37 +12,44 @@ plugins {
 
 kotlin {
     jvm()
-    
+
     js {
         browser()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
     }
-    
-    androidLibrary {
-       namespace = "kurou.kodriver.app.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
 
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
-       lint {
-           abortOnError = true
-           warningsAsErrors = false
-       }
+    androidLibrary {
+        namespace = "kurou.kodriver.feature.readoutlist"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+        lint {
+            abortOnError = true
+            warningsAsErrors = false
+        }
     }
-    
+
     sourceSets {
+        val nonAndroidMain by creating {
+            dependsOn(commonMain.get())
+        }
+        jvmMain.get().dependsOn(nonAndroidMain)
+        jsMain.get().dependsOn(nonAndroidMain)
+        wasmJsMain.get().dependsOn(nonAndroidMain)
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
         }
@@ -51,28 +57,19 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.feature.lmuConnection)
-            implementation(projects.feature.lmuNarrator)
-            implementation(projects.feature.otherDetail)
-            implementation(projects.feature.otherList)
-            implementation(projects.feature.readoutList)
-            implementation(projects.feature.lmuReadoutVehicleApproachDetail)
-            implementation(projects.feature.lmuReadoutFlagDetail)
-            implementation(projects.feature.lmuReadoutVehicleDamageDetail)
-            implementation(libs.aboutlibraries.compose.m3)
-            implementation(libs.koin.core)
+            implementation(projects.core.domain)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
-            implementation(libs.compose.material3.adaptive.navigation.suite)
             implementation(libs.compose.material3.adaptive.layout)
             implementation(libs.compose.material3.adaptive.navigation)
-            implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.compose.material.icons.extended)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.reorderable)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -83,7 +80,7 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
-            implementation(libs.compose.material3.adaptive.layout)
+            implementation(libs.kotlinx.coroutinesTest)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
@@ -91,11 +88,15 @@ kotlin {
     }
 }
 
+compose.resources {
+    packageOfResClass = "kodriver.feature.readoutlist.generated.resources"
+}
+
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
-    add("jvmTestImplementation", testFixtures(projects.app.shared))
-    testFixturesApi(testFixtures(projects.feature.lmuNarrator))
-    testFixturesApi(testFixtures(projects.feature.readoutList))
+    testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))

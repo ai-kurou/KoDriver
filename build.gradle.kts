@@ -243,7 +243,7 @@ dependencies {
     kover(project(":feature:lmu-narrator"))
     kover(project(":feature:other-detail"))
     kover(project(":feature:other-list"))
-    kover(project(":feature:readout"))
+    kover(project(":feature:readout-list"))
     kover(project(":feature:lmu-readout-vehicle-approach-detail"))
     kover(project(":feature:lmu-readout-flag-detail"))
     kover(project(":feature:lmu-readout-vehicle-damage-detail"))
