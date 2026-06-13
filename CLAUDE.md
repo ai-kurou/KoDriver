@@ -16,7 +16,7 @@ KoDriver/
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
 │   ├── lmu-connection/           LMU 接続状態の監視
-│   ├── narrator/                 WAV 音声再生とアナウンス制御
+│   ├── lmu-narrator/             WAV 音声再生とアナウンス制御
 │   ├── other-detail/             その他画面の詳細表示
 │   ├── other-list/               その他画面の一覧表示・選択状態管理
 │   ├── readout/                  アナウンス設定の一覧 UI・状態管理

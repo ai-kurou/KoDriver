@@ -52,7 +52,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.feature.lmuConnection)
-            implementation(projects.feature.narrator)
+            implementation(projects.feature.lmuNarrator)
             implementation(projects.feature.otherDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.readout)
@@ -94,7 +94,7 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.app.shared))
-    testFixturesApi(testFixtures(projects.feature.narrator))
+    testFixturesApi(testFixtures(projects.feature.lmuNarrator))
     testFixturesApi(testFixtures(projects.feature.readout))
 }
 

@@ -240,7 +240,7 @@ dependencies {
     kover(project(":core:data"))
     kover(project(":core:designsystem"))
     kover(project(":feature:lmu-connection"))
-    kover(project(":feature:narrator"))
+    kover(project(":feature:lmu-narrator"))
     kover(project(":feature:other-detail"))
     kover(project(":feature:other-list"))
     kover(project(":feature:readout"))

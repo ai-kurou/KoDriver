@@ -47,8 +47,8 @@ import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
+import kurou.kodriver.feature.lmunarrator.LmuNarratorEffect
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
-import kurou.kodriver.feature.narrator.NarratorEffect
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType
@@ -112,7 +112,7 @@ fun AppScreen(
         disconnectedMessage = disconnectedMessage,
     )
 
-    NarratorEffect()
+    LmuNarratorEffect()
     AppScreenContent(
         connectionStatus = when {
             !connectionUiState.isConnectionChecked -> ConnectionStatus.Hidden
