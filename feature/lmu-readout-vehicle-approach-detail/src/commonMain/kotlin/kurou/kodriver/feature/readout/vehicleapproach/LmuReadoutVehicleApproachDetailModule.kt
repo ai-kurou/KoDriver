@@ -9,8 +9,8 @@ import kurou.kodriver.domain.usecase.SaveSkipFirstLapUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val vehicleApproachModule = module {
-    viewModelOf(::VehicleApproachViewModel)
+val lmuReadoutVehicleApproachDetailModule = module {
+    viewModelOf(::LmuReadoutVehicleApproachDetailViewModel)
     factory { ObserveLateralThresholdUseCase(get()) }
     factory { ObserveLongitudinalThresholdUseCase(get()) }
     factory { ObserveSkipFirstLapUseCase(get()) }
