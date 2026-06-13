@@ -64,19 +64,19 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
-        rule.onNodeWithTag("other_item_0").performClick()
+        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)
 
-        rule.onNodeWithTag("other_item_1").performClick()
+        rule.onNodeWithTag("other_item_2").performClick()
         rule.waitForIdle()
 
         assertTrue(releasePageOpened)
         assertFalse(backEnabled)
 
-        rule.onNodeWithTag("other_item_2").performClick()
+        rule.onNodeWithTag("other_item_3").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)

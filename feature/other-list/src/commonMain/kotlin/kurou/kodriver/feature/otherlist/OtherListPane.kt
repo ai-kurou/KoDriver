@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
@@ -28,10 +29,12 @@ import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_license
 import kodriver.feature.otherlist.generated.resources.item_release_page
+import kodriver.feature.otherlist.generated.resources.item_volume
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
+    OtherListItemType.Volume.id -> stringResource(Res.string.item_volume)
     OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
     OtherListItemType.License.id -> stringResource(Res.string.item_license)
@@ -61,6 +64,15 @@ fun OtherListPane(
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
                     leadingContent = when (itemType) {
+                        OtherListItemType.Volume -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.VolumeUp,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
                         OtherListItemType.GitHubRepository -> {
                             {
                                 Icon(
@@ -91,6 +103,8 @@ fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
+                        OtherListItemType.Volume -> null
+
                         OtherListItemType.GitHubRepository,
                         OtherListItemType.ReleasePage,
                         -> {

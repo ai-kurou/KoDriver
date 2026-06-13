@@ -52,7 +52,7 @@ class MainActivityTest {
         composeTestRule.waitForIdle()
 
         // ライセンス項目をタップ
-        composeTestRule.onNodeWithTag("other_item_0").performClick()
+        composeTestRule.onNodeWithTag("other_item_3").performClick()
         composeTestRule.waitForIdle()
     }
 }
