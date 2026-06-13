@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicledamage
+package kurou.kodriver.feature.lmureadout.vehicledamagedetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
-class VehicleDamageDetailPaneScreenshotTest {
+class LmuLmuReadoutVehicleDamageDetailPaneScreenshotTest {
 
     @get:Rule
     val rule = createComposeRule()
@@ -23,8 +23,8 @@ class VehicleDamageDetailPaneScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        VehicleDamageDetailPaneContent(
-                            uiState = VehicleDamageUiState(),
+                        LmuLmuReadoutVehicleDamageDetailPaneContent(
+                            uiState = LmuReadoutVehicleDamageDetailUiState(),
                         )
                     }
                 }

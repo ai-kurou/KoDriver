@@ -112,7 +112,7 @@ jobs:
         run: sudo apt-get install -y fonts-noto-cjk
 
       - name: Record golden images
-        run: ./gradlew :feature:readout:recordRoborazziJvmTest :feature:readout-vehicle-approach:recordRoborazziJvmTest :feature:readout-vehicle-damage:recordRoborazziJvmTest :feature:readout-flag-detail:recordRoborazziJvmTest :feature:other-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
+        run: ./gradlew :feature:readout:recordRoborazziJvmTest :feature:readout-vehicle-approach:recordRoborazziJvmTest :feature:lmu-readout-vehicle-damage-detail:recordRoborazziJvmTest :feature:readout-flag-detail:recordRoborazziJvmTest :feature:other-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
 
       - name: Commit updated golden images
         run: |
@@ -120,7 +120,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "feature/readout/src/jvmTest/snapshots/*.png"
           git add "feature/readout-vehicle-approach/src/jvmTest/snapshots/*.png"
-          git add "feature/readout-vehicle-damage/src/jvmTest/snapshots/*.png"
+          git add "feature/lmu-readout-vehicle-damage-detail/src/jvmTest/snapshots/*.png"
           git add "feature/readout-flag-detail/src/jvmTest/snapshots/*.png"
           git add "feature/other-detail/src/jvmTest/snapshots/*.png"
           git add "app/shared/src/jvmTest/snapshots/*.png"
@@ -128,7 +128,7 @@ jobs:
           git push
 
       - name: Verify screenshot tests
-        run: ./gradlew :feature:readout:verifyRoborazziJvmTest :feature:readout-vehicle-approach:verifyRoborazziJvmTest :feature:readout-vehicle-damage:verifyRoborazziJvmTest :feature:readout-flag-detail:verifyRoborazziJvmTest :feature:other-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
+        run: ./gradlew :feature:readout:verifyRoborazziJvmTest :feature:readout-vehicle-approach:verifyRoborazziJvmTest :feature:lmu-readout-vehicle-damage-detail:verifyRoborazziJvmTest :feature:readout-flag-detail:verifyRoborazziJvmTest :feature:other-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
 
   desktop-test:
     runs-on: ubuntu-latest

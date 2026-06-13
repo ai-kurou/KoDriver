@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicledamage
+package kurou.kodriver.feature.lmureadout.vehicledamagedetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.readout.vehicledamage.generated.resources.Res
-import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_description
-import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_overheat_chip_label
-import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_overheat_subtitle
-import kodriver.feature.readout.vehicledamage.generated.resources.vehicle_damage_overheat_switch_label
+import kodriver.feature.lmureadout.vehicledamagedetail.generated.resources.Res
+import kodriver.feature.lmureadout.vehicledamagedetail.generated.resources.vehicle_damage_description
+import kodriver.feature.lmureadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_chip_label
+import kodriver.feature.lmureadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_subtitle
+import kodriver.feature.lmureadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -21,12 +21,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun VehicleDamageDetailPane(
+fun LmuReadoutVehicleDamageDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: VehicleDamageViewModel = koinViewModel()
+    val viewModel: LmuReadoutVehicleDamageDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    VehicleDamageDetailPaneContent(
+    LmuLmuReadoutVehicleDamageDetailPaneContent(
         uiState = uiState,
         onOverheatEnabledChanged = viewModel::onOverheatEnabledChanged,
         modifier = modifier,
@@ -34,8 +34,8 @@ fun VehicleDamageDetailPane(
 }
 
 @Composable
-internal fun VehicleDamageDetailPaneContent(
-    uiState: VehicleDamageUiState,
+internal fun LmuLmuReadoutVehicleDamageDetailPaneContent(
+    uiState: LmuReadoutVehicleDamageDetailUiState,
     onOverheatEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -56,6 +56,6 @@ internal fun VehicleDamageDetailPaneContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun VehicleDamageDetailPanePreview() {
-    VehicleDamageDetailPaneContent(uiState = VehicleDamageUiState())
+private fun LmuReadoutVehicleDamageDetailPanePreview() {
+    LmuLmuReadoutVehicleDamageDetailPaneContent(uiState = LmuReadoutVehicleDamageDetailUiState())
 }

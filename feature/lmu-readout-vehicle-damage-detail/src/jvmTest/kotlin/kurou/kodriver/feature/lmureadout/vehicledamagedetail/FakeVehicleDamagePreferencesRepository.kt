@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.vehicledamage
+package kurou.kodriver.feature.lmureadout.vehicledamagedetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
