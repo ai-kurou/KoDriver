@@ -45,7 +45,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-connection` | LMU 接続状態の監視 |
 | `:feature:readout` | アナウンス設定 UI |
 | `:feature:readout-vehicle-approach` | 車両接近アナウンス詳細 UI |
-| `:feature:readout-vehicle-damage-detail` | 車両故障アナウンス詳細 UI |
+| `:feature:lmu-readout-vehicle-damage-detail` | 車両故障アナウンス詳細 UI |
 | `:feature:readout-flag-detail` | フラグアナウンス詳細 UI |
 | `:feature:narrator` | WAV 音声再生エンジン |
 | `:feature:other-detail` | その他画面の詳細表示 |

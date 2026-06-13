@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package kurou.kodriver.feature.readout.vehicledamagedetail
+package kurou.kodriver.feature.lmureadout.vehicledamagedetail
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,17 +18,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ReadoutVehicleDamageDetailViewModelTest {
+class LmuLmuReadoutVehicleDamageDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeReadoutVehicleDamageDetailPreferencesRepository
-    private lateinit var viewModel: ReadoutVehicleDamageDetailViewModel
+    private lateinit var repository: FakeVehicleDamagePreferencesRepository
+    private lateinit var viewModel: LmuReadoutVehicleDamageDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeReadoutVehicleDamageDetailPreferencesRepository()
-        viewModel = ReadoutVehicleDamageDetailViewModel(
+        repository = FakeVehicleDamagePreferencesRepository()
+        viewModel = LmuReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repository),
             saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repository),
         )
@@ -41,20 +41,20 @@ class ReadoutVehicleDamageDetailViewModelTest {
 
     @Test
     fun `初期状態はリポジトリが空のとき overheatEnabled がデフォルト値 true の UiState を返す`() = runTest {
-        assertEquals(ReadoutVehicleDamageDetailUiState(overheatEnabled = true), viewModel.uiState.first())
+        assertEquals(LmuReadoutVehicleDamageDetailUiState(overheatEnabled = true), viewModel.uiState.first())
     }
 
     @Test
     fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() = runTest {
-        val repo = FakeReadoutVehicleDamageDetailPreferencesRepository(
+        val repo = FakeVehicleDamagePreferencesRepository(
             initialStates = mapOf(ReadoutItemKey.OVERHEAT to false),
         )
-        val vm = ReadoutVehicleDamageDetailViewModel(
+        val vm = LmuReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repo),
             saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repo),
         )
 
-        assertEquals(ReadoutVehicleDamageDetailUiState(overheatEnabled = false), vm.uiState.first())
+        assertEquals(LmuReadoutVehicleDamageDetailUiState(overheatEnabled = false), vm.uiState.first())
     }
 
     @Test

@@ -1,11 +1,11 @@
-package kurou.kodriver.feature.readout.vehicledamagedetail
+package kurou.kodriver.feature.lmureadout.vehicledamagedetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 
-internal class FakeReadoutVehicleDamageDetailPreferencesRepository(
+internal class FakeVehicleDamagePreferencesRepository(
     initialStates: Map<String, Boolean> = emptyMap(),
 ) : VehicleDamagePreferencesRepository {
     private val states = MutableStateFlow(initialStates)

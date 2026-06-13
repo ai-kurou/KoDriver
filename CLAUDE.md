@@ -22,7 +22,7 @@ KoDriver/
 │   ├── readout/                  アナウンス設定の一覧 UI・状態管理
 │   ├── readout-flag-detail/      フラグアナウンスの詳細設定
 │   ├── readout-vehicle-approach/        車両接近アナウンスの詳細設定
-│   └── readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
+│   └── lmu-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
 ├── app/
 │   ├── androidApp/ Android アプリのエントリーポイント
 │   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント
