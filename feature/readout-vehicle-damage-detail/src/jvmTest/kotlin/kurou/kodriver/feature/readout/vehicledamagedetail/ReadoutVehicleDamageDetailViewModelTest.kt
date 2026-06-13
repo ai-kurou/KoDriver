@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package kurou.kodriver.feature.readout.vehicledamage
+package kurou.kodriver.feature.readout.vehicledamagedetail
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,17 +18,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class VehicleDamageViewModelTest {
+class ReadoutVehicleDamageDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeVehicleDamagePreferencesRepository
-    private lateinit var viewModel: VehicleDamageViewModel
+    private lateinit var repository: FakeReadoutVehicleDamageDetailPreferencesRepository
+    private lateinit var viewModel: ReadoutVehicleDamageDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeVehicleDamagePreferencesRepository()
-        viewModel = VehicleDamageViewModel(
+        repository = FakeReadoutVehicleDamageDetailPreferencesRepository()
+        viewModel = ReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repository),
             saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repository),
         )
@@ -41,20 +41,20 @@ class VehicleDamageViewModelTest {
 
     @Test
     fun `初期状態はリポジトリが空のとき overheatEnabled がデフォルト値 true の UiState を返す`() = runTest {
-        assertEquals(VehicleDamageUiState(overheatEnabled = true), viewModel.uiState.first())
+        assertEquals(ReadoutVehicleDamageDetailUiState(overheatEnabled = true), viewModel.uiState.first())
     }
 
     @Test
     fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() = runTest {
-        val repo = FakeVehicleDamagePreferencesRepository(
+        val repo = FakeReadoutVehicleDamageDetailPreferencesRepository(
             initialStates = mapOf(ReadoutItemKey.OVERHEAT to false),
         )
-        val vm = VehicleDamageViewModel(
+        val vm = ReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repo),
             saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repo),
         )
 
-        assertEquals(VehicleDamageUiState(overheatEnabled = false), vm.uiState.first())
+        assertEquals(ReadoutVehicleDamageDetailUiState(overheatEnabled = false), vm.uiState.first())
     }
 
     @Test

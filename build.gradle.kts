@@ -246,7 +246,7 @@ dependencies {
     kover(project(":feature:readout"))
     kover(project(":feature:readout-vehicle-approach"))
     kover(project(":feature:readout-flag-detail"))
-    kover(project(":feature:readout-vehicle-damage"))
+    kover(project(":feature:readout-vehicle-damage-detail"))
     kover(project(":app:androidApp"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))

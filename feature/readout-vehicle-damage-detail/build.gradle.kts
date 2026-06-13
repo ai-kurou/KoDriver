@@ -22,7 +22,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.readout.vehicledamage"
+        namespace = "kurou.kodriver.feature.readout.vehicledamagedetail"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -77,7 +77,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.readout.vehicledamage.generated.resources"
+    packageOfResClass = "kodriver.feature.readout.vehicledamagedetail.generated.resources"
 }
 
 dependencies {

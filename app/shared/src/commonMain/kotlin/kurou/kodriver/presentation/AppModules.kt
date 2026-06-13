@@ -6,7 +6,7 @@ import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.readout.flagdetail.flagDetailModule
 import kurou.kodriver.feature.readout.readoutModule
 import kurou.kodriver.feature.readout.vehicleapproach.vehicleApproachModule
-import kurou.kodriver.feature.readout.vehicledamage.vehicleDamageModule
+import kurou.kodriver.feature.readout.vehicledamagedetail.readoutVehicleDamageDetailModule
 import org.koin.core.module.Module
 
 val appModules: List<Module> = listOf(
@@ -16,5 +16,5 @@ val appModules: List<Module> = listOf(
     readoutModule,
     vehicleApproachModule,
     flagDetailModule,
-    vehicleDamageModule,
+    readoutVehicleDamageDetailModule,
 )
