@@ -1,0 +1,4 @@
+digraph G {
+  ":app:shared" -> ":feature:other-list"
+  ":feature:other-list" -> ":core:domain"
+}

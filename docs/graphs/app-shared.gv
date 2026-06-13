@@ -1,0 +1,13 @@
+digraph G {
+  ":app:androidApp" -> ":app:shared"
+  ":app:desktopApp" -> ":app:shared"
+  ":app:shared" -> ":feature:lmu-connection"
+  ":app:shared" -> ":feature:narrator"
+  ":app:shared" -> ":feature:other-detail"
+  ":app:shared" -> ":feature:other-list"
+  ":app:shared" -> ":feature:readout"
+  ":app:shared" -> ":feature:readout-vehicle-approach"
+  ":app:shared" -> ":feature:readout-flag-detail"
+  ":app:shared" -> ":feature:readout-vehicle-damage"
+  ":app:webApp" -> ":app:shared"
+}

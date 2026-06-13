@@ -1,0 +1,4 @@
+digraph G {
+  ":app:shared" -> ":feature:readout"
+  ":feature:readout" -> ":core:domain"
+}
