@@ -1,0 +1,4 @@
+digraph G {
+  ":app:shared" -> ":feature:lmu-narrator"
+  ":feature:lmu-narrator" -> ":core:domain"
+}
