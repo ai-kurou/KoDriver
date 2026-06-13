@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
@@ -62,14 +63,19 @@ internal fun ReadoutContent(
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = if (uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1)
-            scaffoldDirective.copy(maxHorizontalPartitions = 1)
-        else
-            scaffoldDirective,
+        scaffoldDirective = when {
+            uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 ->
+                scaffoldDirective.copy(maxHorizontalPartitions = 1)
+            uiState.selectedItem != null &&
+                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
+                scaffoldDirective.copy(maxHorizontalPartitions = 2)
+            else -> scaffoldDirective
+        },
         initialDestinationHistory = if (uiState.selectedItem != null) {
             listOf(
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),

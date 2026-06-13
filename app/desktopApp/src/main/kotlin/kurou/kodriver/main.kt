@@ -17,7 +17,7 @@ fun main() {
         modules(listOf(desktopDataModule) + appModules)
     }
     application {
-        val windowState = rememberWindowState(size = DpSize(600.dp, 500.dp))
+        val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
         Window(
             onCloseRequest = ::exitApplication,
             title = "KoDriver",
