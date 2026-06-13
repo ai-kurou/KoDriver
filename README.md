@@ -49,6 +49,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:readout-flag` | フラグアナウンス詳細 UI |
 | `:feature:narrator` | WAV 音声再生エンジン |
 | `:feature:other-detail` | その他画面の詳細表示 |
+| `:feature:other-list` | その他画面の一覧表示・選択状態管理 |
 | `:server` | Ktor サーバー（未実装） |
 
 ## Contributing
