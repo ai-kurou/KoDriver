@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.SimulatorPreferencesSerializer
 import java.nio.file.Files
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -23,6 +24,11 @@ class SimulatorPreferencesRepositoryImplTest {
         produceFile = { tempDir.resolve("test.pb") },
     )
     private val repository = SimulatorPreferencesRepositoryImpl(dataStore)
+
+    @AfterTest
+    fun tearDown() {
+        tempDir.deleteRecursively()
+    }
 
     @Test
     fun `初期値はnull・保存した値を返す・上書きで更新される`() = testScope.runTest {

@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.VehicleApproachPreferencesSerializer
 import java.nio.file.Files
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,6 +23,11 @@ class VehicleApproachPreferencesRepositoryImplTest {
         produceFile = { tempDir.resolve("test.pb") },
     )
     private val repository = VehicleApproachPreferencesRepositoryImpl(dataStore)
+
+    @AfterTest
+    fun tearDown() {
+        tempDir.deleteRecursively()
+    }
 
     @Test
     fun `skipFirstLap の初期値は true`() = testScope.runTest {
