@@ -13,8 +13,17 @@ class OtherListViewModelTest {
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
         assertEquals(OtherListItemType.entries.map { it.id }, viewModel.uiState.first().items)
-        assertEquals(OtherListItemType.GitHubRepository.id, viewModel.uiState.first().items.first())
+        assertEquals(OtherListItemType.Volume.id, viewModel.uiState.first().items.first())
         assertNull(viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `音量を選択しても状態は変わらない`() = runTest {
+        val initialState = viewModel.uiState.first()
+
+        viewModel.onItemSelected(OtherListItemType.Volume.id)
+
+        assertEquals(initialState, viewModel.uiState.first())
     }
 
     @Test
