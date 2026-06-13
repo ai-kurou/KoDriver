@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import org.junit.Rule
@@ -21,6 +22,8 @@ class OtherContentTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
 
     private val singlePaneDirective = PaneScaffoldDirective(
         maxHorizontalPartitions = 1,
@@ -50,6 +53,7 @@ class OtherContentTest {
                 onOpenReleasePage = { releasePageOpened = true },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, onBack ->
                     backEnabled = enabled
                     capturedOnBack = onBack

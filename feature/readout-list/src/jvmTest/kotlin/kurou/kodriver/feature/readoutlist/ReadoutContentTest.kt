@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import org.jetbrains.compose.resources.stringResource
@@ -22,6 +23,8 @@ class ReadoutContentTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
 
     private val singlePaneDirective = PaneScaffoldDirective(
         maxHorizontalPartitions = 1,
@@ -54,6 +57,7 @@ class ReadoutContentTest {
                 onItemSelected = { selectedItem = ReadoutListItemType.fromId(it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
                 backHandler = { enabled, onBack ->
                     backEnabled = enabled
                     capturedOnBack = onBack
