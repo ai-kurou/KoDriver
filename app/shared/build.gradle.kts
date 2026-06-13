@@ -53,7 +53,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.lmuConnection)
             implementation(projects.feature.narrator)
-            implementation(projects.feature.other)
+            implementation(projects.feature.otherDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.readout)
             implementation(projects.feature.readoutVehicleApproach)

@@ -5,7 +5,7 @@ digraph G {
   ":core:data" -> ":core:domain"
   ":feature:lmu-connection" -> ":core:domain"
   ":feature:narrator" -> ":core:domain"
-  ":feature:other" -> ":core:domain"
+  ":feature:other-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:readout" -> ":core:domain"
   ":feature:readout-flag" -> ":core:domain"
