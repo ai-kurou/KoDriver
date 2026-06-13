@@ -13,14 +13,14 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import org.junit.Rule
 import org.junit.Test
 
-class FlagDetailPaneScreenshotTest {
+class LmuReadoutFlagDetailPaneScreenshotTest {
 
     @get:Rule
     val rule = createComposeRule()
 
     @Test
     fun `デフォルト`() {
-        captureFlagDetailPane(
+        captureLmuReadoutFlagDetailPane(
             enabledStates = mapOf(
                 ReadoutItemKey.BLUE_FLAG to true,
                 ReadoutItemKey.SECTOR_YELLOW_FLAG to true,
@@ -32,7 +32,7 @@ class FlagDetailPaneScreenshotTest {
 
     @Test
     fun `全カード無効`() {
-        captureFlagDetailPane(
+        captureLmuReadoutFlagDetailPane(
             enabledStates = mapOf(
                 ReadoutItemKey.BLUE_FLAG to false,
                 ReadoutItemKey.SECTOR_YELLOW_FLAG to false,
@@ -42,13 +42,13 @@ class FlagDetailPaneScreenshotTest {
         )
     }
 
-    private fun captureFlagDetailPane(enabledStates: Map<String, Boolean>) {
+    private fun captureLmuReadoutFlagDetailPane(enabledStates: Map<String, Boolean>) {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        FlagDetailPaneContent(
-                            uiState = FlagDetailUiState(enabledStates = enabledStates),
+                        LmuReadoutFlagDetailPaneContent(
+                            uiState = LmuReadoutFlagDetailUiState(enabledStates = enabledStates),
                             onFlagEnabledChanged = { _, _ -> },
                         )
                     }

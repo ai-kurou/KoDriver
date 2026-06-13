@@ -57,7 +57,7 @@ kotlin {
             implementation(projects.feature.otherList)
             implementation(projects.feature.readout)
             implementation(projects.feature.readoutVehicleApproach)
-            implementation(projects.feature.readoutFlagDetail)
+            implementation(projects.feature.lmuReadoutFlagDetail)
             implementation(projects.feature.lmuReadoutVehicleDamageDetail)
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)

@@ -5,8 +5,8 @@ import kurou.kodriver.domain.usecase.SaveFlagEnabledStateUseCase
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val flagDetailModule = module {
-    viewModelOf(::FlagDetailViewModel)
+val lmuReadoutFlagDetailModule = module {
+    viewModelOf(::LmuReadoutFlagDetailViewModel)
     factory { ObserveFlagEnabledStatesUseCase(get()) }
     factory { SaveFlagEnabledStateUseCase(get()) }
 }
