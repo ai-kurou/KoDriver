@@ -1,0 +1,5 @@
+digraph G {
+  ":app:shared" -> ":feature:lmu-readout-vehicle-approach-detail"
+  ":feature:lmu-readout-vehicle-approach-detail" -> ":core:domain"
+  ":feature:lmu-readout-vehicle-approach-detail" -> ":core:designsystem"
+}
