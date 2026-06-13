@@ -1,3 +1,0 @@
-digraph G {
-  ":app:webApp" -> ":app:shared"
-}
