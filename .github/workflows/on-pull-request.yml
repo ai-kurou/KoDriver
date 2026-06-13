@@ -124,7 +124,7 @@ jobs:
           git add "feature/readout-flag/src/jvmTest/snapshots/*.png"
           git add "feature/other-detail/src/jvmTest/snapshots/*.png"
           git add "app/shared/src/jvmTest/snapshots/*.png"
-          git diff --staged --quiet || git commit -m "chore: update golden images [skip ci]"
+          git diff --staged --quiet || git commit -m "chore: update golden images"
           git push
 
       - name: Verify screenshot tests
