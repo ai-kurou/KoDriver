@@ -9,7 +9,7 @@ digraph G {
   ":app:shared" -> ":feature:lmu-narrator"
   ":app:shared" -> ":feature:other-detail"
   ":app:shared" -> ":feature:other-list"
-  ":app:shared" -> ":feature:readout"
+  ":app:shared" -> ":feature:readout-list"
   ":app:shared" -> ":feature:lmu-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:lmu-readout-flag-detail"
   ":app:shared" -> ":feature:lmu-readout-vehicle-damage-detail"
@@ -25,5 +25,5 @@ digraph G {
   ":feature:lmu-readout-vehicle-damage-detail" -> ":core:designsystem"
   ":feature:other-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
-  ":feature:readout" -> ":core:domain"
+  ":feature:readout-list" -> ":core:domain"
 }
