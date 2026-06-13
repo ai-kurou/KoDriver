@@ -3,7 +3,7 @@ package kurou.kodriver.presentation
 import kurou.kodriver.feature.lmuconnection.lmuConnectionModule
 import kurou.kodriver.feature.narrator.narratorModule
 import kurou.kodriver.feature.otherlist.otherListModule
-import kurou.kodriver.feature.readout.flag.flagModule
+import kurou.kodriver.feature.readout.flagdetail.flagDetailModule
 import kurou.kodriver.feature.readout.readoutModule
 import kurou.kodriver.feature.readout.vehicleapproach.vehicleApproachModule
 import kurou.kodriver.feature.readout.vehicledamage.vehicleDamageModule
@@ -15,6 +15,6 @@ val appModules: List<Module> = listOf(
     otherListModule,
     readoutModule,
     vehicleApproachModule,
-    flagModule,
+    flagDetailModule,
     vehicleDamageModule,
 )

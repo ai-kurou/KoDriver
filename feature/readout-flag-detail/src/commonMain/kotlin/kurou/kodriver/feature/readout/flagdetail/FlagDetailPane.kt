@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.flag
+package kurou.kodriver.feature.readout.flagdetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,14 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.readout.flag.generated.resources.Res
-import kodriver.feature.readout.flag.generated.resources.flag_blue
-import kodriver.feature.readout.flag.generated.resources.flag_description
-import kodriver.feature.readout.flag.generated.resources.flag_full_course_yellow
-import kodriver.feature.readout.flag.generated.resources.flag_red
-import kodriver.feature.readout.flag.generated.resources.flag_session_stop
-import kodriver.feature.readout.flag.generated.resources.flag_switch_subtitle
-import kodriver.feature.readout.flag.generated.resources.flag_yellow
+import kodriver.feature.readout.flagdetail.generated.resources.Res
+import kodriver.feature.readout.flagdetail.generated.resources.flag_blue
+import kodriver.feature.readout.flagdetail.generated.resources.flag_description
+import kodriver.feature.readout.flagdetail.generated.resources.flag_full_course_yellow
+import kodriver.feature.readout.flagdetail.generated.resources.flag_red
+import kodriver.feature.readout.flagdetail.generated.resources.flag_session_stop
+import kodriver.feature.readout.flagdetail.generated.resources.flag_switch_subtitle
+import kodriver.feature.readout.flagdetail.generated.resources.flag_yellow
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -48,7 +48,7 @@ private val flagSwitchItems = listOf(
 fun FlagDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: FlagViewModel = koinViewModel()
+    val viewModel: FlagDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     FlagDetailPaneContent(
         uiState = uiState,
@@ -59,7 +59,7 @@ fun FlagDetailPane(
 
 @Composable
 internal fun FlagDetailPaneContent(
-    uiState: FlagUiState,
+    uiState: FlagDetailUiState,
     onFlagEnabledChanged: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -88,7 +88,7 @@ internal fun FlagDetailPaneContent(
 @Composable
 private fun FlagDetailPanePreview() {
     FlagDetailPaneContent(
-        uiState = FlagUiState(
+        uiState = FlagDetailUiState(
             enabledStates = mapOf(
                 ReadoutItemKey.BLUE_FLAG to true,
                 ReadoutItemKey.SECTOR_YELLOW_FLAG to true,

@@ -51,7 +51,7 @@ import kurou.kodriver.feature.narrator.NarratorEffect
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.readout.ReadoutContent
 import kurou.kodriver.feature.readout.ReadoutItemType
-import kurou.kodriver.feature.readout.flag.FlagDetailPane
+import kurou.kodriver.feature.readout.flagdetail.FlagDetailPane
 import kurou.kodriver.feature.readout.vehicleapproach.VehicleApproachDetailPane
 import kurou.kodriver.feature.readout.vehicledamage.VehicleDamageDetailPane
 import org.jetbrains.compose.resources.stringResource

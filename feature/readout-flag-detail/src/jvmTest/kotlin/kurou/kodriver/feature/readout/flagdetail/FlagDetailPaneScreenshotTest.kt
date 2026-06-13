@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readout.flag
+package kurou.kodriver.feature.readout.flagdetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
@@ -48,7 +48,7 @@ class FlagDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         FlagDetailPaneContent(
-                            uiState = FlagUiState(enabledStates = enabledStates),
+                            uiState = FlagDetailUiState(enabledStates = enabledStates),
                             onFlagEnabledChanged = { _, _ -> },
                         )
                     }
