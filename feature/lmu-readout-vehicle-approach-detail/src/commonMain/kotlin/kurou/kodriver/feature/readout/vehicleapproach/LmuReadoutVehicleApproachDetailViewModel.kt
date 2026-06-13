@@ -14,7 +14,7 @@ import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveSkipFirstLapUseCase
 
-internal class VehicleApproachViewModel(
+internal class LmuReadoutVehicleApproachDetailViewModel(
     observeLateralThreshold: ObserveLateralThresholdUseCase,
     observeLongitudinalThreshold: ObserveLongitudinalThresholdUseCase,
     observeSkipFirstLap: ObserveSkipFirstLapUseCase,
@@ -23,17 +23,17 @@ internal class VehicleApproachViewModel(
     private val saveSkipFirstLap: SaveSkipFirstLapUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<VehicleApproachUiState> = combine(
+    val uiState: StateFlow<LmuReadoutVehicleApproachDetailUiState> = combine(
         observeLateralThreshold(),
         observeLongitudinalThreshold(),
         observeSkipFirstLap(),
     ) { lateral, longitudinal, skipFirstLap ->
-        VehicleApproachUiState(
+        LmuReadoutVehicleApproachDetailUiState(
             lateralThresholdMeters = lateral,
             longitudinalThresholdMeters = longitudinal,
             skipFirstLap = skipFirstLap,
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VehicleApproachUiState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuReadoutVehicleApproachDetailUiState())
 
     fun onLateralThresholdChanged(meters: Double) {
         viewModelScope.launch { saveLateralThreshold(meters) }

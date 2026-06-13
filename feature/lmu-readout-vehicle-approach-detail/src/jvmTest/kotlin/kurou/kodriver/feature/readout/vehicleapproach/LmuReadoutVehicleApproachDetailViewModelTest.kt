@@ -19,19 +19,19 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class VehicleApproachViewModelTest {
+class LmuReadoutVehicleApproachDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var thresholdsRepository: FakeProximityThresholdsRepository
     private lateinit var vehicleApproachPreferencesRepository: FakeVehicleApproachPreferencesRepository
-    private lateinit var viewModel: VehicleApproachViewModel
+    private lateinit var viewModel: LmuReadoutVehicleApproachDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         thresholdsRepository = FakeProximityThresholdsRepository()
         vehicleApproachPreferencesRepository = FakeVehicleApproachPreferencesRepository()
-        viewModel = VehicleApproachViewModel(
+        viewModel = LmuReadoutVehicleApproachDetailViewModel(
             observeLateralThreshold = ObserveLateralThresholdUseCase(thresholdsRepository),
             observeLongitudinalThreshold = ObserveLongitudinalThresholdUseCase(thresholdsRepository),
             observeSkipFirstLap = ObserveSkipFirstLapUseCase(vehicleApproachPreferencesRepository),
@@ -49,7 +49,7 @@ class VehicleApproachViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映した UiState を返す`() = runTest {
         assertEquals(
-            VehicleApproachUiState(
+            LmuReadoutVehicleApproachDetailUiState(
                 lateralThresholdMeters = 5.0,
                 longitudinalThresholdMeters = 1.0,
                 skipFirstLap = true,

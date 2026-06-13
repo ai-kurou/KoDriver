@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
-class VehicleApproachDetailPaneScreenshotTest {
+class LmuReadoutVehicleApproachDetailPaneScreenshotTest {
 
     @get:Rule
     val rule = createComposeRule()
@@ -23,7 +23,7 @@ class VehicleApproachDetailPaneScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        VehicleApproachDetailPaneContent(uiState = VehicleApproachUiState())
+                        LmuReadoutVehicleApproachDetailPaneContent(uiState = LmuReadoutVehicleApproachDetailUiState())
                     }
                 }
             }

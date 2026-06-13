@@ -47,22 +47,22 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun VehicleApproachDetailPane(
+fun LmuReadoutVehicleApproachDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    VehicleApproachDetailPane(
+    LmuReadoutVehicleApproachDetailPane(
         modifier = modifier,
         viewModel = koinViewModel(),
     )
 }
 
 @Composable
-private fun VehicleApproachDetailPane(
+private fun LmuReadoutVehicleApproachDetailPane(
     modifier: Modifier = Modifier,
-    viewModel: VehicleApproachViewModel,
+    viewModel: LmuReadoutVehicleApproachDetailViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    VehicleApproachDetailPaneContent(
+    LmuReadoutVehicleApproachDetailPaneContent(
         uiState = uiState,
         onLongitudinalThresholdChanged = viewModel::onLongitudinalThresholdChanged,
         onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
@@ -73,8 +73,8 @@ private fun VehicleApproachDetailPane(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun VehicleApproachDetailPaneContent(
-    uiState: VehicleApproachUiState,
+internal fun LmuReadoutVehicleApproachDetailPaneContent(
+    uiState: LmuReadoutVehicleApproachDetailUiState,
     onLongitudinalThresholdChanged: (Double) -> Unit = {},
     onLateralThresholdChanged: (Double) -> Unit = {},
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
@@ -158,6 +158,6 @@ internal fun VehicleApproachDetailPaneContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun VehicleApproachDetailPanePreview() {
-    VehicleApproachDetailPaneContent(uiState = VehicleApproachUiState())
+private fun LmuReadoutVehicleApproachDetailPanePreview() {
+    LmuReadoutVehicleApproachDetailPaneContent(uiState = LmuReadoutVehicleApproachDetailUiState())
 }
