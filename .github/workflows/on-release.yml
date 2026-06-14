@@ -31,7 +31,9 @@ jobs:
 
       - name: Set version
         shell: bash
-        run: echo "VERSION_NAME=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        run: echo "VERSION_NAME=$INPUT_VERSION" >> $GITHUB_ENV
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
 
       - name: Update appVersion in gradle.properties
         shell: bash
