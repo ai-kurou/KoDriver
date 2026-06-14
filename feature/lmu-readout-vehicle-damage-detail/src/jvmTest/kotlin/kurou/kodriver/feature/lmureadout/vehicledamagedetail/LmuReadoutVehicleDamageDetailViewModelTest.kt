@@ -9,19 +9,31 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveVehicleDamageEnabledStateUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private class FakeTextToSpeechEngine(
+    private val onSpeak: (SpeechEvent) -> Unit,
+) : TextToSpeechEngine {
+    override val currentReadoutItemKey: String? = null
+    override fun speak(event: SpeechEvent) = onSpeak(event)
+    override fun stop() = Unit
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuReadoutVehicleDamageDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakeVehicleDamagePreferencesRepository
+    private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: LmuReadoutVehicleDamageDetailViewModel
 
     @Before
@@ -31,6 +43,7 @@ class LmuReadoutVehicleDamageDetailViewModelTest {
         viewModel = LmuReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repository),
             saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
 
@@ -52,6 +65,7 @@ class LmuReadoutVehicleDamageDetailViewModelTest {
         val vm = LmuReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repo),
             saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repo),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine {}),
         )
 
         assertEquals(LmuReadoutVehicleDamageDetailUiState(overheatEnabled = false), vm.uiState.first())
@@ -64,5 +78,11 @@ class LmuReadoutVehicleDamageDetailViewModelTest {
 
         viewModel.onOverheatEnabledChanged(true)
         assertEquals(true, viewModel.uiState.first().overheatEnabled)
+    }
+
+    @Test
+    fun `onPreviewClicked を呼ぶと Overheating イベントが再生される`() {
+        viewModel.onPreviewClicked()
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), playedEvents)
     }
 }

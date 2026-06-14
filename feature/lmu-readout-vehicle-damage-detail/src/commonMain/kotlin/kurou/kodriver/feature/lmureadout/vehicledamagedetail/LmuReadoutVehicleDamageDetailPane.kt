@@ -3,6 +3,8 @@ package kurou.kodriver.feature.lmureadout.vehicledamagedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,6 +31,7 @@ fun LmuReadoutVehicleDamageDetailPane(
     LmuReadoutVehicleDamageDetailPaneContent(
         uiState = uiState,
         onOverheatEnabledChanged = viewModel::onOverheatEnabledChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -37,9 +40,14 @@ fun LmuReadoutVehicleDamageDetailPane(
 internal fun LmuReadoutVehicleDamageDetailPaneContent(
     uiState: LmuReadoutVehicleDamageDetailUiState,
     onOverheatEnabledChanged: (Boolean) -> Unit = {},
+    onPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(text = stringResource(Res.string.vehicle_damage_description))
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_damage_overheat_subtitle))
         val chipLabel = stringResource(Res.string.vehicle_damage_overheat_chip_label)
@@ -49,6 +57,7 @@ internal fun LmuReadoutVehicleDamageDetailPaneContent(
             chipLabels = listOf(chipLabel),
             selectedChipLabels = setOf(chipLabel),
             onCheckedChange = onOverheatEnabledChanged,
+            onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }
