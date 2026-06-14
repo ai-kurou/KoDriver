@@ -16,15 +16,21 @@ fun main() {
     startKoin {
         modules(listOf(desktopDataModule) + appModules)
     }
-    application {
-        val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
-        Window(
-            onCloseRequest = ::exitApplication,
-            title = "KoDriver",
-            state = windowState,
-        ) {
-            SideEffect { window.minimumSize = Dimension(600, 500) }
-            AppScreen()
+    val server = KoDriverServer()
+    server.start()
+    try {
+        application {
+            val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
+            Window(
+                onCloseRequest = ::exitApplication,
+                title = "KoDriver",
+                state = windowState,
+            ) {
+                SideEffect { window.minimumSize = Dimension(600, 500) }
+                AppScreen()
+            }
         }
+    } finally {
+        server.stop()
     }
 }

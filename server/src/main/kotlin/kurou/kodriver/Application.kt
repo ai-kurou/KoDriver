@@ -8,8 +8,32 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+    KoDriverServer().start(wait = true)
+}
+
+class KoDriverServer(
+    port: Int = DEFAULT_PORT,
+    host: String = DEFAULT_HOST,
+) {
+    private val server = embeddedServer(
+        factory = Netty,
+        port = port,
+        host = host,
+        module = Application::module,
+    )
+
+    fun start(wait: Boolean = false) {
+        server.start(wait = wait)
+    }
+
+    fun stop() {
+        server.stop()
+    }
+
+    private companion object {
+        const val DEFAULT_PORT = 8080
+        const val DEFAULT_HOST = "0.0.0.0"
+    }
 }
 
 fun Application.module() {
