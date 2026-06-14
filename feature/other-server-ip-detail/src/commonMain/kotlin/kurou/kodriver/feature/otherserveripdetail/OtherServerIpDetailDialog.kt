@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -65,6 +66,7 @@ internal fun OtherServerIpDetailDialogContent(
                     null
                 },
                 singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
             )
         },
         confirmButton = {
