@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.item_volume
 import kotlinx.coroutines.launch
 import kurou.kodriver.feature.otherdetail.OtherDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -34,6 +35,13 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
 private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
+
+@Composable
+private fun OtherListItemType.title(): String = when (this) {
+    OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+    OtherListItemType.License -> stringResource(Res.string.item_license)
+    else -> id
+}
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -133,12 +141,8 @@ internal fun OtherContent(
         },
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
-                val title = when (selectedItem) {
-                    OtherListItemType.License -> stringResource(Res.string.item_license)
-                    else -> selectedItem.id
-                }
                 OtherDetailPane(
-                    title = title,
+                    title = selectedItem.title(),
                     canNavigateBack = navigator.canNavigateBack(),
                     onBack = { navigateBack() },
                 ) {

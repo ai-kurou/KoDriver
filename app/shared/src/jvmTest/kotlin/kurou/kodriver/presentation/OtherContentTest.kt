@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
@@ -7,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -58,11 +60,20 @@ class OtherContentTest {
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
-                detailContent = {},
+                detailContent = { Text("Detail: ${it.id}") },
             )
         }
 
         assertFalse(backEnabled)
+
+        rule.onNodeWithTag("other_item_0").performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithText("Detail: volume").assertExists()
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitUntil { !backEnabled }
 
         rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()

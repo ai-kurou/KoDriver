@@ -103,8 +103,6 @@ fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
-                        OtherListItemType.Volume -> null
-
                         OtherListItemType.GitHubRepository,
                         OtherListItemType.ReleasePage,
                         -> {
@@ -116,7 +114,9 @@ fun OtherListPane(
                             }
                         }
 
-                        OtherListItemType.License -> {
+                        OtherListItemType.Volume,
+                        OtherListItemType.License,
+                        -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.ChevronRight,

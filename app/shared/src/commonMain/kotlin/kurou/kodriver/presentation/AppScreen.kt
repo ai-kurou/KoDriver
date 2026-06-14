@@ -52,6 +52,7 @@ import kurou.kodriver.feature.lmureadout.flagdetail.LmuReadoutFlagDetailPane
 import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import org.jetbrains.compose.resources.stringResource
@@ -90,7 +91,7 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
-                    OtherListItemType.Volume -> {}
+                    OtherListItemType.Volume -> OtherVolumeDetailPane()
                     OtherListItemType.GitHubRepository -> {}
                     OtherListItemType.ReleasePage -> {}
                     OtherListItemType.License -> LicenseDetailPane()
