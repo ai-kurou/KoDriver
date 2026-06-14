@@ -2,6 +2,10 @@ package kurou.kodriver.feature.lmunarrator
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -79,8 +83,40 @@ class LmuWavNarratorEngineTest {
         assertContentEquals(CAR_LEFT_SOUND, player.playedSounds.single())
     }
 
+    @Test
+    fun `volumeFlowで指定した音量でノイズとイベント音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player, volumeFlow = flowOf(50))
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(listOf(50, 50), player.playedVolumes)
+    }
+
+    @Test
+    fun `音量変化後のspeakは新しい音量で再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val volumeFlow = MutableStateFlow(80)
+        val engine = createEngine(player, volumeFlow = volumeFlow)
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        volumeFlow.update { 30 }
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(listOf(80, 80, 30, 30), player.playedVolumes)
+    }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
+        volumeFlow: Flow<Int> = flowOf(100),
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
@@ -90,6 +126,7 @@ class LmuWavNarratorEngineTest {
         },
     ): LmuWavNarratorEngine = LmuWavNarratorEngine(
         soundPlayer = player,
+        volumeFlow = volumeFlow,
         resourceLoader = resourceLoader,
         scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
     )
@@ -107,8 +144,10 @@ private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
+    val playedVolumes = mutableListOf<Int>()
 
-    override suspend fun play(bytes: ByteArray) {
+    override suspend fun play(bytes: ByteArray, volume: Int) {
         playedSounds += bytes
+        playedVolumes += volume
     }
 }

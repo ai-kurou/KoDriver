@@ -9,6 +9,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.module.Module
@@ -31,7 +32,13 @@ val lmuNarratorModule: Module = module {
     factory { VehicleApproachUseCases(get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get()) }
-    single<TextToSpeechEngine> { LmuWavNarratorEngine(get()) }
+    factory { ObserveSoundVolumeUseCase(get()) }
+    single<TextToSpeechEngine> {
+        LmuWavNarratorEngine(
+            soundPlayer = get(),
+            volumeFlow = get<ObserveSoundVolumeUseCase>()(),
+        )
+    }
     includes(platformSoundModule)
 }
 

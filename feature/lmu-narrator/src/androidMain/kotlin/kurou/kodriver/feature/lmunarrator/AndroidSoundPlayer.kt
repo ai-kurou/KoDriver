@@ -12,12 +12,14 @@ class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
     override val isPlaying: Boolean
         get() = try { currentPlayer?.isPlaying == true } catch (_: Exception) { false }
 
-    override suspend fun play(bytes: ByteArray) = suspendCancellableCoroutine { cont ->
+    override suspend fun play(bytes: ByteArray, volume: Int) = suspendCancellableCoroutine { cont ->
         try {
             val temp = File.createTempFile("snd_", ".wav", context.cacheDir)
             temp.writeBytes(bytes)
             val player = MediaPlayer()
             player.setDataSource(temp.absolutePath)
+            val v = (volume / 100.0f).coerceIn(0f, 1f)
+            player.setVolume(v, v)
             player.setOnPreparedListener { it.start() }
             player.setOnCompletionListener {
                 it.release()
