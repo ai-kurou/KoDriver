@@ -18,12 +18,10 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `音量を選択しても状態は変わらない`() = runTest {
-        val initialState = viewModel.uiState.first()
-
+    fun `音量を選択すると選択状態になる`() = runTest {
         viewModel.onItemSelected(OtherListItemType.Volume.id)
 
-        assertEquals(initialState, viewModel.uiState.first())
+        assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
     }
 
     @Test

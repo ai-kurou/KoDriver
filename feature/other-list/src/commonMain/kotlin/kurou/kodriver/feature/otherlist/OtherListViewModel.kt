@@ -14,7 +14,6 @@ class OtherListViewModel : ViewModel() {
     fun onItemSelected(itemId: String) {
         val itemType = OtherListItemType.fromId(itemId) ?: return
         if (
-            itemType == OtherListItemType.Volume ||
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage
         ) {
