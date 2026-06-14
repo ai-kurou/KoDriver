@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmunarrator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -62,6 +63,7 @@ class NoOpSoundPlayer : SoundPlayer {
 }
 
 class FakeSoundVolumeRepository : SoundVolumeRepository {
-    override fun volume(): Flow<Int> = MutableStateFlow(100)
-    override suspend fun saveVolume(volume: Int) = Unit
+    private val flow = MutableStateFlow(100)
+    override fun volume(): Flow<Int> = flow
+    override suspend fun saveVolume(volume: Int) { flow.update { volume } }
 }
