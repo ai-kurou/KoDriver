@@ -1,7 +1,5 @@
 digraph G {
   ":server" -> ":core:domain"
-  ":app:desktopApp" -> ":core:data"
-  ":app:desktopApp" -> ":core:domain"
   ":core:data" -> ":core:domain"
   ":feature:lmu-connection" -> ":core:domain"
   ":feature:lmu-narrator" -> ":core:domain"

@@ -1,6 +1,5 @@
 digraph G {
   ":app:androidApp" -> ":core:data"
   ":app:desktopApp" -> ":core:data"
-  ":app:desktopApp" -> ":core:domain"
   ":core:data" -> ":core:domain"
 }
