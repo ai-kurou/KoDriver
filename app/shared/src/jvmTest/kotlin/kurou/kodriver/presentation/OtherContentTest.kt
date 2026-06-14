@@ -60,7 +60,7 @@ class OtherContentTest {
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
-                detailContent = { Text("Detail: ${it.id}") },
+                detailContent = { item, _, _ -> Text("Detail: ${item.id}") },
             )
         }
 
