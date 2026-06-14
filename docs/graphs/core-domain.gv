@@ -8,7 +8,6 @@ digraph G {
   ":feature:lmu-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-readout-vehicle-damage-detail" -> ":core:domain"
-  ":feature:other-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:readout-list" -> ":core:domain"

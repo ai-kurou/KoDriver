@@ -3,7 +3,7 @@ digraph G {
   ":app:desktopApp" -> ":app:shared"
   ":app:shared" -> ":feature:lmu-connection"
   ":app:shared" -> ":feature:lmu-narrator"
-  ":app:shared" -> ":feature:other-detail"
+  ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
   ":app:shared" -> ":feature:other-volume-detail"
   ":app:shared" -> ":feature:readout-list"

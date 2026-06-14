@@ -1,0 +1,4 @@
+digraph G {
+  ":app:shared" -> ":feature:other-license-detail"
+  ":feature:other-license-detail" -> ":core:designsystem"
+}
