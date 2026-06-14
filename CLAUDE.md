@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-Le Mans Ultimate（LMU）から Windows 共有メモリ経由でテレメトリデータを取得し、Compose Multiplatform デスクトップアプリで表示し、Windows TTS でアナウンスする。
+Le Mans Ultimate（LMU）から Windows 共有メモリ経由でテレメトリデータを取得し、Compose Multiplatform デスクトップアプリで表示し、Windows TTS でアナウンスする。デスクトップアプリ内で Ktor サーバーも起動し、フラッグ情報を WebSocket で配信する。
 
 ---
 
@@ -29,7 +29,7 @@ KoDriver/
 │   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント
 │   ├── shared/     Compose Multiplatform 共通 UI・ナビゲーション
 │   └── webApp/     Web アプリ（未実装）
-└── server/         Ktor サーバー（未実装）
+└── server/         デスクトップアプリ内で起動する Ktor WebSocket サーバー
 ```
 
 各モジュールの詳細は、対象モジュール配下の `README.md` と実装を参照すること。
@@ -40,6 +40,11 @@ KoDriver/
 
 ### 共有メモリ読み取りは Windows 専用
 `SharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。
+
+### Ktor サーバー
+`:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。`/ws/flags` は `ObserveRaceFlagsUseCase` を通じて `FlagRepository` を購読し、`RaceFlagsData` を JSON として送信する。同一内容の連続値は送信しない。
+
+LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws/flags` へ接続する。外部端末から接続するには Windows ファイアウォールで TCP 8080 番ポートの受信を許可する必要がある場合がある。現時点では認証・暗号化を実装していないため、信頼できる LAN 内でのみ使用すること。
 
 ### TimingData のラップタイムは未実装
 `LmuMapper` のラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector2Ms`）は `0L` で固定。Scoring セグメントの実装が必要。
@@ -63,6 +68,9 @@ KoDriver/
 
 # デスクトップアプリ起動（ホットリロード）
 ./gradlew :app:desktopApp:hotRun --auto
+
+# Ktor サーバー単体起動（共有メモリ由来のフラッグ情報は配信しない）
+./gradlew :server:run
 
 # Windows MSI パッケージビルド（CI: GitHub Actions / ローカル Windows 環境）
 ./gradlew :app:desktopApp:packageMsi

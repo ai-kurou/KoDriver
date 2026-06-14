@@ -17,6 +17,7 @@ Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルを
 - アナウンスする項目の選択・有効/無効の切り替え
 - アナウンス優先度のドラッグ&リオーダー
 - WAV 音声ファイルによるリアルタイムアナウンス
+- Windows 版デスクトップアプリからフラッグ情報を WebSocket 配信
 
 ## 動作要件
 
@@ -51,7 +52,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 |
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 |
 | `:feature:other-volume-detail` | その他画面の音量設定詳細 |
-| `:server` | Ktor サーバー（未実装） |
+| `:server` | デスクトップアプリ内で起動し、共有メモリ由来のデータを配信する Ktor サーバー |
 
 ## Contributing
 
