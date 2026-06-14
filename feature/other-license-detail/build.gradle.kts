@@ -65,6 +65,13 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+        jvmTest.dependencies {
+            implementation(libs.compose.uiTest)
+            implementation(libs.compose.uiTestJunit4)
+            implementation(libs.kotlin.testJunit)
+            implementation(compose.desktop.currentOs)
+            implementation(libs.roborazzi.composeDesktop)
+        }
     }
 }
 
@@ -75,3 +82,5 @@ compose.resources {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
+
+apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
