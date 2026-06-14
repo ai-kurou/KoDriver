@@ -62,7 +62,7 @@ subprojects {
 
 moduleGraphAssert {
     maxHeight = 3
-    configurations = setOf("api", "implementation", "testFixturesApi", "testFixturesImplementation")
+    configurations = setOf("api", "implementation", "testImplementation", "testFixturesApi", "testFixturesImplementation")
     allowed = arrayOf(
         // app エントリーポイント → app:shared
         ":app:androidApp -> :app:shared",
@@ -82,9 +82,13 @@ moduleGraphAssert {
         ":server -> :core:domain",
     )
     restricted = arrayOf(
-        // app エントリーポイント（feature 層への直接参照禁止）
+        // app エントリーポイント（feature 層・domain 層への直接参照禁止）
         ":app:androidApp -X> :feature:.*",
         ":app:desktopApp -X> :feature:.*",
+        ":app:webApp -X> :feature:.*",
+        ":app:androidApp -X> :core:domain",
+        ":app:desktopApp -X> :core:domain",
+        ":app:webApp -X> :core:domain",
         // app:shared（上位 app・core・server への参照禁止）
         ":app:shared -X> :app:.*",
         ":app:shared -X> :core:.*",

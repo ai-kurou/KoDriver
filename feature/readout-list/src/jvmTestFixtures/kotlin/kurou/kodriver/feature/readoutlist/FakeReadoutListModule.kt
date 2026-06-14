@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -13,6 +14,7 @@ val fakeReadoutListModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
     single<ProximityThresholdsRepository> { FakeProximityThresholdsRepositoryImpl() }
+    single<FlagPreferencesRepository> { FakeFlagPreferencesRepositoryImpl() }
 }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
@@ -28,6 +30,14 @@ private class FakeProximityThresholdsRepositoryImpl : ProximityThresholdsReposit
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinal
     override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.update { meters } }
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.update { meters } }
+}
+
+private class FakeFlagPreferencesRepositoryImpl : FlagPreferencesRepository {
+    private val states = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    override fun observeFlagEnabledStates(): Flow<Map<String, Boolean>> = states
+    override suspend fun saveFlagEnabledState(key: String, enabled: Boolean) {
+        states.update { it + (key to enabled) }
+    }
 }
 
 private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepository {
