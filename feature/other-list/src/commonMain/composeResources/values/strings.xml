@@ -3,4 +3,5 @@
     <string name="item_github_repository">GitHubレポジトリ</string>
     <string name="item_release_page">リリースページ</string>
     <string name="item_license">ライセンス</string>
+    <string name="item_server_ip">接続先サーバー</string>
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -29,11 +30,13 @@ import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_license
 import kodriver.feature.otherlist.generated.resources.item_release_page
+import kodriver.feature.otherlist.generated.resources.item_server_ip
 import kodriver.feature.otherlist.generated.resources.item_volume
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
+    OtherListItemType.ServerIp.id -> stringResource(Res.string.item_server_ip)
     OtherListItemType.Volume.id -> stringResource(Res.string.item_volume)
     OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
@@ -64,6 +67,15 @@ fun OtherListPane(
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
                     leadingContent = when (itemType) {
+                        OtherListItemType.ServerIp -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.Wifi,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
                         OtherListItemType.Volume -> {
                             {
                                 Icon(
@@ -103,23 +115,24 @@ fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
-                        OtherListItemType.GitHubRepository,
-                        OtherListItemType.ReleasePage,
-                        -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
+                        OtherListItemType.ServerIp,
                         OtherListItemType.Volume,
                         OtherListItemType.License,
                         -> {
                             {
                                 Icon(
                                     imageVector = Icons.Outlined.ChevronRight,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
+                        OtherListItemType.GitHubRepository,
+                        OtherListItemType.ReleasePage,
+                        -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
                                     contentDescription = null,
                                 )
                             }

@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherlist
 enum class OtherListItemType(
     val id: String,
 ) {
+    ServerIp("server_ip"),
     Volume("volume"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
