@@ -2,6 +2,7 @@
     <string name="navigate_back">戻る</string>
     <string name="volume_title">音量</string>
     <string name="volume_description">読み上げ音声の音量を設定します。</string>
+    <string name="volume_formula">OS の音量 × ここで設定した音量（0〜100%）＝ アプリで再生される音量</string>
     <string name="volume_subtitle">音量</string>
     <string name="volume_label">%1$d%%</string>
 </resources>
