@@ -12,8 +12,7 @@ class OtherListViewModelTest {
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
-        assertEquals(OtherListItemType.entries.map { it.id }, viewModel.uiState.first().items)
-        assertEquals(OtherListItemType.Volume.id, viewModel.uiState.first().items.first())
+        assertEquals(buildOtherListItems().map { it.id }, viewModel.uiState.first().items)
         assertNull(viewModel.uiState.first().selectedItem)
     }
 

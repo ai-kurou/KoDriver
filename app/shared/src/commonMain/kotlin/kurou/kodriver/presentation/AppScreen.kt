@@ -92,6 +92,7 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType, canNavigateBack, onBack ->
                 when (itemType) {
+                    OtherListItemType.ServerIp -> {}
                     OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                     OtherListItemType.GitHubRepository -> {}
                     OtherListItemType.ReleasePage -> {}
