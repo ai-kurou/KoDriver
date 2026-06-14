@@ -13,10 +13,10 @@ import org.koin.core.context.startKoin
 import java.awt.Dimension
 
 fun main() {
-    startKoin {
+    val koinApplication = startKoin {
         modules(listOf(desktopDataModule) + appModules)
     }
-    val server = KoDriverServer()
+    val server = createKoDriverServer(koinApplication.koin)
     server.start()
     try {
         application {

@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RaceFlagsData(
     // セッション全体の進行状態。例: ガレージ、グリッド、走行中、終了後。
     val gamePhase: SessionPhase,
@@ -28,6 +31,7 @@ data class RaceFlagsData(
 
 // LMU shared memory の ScoringInfo.mGamePhase に対応する値。
 // pyLMUSharedMemory lmu_enum.py の LMUGamePhase に基づく（値 0〜9）。
+@Serializable
 enum class SessionPhase(val rawValue: Int) {
     GARAGE(0),
     WARM_UP(1),
@@ -48,6 +52,7 @@ enum class SessionPhase(val rawValue: Int) {
 }
 
 // rFactor/rF2 系 shared memory の ScoringInfo.mYellowFlagState に対応する値。
+@Serializable
 enum class SessionYellowFlagState(val rawValue: Int) {
     INVALID(-1),
     NONE(0),
@@ -68,6 +73,7 @@ enum class SessionYellowFlagState(val rawValue: Int) {
 
 // shared memory の ScoringInfo.mSectorFlag[3] に対応する値。
 // 通常は 0=クリア、1=黄旗として使われるため、その前提で enum 化している。
+@Serializable
 enum class SectorFlagState(val rawValue: Int) {
     CLEAR(0),
     YELLOW(1),
@@ -81,6 +87,7 @@ enum class SectorFlagState(val rawValue: Int) {
 
 // LMU shared memory の VehicleScoringInfo.mFlag に対応する値。
 // pyLMUSharedMemory lmu_enum.py の LMUPrimaryFlag に基づく（Green=0, Blue=6 の2値のみ）。
+@Serializable
 enum class PrimaryFlag(val rawValue: Int) {
     GREEN(0),
     BLUE(6),
@@ -94,6 +101,7 @@ enum class PrimaryFlag(val rawValue: Int) {
 
 // LMU shared memory の VehicleScoringInfo.mCountLapFlag に対応する値。
 // pyLMUSharedMemory lmu_enum.py の LMUCountLapFlag に基づく。
+@Serializable
 enum class CountLapFlag(val rawValue: Int) {
     DO_NOT_COUNT_LAP_OR_TIME(0),
     COUNT_LAP_BUT_NOT_TIME(1),
