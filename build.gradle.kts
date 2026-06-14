@@ -73,6 +73,8 @@ moduleGraphAssert {
         // app エントリーポイント → core:data（composition root で DI バインドするための参照）
         ":app:androidApp -> :core:data",
         ":app:desktopApp -> :core:data",
+        // Desktop app → server（同一プロセスで Ktor サーバーを起動するため）
+        ":app:desktopApp -> :server",
         // app:shared → feature
         ":app:shared -> :feature:.*",
         // feature → core:domain
