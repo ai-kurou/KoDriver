@@ -50,6 +50,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-narrator` | WAV 音声再生エンジン |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 |
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 |
+| `:feature:other-volume-detail` | その他画面の音量設定詳細 |
 | `:server` | Ktor サーバー（未実装） |
 
 ## Contributing
