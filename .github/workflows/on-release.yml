@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'バージョン番号 (例: 1.2.0)'
+        required: true
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write  # リリース作成 + main へのpushに必要
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4.4.3
+
+      - name: Set version
+        shell: bash
+        run: echo "VERSION_NAME=$INPUT_VERSION" >> $GITHUB_ENV
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
+
+      - name: Update appVersion in gradle.properties
+        shell: bash
+        run: sed -i "s/^appVersion=.*/appVersion=$VERSION_NAME/" gradle.properties
+
+      - name: Commit version bump
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add gradle.properties
+          git commit -m "chore: bump version to $VERSION_NAME [skip ci]"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/ai-kurou/KoDriver.git main
+
+      - name: Build MSI
+        run: ./gradlew :app:desktopApp:packageMsi
+
+      - name: Rename MSI
+        shell: bash
+        run: |
+          mv app/desktopApp/build/compose/binaries/main/msi/KoDriver-${VERSION_NAME}.msi \
+             app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${VERSION_NAME}.msi
+
+      - name: Create GitHub Release
+        shell: bash
+        run: |
+          gh release create "v$VERSION_NAME" \
+            --title "Release v$VERSION_NAME" \
+            --generate-notes \
+            app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${VERSION_NAME}.msi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
