@@ -5,6 +5,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -104,7 +105,7 @@ class LmuWavNarratorEngineTest {
         engine.speak(SpeechEvent.CarLeft)
         runCurrent()
 
-        volumeFlow.value = 30
+        volumeFlow.update { 30 }
         runCurrent()
 
         engine.speak(SpeechEvent.CarLeft)
