@@ -36,8 +36,8 @@ android {
         applicationId = "kurou.kodriver"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = providers.gradleProperty("androidVersionCode").get().toInt()
+        versionName = providers.gradleProperty("appVersion").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
