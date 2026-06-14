@@ -2,7 +2,9 @@ package kurou.kodriver.feature.lmunarrator
 
 import android.content.Context
 import android.media.MediaPlayer
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.resume
 
@@ -12,29 +14,35 @@ class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
     override val isPlaying: Boolean
         get() = try { currentPlayer?.isPlaying == true } catch (_: Exception) { false }
 
-    override suspend fun play(bytes: ByteArray, volume: Int) = suspendCancellableCoroutine { cont ->
-        try {
-            val temp = File.createTempFile("snd_", ".wav", context.cacheDir)
-            temp.writeBytes(bytes)
-            val player = MediaPlayer()
-            player.setDataSource(temp.absolutePath)
-            val v = (volume / 100.0f).coerceIn(0f, 1f)
-            player.setVolume(v, v)
-            player.setOnPreparedListener { it.start() }
-            player.setOnCompletionListener {
-                it.release()
-                temp.delete()
-                currentPlayer = null
-                if (cont.isActive) cont.resume(Unit)
+    override suspend fun play(bytes: ByteArray, volume: Int) {
+        val temp = withContext(Dispatchers.IO) {
+            File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
+        }
+        withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { cont ->
+                try {
+                    val player = MediaPlayer()
+                    player.setDataSource(temp.absolutePath)
+                    val v = (volume / 100.0f).coerceIn(0f, 1f)
+                    player.setVolume(v, v)
+                    player.setOnPreparedListener { it.start() }
+                    player.setOnCompletionListener {
+                        it.release()
+                        temp.delete()
+                        currentPlayer = null
+                        if (cont.isActive) cont.resume(Unit)
+                    }
+                    currentPlayer = player
+                    player.prepareAsync()
+                    cont.invokeOnCancellation {
+                        player.release()
+                        temp.delete()
+                    }
+                } catch (_: Exception) {
+                    temp.delete()
+                    cont.resume(Unit)
+                }
             }
-            currentPlayer = player
-            player.prepareAsync()
-            cont.invokeOnCancellation {
-                player.release()
-                temp.delete()
-            }
-        } catch (_: Exception) {
-            cont.resume(Unit)
         }
     }
 }

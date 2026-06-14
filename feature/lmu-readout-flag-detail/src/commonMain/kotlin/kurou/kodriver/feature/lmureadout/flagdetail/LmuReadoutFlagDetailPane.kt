@@ -53,6 +53,7 @@ fun LmuReadoutFlagDetailPane(
     LmuReadoutFlagDetailPaneContent(
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -61,6 +62,7 @@ fun LmuReadoutFlagDetailPane(
 internal fun LmuReadoutFlagDetailPaneContent(
     uiState: LmuReadoutFlagDetailUiState,
     onFlagEnabledChanged: (String, Boolean) -> Unit,
+    onPreviewClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -78,6 +80,7 @@ internal fun LmuReadoutFlagDetailPaneContent(
                 chipLabels = listOf(chipLabel),
                 selectedChipLabels = setOf(chipLabel),
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item.key, enabled) },
+                onChipClick = { onPreviewClicked(item.key) },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
@@ -97,5 +100,6 @@ private fun LmuReadoutFlagDetailPanePreview() {
             ),
         ),
         onFlagEnabledChanged = { _, _ -> },
+        onPreviewClicked = {},
     )
 }

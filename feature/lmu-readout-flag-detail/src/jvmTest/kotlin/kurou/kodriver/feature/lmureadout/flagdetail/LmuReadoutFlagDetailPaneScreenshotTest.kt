@@ -50,6 +50,7 @@ class LmuReadoutFlagDetailPaneScreenshotTest {
                         LmuReadoutFlagDetailPaneContent(
                             uiState = LmuReadoutFlagDetailUiState(enabledStates = enabledStates),
                             onFlagEnabledChanged = { _, _ -> },
+                            onPreviewClicked = {},
                         )
                     }
                 }
