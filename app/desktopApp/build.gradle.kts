@@ -46,7 +46,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "KoDriver"
-            packageVersion = "0.0.0"
+            packageVersion = providers.gradleProperty("appVersion").get()
             windows {
                 shortcut = true
             }
