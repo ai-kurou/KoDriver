@@ -9,7 +9,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.othervolumedetail.generated.resources.Res
 import kodriver.feature.othervolumedetail.generated.resources.navigate_back
 import kodriver.feature.othervolumedetail.generated.resources.volume_description
+import kodriver.feature.othervolumedetail.generated.resources.volume_formula
 import kodriver.feature.othervolumedetail.generated.resources.volume_label
+import kodriver.feature.othervolumedetail.generated.resources.volume_low_warning
 import kodriver.feature.othervolumedetail.generated.resources.volume_subtitle
 import kodriver.feature.othervolumedetail.generated.resources.volume_title
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -56,6 +58,8 @@ internal fun OtherVolumeDetailPaneContent(
     ) {
         Column {
             DetailPaneDescription(text = stringResource(Res.string.volume_description))
+            DetailPaneDescription(text = stringResource(Res.string.volume_formula))
+            DetailPaneDescription(text = stringResource(Res.string.volume_low_warning))
             DetailPaneSubtitle(text = stringResource(Res.string.volume_subtitle))
             ThresholdSlider(
                 value = uiState.volume.toFloat(),
