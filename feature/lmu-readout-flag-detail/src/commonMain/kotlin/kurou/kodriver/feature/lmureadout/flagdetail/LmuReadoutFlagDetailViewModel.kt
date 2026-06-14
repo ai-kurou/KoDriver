@@ -7,8 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveFlagEnabledStateUseCase
 
 private val flagKeys = listOf(
@@ -18,9 +20,17 @@ private val flagKeys = listOf(
     ReadoutItemKey.RED_FLAG,
 )
 
+private val flagKeyToSpeechEvent = mapOf(
+    ReadoutItemKey.BLUE_FLAG to SpeechEvent.BlueFlag,
+    ReadoutItemKey.SECTOR_YELLOW_FLAG to SpeechEvent.YellowFlag,
+    ReadoutItemKey.FULL_COURSE_YELLOW to SpeechEvent.FullCourseYellow,
+    ReadoutItemKey.RED_FLAG to SpeechEvent.SessionStop,
+)
+
 internal class LmuReadoutFlagDetailViewModel(
     observeFlagEnabledStates: ObserveFlagEnabledStatesUseCase,
     private val saveFlagEnabledState: SaveFlagEnabledStateUseCase,
+    private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuReadoutFlagDetailUiState> = observeFlagEnabledStates()
@@ -32,5 +42,10 @@ internal class LmuReadoutFlagDetailViewModel(
 
     fun onFlagEnabledChanged(key: String, enabled: Boolean) {
         viewModelScope.launch { saveFlagEnabledState(key, enabled) }
+    }
+
+    fun onPreviewClicked(key: String) {
+        val event = flagKeyToSpeechEvent[key] ?: return
+        playSpeechEvent(event)
     }
 }
