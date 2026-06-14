@@ -2,4 +2,5 @@ digraph G {
   ":feature:lmu-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:lmu-readout-vehicle-damage-detail" -> ":core:designsystem"
+  ":feature:other-volume-detail" -> ":core:designsystem"
 }
