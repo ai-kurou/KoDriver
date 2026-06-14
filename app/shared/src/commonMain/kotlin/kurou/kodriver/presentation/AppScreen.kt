@@ -53,6 +53,7 @@ import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuReadoutVehicle
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailDialog
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
@@ -88,8 +89,13 @@ fun AppScreen(
         )
     },
     otherContent: @Composable () -> Unit = {
+        var showServerIpDialog by remember { mutableStateOf(false) }
+        if (showServerIpDialog) {
+            OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
+        }
         OtherContent(
             backHandler = backHandler,
+            onOpenServerIpDialog = { showServerIpDialog = true },
             detailContent = { itemType, canNavigateBack, onBack ->
                 when (itemType) {
                     OtherListItemType.ServerIp -> {}

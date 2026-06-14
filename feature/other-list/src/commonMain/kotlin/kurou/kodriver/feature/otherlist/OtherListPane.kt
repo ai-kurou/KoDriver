@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.outlined.VolumeUp
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.HorizontalDivider
@@ -115,7 +116,15 @@ fun OtherListPane(
                         null -> null
                     },
                     trailingContent = when (itemType) {
-                        OtherListItemType.ServerIp,
+                        OtherListItemType.ServerIp -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
                         OtherListItemType.Volume,
                         OtherListItemType.License,
                         -> {

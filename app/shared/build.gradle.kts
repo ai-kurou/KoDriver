@@ -54,6 +54,7 @@ kotlin {
             implementation(projects.feature.lmuNarrator)
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
+            implementation(projects.feature.otherServerIpDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuReadoutVehicleApproachDetail)
