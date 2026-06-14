@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.otherdetail
+package kurou.kodriver.feature.otherlicensedetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
@@ -12,37 +12,25 @@ import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
-class OtherDetailPaneScreenshotTest {
+class OtherLicenseDetailPaneScreenshotTest {
 
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `戻るボタンを表示`() {
-        captureOtherDetailPane(canNavigateBack = true)
-    }
-
-    @Test
-    fun `戻るボタンを非表示`() {
-        captureOtherDetailPane(canNavigateBack = false)
-    }
-
-    private fun captureOtherDetailPane(canNavigateBack: Boolean) {
+    fun `デフォルト`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        OtherDetailPane(
-                            title = "ライセンス",
-                            canNavigateBack = canNavigateBack,
+                        OtherLicenseDetailPane(
+                            canNavigateBack = true,
                             onBack = {},
-                            content = {},
                         )
                     }
                 }
             }
         }
-
         rule.onRoot().captureRoboImage()
     }
 }

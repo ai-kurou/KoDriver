@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
@@ -22,7 +23,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.otherdetail"
+        namespace = "kurou.kodriver.feature.otherlicensedetail"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -31,9 +32,6 @@ kotlin {
         }
         androidResources {
             enable = true
-        }
-        withHostTest {
-            isIncludeAndroidResources = true
         }
         lint {
             abortOnError = true
@@ -56,21 +54,15 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.core.domain)
+            implementation(projects.core.designsystem)
+            implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
-            implementation(libs.compose.material3.adaptive.layout)
-            implementation(libs.compose.material3.adaptive.navigation)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.compose.material.icons.extended)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
-            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
@@ -84,7 +76,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherdetail.generated.resources"
+    packageOfResClass = "kodriver.feature.otherlicensedetail.generated.resources"
 }
 
 dependencies {

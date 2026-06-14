@@ -34,7 +34,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = {
+                            detailContent = { _, _, _ ->
                                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                                     androidx.compose.material3.Text("License Detail")
                                 }

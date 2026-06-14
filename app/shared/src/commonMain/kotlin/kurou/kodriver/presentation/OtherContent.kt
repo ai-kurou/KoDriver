@@ -21,27 +21,15 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
-import kodriver.feature.otherlist.generated.resources.Res
-import kodriver.feature.otherlist.generated.resources.item_license
-import kodriver.feature.otherlist.generated.resources.item_volume
 import kotlinx.coroutines.launch
-import kurou.kodriver.feature.otherdetail.OtherDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListPane
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.otherlist.OtherListViewModel
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
 private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
-
-@Composable
-private fun OtherListItemType.title(): String = when (this) {
-    OtherListItemType.Volume -> stringResource(Res.string.item_volume)
-    OtherListItemType.License -> stringResource(Res.string.item_license)
-    else -> id
-}
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -49,7 +37,7 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    detailContent: @Composable (OtherListItemType) -> Unit = {},
+    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -79,7 +67,7 @@ internal fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    detailContent: @Composable (OtherListItemType) -> Unit = {},
+    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
         scaffoldDirective = when {
@@ -141,13 +129,11 @@ internal fun OtherContent(
         },
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
-                OtherDetailPane(
-                    title = selectedItem.title(),
-                    canNavigateBack = navigator.canNavigateBack(),
-                    onBack = { navigateBack() },
-                ) {
-                    detailContent(selectedItem)
-                }
+                detailContent(
+                    selectedItem,
+                    navigator.canNavigateBack(),
+                    navigateBack,
+                )
             }
         },
     )

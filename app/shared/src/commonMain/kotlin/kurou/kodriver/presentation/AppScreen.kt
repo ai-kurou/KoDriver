@@ -51,6 +51,7 @@ import kurou.kodriver.feature.lmunarrator.LmuNarratorEffect
 import kurou.kodriver.feature.lmureadout.flagdetail.LmuReadoutFlagDetailPane
 import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
+import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
@@ -89,12 +90,12 @@ fun AppScreen(
     otherContent: @Composable () -> Unit = {
         OtherContent(
             backHandler = backHandler,
-            detailContent = { itemType ->
+            detailContent = { itemType, canNavigateBack, onBack ->
                 when (itemType) {
-                    OtherListItemType.Volume -> OtherVolumeDetailPane()
+                    OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                     OtherListItemType.GitHubRepository -> {}
                     OtherListItemType.ReleasePage -> {}
-                    OtherListItemType.License -> LicenseDetailPane()
+                    OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
                 }
             },
         )

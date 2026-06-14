@@ -2,16 +2,21 @@ package kurou.kodriver.feature.othervolumedetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.othervolumedetail.generated.resources.Res
+import kodriver.feature.othervolumedetail.generated.resources.navigate_back
 import kodriver.feature.othervolumedetail.generated.resources.volume_description
 import kodriver.feature.othervolumedetail.generated.resources.volume_label
 import kodriver.feature.othervolumedetail.generated.resources.volume_subtitle
+import kodriver.feature.othervolumedetail.generated.resources.volume_title
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneHeader
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.stringResource
@@ -20,6 +25,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun OtherVolumeDetailPane(
+    canNavigateBack: Boolean,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: OtherVolumeDetailViewModel = koinViewModel()
@@ -27,6 +34,8 @@ fun OtherVolumeDetailPane(
     OtherVolumeDetailPaneContent(
         uiState = uiState,
         onVolumeChanged = viewModel::onVolumeChanged,
+        canNavigateBack = canNavigateBack,
+        onBack = onBack,
         modifier = modifier,
     )
 }
@@ -35,20 +44,34 @@ fun OtherVolumeDetailPane(
 internal fun OtherVolumeDetailPaneContent(
     uiState: OtherVolumeDetailUiState,
     onVolumeChanged: (Int) -> Unit = {},
+    canNavigateBack: Boolean = true,
+    onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val volumeLabel = stringResource(Res.string.volume_label)
 
-    Column(modifier = modifier.fillMaxSize()) {
-        DetailPaneDescription(text = stringResource(Res.string.volume_description))
-        DetailPaneSubtitle(text = stringResource(Res.string.volume_subtitle))
-        ThresholdSlider(
-            value = uiState.volume.toFloat(),
-            valueRange = 0f..100f,
-            labelFormatter = { volumeLabel.format(it.roundToInt()) },
-            onValueChangeFinished = { onVolumeChanged(it.roundToInt()) },
-            steps = 99,
-        )
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            DetailPaneHeader(
+                title = stringResource(Res.string.volume_title),
+                canNavigateBack = canNavigateBack,
+                navigateBackContentDescription = stringResource(Res.string.navigate_back),
+                onBack = onBack,
+            )
+        },
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            DetailPaneDescription(text = stringResource(Res.string.volume_description))
+            DetailPaneSubtitle(text = stringResource(Res.string.volume_subtitle))
+            ThresholdSlider(
+                value = uiState.volume.toFloat(),
+                valueRange = 0f..100f,
+                labelFormatter = { volumeLabel.format(it.roundToInt()) },
+                onValueChangeFinished = { onVolumeChanged(it.roundToInt()) },
+                steps = 99,
+            )
+        }
     }
 }
 

@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
-    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kover)
@@ -53,14 +52,13 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.lmuConnection)
             implementation(projects.feature.lmuNarrator)
-            implementation(projects.feature.otherDetail)
+            implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuReadoutFlagDetail)
             implementation(projects.feature.lmuReadoutVehicleDamageDetail)
-            implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.koin.core)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

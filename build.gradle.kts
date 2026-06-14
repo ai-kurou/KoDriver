@@ -241,7 +241,7 @@ dependencies {
     kover(project(":core:designsystem"))
     kover(project(":feature:lmu-connection"))
     kover(project(":feature:lmu-narrator"))
-    kover(project(":feature:other-detail"))
+    kover(project(":feature:other-license-detail"))
     kover(project(":feature:other-list"))
     kover(project(":feature:other-volume-detail"))
     kover(project(":feature:readout-list"))
