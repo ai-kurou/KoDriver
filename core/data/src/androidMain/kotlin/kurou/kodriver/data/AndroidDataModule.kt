@@ -8,6 +8,7 @@ import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumeRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
@@ -17,6 +18,7 @@ import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
 private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
+private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
 
 fun androidDataModule(context: Context) = module {
     single<Context> { context }
@@ -45,5 +47,8 @@ fun androidDataModule(context: Context) = module {
     }
     single<SoundVolumeRepository> {
         createSoundVolumeRepository(context.filesDir.absolutePath)
+    }
+    single<ServerIpRepository> {
+        AndroidServerIpRepository(context.serverIpDataStore)
     }
 }
