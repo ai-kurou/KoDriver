@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.SoundVolumeRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
@@ -23,6 +24,7 @@ val fakeLmuNarratorModule = module {
     single<VehicleDamagePreferencesRepository> { FakeVehicleDamagePreferencesRepository() }
     single<VehicleDamageRepository> { FakeVehicleDamageRepository() }
     single<SoundPlayer> { NoOpSoundPlayer() }
+    single<SoundVolumeRepository> { FakeSoundVolumeRepository() }
 }
 
 class FakeProximityRepository : ProximityRepository {
@@ -56,5 +58,10 @@ class FakeVehicleDamageRepository : VehicleDamageRepository {
 
 class NoOpSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean = false
-    override suspend fun play(bytes: ByteArray) = Unit
+    override suspend fun play(bytes: ByteArray, volume: Int) = Unit
+}
+
+class FakeSoundVolumeRepository : SoundVolumeRepository {
+    override fun volume(): Flow<Int> = MutableStateFlow(100)
+    override suspend fun saveVolume(volume: Int) = Unit
 }

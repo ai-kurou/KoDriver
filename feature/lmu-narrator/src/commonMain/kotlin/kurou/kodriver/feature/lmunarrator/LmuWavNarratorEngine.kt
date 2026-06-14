@@ -5,6 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
@@ -14,9 +16,13 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @OptIn(ExperimentalResourceApi::class)
 internal class LmuWavNarratorEngine(
     private val soundPlayer: SoundPlayer,
+    volumeFlow: Flow<Int> = flowOf(100),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
+
+    @Volatile
+    private var currentVolume: Int = 100
 
     // ロード完了後は不変のマップに差し替えるため、読み取り競合は無害
     private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
@@ -44,6 +50,7 @@ internal class LmuWavNarratorEngine(
     )
 
     init {
+        scope.launch { volumeFlow.collect { currentVolume = it } }
         scope.launch {
             val loaded = mutableMapOf<SpeechEvent, ByteArray>()
             eventToFile.forEach { (event, path) ->
@@ -70,8 +77,9 @@ internal class LmuWavNarratorEngine(
         playJob?.cancel()
         playJob = scope.launch {
             _currentReadoutItemKey = event.readoutItemKey
-            noiseSound?.let { soundPlayer.play(it) }
-            soundPlayer.play(mainSound)
+            val vol = currentVolume
+            noiseSound?.let { soundPlayer.play(it, vol) }
+            soundPlayer.play(mainSound, vol)
             _currentReadoutItemKey = null
         }
     }

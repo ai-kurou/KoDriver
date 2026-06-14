@@ -23,4 +23,9 @@ class JvmSoundPlayerTest {
         player.play(ByteArray(0))
         assertFalse(player.isPlaying)
     }
+
+    @Test
+    fun `音量0を指定しても例外が発生しない`() = runTest {
+        player.play(ByteArray(0), volume = 0)
+    }
 }
