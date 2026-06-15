@@ -107,4 +107,33 @@ class OtherServerIpDetailViewModelTest {
 
         assertTrue(viewModel.uiState.first().isInputValid)
     }
+
+    @Test
+    fun `保存に失敗するとsaveFailedがtrueになる`() = runTest {
+        val fakeRepo = FakeServerIpRepository(initialIp = "192.168.1.1", shouldThrow = true)
+        val vm = OtherServerIpDetailViewModel(
+            observeServerIp = ObserveServerIpUseCase(fakeRepo),
+            saveServerIp = SaveServerIpUseCase(fakeRepo),
+        )
+        vm.onIpChanged("10.0.0.1")
+        vm.onSave()
+
+        assertTrue(vm.uiState.first().saveFailed)
+    }
+
+    @Test
+    fun `保存失敗後に再度保存が成功するとsaveFailedがfalseにリセットされる`() = runTest {
+        val fakeRepo = FakeServerIpRepository(initialIp = "192.168.1.1", shouldThrow = true)
+        val vm = OtherServerIpDetailViewModel(
+            observeServerIp = ObserveServerIpUseCase(fakeRepo),
+            saveServerIp = SaveServerIpUseCase(fakeRepo),
+        )
+        vm.onIpChanged("10.0.0.1")
+        vm.onSave()
+
+        fakeRepo.shouldThrow = false
+        vm.onSave()
+
+        assertFalse(vm.uiState.first().saveFailed)
+    }
 }

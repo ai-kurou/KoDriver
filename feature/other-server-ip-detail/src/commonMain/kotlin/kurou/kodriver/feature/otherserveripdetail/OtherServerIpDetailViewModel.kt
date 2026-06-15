@@ -2,6 +2,7 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,12 +24,18 @@ internal class OtherServerIpDetailViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
     private val _userInput: MutableStateFlow<String?> = MutableStateFlow(null)
+    private val _saveFailed: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    val uiState: StateFlow<OtherServerIpDetailUiState> = combine(savedIp, _userInput) { saved, input ->
+    val uiState: StateFlow<OtherServerIpDetailUiState> = combine(
+        savedIp,
+        _userInput,
+        _saveFailed,
+    ) { saved, input, saveFailed ->
         val current = input ?: saved
         OtherServerIpDetailUiState(
             inputIp = current,
             isInputValid = current.isEmpty() || isValidIp(current),
+            saveFailed = saveFailed,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherServerIpDetailUiState())
 
@@ -39,7 +46,16 @@ internal class OtherServerIpDetailViewModel(
     fun onSave() {
         val ip = _userInput.value ?: savedIp.value
         if (isValidIp(ip)) {
-            viewModelScope.launch { saveServerIp(ip) }
+            viewModelScope.launch {
+                try {
+                    saveServerIp(ip)
+                    _saveFailed.update { false }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    _saveFailed.update { true }
+                }
+            }
         }
     }
 
