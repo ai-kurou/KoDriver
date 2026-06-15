@@ -81,6 +81,21 @@ class SharedMemoryVehicleDamageRepositoryTest {
     }
 
     @Test
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
+        val reader = FakeDamageMemoryReader(
+            buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
+        )
+        val repo = SharedMemoryVehicleDamageRepository(source = makeSource(reader))
+        val emitCount = AtomicInteger(0)
+
+        val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
+        delay(50)
+        job.cancelAndJoin()
+
+        assertEquals(0, emitCount.get())
+    }
+
+    @Test
     fun `reader が open できない間は emit しない`() = runBlocking {
         val reader = FakeDamageMemoryReader(
             buffer = buildDamageBuffer(),
