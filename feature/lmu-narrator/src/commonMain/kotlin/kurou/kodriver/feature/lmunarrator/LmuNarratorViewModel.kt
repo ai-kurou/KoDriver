@@ -104,8 +104,8 @@ class LmuNarratorViewModel(
         .onEach { (prev, current) ->
             if (current == null) return@onEach
             if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
-            // mLapNumber は 0 スタート（フォーメーションラップ終了後の最初の計測周 = 0）
-            if (skipFirstLap.value && currentLap.value == 0) return@onEach
+            // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
+            if (skipFirstLap.value && currentLap.value <= 0) return@onEach
 
             val prevLeftIds = prev?.sideBySideLeftVehicleIds ?: emptySet()
             val prevRightIds = prev?.sideBySideRightVehicleIds ?: emptySet()

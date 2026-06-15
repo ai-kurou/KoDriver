@@ -254,6 +254,26 @@ class LmuNarratorViewModelTest {
     }
 
     @Test
+    fun `1周目スキップONかつフォーメーションラップ中はアナウンスしない`() = runTest(testDispatcher) {
+        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
+        val telemetryChannel = Channel<LmuTelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = proximityChannel,
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            skipFirstLap = true,
+        )
+
+        // フォーメーションラップは mLapNumber が負値（-1 等）になる可能性があるため <= 0 でスキップ
+        telemetryChannel.send(fakeTelemetryData(currentLap = -1))
+        proximityChannel.send(noProximity())
+        proximityChannel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `1周目スキップONでも2周目以降はアナウンスする`() = runTest(testDispatcher) {
         val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuTelemetryData>(Channel.UNLIMITED)
