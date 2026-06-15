@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherserveripdetail.generated.resources.Res
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_cancel
-import kodriver.feature.otherserveripdetail.generated.resources.server_ip_checking
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_invalid
@@ -87,15 +85,6 @@ internal fun OtherServerIpDetailDialogContent(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                if (uiState.isCheckingConnectivity) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CircularProgressIndicator()
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(Res.string.server_ip_checking),
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
                 if (uiState.connectivityWarning) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -114,7 +103,7 @@ internal fun OtherServerIpDetailDialogContent(
             } else {
                 TextButton(
                     onClick = onSave,
-                    enabled = uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity,
+                    enabled = uiState.isInputValid && uiState.inputIp.isNotEmpty(),
                 ) {
                     Text(stringResource(Res.string.server_ip_save))
                 }
@@ -144,14 +133,6 @@ private fun OtherServerIpDetailDialogPreview() {
 private fun OtherServerIpDetailDialogInvalidPreview() {
     OtherServerIpDetailDialogContent(
         uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtherServerIpDetailDialogCheckingPreview() {
-    OtherServerIpDetailDialogContent(
-        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", isCheckingConnectivity = true),
     )
 }
 
