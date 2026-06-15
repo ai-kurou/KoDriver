@@ -143,4 +143,18 @@ class ReadoutPreferencesRepositoryImplTest {
         )
         assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu").first())
     }
+
+    @Test
+    fun `順序のみ保存済みのシミュレータはenabledStatesが空Mapを返す`() = testScope.runTest {
+        repository.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag"))
+
+        assertTrue(repository.observeReadoutEnabledStates("lmu").first().isEmpty())
+    }
+
+    @Test
+    fun `enabledStateのみ保存済みのシミュレータはitemOrderが空リストを返す`() = testScope.runTest {
+        repository.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+
+        assertTrue(repository.observeReadoutOrder("lmu").first().isEmpty())
+    }
 }
