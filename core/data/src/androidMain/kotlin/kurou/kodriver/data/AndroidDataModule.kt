@@ -30,7 +30,6 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuRepository> { EmptyLmuRepository() }
     single<FlagRepository> { WebSocketFlagRepository(get()) }
-    single<LmuRepository> { EmptyLmuRepository() }
     single<ProximityRepository> { EmptyProximityRepository() }
     single<VehicleDamageRepository> { EmptyVehicleDamageRepository() }
     single<ProximityThresholdsRepository> {
