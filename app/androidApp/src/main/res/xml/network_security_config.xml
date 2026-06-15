@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    KoDriver は信頼できる LAN 内のみで使用するアプリのため、平文通信を許可する。
+    ws:// (WebSocket) でローカル PC に接続するために必要。
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
