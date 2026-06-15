@@ -64,4 +64,42 @@ class OtherServerIpDetailDialogScreenshotTest {
         }
         rule.onAllNodes(isRoot()).get(1).captureRoboImage()
     }
+
+    @Test
+    fun `接続確認中`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherServerIpDetailDialogContent(
+                            uiState = OtherServerIpDetailUiState(
+                                inputIp = "192.168.1.100",
+                                isCheckingConnectivity = true,
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+    }
+
+    @Test
+    fun `接続警告あり`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherServerIpDetailDialogContent(
+                            uiState = OtherServerIpDetailUiState(
+                                inputIp = "192.168.1.100",
+                                connectivityWarning = true,
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+    }
 }
