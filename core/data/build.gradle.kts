@@ -68,6 +68,7 @@ kotlin {
                 implementation(libs.junit)
                 implementation(libs.kotlinx.coroutinesTest)
                 implementation(libs.androidx.datastore.preferences)
+                implementation(libs.okhttp.mockwebserver)
             }
         }
     }

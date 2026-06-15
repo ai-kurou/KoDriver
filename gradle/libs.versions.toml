@@ -17,6 +17,7 @@ jna = "5.17.0"
 kotlinx-coroutines = "1.11.0"
 detekt = "1.23.8"
 ktor = "3.4.3"
+okhttp = "4.12.0"
 koin = "4.1.0"
 kover = "0.9.8"
 datastore = "1.2.1"
@@ -67,6 +68,7 @@ ktor-clientWebsockets = { module = "io.ktor:ktor-client-websockets-jvm", version
 ktor-clientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-clientOkhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-clientWebsocketsMultiplatform = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 wrappers-browser = { module = "org.jetbrains.kotlin-wrappers:kotlin-browser", version.ref = "kotlin-wrappers" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }

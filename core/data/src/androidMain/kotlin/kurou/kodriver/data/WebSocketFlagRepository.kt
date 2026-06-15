@@ -19,12 +19,14 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 
-private const val PORT = 8080
+private const val DEFAULT_PORT = 8080
 private const val PATH = "/ws/flags"
-private const val RETRY_DELAY_MS = 3000L
+private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
 internal class WebSocketFlagRepository(
     private val serverIpRepository: ServerIpRepository,
+    private val port: Int = DEFAULT_PORT,
+    private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
 ) : FlagRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
@@ -44,7 +46,7 @@ internal class WebSocketFlagRepository(
     private fun connectWithRetry(ip: String): Flow<RaceFlagsData> = flow {
         while (true) {
             try {
-                client.webSocket(host = ip, port = PORT, path = PATH) {
+                client.webSocket(host = ip, port = port, path = PATH) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {
@@ -60,7 +62,7 @@ internal class WebSocketFlagRepository(
                 throw e
             } catch (_: Exception) {
             }
-            delay(RETRY_DELAY_MS)
+            delay(retryDelayMs)
         }
     }
 }
