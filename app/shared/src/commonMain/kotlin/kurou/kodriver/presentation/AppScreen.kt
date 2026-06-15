@@ -89,7 +89,7 @@ fun AppScreen(
         )
     },
     otherContent: @Composable () -> Unit = {
-        var showServerIpDialog by remember { mutableStateOf(false) }
+        var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
         if (showServerIpDialog) {
             OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
         }
