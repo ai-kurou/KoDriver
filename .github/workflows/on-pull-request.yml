@@ -48,6 +48,46 @@ jobs:
 
       - run: ./gradlew assertModuleGraph
 
+  update-module-graph:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: module-graph-assert
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4.4.3
+
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+
+      - name: Generate module graph images
+        run: ./gradlew generateModuleGraphImages
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/graphs/ README.md 2>/dev/null || true
+          find . -name "README.md" \
+            -not -path "*/build/*" -not -path "*/.git/*" | xargs -r git add
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update module graph images"
+            git push
+          fi
+
   detekt:
     runs-on: ubuntu-latest
     timeout-minutes: 15
