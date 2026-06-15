@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DragIndicator
@@ -98,14 +97,8 @@ private fun PriorityHintRow() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(bottom = 4.dp),
+        modifier = Modifier.padding(bottom = 12.dp),
     ) {
-        Icon(
-            imageVector = Icons.Filled.ArrowUpward,
-            contentDescription = null,
-            modifier = Modifier.size(16.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
         Text(
             text = stringResource(Res.string.priority_hint_label),
             style = MaterialTheme.typography.labelMedium,
@@ -200,7 +193,7 @@ internal fun ReadoutListPane(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         PriorityHintRow()
         LazyColumn(
             state = listState,
