@@ -234,7 +234,7 @@ class LmuNarratorViewModelTest {
     }
 
     @Test
-    fun `1周目スキップONかつ現在ラップが1のときはアナウンスしない`() = runTest(testDispatcher) {
+    fun `1周目スキップONかつ現在ラップが0のときはアナウンスしない`() = runTest(testDispatcher) {
         val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuTelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -245,7 +245,8 @@ class LmuNarratorViewModelTest {
             skipFirstLap = true,
         )
 
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1))
+        // mLapNumber は 0 スタートのため、1周目（最初の計測周）は 0
+        telemetryChannel.send(fakeTelemetryData(currentLap = 0))
         proximityChannel.send(noProximity())
         proximityChannel.send(leftProximity(vehicleId = 1))
 
@@ -264,7 +265,8 @@ class LmuNarratorViewModelTest {
             skipFirstLap = true,
         )
 
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2))
+        // mLapNumber は 0 スタートのため、2周目は 1
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1))
         proximityChannel.send(noProximity())
         proximityChannel.send(leftProximity(vehicleId = 1))
 
@@ -283,7 +285,8 @@ class LmuNarratorViewModelTest {
             skipFirstLap = false,
         )
 
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1))
+        // mLapNumber は 0 スタートのため、1周目は 0
+        telemetryChannel.send(fakeTelemetryData(currentLap = 0))
         proximityChannel.send(noProximity())
         proximityChannel.send(leftProximity(vehicleId = 1))
 
