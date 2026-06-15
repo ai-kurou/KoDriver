@@ -38,7 +38,7 @@ class KoDriverServer(
     }
 
     fun stop() {
-        server.stop()
+        server.stop(gracePeriodMillis = 0, timeoutMillis = 0)
     }
 
     private companion object {
