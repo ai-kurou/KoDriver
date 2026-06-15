@@ -37,6 +37,7 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    onOpenServerIpDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
@@ -47,6 +48,7 @@ fun OtherContent(
         onItemSelected = viewModel::onItemSelected,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
+        onOpenServerIpDialog = onOpenServerIpDialog,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
@@ -62,6 +64,7 @@ internal fun OtherContent(
     onItemSelected: (String) -> Unit,
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
+    onOpenServerIpDialog: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -120,6 +123,7 @@ internal fun OtherContent(
                 uiState = uiState,
                 onItemClick = { itemId ->
                     when (itemId) {
+                        OtherListItemType.ServerIp.id -> onOpenServerIpDialog()
                         OtherListItemType.GitHubRepository.id -> onOpenGitHubRepository()
                         OtherListItemType.ReleasePage.id -> onOpenReleasePage()
                         else -> onItemSelected(itemId)
