@@ -6,6 +6,8 @@ import java.io.ByteArrayOutputStream
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioInputStream
 import javax.sound.sampled.AudioSystem
+import javax.sound.sampled.Clip
+import javax.sound.sampled.DataLine
 import javax.sound.sampled.FloatControl
 import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
@@ -21,7 +23,8 @@ class JvmSoundPlayer : SoundPlayer {
         try {
             val stream = AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes))
             val stereoStream = toStereoIfMono(stream)
-            val clip = AudioSystem.getClip()
+            val clipInfo = DataLine.Info(Clip::class.java, stereoStream.format)
+            val clip = AudioSystem.getLine(clipInfo) as Clip
             clip.open(stereoStream)
             applyVolume(clip, volume)
             clip.addLineListener { event ->
