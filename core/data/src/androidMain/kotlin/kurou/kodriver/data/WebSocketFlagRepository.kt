@@ -8,6 +8,7 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.serialization.SerializationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -48,7 +49,9 @@ internal class WebSocketFlagRepository(
                         if (frame is Frame.Text) {
                             try {
                                 emit(json.decodeFromString<RaceFlagsData>(frame.readText()))
-                            } catch (_: Exception) {
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (_: SerializationException) {
                             }
                         }
                     }
