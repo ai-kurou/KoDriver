@@ -86,9 +86,10 @@ class OtherServerIpDetailViewModelTest {
 
     @Test
     fun `保存済みIPがない場合は空文字を返す`() = runTest {
+        val fakeRepo = FakeServerIpRepository(initialIp = null)
         val vm = OtherServerIpDetailViewModel(
-            observeServerIp = ObserveServerIpUseCase(FakeServerIpRepository(initialIp = null)),
-            saveServerIp = SaveServerIpUseCase(FakeServerIpRepository()),
+            observeServerIp = ObserveServerIpUseCase(fakeRepo),
+            saveServerIp = SaveServerIpUseCase(fakeRepo),
         )
 
         assertEquals(OtherServerIpDetailUiState(inputIp = "", isInputValid = true), vm.uiState.first())
