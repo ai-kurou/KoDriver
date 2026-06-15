@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -9,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherserveripdetail.generated.resources.Res
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_cancel
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_invalid
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_label
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_placeholder
@@ -54,8 +59,11 @@ internal fun OtherServerIpDetailDialogContent(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.server_ip_title)) },
         text = {
-            TextField(
-                value = uiState.inputIp,
+            Column {
+                Text(stringResource(Res.string.server_ip_description))
+                Spacer(modifier = Modifier.height(12.dp))
+                TextField(
+                    value = uiState.inputIp,
                 onValueChange = onIpChanged,
                 label = { Text(stringResource(Res.string.server_ip_label)) },
                 placeholder = { Text(stringResource(Res.string.server_ip_placeholder)) },
@@ -67,7 +75,8 @@ internal fun OtherServerIpDetailDialogContent(
                 },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-            )
+                )
+            }
         },
         confirmButton = {
             TextButton(

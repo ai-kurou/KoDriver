@@ -5,4 +5,5 @@
     <string name="server_ip_save">保存</string>
     <string name="server_ip_cancel">キャンセル</string>
     <string name="server_ip_invalid">無効なIPアドレスです</string>
+    <string name="server_ip_description">Windows版KoDriverが動作しているPCのIPアドレスを入力してください。</string>
 </resources>
