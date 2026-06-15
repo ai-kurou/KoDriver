@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DragIndicator
@@ -33,8 +35,12 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +60,8 @@ import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.lmu
+import kodriver.feature.readoutlist.generated.resources.priority_hint_description
+import kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
@@ -81,6 +89,45 @@ private fun itemIcon(itemId: String): ImageVector = when (itemId) {
     "flag" -> Icons.Filled.Flag
     "vehicle_damage" -> Icons.Filled.Build
     else -> Icons.Filled.DirectionsCar
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PriorityHintRow() {
+    val tooltipState = rememberTooltipState()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(bottom = 4.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Filled.ArrowUpward,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(Res.string.priority_hint_label),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = {
+                PlainTooltip {
+                    Text(stringResource(Res.string.priority_hint_description))
+                }
+            },
+            state = tooltipState,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                contentDescription = stringResource(Res.string.priority_hint_description),
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,6 +201,7 @@ internal fun ReadoutListPane(
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
+        PriorityHintRow()
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
