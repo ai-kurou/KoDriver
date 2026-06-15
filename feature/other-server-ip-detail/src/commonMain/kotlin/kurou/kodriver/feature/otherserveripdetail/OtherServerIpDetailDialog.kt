@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,11 +19,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherserveripdetail.generated.resources.Res
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_cancel
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_checking
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_invalid
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_label
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_placeholder
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_save
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_save_anyway
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -32,13 +38,17 @@ fun OtherServerIpDetailDialog(
 ) {
     val viewModel: OtherServerIpDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(uiState.isSaved) {
+        if (uiState.isSaved) {
+            viewModel.onDismiss()
+            onDismiss()
+        }
+    }
     OtherServerIpDetailDialogContent(
         uiState = uiState,
         onIpChanged = viewModel::onIpChanged,
-        onSave = {
-            viewModel.onSave()
-            onDismiss()
-        },
+        onSave = viewModel::onSave,
+        onSaveAnyway = viewModel::onSaveAnyway,
         onDismiss = {
             viewModel.onDismiss()
             onDismiss()
@@ -52,6 +62,7 @@ internal fun OtherServerIpDetailDialogContent(
     uiState: OtherServerIpDetailUiState,
     onIpChanged: (String) -> Unit = {},
     onSave: () -> Unit = {},
+    onSaveAnyway: () -> Unit = {},
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -76,14 +87,37 @@ internal fun OtherServerIpDetailDialogContent(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                if (uiState.isCheckingConnectivity) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    CircularProgressIndicator()
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(Res.string.server_ip_checking),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+                if (uiState.connectivityWarning) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(Res.string.server_ip_connectivity_warning),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
         },
         confirmButton = {
-            TextButton(
-                onClick = onSave,
-                enabled = uiState.isInputValid && uiState.inputIp.isNotEmpty(),
-            ) {
-                Text(stringResource(Res.string.server_ip_save))
+            if (uiState.connectivityWarning) {
+                TextButton(onClick = onSaveAnyway) {
+                    Text(stringResource(Res.string.server_ip_save_anyway))
+                }
+            } else {
+                TextButton(
+                    onClick = onSave,
+                    enabled = uiState.isInputValid && uiState.inputIp.isNotEmpty() && !uiState.isCheckingConnectivity,
+                ) {
+                    Text(stringResource(Res.string.server_ip_save))
+                }
             }
         },
         dismissButton = {
@@ -110,5 +144,21 @@ private fun OtherServerIpDetailDialogPreview() {
 private fun OtherServerIpDetailDialogInvalidPreview() {
     OtherServerIpDetailDialogContent(
         uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherServerIpDetailDialogCheckingPreview() {
+    OtherServerIpDetailDialogContent(
+        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", isCheckingConnectivity = true),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherServerIpDetailDialogConnectivityWarningPreview() {
+    OtherServerIpDetailDialogContent(
+        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", connectivityWarning = true),
     )
 }

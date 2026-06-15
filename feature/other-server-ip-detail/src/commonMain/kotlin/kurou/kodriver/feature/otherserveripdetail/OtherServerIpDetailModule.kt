@@ -9,4 +9,5 @@ val otherServerIpDetailModule = module {
     viewModelOf(::OtherServerIpDetailViewModel)
     factory { ObserveServerIpUseCase(get()) }
     factory { SaveServerIpUseCase(get()) }
+    factory<ServerConnectivityChecker> { createServerConnectivityChecker() }
 }
