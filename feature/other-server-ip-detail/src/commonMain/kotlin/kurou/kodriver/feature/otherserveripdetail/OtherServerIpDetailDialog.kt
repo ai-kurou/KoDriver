@@ -64,17 +64,17 @@ internal fun OtherServerIpDetailDialogContent(
                 Spacer(modifier = Modifier.height(12.dp))
                 TextField(
                     value = uiState.inputIp,
-                onValueChange = onIpChanged,
-                label = { Text(stringResource(Res.string.server_ip_label)) },
-                placeholder = { Text(stringResource(Res.string.server_ip_placeholder)) },
-                isError = !uiState.isInputValid,
-                supportingText = if (!uiState.isInputValid) {
-                    { Text(stringResource(Res.string.server_ip_invalid)) }
-                } else {
-                    null
-                },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                    onValueChange = onIpChanged,
+                    label = { Text(stringResource(Res.string.server_ip_label)) },
+                    placeholder = { Text(stringResource(Res.string.server_ip_placeholder)) },
+                    isError = !uiState.isInputValid,
+                    supportingText = if (!uiState.isInputValid) {
+                        { Text(stringResource(Res.string.server_ip_invalid)) }
+                    } else {
+                        null
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         },
@@ -95,6 +95,8 @@ internal fun OtherServerIpDetailDialogContent(
     )
 }
 
+// AlertDialog はポップアップウィンドウとして別の描画ルートで描画されるため、
+// Compose Multiplatform の Res リソース配列の初期化が引き継がれずプレビューが動作しない。
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDetailDialogPreview() {
