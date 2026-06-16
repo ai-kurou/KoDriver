@@ -30,4 +30,18 @@ class LmuReadoutVehicleApproachDetailPaneScreenshotTest {
         }
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `ヘルプボトムシート`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 200.dp)) {
+                        VehicleApproachHelpSheetContent()
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
 }

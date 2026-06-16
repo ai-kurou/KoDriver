@@ -90,20 +90,7 @@ internal fun LmuReadoutVehicleApproachDetailPaneContent(
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            Image(
-                painter = painterResource(Res.drawable.vehicle_approach),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth(0.7f).align(Alignment.CenterHorizontally).padding(horizontal = 16.dp),
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(Res.string.vehicle_approach_help_description),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            Spacer(modifier = Modifier.height(24.dp))
+            VehicleApproachHelpSheetContent()
         }
     }
 
@@ -154,6 +141,28 @@ internal fun LmuReadoutVehicleApproachDetailPaneContent(
             )
         }
     }
+}
+
+@Composable
+internal fun VehicleApproachHelpSheetContent() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.vehicle_approach_help_description),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
+        )
+        Image(
+            painter = painterResource(Res.drawable.vehicle_approach),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth(0.3f).padding(start = 16.dp),
+        )
+    }
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Preview(showBackground = true)
