@@ -6,14 +6,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
-import kurou.kodriver.domain.model.CountLapFlag
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.RaceFlagsData
-import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.ServerIpRepository
@@ -61,12 +55,16 @@ class WebSocketFlagRepositoryTest {
 
     @Test
     fun `有効なJSONフレームを受信したときRaceFlagsDataをemitする`() = runTest {
-        server.enqueue(MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                webSocket.send(GREEN_FLAG_JSON)
-                webSocket.close(1000, "done")
-            }
-        }))
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        webSocket.send(GREEN_FLAG_JSON)
+                        webSocket.close(1000, "done")
+                    }
+                },
+            ),
+        )
         fakeIpRepository.setIp("127.0.0.1")
 
         val result = buildRepository().flagStream().first()
@@ -77,13 +75,17 @@ class WebSocketFlagRepositoryTest {
 
     @Test
     fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
-        server.enqueue(MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                webSocket.send("invalid json")
-                webSocket.send(GREEN_FLAG_JSON)
-                webSocket.close(1000, "done")
-            }
-        }))
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        webSocket.send("invalid json")
+                        webSocket.send(GREEN_FLAG_JSON)
+                        webSocket.close(1000, "done")
+                    }
+                },
+            ),
+        )
         fakeIpRepository.setIp("127.0.0.1")
 
         val result = buildRepository().flagStream().first()
@@ -93,17 +95,25 @@ class WebSocketFlagRepositoryTest {
 
     @Test
     fun `接続切断後にリトライして再接続する`() = runTest {
-        server.enqueue(MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                webSocket.close(1001, "drop")
-            }
-        }))
-        server.enqueue(MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-            override fun onOpen(webSocket: WebSocket, response: Response) {
-                webSocket.send(GREEN_FLAG_JSON)
-                webSocket.close(1000, "done")
-            }
-        }))
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        webSocket.close(1001, "drop")
+                    }
+                },
+            ),
+        )
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        webSocket.send(GREEN_FLAG_JSON)
+                        webSocket.close(1000, "done")
+                    }
+                },
+            ),
+        )
         fakeIpRepository.setIp("127.0.0.1")
 
         val result = buildRepository(retryDelayMs = 0L).flagStream().first()
@@ -112,44 +122,27 @@ class WebSocketFlagRepositoryTest {
     }
 
     @Test
-    fun `IPが変わると新しいIPのサーバーに接続して新しいデータをemitする`() = runTest {
-        val secondServer = MockWebServer()
-        secondServer.start()
-        try {
-            server.enqueue(MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-                override fun onOpen(webSocket: WebSocket, response: Response) {
-                    webSocket.send(GREEN_FLAG_JSON)
-                }
-            }))
-            secondServer.enqueue(MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-                override fun onOpen(webSocket: WebSocket, response: Response) {
-                    webSocket.send(RED_FLAG_JSON)
-                    webSocket.close(1000, "done")
-                }
-            }))
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() = runTest {
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        webSocket.send(RED_FLAG_JSON)
+                        webSocket.close(1000, "done")
+                    }
+                },
+            ),
+        )
 
-            fakeIpRepository.setIp("127.0.0.1")
-            val repository = WebSocketFlagRepository(
-                serverIpRepository = fakeIpRepository,
-                port = server.port,
-                retryDelayMs = 0L,
-            )
+        fakeIpRepository.setIp(null)
+        val repository = buildRepository()
 
-            val firstResult = repository.flagStream().first()
-            assertEquals(SessionPhase.GREEN_FLAG, firstResult.gamePhase)
+        val noEmit = withTimeoutOrNull(300) { repository.flagStream().first() }
+        assertNull(noEmit)
 
-            val secondRepository = WebSocketFlagRepository(
-                serverIpRepository = fakeIpRepository,
-                port = secondServer.port,
-                retryDelayMs = 0L,
-            )
-            fakeIpRepository.setIp("127.0.0.2")
-
-            val results = secondRepository.flagStream().take(1).toList()
-            assertEquals(SessionPhase.RED_FLAG, results.first().gamePhase)
-        } finally {
-            secondServer.shutdown()
-        }
+        fakeIpRepository.setIp("127.0.0.1")
+        val result = repository.flagStream().first()
+        assertEquals(SessionPhase.RED_FLAG, result.gamePhase)
     }
 }
 
