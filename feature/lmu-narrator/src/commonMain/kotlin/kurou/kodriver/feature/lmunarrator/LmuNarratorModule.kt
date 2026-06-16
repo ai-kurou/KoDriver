@@ -34,14 +34,14 @@ val lmuNarratorModule: Module = module {
     factory { VehicleDamageUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get()) }
     factory { ObserveSoundVolumeUseCase(get()) }
+    factory { PlaySpeechEventUseCase(get()) }
+    includes(platformSoundModule)
     single<TextToSpeechEngine> {
         LmuWavNarratorEngine(
             soundPlayer = get(),
             volumeFlow = get<ObserveSoundVolumeUseCase>()(),
         )
     }
-    factory { PlaySpeechEventUseCase(get()) }
-    includes(platformSoundModule)
 }
 
 internal expect val platformSoundModule: Module

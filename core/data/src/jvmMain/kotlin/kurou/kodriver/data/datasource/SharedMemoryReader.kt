@@ -2,6 +2,7 @@ package kurou.kodriver.data.datasource
 
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
+import io.sentry.Sentry
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -30,6 +31,7 @@ internal class SharedMemoryReader(
             sizeBytes,
         )
         if (ptr == null) {
+            Sentry.captureMessage("SharedMemoryReader: MapViewOfFile failed for segment '$segmentName'")
             kernel32.CloseHandle(h)
             return false
         }

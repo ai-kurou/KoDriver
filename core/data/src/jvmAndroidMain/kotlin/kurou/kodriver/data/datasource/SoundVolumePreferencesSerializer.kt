@@ -2,6 +2,7 @@ package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
+import io.sentry.Sentry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -17,6 +18,7 @@ internal object SoundVolumePreferencesSerializer : Serializer<SoundVolumePrefere
         try {
             ProtoBuf.decodeFromByteArray(SoundVolumePreferences.serializer(), input.readBytes())
         } catch (e: SerializationException) {
+            Sentry.captureException(e)
             throw CorruptionException("Cannot read SoundVolumePreferences.", e)
         }
 

@@ -58,15 +58,18 @@ internal class LmuWavNarratorEngine(
                     loaded[event] = resourceLoader(path)
                 } catch (e: CancellationException) {
                     throw e
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    captureNarratorError(e)
                 }
             }
             sounds = loaded
+            val noisePath = "files/noise.wav"
             try {
-                noiseSound = resourceLoader("files/noise.wav")
+                noiseSound = resourceLoader(noisePath)
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                captureNarratorError(e)
             }
         }
     }
