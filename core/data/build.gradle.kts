@@ -51,6 +51,10 @@ kotlin {
             dependsOn(jvmAndroidMain)
             dependencies {
                 implementation(libs.androidx.datastore.preferences.android)
+                implementation(libs.ktor.clientCore)
+                implementation(libs.ktor.clientOkhttp)
+                implementation(libs.ktor.clientWebsocketsMultiplatform)
+                implementation(libs.kotlinx.serialization.json)
             }
         }
         jvmTest.dependencies {
@@ -64,6 +68,8 @@ kotlin {
                 implementation(libs.junit)
                 implementation(libs.kotlinx.coroutinesTest)
                 implementation(libs.androidx.datastore.preferences)
+                implementation(libs.okhttp)
+                implementation(libs.okhttp.mockwebserver)
             }
         }
     }
