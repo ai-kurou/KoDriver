@@ -6,13 +6,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import io.sentry.Sentry
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
 import org.koin.core.context.startKoin
 import java.awt.Dimension
 
+private const val SENTRY_DSN =
+    "https://93dc09daf8552c39b0eea61b4f1319ee@o4511575800676352.ingest.us.sentry.io/4511575816667136"
+
 fun main() {
+    Sentry.init { options ->
+        options.dsn = SENTRY_DSN
+    }
+    Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+        Sentry.captureException(throwable)
+    }
     val koinApplication = startKoin {
         modules(listOf(desktopDataModule) + appModules)
     }

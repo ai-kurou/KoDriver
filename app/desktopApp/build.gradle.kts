@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodelCompose)
     implementation(libs.koin.core)
     implementation(libs.koin.compose)
+    implementation(libs.sentry)
     implementation(libs.koin.compose.viewmodel)
 
     testImplementation(libs.kotlin.testJunit)

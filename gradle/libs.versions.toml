@@ -30,6 +30,7 @@ material3 = "1.11.0-alpha07"
 compose-material-icons-extended = "1.7.3"
 reorderable = "3.1.0"
 aboutLibraries = "14.2.1"
+sentry = "8.16.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -85,6 +86,8 @@ robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectr
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons-extended" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+sentry-android = { module = "io.sentry:sentry-android", version.ref = "sentry" }
+sentry = { module = "io.sentry:sentry", version.ref = "sentry" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
