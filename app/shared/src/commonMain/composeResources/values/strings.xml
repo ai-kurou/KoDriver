@@ -3,8 +3,8 @@
     <string name="nav_more">その他</string>
     <string name="lmu_connected">LMUに接続しました</string>
     <string name="lmu_disconnected">LMUとの接続を待機しています</string>
-    <string name="banner_lmu_connected">LMUに接続しています</string>
-    <string name="banner_lmu_disconnected">LMU接続待機中</string>
+    <string name="banner_simulator_connected">シミュレータに接続しています</string>
+    <string name="banner_simulator_disconnected">シミュレータ接続待機中</string>
     <string name="banner_server_connected">Windows版KoDriverに接続しています</string>
     <string name="banner_server_disconnected">Windows版KoDriver接続待機中</string>
 </resources>
