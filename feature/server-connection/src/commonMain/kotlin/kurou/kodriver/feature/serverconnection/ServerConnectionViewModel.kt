@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckServerConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
@@ -19,6 +20,8 @@ import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 data class ServerConnectionUiState(
     val isConnected: Boolean = false,
     val isConnectionChecked: Boolean = false,
+    val isIpConfigured: Boolean = false,
+    val requiresKoDriverServer: Boolean = false,
     val selectedSimulator: String? = null,
 )
 
@@ -34,10 +37,17 @@ class ServerConnectionViewModel(
         observeSelectedSimulator(),
     ) { ip, simulator -> ip to simulator }
         .flatMapLatest { (ip, simulator) ->
+            val requiresServer = Simulator.fromId(simulator.orEmpty())?.requiresKoDriverServer == true
             if (ip != null) {
-                connectionCheckFlow(ip, simulator)
+                connectionCheckFlow(ip, simulator, requiresServer)
             } else {
-                flowOf(ServerConnectionUiState(selectedSimulator = simulator))
+                flowOf(
+                    ServerConnectionUiState(
+                        isIpConfigured = false,
+                        requiresKoDriverServer = requiresServer,
+                        selectedSimulator = simulator,
+                    ),
+                )
             }
         }
         .stateIn(
@@ -46,7 +56,7 @@ class ServerConnectionViewModel(
             initialValue = ServerConnectionUiState(),
         )
 
-    private fun connectionCheckFlow(ip: String, simulator: String?) = flow {
+    private fun connectionCheckFlow(ip: String, simulator: String?, requiresServer: Boolean) = flow {
         while (true) {
             val isConnected = try {
                 checkServerConnection(ip)
@@ -59,6 +69,8 @@ class ServerConnectionViewModel(
                 ServerConnectionUiState(
                     isConnected = isConnected,
                     isConnectionChecked = true,
+                    isIpConfigured = true,
+                    requiresKoDriverServer = requiresServer,
                     selectedSimulator = simulator,
                 ),
             )

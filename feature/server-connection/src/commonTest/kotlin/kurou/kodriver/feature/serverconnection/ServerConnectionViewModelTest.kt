@@ -55,11 +55,12 @@ class ServerConnectionViewModelTest {
         val state = viewModel.uiState.first()
         assertTrue(state.isConnected)
         assertTrue(state.isConnectionChecked)
+        assertTrue(state.isIpConfigured)
         collectionJob.cancelAndJoin()
     }
 
     @Test
-    fun `IP未設定時は未確認状態を返す`() = runTest {
+    fun `IP未設定時はisIpConfiguredがfalseで未確認状態を返す`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = null)
         val connectionRepo = FakeServerConnectionRepository(connected = true)
         val viewModel = createViewModel(serverIpRepo, connectionRepo)
@@ -70,6 +71,7 @@ class ServerConnectionViewModelTest {
         val state = viewModel.uiState.first()
         assertFalse(state.isConnected)
         assertFalse(state.isConnectionChecked)
+        assertFalse(state.isIpConfigured)
         collectionJob.cancelAndJoin()
     }
 
@@ -136,6 +138,33 @@ class ServerConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertTrue(viewModel.uiState.first().isConnected)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `LMU選択時はrequiresKoDriverServerがtrueになる`() = runTest {
+        val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
+        val connectionRepo = FakeServerConnectionRepository(connected = true)
+        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val viewModel = createViewModel(serverIpRepo, connectionRepo, simulatorRepo)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertTrue(viewModel.uiState.first().requiresKoDriverServer)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `シミュレータ未選択時はrequiresKoDriverServerがfalseになる`() = runTest {
+        val serverIpRepo = FakeServerIpRepository(initial = null)
+        val connectionRepo = FakeServerConnectionRepository(connected = false)
+        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.first().requiresKoDriverServer)
         collectionJob.cancelAndJoin()
     }
 
