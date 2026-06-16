@@ -6,6 +6,7 @@ digraph G {
   ":app:desktopApp" -> ":core:data"
   ":app:desktopApp" -> ":server"
   ":app:shared" -> ":feature:lmu-connection"
+  ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-narrator"
   ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
@@ -32,4 +33,5 @@ digraph G {
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:designsystem"
   ":feature:readout-list" -> ":core:domain"
+  ":feature:server-connection" -> ":core:domain"
 }

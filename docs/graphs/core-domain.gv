@@ -10,4 +10,5 @@ digraph G {
   ":feature:other-server-ip-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:readout-list" -> ":core:domain"
+  ":feature:server-connection" -> ":core:domain"
 }
