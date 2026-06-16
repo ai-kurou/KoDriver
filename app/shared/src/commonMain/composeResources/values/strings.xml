@@ -7,4 +7,5 @@
     <string name="banner_simulator_disconnected">シミュレータ接続待機中</string>
     <string name="banner_server_connected">Windows版KoDriverに接続中</string>
     <string name="banner_server_disconnected">Windows版KoDriver接続待機中</string>
+    <string name="banner_server_ip_not_configured">接続先IPアドレスが未設定です</string>
 </resources>
