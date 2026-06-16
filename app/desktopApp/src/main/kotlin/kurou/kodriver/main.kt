@@ -20,9 +20,6 @@ fun main() {
     Sentry.init { options ->
         options.dsn = SENTRY_DSN
     }
-    Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
-        Sentry.captureException(throwable)
-    }
     val koinApplication = startKoin {
         modules(listOf(desktopDataModule) + appModules)
     }
