@@ -16,10 +16,11 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val connectedMessage = stringResource(Res.string.banner_server_connected)
     val disconnectedMessage = stringResource(Res.string.banner_server_disconnected)
+    val isConnected = uiState.isConnectionChecked && uiState.isConnected
     return ConnectionBannerUiState(
-        isConnected = uiState.isConnected,
+        isConnected = isConnected,
         isConnectionChecked = uiState.isConnectionChecked,
-        message = if (uiState.isConnected) connectedMessage else disconnectedMessage,
+        message = if (isConnected) connectedMessage else disconnectedMessage,
         iconType = ConnectionBannerIconType.NETWORK,
     )
 }
