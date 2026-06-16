@@ -24,6 +24,7 @@ class LmuRepositoryImplTest {
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
+        currentTimeMs = System::currentTimeMillis,
         scope = CoroutineScope(SupervisorJob()),
     )
 

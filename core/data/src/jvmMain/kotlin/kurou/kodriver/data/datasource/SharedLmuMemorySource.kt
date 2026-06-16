@@ -20,9 +20,12 @@ internal class SharedLmuMemorySource(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
     ),
+    private val currentTimeMs: () -> Long = System::currentTimeMillis,
     scope: CoroutineScope,
 ) {
     private val readerMutex = Mutex()
+    private var lastKnownEt: Double = Double.NaN
+    private var lastEtChangeTimeMs: Long = 0L
 
     val bufferFlow: Flow<ByteBuffer> = flow {
         try {
@@ -65,11 +68,30 @@ internal class SharedLmuMemorySource(
             // LMU is not running. Downstream callers are safe because bufferFlow emits
             // heap-copied buffers and never exposes the native-backed ByteBuffer.
             reader.close()
-            reader.open() && reader.readBuffer() != null
+            if (!reader.open()) return@withLock false
+            val buffer = reader.readBuffer() ?: return@withLock false
+
+            // Even if OpenFileMappingA succeeds, another process (e.g. Steam) may hold
+            // the section alive after LMU has exited. Guard against this by checking
+            // whether mCurrentET is still advancing. If the value has not changed for
+            // ET_STALE_THRESHOLD_MS, assume LMU is no longer running.
+            val currentEt = buffer.getDouble(CURRENT_ET_OFFSET)
+            val nowMs = currentTimeMs()
+            if (currentEt != lastKnownEt) {
+                lastKnownEt = currentEt
+                lastEtChangeTimeMs = nowMs
+            }
+            nowMs - lastEtChangeTimeMs < ET_STALE_THRESHOLD_MS
         }
     }
 
     suspend fun disconnect() = withContext(Dispatchers.IO) {
         readerMutex.withLock { reader.close() }
+    }
+
+    private companion object {
+        // LMUObjectOut: scoring starts at 1632; LMUScoringInfo: mCurrentET at +68
+        const val CURRENT_ET_OFFSET = 1632 + 68
+        const val ET_STALE_THRESHOLD_MS = 3_000L
     }
 }

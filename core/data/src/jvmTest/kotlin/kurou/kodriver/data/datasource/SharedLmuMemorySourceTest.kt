@@ -19,10 +19,12 @@ class SharedLmuMemorySourceTest {
         reader: FakeMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
+        currentTimeMs: () -> Long = System::currentTimeMillis,
     ) = SharedLmuMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
+        currentTimeMs = currentTimeMs,
         scope = CoroutineScope(SupervisorJob()),
     )
 
@@ -100,6 +102,29 @@ class SharedLmuMemorySourceTest {
         assertFalse(source.isConnected())
     }
 
+    @Test
+    fun `mCurrentET が閾値以内に変化し続けるとき isConnected は true を返す`() = runBlocking {
+        var fakeTime = 0L
+        val reader = FakeMemoryReader(openResult = true, currentEt = 1.0)
+        val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
+
+        fakeTime = 0L;     reader.currentEt = 1.0; assertTrue(source.isConnected())
+        fakeTime = 1_000L; reader.currentEt = 2.0; assertTrue(source.isConnected())
+        fakeTime = 2_000L; reader.currentEt = 3.0; assertTrue(source.isConnected())
+    }
+
+    @Test
+    fun `mCurrentET が閾値以上変化しないとき isConnected は false を返す`() = runBlocking {
+        var fakeTime = 0L
+        val reader = FakeMemoryReader(openResult = true, currentEt = 500.0)
+        val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
+
+        fakeTime = 0L
+        source.isConnected()  // 初回: タイムスタンプ = 0
+        fakeTime = 3_000L
+        assertFalse(source.isConnected())
+    }
+
     // -------------------------------------------------------------------------
     // disconnect
     // -------------------------------------------------------------------------
@@ -123,6 +148,7 @@ private class FakeMemoryReader(
     initialOpen: Boolean = false,
     private val openResult: Boolean = true,
     private val returnNullBuffer: Boolean = false,
+    var currentEt: Double = 0.0,
 ) : MemoryReader {
 
     private var opened = initialOpen
@@ -135,7 +161,9 @@ private class FakeMemoryReader(
 
     override fun readBuffer(): ByteBuffer? =
         if (opened && !returnNullBuffer) {
-            ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN)
+            ByteBuffer.allocate(200_000).order(ByteOrder.LITTLE_ENDIAN).also { buf ->
+                buf.putDouble(1700, currentEt)
+            }
         } else {
             null
         }
