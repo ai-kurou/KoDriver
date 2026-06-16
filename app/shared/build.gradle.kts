@@ -51,6 +51,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.feature.lmuConnection)
+            implementation(projects.feature.serverConnection)
             implementation(projects.feature.lmuNarrator)
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
