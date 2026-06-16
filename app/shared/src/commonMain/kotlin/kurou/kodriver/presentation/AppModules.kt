@@ -9,10 +9,12 @@ import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.readoutListModule
+import kurou.kodriver.feature.serverconnection.serverConnectionModule
 import org.koin.core.module.Module
 
 val appModules: List<Module> = listOf(
     lmuConnectionModule,
+    serverConnectionModule,
     lmuNarratorModule,
     otherListModule,
     otherServerIpDetailModule,

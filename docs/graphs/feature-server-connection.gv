@@ -1,0 +1,4 @@
+digraph G {
+  ":app:shared" -> ":feature:server-connection"
+  ":feature:server-connection" -> ":core:domain"
+}
