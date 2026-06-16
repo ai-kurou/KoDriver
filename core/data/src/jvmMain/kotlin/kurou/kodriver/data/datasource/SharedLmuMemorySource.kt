@@ -20,6 +20,9 @@ internal class SharedLmuMemorySource(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
     ),
+    private val probeReaderFactory: () -> MemoryReader = {
+        SharedMemoryReader(segmentName = "LMU_Data", sizeBytes = 324_820)
+    },
     scope: CoroutineScope,
 ) {
     private val readerMutex = Mutex()
@@ -49,13 +52,13 @@ internal class SharedLmuMemorySource(
         .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     suspend fun isConnected(): Boolean = withContext(Dispatchers.IO) {
-        readerMutex.withLock {
-            // Always close first to release the handle. If LMU has exited and no other
-            // process holds the mapping, it gets destroyed so open() will correctly fail.
-            reader.close()
-            if (!reader.open()) return@withLock false
-            reader.readBuffer() != null
-        }
+        // Use a separate probe reader so bufferFlow's mapped ByteBuffer is never unmapped.
+        // Closing the shared reader while downstream code holds a reference to its native-
+        // backed ByteBuffer would cause an access violation on Windows.
+        val probe = probeReaderFactory()
+        val connected = probe.open() && probe.readBuffer() != null
+        probe.close()
+        connected
     }
 
     suspend fun disconnect() = withContext(Dispatchers.IO) {
