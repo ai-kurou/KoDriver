@@ -10,17 +10,24 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import org.koin.core.Koin
 
 fun main() {
-    KoDriverServer(ObserveRaceFlagsUseCase(EmptyFlagRepository)).start(wait = true)
+    KoDriverServer(
+        observeRaceFlags = ObserveRaceFlagsUseCase(EmptyFlagRepository),
+        observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+    ).start(wait = true)
 }
 
 class KoDriverServer(
     observeRaceFlags: ObserveRaceFlagsUseCase,
+    observeProximity: ObserveProximityUseCase,
     port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
 ) {
@@ -29,7 +36,7 @@ class KoDriverServer(
         port = port,
         host = host,
         module = {
-            module(observeRaceFlags)
+            module(observeRaceFlags, observeProximity)
         },
     )
 
@@ -48,20 +55,30 @@ class KoDriverServer(
 }
 
 fun createKoDriverServer(koin: Koin): KoDriverServer {
-    val repository = koin.get<FlagRepository>()
-    return KoDriverServer(ObserveRaceFlagsUseCase(repository))
+    return KoDriverServer(
+        observeRaceFlags = ObserveRaceFlagsUseCase(koin.get<FlagRepository>()),
+        observeProximity = ObserveProximityUseCase(koin.get<ProximityRepository>()),
+    )
 }
 
-fun Application.module(observeRaceFlags: ObserveRaceFlagsUseCase) {
+fun Application.module(
+    observeRaceFlags: ObserveRaceFlagsUseCase,
+    observeProximity: ObserveProximityUseCase,
+) {
     install(WebSockets)
     routing {
         get("/") {
             call.respondText("Hello, Ktor!")
         }
         flagWebSocket(observeRaceFlags)
+        proximityWebSocket(observeProximity)
     }
 }
 
 private object EmptyFlagRepository : FlagRepository {
     override fun flagStream(): Flow<RaceFlagsData> = emptyFlow()
+}
+
+private object EmptyProximityRepository : ProximityRepository {
+    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
 }

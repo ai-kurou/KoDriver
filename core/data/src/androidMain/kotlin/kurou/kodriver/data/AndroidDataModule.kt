@@ -31,7 +31,7 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuRepository> { EmptyLmuRepository() }
     single<FlagRepository> { WebSocketFlagRepository(get()) }
-    single<ProximityRepository> { EmptyProximityRepository() }
+    single<ProximityRepository> { WebSocketProximityRepository(get()) }
     single<VehicleDamageRepository> { EmptyVehicleDamageRepository() }
     single<ProximityThresholdsRepository> {
         createProximityThresholdsRepository(context.filesDir.absolutePath)

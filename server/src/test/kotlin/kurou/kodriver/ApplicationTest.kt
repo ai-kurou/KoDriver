@@ -10,15 +10,19 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,7 +32,10 @@ class ApplicationTest {
     @Test
     fun `ルートはサーバーの応答を返す`() = testApplication {
         application {
-            module(ObserveRaceFlagsUseCase(FakeFlagRepository()))
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+            )
         }
         val response = client.get("/")
         assertEquals(HttpStatusCode.OK, response.status)
@@ -39,7 +46,10 @@ class ApplicationTest {
     fun `フラッグ情報をJSONでWebSocketへ送信する`() = testApplication {
         val repository = FakeFlagRepository()
         application {
-            module(ObserveRaceFlagsUseCase(repository))
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(repository),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+            )
         }
 
         client.config {
@@ -73,6 +83,39 @@ class ApplicationTest {
             )
         }
     }
+
+    @Test
+    fun `近接情報をJSONでWebSocketへ送信する`() = testApplication {
+        val repository = FakeProximityRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(repository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/proximity") {
+            repository.emit(
+                ProximityData(
+                    sideBySideLeftVehicleIds = setOf(3),
+                    sideBySideRightVehicleIds = emptySet(),
+                    lateralDistanceLeftMeters = 1.5,
+                    lateralDistanceRightMeters = Double.MAX_VALUE,
+                ),
+            )
+
+            val message = withTimeout(1_000) {
+                (incoming.receive() as Frame.Text).readText()
+            }
+            assertEquals(
+                """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
+                    """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}""",
+                message,
+            )
+        }
+    }
 }
 
 private class FakeFlagRepository : FlagRepository {
@@ -83,4 +126,18 @@ private class FakeFlagRepository : FlagRepository {
     fun emit(data: RaceFlagsData) {
         channel.trySend(data).getOrThrow()
     }
+}
+
+private class FakeProximityRepository : ProximityRepository {
+    private val channel = Channel<ProximityData>(capacity = Channel.UNLIMITED)
+
+    override fun proximityStream(): Flow<ProximityData> = channel.receiveAsFlow()
+
+    fun emit(data: ProximityData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private object EmptyProximityRepository : ProximityRepository {
+    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
 }
