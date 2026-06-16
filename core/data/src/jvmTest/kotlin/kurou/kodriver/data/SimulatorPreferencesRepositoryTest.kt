@@ -24,8 +24,8 @@ class SimulatorPreferencesRepositoryTest {
     @Test
     fun `simulator_preferences_pbに書き込まれる`() = testScope.runTest {
         val repository = createSimulatorPreferencesRepository(tempDir.absolutePath)
-        repository.saveSelectedSimulator("lmu")
+        repository.saveSelectedSimulator("lmu_windows")
 
-        assertEquals("lmu", repository.selectedSimulator().first())
+        assertEquals("lmu_windows", repository.selectedSimulator().first())
     }
 }

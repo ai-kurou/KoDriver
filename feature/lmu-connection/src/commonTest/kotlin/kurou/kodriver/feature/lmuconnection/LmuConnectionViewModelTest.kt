@@ -42,7 +42,7 @@ class LmuConnectionViewModelTest {
     @Test
     fun `LMU選択時に接続確認結果を反映する`() = runTest {
         val connectionRepository = FakeConnectionRepository(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -85,7 +85,7 @@ class LmuConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
         assertFalse(viewModel.uiState.value.isConnectionChecked)
 
-        simulatorRepository.saveSelectedSimulator("lmu")
+        simulatorRepository.saveSelectedSimulator("lmu_windows")
         dispatcher.scheduler.runCurrent()
 
         assertTrue(viewModel.uiState.value.isConnected)
@@ -96,7 +96,7 @@ class LmuConnectionViewModelTest {
     @Test
     fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() = runTest {
         val connectionRepository = FakeConnectionRepository(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
@@ -113,7 +113,7 @@ class LmuConnectionViewModelTest {
     @Test
     fun `LMU選択時に一定間隔で接続状態を更新する`() = runTest {
         val connectionRepository = FakeConnectionRepository(isConnected = false)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
@@ -130,7 +130,7 @@ class LmuConnectionViewModelTest {
     @Test
     fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
         val connectionRepository = FakeConnectionRepository(isConnected = false, failureCount = 1)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()

@@ -58,6 +58,6 @@ class LmuConnectionViewModel(
 
     private companion object {
         const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-        const val LMU_SIMULATOR_KEY = "lmu"
+        const val LMU_SIMULATOR_KEY = "lmu_windows"
     }
 }

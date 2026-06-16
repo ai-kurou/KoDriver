@@ -81,7 +81,7 @@ class LmuNarratorViewModelTest {
         vehicleDamageEnabledOverrides: Map<String, Boolean> = emptyMap(),
         orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
-        simulator: String? = "lmu",
+        simulator: String? = "lmu_windows",
     ): LmuNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
         return LmuNarratorViewModel(

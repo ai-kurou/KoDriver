@@ -25,7 +25,7 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu"),
+                                simulators = listOf("lmu_windows"),
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
@@ -47,8 +47,8 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu"),
-                                selectedSimulator = "lmu",
+                                simulators = listOf("lmu_windows"),
+                                selectedSimulator = "lmu_windows",
                                 items = listOf("vehicle_approach", "flag", "vehicle_damage"),
                                 readoutEnabledStates = mapOf(
                                     "vehicle_approach" to true,
@@ -76,8 +76,8 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu"),
-                                selectedSimulator = "lmu",
+                                simulators = listOf("lmu_windows"),
+                                selectedSimulator = "lmu_windows",
                                 items = listOf("vehicle_approach", "flag", "vehicle_damage"),
                                 readoutEnabledStates = mapOf(
                                     "vehicle_approach" to true,

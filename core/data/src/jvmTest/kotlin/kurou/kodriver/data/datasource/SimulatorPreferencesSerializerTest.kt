@@ -16,7 +16,7 @@ class SimulatorPreferencesSerializerTest {
 
     @Test
     fun `正常なバイト列をデシリアライズできる`() = runTest {
-        val original = SimulatorPreferences(selectedSimulator = "lmu")
+        val original = SimulatorPreferences(selectedSimulator = "lmu_windows")
         val bytes = ProtoBuf.encodeToByteArray(SimulatorPreferences.serializer(), original)
 
         val result = SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))

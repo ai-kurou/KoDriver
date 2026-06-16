@@ -34,8 +34,8 @@ class SimulatorPreferencesRepositoryImplTest {
     fun `初期値はnull・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertNull(repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator("lmu")
-        assertEquals("lmu", repository.selectedSimulator().first())
+        repository.saveSelectedSimulator("lmu_windows")
+        assertEquals("lmu_windows", repository.selectedSimulator().first())
 
         repository.saveSelectedSimulator("rFactor 2")
         assertEquals("rFactor 2", repository.selectedSimulator().first())
