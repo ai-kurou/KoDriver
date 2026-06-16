@@ -20,10 +20,13 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,6 +38,7 @@ class ApplicationTest {
             module(
                 observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
                 observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
             )
         }
         val response = client.get("/")
@@ -49,6 +53,7 @@ class ApplicationTest {
             module(
                 observeRaceFlags = ObserveRaceFlagsUseCase(repository),
                 observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
             )
         }
 
@@ -91,6 +96,7 @@ class ApplicationTest {
             module(
                 observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
                 observeProximity = ObserveProximityUseCase(repository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
             )
         }
 
@@ -112,6 +118,38 @@ class ApplicationTest {
             assertEquals(
                 """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
                     """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}""",
+                message,
+            )
+        }
+    }
+
+    @Test
+    fun `車両故障情報をJSONでWebSocketへ送信する`() = testApplication {
+        val repository = FakeVehicleDamageRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(repository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/damage") {
+            repository.emit(
+                VehicleDamageData(
+                    overheating = true,
+                    partDetached = false,
+                    lastImpactMagnitude = 0.5,
+                ),
+            )
+
+            val message = withTimeout(1_000) {
+                (incoming.receive() as Frame.Text).readText()
+            }
+            assertEquals(
+                """{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.5}""",
                 message,
             )
         }
@@ -140,4 +178,18 @@ private class FakeProximityRepository : ProximityRepository {
 
 private object EmptyProximityRepository : ProximityRepository {
     override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+}
+
+private object EmptyVehicleDamageRepository : VehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+}
+
+private class FakeVehicleDamageRepository : VehicleDamageRepository {
+    private val channel = Channel<VehicleDamageData>(capacity = Channel.UNLIMITED)
+
+    override fun vehicleDamageStream(): Flow<VehicleDamageData> = channel.receiveAsFlow()
+
+    fun emit(data: VehicleDamageData) {
+        channel.trySend(data).getOrThrow()
+    }
 }
