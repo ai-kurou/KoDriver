@@ -4,10 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -94,7 +95,7 @@ internal fun LmuReadoutVehicleApproachDetailPaneContent(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         DetailPaneDescription(text = stringResource(Res.string.vehicle_approach_description))
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
