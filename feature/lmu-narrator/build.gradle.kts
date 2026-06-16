@@ -49,9 +49,11 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.sentry)
         }
         jvmMain.dependencies {
             implementation(libs.compose.uiTooling)
+            implementation(libs.sentry)
         }
         commonMain.dependencies {
             implementation(projects.core.domain)

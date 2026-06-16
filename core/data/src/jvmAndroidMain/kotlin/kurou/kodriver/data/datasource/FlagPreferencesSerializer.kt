@@ -2,6 +2,7 @@ package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
+import io.sentry.Sentry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -17,6 +18,7 @@ internal object FlagPreferencesSerializer : Serializer<FlagPreferences> {
         try {
             ProtoBuf.decodeFromByteArray(FlagPreferences.serializer(), input.readBytes())
         } catch (e: SerializationException) {
+            Sentry.captureException(e)
             throw CorruptionException("Cannot read FlagPreferences.", e)
         }
 

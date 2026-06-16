@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmunarrator
 
+import io.sentry.Sentry
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayInputStream
 import javax.sound.sampled.AudioSystem
@@ -30,7 +31,8 @@ class JvmSoundPlayer : SoundPlayer {
             currentClip = clip
             clip.start()
             cont.invokeOnCancellation { clip.stop() }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Sentry.captureException(e)
             cont.resume(Unit)
         }
     }

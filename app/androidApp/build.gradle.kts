@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.koin.core)
+    implementation(libs.sentry.android)
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
@@ -32,6 +33,9 @@ android {
     namespace = "kurou.kodriver"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         applicationId = "kurou.kodriver"
         minSdk = libs.versions.android.minSdk.get().toInt()

@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmunarrator
 
 import android.content.Context
 import android.media.MediaPlayer
+import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -38,7 +39,8 @@ class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
                         player.release()
                         temp.delete()
                     }
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    Sentry.captureException(e)
                     temp.delete()
                     cont.resume(Unit)
                 }
