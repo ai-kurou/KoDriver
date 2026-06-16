@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ProximityData(
     val sideBySideLeftVehicleIds: Set<Int>,
     val sideBySideRightVehicleIds: Set<Int>,
