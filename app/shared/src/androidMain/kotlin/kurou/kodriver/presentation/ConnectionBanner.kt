@@ -20,5 +20,6 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
         isConnected = uiState.isConnected,
         isConnectionChecked = uiState.isConnectionChecked,
         message = if (uiState.isConnected) connectedMessage else disconnectedMessage,
+        iconType = ConnectionBannerIconType.NETWORK,
     )
 }

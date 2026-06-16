@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PowerOff
 import androidx.compose.material.icons.filled.SportsScore
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,7 +36,12 @@ fun ConnectionBanner(
     } else {
         MaterialTheme.colorScheme.onErrorContainer
     }
-    val icon = if (uiState.isConnected) Icons.Default.SportsScore else Icons.Default.PowerOff
+    val icon = when (uiState.iconType) {
+        ConnectionBannerIconType.NETWORK ->
+            if (uiState.isConnected) Icons.Default.Wifi else Icons.Default.WifiOff
+        ConnectionBannerIconType.SIMULATOR ->
+            if (uiState.isConnected) Icons.Default.SportsScore else Icons.Default.PowerOff
+    }
 
     Row(
         modifier = modifier
