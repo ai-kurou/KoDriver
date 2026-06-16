@@ -108,9 +108,15 @@ class SharedLmuMemorySourceTest {
         val reader = FakeMemoryReader(openResult = true, currentEt = 1.0)
         val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
 
-        fakeTime = 0L;     reader.currentEt = 1.0; assertTrue(source.isConnected())
-        fakeTime = 1_000L; reader.currentEt = 2.0; assertTrue(source.isConnected())
-        fakeTime = 2_000L; reader.currentEt = 3.0; assertTrue(source.isConnected())
+        fakeTime = 0L
+        reader.currentEt = 1.0
+        assertTrue(source.isConnected())
+        fakeTime = 1_000L
+        reader.currentEt = 2.0
+        assertTrue(source.isConnected())
+        fakeTime = 2_000L
+        reader.currentEt = 3.0
+        assertTrue(source.isConnected())
     }
 
     @Test
@@ -120,7 +126,7 @@ class SharedLmuMemorySourceTest {
         val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
 
         fakeTime = 0L
-        source.isConnected()  // 初回: タイムスタンプ = 0
+        source.isConnected() // 初回: タイムスタンプ = 0
         fakeTime = 3_000L
         assertFalse(source.isConnected())
     }
