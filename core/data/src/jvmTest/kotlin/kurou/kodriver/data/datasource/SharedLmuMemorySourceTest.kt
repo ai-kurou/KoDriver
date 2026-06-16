@@ -17,14 +17,12 @@ class SharedLmuMemorySourceTest {
 
     private fun makeSource(
         reader: FakeMemoryReader,
-        probeReader: FakeMemoryReader = reader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
     ) = SharedLmuMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
-        probeReaderFactory = { probeReader },
         scope = CoroutineScope(SupervisorJob()),
     )
 
@@ -73,34 +71,31 @@ class SharedLmuMemorySourceTest {
 
     @Test
     fun `open に成功しバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val probe = FakeMemoryReader(openResult = true)
-        val source = makeSource(reader = FakeMemoryReader(), probeReader = probe)
+        val source = makeSource(reader = FakeMemoryReader(openResult = true))
 
         assertTrue(source.isConnected())
     }
 
     @Test
     fun `open に失敗するとき isConnected は false を返す`() = runBlocking {
-        val probe = FakeMemoryReader(openResult = false)
-        val source = makeSource(reader = FakeMemoryReader(), probeReader = probe)
+        val source = makeSource(reader = FakeMemoryReader(openResult = false))
 
         assertFalse(source.isConnected())
     }
 
     @Test
-    fun `isConnected はプローブリーダーを open 後に close する`() = runBlocking {
-        val probe = FakeMemoryReader(openResult = true)
-        val source = makeSource(reader = FakeMemoryReader(), probeReader = probe)
+    fun `isConnected は reader を close してから open する`() = runBlocking {
+        val reader = FakeMemoryReader(openResult = true)
+        val source = makeSource(reader = reader)
 
         source.isConnected()
 
-        assertTrue(probe.closeCalled)
+        assertTrue(reader.closeCalled)
     }
 
     @Test
     fun `バッファを読み取れないとき isConnected は false を返す`() = runBlocking {
-        val probe = FakeMemoryReader(openResult = true, returnNullBuffer = true)
-        val source = makeSource(reader = FakeMemoryReader(), probeReader = probe)
+        val source = makeSource(reader = FakeMemoryReader(openResult = true, returnNullBuffer = true))
 
         assertFalse(source.isConnected())
     }

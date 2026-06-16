@@ -18,22 +18,19 @@ class LmuRepositoryImplTest {
 
     private fun makeSource(
         reader: FakeMemoryReader,
-        probeReader: FakeMemoryReader = reader,
         pollingIntervalMs: Long = 16L,
         reconnectIntervalMs: Long = 1_000L,
     ) = SharedLmuMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
-        probeReaderFactory = { probeReader },
         scope = CoroutineScope(SupervisorJob()),
     )
 
     @Test
     fun `reader が open 済みかつデータを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true)
-        val probe = FakeMemoryReader(openResults = listOf(true))
-        val repo = LmuRepositoryImpl(source = makeSource(fake, probeReader = probe))
+        val fake = FakeMemoryReader(initialOpen = true, openResults = listOf(true))
+        val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertTrue(repo.isConnected())
     }
@@ -41,8 +38,7 @@ class LmuRepositoryImplTest {
     @Test
     fun `reader が未 open かつ open 後にデータを読み取れるとき isConnected は true を返す`() = runBlocking {
         val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(true))
-        val probe = FakeMemoryReader(openResults = listOf(true))
-        val repo = LmuRepositoryImpl(source = makeSource(fake, probeReader = probe))
+        val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertTrue(repo.isConnected())
     }
@@ -50,17 +46,15 @@ class LmuRepositoryImplTest {
     @Test
     fun `reader が未 open かつ open 失敗のとき isConnected は false を返す`() = runBlocking {
         val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(false))
-        val probe = FakeMemoryReader(openResults = listOf(false))
-        val repo = LmuRepositoryImpl(source = makeSource(fake, probeReader = probe))
+        val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertFalse(repo.isConnected())
     }
 
     @Test
     fun `reader が open 済みでもデータを読み取れないとき isConnected は false を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true, returnNullBuffer = true)
-        val probe = FakeMemoryReader(openResults = listOf(true), returnNullBuffer = true)
-        val repo = LmuRepositoryImpl(source = makeSource(fake, probeReader = probe))
+        val fake = FakeMemoryReader(initialOpen = true, openResults = listOf(true), returnNullBuffer = true)
+        val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertFalse(repo.isConnected())
     }

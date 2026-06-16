@@ -20,9 +20,6 @@ internal class SharedLmuMemorySource(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
     ),
-    private val probeReaderFactory: () -> MemoryReader = {
-        SharedMemoryReader(segmentName = "LMU_Data", sizeBytes = 324_820)
-    },
     scope: CoroutineScope,
 ) {
     private val readerMutex = Mutex()
@@ -34,7 +31,16 @@ internal class SharedLmuMemorySource(
                     if (!reader.isOpen() && !reader.open()) {
                         null
                     } else {
-                        reader.readBuffer()
+                        // Copy to a heap buffer so downstream never holds a native-backed
+                        // reference. This lets isConnected() safely unmap/remap the reader
+                        // without risking an access violation on Windows.
+                        reader.readBuffer()?.let { native ->
+                            val copy = ByteBuffer.allocate(native.limit()).order(native.order())
+                            native.rewind()
+                            copy.put(native)
+                            copy.rewind()
+                            copy
+                        }
                     }
                 }
                 if (buffer == null) {
@@ -52,13 +58,15 @@ internal class SharedLmuMemorySource(
         .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     suspend fun isConnected(): Boolean = withContext(Dispatchers.IO) {
-        // Use a separate probe reader so bufferFlow's mapped ByteBuffer is never unmapped.
-        // Closing the shared reader while downstream code holds a reference to its native-
-        // backed ByteBuffer would cause an access violation on Windows.
-        val probe = probeReaderFactory()
-        val connected = probe.open() && probe.readBuffer() != null
-        probe.close()
-        connected
+        readerMutex.withLock {
+            // Releasing our mapping before probing is essential: if LMU has exited,
+            // our MapViewOfFile is the last reference keeping the section alive.
+            // Closing first drops that reference, so OpenFileMappingA will fail when
+            // LMU is not running. Downstream callers are safe because bufferFlow emits
+            // heap-copied buffers and never exposes the native-backed ByteBuffer.
+            reader.close()
+            reader.open() && reader.readBuffer() != null
+        }
     }
 
     suspend fun disconnect() = withContext(Dispatchers.IO) {
