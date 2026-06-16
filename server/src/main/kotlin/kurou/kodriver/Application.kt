@@ -12,22 +12,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.Koin
 
 fun main() {
     KoDriverServer(
         observeRaceFlags = ObserveRaceFlagsUseCase(EmptyFlagRepository),
         observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+        observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
     ).start(wait = true)
 }
 
 class KoDriverServer(
     observeRaceFlags: ObserveRaceFlagsUseCase,
     observeProximity: ObserveProximityUseCase,
+    observeVehicleDamage: ObserveVehicleDamageUseCase,
     port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
 ) {
@@ -36,7 +41,7 @@ class KoDriverServer(
         port = port,
         host = host,
         module = {
-            module(observeRaceFlags, observeProximity)
+            module(observeRaceFlags, observeProximity, observeVehicleDamage)
         },
     )
 
@@ -58,12 +63,14 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
     return KoDriverServer(
         observeRaceFlags = ObserveRaceFlagsUseCase(koin.get<FlagRepository>()),
         observeProximity = ObserveProximityUseCase(koin.get<ProximityRepository>()),
+        observeVehicleDamage = ObserveVehicleDamageUseCase(koin.get<VehicleDamageRepository>()),
     )
 }
 
 fun Application.module(
     observeRaceFlags: ObserveRaceFlagsUseCase,
     observeProximity: ObserveProximityUseCase,
+    observeVehicleDamage: ObserveVehicleDamageUseCase,
 ) {
     install(WebSockets)
     routing {
@@ -72,6 +79,7 @@ fun Application.module(
         }
         flagWebSocket(observeRaceFlags)
         proximityWebSocket(observeProximity)
+        damageWebSocket(observeVehicleDamage)
     }
 }
 
@@ -81,4 +89,8 @@ private object EmptyFlagRepository : FlagRepository {
 
 private object EmptyProximityRepository : ProximityRepository {
     override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+}
+
+private object EmptyVehicleDamageRepository : VehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
 }
