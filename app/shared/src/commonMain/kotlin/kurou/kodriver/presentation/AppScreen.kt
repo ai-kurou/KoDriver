@@ -1,5 +1,9 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -240,8 +244,12 @@ internal fun AppScreenContent(
                             }
                         },
                     )
-                Box(modifier = contentModifier) {
-                    when (currentDestination) {
+                AnimatedContent(
+                    targetState = currentDestination,
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    modifier = contentModifier,
+                ) { destination ->
+                    when (destination) {
                         AppDestination.Readout -> readoutContent()
                         AppDestination.More -> otherContent()
                     }
