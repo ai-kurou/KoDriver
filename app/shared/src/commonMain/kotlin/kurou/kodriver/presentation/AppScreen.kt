@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -244,14 +245,18 @@ internal fun AppScreenContent(
                             }
                         },
                     )
-                AnimatedContent(
-                    targetState = currentDestination,
-                    transitionSpec = { fadeIn() togetherWith fadeOut() },
-                    modifier = contentModifier,
-                ) { destination ->
-                    when (destination) {
-                        AppDestination.Readout -> readoutContent()
-                        AppDestination.More -> otherContent()
+                Column(modifier = contentModifier) {
+                    val bannerUiState = rememberConnectionBannerUiState()
+                    ConnectionBanner(uiState = bannerUiState)
+                    AnimatedContent(
+                        targetState = currentDestination,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        modifier = Modifier.weight(1f),
+                    ) { destination ->
+                        when (destination) {
+                            AppDestination.Readout -> readoutContent()
+                            AppDestination.More -> otherContent()
+                        }
                     }
                 }
             }
