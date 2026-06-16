@@ -1,7 +1,10 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -193,64 +196,74 @@ internal fun ReadoutListPane(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        PriorityHintRow()
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize(),
+        AnimatedVisibility(
+            visible = uiState.selectedSimulator != null,
+            enter = slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = tween(durationMillis = 400),
+            ) + fadeIn(animationSpec = tween(durationMillis = 400)),
         ) {
-            itemsIndexed(uiState.items, key = { _, it -> it }) { index, item ->
-                ReorderableItem(reorderableState, key = item) {
-                    val isSelected = ReadoutListItemType.fromId(item) == uiState.selectedItem
-                    val cardContainerColor by animateColorAsState(
-                        targetValue = if (isSelected) {
-                            MaterialTheme.colorScheme.secondaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.surfaceContainerLow
-                        },
-                        animationSpec = tween(durationMillis = 500),
-                        label = "cardContainerColor",
-                    )
-                    ElevatedCard(
-                        onClick = { onItemClick(item) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
-                            .testTag("readout_item_$index"),
-                        colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
-                    ) {
-                        ListItem(
-                            headlineContent = { Text(itemDisplayName(item)) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            leadingContent = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.DragIndicator,
-                                        contentDescription = stringResource(Res.string.drag_handle),
-                                        modifier = Modifier.draggableHandle(),
-                                    )
-                                    Text(
-                                        text = "${index + 1}",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.widthIn(min = 20.dp),
-                                    )
-                                    Icon(
-                                        imageVector = itemIcon(item),
-                                        contentDescription = null,
-                                    )
-                                }
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = uiState.readoutEnabledStates[item] != false,
-                                    onCheckedChange = { onReadoutEnabledChanged(item, it) },
+            Column {
+                Spacer(modifier = Modifier.height(16.dp))
+                PriorityHintRow()
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    itemsIndexed(uiState.items, key = { _, it -> it }) { index, item ->
+                        ReorderableItem(reorderableState, key = item) {
+                            val isSelected = ReadoutListItemType.fromId(item) == uiState.selectedItem
+                            val cardContainerColor by animateColorAsState(
+                                targetValue = if (isSelected) {
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerLow
+                                },
+                                animationSpec = tween(durationMillis = 500),
+                                label = "cardContainerColor",
+                            )
+                            ElevatedCard(
+                                onClick = { onItemClick(item) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .testTag("readout_item_$index"),
+                                colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
+                            ) {
+                                ListItem(
+                                    headlineContent = { Text(itemDisplayName(item)) },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                    leadingContent = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.DragIndicator,
+                                                contentDescription = stringResource(Res.string.drag_handle),
+                                                modifier = Modifier.draggableHandle(),
+                                            )
+                                            Text(
+                                                text = "${index + 1}",
+                                                style = MaterialTheme.typography.labelLarge,
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier.widthIn(min = 20.dp),
+                                            )
+                                            Icon(
+                                                imageVector = itemIcon(item),
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    },
+                                    trailingContent = {
+                                        Switch(
+                                            checked = uiState.readoutEnabledStates[item] != false,
+                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                                        )
+                                    },
                                 )
-                            },
-                        )
+                            }
+                        }
                     }
                 }
             }
