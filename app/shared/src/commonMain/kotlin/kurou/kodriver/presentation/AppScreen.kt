@@ -44,14 +44,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.lmu_connected
 import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.feature.lmuconnection.LmuConnectionViewModel
 import kurou.kodriver.feature.lmunarrator.LmuNarratorEffect
 import kurou.kodriver.feature.lmureadout.flagdetail.LmuReadoutFlagDetailPane
 import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuReadoutVehicleApproachDetailPane
@@ -63,7 +61,6 @@ import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 private enum class AppDestination(
     val icon: ImageVector,
@@ -113,15 +110,14 @@ fun AppScreen(
         )
     },
 ) {
-    val connectionViewModel: LmuConnectionViewModel = koinViewModel()
-    val connectionUiState by connectionViewModel.uiState.collectAsStateWithLifecycle()
+    val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val connectedMessage = stringResource(Res.string.lmu_connected)
     val disconnectedMessage = stringResource(Res.string.lmu_disconnected)
 
     ConnectionSnackbarEffect(
-        isConnectionChecked = connectionUiState.isConnectionChecked,
-        isConnected = connectionUiState.isConnected,
+        isConnectionChecked = bannerUiState.isConnectionChecked,
+        isConnected = bannerUiState.isConnected,
         snackbarHostState = snackbarHostState,
         connectedMessage = connectedMessage,
         disconnectedMessage = disconnectedMessage,
@@ -129,6 +125,7 @@ fun AppScreen(
 
     LmuNarratorEffect()
     AppScreenContent(
+        bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
         readoutContent = readoutContent,
         otherContent = otherContent,
@@ -161,6 +158,7 @@ internal fun ConnectionSnackbarEffect(
 @Composable
 internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
+    bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
@@ -246,7 +244,6 @@ internal fun AppScreenContent(
                         },
                     )
                 Column(modifier = contentModifier) {
-                    val bannerUiState = rememberConnectionBannerUiState()
                     ConnectionBanner(uiState = bannerUiState)
                     AnimatedContent(
                         targetState = currentDestination,
