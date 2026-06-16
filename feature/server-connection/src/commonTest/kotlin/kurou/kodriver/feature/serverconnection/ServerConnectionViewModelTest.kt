@@ -6,6 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -181,7 +182,7 @@ private class FakeServerIpRepository(
     private val flow = MutableStateFlow(initial)
 
     override fun serverIp(): Flow<String?> = flow
-    override suspend fun saveServerIp(ip: String) { flow.value = ip }
+    override suspend fun saveServerIp(ip: String) { flow.update { ip } }
 }
 
 private class FakeSimulatorPreferencesRepository(
@@ -190,5 +191,5 @@ private class FakeSimulatorPreferencesRepository(
     private val flow = MutableStateFlow(initial)
 
     override fun selectedSimulator(): Flow<String?> = flow
-    override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
+    override suspend fun saveSelectedSimulator(simulator: String) { flow.update { simulator } }
 }
