@@ -124,11 +124,6 @@ fun AppScreen(
 
     LmuNarratorEffect()
     AppScreenContent(
-        connectionStatus = when {
-            !connectionUiState.isConnectionChecked -> ConnectionStatus.Hidden
-            connectionUiState.isConnected -> ConnectionStatus.Connected
-            else -> ConnectionStatus.Waiting
-        },
         snackbarHostState = snackbarHostState,
         readoutContent = readoutContent,
         otherContent = otherContent,
@@ -143,12 +138,17 @@ internal fun ConnectionSnackbarEffect(
     connectedMessage: String,
     disconnectedMessage: String,
 ) {
+    val previousIsConnected = remember { mutableStateOf<Boolean?>(null) }
     LaunchedEffect(isConnectionChecked, isConnected) {
         if (isConnectionChecked) {
-            snackbarHostState.showSnackbar(
-                message = if (isConnected) connectedMessage else disconnectedMessage,
-                duration = SnackbarDuration.Short,
-            )
+            val prev = previousIsConnected.value
+            previousIsConnected.value = isConnected
+            if (prev != null && prev != isConnected) {
+                snackbarHostState.showSnackbar(
+                    message = if (isConnected) connectedMessage else disconnectedMessage,
+                    duration = SnackbarDuration.Short,
+                )
+            }
         }
     }
 }
@@ -156,7 +156,6 @@ internal fun ConnectionSnackbarEffect(
 @Composable
 internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
-    connectionStatus: ConnectionStatus = ConnectionStatus.Waiting,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
@@ -262,10 +261,6 @@ internal fun AppScreenContent(
                         },
                     ),
             )
-            ConnectionStatusIndicator(
-                status = connectionStatus,
-                modifier = Modifier.align(Alignment.TopCenter),
-            )
         }
     }
 }
@@ -273,5 +268,5 @@ internal fun AppScreenContent(
 @Preview(showBackground = true)
 @Composable
 private fun AppScreenContentPreview() {
-    AppScreenContent(connectionStatus = ConnectionStatus.Connected)
+    AppScreenContent()
 }
