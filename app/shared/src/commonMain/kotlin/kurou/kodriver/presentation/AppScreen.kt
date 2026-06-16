@@ -138,12 +138,17 @@ internal fun ConnectionSnackbarEffect(
     connectedMessage: String,
     disconnectedMessage: String,
 ) {
+    val previousIsConnected = remember { mutableStateOf<Boolean?>(null) }
     LaunchedEffect(isConnectionChecked, isConnected) {
         if (isConnectionChecked) {
-            snackbarHostState.showSnackbar(
-                message = if (isConnected) connectedMessage else disconnectedMessage,
-                duration = SnackbarDuration.Short,
-            )
+            val prev = previousIsConnected.value
+            previousIsConnected.value = isConnected
+            if (prev != null && prev != isConnected) {
+                snackbarHostState.showSnackbar(
+                    message = if (isConnected) connectedMessage else disconnectedMessage,
+                    duration = SnackbarDuration.Short,
+                )
+            }
         }
     }
 }
