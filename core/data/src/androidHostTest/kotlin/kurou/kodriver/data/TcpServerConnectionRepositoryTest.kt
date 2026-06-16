@@ -15,6 +15,7 @@ class TcpServerConnectionRepositoryTest {
     private lateinit var serverSocket: ServerSocket
 
     @Before
+    @SuppressWarnings("UNENCRYPTED_SERVER_SOCKET")
     fun setUp() {
         serverSocket = ServerSocket(0)
     }

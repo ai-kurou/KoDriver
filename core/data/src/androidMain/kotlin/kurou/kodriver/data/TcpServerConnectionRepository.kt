@@ -13,6 +13,8 @@ internal class TcpServerConnectionRepository(
     private val port: Int = DEFAULT_PORT,
     private val timeoutMs: Int = DEFAULT_TIMEOUT_MS,
 ) : ServerConnectionRepository {
+    // 疎通確認のみで通信データを持たないため非暗号化ソケットで問題ない
+    @SuppressWarnings("UNENCRYPTED_SOCKET", "SSRF")
     override suspend fun isConnected(ip: String): Boolean = withContext(Dispatchers.IO) {
         try {
             Socket().use { socket ->
