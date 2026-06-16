@@ -14,6 +14,7 @@ class KoDriverApplication : Application() {
         super.onCreate()
         SentryAndroid.init(this) { options ->
             options.dsn = SENTRY_DSN
+            options.isEnabled = !BuildConfig.DEBUG
         }
         startKoin {
             modules(listOf(androidDataModule(this@KoDriverApplication)) + appModules)
