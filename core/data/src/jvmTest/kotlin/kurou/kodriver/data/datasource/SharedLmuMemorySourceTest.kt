@@ -70,33 +70,34 @@ class SharedLmuMemorySourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `isOpen が true かつバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val reader = FakeMemoryReader(initialOpen = true)
+    fun `open に成功しバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
+        val reader = FakeMemoryReader(openResult = true)
         val source = makeSource(reader)
 
         assertTrue(source.isConnected())
     }
 
     @Test
-    fun `isOpen が false かつ open 後にバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val reader = FakeMemoryReader(initialOpen = false, openResult = true)
-        val source = makeSource(reader)
-
-        assertTrue(source.isConnected())
-    }
-
-    @Test
-    fun `isOpen が false かつ open 失敗のとき isConnected は false を返し close が呼ばれる`() = runBlocking {
-        val reader = FakeMemoryReader(initialOpen = false, openResult = false)
+    fun `open に失敗するとき isConnected は false を返す`() = runBlocking {
+        val reader = FakeMemoryReader(openResult = false)
         val source = makeSource(reader)
 
         assertFalse(source.isConnected())
+    }
+
+    @Test
+    fun `open 済みでも isConnected は必ず close してから再 open する`() = runBlocking {
+        val reader = FakeMemoryReader(initialOpen = true, openResult = true)
+        val source = makeSource(reader)
+
+        source.isConnected()
+
         assertTrue(reader.closeCalled)
     }
 
     @Test
-    fun `open 済みでもバッファを読み取れないとき isConnected は false を返す`() = runBlocking {
-        val reader = FakeMemoryReader(initialOpen = true, returnNullBuffer = true)
+    fun `バッファを読み取れないとき isConnected は false を返す`() = runBlocking {
+        val reader = FakeMemoryReader(openResult = true, returnNullBuffer = true)
         val source = makeSource(reader)
 
         assertFalse(source.isConnected())

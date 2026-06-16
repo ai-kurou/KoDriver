@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +34,7 @@ fun ConnectionBanner(
     } else {
         MaterialTheme.colorScheme.onErrorContainer
     }
-    val icon = if (uiState.isConnected) Icons.Default.CheckCircle else Icons.Default.WifiOff
+    val icon = if (uiState.isConnected) Icons.Default.Wifi else Icons.Default.WifiOff
 
     Row(
         modifier = modifier

@@ -50,10 +50,10 @@ internal class SharedLmuMemorySource(
 
     suspend fun isConnected(): Boolean = withContext(Dispatchers.IO) {
         readerMutex.withLock {
-            if (!reader.isOpen() && !reader.open()) {
-                reader.close()
-                return@withLock false
-            }
+            // Always close first to release the handle. If LMU has exited and no other
+            // process holds the mapping, it gets destroyed so open() will correctly fail.
+            reader.close()
+            if (!reader.open()) return@withLock false
             reader.readBuffer() != null
         }
     }
