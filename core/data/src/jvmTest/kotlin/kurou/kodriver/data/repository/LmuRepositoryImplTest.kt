@@ -24,12 +24,13 @@ class LmuRepositoryImplTest {
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
+        currentTimeMs = System::currentTimeMillis,
         scope = CoroutineScope(SupervisorJob()),
     )
 
     @Test
     fun `reader が open 済みかつデータを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true)
+        val fake = FakeMemoryReader(initialOpen = true, openResults = listOf(true))
         val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertTrue(repo.isConnected())
@@ -44,17 +45,16 @@ class LmuRepositoryImplTest {
     }
 
     @Test
-    fun `reader が未 open かつ open 失敗のとき isConnected は false を返し close が呼ばれる`() = runBlocking {
+    fun `reader が未 open かつ open 失敗のとき isConnected は false を返す`() = runBlocking {
         val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(false))
         val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertFalse(repo.isConnected())
-        assertTrue(fake.closeCalled)
     }
 
     @Test
     fun `reader が open 済みでもデータを読み取れないとき isConnected は false を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true, returnNullBuffer = true)
+        val fake = FakeMemoryReader(initialOpen = true, openResults = listOf(true), returnNullBuffer = true)
         val repo = LmuRepositoryImpl(source = makeSource(fake))
 
         assertFalse(repo.isConnected())

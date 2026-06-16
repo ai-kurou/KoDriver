@@ -13,6 +13,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.banner_simulator_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.feature.lmunarrator.fakeLmuNarratorModule
 import kurou.kodriver.feature.readoutlist.ReadoutContent
@@ -47,9 +48,15 @@ class AppScreenScreenshotTest {
     @Test
     fun `NavigationDrawer 読み上げタブ`() {
         composeRule.setContent {
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = twoPaneDirective)
                     },
@@ -65,9 +72,15 @@ class AppScreenScreenshotTest {
 
         composeRule.setContent {
             navMore = stringResource(Res.string.nav_more)
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = twoPaneDirective)
                     },
@@ -82,9 +95,15 @@ class AppScreenScreenshotTest {
     @Test
     fun `NavigationRail 読み上げタブ`() {
         composeRule.setContent {
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -100,9 +119,15 @@ class AppScreenScreenshotTest {
 
         composeRule.setContent {
             navMore = stringResource(Res.string.nav_more)
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -117,9 +142,15 @@ class AppScreenScreenshotTest {
     @Test
     fun `NavigationBar 読み上げタブ`() {
         composeRule.setContent {
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -135,9 +166,15 @@ class AppScreenScreenshotTest {
 
         composeRule.setContent {
             navMore = stringResource(Res.string.nav_more)
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
