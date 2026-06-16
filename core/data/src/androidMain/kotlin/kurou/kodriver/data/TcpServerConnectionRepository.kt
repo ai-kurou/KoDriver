@@ -1,5 +1,6 @@
 package kurou.kodriver.data
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.repository.ServerConnectionRepository
@@ -21,6 +22,8 @@ internal class TcpServerConnectionRepository(
                 socket.connect(InetSocketAddress(ip, port), timeoutMs)
                 true
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (_: Exception) {
             false
         }
