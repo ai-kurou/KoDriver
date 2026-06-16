@@ -19,7 +19,7 @@ class ReadoutPreferencesSerializerTest {
     fun `正常なバイト列をデシリアライズできる`() = runTest {
         val original = ReadoutPreferences(
             simulatorStates = mapOf(
-                "lmu" to SimulatorReadoutState(enabledStates = mapOf("vehicle_approach" to true)),
+                "lmu_windows" to SimulatorReadoutState(enabledStates = mapOf("vehicle_approach" to true)),
             ),
         )
         val bytes = ProtoBuf.encodeToByteArray(ReadoutPreferences.serializer(), original)
@@ -42,7 +42,7 @@ class ReadoutPreferencesSerializerTest {
     fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
         val original = ReadoutPreferences(
             simulatorStates = mapOf(
-                "lmu" to SimulatorReadoutState(
+                "lmu_windows" to SimulatorReadoutState(
                     enabledStates = mapOf("vehicle_approach" to true, "flag" to false, "vehicle_damage" to true),
                 ),
             ),

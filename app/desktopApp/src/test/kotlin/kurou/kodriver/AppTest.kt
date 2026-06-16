@@ -49,7 +49,7 @@ class AppTest {
         rule.onNodeWithTag("simulator_dropdown_trigger").performClick()
         rule.waitForIdle()
 
-        rule.onNodeWithTag("simulator_item_lmu").performClick()
+        rule.onNodeWithTag("simulator_item_lmu_windows").performClick()
         rule.waitForIdle()
 
         rule.waitUntil(timeoutMillis = 5_000L) {

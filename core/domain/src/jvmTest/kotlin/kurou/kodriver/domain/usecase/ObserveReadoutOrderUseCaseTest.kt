@@ -13,12 +13,12 @@ class ObserveReadoutOrderUseCaseTest {
         val repo = FakeReadoutPreferencesRepository()
         val useCase = ObserveReadoutOrderUseCase(repo)
 
-        assertTrue(useCase("lmu").first().isEmpty())
+        assertTrue(useCase("lmu_windows").first().isEmpty())
 
-        repo.saveReadoutOrder("lmu", listOf("vehicle_approach", "flag", "vehicle_damage"))
+        repo.saveReadoutOrder("lmu_windows", listOf("vehicle_approach", "flag", "vehicle_damage"))
         repo.saveReadoutOrder("rFactor 2", listOf("flag"))
 
-        assertEquals(listOf("vehicle_approach", "flag", "vehicle_damage"), useCase("lmu").first())
+        assertEquals(listOf("vehicle_approach", "flag", "vehicle_damage"), useCase("lmu_windows").first())
         assertEquals(listOf("flag"), useCase("rFactor 2").first())
     }
 }

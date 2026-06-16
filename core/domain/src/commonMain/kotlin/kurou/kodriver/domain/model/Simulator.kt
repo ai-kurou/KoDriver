@@ -4,7 +4,7 @@ enum class Simulator(
     val id: String,
     val requiresKoDriverServer: Boolean,
 ) {
-    LMU(id = "lmu", requiresKoDriverServer = true),
+    LMU(id = "lmu_windows", requiresKoDriverServer = true),
     ;
 
     companion object {

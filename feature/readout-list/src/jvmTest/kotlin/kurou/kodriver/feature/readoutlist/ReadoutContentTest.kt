@@ -46,8 +46,8 @@ class ReadoutContentTest {
             vehicleApproachText = stringResource(Res.string.item_vehicle_approach)
             ReadoutContent(
                 uiState = ReadoutListUiState(
-                    simulators = listOf("lmu"),
-                    selectedSimulator = "lmu",
+                    simulators = listOf("lmu_windows"),
+                    selectedSimulator = "lmu_windows",
                     items = listOf("vehicle_approach", "flag", "vehicle_damage"),
                     selectedItem = selectedItem,
                 ),

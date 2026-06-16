@@ -197,7 +197,7 @@ class LmuNarratorViewModel(
     }
 
     private companion object {
-        const val LMU_SIMULATOR_KEY = "lmu"
+        const val LMU_SIMULATOR_KEY = "lmu_windows"
     }
 
     /**

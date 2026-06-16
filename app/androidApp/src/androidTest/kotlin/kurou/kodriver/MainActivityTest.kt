@@ -20,7 +20,7 @@ class MainActivityTest {
         composeTestRule.waitForIdle()
 
         // Le Mans Ultimate を選択
-        composeTestRule.onNodeWithTag("simulator_item_lmu").performClick()
+        composeTestRule.onNodeWithTag("simulator_item_lmu_windows").performClick()
         composeTestRule.waitForIdle()
 
         // フラッグ（インデックス0）をタップ

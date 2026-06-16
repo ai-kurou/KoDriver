@@ -74,7 +74,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 private fun simulatorDisplayName(simulatorId: String): String = when (simulatorId) {
-    "lmu" -> stringResource(Res.string.simulator_name_lmu)
+    "lmu_windows" -> stringResource(Res.string.simulator_name_lmu)
     else -> simulatorId
 }
 
@@ -276,8 +276,8 @@ internal fun ReadoutListPane(
 private fun ReadoutListPanePreview() {
     ReadoutListPane(
         uiState = ReadoutListUiState(
-            simulators = listOf("lmu"),
-            selectedSimulator = "lmu",
+            simulators = listOf("lmu_windows"),
+            selectedSimulator = "lmu_windows",
             items = listOf("vehicle_approach", "flag", "vehicle_damage"),
         ),
         onSimulatorSelected = {},

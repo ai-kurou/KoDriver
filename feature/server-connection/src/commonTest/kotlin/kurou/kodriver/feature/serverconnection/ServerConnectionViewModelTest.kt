@@ -79,13 +79,13 @@ class ServerConnectionViewModelTest {
     fun `選択シミュレータがuiStateに反映される`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
         val connectionRepo = FakeServerConnectionRepository(connected = true)
-        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
         val viewModel = createViewModel(serverIpRepo, connectionRepo, simulatorRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
 
-        assertEquals("lmu", viewModel.uiState.first().selectedSimulator)
+        assertEquals("lmu_windows", viewModel.uiState.first().selectedSimulator)
         collectionJob.cancelAndJoin()
     }
 
@@ -145,7 +145,7 @@ class ServerConnectionViewModelTest {
     fun `LMU選択時はrequiresKoDriverServerがtrueになる`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
         val connectionRepo = FakeServerConnectionRepository(connected = true)
-        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu")
+        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
         val viewModel = createViewModel(serverIpRepo, connectionRepo, simulatorRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 

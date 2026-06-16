@@ -13,12 +13,12 @@ class ObserveReadoutEnabledStatesUseCaseTest {
         val repo = FakeReadoutPreferencesRepository()
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        assertTrue(useCase("lmu").first().isEmpty())
+        assertTrue(useCase("lmu_windows").first().isEmpty())
 
-        repo.saveReadoutEnabledState("lmu", "vehicle_approach", true)
+        repo.saveReadoutEnabledState("lmu_windows", "vehicle_approach", true)
         repo.saveReadoutEnabledState("rFactor 2", "vehicle_approach", false)
 
-        assertEquals(mapOf("vehicle_approach" to true), useCase("lmu").first())
+        assertEquals(mapOf("vehicle_approach" to true), useCase("lmu_windows").first())
         assertEquals(mapOf("vehicle_approach" to false), useCase("rFactor 2").first())
     }
 }

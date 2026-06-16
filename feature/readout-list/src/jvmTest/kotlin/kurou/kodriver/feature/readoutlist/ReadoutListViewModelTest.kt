@@ -52,16 +52,16 @@ class ReadoutListViewModelTest {
         assertNull(viewModel.uiState.first().selectedSimulator)
         assertEquals(emptyList(), viewModel.uiState.first().items)
 
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
 
         val state = viewModel.uiState.first()
-        assertEquals("lmu", state.selectedSimulator)
+        assertEquals("lmu_windows", state.selectedSimulator)
         assertEquals(listOf("flag", "vehicle_approach", "vehicle_damage"), state.items)
     }
 
     @Test
     fun `moveItemでアイテムの順序を変更できる`() = runTest {
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
         viewModel.moveItem(0, 1)
 
         assertEquals(listOf("vehicle_approach", "flag", "vehicle_damage"), viewModel.uiState.first().items)
@@ -71,12 +71,12 @@ class ReadoutListViewModelTest {
     fun `シミュレータ未選択時はmoveItemで順序を保存しない`() = runTest {
         viewModel.moveItem(0, 1)
 
-        assertEquals(emptyList(), readoutRepository.observeReadoutOrder("lmu").first())
+        assertEquals(emptyList(), readoutRepository.observeReadoutOrder("lmu_windows").first())
     }
 
     @Test
     fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() = runTest {
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
         viewModel.onReadoutEnabledChanged("vehicle_approach", false)
 
         assertEquals(false, viewModel.uiState.first().readoutEnabledStates["vehicle_approach"])
@@ -86,41 +86,41 @@ class ReadoutListViewModelTest {
     fun `シミュレータ未選択時はON_OFF状態を保存しない`() = runTest {
         viewModel.onReadoutEnabledChanged("vehicle_approach", false)
 
-        assertEquals(emptyMap(), readoutRepository.observeReadoutEnabledStates("lmu").first())
+        assertEquals(emptyMap(), readoutRepository.observeReadoutEnabledStates("lmu_windows").first())
     }
 
     @Test
     fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() = runTest {
-        readoutRepository.saveReadoutEnabledState("lmu", "flag", false)
+        readoutRepository.saveReadoutEnabledState("lmu_windows", "flag", false)
 
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
 
         assertEquals(false, viewModel.uiState.first().readoutEnabledStates["flag"])
     }
 
     @Test
     fun `シミュレータを選択するとRepositoryから永続化済みの順序が読み込まれる`() = runTest {
-        readoutRepository.saveReadoutOrder("lmu", listOf("flag", "vehicle_approach"))
+        readoutRepository.saveReadoutOrder("lmu_windows", listOf("flag", "vehicle_approach"))
 
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
 
         assertEquals(listOf("flag", "vehicle_approach", "vehicle_damage"), viewModel.uiState.first().items)
     }
 
     @Test
     fun `moveItemで変更した順序がRepositoryに保存される`() = runTest {
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
         viewModel.moveItem(0, 1)
 
         assertEquals(
             listOf("vehicle_approach", "flag", "vehicle_damage"),
-            readoutRepository.observeReadoutOrder("lmu").first(),
+            readoutRepository.observeReadoutOrder("lmu_windows").first(),
         )
     }
 
     @Test
     fun `連続moveItemではRepository更新より最後のmoveItem結果を優先して表示する`() = runTest {
-        viewModel.onSimulatorSelected("lmu")
+        viewModel.onSimulatorSelected("lmu_windows")
         viewModel.moveItem(0, 1) // [vehicle_approach, flag, vehicle_damage]
         viewModel.moveItem(0, 1) // [flag, vehicle_approach, vehicle_damage]（初期順序に戻る）
 

@@ -42,8 +42,8 @@ class AndroidSimulatorPreferencesRepositoryTest {
     fun `selectedSimulatorは初期状態でnullを返し保存後に選択したシミュレータを返す`() = runTest(testDispatcher) {
         assertNull(repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator("lmu")
+        repository.saveSelectedSimulator("lmu_windows")
 
-        assertEquals("lmu", repository.selectedSimulator().first())
+        assertEquals("lmu_windows", repository.selectedSimulator().first())
     }
 }
