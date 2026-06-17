@@ -60,7 +60,7 @@ kotlin {
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuReadoutFlagDetail)
-            implementation(projects.feature.lmuReadoutVehicleDamageDetail)
+            implementation(projects.feature.lmuWindowsReadoutVehicleDamageDetail)
             implementation(libs.koin.core)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

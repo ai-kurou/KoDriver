@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmureadout.vehicledamagedetail
+package kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail
 
 data class LmuWindowsReadoutVehicleDamageDetailUiState(
     val overheatEnabled: Boolean = true,

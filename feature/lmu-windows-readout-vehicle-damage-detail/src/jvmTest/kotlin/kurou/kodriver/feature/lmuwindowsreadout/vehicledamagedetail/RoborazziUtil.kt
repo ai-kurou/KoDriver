@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmureadout.vehicledamagedetail
+package kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import com.github.takahirom.roborazzi.RoborazziOptions

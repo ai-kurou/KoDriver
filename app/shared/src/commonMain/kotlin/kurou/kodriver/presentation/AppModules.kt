@@ -1,10 +1,10 @@
 package kurou.kodriver.presentation
 
 import kurou.kodriver.feature.lmureadout.flagdetail.lmuReadoutFlagDetailModule
-import kurou.kodriver.feature.lmureadout.vehicledamagedetail.lmuReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuReadoutVehicleApproachDetailModule
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
@@ -22,5 +22,5 @@ val appModules: List<Module> = listOf(
     readoutListModule,
     lmuReadoutVehicleApproachDetailModule,
     lmuReadoutFlagDetailModule,
-    lmuReadoutVehicleDamageDetailModule,
+    lmuWindowsReadoutVehicleDamageDetailModule,
 )

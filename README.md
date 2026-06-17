@@ -47,7 +47,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:server-connection` | KoDriver サーバーへの接続状態確認 |
 | `:feature:readout-list` | アナウンス設定 UI |
 | `:feature:lmu-windows-readout-vehicle-approach-detail` | 車両接近アナウンス詳細 UI |
-| `:feature:lmu-readout-vehicle-damage-detail` | 車両故障アナウンス詳細 UI |
+| `:feature:lmu-windows-readout-vehicle-damage-detail` | 車両故障アナウンス詳細 UI |
 | `:feature:lmu-readout-flag-detail` | フラグアナウンス詳細 UI |
 | `:feature:lmu-windows-narrator` | WAV 音声再生エンジン |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 |

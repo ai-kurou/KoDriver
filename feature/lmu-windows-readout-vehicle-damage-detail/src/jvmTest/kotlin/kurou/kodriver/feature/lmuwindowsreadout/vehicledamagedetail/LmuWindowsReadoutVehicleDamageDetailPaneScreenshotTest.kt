@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmureadout.vehicledamagedetail
+package kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize

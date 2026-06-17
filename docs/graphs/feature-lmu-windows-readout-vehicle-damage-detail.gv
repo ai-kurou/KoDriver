@@ -1,0 +1,5 @@
+digraph G {
+  ":app:shared" -> ":feature:lmu-windows-readout-vehicle-damage-detail"
+  ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:designsystem"
+}
