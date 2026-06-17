@@ -50,15 +50,15 @@ class AppTest {
         rule.waitUntil(timeoutMillis = 5_000L) {
             rule.onAllNodesWithTag("readout_item_0").fetchSemanticsNodes().isNotEmpty()
         }
-        // 読み上げ項目0（車両接近）をタップ
+        // 読み上げ項目0をタップ
         rule.onNodeWithTag("readout_item_0").performClick()
         rule.waitForIdle()
 
-        // 読み上げ項目1（車両故障）をタップ
+        // 読み上げ項目1をタップ
         rule.onNodeWithTag("readout_item_1").performClick()
         rule.waitForIdle()
 
-        // 読み上げ項目2（旗）をタップ
+        // 読み上げ項目2をタップ
         rule.onNodeWithTag("readout_item_2").performClick()
         rule.waitForIdle()
 
