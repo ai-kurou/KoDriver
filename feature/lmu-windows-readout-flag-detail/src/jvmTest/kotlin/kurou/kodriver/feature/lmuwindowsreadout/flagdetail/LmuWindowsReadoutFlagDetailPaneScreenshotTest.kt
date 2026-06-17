@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmureadout.flagdetail
+package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize

@@ -22,7 +22,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.lmureadout.flagdetail"
+        namespace = "kurou.kodriver.feature.lmuwindowsreadout.flagdetail"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -77,7 +77,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmureadout.flagdetail.generated.resources"
+    packageOfResClass = "kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources"
 }
 
 dependencies {
