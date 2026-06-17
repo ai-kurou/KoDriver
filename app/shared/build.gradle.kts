@@ -58,7 +58,7 @@ kotlin {
             implementation(projects.feature.otherServerIpDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.readoutList)
-            implementation(projects.feature.lmuReadoutVehicleApproachDetail)
+            implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuReadoutFlagDetail)
             implementation(projects.feature.lmuReadoutVehicleDamageDetail)
             implementation(libs.koin.core)

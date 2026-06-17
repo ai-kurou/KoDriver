@@ -22,7 +22,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.lmureadout.vehicleapproachdetail"
+        namespace = "kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
@@ -78,7 +78,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmureadout.vehicleapproachdetail.generated.resources"
+    packageOfResClass = "kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources"
 }
 
 dependencies {
