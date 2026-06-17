@@ -35,14 +35,6 @@ class AppTest {
     val rule = createComposeRule()
 
     @Test
-    fun `アプリ画面が起動する`() {
-        rule.setContent {
-            AppScreen(readoutContent = {})
-        }
-        rule.waitForIdle()
-    }
-
-    @Test
     fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動する`() {
         rule.setContent { AppScreen() }
 
