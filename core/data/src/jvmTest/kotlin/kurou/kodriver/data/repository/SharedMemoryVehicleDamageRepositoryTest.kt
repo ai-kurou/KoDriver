@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.data.datasource.MemoryReader
-import kurou.kodriver.data.datasource.SharedLmuMemorySource
+import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicInteger
@@ -25,7 +25,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
         reader: MemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
-    ) = SharedLmuMemorySource(
+    ) = SharedLmuWindowsMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,

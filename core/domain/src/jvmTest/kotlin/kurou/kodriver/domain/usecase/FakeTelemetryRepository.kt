@@ -5,24 +5,24 @@ import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.model.EngineData
 import kurou.kodriver.domain.model.FuelData
 import kurou.kodriver.domain.model.InputsData
-import kurou.kodriver.domain.model.LmuTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleData
-import kurou.kodriver.domain.repository.LmuRepository
+import kurou.kodriver.domain.repository.LmuWindowsRepository
 
-internal class FakeLmuRepository(
+internal class FakeLmuWindowsRepository(
     private val connected: Boolean = true,
-    private val stream: Flow<LmuTelemetryData> = flowOf(),
-) : LmuRepository {
+    private val stream: Flow<LmuWindowsTelemetryData> = flowOf(),
+) : LmuWindowsRepository {
     var disconnectCalled = false
 
-    override fun telemetryStream(): Flow<LmuTelemetryData> = stream
+    override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = stream
     override suspend fun isConnected(): Boolean = connected
     override suspend fun disconnect() { disconnectCalled = true }
 }
 
-internal fun fakeLmuTelemetryData(speedX: Double = 0.0) = LmuTelemetryData(
+internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) = LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = EngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = InputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),

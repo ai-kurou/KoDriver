@@ -50,10 +50,10 @@ import kodriver.app.shared.generated.resources.lmu_connected
 import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.feature.lmunarrator.LmuNarratorEffect
-import kurou.kodriver.feature.lmureadout.flagdetail.LmuReadoutFlagDetailPane
-import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuReadoutVehicleApproachDetailPane
-import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuReadoutVehicleDamageDetailPane
+import kurou.kodriver.feature.lmunarrator.LmuWindowsNarratorEffect
+import kurou.kodriver.feature.lmureadout.flagdetail.LmuWindowsReadoutFlagDetailPane
+import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
+import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailDialog
@@ -83,9 +83,9 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
-                    ReadoutListItemType.VehicleApproach -> LmuReadoutVehicleApproachDetailPane()
-                    ReadoutListItemType.Flag -> LmuReadoutFlagDetailPane()
-                    ReadoutListItemType.VehicleDamage -> LmuReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
+                    ReadoutListItemType.Flag -> LmuWindowsReadoutFlagDetailPane()
+                    ReadoutListItemType.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
                 }
             },
         )
@@ -123,7 +123,7 @@ fun AppScreen(
         disconnectedMessage = disconnectedMessage,
     )
 
-    LmuNarratorEffect()
+    LmuWindowsNarratorEffect()
     AppScreenContent(
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
