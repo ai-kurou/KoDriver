@@ -18,6 +18,7 @@ class AppScreenViewModel(
     val uiState: StateFlow<AppScreenUiState> = _uiState.asStateFlow()
 
     fun checkUpdate() {
+        if (currentVersion.isBlank()) return
         viewModelScope.launch {
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _uiState.update { it.copy(hasAppUpdate = hasUpdate) }

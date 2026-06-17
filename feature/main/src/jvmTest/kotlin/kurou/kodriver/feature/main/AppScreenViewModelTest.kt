@@ -69,6 +69,19 @@ class AppScreenViewModelTest {
     }
 
     @Test
+    fun `currentVersionが空文字の場合hasAppUpdateがfalseのまま`() = runTest {
+        val viewModel = AppScreenViewModel(
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository("v9.9.9")),
+            currentVersion = "",
+        )
+
+        viewModel.checkUpdate()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.first().hasAppUpdate)
+    }
+
+    @Test
     fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() = runTest {
         val viewModel = AppScreenViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(null)),
