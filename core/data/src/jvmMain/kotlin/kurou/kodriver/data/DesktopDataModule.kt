@@ -4,18 +4,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kurou.kodriver.data.datasource.SharedLmuMemorySource
-import kurou.kodriver.data.repository.LmuRepositoryImpl
+import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.data.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.data.repository.SharedMemoryFlagRepository
 import kurou.kodriver.data.repository.SharedMemoryProximityRepository
 import kurou.kodriver.data.repository.SharedMemoryVehicleDamageRepository
-import kurou.kodriver.domain.model.LmuTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
-import kurou.kodriver.domain.repository.LmuRepository
+import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -33,10 +33,10 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
 val desktopDataModule = module {
     single { CoroutineScope(SupervisorJob()) }
     single {
-        SharedLmuMemorySource(scope = get())
+        SharedLmuWindowsMemorySource(scope = get())
     }
-    single<LmuRepository> {
-        if (isWindows) LmuRepositoryImpl(source = get()) else NoOpLmuRepository()
+    single<LmuWindowsRepository> {
+        if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
     }
     single<ProximityRepository> {
         if (isWindows) {
@@ -75,8 +75,8 @@ val desktopDataModule = module {
     single<ServerConnectionRepository> { NoOpServerConnectionRepository() }
 }
 
-private class NoOpLmuRepository : LmuRepository {
-    override fun telemetryStream(): Flow<LmuTelemetryData> = emptyFlow()
+private class NoOpLmuWindowsRepository : LmuWindowsRepository {
+    override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
     override suspend fun isConnected(): Boolean = false
     override suspend fun disconnect() = Unit
 }

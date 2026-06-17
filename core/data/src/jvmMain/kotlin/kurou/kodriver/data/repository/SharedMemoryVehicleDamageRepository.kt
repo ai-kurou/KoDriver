@@ -2,13 +2,13 @@ package kurou.kodriver.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
-import kurou.kodriver.data.datasource.SharedLmuMemorySource
+import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import java.nio.ByteBuffer
 
 internal class SharedMemoryVehicleDamageRepository(
-    private val source: SharedLmuMemorySource,
+    private val source: SharedLmuWindowsMemorySource,
 ) : VehicleDamageRepository {
 
     override fun vehicleDamageStream(): Flow<VehicleDamageData> =

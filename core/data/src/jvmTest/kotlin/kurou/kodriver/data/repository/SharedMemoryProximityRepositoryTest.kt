@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.data.datasource.MemoryReader
-import kurou.kodriver.data.datasource.SharedLmuMemorySource
+import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -39,7 +39,7 @@ class SharedMemoryProximityRepositoryTest {
         reader: MemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
-    ) = SharedLmuMemorySource(
+    ) = SharedLmuWindowsMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,

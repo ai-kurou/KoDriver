@@ -2,7 +2,7 @@ package kurou.kodriver.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
-import kurou.kodriver.data.datasource.SharedLmuMemorySource
+import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -13,7 +13,7 @@ import kurou.kodriver.domain.repository.FlagRepository
 import java.nio.ByteBuffer
 
 internal class SharedMemoryFlagRepository(
-    private val source: SharedLmuMemorySource,
+    private val source: SharedLmuWindowsMemorySource,
 ) : FlagRepository {
 
     override fun flagStream(): Flow<RaceFlagsData> =
