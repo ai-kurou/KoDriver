@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.repository.AppReleaseRepository
+import kurou.kodriver.domain.repository.AppUpdateRepository
 
 class CheckAppUpdateAvailableUseCase(
-    private val repository: AppReleaseRepository,
+    private val repository: AppUpdateRepository,
 ) {
     suspend operator fun invoke(currentVersion: String): Boolean {
         val latest = repository.getLatestRelease() ?: return false

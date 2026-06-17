@@ -63,7 +63,6 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutinesTest)
-            implementation(libs.okhttp.mockwebserver)
         }
         named("androidHostTest") {
             dependencies {

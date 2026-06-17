@@ -1,3 +1,3 @@
 package kurou.kodriver.domain.model
 
-data class AppRelease(val tagName: String)
+data class AppUpdate(val tagName: String)

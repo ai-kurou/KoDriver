@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
-import kurou.kodriver.domain.model.AppRelease
+import kurou.kodriver.domain.model.AppUpdate
 
-interface AppReleaseRepository {
-    suspend fun getLatestRelease(): AppRelease?
+interface AppUpdateRepository {
+    suspend fun getLatestRelease(): AppUpdate?
 }
