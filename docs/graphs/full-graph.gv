@@ -6,6 +6,7 @@ digraph G {
   ":app:desktopApp" -> ":app:shared"
   ":app:desktopApp" -> ":core:data"
   ":app:desktopApp" -> ":server"
+  ":app:shared" -> ":core:domain"
   ":app:shared" -> ":feature:lmu-windows-connection"
   ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-windows-narrator"

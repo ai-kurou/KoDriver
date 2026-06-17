@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":core:domain"
   ":app:shared" -> ":feature:lmu-windows-connection"
   ":feature:lmu-windows-connection" -> ":core:domain"
 }

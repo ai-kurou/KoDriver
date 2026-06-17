@@ -1,6 +1,17 @@
 digraph G {
   rankdir=TB
   ":server" -> ":core:domain"
+  ":app:shared" -> ":core:domain"
+  ":app:shared" -> ":feature:lmu-windows-connection"
+  ":app:shared" -> ":feature:server-connection"
+  ":app:shared" -> ":feature:lmu-windows-narrator"
+  ":app:shared" -> ":feature:other-list"
+  ":app:shared" -> ":feature:other-server-ip-detail"
+  ":app:shared" -> ":feature:other-volume-detail"
+  ":app:shared" -> ":feature:readout-list"
+  ":app:shared" -> ":feature:lmu-windows-readout-vehicle-approach-detail"
+  ":app:shared" -> ":feature:lmu-windows-readout-flag-detail"
+  ":app:shared" -> ":feature:lmu-windows-readout-vehicle-damage-detail"
   ":core:data" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"

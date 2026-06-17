@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":core:domain"
   ":app:shared" -> ":feature:other-list"
   ":feature:other-list" -> ":core:domain"
 }

@@ -2,6 +2,7 @@ digraph G {
   rankdir=TB
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
+  ":app:shared" -> ":core:domain"
   ":app:shared" -> ":feature:lmu-windows-connection"
   ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-windows-narrator"
@@ -14,4 +15,14 @@ digraph G {
   ":app:shared" -> ":feature:lmu-windows-readout-flag-detail"
   ":app:shared" -> ":feature:lmu-windows-readout-vehicle-damage-detail"
   ":app:webApp" -> ":app:shared"
+  ":feature:lmu-windows-connection" -> ":core:domain"
+  ":feature:lmu-windows-narrator" -> ":core:domain"
+  ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
+  ":feature:other-list" -> ":core:domain"
+  ":feature:other-server-ip-detail" -> ":core:domain"
+  ":feature:other-volume-detail" -> ":core:domain"
+  ":feature:readout-list" -> ":core:domain"
+  ":feature:server-connection" -> ":core:domain"
 }
