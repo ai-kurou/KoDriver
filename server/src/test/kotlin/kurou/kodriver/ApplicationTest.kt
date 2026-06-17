@@ -27,8 +27,12 @@ import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class ApplicationTest {
 
@@ -60,22 +64,7 @@ class ApplicationTest {
         client.config {
             install(WebSockets)
         }.webSocket("/ws/flags") {
-            repository.emit(
-                RaceFlagsData(
-                    gamePhase = SessionPhase.GREEN_FLAG,
-                    yellowFlagState = SessionYellowFlagState.NONE,
-                    sectorFlags = listOf(
-                        SectorFlagState.CLEAR,
-                        SectorFlagState.YELLOW,
-                        SectorFlagState.CLEAR,
-                    ),
-                    startLight = 4,
-                    numRedLights = 2,
-                    playerFlag = PrimaryFlag.BLUE,
-                    playerUnderYellow = true,
-                    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
-                ),
-            )
+            repository.emit(greenFlagData)
 
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
@@ -86,6 +75,57 @@ class ApplicationTest {
                     """"playerCountLapFlag":"COUNT_LAP_AND_TIME"}""",
                 message,
             )
+        }
+    }
+
+    @Test
+    fun `フラッグ情報の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeFlagRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(repository),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/flags") {
+            repository.emit(greenFlagData)
+            repository.emit(greenFlagData)
+            repository.emit(yellowFlagData)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(greenFlagJson, first)
+            assertEquals(yellowFlagJson, second)
+        }
+    }
+
+    @Test
+    fun `フラッグ情報を複数の異なる値で連続して送信する`() = testApplication {
+        val repository = FakeFlagRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(repository),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/flags") {
+            repository.emit(greenFlagData)
+            repository.emit(yellowFlagData)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(greenFlagJson, first)
+            assertEquals(yellowFlagJson, second)
         }
     }
 
@@ -103,14 +143,7 @@ class ApplicationTest {
         client.config {
             install(WebSockets)
         }.webSocket("/ws/proximity") {
-            repository.emit(
-                ProximityData(
-                    sideBySideLeftVehicleIds = setOf(3),
-                    sideBySideRightVehicleIds = emptySet(),
-                    lateralDistanceLeftMeters = 1.5,
-                    lateralDistanceRightMeters = Double.MAX_VALUE,
-                ),
-            )
+            repository.emit(proximityDataLeft)
 
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
@@ -120,6 +153,57 @@ class ApplicationTest {
                     """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}""",
                 message,
             )
+        }
+    }
+
+    @Test
+    fun `近接情報の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeProximityRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(repository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/proximity") {
+            repository.emit(proximityDataLeft)
+            repository.emit(proximityDataLeft)
+            repository.emit(proximityDataRight)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(proximityLeftJson, first)
+            assertEquals(proximityRightJson, second)
+        }
+    }
+
+    @Test
+    fun `近接情報を複数の異なる値で連続して送信する`() = testApplication {
+        val repository = FakeProximityRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(repository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/proximity") {
+            repository.emit(proximityDataLeft)
+            repository.emit(proximityDataRight)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(proximityLeftJson, first)
+            assertEquals(proximityRightJson, second)
         }
     }
 
@@ -137,13 +221,7 @@ class ApplicationTest {
         client.config {
             install(WebSockets)
         }.webSocket("/ws/damage") {
-            repository.emit(
-                VehicleDamageData(
-                    overheating = true,
-                    partDetached = false,
-                    lastImpactMagnitude = 0.5,
-                ),
-            )
+            repository.emit(overheatingDamage)
 
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
@@ -154,7 +232,153 @@ class ApplicationTest {
             )
         }
     }
+
+    @Test
+    fun `車両故障情報の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeVehicleDamageRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(repository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/damage") {
+            repository.emit(overheatingDamage)
+            repository.emit(overheatingDamage)
+            repository.emit(partDetachedDamage)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(overheatingDamageJson, first)
+            assertEquals(partDetachedDamageJson, second)
+        }
+    }
+
+    @Test
+    fun `車両故障情報を複数の異なる値で連続して送信する`() = testApplication {
+        val repository = FakeVehicleDamageRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(repository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/damage") {
+            repository.emit(overheatingDamage)
+            repository.emit(partDetachedDamage)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(overheatingDamageJson, first)
+            assertEquals(partDetachedDamageJson, second)
+        }
+    }
+
+    @Test
+    fun `createKoDriverServerはKoinから依存を解決してKoDriverServerを生成する`() {
+        val koin = startKoin {
+            modules(
+                module {
+                    single<FlagRepository> { FakeFlagRepository() }
+                    single<ProximityRepository> { EmptyProximityRepository }
+                    single<VehicleDamageRepository> { EmptyVehicleDamageRepository }
+                },
+            )
+        }.koin
+        try {
+            val server = createKoDriverServer(koin)
+            assertNotNull(server)
+        } finally {
+            stopKoin()
+        }
+    }
 }
+
+// --- テストデータ ---
+
+private val greenFlagData = RaceFlagsData(
+    gamePhase = SessionPhase.GREEN_FLAG,
+    yellowFlagState = SessionYellowFlagState.NONE,
+    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
+    startLight = 4,
+    numRedLights = 2,
+    playerFlag = PrimaryFlag.BLUE,
+    playerUnderYellow = true,
+    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+)
+
+private val yellowFlagData = RaceFlagsData(
+    gamePhase = SessionPhase.FULL_COURSE_YELLOW,
+    yellowFlagState = SessionYellowFlagState.PENDING,
+    sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.YELLOW, SectorFlagState.YELLOW),
+    startLight = 0,
+    numRedLights = 0,
+    playerFlag = PrimaryFlag.UNKNOWN,
+    playerUnderYellow = true,
+    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
+)
+
+private const val greenFlagJson =
+    """{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE","sectorFlags":["CLEAR","YELLOW","CLEAR"],""" +
+        """"startLight":4,"numRedLights":2,"playerFlag":"BLUE","playerUnderYellow":true,""" +
+        """"playerCountLapFlag":"COUNT_LAP_AND_TIME"}"""
+
+private const val yellowFlagJson =
+    """{"gamePhase":"FULL_COURSE_YELLOW","yellowFlagState":"PENDING","sectorFlags":["YELLOW","YELLOW","YELLOW"],""" +
+        """"startLight":0,"numRedLights":0,"playerFlag":"UNKNOWN","playerUnderYellow":true,""" +
+        """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}"""
+
+private val proximityDataLeft = ProximityData(
+    sideBySideLeftVehicleIds = setOf(3),
+    sideBySideRightVehicleIds = emptySet(),
+    lateralDistanceLeftMeters = 1.5,
+    lateralDistanceRightMeters = Double.MAX_VALUE,
+)
+
+private val proximityDataRight = ProximityData(
+    sideBySideLeftVehicleIds = emptySet(),
+    sideBySideRightVehicleIds = setOf(5),
+    lateralDistanceLeftMeters = Double.MAX_VALUE,
+    lateralDistanceRightMeters = 2.0,
+)
+
+private const val proximityLeftJson =
+    """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
+        """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}"""
+
+private const val proximityRightJson =
+    """{"sideBySideLeftVehicleIds":[],"sideBySideRightVehicleIds":[5],""" +
+        """"lateralDistanceLeftMeters":1.7976931348623157E308,"lateralDistanceRightMeters":2.0}"""
+
+private val overheatingDamage = VehicleDamageData(
+    overheating = true,
+    partDetached = false,
+    lastImpactMagnitude = 0.5,
+)
+
+private val partDetachedDamage = VehicleDamageData(
+    overheating = false,
+    partDetached = true,
+    lastImpactMagnitude = 1.2,
+)
+
+private const val overheatingDamageJson =
+    """{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.5}"""
+
+private const val partDetachedDamageJson =
+    """{"overheating":false,"partDetached":true,"lastImpactMagnitude":1.2}"""
+
+// --- Fake リポジトリ ---
 
 private class FakeFlagRepository : FlagRepository {
     private val channel = Channel<RaceFlagsData>(capacity = Channel.UNLIMITED)
