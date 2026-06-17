@@ -34,7 +34,9 @@ class OtherListViewModelCheckUpdateTest {
     @Test
     fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
         val viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9"))),
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
+                FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9")),
+            ),
             currentVersion = "1.0.0",
         )
 
@@ -47,7 +49,9 @@ class OtherListViewModelCheckUpdateTest {
     @Test
     fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
         val viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate(tagName = "v1.0.0"))),
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
+                FakeAppUpdateRepository(AppUpdate(tagName = "v1.0.0")),
+            ),
             currentVersion = "1.0.0",
         )
 
@@ -60,7 +64,9 @@ class OtherListViewModelCheckUpdateTest {
     @Test
     fun `checkUpdateを呼ぶ前はhasAppUpdateがfalseのまま`() = runTest {
         val viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9"))),
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
+                FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9")),
+            ),
             currentVersion = "1.0.0",
         )
 
@@ -70,7 +76,9 @@ class OtherListViewModelCheckUpdateTest {
     @Test
     fun `currentVersionが空の場合checkUpdateは何もしない`() = runTest {
         val viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9"))),
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
+                FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9")),
+            ),
             currentVersion = "",
         )
 
@@ -83,7 +91,9 @@ class OtherListViewModelCheckUpdateTest {
     @Test
     fun `リリース情報がnullの場合hasAppUpdateがfalseになる`() = runTest {
         val viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(latestRelease = null)),
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
+                FakeAppUpdateRepository(latestRelease = null),
+            ),
             currentVersion = "1.0.0",
         )
 
@@ -93,4 +103,3 @@ class OtherListViewModelCheckUpdateTest {
         assertFalse(viewModel.uiState.first().hasAppUpdate)
     }
 }
-
