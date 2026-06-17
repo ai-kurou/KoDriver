@@ -11,6 +11,6 @@ digraph G {
   ":app:shared" -> ":feature:readout-list"
   ":app:shared" -> ":feature:lmu-windows-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:lmu-readout-flag-detail"
-  ":app:shared" -> ":feature:lmu-readout-vehicle-damage-detail"
+  ":app:shared" -> ":feature:lmu-windows-readout-vehicle-damage-detail"
   ":app:webApp" -> ":app:shared"
 }
