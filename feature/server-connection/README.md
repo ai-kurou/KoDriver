@@ -1,7 +1,5 @@
 # server-connection
 
-KoDriver サーバー（Ktor）への接続状態確認を担当する feature モジュール。
-
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
