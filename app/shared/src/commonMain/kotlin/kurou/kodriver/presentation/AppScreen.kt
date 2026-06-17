@@ -39,8 +39,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import kurou.kodriver.feature.main.AppScreenViewModel
-import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -59,6 +57,7 @@ import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
+import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailDialog
@@ -66,6 +65,7 @@ import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 private enum class AppDestination(
     val icon: ImageVector,
@@ -78,6 +78,17 @@ private enum class AppDestination(
 private fun AppDestination.label(): String = when (this) {
     AppDestination.Readout -> stringResource(Res.string.nav_readout)
     AppDestination.More -> stringResource(Res.string.nav_more)
+}
+
+@Composable
+private fun AppNavIcon(
+    dest: AppDestination,
+    showBadge: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    BadgedBox(badge = { if (showBadge) Badge() }) {
+        Icon(dest.icon, contentDescription = dest.label(), modifier = modifier)
+    }
 }
 
 @Composable
@@ -205,9 +216,7 @@ internal fun AppScreenContent(
                         item(
                             icon = {
                                 if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                                    BadgedBox(badge = { if (showBadge) Badge() }) {
-                                        Icon(dest.icon, contentDescription = dest.label())
-                                    }
+                                    AppNavIcon(dest = dest, showBadge = showBadge)
                                 }
                             },
                             label = {
@@ -219,13 +228,11 @@ internal fun AppScreenContent(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
-                                        BadgedBox(badge = { if (showBadge) Badge() }) {
-                                            Icon(
-                                                imageVector = dest.icon,
-                                                contentDescription = dest.label(),
-                                                modifier = Modifier.size(24.dp),
-                                            )
-                                        }
+                                        AppNavIcon(
+                                            dest = dest,
+                                            showBadge = showBadge,
+                                            modifier = Modifier.size(24.dp),
+                                        )
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(dest.label())
                                     }
