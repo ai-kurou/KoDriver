@@ -38,6 +38,7 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.datastore.core)
                 implementation(libs.kotlinx.serialization.protobuf)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.sentry)
             }
         }
@@ -62,6 +63,7 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutinesTest)
+            implementation(libs.okhttp.mockwebserver)
         }
         named("androidHostTest") {
             dependencies {
