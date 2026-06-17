@@ -15,7 +15,7 @@ KoDriver/
 │   ├── data/          共有メモリ読み取り・DataStore・リポジトリ実装
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
-│   ├── lmu-connection/           LMU 接続状態の監視
+│   ├── lmu-windows-connection/   LMU 接続状態の監視
 │   ├── server-connection/        KoDriver サーバーへの接続状態確認
 │   ├── lmu-narrator/             WAV 音声再生とアナウンス制御
 │   ├── other-license-detail/     その他画面のライセンス詳細表示

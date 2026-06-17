@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmuconnection
+package kurou.kodriver.feature.lmuwindowsconnection
 
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase

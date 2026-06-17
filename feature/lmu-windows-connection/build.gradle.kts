@@ -20,7 +20,7 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "kurou.kodriver.feature.lmuconnection"
+        namespace = "kurou.kodriver.feature.lmuwindowsconnection"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
