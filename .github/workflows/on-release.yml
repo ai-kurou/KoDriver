@@ -10,6 +10,7 @@ on:
 jobs:
   release:
     runs-on: windows-latest
+    timeout-minutes: 15
     permissions:
       contents: write  # リリース作成 + main へのpushに必要
 
