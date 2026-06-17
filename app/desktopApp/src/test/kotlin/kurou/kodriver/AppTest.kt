@@ -38,27 +38,35 @@ class AppTest {
     fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動する`() {
         rule.setContent { AppScreen() }
 
+        // シミュレータ選択ドロップダウンを開く
         rule.onNodeWithTag("simulator_dropdown_trigger").performClick()
         rule.waitForIdle()
 
+        // LMU Windowsシミュレータを選択
         rule.onNodeWithTag("simulator_item_lmu_windows").performClick()
         rule.waitForIdle()
 
+        // 読み上げリストが表示されるまで待機
         rule.waitUntil(timeoutMillis = 5_000L) {
             rule.onAllNodesWithTag("readout_item_0").fetchSemanticsNodes().isNotEmpty()
         }
+        // 読み上げ項目0（車両接近）をタップ
         rule.onNodeWithTag("readout_item_0").performClick()
         rule.waitForIdle()
 
+        // 読み上げ項目1（車両故障）をタップ
         rule.onNodeWithTag("readout_item_1").performClick()
         rule.waitForIdle()
 
+        // 読み上げ項目2（旗）をタップ
         rule.onNodeWithTag("readout_item_2").performClick()
         rule.waitForIdle()
 
+        // その他タブへ移動
         rule.onNodeWithTag("nav_more").performClick()
         rule.waitForIdle()
 
+        // 音量をタップ
         rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
     }
