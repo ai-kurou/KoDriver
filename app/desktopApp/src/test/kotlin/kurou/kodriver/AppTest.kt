@@ -58,7 +58,16 @@ class AppTest {
         rule.onNodeWithTag("readout_item_0").performClick()
         rule.waitForIdle()
 
+        rule.onNodeWithTag("readout_item_1").performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithTag("readout_item_2").performClick()
+        rule.waitForIdle()
+
         rule.onNodeWithTag("nav_more").performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
     }
 }
