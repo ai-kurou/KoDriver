@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmureadout.flagdetail
+package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

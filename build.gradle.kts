@@ -256,7 +256,7 @@ dependencies {
     kover(project(":feature:other-volume-detail"))
     kover(project(":feature:readout-list"))
     kover(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
-    kover(project(":feature:lmu-readout-flag-detail"))
+    kover(project(":feature:lmu-windows-readout-flag-detail"))
     kover(project(":feature:lmu-windows-readout-vehicle-damage-detail"))
     kover(project(":app:androidApp"))
     kover(project(":app:shared"))

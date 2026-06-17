@@ -59,7 +59,7 @@ kotlin {
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
-            implementation(projects.feature.lmuReadoutFlagDetail)
+            implementation(projects.feature.lmuWindowsReadoutFlagDetail)
             implementation(projects.feature.lmuWindowsReadoutVehicleDamageDetail)
             implementation(libs.koin.core)
             implementation(libs.compose.runtime)

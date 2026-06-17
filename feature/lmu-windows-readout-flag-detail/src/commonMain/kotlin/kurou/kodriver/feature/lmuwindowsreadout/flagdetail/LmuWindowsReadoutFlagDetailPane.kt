@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmureadout.flagdetail
+package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,14 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.lmureadout.flagdetail.generated.resources.Res
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_blue
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_description
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_full_course_yellow
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_red
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_session_stop
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_switch_subtitle
-import kodriver.feature.lmureadout.flagdetail.generated.resources.flag_yellow
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_switch_subtitle
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_yellow
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle

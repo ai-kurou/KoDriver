@@ -23,7 +23,7 @@ KoDriver/
 │   ├── other-server-ip-detail/   その他画面の接続先サーバーIP設定ダイアログ
 │   ├── other-volume-detail/      その他画面の音量設定詳細
 │   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
-│   ├── lmu-readout-flag-detail/          フラグアナウンスの詳細設定
+│   ├── lmu-windows-readout-flag-detail/          フラグアナウンスの詳細設定
 │   ├── lmu-windows-readout-vehicle-approach-detail/ 車両接近アナウンスの詳細設定
 │   └── lmu-windows-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
 ├── app/
