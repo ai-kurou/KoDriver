@@ -11,8 +11,15 @@ import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.serverconnection.serverConnectionModule
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+private val appScreenModule = module {
+    viewModel { AppScreenViewModel(get(), currentAppVersion()) }
+}
 
 val appModules: List<Module> = listOf(
+    appScreenModule,
     lmuConnectionModule,
     serverConnectionModule,
     lmuNarratorModule,

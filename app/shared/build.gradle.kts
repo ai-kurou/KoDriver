@@ -50,6 +50,7 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
+            implementation(projects.core.domain)
             implementation(projects.feature.lmuWindowsConnection)
             implementation(projects.feature.serverConnection)
             implementation(projects.feature.lmuWindowsNarrator)
@@ -82,6 +83,7 @@ kotlin {
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)
             implementation(libs.kotlin.testJunit)
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.compose.material3.adaptive.layout)
