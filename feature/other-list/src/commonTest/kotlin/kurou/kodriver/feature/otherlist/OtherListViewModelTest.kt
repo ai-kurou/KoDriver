@@ -2,13 +2,25 @@ package kurou.kodriver.feature.otherlist
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+internal class FakeAppUpdateRepository(
+    private val latestRelease: AppUpdate? = null,
+) : AppUpdateRepository {
+    override suspend fun getLatestRelease(): AppUpdate? = latestRelease
+}
+
 class OtherListViewModelTest {
 
-    private val viewModel = OtherListViewModel()
+    private val viewModel = OtherListViewModel(
+        checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
+        currentVersion = "",
+    )
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
