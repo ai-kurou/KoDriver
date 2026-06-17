@@ -1,6 +1,7 @@
 package kurou.kodriver
 
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -15,15 +16,19 @@ class MainActivityTest {
 
     @Test
     fun `シミュレータ選択後に読み上げ項目を順にタップしその他タブへ移動する`() {
-        // シミュレータドロップダウンをタップして展開
+        // シミュレータ選択ドロップダウンを開く
         composeTestRule.onNodeWithTag("simulator_dropdown_trigger").performClick()
         composeTestRule.waitForIdle()
 
-        // Le Mans Ultimate を選択
+        // LMU Windowsシミュレータを選択
         composeTestRule.onNodeWithTag("simulator_item_lmu_windows").performClick()
         composeTestRule.waitForIdle()
 
-        // フラッグ（インデックス0）をタップ
+        // 読み上げリストが表示されるまで待機
+        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
+            composeTestRule.onAllNodesWithTag("readout_item_0").fetchSemanticsNodes().isNotEmpty()
+        }
+        // 読み上げ項目0をタップ
         composeTestRule.onNodeWithTag("readout_item_0").performClick()
         composeTestRule.waitForIdle()
 
@@ -31,7 +36,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("readout_detail_back").performClick()
         composeTestRule.waitForIdle()
 
-        // 車両接近（インデックス1）をタップ
+        // 読み上げ項目1をタップ
         composeTestRule.onNodeWithTag("readout_item_1").performClick()
         composeTestRule.waitForIdle()
 
@@ -43,16 +48,20 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("readout_detail_back").performClick()
         composeTestRule.waitForIdle()
 
-        // 車両故障（インデックス2）をタップ
+        // 読み上げ項目2をタップ
         composeTestRule.onNodeWithTag("readout_item_2").performClick()
         composeTestRule.waitForIdle()
 
-        // その他タブをタップ
+        // 詳細ペインから戻る
+        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.waitForIdle()
+
+        // その他タブへ移動
         composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()
 
-        // ライセンス項目をタップ
-        composeTestRule.onNodeWithTag("other_item_3").performClick()
+        // 音量をタップ（AndroidではServerIpが含まれるためother_item_1）
+        composeTestRule.onNodeWithTag("other_item_1").performClick()
         composeTestRule.waitForIdle()
     }
 }
