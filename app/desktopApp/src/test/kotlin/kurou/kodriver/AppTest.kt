@@ -71,4 +71,17 @@ class AppTest {
         rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
     }
+
+    @Test
+    fun `その他タブのライセンス項目をタップする`() {
+        rule.setContent { AppScreen() }
+
+        // その他タブへ移動
+        rule.onNodeWithTag("nav_more").performClick()
+        rule.waitForIdle()
+
+        // ライセンスをタップ（Desktop では ServerIp が含まれないため other_item_1）
+        rule.onNodeWithTag("other_item_1").performClick()
+        rule.waitForIdle()
+    }
 }
