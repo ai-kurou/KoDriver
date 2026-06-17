@@ -64,8 +64,8 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("other_item_1").performClick()
         composeTestRule.waitForIdle()
 
-        // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_2）
-        composeTestRule.onNodeWithTag("other_item_2").performClick()
+        // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_4）
+        composeTestRule.onNodeWithTag("other_item_4").performClick()
         composeTestRule.waitForIdle()
     }
 }
