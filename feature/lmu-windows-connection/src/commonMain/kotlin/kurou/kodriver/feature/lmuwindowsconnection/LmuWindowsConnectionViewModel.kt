@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmuconnection
+package kurou.kodriver.feature.lmuwindowsconnection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

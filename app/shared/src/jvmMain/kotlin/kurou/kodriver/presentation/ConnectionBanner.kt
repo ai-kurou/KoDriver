@@ -6,7 +6,7 @@ import androidx.compose.runtime.getValue
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.banner_simulator_connected
 import kodriver.app.shared.generated.resources.banner_simulator_disconnected
-import kurou.kodriver.feature.lmuconnection.LmuWindowsConnectionViewModel
+import kurou.kodriver.feature.lmuwindowsconnection.LmuWindowsConnectionViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

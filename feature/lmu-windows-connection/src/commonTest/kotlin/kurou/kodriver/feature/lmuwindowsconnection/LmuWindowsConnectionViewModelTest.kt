@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.lmuconnection
+package kurou.kodriver.feature.lmuwindowsconnection
 
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
