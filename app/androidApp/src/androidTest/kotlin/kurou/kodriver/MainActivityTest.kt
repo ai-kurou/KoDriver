@@ -15,7 +15,7 @@ class MainActivityTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun `シミュレータ選択後に読み上げ項目を順にタップしその他タブへ移動する`() {
+    fun `シミュレータ選択後に読み上げ項目を順にタップしその他タブへ移動しライセンスを開く`() {
         // シミュレータ選択ドロップダウンを開く
         composeTestRule.onNodeWithTag("simulator_dropdown_trigger").performClick()
         composeTestRule.waitForIdle()
@@ -62,13 +62,6 @@ class MainActivityTest {
 
         // 音量をタップ（AndroidではServerIpが含まれるためother_item_1）
         composeTestRule.onNodeWithTag("other_item_1").performClick()
-        composeTestRule.waitForIdle()
-    }
-
-    @Test
-    fun `その他タブのライセンス項目をタップする`() {
-        // その他タブへ移動
-        composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()
 
         // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_2）

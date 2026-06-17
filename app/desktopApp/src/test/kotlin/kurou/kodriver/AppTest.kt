@@ -36,7 +36,7 @@ class AppTest {
     val rule = createComposeRule()
 
     @Test
-    fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動する`() {
+    fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動しライセンスを開く`() {
         rule.setContent { AppScreen() }
 
         // シミュレータ選択ドロップダウンを開く
@@ -69,15 +69,6 @@ class AppTest {
 
         // 音量をタップ
         rule.onNodeWithTag("other_item_0").performClick()
-        rule.waitForIdle()
-    }
-
-    @Test
-    fun `その他タブのライセンス項目をタップする`() {
-        rule.setContent { AppScreen() }
-
-        // その他タブへ移動
-        rule.onNodeWithTag("nav_more").performClick()
         rule.waitForIdle()
 
         // ライセンスをタップ（Desktop では ServerIp が含まれないため other_item_1）
