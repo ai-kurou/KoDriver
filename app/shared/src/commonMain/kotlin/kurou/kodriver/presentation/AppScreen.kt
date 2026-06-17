@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
@@ -31,11 +33,14 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import kurou.kodriver.feature.main.AppScreenViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -77,6 +82,7 @@ private fun AppDestination.label(): String = when (this) {
 
 @Composable
 fun AppScreen(
+    viewModel: AppScreenViewModel = koinViewModel(),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
@@ -114,6 +120,11 @@ fun AppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val connectedMessage = stringResource(Res.string.lmu_connected)
     val disconnectedMessage = stringResource(Res.string.lmu_disconnected)
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.checkUpdate()
+    }
 
     ConnectionSnackbarEffect(
         isConnectionChecked = bannerUiState.isConnectionChecked,
@@ -127,6 +138,7 @@ fun AppScreen(
     AppScreenContent(
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
+        hasAppUpdate = uiState.hasAppUpdate,
         readoutContent = readoutContent,
         otherContent = otherContent,
     )
@@ -160,6 +172,7 @@ internal fun AppScreenContent(
     layoutType: NavigationSuiteType? = null,
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    hasAppUpdate: Boolean = false,
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
@@ -188,10 +201,13 @@ internal fun AppScreenContent(
                         } else {
                             Modifier.testTag("nav_${dest.name.lowercase()}")
                         }
+                        val showBadge = dest == AppDestination.More && hasAppUpdate
                         item(
                             icon = {
                                 if (resolvedLayoutType != NavigationSuiteType.NavigationDrawer) {
-                                    Icon(dest.icon, contentDescription = dest.label())
+                                    BadgedBox(badge = { if (showBadge) Badge() }) {
+                                        Icon(dest.icon, contentDescription = dest.label())
+                                    }
                                 }
                             },
                             label = {
@@ -203,11 +219,13 @@ internal fun AppScreenContent(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
-                                        Icon(
-                                            imageVector = dest.icon,
-                                            contentDescription = dest.label(),
-                                            modifier = Modifier.size(24.dp),
-                                        )
+                                        BadgedBox(badge = { if (showBadge) Badge() }) {
+                                            Icon(
+                                                imageVector = dest.icon,
+                                                contentDescription = dest.label(),
+                                                modifier = Modifier.size(24.dp),
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Text(dest.label())
                                     }
