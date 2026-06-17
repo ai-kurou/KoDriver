@@ -185,4 +185,70 @@ class AppScreenScreenshotTest {
         composeRule.waitForIdle()
         composeRule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `NavigationBar アップデートバッジ`() {
+        composeRule.setContent {
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+            Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationBar,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
+                    hasAppUpdate = true,
+                    readoutContent = {
+                        ReadoutContent(scaffoldDirective = singlePaneDirective)
+                    },
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `NavigationRail アップデートバッジ`() {
+        composeRule.setContent {
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationRail,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
+                    hasAppUpdate = true,
+                    readoutContent = {
+                        ReadoutContent(scaffoldDirective = singlePaneDirective)
+                    },
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `NavigationDrawer アップデートバッジ`() {
+        composeRule.setContent {
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+            Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationDrawer,
+                    bannerUiState = ConnectionBannerUiState(
+                        isConnected = false,
+                        isConnectionChecked = true,
+                        message = bannerMessage,
+                    ),
+                    hasAppUpdate = true,
+                    readoutContent = {
+                        ReadoutContent(scaffoldDirective = twoPaneDirective)
+                    },
+                )
+            }
+        }
+        composeRule.onRoot().captureRoboImage()
+    }
 }
