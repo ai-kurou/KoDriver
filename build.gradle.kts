@@ -154,6 +154,7 @@ tasks.register("generateModuleGraphImages") {
         fullGvFile.writeText(
             buildString {
                 appendLine("digraph G {")
+                appendLine("  rankdir=TB")
                 parsedEdges.forEach { (from, to, _) ->
                     appendLine("  \"$from\" -> \"$to\"")
                 }
@@ -174,6 +175,7 @@ tasks.register("generateModuleGraphImages") {
 
             val gvContent = buildString {
                 appendLine("digraph G {")
+                appendLine("  rankdir=TB")
                 subEdges.forEach { (from, to, attrs) ->
                     val attrPart = if (attrs.isNotEmpty()) " $attrs" else ""
                     appendLine("  \"$from\" -> \"$to\"$attrPart")
