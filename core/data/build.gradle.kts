@@ -38,6 +38,7 @@ kotlin {
             dependencies {
                 implementation(libs.androidx.datastore.core)
                 implementation(libs.kotlinx.serialization.protobuf)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.sentry)
             }
         }

@@ -2,6 +2,7 @@ package kurou.kodriver.data
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -52,4 +53,5 @@ fun androidDataModule(context: Context) = module {
         AndroidServerIpRepository(context.serverIpDataStore)
     }
     single<ServerConnectionRepository> { TcpServerConnectionRepository() }
+    single<AppUpdateRepository> { GitHubAppReleaseRepository() }
 }

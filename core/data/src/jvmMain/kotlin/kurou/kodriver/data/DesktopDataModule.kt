@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.VehicleDamageData
+import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -73,6 +74,7 @@ val desktopDataModule = module {
         createSoundVolumeRepository(directory = kodriverDirectory)
     }
     single<ServerConnectionRepository> { NoOpServerConnectionRepository() }
+    single<AppUpdateRepository> { GitHubAppReleaseRepository() }
 }
 
 private class NoOpLmuWindowsRepository : LmuWindowsRepository {
