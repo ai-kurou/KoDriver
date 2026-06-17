@@ -52,7 +52,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.lmuWindowsConnection)
             implementation(projects.feature.serverConnection)
-            implementation(projects.feature.lmuNarrator)
+            implementation(projects.feature.lmuWindowsNarrator)
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.otherServerIpDetail)
@@ -95,7 +95,7 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.app.shared))
-    testFixturesApi(testFixtures(projects.feature.lmuNarrator))
+    testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.readoutList))
 }
 

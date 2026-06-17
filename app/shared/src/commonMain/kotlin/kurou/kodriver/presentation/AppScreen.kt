@@ -50,10 +50,10 @@ import kodriver.app.shared.generated.resources.lmu_connected
 import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
-import kurou.kodriver.feature.lmunarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmureadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmureadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmureadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
+import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailDialog

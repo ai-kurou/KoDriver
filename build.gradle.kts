@@ -249,7 +249,7 @@ dependencies {
     kover(project(":core:designsystem"))
     kover(project(":feature:lmu-windows-connection"))
     kover(project(":feature:server-connection"))
-    kover(project(":feature:lmu-narrator"))
+    kover(project(":feature:lmu-windows-narrator"))
     kover(project(":feature:other-license-detail"))
     kover(project(":feature:other-list"))
     kover(project(":feature:other-server-ip-detail"))
