@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.banner_simulator_disconnected
 import kodriver.app.shared.generated.resources.nav_more
-import kurou.kodriver.feature.lmunarrator.fakeLmuWindowsNarratorModule
+import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import org.jetbrains.compose.resources.stringResource

@@ -1,11 +1,11 @@
 digraph G {
   ":server" -> ":core:domain"
   ":core:data" -> ":core:domain"
-  ":feature:lmu-narrator" -> ":core:domain"
   ":feature:lmu-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
+  ":feature:lmu-windows-narrator" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-server-ip-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:domain"

@@ -4,7 +4,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.feature.lmunarrator.fakeLmuWindowsNarratorModule
+import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules

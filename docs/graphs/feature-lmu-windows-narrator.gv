@@ -1,0 +1,4 @@
+digraph G {
+  ":app:shared" -> ":feature:lmu-windows-narrator"
+  ":feature:lmu-windows-narrator" -> ":core:domain"
+}
