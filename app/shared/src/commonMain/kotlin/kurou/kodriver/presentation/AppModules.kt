@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import kurou.kodriver.feature.lmuwindowsconnection.lmuConnectionModule
+import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuReadoutVehicleApproachDetailModule
@@ -13,6 +14,7 @@ import kurou.kodriver.feature.serverconnection.serverConnectionModule
 import org.koin.core.module.Module
 
 val appModules: List<Module> = listOf(
+    mainModule,
     lmuConnectionModule,
     serverConnectionModule,
     lmuNarratorModule,
