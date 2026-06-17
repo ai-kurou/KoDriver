@@ -1,5 +1,5 @@
 digraph G {
-  ":feature:lmu-readout-flag-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:designsystem"
   ":feature:other-license-detail" -> ":core:designsystem"

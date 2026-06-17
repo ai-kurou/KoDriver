@@ -1,9 +1,9 @@
 digraph G {
   ":server" -> ":core:domain"
   ":core:data" -> ":core:domain"
-  ":feature:lmu-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
+  ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"

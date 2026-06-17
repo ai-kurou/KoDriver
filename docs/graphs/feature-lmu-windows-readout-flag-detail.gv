@@ -1,0 +1,5 @@
+digraph G {
+  ":app:shared" -> ":feature:lmu-windows-readout-flag-detail"
+  ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
+}
