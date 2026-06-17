@@ -1,15 +1,29 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 
-class OtherListViewModel : ViewModel() {
+class OtherListViewModel(
+    private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
+    private val currentVersion: String,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OtherListUiState())
     val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
+
+    fun checkUpdate() {
+        if (currentVersion.isBlank()) return
+        viewModelScope.launch {
+            val hasUpdate = checkAppUpdateAvailable(currentVersion)
+            _uiState.update { it.copy(hasAppUpdate = hasUpdate) }
+        }
+    }
 
     fun onItemSelected(itemId: String) {
         val itemType = OtherListItemType.fromId(itemId) ?: return

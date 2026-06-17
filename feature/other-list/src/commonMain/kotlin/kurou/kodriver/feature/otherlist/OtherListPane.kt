@@ -15,6 +15,8 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -97,10 +99,12 @@ fun OtherListPane(
 
                         OtherListItemType.ReleasePage -> {
                             {
-                                Icon(
-                                    imageVector = Icons.Outlined.NewReleases,
-                                    contentDescription = null,
-                                )
+                                BadgedBox(badge = { if (uiState.hasAppUpdate) Badge() }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.NewReleases,
+                                        contentDescription = null,
+                                    )
+                                }
                             }
                         }
 

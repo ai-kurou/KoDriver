@@ -43,6 +43,11 @@ fun OtherContent(
     val viewModel: OtherListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
+
+    LaunchedEffect(Unit) {
+        viewModel.checkUpdate()
+    }
+
     OtherContent(
         uiState = uiState,
         onItemSelected = viewModel::onItemSelected,
