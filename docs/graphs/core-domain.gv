@@ -1,4 +1,5 @@
 digraph G {
+  rankdir=TB
   ":server" -> ":core:domain"
   ":core:data" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"

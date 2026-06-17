@@ -1,4 +1,5 @@
 digraph G {
+  rankdir=TB
   ":app:androidApp" -> ":app:shared"
   ":app:desktopApp" -> ":app:shared"
   ":app:shared" -> ":feature:lmu-windows-connection"

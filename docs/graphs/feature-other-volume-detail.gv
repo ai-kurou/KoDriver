@@ -1,4 +1,5 @@
 digraph G {
+  rankdir=TB
   ":app:shared" -> ":feature:other-volume-detail"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:designsystem"
