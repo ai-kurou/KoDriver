@@ -39,6 +39,7 @@ class AppScreenViewModelTest {
             currentVersion = "1.0.0",
         )
 
+        viewModel.checkUpdate()
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.first().hasAppUpdate)
@@ -51,15 +52,16 @@ class AppScreenViewModelTest {
             currentVersion = "1.0.0",
         )
 
+        viewModel.checkUpdate()
         advanceUntilIdle()
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
     }
 
     @Test
-    fun `初期状態ではhasAppUpdateがfalse`() = runTest {
+    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalse`() = runTest {
         val viewModel = AppScreenViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(null)),
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository("v9.9.9")),
             currentVersion = "1.0.0",
         )
 
@@ -73,6 +75,7 @@ class AppScreenViewModelTest {
             currentVersion = "1.0.0",
         )
 
+        viewModel.checkUpdate()
         advanceUntilIdle()
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)

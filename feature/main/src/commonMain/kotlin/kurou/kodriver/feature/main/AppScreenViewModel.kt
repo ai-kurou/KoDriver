@@ -17,7 +17,7 @@ class AppScreenViewModel(
     private val _uiState = MutableStateFlow(AppScreenUiState())
     val uiState: StateFlow<AppScreenUiState> = _uiState.asStateFlow()
 
-    init {
+    fun checkUpdate() {
         viewModelScope.launch {
             val hasUpdate = checkAppUpdateAvailable(currentVersion)
             _uiState.update { it.copy(hasAppUpdate = hasUpdate) }
