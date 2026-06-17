@@ -2,7 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.repository.AppReleaseRepository
 
-class CheckNewReleaseAvailableUseCase(
+class CheckAppUpdateAvailableUseCase(
     private val repository: AppReleaseRepository,
 ) {
     suspend operator fun invoke(currentVersion: String): Boolean {
