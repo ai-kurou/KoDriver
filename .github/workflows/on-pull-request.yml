@@ -158,7 +158,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          find . -path "*/jvmTest/snapshots/*.png" -not -path "*/build/*" | xargs -r git add
+          find . -path "*/jvmTest/snapshots/*.png" -not -path "*/build/*" -print0 | xargs -0 -r git add
           git diff --staged --quiet || git commit -m "chore: update golden images"
           git push
 
