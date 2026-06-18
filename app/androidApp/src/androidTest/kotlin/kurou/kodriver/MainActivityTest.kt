@@ -64,6 +64,10 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("other_item_1").performClick()
         composeTestRule.waitForIdle()
 
+        // 音量詳細から戻る（Androidではシングルペインのためリスト非表示になる）
+        composeTestRule.onNodeWithTag("other_detail_back").performClick()
+        composeTestRule.waitForIdle()
+
         // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_4）
         composeTestRule.onNodeWithTag("other_item_4").performClick()
         composeTestRule.waitForIdle()
