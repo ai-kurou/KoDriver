@@ -8,4 +8,6 @@
     <string name="vehicle_approach_first_lap_subtitle">フォーメーションラップ・1周目はスキップ</string>
     <string name="vehicle_approach_skip_first_lap_subtitle">フォーメーションラップおよびスタート直後の1周目はスキップします。スタートグリッドで密集している状況での誤報を防ぎます。</string>
     <string name="vehicle_approach_readout_subtitle">読み上げ別設定</string>
+    <string name="vehicle_approach_start_readout_switch_label">接近開始時の読み上げ</string>
+    <string name="vehicle_approach_car_left_right_chip_label">カーレフト・カーライト</string>
 </resources>
