@@ -74,6 +74,7 @@ private fun LmuWindowsReadoutVehicleApproachDetailPane(
         onLongitudinalThresholdChanged = viewModel::onLongitudinalThresholdChanged,
         onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
+        onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         modifier = modifier,
     )
 }
@@ -85,6 +86,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onLongitudinalThresholdChanged: (Double) -> Unit = {},
     onLateralThresholdChanged: (Double) -> Unit = {},
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
+    onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
@@ -152,10 +154,10 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         val carLeftRightChipLabel = stringResource(Res.string.vehicle_approach_car_left_right_chip_label)
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
-            checked = true,
+            checked = uiState.startReadoutEnabled,
             chipLabels = listOf(carLeftRightChipLabel),
             selectedChipLabels = setOf(carLeftRightChipLabel),
-            onCheckedChange = {},
+            onCheckedChange = onStartReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }

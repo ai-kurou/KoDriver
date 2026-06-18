@@ -8,4 +8,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 @Serializable
 internal data class VehicleApproachPreferences(
     @ProtoNumber(1) val skipFirstLap: Boolean = true,
+    @ProtoNumber(2) val startReadoutEnabled: Boolean = true,
 )

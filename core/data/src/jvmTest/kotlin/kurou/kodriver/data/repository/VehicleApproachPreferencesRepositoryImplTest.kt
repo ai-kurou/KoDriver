@@ -46,4 +46,22 @@ class VehicleApproachPreferencesRepositoryImplTest {
         repository.saveSkipFirstLap(false)
         assertEquals(false, repository.observeSkipFirstLap().first())
     }
+
+    @Test
+    fun `startReadoutEnabled の初期値は true`() = testScope.runTest {
+        assertEquals(true, repository.observeStartReadoutEnabled().first())
+    }
+
+    @Test
+    fun `saveStartReadoutEnabled で保存した値を observeStartReadoutEnabled で取得できる`() = testScope.runTest {
+        repository.saveStartReadoutEnabled(false)
+        assertEquals(false, repository.observeStartReadoutEnabled().first())
+    }
+
+    @Test
+    fun `saveStartReadoutEnabled を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+        repository.saveStartReadoutEnabled(false)
+        repository.saveStartReadoutEnabled(true)
+        assertEquals(true, repository.observeStartReadoutEnabled().first())
+    }
 }

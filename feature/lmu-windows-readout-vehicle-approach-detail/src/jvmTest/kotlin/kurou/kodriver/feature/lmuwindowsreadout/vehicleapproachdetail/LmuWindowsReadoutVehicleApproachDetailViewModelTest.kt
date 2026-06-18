@@ -9,10 +9,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.VehicleApproachPreferencesUseCases
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -34,10 +33,9 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         viewModel = LmuWindowsReadoutVehicleApproachDetailViewModel(
             observeLateralThreshold = ObserveLateralThresholdUseCase(thresholdsRepository),
             observeLongitudinalThreshold = ObserveLongitudinalThresholdUseCase(thresholdsRepository),
-            observeSkipFirstLap = ObserveSkipFirstLapUseCase(vehicleApproachPreferencesRepository),
+            vehicleApproachPreferences = VehicleApproachPreferencesUseCases(vehicleApproachPreferencesRepository),
             saveLateralThreshold = SaveLateralThresholdUseCase(thresholdsRepository),
             saveLongitudinalThreshold = SaveLongitudinalThresholdUseCase(thresholdsRepository),
-            saveSkipFirstLap = SaveSkipFirstLapUseCase(vehicleApproachPreferencesRepository),
         )
     }
 
@@ -53,6 +51,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 lateralThresholdMeters = 5.0,
                 longitudinalThresholdMeters = 1.0,
                 skipFirstLap = true,
+                startReadoutEnabled = true,
             ),
             viewModel.uiState.first(),
         )
@@ -74,5 +73,11 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     fun `onSkipFirstLapChanged を呼ぶと UiState の skipFirstLap が更新される`() = runTest {
         viewModel.onSkipFirstLapChanged(true)
         assertEquals(true, viewModel.uiState.first().skipFirstLap)
+    }
+
+    @Test
+    fun `onStartReadoutEnabledChanged を呼ぶと UiState の startReadoutEnabled が更新される`() = runTest {
+        viewModel.onStartReadoutEnabledChanged(false)
+        assertEquals(false, viewModel.uiState.first().startReadoutEnabled)
     }
 }

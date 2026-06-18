@@ -592,6 +592,8 @@ private class FakeConstantVehicleApproachPreferencesRepository(
 ) : VehicleApproachPreferencesRepository {
     override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
+    override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(true)
+    override suspend fun saveStartReadoutEnabled(enabled: Boolean) = Unit
 }
 
 private class FakeVehicleDamagePreferencesRepository(
