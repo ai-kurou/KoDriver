@@ -51,6 +51,7 @@ compose.desktop {
             packageVersion = providers.gradleProperty("appVersion").get()
             windows {
                 shortcut = true
+                iconFile.set(project.file("src/main/resources/launcher.ico"))
             }
         }
     }
