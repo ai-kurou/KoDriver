@@ -17,7 +17,7 @@ internal class SharedLmuWindowsMemorySource(
     private val pollingIntervalMs: Long = 16L,
     private val reconnectIntervalMs: Long = 1_000L,
     internal val reader: MemoryReader = SharedMemoryReader(
-        segmentName = "LMU_WINDOWS_Data",
+        segmentName = "LMU_Data",
         sizeBytes = 324_820,
     ),
     private val currentTimeMs: () -> Long = System::currentTimeMillis,
