@@ -546,7 +546,7 @@ private fun clearFlags(
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
     val spokenTexts = mutableListOf<SpeechEvent>()
     override val currentReadoutItemKey: String? = null
-    override fun speak(event: SpeechEvent) { spokenTexts.add(event) }
+    override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
     override fun stop() = Unit
 }
 
@@ -557,7 +557,7 @@ private class PriorityAwareTextToSpeechEngine(
     val spokenTexts = mutableListOf<SpeechEvent>()
     var stopCalled = false
     override var currentReadoutItemKey: String? = initialKey
-    override fun speak(event: SpeechEvent) { spokenTexts.add(event) }
+    override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
     override fun stop() {
         stopCalled = true
         currentReadoutItemKey = null

@@ -74,21 +74,31 @@ internal class LmuWindowsWavNarratorEngine(
         }
     }
 
-    override fun speak(event: SpeechEvent) {
+    override fun speak(event: SpeechEvent, queue: Boolean) {
         val mainSound = sounds[event] ?: return
+        if (queue) {
+            val previousJob = playJob
+            playJob = scope.launch {
+                previousJob?.join()
+                play(event, mainSound)
+            }
+            return
+        }
         if (soundPlayer.isPlaying) return
         playJob?.cancel()
-        playJob = scope.launch {
-            _currentReadoutItemKey = event.readoutItemKey
-            val vol = currentVolume
-            noiseSound?.let { soundPlayer.play(it, vol) }
-            soundPlayer.play(mainSound, vol)
-            _currentReadoutItemKey = null
-        }
+        playJob = scope.launch { play(event, mainSound) }
     }
 
     override fun stop() {
         playJob?.cancel()
         playJob = null
+    }
+
+    private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {
+        _currentReadoutItemKey = event.readoutItemKey
+        val vol = currentVolume
+        noiseSound?.let { soundPlayer.play(it, vol) }
+        soundPlayer.play(mainSound, vol)
+        _currentReadoutItemKey = null
     }
 }

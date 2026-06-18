@@ -9,8 +9,12 @@ import kotlin.test.assertEquals
 
 private class FakeTextToSpeechEngine : TextToSpeechEngine {
     val spokenEvents = mutableListOf<SpeechEvent>()
+    val queued = mutableListOf<Boolean>()
     override val currentReadoutItemKey: String? = null
-    override fun speak(event: SpeechEvent) { spokenEvents.add(event) }
+    override fun speak(event: SpeechEvent, queue: Boolean) {
+        spokenEvents.add(event)
+        queued.add(queue)
+    }
     override fun stop() = Unit
 }
 
@@ -35,5 +39,15 @@ class PlaySpeechEventUseCaseTest {
         useCase(SpeechEvent.SessionStop)
 
         assertEquals(listOf(SpeechEvent.YellowFlag, SpeechEvent.SessionStop), engine.spokenEvents)
+    }
+
+    @Test
+    fun `queue true を指定すると TextToSpeechEngine の speak に渡される`() {
+        val engine = FakeTextToSpeechEngine()
+        val useCase = PlaySpeechEventUseCase(engine)
+
+        useCase(SpeechEvent.CarRight, queue = true)
+
+        assertEquals(listOf(true), engine.queued)
     }
 }

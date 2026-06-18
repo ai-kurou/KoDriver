@@ -56,6 +56,6 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onStartReadoutPreviewClicked() {
         playSpeechEvent(SpeechEvent.CarLeft)
-        playSpeechEvent(SpeechEvent.CarRight)
+        playSpeechEvent(SpeechEvent.CarRight, queue = true)
     }
 }

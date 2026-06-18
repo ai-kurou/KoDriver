@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -59,6 +60,23 @@ class LmuWindowsWavNarratorEngineTest {
         assertEquals(2, player.playedSounds.size)
         assertContentEquals(NOISE_SOUND, player.playedSounds[0])
         assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `queue true の speak は前の音声が終わってから再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        engine.speak(SpeechEvent.CarRight, queue = true)
+        advanceUntilIdle()
+
+        assertEquals(4, player.playedSounds.size)
+        assertContentEquals(NOISE_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+        assertContentEquals(NOISE_SOUND, player.playedSounds[2])
+        assertContentEquals(EVENT_SOUND, player.playedSounds[3])
     }
 
     @Test

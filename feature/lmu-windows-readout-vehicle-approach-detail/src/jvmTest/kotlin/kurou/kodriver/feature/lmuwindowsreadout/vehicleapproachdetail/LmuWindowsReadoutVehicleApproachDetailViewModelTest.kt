@@ -26,7 +26,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var thresholdsRepository: FakeProximityThresholdsRepository
     private lateinit var vehicleApproachPreferencesRepository: FakeVehicleApproachPreferencesRepository
-    private lateinit var playedEvents: MutableList<SpeechEvent>
+    private lateinit var playedEvents: MutableList<QueuedSpeechEvent>
     private lateinit var viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel
 
     @Before
@@ -41,7 +41,11 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             vehicleApproachPreferences = VehicleApproachPreferencesUseCases(vehicleApproachPreferencesRepository),
             saveLateralThreshold = SaveLateralThresholdUseCase(thresholdsRepository),
             saveLongitudinalThreshold = SaveLongitudinalThresholdUseCase(thresholdsRepository),
-            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
+            playSpeechEvent = PlaySpeechEventUseCase(
+                FakeTextToSpeechEngine { event, queue ->
+                    playedEvents.add(QueuedSpeechEvent(event, queue))
+                },
+            ),
         )
     }
 
@@ -88,17 +92,28 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     @Test
-    fun `onStartReadoutPreviewClicked を呼ぶと CarLeft と CarRight が再生される`() {
+    fun `onStartReadoutPreviewClicked を呼ぶと CarLeft の後に CarRight がキュー再生される`() {
         viewModel.onStartReadoutPreviewClicked()
 
-        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.CarRight), playedEvents)
+        assertEquals(
+            listOf(
+                QueuedSpeechEvent(SpeechEvent.CarLeft, queue = false),
+                QueuedSpeechEvent(SpeechEvent.CarRight, queue = true),
+            ),
+            playedEvents,
+        )
     }
 }
 
+private data class QueuedSpeechEvent(
+    val event: SpeechEvent,
+    val queue: Boolean,
+)
+
 private class FakeTextToSpeechEngine(
-    private val onSpeak: (SpeechEvent) -> Unit,
+    private val onSpeak: (SpeechEvent, Boolean) -> Unit,
 ) : TextToSpeechEngine {
     override val currentReadoutItemKey: String? = null
-    override fun speak(event: SpeechEvent) = onSpeak(event)
+    override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event, queue)
     override fun stop() = Unit
 }
