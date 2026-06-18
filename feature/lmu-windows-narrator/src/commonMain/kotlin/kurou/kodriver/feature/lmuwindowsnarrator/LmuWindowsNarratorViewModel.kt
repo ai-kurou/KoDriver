@@ -21,6 +21,7 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 
@@ -39,6 +41,7 @@ data class VehicleApproachUseCases(
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeSkipFirstLap: ObserveSkipFirstLapUseCase,
     val observeStartReadoutEnabled: ObserveVehicleApproachStartReadoutEnabledUseCase,
+    val observeStartReadoutType: ObserveVehicleApproachStartReadoutTypeUseCase,
 )
 
 data class VehicleDamageUseCases(
@@ -96,6 +99,9 @@ class LmuWindowsNarratorViewModel(
     private val startReadoutEnabled = vehicleApproachUseCases.observeStartReadoutEnabled()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    private val startReadoutType = vehicleApproachUseCases.observeStartReadoutType()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+
     @Suppress("UnusedPrivateProperty")
     private val proximityJob = selectedSimulator
         .flatMapLatest { simulator ->
@@ -118,16 +124,22 @@ class LmuWindowsNarratorViewModel(
             val newLeftVehicle = (current.sideBySideLeftVehicleIds - prevLeftIds).isNotEmpty()
             val newRightVehicle = (current.sideBySideRightVehicleIds - prevRightIds).isNotEmpty()
 
+            val (leftEvent, rightEvent) = when (startReadoutType.value) {
+                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT ->
+                    SpeechEvent.CarLeft to SpeechEvent.CarRight
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH ->
+                    SpeechEvent.LeftApproach to SpeechEvent.RightApproach
+            }
             when {
                 // 両方同時の場合は読み上げないで一旦様子見る
                 /*
                 newLeftVehicle && newRightVehicle -> {
-                    speakWithPriority(SpeechEvent.CarLeft)
-                    speakWithPriority(SpeechEvent.CarRight)
+                    speakWithPriority(leftEvent)
+                    speakWithPriority(rightEvent)
                 }
                  */
-                newLeftVehicle -> speakWithPriority(SpeechEvent.CarLeft)
-                newRightVehicle -> speakWithPriority(SpeechEvent.CarRight)
+                newLeftVehicle -> speakWithPriority(leftEvent)
+                newRightVehicle -> speakWithPriority(rightEvent)
             }
         }
         .launchIn(viewModelScope)
