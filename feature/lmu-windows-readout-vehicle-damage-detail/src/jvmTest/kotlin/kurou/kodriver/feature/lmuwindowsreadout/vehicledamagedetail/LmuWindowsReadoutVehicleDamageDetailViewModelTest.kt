@@ -24,7 +24,7 @@ private class FakeTextToSpeechEngine(
     private val onSpeak: (SpeechEvent) -> Unit,
 ) : TextToSpeechEngine {
     override val currentReadoutItemKey: String? = null
-    override fun speak(event: SpeechEvent) = onSpeak(event)
+    override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
     override fun stop() = Unit
 }
 

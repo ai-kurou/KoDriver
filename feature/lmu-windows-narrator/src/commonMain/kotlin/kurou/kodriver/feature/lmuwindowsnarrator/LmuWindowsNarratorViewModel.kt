@@ -30,6 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 
@@ -37,6 +38,7 @@ data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeSkipFirstLap: ObserveSkipFirstLapUseCase,
+    val observeStartReadoutEnabled: ObserveVehicleApproachStartReadoutEnabledUseCase,
 )
 
 data class VehicleDamageUseCases(
@@ -91,6 +93,9 @@ class LmuWindowsNarratorViewModel(
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    private val startReadoutEnabled = vehicleApproachUseCases.observeStartReadoutEnabled()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     @Suppress("UnusedPrivateProperty")
     private val proximityJob = selectedSimulator
         .flatMapLatest { simulator ->
@@ -104,6 +109,7 @@ class LmuWindowsNarratorViewModel(
         .onEach { (prev, current) ->
             if (current == null) return@onEach
             if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
+            if (!startReadoutEnabled.value) return@onEach
             // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
             if (skipFirstLap.value && currentLap.value <= 0) return@onEach
 
