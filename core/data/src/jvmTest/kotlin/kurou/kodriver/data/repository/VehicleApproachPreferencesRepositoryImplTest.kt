@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.VehicleApproachPreferencesSerializer
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -63,5 +64,30 @@ class VehicleApproachPreferencesRepositoryImplTest {
         repository.saveStartReadoutEnabled(false)
         repository.saveStartReadoutEnabled(true)
         assertEquals(true, repository.observeStartReadoutEnabled().first())
+    }
+
+    @Test
+    fun `startReadoutType の初期値は CAR_LEFT_RIGHT`() = testScope.runTest {
+        assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
+    }
+
+    @Test
+    fun `saveStartReadoutType で保存した値を observeStartReadoutType で取得できる`() = testScope.runTest {
+        repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
+        assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, repository.observeStartReadoutType().first())
+    }
+
+    @Test
+    fun `saveStartReadoutType を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+        repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
+        repository.saveStartReadoutType(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+        assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
+    }
+
+    @Test
+    fun `startReadoutType が未知の ID のとき CAR_LEFT_RIGHT を返す`() = testScope.runTest {
+        dataStore.updateData { it.copy(startReadoutType = "unknown") }
+
+        assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
     }
 }

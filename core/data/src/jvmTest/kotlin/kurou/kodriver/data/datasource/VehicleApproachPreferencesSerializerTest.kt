@@ -12,16 +12,24 @@ import kotlin.test.assertFailsWith
 class VehicleApproachPreferencesSerializerTest {
 
     @Test
-    fun `デフォルト値は skipFirstLap が false`() {
+    fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            VehicleApproachPreferences(skipFirstLap = true),
+            VehicleApproachPreferences(
+                skipFirstLap = true,
+                startReadoutEnabled = true,
+                startReadoutType = "car_left_right",
+            ),
             VehicleApproachPreferencesSerializer.defaultValue,
         )
     }
 
     @Test
     fun `書き込んだ値を読み出せる`() = runTest {
-        val original = VehicleApproachPreferences(skipFirstLap = true)
+        val original = VehicleApproachPreferences(
+            skipFirstLap = true,
+            startReadoutEnabled = false,
+            startReadoutType = "left_right_approach",
+        )
         val output = ByteArrayOutputStream()
         VehicleApproachPreferencesSerializer.writeTo(original, output)
 

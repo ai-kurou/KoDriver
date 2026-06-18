@@ -12,6 +12,11 @@ class VehicleApproachPreferencesTest {
     }
 
     @Test
+    fun `デフォルト値は startReadoutType が car_left_right`() {
+        assertEquals("car_left_right", VehicleApproachPreferences().startReadoutType)
+    }
+
+    @Test
     fun `copy で skipFirstLap を変更できる`() {
         val original = VehicleApproachPreferences(skipFirstLap = false)
         val updated = original.copy(skipFirstLap = true)

@@ -9,4 +9,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 internal data class VehicleApproachPreferences(
     @ProtoNumber(1) val skipFirstLap: Boolean = true,
     @ProtoNumber(2) val startReadoutEnabled: Boolean = true,
+    @ProtoNumber(3) val startReadoutType: String = "car_left_right",
 )
