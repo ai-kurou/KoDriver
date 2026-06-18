@@ -63,7 +63,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/flags") {
+        }.webSocket("/ws/lmu_windows/flags") {
             repository.emit(greenFlagData)
 
             val message = withTimeout(1_000) {
@@ -91,7 +91,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/flags") {
+        }.webSocket("/ws/lmu_windows/flags") {
             repository.emit(greenFlagData)
             repository.emit(greenFlagData)
             repository.emit(yellowFlagData)
@@ -117,7 +117,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/flags") {
+        }.webSocket("/ws/lmu_windows/flags") {
             repository.emit(greenFlagData)
             repository.emit(yellowFlagData)
 
@@ -142,7 +142,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/proximity") {
+        }.webSocket("/ws/lmu_windows/proximity") {
             repository.emit(proximityDataLeft)
 
             val message = withTimeout(1_000) {
@@ -169,7 +169,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/proximity") {
+        }.webSocket("/ws/lmu_windows/proximity") {
             repository.emit(proximityDataLeft)
             repository.emit(proximityDataLeft)
             repository.emit(proximityDataRight)
@@ -195,7 +195,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/proximity") {
+        }.webSocket("/ws/lmu_windows/proximity") {
             repository.emit(proximityDataLeft)
             repository.emit(proximityDataRight)
 
@@ -220,7 +220,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/damage") {
+        }.webSocket("/ws/lmu_windows/damage") {
             repository.emit(overheatingDamage)
 
             val message = withTimeout(1_000) {
@@ -246,7 +246,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/damage") {
+        }.webSocket("/ws/lmu_windows/damage") {
             repository.emit(overheatingDamage)
             repository.emit(overheatingDamage)
             repository.emit(partDetachedDamage)
@@ -272,7 +272,7 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/damage") {
+        }.webSocket("/ws/lmu_windows/damage") {
             repository.emit(overheatingDamage)
             repository.emit(partDetachedDamage)
 

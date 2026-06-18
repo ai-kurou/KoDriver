@@ -8,7 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 
-private const val DAMAGE_WEBSOCKET_PATH = "/ws/damage"
+private const val DAMAGE_WEBSOCKET_PATH = "/ws/lmu_windows/damage"
 
 internal fun Route.damageWebSocket(observeVehicleDamage: ObserveVehicleDamageUseCase) {
     webSocket(DAMAGE_WEBSOCKET_PATH) {
