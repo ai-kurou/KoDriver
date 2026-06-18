@@ -46,9 +46,9 @@ class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepos
     private val skipFirstLapFlow = MutableStateFlow(true)
     private val startReadoutEnabledFlow = MutableStateFlow(true)
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
-    override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.value = skip }
+    override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
     override fun observeStartReadoutEnabled(): Flow<Boolean> = startReadoutEnabledFlow
-    override suspend fun saveStartReadoutEnabled(enabled: Boolean) { startReadoutEnabledFlow.value = enabled }
+    override suspend fun saveStartReadoutEnabled(enabled: Boolean) { startReadoutEnabledFlow.update { enabled } }
 }
 
 class FakeVehicleDamagePreferencesRepository : VehicleDamagePreferencesRepository {
