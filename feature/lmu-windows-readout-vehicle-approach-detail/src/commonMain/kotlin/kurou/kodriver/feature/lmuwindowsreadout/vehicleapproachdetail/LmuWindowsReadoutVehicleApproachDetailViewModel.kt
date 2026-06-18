@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
@@ -29,12 +30,14 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         observeLongitudinalThreshold(),
         vehicleApproachPreferences.observeSkipFirstLap(),
         vehicleApproachPreferences.observeStartReadoutEnabled(),
-    ) { lateral, longitudinal, skipFirstLap, startReadoutEnabled ->
+        vehicleApproachPreferences.observeStartReadoutType(),
+    ) { lateral, longitudinal, skipFirstLap, startReadoutEnabled, startReadoutType ->
         LmuWindowsReadoutVehicleApproachDetailUiState(
             lateralThresholdMeters = lateral,
             longitudinalThresholdMeters = longitudinal,
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
+            startReadoutType = startReadoutType,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
 
@@ -54,8 +57,21 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutEnabled(enabled) }
     }
 
+    fun onStartReadoutTypeChanged(type: VehicleApproachStartReadoutType) {
+        viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutType(type) }
+        playStartReadoutPreview(type)
+    }
+
     fun onStartReadoutPreviewClicked() {
-        playSpeechEvent(SpeechEvent.CarLeft)
-        playSpeechEvent(SpeechEvent.CarRight, queue = true)
+        playStartReadoutPreview(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+    }
+
+    private fun playStartReadoutPreview(type: VehicleApproachStartReadoutType) {
+        val events = when (type) {
+            VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft to SpeechEvent.CarRight
+            VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach to SpeechEvent.RightApproach
+        }
+        playSpeechEvent(events.first)
+        playSpeechEvent(events.second, queue = true)
     }
 }

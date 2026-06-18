@@ -42,6 +42,8 @@ internal class LmuWindowsWavNarratorEngine(
     private val eventToFile = mapOf(
         SpeechEvent.CarLeft to "files/car_left.wav",
         SpeechEvent.CarRight to "files/car_right.wav",
+        SpeechEvent.LeftApproach to "files/left_approach.wav",
+        SpeechEvent.RightApproach to "files/right_approach.wav",
         SpeechEvent.BlueFlag to "files/blue_flag.wav",
         SpeechEvent.YellowFlag to "files/yellow_flag.wav",
         SpeechEvent.FullCourseYellow to "files/full_course_yellow.wav",

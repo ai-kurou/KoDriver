@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
@@ -62,6 +63,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 longitudinalThresholdMeters = 1.0,
                 skipFirstLap = true,
                 startReadoutEnabled = true,
+                startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
             ),
             viewModel.uiState.first(),
         )
@@ -89,6 +91,19 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     fun `onStartReadoutEnabledChanged を呼ぶと UiState の startReadoutEnabled が更新される`() = runTest {
         viewModel.onStartReadoutEnabledChanged(false)
         assertEquals(false, viewModel.uiState.first().startReadoutEnabled)
+    }
+
+    @Test
+    fun `onStartReadoutTypeChanged を呼ぶと UiState の startReadoutType が更新されプレビュー再生される`() = runTest {
+        viewModel.onStartReadoutTypeChanged(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
+        assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, viewModel.uiState.first().startReadoutType)
+        assertEquals(
+            listOf(
+                QueuedSpeechEvent(SpeechEvent.LeftApproach, queue = false),
+                QueuedSpeechEvent(SpeechEvent.RightApproach, queue = true),
+            ),
+            playedEvents,
+        )
     }
 
     @Test
