@@ -59,10 +59,19 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onStartReadoutTypeChanged(type: VehicleApproachStartReadoutType) {
         viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutType(type) }
+        playStartReadoutPreview(type)
     }
 
     fun onStartReadoutPreviewClicked() {
-        playSpeechEvent(SpeechEvent.CarLeft)
-        playSpeechEvent(SpeechEvent.CarRight, queue = true)
+        playStartReadoutPreview(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+    }
+
+    private fun playStartReadoutPreview(type: VehicleApproachStartReadoutType) {
+        val events = when (type) {
+            VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft to SpeechEvent.CarRight
+            VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach to SpeechEvent.RightApproach
+        }
+        playSpeechEvent(events.first)
+        playSpeechEvent(events.second, queue = true)
     }
 }

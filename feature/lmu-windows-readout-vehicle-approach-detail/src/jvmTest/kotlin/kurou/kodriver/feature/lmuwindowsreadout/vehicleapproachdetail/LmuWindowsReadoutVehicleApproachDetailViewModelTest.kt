@@ -94,9 +94,16 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     @Test
-    fun `onStartReadoutTypeChanged を呼ぶと UiState の startReadoutType が更新される`() = runTest {
+    fun `onStartReadoutTypeChanged を呼ぶと UiState の startReadoutType が更新されプレビュー再生される`() = runTest {
         viewModel.onStartReadoutTypeChanged(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
         assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, viewModel.uiState.first().startReadoutType)
+        assertEquals(
+            listOf(
+                QueuedSpeechEvent(SpeechEvent.LeftApproach, queue = false),
+                QueuedSpeechEvent(SpeechEvent.RightApproach, queue = true),
+            ),
+            playedEvents,
+        )
     }
 
     @Test

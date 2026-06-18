@@ -63,6 +63,29 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
+    fun `LeftApproach は左接近音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                when (path) {
+                    LEFT_APPROACH_PATH -> LEFT_APPROACH_SOUND
+                    NOISE_PATH -> NOISE_SOUND
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.LeftApproach)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(NOISE_SOUND, player.playedSounds[0])
+        assertContentEquals(LEFT_APPROACH_SOUND, player.playedSounds[1])
+    }
+
+    @Test
     fun `queue true の speak は前の音声が終わってから再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
@@ -151,10 +174,12 @@ class LmuWindowsWavNarratorEngineTest {
 
     private companion object {
         const val CAR_LEFT_PATH = "files/car_left.wav"
+        const val LEFT_APPROACH_PATH = "files/left_approach.wav"
         const val NOISE_PATH = "files/noise.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)
         val EVENT_SOUND = byteArrayOf(2)
         val NOISE_SOUND = byteArrayOf(3)
+        val LEFT_APPROACH_SOUND = byteArrayOf(4)
     }
 }
 
