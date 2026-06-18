@@ -39,6 +39,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_lateral_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_readout_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -142,6 +143,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                 modifier = Modifier.testTag("vehicle_approach_skip_first_lap_switch"),
             )
         }
+        DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_readout_subtitle))
     }
 }
 

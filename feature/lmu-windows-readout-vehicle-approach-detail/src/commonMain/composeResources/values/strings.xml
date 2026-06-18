@@ -7,4 +7,5 @@
     <string name="vehicle_approach_help_description">閾値は自車中心から相手車両中心までの距離です。この範囲内に入ると車両接近と判定され読み上げられます。\n\n※車両は一般的に全長 5 m 以下、全幅 2 m 以下となっています。</string>
     <string name="vehicle_approach_first_lap_subtitle">フォーメーションラップ・1周目はスキップ</string>
     <string name="vehicle_approach_skip_first_lap_subtitle">フォーメーションラップおよびスタート直後の1周目はスキップします。スタートグリッドで密集している状況での誤報を防ぎます。</string>
+    <string name="vehicle_approach_readout_subtitle">読み上げ別設定</string>
 </resources>
