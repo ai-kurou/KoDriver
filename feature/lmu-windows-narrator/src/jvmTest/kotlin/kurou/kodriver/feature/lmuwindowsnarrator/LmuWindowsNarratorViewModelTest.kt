@@ -46,6 +46,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.junit.After
@@ -81,9 +82,14 @@ class LmuWindowsNarratorViewModelTest {
         vehicleDamageEnabledOverrides: Map<String, Boolean> = emptyMap(),
         orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
+        startReadoutEnabled: Boolean = true,
         simulator: String? = "lmu_windows",
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
+        val vehicleApproachPreferencesRepository = FakeConstantVehicleApproachPreferencesRepository(
+            skipFirstLap = skipFirstLap,
+            startReadoutEnabled = startReadoutEnabled,
+        )
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases = VehicleApproachUseCases(
                 observeProximity = ObserveProximityUseCase(
@@ -93,7 +99,10 @@ class LmuWindowsNarratorViewModelTest {
                     FakeChannelLmuWindowsRepository(telemetryChannel.receiveAsFlow()),
                 ),
                 observeSkipFirstLap = ObserveSkipFirstLapUseCase(
-                    FakeConstantVehicleApproachPreferencesRepository(skipFirstLap),
+                    vehicleApproachPreferencesRepository,
+                ),
+                observeStartReadoutEnabled = ObserveVehicleApproachStartReadoutEnabledUseCase(
+                    vehicleApproachPreferencesRepository,
                 ),
             ),
             vehicleDamageUseCases = VehicleDamageUseCases(
@@ -173,6 +182,22 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(rightProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarRight), tts.spokenTexts)
+    }
+
+    @Test
+    fun `接近開始時の読み上げが無効のときは接近アナウンスをしない`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            startReadoutEnabled = false,
+        )
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
     @Test
@@ -589,10 +614,11 @@ private class FakeChannelLmuWindowsRepository(
 
 private class FakeConstantVehicleApproachPreferencesRepository(
     private val skipFirstLap: Boolean,
+    private val startReadoutEnabled: Boolean,
 ) : VehicleApproachPreferencesRepository {
     override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
-    override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(true)
+    override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(startReadoutEnabled)
     override suspend fun saveStartReadoutEnabled(enabled: Boolean) = Unit
 }
 
