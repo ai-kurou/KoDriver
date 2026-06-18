@@ -40,6 +40,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_lateral_label
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_approach_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_readout_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
@@ -49,6 +50,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -75,7 +77,7 @@ private fun LmuWindowsReadoutVehicleApproachDetailPane(
         onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
-        onStartReadoutPreviewClicked = viewModel::onStartReadoutPreviewClicked,
+        onStartReadoutTypeChanged = viewModel::onStartReadoutTypeChanged,
         modifier = modifier,
     )
 }
@@ -88,7 +90,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onLateralThresholdChanged: (Double) -> Unit = {},
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
-    onStartReadoutPreviewClicked: () -> Unit = {},
+    onStartReadoutTypeChanged: (VehicleApproachStartReadoutType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
@@ -154,13 +156,23 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         }
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_readout_subtitle))
         val carLeftRightChipLabel = stringResource(Res.string.vehicle_approach_car_left_right_chip_label)
+        val leftRightApproachChipLabel = stringResource(Res.string.vehicle_approach_left_right_approach_chip_label)
+        val startReadoutTypeLabels = mapOf(
+            VehicleApproachStartReadoutType.CAR_LEFT_RIGHT to carLeftRightChipLabel,
+            VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH to leftRightApproachChipLabel,
+        )
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
             checked = uiState.startReadoutEnabled,
-            chipLabels = listOf(carLeftRightChipLabel),
-            selectedChipLabels = setOf(carLeftRightChipLabel),
+            chipLabels = startReadoutTypeLabels.values.toList(),
+            selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
             onCheckedChange = onStartReadoutEnabledChanged,
-            onChipClick = { onStartReadoutPreviewClicked() },
+            onChipClick = { label ->
+                startReadoutTypeLabels
+                    .entries
+                    .firstOrNull { it.value == label }
+                    ?.let { onStartReadoutTypeChanged(it.key) }
+            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }
