@@ -9,29 +9,29 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.VehicleApproachPreferencesUseCases
 
 internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     observeLateralThreshold: ObserveLateralThresholdUseCase,
     observeLongitudinalThreshold: ObserveLongitudinalThresholdUseCase,
-    observeSkipFirstLap: ObserveSkipFirstLapUseCase,
+    private val vehicleApproachPreferences: VehicleApproachPreferencesUseCases,
     private val saveLateralThreshold: SaveLateralThresholdUseCase,
     private val saveLongitudinalThreshold: SaveLongitudinalThresholdUseCase,
-    private val saveSkipFirstLap: SaveSkipFirstLapUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> = combine(
         observeLateralThreshold(),
         observeLongitudinalThreshold(),
-        observeSkipFirstLap(),
-    ) { lateral, longitudinal, skipFirstLap ->
+        vehicleApproachPreferences.observeSkipFirstLap(),
+        vehicleApproachPreferences.observeStartReadoutEnabled(),
+    ) { lateral, longitudinal, skipFirstLap, startReadoutEnabled ->
         LmuWindowsReadoutVehicleApproachDetailUiState(
             lateralThresholdMeters = lateral,
             longitudinalThresholdMeters = longitudinal,
             skipFirstLap = skipFirstLap,
+            startReadoutEnabled = startReadoutEnabled,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
 
@@ -44,6 +44,10 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     }
 
     fun onSkipFirstLapChanged(skip: Boolean) {
-        viewModelScope.launch { saveSkipFirstLap(skip) }
+        viewModelScope.launch { vehicleApproachPreferences.saveSkipFirstLap(skip) }
+    }
+
+    fun onStartReadoutEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutEnabled(enabled) }
     }
 }

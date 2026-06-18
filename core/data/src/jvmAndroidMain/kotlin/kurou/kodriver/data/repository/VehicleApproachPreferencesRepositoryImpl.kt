@@ -16,4 +16,11 @@ internal class VehicleApproachPreferencesRepositoryImpl(
     override suspend fun saveSkipFirstLap(skip: Boolean) {
         dataStore.updateData { it.copy(skipFirstLap = skip) }
     }
+
+    override fun observeStartReadoutEnabled(): Flow<Boolean> =
+        dataStore.data.map { it.startReadoutEnabled }
+
+    override suspend fun saveStartReadoutEnabled(enabled: Boolean) {
+        dataStore.updateData { it.copy(startReadoutEnabled = enabled) }
+    }
 }
