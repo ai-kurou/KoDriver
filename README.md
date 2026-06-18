@@ -21,8 +21,15 @@ Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルを
 
 ## 動作要件
 
+**デスクトップアプリ（Windows）**
+
 - Windows 10 以降
 - Le Mans Ultimate（インストール済み）
+
+**Android アプリ**
+
+- Android 9.0 以降
+- デスクトップアプリと同一 LAN への接続
 
 ## インストール
 
