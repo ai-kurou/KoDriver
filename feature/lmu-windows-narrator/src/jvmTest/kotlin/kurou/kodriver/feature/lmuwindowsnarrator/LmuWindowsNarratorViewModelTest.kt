@@ -48,6 +48,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.junit.After
@@ -84,12 +85,14 @@ class LmuWindowsNarratorViewModelTest {
         orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
+        startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         simulator: String? = "lmu_windows",
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
         val vehicleApproachPreferencesRepository = FakeConstantVehicleApproachPreferencesRepository(
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
+            startReadoutType = startReadoutType,
         )
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases = VehicleApproachUseCases(
@@ -103,6 +106,9 @@ class LmuWindowsNarratorViewModelTest {
                     vehicleApproachPreferencesRepository,
                 ),
                 observeStartReadoutEnabled = ObserveVehicleApproachStartReadoutEnabledUseCase(
+                    vehicleApproachPreferencesRepository,
+                ),
+                observeStartReadoutType = ObserveVehicleApproachStartReadoutTypeUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
             ),
@@ -162,7 +168,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- 接近アナウンス ---
 
     @Test
-    fun `左から接近するとCarLeftを読み上げる`() = runTest(testDispatcher) {
+    fun `CAR_LEFT_RIGHTタイプのとき左からの接近でCarLeftを読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(proximityChannel = channel, ttsEngine = tts)
@@ -174,7 +180,7 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `右から接近するとCarRightを読み上げる`() = runTest(testDispatcher) {
+    fun `CAR_LEFT_RIGHTタイプのとき右からの接近でCarRightを読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(proximityChannel = channel, ttsEngine = tts)
@@ -183,6 +189,38 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(rightProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarRight), tts.spokenTexts)
+    }
+
+    @Test
+    fun `LEFT_RIGHT_APPROACHタイプのとき左からの接近でLeftApproachを読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+        )
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.LeftApproach), tts.spokenTexts)
+    }
+
+    @Test
+    fun `LEFT_RIGHT_APPROACHタイプのとき右からの接近でRightApproachを読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+        )
+
+        channel.send(noProximity())
+        channel.send(rightProximity(vehicleId = 1))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RightApproach), tts.spokenTexts)
     }
 
     @Test
@@ -616,13 +654,14 @@ private class FakeChannelLmuWindowsRepository(
 private class FakeConstantVehicleApproachPreferencesRepository(
     private val skipFirstLap: Boolean,
     private val startReadoutEnabled: Boolean,
+    private val startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
 ) : VehicleApproachPreferencesRepository {
     override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
     override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(startReadoutEnabled)
     override suspend fun saveStartReadoutEnabled(enabled: Boolean) = Unit
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> =
-        MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+        MutableStateFlow(startReadoutType)
 
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) = Unit
 }
