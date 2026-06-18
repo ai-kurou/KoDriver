@@ -8,7 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 
-private const val PROXIMITY_WEBSOCKET_PATH = "/ws/proximity"
+private const val PROXIMITY_WEBSOCKET_PATH = "/ws/lmu_windows/proximity"
 
 internal fun Route.proximityWebSocket(observeProximity: ObserveProximityUseCase) {
     webSocket(PROXIMITY_WEBSOCKET_PATH) {

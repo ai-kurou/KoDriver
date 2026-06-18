@@ -21,7 +21,7 @@ import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 
 private const val DEFAULT_PORT = 8080
-private const val PATH = "/ws/proximity"
+private const val PATH = "/ws/lmu_windows/proximity"
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
 internal class WebSocketProximityRepository(

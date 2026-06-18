@@ -20,7 +20,7 @@ import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 
 private const val DEFAULT_PORT = 8080
-private const val PATH = "/ws/damage"
+private const val PATH = "/ws/lmu_windows/damage"
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
 internal class WebSocketVehicleDamageRepository(
