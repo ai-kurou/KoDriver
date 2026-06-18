@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -45,10 +46,15 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
     private val startReadoutEnabledFlow = MutableStateFlow(true)
+    private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
     override fun observeStartReadoutEnabled(): Flow<Boolean> = startReadoutEnabledFlow
     override suspend fun saveStartReadoutEnabled(enabled: Boolean) { startReadoutEnabledFlow.update { enabled } }
+    override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
+    override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
+        startReadoutTypeFlow.update { type }
+    }
 }
 
 class FakeVehicleDamagePreferencesRepository : VehicleDamagePreferencesRepository {

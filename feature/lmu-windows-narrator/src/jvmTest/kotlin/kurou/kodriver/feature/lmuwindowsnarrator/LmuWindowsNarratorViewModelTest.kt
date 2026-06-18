@@ -27,6 +27,7 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
@@ -620,6 +621,10 @@ private class FakeConstantVehicleApproachPreferencesRepository(
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
     override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(startReadoutEnabled)
     override suspend fun saveStartReadoutEnabled(enabled: Boolean) = Unit
+    override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> =
+        MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+
+    override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) = Unit
 }
 
 private class FakeVehicleDamagePreferencesRepository(

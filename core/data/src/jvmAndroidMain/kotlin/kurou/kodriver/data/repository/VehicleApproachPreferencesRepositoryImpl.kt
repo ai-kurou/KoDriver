@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.VehicleApproachPreferences
+import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 
 internal class VehicleApproachPreferencesRepositoryImpl(
@@ -22,5 +23,12 @@ internal class VehicleApproachPreferencesRepositoryImpl(
 
     override suspend fun saveStartReadoutEnabled(enabled: Boolean) {
         dataStore.updateData { it.copy(startReadoutEnabled = enabled) }
+    }
+
+    override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> =
+        dataStore.data.map { VehicleApproachStartReadoutType.fromId(it.startReadoutType) }
+
+    override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
+        dataStore.updateData { it.copy(startReadoutType = type.id) }
     }
 }
