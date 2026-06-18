@@ -7,8 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.VehicleApproachPreferencesUseCases
@@ -19,6 +21,7 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val vehicleApproachPreferences: VehicleApproachPreferencesUseCases,
     private val saveLateralThreshold: SaveLateralThresholdUseCase,
     private val saveLongitudinalThreshold: SaveLongitudinalThresholdUseCase,
+    private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> = combine(
@@ -49,5 +52,10 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
         viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutEnabled(enabled) }
+    }
+
+    fun onStartReadoutPreviewClicked() {
+        playSpeechEvent(SpeechEvent.CarLeft)
+        playSpeechEvent(SpeechEvent.CarRight)
     }
 }

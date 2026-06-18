@@ -7,8 +7,11 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.VehicleApproachPreferencesUseCases
@@ -23,6 +26,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var thresholdsRepository: FakeProximityThresholdsRepository
     private lateinit var vehicleApproachPreferencesRepository: FakeVehicleApproachPreferencesRepository
+    private lateinit var playedEvents: MutableList<SpeechEvent>
     private lateinit var viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel
 
     @Before
@@ -30,12 +34,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         Dispatchers.setMain(testDispatcher)
         thresholdsRepository = FakeProximityThresholdsRepository()
         vehicleApproachPreferencesRepository = FakeVehicleApproachPreferencesRepository()
+        playedEvents = mutableListOf()
         viewModel = LmuWindowsReadoutVehicleApproachDetailViewModel(
             observeLateralThreshold = ObserveLateralThresholdUseCase(thresholdsRepository),
             observeLongitudinalThreshold = ObserveLongitudinalThresholdUseCase(thresholdsRepository),
             vehicleApproachPreferences = VehicleApproachPreferencesUseCases(vehicleApproachPreferencesRepository),
             saveLateralThreshold = SaveLateralThresholdUseCase(thresholdsRepository),
             saveLongitudinalThreshold = SaveLongitudinalThresholdUseCase(thresholdsRepository),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
 
@@ -80,4 +86,19 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         viewModel.onStartReadoutEnabledChanged(false)
         assertEquals(false, viewModel.uiState.first().startReadoutEnabled)
     }
+
+    @Test
+    fun `onStartReadoutPreviewClicked を呼ぶと CarLeft と CarRight が再生される`() {
+        viewModel.onStartReadoutPreviewClicked()
+
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.CarRight), playedEvents)
+    }
+}
+
+private class FakeTextToSpeechEngine(
+    private val onSpeak: (SpeechEvent) -> Unit,
+) : TextToSpeechEngine {
+    override val currentReadoutItemKey: String? = null
+    override fun speak(event: SpeechEvent) = onSpeak(event)
+    override fun stop() = Unit
 }
