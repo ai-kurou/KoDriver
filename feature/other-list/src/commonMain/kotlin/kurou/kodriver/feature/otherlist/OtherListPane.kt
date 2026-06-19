@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
@@ -176,7 +177,42 @@ fun OtherListPane(
             }
             HorizontalDivider()
         }
+        item(key = "app_version") {
+            OtherAppVersionListItem(
+                appVersionLabel = uiState.appVersionLabel,
+                appVersion = uiState.appVersion,
+            )
+            HorizontalDivider()
+        }
     }
+}
+
+@Composable
+private fun OtherAppVersionListItem(
+    appVersionLabel: String,
+    appVersion: String,
+) {
+    if (appVersionLabel.isBlank() || appVersion.isBlank()) return
+
+    ListItem(
+        headlineContent = { Text(appVersionLabel) },
+        supportingContent = { Text(appVersion) },
+        leadingContent = {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = null,
+            )
+        },
+        colors = ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            headlineColor = MaterialTheme.colorScheme.onSurface,
+            supportingColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("other_app_version"),
+    )
 }
 
 @Preview(showBackground = true)

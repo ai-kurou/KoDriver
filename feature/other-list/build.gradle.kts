@@ -1,5 +1,29 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
+val generatedAppVersionDir = layout.buildDirectory.dir("generated/source/appVersion/commonMain/kotlin")
+val generatedAppVersionFile = generatedAppVersionDir.map {
+    it.file("kurou/kodriver/feature/otherlist/GeneratedAppVersion.kt")
+}
+val generateAppVersionSource = tasks.register("generateAppVersionSource") {
+    val appVersion = providers.gradleProperty("appVersion").get()
+    val outputFile = generatedAppVersionFile.get().asFile
+
+    inputs.property("appVersion", appVersion)
+    outputs.file(outputFile)
+
+    doLast {
+        outputFile.parentFile.mkdirs()
+        outputFile.writeText(
+            """
+            package kurou.kodriver.feature.otherlist
+
+            internal const val GENERATED_APP_VERSION = "$appVersion"
+            """.trimIndent() + "\n",
+        )
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -42,6 +66,9 @@ kotlin {
     }
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir(generatedAppVersionDir)
+        }
         val nonAndroidMain by creating {
             dependsOn(commonMain.get())
         }
@@ -81,6 +108,10 @@ kotlin {
             implementation(libs.roborazzi.composeDesktop)
         }
     }
+}
+
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
+    dependsOn(generateAppVersionSource)
 }
 
 compose.resources {

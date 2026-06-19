@@ -4,4 +4,6 @@ data class OtherListUiState(
     val items: List<String> = buildOtherListItems().map { it.id },
     val selectedItem: OtherListItemType? = null,
     val hasAppUpdate: Boolean = false,
+    val appVersionLabel: String = "",
+    val appVersion: String = "",
 )
