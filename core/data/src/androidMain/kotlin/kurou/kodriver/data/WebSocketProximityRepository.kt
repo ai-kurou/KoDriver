@@ -16,12 +16,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.ProximityData
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 
 private const val DEFAULT_PORT = 8080
-private const val PATH = "/ws/lmu_windows/proximity"
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
 internal class WebSocketProximityRepository(
@@ -47,7 +48,11 @@ internal class WebSocketProximityRepository(
     private fun connectWithRetry(ip: String): Flow<ProximityData> = flow {
         while (true) {
             try {
-                client.webSocket(host = ip, port = port, path = PATH) {
+                client.webSocket(
+                    host = ip,
+                    port = port,
+                    path = KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LMU),
+                ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {

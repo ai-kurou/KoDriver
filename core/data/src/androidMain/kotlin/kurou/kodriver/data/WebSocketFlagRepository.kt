@@ -16,12 +16,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 
 private const val DEFAULT_PORT = 8080
-private const val PATH = "/ws/lmu_windows/flags"
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
 internal class WebSocketFlagRepository(
@@ -47,7 +48,11 @@ internal class WebSocketFlagRepository(
     private fun connectWithRetry(ip: String): Flow<RaceFlagsData> = flow {
         while (true) {
             try {
-                client.webSocket(host = ip, port = port, path = PATH) {
+                client.webSocket(
+                    host = ip,
+                    port = port,
+                    path = KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LMU),
+                ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {

@@ -71,6 +71,7 @@ class WebSocketVehicleDamageRepositoryTest {
         assertEquals(true, result.overheating)
         assertEquals(false, result.partDetached)
         assertEquals(0.5, result.lastImpactMagnitude)
+        assertEquals("/ws/lmu_windows/damage", server.takeRequest().path)
     }
 
     @Test

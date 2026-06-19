@@ -70,6 +70,7 @@ class WebSocketProximityRepositoryTest {
 
         assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
         assertEquals(emptySet(), result.sideBySideRightVehicleIds)
+        assertEquals("/ws/lmu_windows/proximity", server.takeRequest().path)
     }
 
     @Test
