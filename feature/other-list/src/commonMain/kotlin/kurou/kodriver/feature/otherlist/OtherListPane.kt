@@ -182,6 +182,7 @@ fun OtherListPane(
                 appVersionLabel = uiState.appVersionLabel,
                 appVersion = uiState.appVersion,
             )
+            HorizontalDivider()
         }
     }
 }
