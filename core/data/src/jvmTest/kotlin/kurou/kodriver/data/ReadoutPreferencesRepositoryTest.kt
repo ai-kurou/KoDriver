@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -24,8 +25,11 @@ class ReadoutPreferencesRepositoryTest {
     @Test
     fun `readout設定が正しいファイルに書き込まれる`() = testScope.runTest {
         val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
-        repository.saveReadoutEnabledState("lmu_windows", "vehicle_approach", true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
 
-        assertEquals(mapOf("vehicle_approach" to true), repository.observeReadoutEnabledStates("lmu_windows").first())
+        assertEquals(
+            mapOf(ReadoutItemKey.VEHICLE_APPROACH to true),
+            repository.observeReadoutEnabledStates("lmu_windows").first(),
+        )
     }
 }

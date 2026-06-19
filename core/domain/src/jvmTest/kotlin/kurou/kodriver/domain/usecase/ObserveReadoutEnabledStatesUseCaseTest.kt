@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,10 +16,10 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
         assertTrue(useCase("lmu_windows").first().isEmpty())
 
-        repo.saveReadoutEnabledState("lmu_windows", "vehicle_approach", true)
-        repo.saveReadoutEnabledState("rFactor 2", "vehicle_approach", false)
+        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
+        repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.VEHICLE_APPROACH, false)
 
-        assertEquals(mapOf("vehicle_approach" to true), useCase("lmu_windows").first())
-        assertEquals(mapOf("vehicle_approach" to false), useCase("rFactor 2").first())
+        assertEquals(mapOf(ReadoutItemKey.VEHICLE_APPROACH to true), useCase("lmu_windows").first())
+        assertEquals(mapOf(ReadoutItemKey.VEHICLE_APPROACH to false), useCase("rFactor 2").first())
     }
 }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -33,31 +34,31 @@ private class FakeProximityThresholdsRepositoryImpl : ProximityThresholdsReposit
 }
 
 private class FakeFlagPreferencesRepositoryImpl : FlagPreferencesRepository {
-    private val states = MutableStateFlow<Map<String, Boolean>>(emptyMap())
-    override fun observeFlagEnabledStates(): Flow<Map<String, Boolean>> = states
-    override suspend fun saveFlagEnabledState(key: String, enabled: Boolean) {
+    private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+    override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
+    override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         states.update { it + (key to enabled) }
     }
 }
 
 private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepository {
-    private val enabledStates = MutableStateFlow<Map<String, Map<String, Boolean>>>(emptyMap())
-    private val orders = MutableStateFlow<Map<String, List<String>>>(emptyMap())
+    private val enabledStates = MutableStateFlow<Map<String, Map<ReadoutItemKey, Boolean>>>(emptyMap())
+    private val orders = MutableStateFlow<Map<String, List<ReadoutItemKey>>>(emptyMap())
 
-    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<String, Boolean>> =
+    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         enabledStates.map { it[simulator] ?: emptyMap() }
 
-    override suspend fun saveReadoutEnabledState(simulator: String, label: String, enabled: Boolean) {
+    override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) {
         enabledStates.update { all ->
             val current = all[simulator] ?: emptyMap()
-            all + (simulator to (current + (label to enabled)))
+            all + (simulator to (current + (key to enabled)))
         }
     }
 
-    override fun observeReadoutOrder(simulator: String): Flow<List<String>> =
+    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
         orders.map { it[simulator] ?: emptyList() }
 
-    override suspend fun saveReadoutOrder(simulator: String, order: List<String>) {
+    override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) {
         orders.update { it + (simulator to order) }
     }
 }

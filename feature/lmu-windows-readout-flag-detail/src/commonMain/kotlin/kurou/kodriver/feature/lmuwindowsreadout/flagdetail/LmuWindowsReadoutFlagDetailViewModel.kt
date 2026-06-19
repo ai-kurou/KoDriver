@@ -40,11 +40,11 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
 
-    fun onFlagEnabledChanged(key: String, enabled: Boolean) {
+    fun onFlagEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
         viewModelScope.launch { saveFlagEnabledState(key, enabled) }
     }
 
-    fun onPreviewClicked(key: String) {
+    fun onPreviewClicked(key: ReadoutItemKey) {
         val event = flagKeyToSpeechEvent[key] ?: return
         playSpeechEvent(event)
     }

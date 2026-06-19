@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
+import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
 import org.junit.Rule
 import org.junit.Test
@@ -48,7 +49,7 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf("lmu_windows"),
                     selectedSimulator = "lmu_windows",
-                    items = listOf("vehicle_approach", "flag", "vehicle_damage"),
+                    items = listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},

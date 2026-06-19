@@ -66,6 +66,7 @@ import kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
+import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
@@ -78,17 +79,17 @@ private fun simulatorDisplayName(simulatorId: String): String = when (simulatorI
 }
 
 @Composable
-private fun itemDisplayName(itemId: String): String = when (itemId) {
-    "vehicle_approach" -> stringResource(Res.string.item_vehicle_approach)
-    "flag" -> stringResource(Res.string.item_flag)
-    "vehicle_damage" -> stringResource(Res.string.item_vehicle_damage)
-    else -> itemId
+private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
+    ReadoutItemKey.VEHICLE_APPROACH -> stringResource(Res.string.item_vehicle_approach)
+    ReadoutItemKey.FLAG -> stringResource(Res.string.item_flag)
+    ReadoutItemKey.VEHICLE_DAMAGE -> stringResource(Res.string.item_vehicle_damage)
+    else -> itemId.value
 }
 
-private fun itemIcon(itemId: String): ImageVector = when (itemId) {
-    "vehicle_approach" -> Icons.Filled.DirectionsCar
-    "flag" -> Icons.Filled.Flag
-    "vehicle_damage" -> Icons.Filled.Build
+private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
+    ReadoutItemKey.VEHICLE_APPROACH -> Icons.Filled.DirectionsCar
+    ReadoutItemKey.FLAG -> Icons.Filled.Flag
+    ReadoutItemKey.VEHICLE_DAMAGE -> Icons.Filled.Build
     else -> Icons.Filled.DirectionsCar
 }
 
@@ -142,8 +143,8 @@ internal fun ReadoutListPane(
     uiState: ReadoutListUiState,
     onSimulatorSelected: (String) -> Unit,
     onMove: (Int, Int) -> Unit,
-    onReadoutEnabledChanged: (String, Boolean) -> Unit,
-    onItemClick: (String) -> Unit,
+    onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onItemClick: (ReadoutItemKey) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -220,8 +221,8 @@ internal fun ReadoutListPane(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    itemsIndexed(uiState.items, key = { _, it -> it }) { index, item ->
-                        ReorderableItem(reorderableState, key = item) {
+                    itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
+                        ReorderableItem(reorderableState, key = item.value) {
                             val isSelected = ReadoutListItemType.fromId(item) == uiState.selectedItem
                             val cardContainerColor by animateColorAsState(
                                 targetValue = if (isSelected) {
@@ -288,7 +289,11 @@ private fun ReadoutListPanePreview() {
         uiState = ReadoutListUiState(
             simulators = listOf("lmu_windows"),
             selectedSimulator = "lmu_windows",
-            items = listOf("vehicle_approach", "flag", "vehicle_damage"),
+            items = listOf(
+                ReadoutItemKey.VEHICLE_APPROACH,
+                ReadoutItemKey.FLAG,
+                ReadoutItemKey.VEHICLE_DAMAGE,
+            ),
         ),
         onSimulatorSelected = {},
         onMove = { _, _ -> },

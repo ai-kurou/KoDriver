@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
@@ -32,11 +33,11 @@ internal class LmuWindowsWavNarratorEngine(
     private var playJob: Job? = null
 
     @Volatile
-    private var _currentReadoutItemKey: String? = null
+    private var _currentReadoutItemKey: ReadoutItemKey? = null
 
     // playJob がアクティブな間だけ再生中のキーを返す。
     // キャンセル後に古いジョブが _currentReadoutItemKey を上書きしないよう playJob で二重確認する。
-    override val currentReadoutItemKey: String?
+    override val currentReadoutItemKey: ReadoutItemKey?
         get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
     private val eventToFile = mapOf(

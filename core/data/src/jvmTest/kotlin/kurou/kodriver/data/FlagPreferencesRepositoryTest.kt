@@ -2,6 +2,7 @@ package kurou.kodriver.data
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,8 +18,8 @@ class FlagPreferencesRepositoryTest {
 
             assertTrue(repo.observeFlagEnabledStates().first().isEmpty())
 
-            repo.saveFlagEnabledState("green", true)
-            assertEquals(mapOf("green" to true), repo.observeFlagEnabledStates().first())
+            repo.saveFlagEnabledState(ReadoutItemKey.BLUE_FLAG, true)
+            assertEquals(mapOf(ReadoutItemKey.BLUE_FLAG to true), repo.observeFlagEnabledStates().first())
         } finally {
             tempDir.deleteRecursively()
         }

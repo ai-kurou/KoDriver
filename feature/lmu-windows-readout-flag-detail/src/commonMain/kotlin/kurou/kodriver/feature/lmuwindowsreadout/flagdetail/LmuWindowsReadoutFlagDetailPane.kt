@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private data class FlagSwitchItem(
-    val key: String,
+    val key: ReadoutItemKey,
     val labelRes: StringResource,
     val chipLabelRes: StringResource,
 )
@@ -61,8 +61,8 @@ fun LmuWindowsReadoutFlagDetailPane(
 @Composable
 internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
-    onFlagEnabledChanged: (String, Boolean) -> Unit,
-    onPreviewClicked: (String) -> Unit,
+    onFlagEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onPreviewClicked: (ReadoutItemKey) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(

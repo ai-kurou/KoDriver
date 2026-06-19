@@ -4,13 +4,14 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private class FakeTextToSpeechEngine : TextToSpeechEngine {
     val spokenEvents = mutableListOf<SpeechEvent>()
     val queued = mutableListOf<Boolean>()
-    override val currentReadoutItemKey: String? = null
+    override val currentReadoutItemKey: ReadoutItemKey? = null
     override fun speak(event: SpeechEvent, queue: Boolean) {
         spokenEvents.add(event)
         queued.add(queue)

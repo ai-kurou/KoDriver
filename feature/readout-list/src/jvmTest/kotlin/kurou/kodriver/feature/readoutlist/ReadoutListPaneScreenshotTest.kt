@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.ReadoutItemKey
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,11 +50,15 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu_windows"),
                                 selectedSimulator = "lmu_windows",
-                                items = listOf("vehicle_approach", "flag", "vehicle_damage"),
+                                items = listOf(
+                                    ReadoutItemKey.VEHICLE_APPROACH,
+                                    ReadoutItemKey.FLAG,
+                                    ReadoutItemKey.VEHICLE_DAMAGE,
+                                ),
                                 readoutEnabledStates = mapOf(
-                                    "vehicle_approach" to true,
-                                    "flag" to false,
-                                    "vehicle_damage" to true,
+                                    ReadoutItemKey.VEHICLE_APPROACH to true,
+                                    ReadoutItemKey.FLAG to false,
+                                    ReadoutItemKey.VEHICLE_DAMAGE to true,
                                 ),
                             ),
                             onSimulatorSelected = {},
@@ -78,11 +83,15 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu_windows"),
                                 selectedSimulator = "lmu_windows",
-                                items = listOf("vehicle_approach", "flag", "vehicle_damage"),
+                                items = listOf(
+                                    ReadoutItemKey.VEHICLE_APPROACH,
+                                    ReadoutItemKey.FLAG,
+                                    ReadoutItemKey.VEHICLE_DAMAGE,
+                                ),
                                 readoutEnabledStates = mapOf(
-                                    "vehicle_approach" to true,
-                                    "flag" to false,
-                                    "vehicle_damage" to true,
+                                    ReadoutItemKey.VEHICLE_APPROACH to true,
+                                    ReadoutItemKey.FLAG to false,
+                                    ReadoutItemKey.VEHICLE_DAMAGE to true,
                                 ),
                                 selectedItem = ReadoutListItemType.VehicleApproach,
                             ),

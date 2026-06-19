@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ReadoutItemKey
 import org.junit.After
 import org.junit.Before
 import java.io.File
@@ -41,24 +42,27 @@ class AndroidReadoutPreferencesRepositoryTest {
     fun `enabledStatesは初期状態で空を返し保存後にON_OFF状態を返す`() = runTest(testDispatcher) {
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
 
-        repository.saveReadoutEnabledState("lmu_windows", "vehicle_approach", true)
-        repository.saveReadoutEnabledState("lmu_windows", "flag", false)
-        repository.saveReadoutEnabledState("lmu_windows", "vehicle_damage", true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.FLAG, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_DAMAGE, true)
 
         val states = repository.observeReadoutEnabledStates("lmu_windows").first()
-        assertEquals(true, states["vehicle_approach"])
-        assertEquals(false, states["flag"])
-        assertEquals(true, states["vehicle_damage"])
+        assertEquals(true, states[ReadoutItemKey.VEHICLE_APPROACH])
+        assertEquals(false, states[ReadoutItemKey.FLAG])
+        assertEquals(true, states[ReadoutItemKey.VEHICLE_DAMAGE])
     }
 
     @Test
     fun `orderは初期状態で空を返し保存後に順序を返す`() = runTest(testDispatcher) {
         assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
 
-        repository.saveReadoutOrder("lmu_windows", listOf("flag", "vehicle_approach", "vehicle_damage"))
+        repository.saveReadoutOrder(
+            "lmu_windows",
+            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
+        )
 
         assertEquals(
-            listOf("flag", "vehicle_approach", "vehicle_damage"),
+            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
     }
@@ -72,8 +76,8 @@ class AndroidReadoutPreferencesRepositoryTest {
 
     @Test
     fun `異なるシミュレータのデータは互いに影響しない`() = runTest(testDispatcher) {
-        repository.saveReadoutEnabledState("lmu_windows", "vehicle_approach", true)
-        repository.saveReadoutOrder("lmu_windows", listOf("vehicle_approach"))
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
+        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VEHICLE_APPROACH))
 
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("other").first())
         assertEquals(emptyList(), repository.observeReadoutOrder("other").first())

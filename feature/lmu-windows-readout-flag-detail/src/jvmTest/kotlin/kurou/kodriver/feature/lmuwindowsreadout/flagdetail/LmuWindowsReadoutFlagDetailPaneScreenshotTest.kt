@@ -42,7 +42,7 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
         )
     }
 
-    private fun captureLmuWindowsReadoutFlagDetailPane(enabledStates: Map<String, Boolean>) {
+    private fun captureLmuWindowsReadoutFlagDetailPane(enabledStates: Map<ReadoutItemKey, Boolean>) {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
