@@ -63,11 +63,13 @@ subprojects {
 moduleGraphAssert {
     maxHeight = 3
     configurations = setOf(
+        // JVM・Android プロジェクトの標準依存関係
         "api",
         "implementation",
         "testImplementation",
         "testFixturesApi",
         "testFixturesImplementation",
+        // Kotlin Multiplatform の本番 source set
         "commonMainApi",
         "commonMainImplementation",
         "androidMainApi",
@@ -82,6 +84,23 @@ moduleGraphAssert {
         "nonAndroidMainImplementation",
         "jvmAndroidMainApi",
         "jvmAndroidMainImplementation",
+        // Kotlin Multiplatform のテスト source set
+        "commonTestApi",
+        "commonTestImplementation",
+        "androidHostTestApi",
+        "androidHostTestImplementation",
+        "androidUnitTestApi",
+        "androidUnitTestImplementation",
+        "jvmTestApi",
+        "jvmTestImplementation",
+        "jsTestApi",
+        "jsTestImplementation",
+        "wasmJsTestApi",
+        "wasmJsTestImplementation",
+        "nonAndroidTestApi",
+        "nonAndroidTestImplementation",
+        "jvmAndroidTestApi",
+        "jvmAndroidTestImplementation",
     )
     allowed = arrayOf(
         // app エントリーポイント → app:shared
