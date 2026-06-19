@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kodriver.feature.otherlist.generated.resources.item_release_page
 import kodriver.feature.otherlist.generated.resources.item_server_ip
 import kodriver.feature.otherlist.generated.resources.item_volume
@@ -42,6 +44,7 @@ import org.jetbrains.compose.resources.stringResource
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
     OtherListItemType.ServerIp.id -> stringResource(Res.string.item_server_ip)
     OtherListItemType.Volume.id -> stringResource(Res.string.item_volume)
+    OtherListItemType.ReadoutStartSound.id -> stringResource(Res.string.item_readout_start_sound)
     OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
     OtherListItemType.License.id -> stringResource(Res.string.item_license)
@@ -89,6 +92,15 @@ fun OtherListPane(
                             }
                         }
 
+                        OtherListItemType.ReadoutStartSound -> {
+                            {
+                                Icon(
+                                    imageVector = Icons.Outlined.MusicNote,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+
                         OtherListItemType.GitHubRepository -> {
                             {
                                 Icon(
@@ -131,6 +143,7 @@ fun OtherListPane(
                         }
 
                         OtherListItemType.Volume,
+                        OtherListItemType.ReadoutStartSound,
                         OtherListItemType.License,
                         -> {
                             {
