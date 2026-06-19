@@ -1,4 +1,4 @@
-package kurou.kodriver.data.repository
+package kurou.kodriver.core.lmuwindowsdata.repository
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kurou.kodriver.data.datasource.MemoryReader
-import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.MemoryReader
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

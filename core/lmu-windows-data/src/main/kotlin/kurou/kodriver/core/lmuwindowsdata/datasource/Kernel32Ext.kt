@@ -1,4 +1,4 @@
-package kurou.kodriver.data.datasource
+package kurou.kodriver.core.lmuwindowsdata.datasource
 
 import com.sun.jna.Library
 import com.sun.jna.Native

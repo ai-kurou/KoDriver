@@ -1,11 +1,11 @@
-package kurou.kodriver.data.repository
+package kurou.kodriver.core.lmuwindowsdata.repository
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
-import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository

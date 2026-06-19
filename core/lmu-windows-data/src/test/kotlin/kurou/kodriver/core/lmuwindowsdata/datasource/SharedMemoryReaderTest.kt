@@ -1,4 +1,4 @@
-package kurou.kodriver.data.datasource
+package kurou.kodriver.core.lmuwindowsdata.datasource
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
