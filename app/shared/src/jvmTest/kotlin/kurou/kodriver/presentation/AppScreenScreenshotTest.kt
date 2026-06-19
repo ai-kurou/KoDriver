@@ -53,8 +53,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     readoutContent = {
@@ -77,8 +76,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     readoutContent = {
@@ -100,8 +98,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     readoutContent = {
@@ -124,8 +121,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     readoutContent = {
@@ -147,8 +143,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     readoutContent = {
@@ -171,8 +166,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     readoutContent = {
@@ -194,8 +188,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationBar,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
@@ -216,8 +209,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
@@ -238,8 +230,7 @@ class AppScreenScreenshotTest {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationDrawer,
                     bannerUiState = ConnectionBannerUiState(
-                        isConnected = false,
-                        isConnectionChecked = true,
+                        status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,

@@ -26,15 +26,15 @@ fun ConnectionBanner(
     uiState: ConnectionBannerUiState,
     modifier: Modifier = Modifier,
 ) {
-    val backgroundColor = if (uiState.isConnected) {
-        MaterialTheme.colorScheme.secondaryContainer
-    } else {
-        MaterialTheme.colorScheme.errorContainer
+    val backgroundColor = when (uiState.status) {
+        ConnectionBannerStatus.CONNECTED -> MaterialTheme.colorScheme.secondaryContainer
+        ConnectionBannerStatus.UNCHECKED, ConnectionBannerStatus.DISCONNECTED ->
+            MaterialTheme.colorScheme.errorContainer
     }
-    val contentColor = if (uiState.isConnected) {
-        MaterialTheme.colorScheme.onSecondaryContainer
-    } else {
-        MaterialTheme.colorScheme.onErrorContainer
+    val contentColor = when (uiState.status) {
+        ConnectionBannerStatus.CONNECTED -> MaterialTheme.colorScheme.onSecondaryContainer
+        ConnectionBannerStatus.UNCHECKED, ConnectionBannerStatus.DISCONNECTED ->
+            MaterialTheme.colorScheme.onErrorContainer
     }
     val icon = when (uiState.iconType) {
         ConnectionBannerIconType.NETWORK ->
