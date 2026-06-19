@@ -44,10 +44,6 @@ kotlin {
         }
         jvmMain {
             dependsOn(jvmAndroidMain)
-            dependencies {
-                implementation(libs.jna)
-                implementation(libs.jna.platform)
-            }
         }
         androidMain {
             dependsOn(jvmAndroidMain)

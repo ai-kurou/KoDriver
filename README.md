@@ -59,7 +59,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:webApp` | Web アプリ（未実装） | [図](docs/graphs/app-webApp.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](docs/graphs/app-shared.svg) |
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](docs/graphs/core-domain.svg) |
-| `:core:data` | 共有メモリ読み取り（JVM）・DataStore・リポジトリ実装（JVM / Android） | [図](docs/graphs/core-data.svg) |
+| `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](docs/graphs/core-data.svg) |
+| `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](docs/graphs/core-lmu-windows-data.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](docs/graphs/core-designsystem.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](docs/graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](docs/graphs/feature-main.svg) |

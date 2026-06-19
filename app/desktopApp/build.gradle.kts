@@ -10,6 +10,7 @@ plugins {
 dependencies {
     implementation(projects.app.shared)
     implementation(projects.core.data)
+    implementation(projects.core.lmuWindowsData)
     implementation(projects.server)
 
     implementation(compose.desktop.currentOs)

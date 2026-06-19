@@ -91,6 +91,7 @@ moduleGraphAssert {
         // app エントリーポイント → core:data（composition root で DI バインドするための参照）
         ":app:androidApp -> :core:data",
         ":app:desktopApp -> :core:data",
+        ":app:desktopApp -> :core:lmu-windows-data",
         // Desktop app → server（同一プロセスで Ktor サーバーを起動するため）
         ":app:desktopApp -> :server",
         // app:shared → feature
@@ -101,6 +102,7 @@ moduleGraphAssert {
         ":feature:.* -> :core:designsystem",
         // インフラ・サーバー → core:domain
         ":core:data -> :core:domain",
+        ":core:lmu-windows-data -> :core:domain",
         ":server -> :core:domain",
     )
     restricted = arrayOf(
@@ -266,6 +268,7 @@ kover {
 dependencies {
     kover(project(":core:domain"))
     kover(project(":core:data"))
+    kover(project(":core:lmu-windows-data"))
     kover(project(":core:designsystem"))
     kover(project(":feature:lmu-windows-connection"))
     kover(project(":feature:main"))
