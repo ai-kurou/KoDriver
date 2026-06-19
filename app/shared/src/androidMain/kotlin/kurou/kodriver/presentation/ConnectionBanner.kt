@@ -7,6 +7,7 @@ import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.banner_server_connected
 import kodriver.app.shared.generated.resources.banner_server_disconnected
 import kodriver.app.shared.generated.resources.banner_server_ip_not_configured
+import kurou.kodriver.feature.serverconnection.ServerConnectionStatus
 import kurou.kodriver.feature.serverconnection.ServerConnectionViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -18,17 +19,17 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val connectedMessage = stringResource(Res.string.banner_server_connected)
     val disconnectedMessage = stringResource(Res.string.banner_server_disconnected)
     val ipNotConfiguredMessage = stringResource(Res.string.banner_server_ip_not_configured)
-    val ipNotConfigured = !uiState.isIpConfigured
-    val isConnected = uiState.isConnectionChecked && uiState.isConnected
-    val status = when {
-        isConnected -> ConnectionBannerStatus.CONNECTED
-        ipNotConfigured || uiState.isConnectionChecked -> ConnectionBannerStatus.DISCONNECTED
-        else -> ConnectionBannerStatus.UNCHECKED
+    val status = when (uiState.connectionStatus) {
+        ServerConnectionStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
+        ServerConnectionStatus.NOT_CONFIGURED, ServerConnectionStatus.DISCONNECTED ->
+            ConnectionBannerStatus.DISCONNECTED
+        ServerConnectionStatus.CHECKING -> ConnectionBannerStatus.UNCHECKED
     }
-    val message = when {
-        ipNotConfigured -> ipNotConfiguredMessage
-        isConnected -> connectedMessage
-        else -> disconnectedMessage
+    val message = when (uiState.connectionStatus) {
+        ServerConnectionStatus.NOT_CONFIGURED -> ipNotConfiguredMessage
+        ServerConnectionStatus.CONNECTED -> connectedMessage
+        ServerConnectionStatus.CHECKING, ServerConnectionStatus.DISCONNECTED ->
+            disconnectedMessage
     }
     return ConnectionBannerUiState(
         status = status,
