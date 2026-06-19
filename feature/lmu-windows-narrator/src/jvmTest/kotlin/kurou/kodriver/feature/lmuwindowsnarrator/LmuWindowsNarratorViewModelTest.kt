@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -621,6 +622,7 @@ private class RecordingTextToSpeechEngine : TextToSpeechEngine {
     override val currentReadoutItemKey: ReadoutItemKey? = null
     override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
     override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
 }
 
 /** 優先度テスト用: 再生中キーを手動で制御できる TTS エンジン */
@@ -635,6 +637,7 @@ private class PriorityAwareTextToSpeechEngine(
         stopCalled = true
         currentReadoutItemKey = null
     }
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
 }
 
 private class FakeChannelProximityRepository(

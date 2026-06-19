@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCa
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -37,13 +39,16 @@ val lmuNarratorModule: Module = module {
     factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get()) }
+    factory { ObserveReadoutStartSoundTypeUseCase(get()) }
     factory { ObserveSoundVolumeUseCase(get()) }
     factory { PlaySpeechEventUseCase(get()) }
+    factory { PreviewStartSoundUseCase(get()) }
     includes(platformSoundModule)
     single<TextToSpeechEngine> {
         LmuWindowsWavNarratorEngine(
             soundPlayer = get(),
             volumeFlow = get<ObserveSoundVolumeUseCase>()(),
+            startSoundTypeFlow = get<ObserveReadoutStartSoundTypeUseCase>()(),
         )
     }
 }

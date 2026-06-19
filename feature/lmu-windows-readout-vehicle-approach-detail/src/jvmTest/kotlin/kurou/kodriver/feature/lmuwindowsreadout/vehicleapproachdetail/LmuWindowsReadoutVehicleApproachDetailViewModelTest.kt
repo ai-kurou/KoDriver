@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
@@ -132,4 +133,5 @@ private class FakeTextToSpeechEngine(
     override val currentReadoutItemKey: ReadoutItemKey? = null
     override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event, queue)
     override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
 }
