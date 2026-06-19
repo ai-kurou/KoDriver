@@ -119,27 +119,13 @@ class LmuWindowsNarratorViewModel(
             // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
             if (skipFirstLap.value && currentLap.value <= 0) return@onEach
 
-            val prevLeftIds = prev?.sideBySideLeftVehicleIds ?: emptySet()
-            val prevRightIds = prev?.sideBySideRightVehicleIds ?: emptySet()
-            val newLeftVehicle = (current.sideBySideLeftVehicleIds - prevLeftIds).isNotEmpty()
-            val newRightVehicle = (current.sideBySideRightVehicleIds - prevRightIds).isNotEmpty()
-
-            val (leftEvent, rightEvent) = when (startReadoutType.value) {
-                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT ->
-                    SpeechEvent.CarLeft to SpeechEvent.CarRight
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH ->
-                    SpeechEvent.LeftApproach to SpeechEvent.RightApproach
-            }
-            when {
-                // 両方同時の場合は読み上げないで一旦様子見る
-                /*
-                newLeftVehicle && newRightVehicle -> {
-                    speakWithPriority(leftEvent)
-                    speakWithPriority(rightEvent)
+            when (val event = VehicleApproachEvent.from(prev, current)) {
+                is VehicleApproachEvent.Single -> {
+                    speakWithPriority(event.side.toSpeechEvent(startReadoutType.value))
                 }
-                 */
-                newLeftVehicle -> speakWithPriority(leftEvent)
-                newRightVehicle -> speakWithPriority(rightEvent)
+                VehicleApproachEvent.None,
+                VehicleApproachEvent.Simultaneous,
+                -> Unit
             }
         }
         .launchIn(viewModelScope)
@@ -232,5 +218,45 @@ class LmuWindowsNarratorViewModel(
             ttsEngine.stop()
         }
         ttsEngine.speak(event)
+    }
+}
+
+private enum class ApproachSide {
+    LEFT,
+    RIGHT,
+    ;
+
+    fun toSpeechEvent(readoutType: VehicleApproachStartReadoutType): SpeechEvent =
+        when (this) {
+            LEFT -> when (readoutType) {
+                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach
+            }
+            RIGHT -> when (readoutType) {
+                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarRight
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.RightApproach
+            }
+        }
+}
+
+private sealed interface VehicleApproachEvent {
+    data object None : VehicleApproachEvent
+    data object Simultaneous : VehicleApproachEvent
+    data class Single(val side: ApproachSide) : VehicleApproachEvent
+
+    companion object {
+        fun from(prev: ProximityData?, current: ProximityData): VehicleApproachEvent {
+            val prevLeftIds = prev?.sideBySideLeftVehicleIds ?: emptySet()
+            val prevRightIds = prev?.sideBySideRightVehicleIds ?: emptySet()
+            val newLeftVehicle = (current.sideBySideLeftVehicleIds - prevLeftIds).isNotEmpty()
+            val newRightVehicle = (current.sideBySideRightVehicleIds - prevRightIds).isNotEmpty()
+
+            return when {
+                newLeftVehicle && newRightVehicle -> Simultaneous
+                newLeftVehicle -> Single(ApproachSide.LEFT)
+                newRightVehicle -> Single(ApproachSide.RIGHT)
+                else -> None
+            }
+        }
     }
 }
