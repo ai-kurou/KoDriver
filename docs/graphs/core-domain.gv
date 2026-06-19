@@ -9,6 +9,7 @@ digraph G {
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:main" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
+  ":feature:other-readout-start-sound-detail" -> ":core:domain"
   ":feature:other-server-ip-detail" -> ":core:domain"
   ":feature:other-volume-detail" -> ":core:domain"
   ":feature:readout-list" -> ":core:domain"
