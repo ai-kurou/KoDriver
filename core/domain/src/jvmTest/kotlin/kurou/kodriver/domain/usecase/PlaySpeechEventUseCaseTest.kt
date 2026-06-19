@@ -5,6 +5,7 @@ package kurou.kodriver.domain.usecase
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -17,6 +18,7 @@ private class FakeTextToSpeechEngine : TextToSpeechEngine {
         queued.add(queue)
     }
     override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
 }
 
 class PlaySpeechEventUseCaseTest {

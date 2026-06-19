@@ -111,6 +111,13 @@ internal class LmuWindowsWavNarratorEngine(
         playJob = null
     }
 
+    override fun previewStartSound(type: ReadoutStartSoundType) {
+        val sound = startSounds[type] ?: return
+        if (soundPlayer.isPlaying) return
+        playJob?.cancel()
+        playJob = scope.launch { soundPlayer.play(sound, currentVolume) }
+    }
+
     private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {
         _currentReadoutItemKey = event.readoutItemKey
         val vol = currentVolume

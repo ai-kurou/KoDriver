@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
+import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundTypeUseCase
 
 class OtherReadoutStartSoundDetailViewModel(
     observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     private val saveReadoutStartSoundType: SaveReadoutStartSoundTypeUseCase,
+    private val previewStartSound: PreviewStartSoundUseCase,
 ) : ViewModel() {
 
     private val pendingType = MutableStateFlow<ReadoutStartSoundType?>(null)
@@ -27,6 +29,7 @@ class OtherReadoutStartSoundDetailViewModel(
 
     fun onPendingTypeSelected(type: ReadoutStartSoundType) {
         pendingType.value = type
+        previewStartSound(type)
     }
 
     fun onConfirm() {

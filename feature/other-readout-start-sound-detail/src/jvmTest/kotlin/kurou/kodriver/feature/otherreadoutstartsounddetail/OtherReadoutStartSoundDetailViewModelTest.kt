@@ -9,8 +9,12 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
+import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundTypeUseCase
 import org.junit.After
 import org.junit.Before
@@ -41,6 +45,7 @@ class OtherReadoutStartSoundDetailViewModelTest {
     ) = OtherReadoutStartSoundDetailViewModel(
         observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(repo),
         saveReadoutStartSoundType = SaveReadoutStartSoundTypeUseCase(repo),
+        previewStartSound = PreviewStartSoundUseCase(FakeTextToSpeechEngine()),
     )
 
     @Test
@@ -94,4 +99,11 @@ class OtherReadoutStartSoundDetailViewModelTest {
         val state = viewModel.uiState.first()
         assertEquals(ReadoutStartSoundType.ELECTRONIC_NOISE, state.selectedType)
     }
+}
+
+private class FakeTextToSpeechEngine : TextToSpeechEngine {
+    override val currentReadoutItemKey: ReadoutItemKey? = null
+    override fun speak(event: SpeechEvent, queue: Boolean) = Unit
+    override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
 }
