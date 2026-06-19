@@ -81,6 +81,8 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
+            implementation(projects.core.domain)
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)
             implementation(libs.kotlin.testJunit)
