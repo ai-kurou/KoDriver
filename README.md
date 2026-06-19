@@ -17,7 +17,8 @@ Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルを
 - アナウンスする項目の選択・有効/無効の切り替え
 - アナウンス優先度のドラッグ＆ドロップによる並び替え
 - WAV 音声ファイルによるリアルタイムアナウンス
-- フラッグ情報を WebSocket で配信（Android アプリで受信・表示可能）
+- LMU 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
+- クラッシュが発生した場合、改善のためにクラッシュレポートを Sentry に自動送信
 
 ## 動作要件
 
@@ -54,7 +55,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | モジュール | 役割 | モジュール図 |
 |---|---|---|
 | `:app:desktopApp` | JVM デスクトップアプリのエントリーポイント。Windows 共有メモリ読み取りと Ktor サーバーを同一プロセスで起動する | [図](docs/graphs/app-desktopApp.svg) |
-| `:app:androidApp` | Android アプリのエントリーポイント。WebSocket 経由でサーバーからフラッグ情報を受信して表示する | [図](docs/graphs/app-androidApp.svg) |
+| `:app:androidApp` | Android アプリのエントリーポイント。WebSocket 経由でサーバーから LMU 由来の走行情報を受信して表示する | [図](docs/graphs/app-androidApp.svg) |
 | `:app:webApp` | Web アプリ（未実装） | [図](docs/graphs/app-webApp.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](docs/graphs/app-shared.svg) |
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](docs/graphs/core-domain.svg) |
@@ -71,7 +72,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 | [図](docs/graphs/feature-other-list.svg) |
 | `:feature:other-server-ip-detail` | その他画面の接続先サーバー IP 設定ダイアログ | [図](docs/graphs/feature-other-server-ip-detail.svg) |
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](docs/graphs/feature-other-volume-detail.svg) |
-| `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/flags` WebSocket で共有メモリ由来のフラッグ情報を配信する | [図](docs/graphs/server.svg) |
+| `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ由来の走行情報を配信する | [図](docs/graphs/server.svg) |
 
 ## Contributing
 
