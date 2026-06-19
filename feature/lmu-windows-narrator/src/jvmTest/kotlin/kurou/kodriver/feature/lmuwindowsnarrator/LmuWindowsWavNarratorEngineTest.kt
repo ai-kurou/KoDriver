@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import org.junit.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -37,7 +38,7 @@ class LmuWindowsWavNarratorEngineTest {
         val engine = createEngine(
             player = player,
             resourceLoader = { path ->
-                if (path == NOISE_PATH) NOISE_SOUND else error("load failed")
+                if (path == FORMULA_RADIO_PATH) FORMULA_RADIO_SOUND else error("load failed")
             },
         )
         runCurrent()
@@ -49,7 +50,7 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `ノイズとイベント音声を順番に再生する`() = runTest {
+    fun `開始音とイベント音声を順番に再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -58,7 +59,31 @@ class LmuWindowsWavNarratorEngineTest {
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
-        assertContentEquals(NOISE_SOUND, player.playedSounds[0])
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE),
+            resourceLoader = { path ->
+                when (path) {
+                    CAR_LEFT_PATH -> CAR_LEFT_SOUND
+                    ELECTRONIC_NOISE_PATH -> ELECTRONIC_NOISE_SOUND
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(ELECTRONIC_NOISE_SOUND, player.playedSounds[0])
         assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
     }
 
@@ -70,7 +95,7 @@ class LmuWindowsWavNarratorEngineTest {
             resourceLoader = { path ->
                 when (path) {
                     LEFT_APPROACH_PATH -> LEFT_APPROACH_SOUND
-                    NOISE_PATH -> NOISE_SOUND
+                    FORMULA_RADIO_PATH -> FORMULA_RADIO_SOUND
                     else -> EVENT_SOUND
                 }
             },
@@ -81,7 +106,7 @@ class LmuWindowsWavNarratorEngineTest {
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
-        assertContentEquals(NOISE_SOUND, player.playedSounds[0])
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
         assertContentEquals(LEFT_APPROACH_SOUND, player.playedSounds[1])
     }
 
@@ -96,21 +121,21 @@ class LmuWindowsWavNarratorEngineTest {
         advanceUntilIdle()
 
         assertEquals(4, player.playedSounds.size)
-        assertContentEquals(NOISE_SOUND, player.playedSounds[0])
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
         assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
-        assertContentEquals(NOISE_SOUND, player.playedSounds[2])
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
         assertContentEquals(EVENT_SOUND, player.playedSounds[3])
     }
 
     @Test
-    fun `ノイズが未ロードでもイベント音声を再生する`() = runTest {
+    fun `開始音が未ロードでもイベント音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
             resourceLoader = { path ->
                 when (path) {
                     CAR_LEFT_PATH -> CAR_LEFT_SOUND
-                    NOISE_PATH -> error("load failed")
+                    FORMULA_RADIO_PATH -> error("load failed")
                     else -> EVENT_SOUND
                 }
             },
@@ -125,7 +150,7 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `volumeFlowで指定した音量でノイズとイベント音声を再生する`() = runTest {
+    fun `volumeFlowで指定した音量で開始音とイベント音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player, volumeFlow = flowOf(50))
         runCurrent()
@@ -155,19 +180,45 @@ class LmuWindowsWavNarratorEngineTest {
         assertEquals(listOf(80, 80, 30, 30), player.playedVolumes)
     }
 
+    @Test
+    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val startSoundTypeFlow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
+        val engine = createEngine(player, startSoundTypeFlow = startSoundTypeFlow)
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        startSoundTypeFlow.update { ReadoutStartSoundType.ELECTRONIC_NOISE }
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(4, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+        assertContentEquals(ELECTRONIC_NOISE_SOUND, player.playedSounds[2])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[3])
+    }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
+        startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
-                NOISE_PATH -> NOISE_SOUND
+                FORMULA_RADIO_PATH -> FORMULA_RADIO_SOUND
+                ELECTRONIC_NOISE_PATH -> ELECTRONIC_NOISE_SOUND
                 else -> EVENT_SOUND
             }
         },
     ): LmuWindowsWavNarratorEngine = LmuWindowsWavNarratorEngine(
         soundPlayer = player,
         volumeFlow = volumeFlow,
+        startSoundTypeFlow = startSoundTypeFlow,
         resourceLoader = resourceLoader,
         scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
     )
@@ -175,10 +226,12 @@ class LmuWindowsWavNarratorEngineTest {
     private companion object {
         const val CAR_LEFT_PATH = "files/car_left.wav"
         const val LEFT_APPROACH_PATH = "files/left_approach.wav"
-        const val NOISE_PATH = "files/noise.wav"
+        const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
+        const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)
         val EVENT_SOUND = byteArrayOf(2)
-        val NOISE_SOUND = byteArrayOf(3)
+        val FORMULA_RADIO_SOUND = byteArrayOf(3)
+        val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
         val LEFT_APPROACH_SOUND = byteArrayOf(4)
     }
 }

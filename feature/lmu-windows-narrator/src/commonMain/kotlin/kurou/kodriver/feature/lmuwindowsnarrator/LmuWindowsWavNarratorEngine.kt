@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
@@ -18,6 +19,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 internal class LmuWindowsWavNarratorEngine(
     private val soundPlayer: SoundPlayer,
     volumeFlow: Flow<Int> = flowOf(100),
+    startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
@@ -25,10 +27,13 @@ internal class LmuWindowsWavNarratorEngine(
     @Volatile
     private var currentVolume: Int = 100
 
+    @Volatile
+    private var currentStartSoundType: ReadoutStartSoundType = ReadoutStartSoundType.FORMULA_RADIO
+
     // ロード完了後は不変のマップに差し替えるため、読み取り競合は無害
     private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
 
-    private var noiseSound: ByteArray? = null
+    private var startSounds: Map<ReadoutStartSoundType, ByteArray> = emptyMap()
 
     private var playJob: Job? = null
 
@@ -52,8 +57,14 @@ internal class LmuWindowsWavNarratorEngine(
         SpeechEvent.Overheating to "files/gp2_gp2.wav",
     )
 
+    private val startSoundTypeToFile = mapOf(
+        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+    )
+
     init {
         scope.launch { volumeFlow.collect { currentVolume = it } }
+        scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
         scope.launch {
             val loaded = mutableMapOf<SpeechEvent, ByteArray>()
             eventToFile.forEach { (event, path) ->
@@ -66,14 +77,17 @@ internal class LmuWindowsWavNarratorEngine(
                 }
             }
             sounds = loaded
-            val noisePath = "files/noise.wav"
-            try {
-                noiseSound = resourceLoader(noisePath)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                captureNarratorError(e)
+            val loadedStartSounds = mutableMapOf<ReadoutStartSoundType, ByteArray>()
+            startSoundTypeToFile.forEach { (type, path) ->
+                try {
+                    loadedStartSounds[type] = resourceLoader(path)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    captureNarratorError(e)
+                }
             }
+            startSounds = loadedStartSounds
         }
     }
 
@@ -100,7 +114,7 @@ internal class LmuWindowsWavNarratorEngine(
     private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {
         _currentReadoutItemKey = event.readoutItemKey
         val vol = currentVolume
-        noiseSound?.let { soundPlayer.play(it, vol) }
+        startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         soundPlayer.play(mainSound, vol)
         _currentReadoutItemKey = null
     }

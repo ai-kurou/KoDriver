@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
@@ -37,6 +38,7 @@ val lmuNarratorModule: Module = module {
     factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get()) }
+    factory { ObserveReadoutStartSoundTypeUseCase(get()) }
     factory { ObserveSoundVolumeUseCase(get()) }
     factory { PlaySpeechEventUseCase(get()) }
     includes(platformSoundModule)
@@ -44,6 +46,7 @@ val lmuNarratorModule: Module = module {
         LmuWindowsWavNarratorEngine(
             soundPlayer = get(),
             volumeFlow = get<ObserveSoundVolumeUseCase>()(),
+            startSoundTypeFlow = get<ObserveReadoutStartSoundTypeUseCase>()(),
         )
     }
 }
