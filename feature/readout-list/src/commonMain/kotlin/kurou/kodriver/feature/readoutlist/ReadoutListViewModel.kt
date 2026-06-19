@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -19,15 +20,19 @@ import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
-private val simulatorItems: Map<String, List<String>> = mapOf(
-    "lmu_windows" to listOf("flag", "vehicle_approach", "vehicle_damage"),
+private val simulatorItems: Map<String, List<ReadoutItemKey>> = mapOf(
+    "lmu_windows" to listOf(
+        ReadoutItemKey.FLAG,
+        ReadoutItemKey.VEHICLE_APPROACH,
+        ReadoutItemKey.VEHICLE_DAMAGE,
+    ),
 )
 
 private val simulators: List<String> = simulatorItems.keys.toList()
 
 private data class LocalOrderState(
     val simulator: String?,
-    val items: List<String>,
+    val items: List<ReadoutItemKey>,
 )
 
 internal class ReadoutListViewModel(
@@ -46,7 +51,7 @@ internal class ReadoutListViewModel(
     private val _localOrder = MutableStateFlow(LocalOrderState(null, emptyList()))
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _persistedOrder: StateFlow<List<String>> = _selectedSimulator
+    private val _persistedOrder: StateFlow<List<ReadoutItemKey>> = _selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != null) observeReadoutOrder(simulator)
             else flowOf(emptyList())
@@ -54,7 +59,7 @@ internal class ReadoutListViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _readoutEnabledStates: StateFlow<Map<String, Boolean>> = _selectedSimulator
+    private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != null) observeReadoutEnabledStates(simulator)
             else flowOf(emptyMap())
@@ -63,7 +68,7 @@ internal class ReadoutListViewModel(
 
     private val _selectedItem = MutableStateFlow<ReadoutListItemType?>(null)
 
-    private val _effectiveOrder: StateFlow<List<String>> = combine(
+    private val _effectiveOrder: StateFlow<List<ReadoutItemKey>> = combine(
         _selectedSimulator,
         _persistedOrder,
         _localOrder,
@@ -116,7 +121,7 @@ internal class ReadoutListViewModel(
         }
     }
 
-    fun onItemSelected(item: String) {
+    fun onItemSelected(item: ReadoutItemKey) {
         val type = ReadoutListItemType.fromId(item) ?: return
         _selectedItem.update { if (it == type) null else type }
     }
@@ -125,10 +130,10 @@ internal class ReadoutListViewModel(
         _selectedItem.update { null }
     }
 
-    fun onReadoutEnabledChanged(label: String, enabled: Boolean) {
+    fun onReadoutEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
-            saveReadoutEnabledState(simulator, label, enabled)
+            saveReadoutEnabledState(simulator, key, enabled)
         }
     }
 }

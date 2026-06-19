@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 private class FakeTextToSpeechEngine(
     private val onSpeak: (SpeechEvent) -> Unit,
 ) : TextToSpeechEngine {
-    override val currentReadoutItemKey: String? = null
+    override val currentReadoutItemKey: ReadoutItemKey? = null
     override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
     override fun stop() = Unit
 }

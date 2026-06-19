@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.VehicleDamagePreferencesSerializer
+import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -38,26 +39,26 @@ class VehicleDamagePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() = testScope.runTest {
-        repository.saveEnabledState("overheat", true)
+        repository.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
 
-        assertEquals(mapOf("overheat" to true), repository.observeEnabledStates().first())
+        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true), repository.observeEnabledStates().first())
     }
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
-        repository.saveEnabledState("overheat", true)
-        repository.saveEnabledState("overheat", false)
+        repository.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
+        repository.saveEnabledState(ReadoutItemKey.OVERHEAT, false)
 
-        assertEquals(mapOf("overheat" to false), repository.observeEnabledStates().first())
+        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to false), repository.observeEnabledStates().first())
     }
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() = testScope.runTest {
-        repository.saveEnabledState("overheat", true)
-        repository.saveEnabledState("part_detached", false)
+        repository.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
+        repository.saveEnabledState(ReadoutItemKey.VEHICLE_DAMAGE, false)
 
         assertEquals(
-            mapOf("overheat" to true, "part_detached" to false),
+            mapOf(ReadoutItemKey.OVERHEAT to true, ReadoutItemKey.VEHICLE_DAMAGE to false),
             repository.observeEnabledStates().first(),
         )
     }

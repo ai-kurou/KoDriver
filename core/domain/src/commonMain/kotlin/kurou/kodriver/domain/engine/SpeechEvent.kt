@@ -3,7 +3,7 @@ package kurou.kodriver.domain.engine
 import kurou.kodriver.domain.model.ReadoutItemKey
 
 sealed interface SpeechEvent {
-    val readoutItemKey: String
+    val readoutItemKey: ReadoutItemKey
 
     data object CarLeft : SpeechEvent { override val readoutItemKey = ReadoutItemKey.VEHICLE_APPROACH }
     data object CarRight : SpeechEvent { override val readoutItemKey = ReadoutItemKey.VEHICLE_APPROACH }

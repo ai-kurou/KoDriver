@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -35,8 +36,8 @@ class VehicleDamagePreferencesRepositoryFactoryTest {
     fun `保存した enabledStates を読み出せる`() = testScope.runTest {
         val repository = createVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
-        repository.saveEnabledState("overheat", true)
+        repository.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
 
-        assertEquals(mapOf("overheat" to true), repository.observeEnabledStates().first())
+        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true), repository.observeEnabledStates().first())
     }
 }

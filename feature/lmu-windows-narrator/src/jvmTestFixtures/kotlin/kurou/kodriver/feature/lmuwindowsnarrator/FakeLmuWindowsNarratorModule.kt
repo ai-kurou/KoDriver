@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
@@ -58,8 +59,8 @@ class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepos
 }
 
 class FakeVehicleDamagePreferencesRepository : VehicleDamagePreferencesRepository {
-    override fun observeEnabledStates(): Flow<Map<String, Boolean>> = MutableStateFlow(emptyMap())
-    override suspend fun saveEnabledState(key: String, enabled: Boolean) = Unit
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = MutableStateFlow(emptyMap())
+    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
 }
 
 class FakeVehicleDamageRepository : VehicleDamageRepository {

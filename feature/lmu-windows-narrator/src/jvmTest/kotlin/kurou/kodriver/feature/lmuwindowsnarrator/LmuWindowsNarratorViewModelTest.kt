@@ -79,10 +79,10 @@ class LmuWindowsNarratorViewModelTest {
         damageChannel: Channel<VehicleDamageData> = Channel(Channel.UNLIMITED),
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
-        enabledOverrides: Map<String, Boolean> = emptyMap(),
-        flagEnabledOverrides: Map<String, Boolean> = emptyMap(),
-        vehicleDamageEnabledOverrides: Map<String, Boolean> = emptyMap(),
-        orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
+        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -599,18 +599,18 @@ private fun clearFlags(
 
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
     val spokenTexts = mutableListOf<SpeechEvent>()
-    override val currentReadoutItemKey: String? = null
+    override val currentReadoutItemKey: ReadoutItemKey? = null
     override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
     override fun stop() = Unit
 }
 
 /** 優先度テスト用: 再生中キーを手動で制御できる TTS エンジン */
 private class PriorityAwareTextToSpeechEngine(
-    initialKey: String? = null,
+    initialKey: ReadoutItemKey? = null,
 ) : TextToSpeechEngine {
     val spokenTexts = mutableListOf<SpeechEvent>()
     var stopCalled = false
-    override var currentReadoutItemKey: String? = initialKey
+    override var currentReadoutItemKey: ReadoutItemKey? = initialKey
     override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
     override fun stop() {
         stopCalled = true
@@ -638,24 +638,24 @@ private class FakeConstantSimulatorRepository(
 }
 
 private class FakeAllEnabledReadoutPreferencesRepository(
-    private val enabledOverrides: Map<String, Boolean> = emptyMap(),
-    private val orderOverride: List<String> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
+    private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
 ) : ReadoutPreferencesRepository {
-    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<String, Boolean>> =
+    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)
 
-    override suspend fun saveReadoutEnabledState(simulator: String, label: String, enabled: Boolean) = Unit
-    override fun observeReadoutOrder(simulator: String): Flow<List<String>> = MutableStateFlow(orderOverride)
-    override suspend fun saveReadoutOrder(simulator: String, order: List<String>) = Unit
+    override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) = Unit
+    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> = MutableStateFlow(orderOverride)
+    override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) = Unit
 }
 
 private class FakeFlagPreferencesRepository(
-    private val enabledOverrides: Map<String, Boolean> = emptyMap(),
+    private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
 ) : FlagPreferencesRepository {
-    override fun observeFlagEnabledStates(): Flow<Map<String, Boolean>> =
+    override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)
 
-    override suspend fun saveFlagEnabledState(key: String, enabled: Boolean) = Unit
+    override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
 }
 
 private class FakeChannelLmuWindowsRepository(
@@ -682,11 +682,11 @@ private class FakeConstantVehicleApproachPreferencesRepository(
 }
 
 private class FakeVehicleDamagePreferencesRepository(
-    initialStates: Map<String, Boolean> = emptyMap(),
+    initialStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
 ) : VehicleDamagePreferencesRepository {
     private val states = MutableStateFlow(initialStates)
-    override fun observeEnabledStates(): Flow<Map<String, Boolean>> = states
-    override suspend fun saveEnabledState(key: String, enabled: Boolean) {
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
+    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         states.update { it + (key to enabled) }
     }
 }

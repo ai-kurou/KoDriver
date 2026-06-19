@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 private class FakeTextToSpeechEngine(
     private val onSpeak: (SpeechEvent) -> Unit,
 ) : TextToSpeechEngine {
-    override val currentReadoutItemKey: String? = null
+    override val currentReadoutItemKey: ReadoutItemKey? = null
     override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
     override fun stop() = Unit
 }
@@ -93,7 +93,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
     @Test
     fun `onPreviewClicked に不明なキーを渡しても何も再生されない`() {
-        viewModel.onPreviewClicked("unknown_key")
+        viewModel.onPreviewClicked(ReadoutItemKey.VEHICLE_APPROACH)
         assertEquals(emptyList<SpeechEvent>(), playedEvents)
     }
 }

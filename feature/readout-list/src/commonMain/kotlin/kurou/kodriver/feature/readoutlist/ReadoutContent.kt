@@ -24,6 +24,7 @@ import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -58,8 +59,8 @@ internal fun ReadoutContent(
     uiState: ReadoutListUiState,
     onSimulatorSelected: (String) -> Unit,
     onMove: (Int, Int) -> Unit,
-    onReadoutEnabledChanged: (String, Boolean) -> Unit,
-    onItemSelected: (String) -> Unit,
+    onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onItemSelected: (ReadoutItemKey) -> Unit,
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -146,7 +147,11 @@ private fun ReadoutContentPreview() {
         uiState = ReadoutListUiState(
             simulators = listOf("lmu_windows"),
             selectedSimulator = "lmu_windows",
-            items = listOf("vehicle_approach", "flag", "vehicle_damage"),
+            items = listOf(
+                ReadoutItemKey.VEHICLE_APPROACH,
+                ReadoutItemKey.FLAG,
+                ReadoutItemKey.VEHICLE_DAMAGE,
+            ),
         ),
         onSimulatorSelected = {},
         onMove = { _, _ -> },

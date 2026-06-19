@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,9 +28,9 @@ class ObserveVehicleDamageEnabledStatesUseCaseTest {
         val repo = FakeVehicleDamagePreferencesRepository()
         val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState("overheat", true)
+        repo.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
 
-        assertEquals(mapOf("overheat" to true), useCase().first())
+        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true), useCase().first())
     }
 
     @Test
@@ -37,19 +38,19 @@ class ObserveVehicleDamageEnabledStatesUseCaseTest {
         val repo = FakeVehicleDamagePreferencesRepository()
         val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState("overheat", true)
-        repo.saveEnabledState("part_detached", false)
+        repo.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
+        repo.saveEnabledState(ReadoutItemKey.VEHICLE_DAMAGE, false)
 
-        assertEquals(mapOf("overheat" to true, "part_detached" to false), useCase().first())
+        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true, ReadoutItemKey.VEHICLE_DAMAGE to false), useCase().first())
     }
 }
 
 internal class FakeVehicleDamagePreferencesRepository : VehicleDamagePreferencesRepository {
-    private val states = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+    private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
-    override fun observeEnabledStates(): Flow<Map<String, Boolean>> = states
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
 
-    override suspend fun saveEnabledState(key: String, enabled: Boolean) {
+    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         states.update { it + (key to enabled) }
     }
 }
