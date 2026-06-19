@@ -71,8 +71,8 @@ class AppTest {
         rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
 
-        // ライセンスをタップ（Desktop では ServerIp が含まれないため other_item_3）
-        rule.onNodeWithTag("other_item_3").performClick()
+        // ライセンスをタップ（Desktop では ServerIp が含まれないため other_item_4）
+        rule.onNodeWithTag("other_item_4").performClick()
         rule.waitForIdle()
     }
 }
