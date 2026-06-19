@@ -66,6 +66,7 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
+        // item_0: Volume
         rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
 
@@ -75,19 +76,32 @@ class OtherContentTest {
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitUntil { !backEnabled }
 
+        // item_1: ReadoutStartSound (詳細あり)
         rule.onNodeWithTag("other_item_1").performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithText("Detail: readout_start_sound").assertExists()
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitUntil { !backEnabled }
+
+        // item_2: GitHubRepository
+        rule.onNodeWithTag("other_item_2").performClick()
         rule.waitForIdle()
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)
 
-        rule.onNodeWithTag("other_item_2").performClick()
+        // item_3: ReleasePage
+        rule.onNodeWithTag("other_item_3").performClick()
         rule.waitForIdle()
 
         assertTrue(releasePageOpened)
         assertFalse(backEnabled)
 
-        rule.onNodeWithTag("other_item_3").performClick()
+        // item_4: License (詳細あり)
+        rule.onNodeWithTag("other_item_4").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)

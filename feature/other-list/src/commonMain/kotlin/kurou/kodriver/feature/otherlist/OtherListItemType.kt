@@ -5,6 +5,7 @@ enum class OtherListItemType(
 ) {
     ServerIp("server_ip"),
     Volume("volume"),
+    ReadoutStartSound("readout_start_sound"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
     License("license"),

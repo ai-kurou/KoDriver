@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_license
+import kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kodriver.feature.otherlist.generated.resources.item_release_page
 import kodriver.feature.otherlist.generated.resources.item_server_ip
 import kodriver.feature.otherlist.generated.resources.item_volume
@@ -42,10 +44,41 @@ import org.jetbrains.compose.resources.stringResource
 private fun otherItemDisplayName(itemId: String): String = when (itemId) {
     OtherListItemType.ServerIp.id -> stringResource(Res.string.item_server_ip)
     OtherListItemType.Volume.id -> stringResource(Res.string.item_volume)
+    OtherListItemType.ReadoutStartSound.id -> stringResource(Res.string.item_readout_start_sound)
     OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
     OtherListItemType.License.id -> stringResource(Res.string.item_license)
     else -> itemId
+}
+
+@Composable
+private fun OtherListItemLeadingIcon(itemType: OtherListItemType?, hasAppUpdate: Boolean) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Wifi, contentDescription = null)
+        OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
+        OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
+        OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
+        OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+            Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
+        }
+        OtherListItemType.License -> Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
+        null -> Unit
+    }
+}
+
+@Composable
+private fun OtherListItemTrailingIcon(itemType: OtherListItemType?) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.Volume,
+        OtherListItemType.ReadoutStartSound,
+        OtherListItemType.License,
+        -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
+        OtherListItemType.GitHubRepository,
+        OtherListItemType.ReleasePage,
+        -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
+        null -> Unit
+    }
 }
 
 @Composable
@@ -70,89 +103,15 @@ fun OtherListPane(
             ) {
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
-                    leadingContent = when (itemType) {
-                        OtherListItemType.ServerIp -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Wifi,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.Volume -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.VolumeUp,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.GitHubRepository -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Code,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.ReleasePage -> {
-                            {
-                                BadgedBox(badge = { if (uiState.hasAppUpdate) Badge() }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.NewReleases,
-                                        contentDescription = null,
-                                    )
-                                }
-                            }
-                        }
-
-                        OtherListItemType.License -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Description,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        null -> null
+                    leadingContent = if (itemType != null) {
+                        { OtherListItemLeadingIcon(itemType, uiState.hasAppUpdate) }
+                    } else {
+                        null
                     },
-                    trailingContent = when (itemType) {
-                        OtherListItemType.ServerIp -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Edit,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.Volume,
-                        OtherListItemType.License,
-                        -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.ChevronRight,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.GitHubRepository,
-                        OtherListItemType.ReleasePage,
-                        -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        null -> null
+                    trailingContent = if (itemType != null) {
+                        { OtherListItemTrailingIcon(itemType) }
+                    } else {
+                        null
                     },
                     colors = if (itemType == uiState.selectedItem) {
                         ListItemDefaults.colors(
