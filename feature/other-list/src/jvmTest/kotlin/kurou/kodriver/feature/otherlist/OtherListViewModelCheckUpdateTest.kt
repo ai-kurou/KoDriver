@@ -33,7 +33,7 @@ class OtherListViewModelCheckUpdateTest {
 
     @Test
     fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
-        val viewModel = OtherListViewModel(
+        val viewModel = createViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
                 FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9")),
             ),
@@ -48,7 +48,7 @@ class OtherListViewModelCheckUpdateTest {
 
     @Test
     fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
-        val viewModel = OtherListViewModel(
+        val viewModel = createViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
                 FakeAppUpdateRepository(AppUpdate(tagName = "v1.0.0")),
             ),
@@ -63,7 +63,7 @@ class OtherListViewModelCheckUpdateTest {
 
     @Test
     fun `checkUpdateを呼ぶ前はhasAppUpdateがfalseのまま`() = runTest {
-        val viewModel = OtherListViewModel(
+        val viewModel = createViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
                 FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9")),
             ),
@@ -75,7 +75,7 @@ class OtherListViewModelCheckUpdateTest {
 
     @Test
     fun `currentVersionが空の場合checkUpdateは何もしない`() = runTest {
-        val viewModel = OtherListViewModel(
+        val viewModel = createViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
                 FakeAppUpdateRepository(AppUpdate(tagName = "v9.9.9")),
             ),
@@ -90,7 +90,7 @@ class OtherListViewModelCheckUpdateTest {
 
     @Test
     fun `リリース情報がnullの場合hasAppUpdateがfalseになる`() = runTest {
-        val viewModel = OtherListViewModel(
+        val viewModel = createViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(
                 FakeAppUpdateRepository(latestRelease = null),
             ),
@@ -102,4 +102,13 @@ class OtherListViewModelCheckUpdateTest {
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
     }
+
+    private fun createViewModel(
+        checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
+        currentVersion: String,
+    ): OtherListViewModel = OtherListViewModel(
+        checkAppUpdateAvailable = checkAppUpdateAvailable,
+        currentVersion = currentVersion,
+        appVersionLabel = "Windows版KoDriverバージョン",
+    )
 }

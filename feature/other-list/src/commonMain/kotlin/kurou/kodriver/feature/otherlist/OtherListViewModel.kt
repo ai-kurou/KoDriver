@@ -12,9 +12,15 @@ import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
+    appVersionLabel: String,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(OtherListUiState(appVersion = currentVersion))
+    private val _uiState = MutableStateFlow(
+        OtherListUiState(
+            appVersionLabel = appVersionLabel,
+            appVersion = currentVersion,
+        ),
+    )
     val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
 
     fun checkUpdate() {

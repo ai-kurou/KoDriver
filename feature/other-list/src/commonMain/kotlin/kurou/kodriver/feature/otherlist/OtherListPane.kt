@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
-import kodriver.feature.otherlist.generated.resources.app_version
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_license
 import kodriver.feature.otherlist.generated.resources.item_release_page
@@ -179,17 +178,23 @@ fun OtherListPane(
             HorizontalDivider()
         }
         item(key = "app_version") {
-            OtherAppVersionListItem(appVersion = uiState.appVersion)
+            OtherAppVersionListItem(
+                appVersionLabel = uiState.appVersionLabel,
+                appVersion = uiState.appVersion,
+            )
         }
     }
 }
 
 @Composable
-private fun OtherAppVersionListItem(appVersion: String) {
-    if (appVersion.isBlank()) return
+private fun OtherAppVersionListItem(
+    appVersionLabel: String,
+    appVersion: String,
+) {
+    if (appVersionLabel.isBlank() || appVersion.isBlank()) return
 
     ListItem(
-        headlineContent = { Text(stringResource(Res.string.app_version)) },
+        headlineContent = { Text(appVersionLabel) },
         supportingContent = { Text(appVersion) },
         leadingContent = {
             Icon(

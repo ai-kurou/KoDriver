@@ -26,7 +26,10 @@ class OtherListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         OtherListPane(
-                            uiState = OtherListUiState(appVersion = "0.5.0"),
+                            uiState = OtherListUiState(
+                                appVersionLabel = "Windows版KoDriverバージョン",
+                                appVersion = "0.5.0",
+                            ),
                             onItemClick = {},
                         )
                     }
@@ -35,6 +38,7 @@ class OtherListPaneScreenshotTest {
         }
 
         rule.onNodeWithTag("other_app_version").assertExists()
+        rule.onNodeWithText("Windows版KoDriverバージョン").assertExists()
         rule.onNodeWithText("0.5.0").assertExists()
         rule.onRoot().captureRoboImage()
     }

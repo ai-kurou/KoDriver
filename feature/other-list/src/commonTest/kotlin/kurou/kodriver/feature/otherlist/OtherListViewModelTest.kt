@@ -20,11 +20,13 @@ class OtherListViewModelTest {
     private val viewModel = OtherListViewModel(
         checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
         currentVersion = "0.5.0",
+        appVersionLabel = "Windows版KoDriverバージョン",
     )
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
         assertEquals(buildOtherListItems().map { it.id }, viewModel.uiState.first().items)
+        assertEquals("Windows版KoDriverバージョン", viewModel.uiState.first().appVersionLabel)
         assertEquals("0.5.0", viewModel.uiState.first().appVersion)
         assertNull(viewModel.uiState.first().selectedItem)
     }
