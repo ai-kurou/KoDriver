@@ -52,6 +52,36 @@ private fun otherItemDisplayName(itemId: String): String = when (itemId) {
 }
 
 @Composable
+private fun OtherListItemLeadingIcon(itemType: OtherListItemType?, hasAppUpdate: Boolean) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Wifi, contentDescription = null)
+        OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
+        OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
+        OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
+        OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+            Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
+        }
+        OtherListItemType.License -> Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
+        null -> Unit
+    }
+}
+
+@Composable
+private fun OtherListItemTrailingIcon(itemType: OtherListItemType?) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.Volume,
+        OtherListItemType.ReadoutStartSound,
+        OtherListItemType.License,
+        -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
+        OtherListItemType.GitHubRepository,
+        OtherListItemType.ReleasePage,
+        -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
+        null -> Unit
+    }
+}
+
+@Composable
 fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (String) -> Unit,
@@ -73,99 +103,15 @@ fun OtherListPane(
             ) {
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
-                    leadingContent = when (itemType) {
-                        OtherListItemType.ServerIp -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Wifi,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.Volume -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.VolumeUp,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.ReadoutStartSound -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.MusicNote,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.GitHubRepository -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Code,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.ReleasePage -> {
-                            {
-                                BadgedBox(badge = { if (uiState.hasAppUpdate) Badge() }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.NewReleases,
-                                        contentDescription = null,
-                                    )
-                                }
-                            }
-                        }
-
-                        OtherListItemType.License -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Description,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        null -> null
+                    leadingContent = if (itemType != null) {
+                        { OtherListItemLeadingIcon(itemType, uiState.hasAppUpdate) }
+                    } else {
+                        null
                     },
-                    trailingContent = when (itemType) {
-                        OtherListItemType.ServerIp -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.Edit,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.Volume,
-                        OtherListItemType.ReadoutStartSound,
-                        OtherListItemType.License,
-                        -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.Outlined.ChevronRight,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        OtherListItemType.GitHubRepository,
-                        OtherListItemType.ReleasePage,
-                        -> {
-                            {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-
-                        null -> null
+                    trailingContent = if (itemType != null) {
+                        { OtherListItemTrailingIcon(itemType) }
+                    } else {
+                        null
                     },
                     colors = if (itemType == uiState.selectedItem) {
                         ListItemDefaults.colors(
