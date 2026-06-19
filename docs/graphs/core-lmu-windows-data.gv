@@ -1,0 +1,5 @@
+digraph G {
+  rankdir=TB
+  ":app:desktopApp" -> ":core:lmu-windows-data"
+  ":core:lmu-windows-data" -> ":core:domain"
+}

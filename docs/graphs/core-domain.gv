@@ -2,6 +2,7 @@ digraph G {
   rankdir=TB
   ":server" -> ":core:domain"
   ":core:data" -> ":core:domain"
+  ":core:lmu-windows-data" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
