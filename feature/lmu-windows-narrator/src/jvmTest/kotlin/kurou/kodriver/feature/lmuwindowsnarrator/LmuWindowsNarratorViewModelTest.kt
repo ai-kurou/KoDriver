@@ -380,6 +380,21 @@ class LmuWindowsNarratorViewModelTest {
     // --- 旗アナウンス ---
 
     @Test
+    fun `起動直後の最初のフラグemitでは黄旗が立っていてもアナウンスしない`() = runTest(testDispatcher) {
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
+
+        flagChannel.send(
+            clearFlags().copy(
+                sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `青旗に変化するとブルーフラッグを読み上げる`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()

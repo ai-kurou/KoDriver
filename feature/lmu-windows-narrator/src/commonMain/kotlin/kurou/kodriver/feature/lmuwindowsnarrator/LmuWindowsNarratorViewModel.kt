@@ -174,23 +174,22 @@ class LmuWindowsNarratorViewModel(
                 .drop(1)
         }
         .onEach { (prev, current) ->
-            if (current == null) return@onEach
+            if (prev == null || current == null) return@onEach
             announceFlags(prev, current)
         }
         .launchIn(viewModelScope)
 
-    private fun announceFlags(prev: RaceFlagsData?, current: RaceFlagsData) {
+    private fun announceFlags(prev: RaceFlagsData, current: RaceFlagsData) {
         if (enabledStates.value[ReadoutItemKey.BLUE_FLAG] != false) {
-            if (prev?.playerFlag != PrimaryFlag.BLUE && current.playerFlag == PrimaryFlag.BLUE) {
+            if (prev.playerFlag != PrimaryFlag.BLUE && current.playerFlag == PrimaryFlag.BLUE) {
                 speakWithPriority(SpeechEvent.BlueFlag)
             }
         }
 
         if (enabledStates.value[ReadoutItemKey.SECTOR_YELLOW_FLAG] != false) {
-            val prevSectors = prev?.sectorFlags ?: emptyList()
             val newYellowSector = current.sectorFlags.indices.any { i ->
                 current.sectorFlags[i] == SectorFlagState.YELLOW &&
-                    prevSectors.getOrNull(i) != SectorFlagState.YELLOW
+                    prev.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
             }
             if (newYellowSector) {
                 speakWithPriority(SpeechEvent.YellowFlag)
@@ -198,7 +197,7 @@ class LmuWindowsNarratorViewModel(
         }
 
         if (enabledStates.value[ReadoutItemKey.FULL_COURSE_YELLOW] != false) {
-            if (prev?.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
+            if (prev.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
                 current.gamePhase == SessionPhase.FULL_COURSE_YELLOW
             ) {
                 speakWithPriority(SpeechEvent.FullCourseYellow)
@@ -206,7 +205,7 @@ class LmuWindowsNarratorViewModel(
         }
 
         if (enabledStates.value[ReadoutItemKey.RED_FLAG] != false) {
-            if (prev?.gamePhase != SessionPhase.RED_FLAG &&
+            if (prev.gamePhase != SessionPhase.RED_FLAG &&
                 current.gamePhase == SessionPhase.RED_FLAG
             ) {
                 speakWithPriority(SpeechEvent.SessionStop)
