@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
@@ -23,7 +24,14 @@ class AppTest {
         @BeforeClass @JvmStatic
         fun setUpKoin() {
             startKoin {
-                modules(listOf(desktopDataModule, fakeLmuWindowsNarratorModule, fakeReadoutListModule) + appModules)
+                modules(
+                    listOf(
+                        desktopDataModule,
+                        lmuWindowsDataModule,
+                        fakeLmuWindowsNarratorModule,
+                        fakeReadoutListModule,
+                    ) + appModules,
+                )
             }
         }
 

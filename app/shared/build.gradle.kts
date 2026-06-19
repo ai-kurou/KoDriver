@@ -93,7 +93,8 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
-    add("jvmTestImplementation", testFixtures(projects.app.shared))
+    add("jvmTestImplementation", testFixtures(projects.feature.lmuWindowsNarrator))
+    add("jvmTestImplementation", testFixtures(projects.feature.readoutList))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.readoutList))
 }

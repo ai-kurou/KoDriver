@@ -7,6 +7,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import io.sentry.Sentry
+import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
@@ -24,7 +25,7 @@ fun main() {
     }
     val koinApplication = startKoin {
         modules(
-            listOf(desktopDataModule) +
+            listOf(desktopDataModule, lmuWindowsDataModule) +
                 appModules +
                 listOf(module { single(named("appVersion")) { APP_VERSION } }),
         )

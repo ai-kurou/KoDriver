@@ -1,4 +1,4 @@
-package kurou.kodriver.data.mapper
+package kurou.kodriver.core.lmuwindowsdata.mapper
 
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer

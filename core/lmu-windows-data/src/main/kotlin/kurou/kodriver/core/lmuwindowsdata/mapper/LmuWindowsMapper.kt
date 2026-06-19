@@ -1,4 +1,4 @@
-package kurou.kodriver.data.mapper
+package kurou.kodriver.core.lmuwindowsdata.mapper
 
 import kurou.kodriver.domain.model.EngineData
 import kurou.kodriver.domain.model.FuelData

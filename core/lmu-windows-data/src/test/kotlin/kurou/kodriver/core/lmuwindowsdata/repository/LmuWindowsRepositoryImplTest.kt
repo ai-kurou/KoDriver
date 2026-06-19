@@ -1,4 +1,4 @@
-package kurou.kodriver.data.repository
+package kurou.kodriver.core.lmuwindowsdata.repository
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
-import kurou.kodriver.data.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

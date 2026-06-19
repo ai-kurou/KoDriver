@@ -1,6 +1,6 @@
-package kurou.kodriver.data.repository
+package kurou.kodriver.core.lmuwindowsdata.repository
 
-import kurou.kodriver.data.datasource.MemoryReader
+import kurou.kodriver.core.lmuwindowsdata.datasource.MemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
