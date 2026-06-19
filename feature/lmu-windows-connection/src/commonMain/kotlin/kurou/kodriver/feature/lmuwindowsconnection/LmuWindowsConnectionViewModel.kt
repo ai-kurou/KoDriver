@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsconnection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,15 +15,24 @@ import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 data class LmuWindowsConnectionUiState(
-    val isConnected: Boolean = false,
-    val isConnectionChecked: Boolean = false,
-)
+    val connectionStatus: LmuWindowsConnectionStatus = LmuWindowsConnectionStatus.UNCHECKED,
+) {
+    val isConnected: Boolean get() = connectionStatus == LmuWindowsConnectionStatus.CONNECTED
+    val isConnectionChecked: Boolean get() = connectionStatus != LmuWindowsConnectionStatus.UNCHECKED
+}
+
+enum class LmuWindowsConnectionStatus {
+    UNCHECKED,
+    CONNECTED,
+    DISCONNECTED,
+}
 
 class LmuWindowsConnectionViewModel(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<LmuWindowsConnectionUiState> = observeSelectedSimulator()
         .flatMapLatest { simulator ->
             if (simulator == LMU_WINDOWS_SIMULATOR_KEY) {
@@ -48,8 +58,11 @@ class LmuWindowsConnectionViewModel(
             }
             emit(
                 LmuWindowsConnectionUiState(
-                    isConnected = isConnected,
-                    isConnectionChecked = true,
+                    connectionStatus = if (isConnected) {
+                        LmuWindowsConnectionStatus.CONNECTED
+                    } else {
+                        LmuWindowsConnectionStatus.DISCONNECTED
+                    },
                 ),
             )
             delay(CONNECTION_CHECK_INTERVAL_MS)

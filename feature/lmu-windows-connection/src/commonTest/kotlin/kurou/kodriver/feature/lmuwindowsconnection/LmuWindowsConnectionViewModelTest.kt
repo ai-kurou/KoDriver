@@ -21,8 +21,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsConnectionViewModelTest {
@@ -48,8 +47,7 @@ class LmuWindowsConnectionViewModelTest {
 
         dispatcher.scheduler.runCurrent()
 
-        assertTrue(viewModel.uiState.value.isConnected)
-        assertTrue(viewModel.uiState.value.isConnectionChecked)
+        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.value.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -62,8 +60,7 @@ class LmuWindowsConnectionViewModelTest {
 
         dispatcher.scheduler.runCurrent()
 
-        assertFalse(viewModel.uiState.value.isConnected)
-        assertFalse(viewModel.uiState.value.isConnectionChecked)
+        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.value.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -73,7 +70,7 @@ class LmuWindowsConnectionViewModelTest {
         val simulatorRepository = FakeSimulatorPreferencesRepository(initial = null)
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
 
-        assertFalse(viewModel.uiState.value.isConnectionChecked)
+        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.value.connectionStatus)
     }
 
     @Test
@@ -83,13 +80,12 @@ class LmuWindowsConnectionViewModelTest {
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
-        assertFalse(viewModel.uiState.value.isConnectionChecked)
+        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.value.connectionStatus)
 
         simulatorRepository.saveSelectedSimulator("lmu_windows")
         dispatcher.scheduler.runCurrent()
 
-        assertTrue(viewModel.uiState.value.isConnected)
-        assertTrue(viewModel.uiState.value.isConnectionChecked)
+        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.value.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -100,13 +96,12 @@ class LmuWindowsConnectionViewModelTest {
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
-        assertTrue(viewModel.uiState.value.isConnected)
+        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.value.connectionStatus)
 
         simulatorRepository.saveSelectedSimulator("other")
         dispatcher.scheduler.runCurrent()
 
-        assertFalse(viewModel.uiState.value.isConnected)
-        assertFalse(viewModel.uiState.value.isConnectionChecked)
+        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.value.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -117,13 +112,13 @@ class LmuWindowsConnectionViewModelTest {
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
-        assertFalse(viewModel.uiState.value.isConnected)
+        assertEquals(LmuWindowsConnectionStatus.DISCONNECTED, viewModel.uiState.value.connectionStatus)
 
         connectionRepository.isConnected = true
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
-        assertTrue(viewModel.uiState.value.isConnected)
+        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.value.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -134,13 +129,13 @@ class LmuWindowsConnectionViewModelTest {
         val viewModel = createViewModel(connectionRepository, simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
-        assertFalse(viewModel.uiState.value.isConnected)
+        assertEquals(LmuWindowsConnectionStatus.DISCONNECTED, viewModel.uiState.value.connectionStatus)
 
         connectionRepository.isConnected = true
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
-        assertTrue(viewModel.uiState.value.isConnected)
+        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.value.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
