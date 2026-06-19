@@ -7,25 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveFlagEnabledStateUseCase
-
-private val flagKeys = listOf(
-    ReadoutItemKey.BLUE_FLAG,
-    ReadoutItemKey.SECTOR_YELLOW_FLAG,
-    ReadoutItemKey.FULL_COURSE_YELLOW,
-    ReadoutItemKey.RED_FLAG,
-)
-
-private val flagKeyToSpeechEvent = mapOf(
-    ReadoutItemKey.BLUE_FLAG to SpeechEvent.BlueFlag,
-    ReadoutItemKey.SECTOR_YELLOW_FLAG to SpeechEvent.YellowFlag,
-    ReadoutItemKey.FULL_COURSE_YELLOW to SpeechEvent.FullCourseYellow,
-    ReadoutItemKey.RED_FLAG to SpeechEvent.SessionStop,
-)
 
 internal class LmuWindowsReadoutFlagDetailViewModel(
     observeFlagEnabledStates: ObserveFlagEnabledStatesUseCase,
@@ -35,17 +19,18 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
 
     val uiState: StateFlow<LmuWindowsReadoutFlagDetailUiState> = observeFlagEnabledStates()
         .map { storedStates ->
-            val enabledStates = flagKeys.associateWith { storedStates[it] ?: true }
+            val enabledStates = FlagReadoutItem.entries.associate { item ->
+                item.key to (storedStates[item.key] ?: true)
+            }
             LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
 
-    fun onFlagEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
-        viewModelScope.launch { saveFlagEnabledState(key, enabled) }
+    fun onFlagEnabledChanged(item: FlagReadoutItem, enabled: Boolean) {
+        viewModelScope.launch { saveFlagEnabledState(item.key, enabled) }
     }
 
-    fun onPreviewClicked(key: ReadoutItemKey) {
-        val event = flagKeyToSpeechEvent[key] ?: return
-        playSpeechEvent(event)
+    fun onPreviewClicked(item: FlagReadoutItem) {
+        playSpeechEvent(item.previewEvent)
     }
 }
