@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -23,6 +24,8 @@ data class ServerConnectionUiState(
     val requiresKoDriverServer: Boolean = false,
     val selectedSimulator: String? = null,
     val serverVersion: String? = null,
+    val showVersionMismatchBottomSheet: Boolean = false,
+    val appVersion: String = "",
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -30,9 +33,13 @@ class ServerConnectionViewModel(
     private val fetchServerVersion: FetchServerVersionUseCase,
     private val observeServerIp: ObserveServerIpUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    private val appVersion: String,
 ) : ViewModel() {
 
-    val uiState: StateFlow<ServerConnectionUiState> = combine(
+    private val _showVersionMismatchBottomSheet = MutableStateFlow(false)
+    private var versionMismatchWarningShown = false
+
+    private val baseUiStateFlow = combine(
         observeServerIp(),
         observeSelectedSimulator(),
     ) { ip, simulator -> ip to simulator }
@@ -50,15 +57,31 @@ class ServerConnectionViewModel(
                 )
             }
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = ServerConnectionUiState(),
-        )
+
+    val uiState: StateFlow<ServerConnectionUiState> = combine(
+        baseUiStateFlow,
+        _showVersionMismatchBottomSheet,
+    ) { base, showBottomSheet ->
+        base.copy(showVersionMismatchBottomSheet = showBottomSheet, appVersion = appVersion)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = ServerConnectionUiState(),
+    )
+
+    fun dismissVersionMismatchBottomSheet() {
+        _showVersionMismatchBottomSheet.value = false
+    }
 
     private fun connectionCheckFlow(ip: String, simulator: String?, requiresServer: Boolean) = flow {
         while (true) {
             val versionResult = fetchServerVersion(ip)
+            val serverVer = versionResult.getOrNull()
+            val isMismatch = serverVer != null && appVersion.isNotEmpty() && serverVer != appVersion
+            if (isMismatch && !versionMismatchWarningShown) {
+                versionMismatchWarningShown = true
+                _showVersionMismatchBottomSheet.value = true
+            }
             emit(
                 ServerConnectionUiState(
                     isConnected = versionResult.isSuccess,
@@ -66,7 +89,7 @@ class ServerConnectionViewModel(
                     isIpConfigured = true,
                     requiresKoDriverServer = requiresServer,
                     selectedSimulator = simulator,
-                    serverVersion = versionResult.getOrNull(),
+                    serverVersion = serverVer,
                 ),
             )
             delay(CONNECTION_CHECK_INTERVAL_MS)

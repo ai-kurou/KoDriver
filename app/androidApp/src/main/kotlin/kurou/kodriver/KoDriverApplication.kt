@@ -5,6 +5,8 @@ import io.sentry.android.core.SentryAndroid
 import kurou.kodriver.data.androidDataModule
 import kurou.kodriver.presentation.appModules
 import org.koin.core.context.startKoin
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 
 private const val SENTRY_DSN =
     "https://93dc09daf8552c39b0eea61b4f1319ee@o4511575800676352.ingest.us.sentry.io/4511575816667136"
@@ -17,7 +19,11 @@ class KoDriverApplication : Application() {
             options.isEnabled = !BuildConfig.DEBUG
         }
         startKoin {
-            modules(listOf(androidDataModule(this@KoDriverApplication)) + appModules)
+            modules(
+                listOf(androidDataModule(this@KoDriverApplication)) +
+                    appModules +
+                    listOf(module { single(named("appVersion")) { BuildConfig.VERSION_NAME } }),
+            )
         }
     }
 }

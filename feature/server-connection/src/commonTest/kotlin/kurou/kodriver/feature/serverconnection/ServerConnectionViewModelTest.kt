@@ -200,14 +200,75 @@ class ServerConnectionViewModelTest {
         collectionJob.cancelAndJoin()
     }
 
+    @Test
+    fun `バージョン不一致時にボトムシートを表示する`() = runTest {
+        val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
+        val versionRepo = FakeServerVersionRepository(Result.success("2.0.0"))
+        val viewModel = createViewModel(serverIpRepo, versionRepo, appVersion = "1.0.0")
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertTrue(viewModel.uiState.first().showVersionMismatchBottomSheet)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `バージョン一致時はボトムシートを表示しない`() = runTest {
+        val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
+        val versionRepo = FakeServerVersionRepository(Result.success("1.0.0"))
+        val viewModel = createViewModel(serverIpRepo, versionRepo, appVersion = "1.0.0")
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.first().showVersionMismatchBottomSheet)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `ボトムシートをdismissするとshowVersionMismatchBottomSheetがfalseになる`() = runTest {
+        val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
+        val versionRepo = FakeServerVersionRepository(Result.success("2.0.0"))
+        val viewModel = createViewModel(serverIpRepo, versionRepo, appVersion = "1.0.0")
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+        dispatcher.scheduler.runCurrent()
+        assertTrue(viewModel.uiState.first().showVersionMismatchBottomSheet)
+
+        viewModel.dismissVersionMismatchBottomSheet()
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.first().showVersionMismatchBottomSheet)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
+    fun `バージョン不一致のボトムシートはdismiss後に再ポーリングで再表示されない`() = runTest {
+        val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
+        val versionRepo = FakeServerVersionRepository(Result.success("2.0.0"))
+        val viewModel = createViewModel(serverIpRepo, versionRepo, appVersion = "1.0.0")
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+        dispatcher.scheduler.runCurrent()
+        viewModel.dismissVersionMismatchBottomSheet()
+        dispatcher.scheduler.runCurrent()
+
+        dispatcher.scheduler.advanceTimeBy(1_000L)
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.first().showVersionMismatchBottomSheet)
+        collectionJob.cancelAndJoin()
+    }
+
     private fun createViewModel(
         serverIpRepository: ServerIpRepository = FakeServerIpRepository(),
         versionRepository: ServerVersionRepository = FakeServerVersionRepository(),
         simulatorRepository: SimulatorPreferencesRepository = FakeSimulatorPreferencesRepository(),
+        appVersion: String = "1.0.0",
     ) = ServerConnectionViewModel(
         fetchServerVersion = FetchServerVersionUseCase(versionRepository),
         observeServerIp = ObserveServerIpUseCase(serverIpRepository),
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+        appVersion = appVersion,
     )
 }
 

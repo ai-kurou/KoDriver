@@ -37,6 +37,28 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
 }
 
+val generateAppVersion by tasks.registering {
+    val version = providers.gradleProperty("appVersion")
+    val outputDir = layout.buildDirectory.dir("generated/appVersion/kotlin")
+    inputs.property("appVersion", version)
+    outputs.dir(outputDir)
+    doLast {
+        val dir = outputDir.get().asFile
+        dir.mkdirs()
+        File(dir, "AppVersion.kt").writeText(
+            """
+            package kurou.kodriver
+
+            internal const val APP_VERSION = "${version.get()}"
+            """.trimIndent(),
+        )
+    }
+}
+
+kotlin.sourceSets.main {
+    kotlin.srcDirs(generateAppVersion)
+}
+
 tasks.withType<Test>().configureEach {
     systemProperty("skiko.renderApi", "SOFTWARE_FAST")
 }
