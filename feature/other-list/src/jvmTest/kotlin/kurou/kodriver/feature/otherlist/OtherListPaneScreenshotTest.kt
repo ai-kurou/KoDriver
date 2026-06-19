@@ -7,6 +7,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
@@ -24,7 +26,7 @@ class OtherListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         OtherListPane(
-                            uiState = OtherListUiState(),
+                            uiState = OtherListUiState(appVersion = "0.5.0"),
                             onItemClick = {},
                         )
                     }
@@ -32,6 +34,8 @@ class OtherListPaneScreenshotTest {
             }
         }
 
+        rule.onNodeWithTag("other_app_version").assertExists()
+        rule.onNodeWithText("0.5.0").assertExists()
         rule.onRoot().captureRoboImage()
     }
 

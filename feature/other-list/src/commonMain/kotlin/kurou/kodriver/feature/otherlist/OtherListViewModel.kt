@@ -14,7 +14,7 @@ class OtherListViewModel(
     private val currentVersion: String,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(OtherListUiState())
+    private val _uiState = MutableStateFlow(OtherListUiState(appVersion = currentVersion))
     val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
 
     fun checkUpdate() {
