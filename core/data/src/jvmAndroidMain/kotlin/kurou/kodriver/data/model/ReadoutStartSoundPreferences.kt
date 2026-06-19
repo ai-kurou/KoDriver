@@ -7,5 +7,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 internal data class ReadoutStartSoundPreferences(
-    @ProtoNumber(1) val type: String = "electronic_noise",
+    @ProtoNumber(1) val type: String = "formula_radio",
 )

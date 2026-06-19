@@ -66,7 +66,7 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
-        // item_0: Volume
+        // item_0: Volume (詳細あり、Desktop では ServerIp が含まれないためインデックス 0)
         rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
 
@@ -76,15 +76,11 @@ class OtherContentTest {
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitUntil { !backEnabled }
 
-        // item_1: ReadoutStartSound (詳細あり)
+        // item_1: ReadoutStartSound (ダイアログを開く)
         rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
-        rule.onNodeWithText("Detail: readout_start_sound").assertExists()
-        assertTrue(backEnabled)
-
-        rule.runOnIdle { capturedOnBack?.invoke() }
-        rule.waitUntil { !backEnabled }
+        assertFalse(backEnabled)
 
         // item_2: GitHubRepository
         rule.onNodeWithTag("other_item_2").performClick()

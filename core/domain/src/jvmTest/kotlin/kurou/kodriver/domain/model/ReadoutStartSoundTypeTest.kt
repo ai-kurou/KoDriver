@@ -18,9 +18,9 @@ class ReadoutStartSoundTypeTest {
     }
 
     @Test
-    fun `fromId は未知の ID のとき ELECTRONIC_NOISE を返す`() {
+    fun `fromId は未知の ID のとき FORMULA_RADIO を返す`() {
         assertEquals(
-            ReadoutStartSoundType.ELECTRONIC_NOISE,
+            ReadoutStartSoundType.FORMULA_RADIO,
             ReadoutStartSoundType.fromId("unknown"),
         )
     }

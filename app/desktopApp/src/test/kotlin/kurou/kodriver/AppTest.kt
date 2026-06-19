@@ -3,6 +3,7 @@ package kurou.kodriver
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
@@ -69,6 +70,14 @@ class AppTest {
 
         // 音量をタップ
         rule.onNodeWithTag("other_item_0").performClick()
+        rule.waitForIdle()
+
+        // 読み上げ開始音をタップ（Desktop では ServerIp が含まれないため other_item_1）
+        rule.onNodeWithTag("other_item_1").performClick()
+        rule.waitForIdle()
+
+        // ダイアログをキャンセル
+        rule.onNodeWithText("キャンセル").performClick()
         rule.waitForIdle()
 
         // ライセンスをタップ（Desktop では ServerIp が含まれないため other_item_4）

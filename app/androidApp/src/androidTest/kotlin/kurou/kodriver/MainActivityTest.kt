@@ -3,6 +3,7 @@ package kurou.kodriver
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -60,6 +61,14 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()
 
+        // 接続先サーバーをタップ（AndroidではServerIpが含まれるためother_item_0）
+        composeTestRule.onNodeWithTag("other_item_0").performClick()
+        composeTestRule.waitForIdle()
+
+        // ダイアログをキャンセル
+        composeTestRule.onNodeWithText("キャンセル").performClick()
+        composeTestRule.waitForIdle()
+
         // 音量をタップ（AndroidではServerIpが含まれるためother_item_1）
         composeTestRule.onNodeWithTag("other_item_1").performClick()
         composeTestRule.waitForIdle()
@@ -68,8 +77,16 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("other_detail_back").performClick()
         composeTestRule.waitForIdle()
 
-        // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_4）
-        composeTestRule.onNodeWithTag("other_item_4").performClick()
+        // 読み上げ開始音をタップ（AndroidではServerIpが含まれるためother_item_2）
+        composeTestRule.onNodeWithTag("other_item_2").performClick()
+        composeTestRule.waitForIdle()
+
+        // ダイアログをキャンセル
+        composeTestRule.onNodeWithText("キャンセル").performClick()
+        composeTestRule.waitForIdle()
+
+        // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_5）
+        composeTestRule.onNodeWithTag("other_item_5").performClick()
         composeTestRule.waitForIdle()
     }
 }
