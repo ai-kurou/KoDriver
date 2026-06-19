@@ -41,7 +41,7 @@ fun OtherVolumeDetailPane(
 }
 
 @Composable
-internal fun OtherVolumeDetailPaneContent(
+fun OtherVolumeDetailPaneContent(
     uiState: OtherVolumeDetailUiState,
     onVolumeChanged: (Int) -> Unit = {},
     canNavigateBack: Boolean = true,
