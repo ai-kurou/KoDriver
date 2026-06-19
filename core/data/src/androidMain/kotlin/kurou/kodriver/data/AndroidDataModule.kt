@@ -9,6 +9,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -48,6 +49,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<SoundVolumeRepository> {
         createSoundVolumeRepository(context.filesDir.absolutePath)
+    }
+    single<ReadoutStartSoundRepository> {
+        createReadoutStartSoundRepository(context.filesDir.absolutePath)
     }
     single<ServerIpRepository> {
         AndroidServerIpRepository(context.serverIpDataStore)
