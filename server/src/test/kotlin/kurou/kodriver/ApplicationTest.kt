@@ -37,6 +37,20 @@ import kotlin.test.assertNotNull
 class ApplicationTest {
 
     @Test
+    fun `バージョンエンドポイントはアプリバージョンをJSONで返す`() = testApplication {
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            )
+        }
+        val response = client.get("/version")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("""{"version":"${BuildConfig.APP_VERSION}"}""", response.bodyAsText())
+    }
+
+    @Test
     fun `ルートはサーバーの応答を返す`() = testApplication {
         application {
             module(

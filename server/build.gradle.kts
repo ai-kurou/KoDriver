@@ -11,6 +11,30 @@ application {
     mainClass = "kurou.kodriver.ApplicationKt"
 }
 
+val generateBuildConfig by tasks.registering {
+    val appVersion = providers.gradleProperty("appVersion")
+    val outputDir = layout.buildDirectory.dir("generated/buildConfig")
+    inputs.property("appVersion", appVersion)
+    outputs.dir(outputDir)
+    doLast {
+        val dir = outputDir.get().asFile.resolve("kurou/kodriver")
+        dir.mkdirs()
+        dir.resolve("BuildConfig.kt").writeText(
+            """
+            package kurou.kodriver
+
+            internal object BuildConfig {
+                const val APP_VERSION = "${appVersion.get()}"
+            }
+            """.trimIndent(),
+        )
+    }
+}
+
+kotlin.sourceSets.main {
+    kotlin.srcDir(generateBuildConfig.map { layout.buildDirectory.dir("generated/buildConfig") })
+}
+
 dependencies {
     api(projects.core.domain)
     implementation(libs.logback)

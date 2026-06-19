@@ -1,5 +1,6 @@
 package kurou.kodriver
 
+import io.ktor.http.ContentType
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -76,6 +77,12 @@ fun Application.module(
     routing {
         get("/") {
             call.respondText("Hello, Ktor!")
+        }
+        get("/version") {
+            call.respondText(
+                """{"version":"${BuildConfig.APP_VERSION}"}""",
+                ContentType.Application.Json,
+            )
         }
         flagWebSocket(observeRaceFlags)
         proximityWebSocket(observeProximity)
