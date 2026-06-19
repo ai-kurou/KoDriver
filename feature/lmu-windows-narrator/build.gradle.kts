@@ -73,7 +73,6 @@ kotlin {
         }
         androidUnitTest.dependencies {
             implementation(libs.kotlin.testJunit)
-            implementation(libs.robolectric)
         }
     }
 }

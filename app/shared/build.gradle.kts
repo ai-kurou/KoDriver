@@ -87,9 +87,6 @@ kotlin {
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.compose.material3.adaptive.layout)
         }
-        jsMain.dependencies {
-            implementation(libs.wrappers.browser)
-        }
     }
 }
 

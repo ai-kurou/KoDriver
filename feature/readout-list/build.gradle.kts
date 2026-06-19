@@ -82,9 +82,6 @@ kotlin {
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.kotlinx.coroutinesTest)
         }
-        jsMain.dependencies {
-            implementation(libs.wrappers.browser)
-        }
     }
 }
 
