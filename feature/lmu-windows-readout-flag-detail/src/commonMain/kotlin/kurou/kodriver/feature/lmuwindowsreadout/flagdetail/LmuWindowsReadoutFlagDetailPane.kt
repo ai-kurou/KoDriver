@@ -12,37 +12,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_switch_subtitle
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_yellow
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.domain.model.ReadoutItemKey
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-
-private data class FlagSwitchItem(
-    val key: ReadoutItemKey,
-    val labelRes: StringResource,
-    val chipLabelRes: StringResource,
-)
-
-private val flagSwitchItems = listOf(
-    FlagSwitchItem(ReadoutItemKey.BLUE_FLAG, Res.string.flag_blue, Res.string.flag_blue),
-    FlagSwitchItem(ReadoutItemKey.SECTOR_YELLOW_FLAG, Res.string.flag_yellow, Res.string.flag_yellow),
-    FlagSwitchItem(
-        ReadoutItemKey.FULL_COURSE_YELLOW,
-        Res.string.flag_full_course_yellow,
-        Res.string.flag_full_course_yellow,
-    ),
-    FlagSwitchItem(ReadoutItemKey.RED_FLAG, Res.string.flag_red, Res.string.flag_session_stop),
-)
 
 @Composable
 fun LmuWindowsReadoutFlagDetailPane(
@@ -61,8 +38,8 @@ fun LmuWindowsReadoutFlagDetailPane(
 @Composable
 internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
-    onFlagEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
-    onPreviewClicked: (ReadoutItemKey) -> Unit,
+    onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit,
+    onPreviewClicked: (FlagReadoutItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -72,15 +49,15 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     ) {
         DetailPaneDescription(text = stringResource(Res.string.flag_description))
         DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
-        flagSwitchItems.forEach { item ->
+        FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
             DetailPaneCard(
                 title = stringResource(item.labelRes),
                 checked = uiState.enabledStates[item.key] ?: true,
                 chipLabels = listOf(chipLabel),
                 selectedChipLabels = setOf(chipLabel),
-                onCheckedChange = { enabled -> onFlagEnabledChanged(item.key, enabled) },
-                onChipClick = { onPreviewClicked(item.key) },
+                onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
+                onChipClick = { onPreviewClicked(item) },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }

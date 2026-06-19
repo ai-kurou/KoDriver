@@ -63,37 +63,31 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
     @Test
     fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
-        viewModel.onFlagEnabledChanged(ReadoutItemKey.BLUE_FLAG, false)
+        viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
         assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.BLUE_FLAG])
     }
 
     @Test
-    fun `onPreviewClicked に BLUE_FLAG を渡すと BlueFlag イベントが再生される`() {
-        viewModel.onPreviewClicked(ReadoutItemKey.BLUE_FLAG)
+    fun `onPreviewClicked に BlueFlag を渡すと BlueFlag イベントが再生される`() {
+        viewModel.onPreviewClicked(FlagReadoutItem.BlueFlag)
         assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), playedEvents)
     }
 
     @Test
-    fun `onPreviewClicked に SECTOR_YELLOW_FLAG を渡すと YellowFlag イベントが再生される`() {
-        viewModel.onPreviewClicked(ReadoutItemKey.SECTOR_YELLOW_FLAG)
+    fun `onPreviewClicked に SectorYellowFlag を渡すと YellowFlag イベントが再生される`() {
+        viewModel.onPreviewClicked(FlagReadoutItem.SectorYellowFlag)
         assertEquals(listOf<SpeechEvent>(SpeechEvent.YellowFlag), playedEvents)
     }
 
     @Test
-    fun `onPreviewClicked に FULL_COURSE_YELLOW を渡すと FullCourseYellow イベントが再生される`() {
-        viewModel.onPreviewClicked(ReadoutItemKey.FULL_COURSE_YELLOW)
+    fun `onPreviewClicked に FullCourseYellow を渡すと FullCourseYellow イベントが再生される`() {
+        viewModel.onPreviewClicked(FlagReadoutItem.FullCourseYellow)
         assertEquals(listOf<SpeechEvent>(SpeechEvent.FullCourseYellow), playedEvents)
     }
 
     @Test
-    fun `onPreviewClicked に RED_FLAG を渡すと SessionStop イベントが再生される`() {
-        viewModel.onPreviewClicked(ReadoutItemKey.RED_FLAG)
+    fun `onPreviewClicked に RedFlag を渡すと SessionStop イベントが再生される`() {
+        viewModel.onPreviewClicked(FlagReadoutItem.RedFlag)
         assertEquals(listOf<SpeechEvent>(SpeechEvent.SessionStop), playedEvents)
-    }
-
-    @Test
-    fun `onPreviewClicked に不明なキーを渡しても何も再生されない`() {
-        viewModel.onPreviewClicked(ReadoutItemKey.VEHICLE_APPROACH)
-        assertEquals(emptyList<SpeechEvent>(), playedEvents)
     }
 }
