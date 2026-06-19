@@ -1,0 +1,7 @@
+<resources>
+    <string name="readout_start_sound_title">読み上げ開始音</string>
+    <string name="readout_start_sound_electronic_noise">電子ノイズ</string>
+    <string name="readout_start_sound_formula_radio">Formula無線</string>
+    <string name="readout_start_sound_ok">OK</string>
+    <string name="readout_start_sound_cancel">キャンセル</string>
+</resources>
