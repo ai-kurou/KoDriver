@@ -16,10 +16,12 @@ KoDriver/
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
 │   ├── lmu-windows-connection/   LMU 接続状態の監視
+│   ├── main/                     アプリ全体のメイン画面状態管理
 │   ├── server-connection/        KoDriver サーバーへの接続状態確認
 │   ├── lmu-windows-narrator/     WAV 音声再生とアナウンス制御
 │   ├── other-license-detail/     その他画面のライセンス詳細表示
 │   ├── other-list/               その他画面の一覧表示・選択状態管理
+│   ├── other-readout-start-sound-detail/ その他画面の読み上げ開始音設定詳細
 │   ├── other-server-ip-detail/   その他画面の接続先サーバーIP設定ダイアログ
 │   ├── other-volume-detail/      その他画面の音量設定詳細
 │   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
