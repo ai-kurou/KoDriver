@@ -70,8 +70,8 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType?, hasAppUpdate:
 private fun OtherListItemTrailingIcon(itemType: OtherListItemType?) {
     when (itemType) {
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.Volume,
-        OtherListItemType.ReadoutStartSound,
         OtherListItemType.License,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
         OtherListItemType.GitHubRepository,
