@@ -14,11 +14,9 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.repository.ServerConnectionRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.usecase.CheckServerConnectionUseCase
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
@@ -48,8 +46,7 @@ class ServerConnectionViewModelTest {
     @Test
     fun `IP設定済みで接続成功時に接続済み状態を返す`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val viewModel = createViewModel(serverIpRepo, FakeServerVersionRepository(Result.success("1.0.0")))
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -64,8 +61,7 @@ class ServerConnectionViewModelTest {
     @Test
     fun `IP未設定時はisIpConfiguredがfalseで未確認状態を返す`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = null)
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val viewModel = createViewModel(serverIpRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -80,9 +76,8 @@ class ServerConnectionViewModelTest {
     @Test
     fun `選択シミュレータがuiStateに反映される`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
         val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
-        val viewModel = createViewModel(serverIpRepo, connectionRepo, simulatorRepo)
+        val viewModel = createViewModel(serverIpRepo, simulatorRepository = simulatorRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -94,8 +89,7 @@ class ServerConnectionViewModelTest {
     @Test
     fun `IP設定後に接続確認を開始する`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = null)
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val viewModel = createViewModel(serverIpRepo, FakeServerVersionRepository(Result.success("1.0.0")))
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertFalse(viewModel.uiState.first().isConnectionChecked)
@@ -112,13 +106,13 @@ class ServerConnectionViewModelTest {
     @Test
     fun `一定間隔で接続状態を更新する`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = false)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val versionRepo = FakeServerVersionRepository(Result.failure(RuntimeException("down")))
+        val viewModel = createViewModel(serverIpRepo, versionRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertFalse(viewModel.uiState.first().isConnected)
 
-        connectionRepo.connected = true
+        versionRepo.result = Result.success("1.0.0")
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
@@ -129,13 +123,13 @@ class ServerConnectionViewModelTest {
     @Test
     fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = false, failureCount = 1)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val versionRepo = FakeServerVersionRepository(Result.failure(RuntimeException("error")), failureCount = 1)
+        val viewModel = createViewModel(serverIpRepo, versionRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertFalse(viewModel.uiState.first().isConnected)
 
-        connectionRepo.connected = true
+        versionRepo.result = Result.success("1.0.0")
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
@@ -146,9 +140,8 @@ class ServerConnectionViewModelTest {
     @Test
     fun `LMU選択時はrequiresKoDriverServerがtrueになる`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
         val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
-        val viewModel = createViewModel(serverIpRepo, connectionRepo, simulatorRepo)
+        val viewModel = createViewModel(serverIpRepo, simulatorRepository = simulatorRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -160,8 +153,7 @@ class ServerConnectionViewModelTest {
     @Test
     fun `シミュレータ未選択時はrequiresKoDriverServerがfalseになる`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = null)
-        val connectionRepo = FakeServerConnectionRepository(connected = false)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val viewModel = createViewModel(serverIpRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -173,8 +165,7 @@ class ServerConnectionViewModelTest {
     @Test
     fun `シミュレータ未選択時はnullを返す`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = null)
-        val connectionRepo = FakeServerConnectionRepository(connected = false)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
+        val viewModel = createViewModel(serverIpRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -186,9 +177,8 @@ class ServerConnectionViewModelTest {
     @Test
     fun `接続成功時にサーバーバージョンがuiStateに反映される`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
         val versionRepo = FakeServerVersionRepository(Result.success("1.0.0"))
-        val viewModel = createViewModel(serverIpRepo, connectionRepo, versionRepo = versionRepo)
+        val viewModel = createViewModel(serverIpRepo, versionRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -200,22 +190,8 @@ class ServerConnectionViewModelTest {
     @Test
     fun `未接続時はサーバーバージョンがnullになる`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = false)
-        val viewModel = createViewModel(serverIpRepo, connectionRepo)
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
-
-        dispatcher.scheduler.runCurrent()
-
-        assertNull(viewModel.uiState.first().serverVersion)
-        collectionJob.cancelAndJoin()
-    }
-
-    @Test
-    fun `バージョン取得失敗時はサーバーバージョンがnullになる`() = runTest {
-        val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val connectionRepo = FakeServerConnectionRepository(connected = true)
         val versionRepo = FakeServerVersionRepository(Result.failure(RuntimeException("error")))
-        val viewModel = createViewModel(serverIpRepo, connectionRepo, versionRepo = versionRepo)
+        val viewModel = createViewModel(serverIpRepo, versionRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -226,28 +202,13 @@ class ServerConnectionViewModelTest {
 
     private fun createViewModel(
         serverIpRepository: ServerIpRepository = FakeServerIpRepository(),
-        connectionRepository: ServerConnectionRepository = FakeServerConnectionRepository(),
+        versionRepository: ServerVersionRepository = FakeServerVersionRepository(),
         simulatorRepository: SimulatorPreferencesRepository = FakeSimulatorPreferencesRepository(),
-        versionRepo: ServerVersionRepository = FakeServerVersionRepository(),
     ) = ServerConnectionViewModel(
-        checkServerConnection = CheckServerConnectionUseCase(connectionRepository),
-        fetchServerVersion = FetchServerVersionUseCase(versionRepo),
+        fetchServerVersion = FetchServerVersionUseCase(versionRepository),
         observeServerIp = ObserveServerIpUseCase(serverIpRepository),
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     )
-}
-
-private class FakeServerConnectionRepository(
-    var connected: Boolean = true,
-    var failureCount: Int = 0,
-) : ServerConnectionRepository {
-    override suspend fun isConnected(ip: String): Boolean {
-        if (failureCount > 0) {
-            failureCount--
-            error("connection check failed")
-        }
-        return connected
-    }
 }
 
 private class FakeServerIpRepository(
@@ -269,7 +230,14 @@ private class FakeSimulatorPreferencesRepository(
 }
 
 private class FakeServerVersionRepository(
-    private val result: Result<String> = Result.success("0.0.0"),
+    var result: Result<String> = Result.success("0.0.0"),
+    var failureCount: Int = 0,
 ) : ServerVersionRepository {
-    override suspend fun fetchVersion(ip: String): Result<String> = result
+    override suspend fun fetchVersion(ip: String): Result<String> {
+        if (failureCount > 0) {
+            failureCount--
+            return Result.failure(RuntimeException("temporary failure"))
+        }
+        return result
+    }
 }

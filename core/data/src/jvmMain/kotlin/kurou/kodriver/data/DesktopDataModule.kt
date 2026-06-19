@@ -20,7 +20,6 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
-import kurou.kodriver.domain.repository.ServerConnectionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumeRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
@@ -73,7 +72,6 @@ val desktopDataModule = module {
     single<SoundVolumeRepository> {
         createSoundVolumeRepository(directory = kodriverDirectory)
     }
-    single<ServerConnectionRepository> { NoOpServerConnectionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
 }
 
@@ -93,8 +91,4 @@ private class NoOpFlagRepository : FlagRepository {
 
 private class NoOpVehicleDamageRepository : VehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
-}
-
-private class NoOpServerConnectionRepository : ServerConnectionRepository {
-    override suspend fun isConnected(ip: String): Boolean = false
 }
