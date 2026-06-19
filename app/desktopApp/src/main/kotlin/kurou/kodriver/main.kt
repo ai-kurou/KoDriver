@@ -11,6 +11,8 @@ import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
 import org.koin.core.context.startKoin
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import java.awt.Dimension
 
 private const val SENTRY_DSN =
@@ -21,7 +23,11 @@ fun main() {
         options.dsn = SENTRY_DSN
     }
     val koinApplication = startKoin {
-        modules(listOf(desktopDataModule) + appModules)
+        modules(
+            listOf(desktopDataModule) +
+                appModules +
+                listOf(module { single(named("appVersion")) { APP_VERSION } }),
+        )
     }
     val server = createKoDriverServer(koinApplication.koin)
     server.start()

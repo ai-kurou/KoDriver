@@ -146,6 +146,7 @@ fun AppScreen(
     )
 
     LmuWindowsNarratorEffect()
+    VersionMismatchBottomSheetEffect()
     AppScreenContent(
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,

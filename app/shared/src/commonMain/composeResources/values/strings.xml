@@ -8,4 +8,11 @@
     <string name="banner_server_connected">Windows版KoDriverに接続中</string>
     <string name="banner_server_disconnected">Windows版KoDriver接続待機中</string>
     <string name="banner_server_ip_not_configured">接続先IPアドレスが未設定です</string>
+    <string name="version_mismatch_title">バージョンが一致しません</string>
+    <string name="version_mismatch_body">バージョンが一致しないため、クラッシュや正常に動作しない可能性があります。</string>
+    <string name="version_mismatch_windows_version">Windows版KoDriver: %1$s</string>
+    <string name="version_mismatch_app_version">Androidアプリ: %1$s</string>
+    <string name="version_mismatch_update_app">Androidアプリを最新バージョンに更新してください。</string>
+    <string name="version_mismatch_update_windows">Windows版KoDriverを最新バージョンに更新してください。</string>
+    <string name="version_mismatch_close">閉じる</string>
 </resources>
