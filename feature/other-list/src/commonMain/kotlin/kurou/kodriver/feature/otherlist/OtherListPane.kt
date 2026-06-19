@@ -196,18 +196,23 @@ private fun OtherAppVersionListItem(
 
     ListItem(
         headlineContent = { Text(appVersionLabel) },
-        supportingContent = { Text(appVersion) },
         leadingContent = {
             Icon(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = null,
             )
         },
+        trailingContent = {
+            Text(
+                text = appVersion,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        },
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface,
             headlineColor = MaterialTheme.colorScheme.onSurface,
-            supportingColor = MaterialTheme.colorScheme.onSurfaceVariant,
             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         modifier = Modifier
             .fillMaxWidth()
