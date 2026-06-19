@@ -119,6 +119,7 @@ fun AppScreen(
                 when (itemType) {
                     OtherListItemType.ServerIp -> {}
                     OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
+                    OtherListItemType.ReadoutStartSound -> {}
                     OtherListItemType.GitHubRepository -> {}
                     OtherListItemType.ReleasePage -> {}
                     OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
