@@ -224,6 +224,18 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `左右同時に接近したときは接近アナウンスをしない`() = runTest(testDispatcher) {
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+
+        channel.send(noProximity())
+        channel.send(leftAndRightProximity(leftVehicleId = 1, rightVehicleId = 2))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `接近開始時の読み上げが無効のときは接近アナウンスをしない`() = runTest(testDispatcher) {
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -580,6 +592,13 @@ private fun rightProximity(vehicleId: Int) = ProximityData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = setOf(vehicleId),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
+    lateralDistanceRightMeters = 3.0,
+)
+
+private fun leftAndRightProximity(leftVehicleId: Int, rightVehicleId: Int) = ProximityData(
+    sideBySideLeftVehicleIds = setOf(leftVehicleId),
+    sideBySideRightVehicleIds = setOf(rightVehicleId),
+    lateralDistanceLeftMeters = 3.0,
     lateralDistanceRightMeters = 3.0,
 )
 
