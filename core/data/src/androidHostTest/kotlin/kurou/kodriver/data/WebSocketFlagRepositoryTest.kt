@@ -71,6 +71,7 @@ class WebSocketFlagRepositoryTest {
 
         assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
         assertEquals(SessionYellowFlagState.NONE, result.yellowFlagState)
+        assertEquals("/ws/lmu_windows/flags", server.takeRequest().path)
     }
 
     @Test
