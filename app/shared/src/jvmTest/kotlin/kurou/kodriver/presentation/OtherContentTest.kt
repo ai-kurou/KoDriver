@@ -66,14 +66,8 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
-        // item_0: ServerIp (ダイアログを開く)
+        // item_0: Volume (詳細あり、Desktop では ServerIp が含まれないためインデックス 0)
         rule.onNodeWithTag("other_item_0").performClick()
-        rule.waitForIdle()
-
-        assertFalse(backEnabled)
-
-        // item_1: Volume (詳細あり)
-        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
         rule.onNodeWithText("Detail: volume").assertExists()
@@ -82,28 +76,28 @@ class OtherContentTest {
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitUntil { !backEnabled }
 
-        // item_2: ReadoutStartSound (ダイアログを開く)
-        rule.onNodeWithTag("other_item_2").performClick()
+        // item_1: ReadoutStartSound (ダイアログを開く)
+        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
         assertFalse(backEnabled)
 
-        // item_3: GitHubRepository
-        rule.onNodeWithTag("other_item_3").performClick()
+        // item_2: GitHubRepository
+        rule.onNodeWithTag("other_item_2").performClick()
         rule.waitForIdle()
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)
 
-        // item_4: ReleasePage
-        rule.onNodeWithTag("other_item_4").performClick()
+        // item_3: ReleasePage
+        rule.onNodeWithTag("other_item_3").performClick()
         rule.waitForIdle()
 
         assertTrue(releasePageOpened)
         assertFalse(backEnabled)
 
-        // item_5: License (詳細あり)
-        rule.onNodeWithTag("other_item_5").performClick()
+        // item_4: License (詳細あり)
+        rule.onNodeWithTag("other_item_4").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)
