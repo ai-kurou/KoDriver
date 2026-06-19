@@ -11,6 +11,7 @@ import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ServerConnectionRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumeRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
@@ -53,5 +54,6 @@ fun androidDataModule(context: Context) = module {
         AndroidServerIpRepository(context.serverIpDataStore)
     }
     single<ServerConnectionRepository> { TcpServerConnectionRepository() }
+    single<ServerVersionRepository> { HttpServerVersionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
 }

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckServerConnectionUseCase
+import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
@@ -23,11 +24,13 @@ data class ServerConnectionUiState(
     val isIpConfigured: Boolean = false,
     val requiresKoDriverServer: Boolean = false,
     val selectedSimulator: String? = null,
+    val serverVersion: String? = null,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ServerConnectionViewModel(
     private val checkServerConnection: CheckServerConnectionUseCase,
+    private val fetchServerVersion: FetchServerVersionUseCase,
     private val observeServerIp: ObserveServerIpUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
@@ -65,6 +68,17 @@ class ServerConnectionViewModel(
             } catch (_: Exception) {
                 false
             }
+            val serverVersion = if (isConnected) {
+                try {
+                    fetchServerVersion(ip).getOrNull()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
             emit(
                 ServerConnectionUiState(
                     isConnected = isConnected,
@@ -72,6 +86,7 @@ class ServerConnectionViewModel(
                     isIpConfigured = true,
                     requiresKoDriverServer = requiresServer,
                     selectedSimulator = simulator,
+                    serverVersion = serverVersion,
                 ),
             )
             delay(CONNECTION_CHECK_INTERVAL_MS)
