@@ -17,16 +17,22 @@ import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
+enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONNECTED }
+
 data class ServerConnectionUiState(
-    val isConnected: Boolean = false,
-    val isConnectionChecked: Boolean = false,
-    val isIpConfigured: Boolean = false,
+    val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = false,
     val selectedSimulator: String? = null,
     val serverVersion: String? = null,
     val showVersionMismatchBottomSheet: Boolean = false,
     val appVersion: String = "",
-)
+) {
+    val isConnected: Boolean get() = connectionStatus == ServerConnectionStatus.CONNECTED
+    val isConnectionChecked: Boolean
+        get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
+            connectionStatus != ServerConnectionStatus.CHECKING
+    val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ServerConnectionViewModel(
@@ -50,7 +56,7 @@ class ServerConnectionViewModel(
             } else {
                 flowOf(
                     ServerConnectionUiState(
-                        isIpConfigured = false,
+                        connectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
                         requiresKoDriverServer = requiresServer,
                         selectedSimulator = simulator,
                     ),
@@ -74,6 +80,13 @@ class ServerConnectionViewModel(
     }
 
     private fun connectionCheckFlow(ip: String, simulator: String?, requiresServer: Boolean) = flow {
+        emit(
+            ServerConnectionUiState(
+                connectionStatus = ServerConnectionStatus.CHECKING,
+                requiresKoDriverServer = requiresServer,
+                selectedSimulator = simulator,
+            ),
+        )
         while (true) {
             val versionResult = fetchServerVersion(ip)
             val serverVer = versionResult.getOrNull()
@@ -84,9 +97,11 @@ class ServerConnectionViewModel(
             }
             emit(
                 ServerConnectionUiState(
-                    isConnected = versionResult.isSuccess,
-                    isConnectionChecked = true,
-                    isIpConfigured = true,
+                    connectionStatus = if (versionResult.isSuccess) {
+                        ServerConnectionStatus.CONNECTED
+                    } else {
+                        ServerConnectionStatus.DISCONNECTED
+                    },
                     requiresKoDriverServer = requiresServer,
                     selectedSimulator = simulator,
                     serverVersion = serverVer,

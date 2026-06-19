@@ -52,14 +52,12 @@ class ServerConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         val state = viewModel.uiState.first()
-        assertTrue(state.isConnected)
-        assertTrue(state.isConnectionChecked)
-        assertTrue(state.isIpConfigured)
+        assertEquals(ServerConnectionStatus.CONNECTED, state.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
     @Test
-    fun `IP未設定時はisIpConfiguredがfalseで未確認状態を返す`() = runTest {
+    fun `IP未設定時はNOT_CONFIGUREDを返す`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = null)
         val viewModel = createViewModel(serverIpRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -67,9 +65,7 @@ class ServerConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         val state = viewModel.uiState.first()
-        assertFalse(state.isConnected)
-        assertFalse(state.isConnectionChecked)
-        assertFalse(state.isIpConfigured)
+        assertEquals(ServerConnectionStatus.NOT_CONFIGURED, state.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -98,8 +94,7 @@ class ServerConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         val state = viewModel.uiState.first()
-        assertTrue(state.isConnected)
-        assertTrue(state.isConnectionChecked)
+        assertEquals(ServerConnectionStatus.CONNECTED, state.connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -110,13 +105,13 @@ class ServerConnectionViewModelTest {
         val viewModel = createViewModel(serverIpRepo, versionRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
-        assertFalse(viewModel.uiState.first().isConnected)
+        assertEquals(ServerConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
         versionRepo.result = Result.success("1.0.0")
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
-        assertTrue(viewModel.uiState.first().isConnected)
+        assertEquals(ServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
@@ -127,13 +122,13 @@ class ServerConnectionViewModelTest {
         val viewModel = createViewModel(serverIpRepo, versionRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
-        assertFalse(viewModel.uiState.first().isConnected)
+        assertEquals(ServerConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
         versionRepo.result = Result.success("1.0.0")
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
-        assertTrue(viewModel.uiState.first().isConnected)
+        assertEquals(ServerConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
         collectionJob.cancelAndJoin()
     }
 
