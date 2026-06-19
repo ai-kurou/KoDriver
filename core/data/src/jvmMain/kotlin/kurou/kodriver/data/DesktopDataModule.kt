@@ -21,6 +21,7 @@ import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundRepository
 import kurou.kodriver.domain.repository.SoundVolumeRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
@@ -71,6 +72,9 @@ val desktopDataModule = module {
     }
     single<SoundVolumeRepository> {
         createSoundVolumeRepository(directory = kodriverDirectory)
+    }
+    single<ReadoutStartSoundRepository> {
+        createReadoutStartSoundRepository(directory = kodriverDirectory)
     }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
 }

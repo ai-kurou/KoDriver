@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createReadoutStartSoundPreferencesDataStore
+import kurou.kodriver.data.repository.ReadoutStartSoundRepositoryImpl
+import kurou.kodriver.domain.repository.ReadoutStartSoundRepository
+
+fun createReadoutStartSoundRepository(directory: String): ReadoutStartSoundRepository =
+    ReadoutStartSoundRepositoryImpl(createReadoutStartSoundPreferencesDataStore(directory))

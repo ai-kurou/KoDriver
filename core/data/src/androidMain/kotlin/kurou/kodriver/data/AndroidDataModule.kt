@@ -12,6 +12,7 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundRepository
 import kurou.kodriver.domain.repository.SoundVolumeRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
@@ -48,6 +49,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<SoundVolumeRepository> {
         createSoundVolumeRepository(context.filesDir.absolutePath)
+    }
+    single<ReadoutStartSoundRepository> {
+        createReadoutStartSoundRepository(context.filesDir.absolutePath)
     }
     single<ServerIpRepository> {
         AndroidServerIpRepository(context.serverIpDataStore)
