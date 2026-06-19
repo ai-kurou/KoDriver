@@ -24,10 +24,10 @@ class ReadoutStartSoundRepositoryTest {
     }
 
     @Test
-    fun `デフォルト値は ELECTRONIC_NOISE`() = testScope.runTest {
+    fun `デフォルト値は FORMULA_RADIO`() = testScope.runTest {
         val repository = createReadoutStartSoundRepository(tempDir.absolutePath)
 
-        assertEquals(ReadoutStartSoundType.ELECTRONIC_NOISE, repository.observeType().first())
+        assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
     }
 
     @Test

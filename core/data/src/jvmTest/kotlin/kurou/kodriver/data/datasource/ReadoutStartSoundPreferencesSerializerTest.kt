@@ -45,7 +45,7 @@ class ReadoutStartSoundPreferencesSerializerTest {
     }
 
     @Test
-    fun `デフォルト値は electronic_noise`() {
-        assertEquals("electronic_noise", ReadoutStartSoundPreferencesSerializer.defaultValue.type)
+    fun `デフォルト値は formula_radio`() {
+        assertEquals("formula_radio", ReadoutStartSoundPreferencesSerializer.defaultValue.type)
     }
 }
