@@ -20,14 +20,18 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val ipNotConfiguredMessage = stringResource(Res.string.banner_server_ip_not_configured)
     val ipNotConfigured = !uiState.isIpConfigured
     val isConnected = uiState.isConnectionChecked && uiState.isConnected
+    val status = when {
+        isConnected -> ConnectionBannerStatus.CONNECTED
+        ipNotConfigured || uiState.isConnectionChecked -> ConnectionBannerStatus.DISCONNECTED
+        else -> ConnectionBannerStatus.UNCHECKED
+    }
     val message = when {
         ipNotConfigured -> ipNotConfiguredMessage
         isConnected -> connectedMessage
         else -> disconnectedMessage
     }
     return ConnectionBannerUiState(
-        isConnected = isConnected,
-        isConnectionChecked = uiState.isConnectionChecked || ipNotConfigured,
+        status = status,
         message = message,
         iconType = ConnectionBannerIconType.NETWORK,
     )
