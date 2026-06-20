@@ -41,18 +41,16 @@ fun OtherServerIpDetailDialog(
 ) {
     val viewModel: OtherServerIpDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(uiState.isSaved) {
-        if (uiState.isSaved) {
-            viewModel.onDismiss()
-            onDismiss()
-        }
-    }
     OtherServerIpDetailDialogContent(
         uiState = uiState,
         onIpChanged = viewModel::onIpChanged,
         onSave = viewModel::onSave,
         onSaveAnyway = viewModel::onSaveAnyway,
         onDismiss = {
+            viewModel.onDismiss()
+            onDismiss()
+        },
+        onSaved = {
             viewModel.onDismiss()
             onDismiss()
         },
@@ -67,8 +65,14 @@ internal fun OtherServerIpDetailDialogContent(
     onSave: () -> Unit = {},
     onSaveAnyway: () -> Unit = {},
     onDismiss: () -> Unit = {},
+    onSaved: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(uiState.isSaved) {
+        if (uiState.isSaved) {
+            onSaved()
+        }
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.server_ip_title)) },
