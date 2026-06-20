@@ -1,32 +1,14 @@
 plugins {
-    id("feature-kmp")
+    id("feature-compose")
     alias(libs.plugins.aboutlibraries)
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
     androidLibrary {
         namespace = "kurou.kodriver.feature.otherlicensedetail"
-        androidResources {
-            enable = true
-        }
     }
 
     sourceSets {
-        val nonAndroidMain by creating {
-            dependsOn(commonMain.get())
-        }
-        jvmMain.get().dependsOn(nonAndroidMain)
-        jsMain.get().dependsOn(nonAndroidMain)
-        wasmJsMain.get().dependsOn(nonAndroidMain)
-
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-        }
-        jvmMain.dependencies {
-            implementation(libs.compose.uiTooling)
-        }
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(libs.aboutlibraries.compose.m3)
@@ -51,10 +33,6 @@ kotlin {
 
 compose.resources {
     packageOfResClass = "kodriver.feature.otherlicensedetail.generated.resources"
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
