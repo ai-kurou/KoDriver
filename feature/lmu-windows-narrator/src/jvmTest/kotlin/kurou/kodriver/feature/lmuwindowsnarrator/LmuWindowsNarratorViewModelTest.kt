@@ -47,7 +47,7 @@ import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
@@ -103,7 +103,7 @@ class LmuWindowsNarratorViewModelTest {
                 observeLmuWindows = ObserveLmuWindowsUseCase(
                     FakeChannelLmuWindowsRepository(telemetryChannel.receiveAsFlow()),
                 ),
-                observeSkipFirstLap = ObserveSkipFirstLapUseCase(
+                observeSkipFirstLap = ObserveVehicleApproachSkipFirstLapUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
                 observeStartReadoutEnabled = ObserveVehicleApproachStartReadoutEnabledUseCase(
