@@ -24,17 +24,12 @@ val generateAppVersionSource = tasks.register("generateAppVersionSource") {
 }
 
 plugins {
-    id("feature-kmp")
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    id("feature-compose")
 }
 
 kotlin {
     androidLibrary {
         namespace = "kurou.kodriver.feature.otherlist"
-        androidResources {
-            enable = true
-        }
         withHostTest {
             isIncludeAndroidResources = true
         }
@@ -43,19 +38,6 @@ kotlin {
     sourceSets {
         commonMain {
             kotlin.srcDir(generatedAppVersionDir)
-        }
-        val nonAndroidMain by creating {
-            dependsOn(commonMain.get())
-        }
-        jvmMain.get().dependsOn(nonAndroidMain)
-        jsMain.get().dependsOn(nonAndroidMain)
-        wasmJsMain.get().dependsOn(nonAndroidMain)
-
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-        }
-        jvmMain.dependencies {
-            implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
             implementation(projects.core.domain)
@@ -92,10 +74,6 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 compose.resources {
     packageOfResClass = "kodriver.feature.otherlist.generated.resources"
     publicResClass = true
-}
-
-dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))

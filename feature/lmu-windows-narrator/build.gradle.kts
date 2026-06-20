@@ -1,32 +1,18 @@
 plugins {
-    id("feature-kmp")
-    alias(libs.plugins.composeMultiplatform)
-    alias(libs.plugins.composeCompiler)
+    id("feature-compose")
     `java-test-fixtures`
 }
 
 kotlin {
     androidLibrary {
         namespace = "kurou.kodriver.feature.lmuwindowsnarrator"
-        androidResources {
-            enable = true
-        }
     }
 
     sourceSets {
-        val nonAndroidMain by creating {
-            dependsOn(commonMain.get())
-        }
-        jvmMain.get().dependsOn(nonAndroidMain)
-        jsMain.get().dependsOn(nonAndroidMain)
-        wasmJsMain.get().dependsOn(nonAndroidMain)
-
         androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
             implementation(libs.sentry)
         }
         jvmMain.dependencies {
-            implementation(libs.compose.uiTooling)
             implementation(libs.sentry)
         }
         commonMain.dependencies {
@@ -56,7 +42,6 @@ compose.resources {
 }
 
 dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
     testFixturesImplementation(projects.core.domain)
     testFixturesImplementation(libs.koin.core)
 }
