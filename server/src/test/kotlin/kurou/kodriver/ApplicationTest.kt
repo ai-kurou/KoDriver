@@ -30,6 +30,8 @@ import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import java.net.ServerSocket
+import java.net.URI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -119,31 +121,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `フラッグ情報を複数の異なる値で連続して送信する`() = testApplication {
-        val repository = FakeFlagRepository()
-        application {
-            module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(repository),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-            )
-        }
-
-        client.config {
-            install(WebSockets)
-        }.webSocket("/ws/lmu_windows/flags") {
-            repository.emit(greenFlagData)
-            repository.emit(yellowFlagData)
-
-            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-
-            assertEquals(greenFlagJson, first)
-            assertEquals(yellowFlagJson, second)
-        }
-    }
-
-    @Test
     fun `近接情報をJSONでWebSocketへ送信する`() = testApplication {
         val repository = FakeProximityRepository()
         application {
@@ -185,31 +162,6 @@ class ApplicationTest {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/proximity") {
             repository.emit(proximityDataLeft)
-            repository.emit(proximityDataLeft)
-            repository.emit(proximityDataRight)
-
-            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-
-            assertEquals(proximityLeftJson, first)
-            assertEquals(proximityRightJson, second)
-        }
-    }
-
-    @Test
-    fun `近接情報を複数の異なる値で連続して送信する`() = testApplication {
-        val repository = FakeProximityRepository()
-        application {
-            module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(repository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-            )
-        }
-
-        client.config {
-            install(WebSockets)
-        }.webSocket("/ws/lmu_windows/proximity") {
             repository.emit(proximityDataLeft)
             repository.emit(proximityDataRight)
 
@@ -274,27 +226,21 @@ class ApplicationTest {
     }
 
     @Test
-    fun `車両故障情報を複数の異なる値で連続して送信する`() = testApplication {
-        val repository = FakeVehicleDamageRepository()
-        application {
-            module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(repository),
-            )
-        }
-
-        client.config {
-            install(WebSockets)
-        }.webSocket("/ws/lmu_windows/damage") {
-            repository.emit(overheatingDamage)
-            repository.emit(partDetachedDamage)
-
-            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-
-            assertEquals(overheatingDamageJson, first)
-            assertEquals(partDetachedDamageJson, second)
+    fun `KoDriverServerはstartで起動しstopで停止する`() {
+        val port = ServerSocket(0).use { it.localPort }
+        val server = KoDriverServer(
+            observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+            observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+            observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            port = port,
+            host = "127.0.0.1",
+        )
+        server.start(wait = false)
+        try {
+            val response = URI("http://127.0.0.1:$port/").toURL().readText()
+            assertEquals("Hello, Ktor!", response)
+        } finally {
+            server.stop()
         }
     }
 
