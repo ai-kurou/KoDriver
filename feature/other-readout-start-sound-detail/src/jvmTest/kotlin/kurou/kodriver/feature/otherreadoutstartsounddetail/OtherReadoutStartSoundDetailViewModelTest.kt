@@ -25,13 +25,13 @@ import kotlin.test.assertEquals
 class OtherReadoutStartSoundDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeReadoutStartSoundRepository
+    private lateinit var repository: FakeReadoutStartSoundPreferencesRepository
     private lateinit var viewModel: OtherReadoutStartSoundDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeReadoutStartSoundRepository(initialType = ReadoutStartSoundType.FORMULA_RADIO)
+        repository = FakeReadoutStartSoundPreferencesRepository(initialType = ReadoutStartSoundType.FORMULA_RADIO)
         viewModel = buildViewModel()
     }
 
@@ -41,7 +41,7 @@ class OtherReadoutStartSoundDetailViewModelTest {
     }
 
     private fun buildViewModel(
-        repo: FakeReadoutStartSoundRepository = repository,
+        repo: FakeReadoutStartSoundPreferencesRepository = repository,
     ) = OtherReadoutStartSoundDetailViewModel(
         observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(repo),
         saveReadoutStartSoundType = SaveReadoutStartSoundTypeUseCase(repo),

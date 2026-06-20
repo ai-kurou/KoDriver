@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createSoundVolumePreferencesDataStore
+import kurou.kodriver.data.repository.SoundVolumePreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+
+fun createSoundVolumePreferencesRepository(directory: String): SoundVolumePreferencesRepository =
+    SoundVolumePreferencesRepositoryImpl(createSoundVolumePreferencesDataStore(directory))

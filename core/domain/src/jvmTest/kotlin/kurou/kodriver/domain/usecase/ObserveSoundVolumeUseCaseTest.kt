@@ -9,7 +9,7 @@ class ObserveSoundVolumeUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() = runBlocking {
-        val repo = FakeSoundVolumeRepository(initial = 80)
+        val repo = FakeSoundVolumePreferencesRepository(initial = 80)
         val useCase = ObserveSoundVolumeUseCase(repo)
 
         assertEquals(80, useCase().first())

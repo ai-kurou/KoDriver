@@ -8,7 +8,7 @@ import kotlin.test.assertFailsWith
 
 class SaveSoundVolumeUseCaseTest {
 
-    private val repo = FakeSoundVolumeRepository()
+    private val repo = FakeSoundVolumePreferencesRepository()
     private val useCase = SaveSoundVolumeUseCase(repo)
 
     @Test

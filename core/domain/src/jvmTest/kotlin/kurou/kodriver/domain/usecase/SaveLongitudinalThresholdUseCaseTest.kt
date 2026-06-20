@@ -9,7 +9,7 @@ class SaveLongitudinalThresholdUseCaseTest {
 
     @Test
     fun `保存した縦方向閾値がFlowに反映される`() = runBlocking {
-        val repo = FakeProximityThresholdsRepository()
+        val repo = FakeProximityThresholdsPreferencesRepository()
         val useCase = SaveLongitudinalThresholdUseCase(repo)
 
         useCase(50.0)
@@ -18,7 +18,7 @@ class SaveLongitudinalThresholdUseCaseTest {
 
     @Test
     fun `上書き保存すると最新値がFlowに反映される`() = runBlocking {
-        val repo = FakeProximityThresholdsRepository()
+        val repo = FakeProximityThresholdsPreferencesRepository()
         val useCase = SaveLongitudinalThresholdUseCase(repo)
 
         useCase(50.0)

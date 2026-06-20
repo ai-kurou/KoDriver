@@ -4,11 +4,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.repository.ReadoutStartSoundRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 
-internal class FakeReadoutStartSoundRepository(
+internal class FakeReadoutStartSoundPreferencesRepository(
     initialType: ReadoutStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
-) : ReadoutStartSoundRepository {
+) : ReadoutStartSoundPreferencesRepository {
     private val state = MutableStateFlow(initialType)
 
     override fun observeType(): Flow<ReadoutStartSoundType> = state

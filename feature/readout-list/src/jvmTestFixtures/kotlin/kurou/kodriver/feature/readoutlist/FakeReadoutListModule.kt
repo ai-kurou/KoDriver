@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
-import kurou.kodriver.domain.repository.ProximityThresholdsRepository
+import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
@@ -14,7 +14,7 @@ import org.koin.dsl.module
 val fakeReadoutListModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
-    single<ProximityThresholdsRepository> { FakeProximityThresholdsRepositoryImpl() }
+    single<ProximityThresholdsPreferencesRepository> { FakeProximityThresholdsPreferencesRepositoryImpl() }
     single<FlagPreferencesRepository> { FakeFlagPreferencesRepositoryImpl() }
 }
 
@@ -24,7 +24,7 @@ private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepos
     override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
 }
 
-private class FakeProximityThresholdsRepositoryImpl : ProximityThresholdsRepository {
+private class FakeProximityThresholdsPreferencesRepositoryImpl : ProximityThresholdsPreferencesRepository {
     private val lateral = MutableStateFlow(5.0)
     private val longitudinal = MutableStateFlow(1.0)
     override fun observeLateralThresholdMeters(): Flow<Double> = lateral

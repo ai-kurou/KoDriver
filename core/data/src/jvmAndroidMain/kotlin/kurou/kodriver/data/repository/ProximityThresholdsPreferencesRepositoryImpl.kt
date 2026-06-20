@@ -4,11 +4,11 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.ProximityThresholdsPreferences
-import kurou.kodriver.domain.repository.ProximityThresholdsRepository
+import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 
-internal class ProximityThresholdsRepositoryImpl(
+internal class ProximityThresholdsPreferencesRepositoryImpl(
     private val dataStore: DataStore<ProximityThresholdsPreferences>,
-) : ProximityThresholdsRepository {
+) : ProximityThresholdsPreferencesRepository {
 
     override fun observeLongitudinalThresholdMeters(): Flow<Double> =
         dataStore.data.map { it.longitudinalThresholdMeters }
