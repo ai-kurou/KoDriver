@@ -73,8 +73,8 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `バージョンのセグメントが3未満の場合は不足分を0として扱う`() = runBlocking {
-        val useCase = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate("v1.1")))
+        val useCase = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate("v2")))
 
-        assertTrue(useCase("1.0.0"))
+        assertTrue(useCase("1"))
     }
 }
