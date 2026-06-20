@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -67,16 +69,37 @@ fun ConnectionBanner(
     }
 }
 
+private class ConnectionBannerPreviewProvider : PreviewParameterProvider<ConnectionBannerUiState> {
+    override val values = sequenceOf(
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.CONNECTED,
+            message = "LMUに接続しました",
+            iconType = ConnectionBannerIconType.SIMULATOR,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.CONNECTED,
+            message = "サーバーに接続しました",
+            iconType = ConnectionBannerIconType.NETWORK,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.DISCONNECTED,
+            message = "LMUとの接続を待機しています",
+            iconType = ConnectionBannerIconType.SIMULATOR,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.DISCONNECTED,
+            message = "サーバーへの接続を待機しています",
+            iconType = ConnectionBannerIconType.NETWORK,
+        ),
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
-private fun ConnectionBannerUncheckedPreview() {
+private fun ConnectionBannerPreview(
+    @PreviewParameter(ConnectionBannerPreviewProvider::class) uiState: ConnectionBannerUiState,
+) {
     KoDriverTheme {
-        ConnectionBanner(
-            uiState = ConnectionBannerUiState(
-                status = ConnectionBannerStatus.UNCHECKED,
-                message = "接続を確認しています...",
-                iconType = ConnectionBannerIconType.SIMULATOR,
-            ),
-        )
+        ConnectionBanner(uiState = uiState)
     }
 }
