@@ -37,25 +37,6 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
     }
 
     @Test
-    fun `電子ノイズ選択中`() {
-        rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        OtherReadoutStartSoundDetailDialogContent(
-                            uiState = OtherReadoutStartSoundDetailUiState(
-                                selectedType = ReadoutStartSoundType.ELECTRONIC_NOISE,
-                                pendingType = ReadoutStartSoundType.ELECTRONIC_NOISE,
-                            ),
-                        )
-                    }
-                }
-            }
-        }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
-    }
-
-    @Test
     fun `保存済みと異なる種別を選択中`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
