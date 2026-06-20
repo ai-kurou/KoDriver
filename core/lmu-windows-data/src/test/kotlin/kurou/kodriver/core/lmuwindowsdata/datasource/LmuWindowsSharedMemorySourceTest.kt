@@ -13,14 +13,14 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class SharedLmuWindowsMemorySourceTest {
+class LmuWindowsSharedMemorySourceTest {
 
     private fun makeSource(
         reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
         currentTimeMs: () -> Long = System::currentTimeMillis,
-    ) = SharedLmuWindowsMemorySource(
+    ) = LmuWindowsSharedMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,

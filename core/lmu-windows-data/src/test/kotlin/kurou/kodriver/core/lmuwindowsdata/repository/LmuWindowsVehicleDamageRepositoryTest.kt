@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -25,7 +25,7 @@ class LmuWindowsVehicleDamageRepositoryTest {
         reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
-    ) = SharedLmuWindowsMemorySource(
+    ) = LmuWindowsSharedMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,

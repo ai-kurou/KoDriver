@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepository
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsProximityRepository
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
@@ -23,7 +23,7 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
 
 val lmuWindowsDataModule = module {
     single { CoroutineScope(SupervisorJob()) }
-    single { SharedLmuWindowsMemorySource(scope = get()) }
+    single { LmuWindowsSharedMemorySource(scope = get()) }
     single<LmuWindowsRepository> {
         if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
     }
