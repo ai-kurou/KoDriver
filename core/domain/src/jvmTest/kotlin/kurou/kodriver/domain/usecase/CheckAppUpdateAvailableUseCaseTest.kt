@@ -63,4 +63,18 @@ class CheckAppUpdateAvailableUseCaseTest {
 
         assertTrue(useCase("v1.0.0"))
     }
+
+    @Test
+    fun `バージョンに数値以外のセグメントが含まれる場合は0として扱う`() = runBlocking {
+        val useCase = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate("v1.0.alpha")))
+
+        assertFalse(useCase("1.0.0"))
+    }
+
+    @Test
+    fun `バージョンのセグメントが3未満の場合は不足分を0として扱う`() = runBlocking {
+        val useCase = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(AppUpdate("v1.1")))
+
+        assertTrue(useCase("1.0.0"))
+    }
 }
