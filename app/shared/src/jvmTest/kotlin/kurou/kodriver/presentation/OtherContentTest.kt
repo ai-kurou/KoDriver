@@ -47,10 +47,7 @@ class OtherContentTest {
         rule.setContent {
             OtherContent(
                 uiState = OtherListUiState(selectedItem = selectedItem),
-                onItemSelected = {
-                    val itemType = OtherListItemType.fromId(it)
-                    selectedItem = itemType
-                },
+                onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
                 onClearSelectedItem = { selectedItem = null },

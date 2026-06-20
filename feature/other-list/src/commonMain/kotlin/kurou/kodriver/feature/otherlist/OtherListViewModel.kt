@@ -31,8 +31,7 @@ class OtherListViewModel(
         }
     }
 
-    fun onItemSelected(itemId: String) {
-        val itemType = OtherListItemType.fromId(itemId) ?: return
+    fun onItemSelected(itemType: OtherListItemType) {
         if (
             itemType == OtherListItemType.GitHubRepository ||
             itemType == OtherListItemType.ReleasePage
