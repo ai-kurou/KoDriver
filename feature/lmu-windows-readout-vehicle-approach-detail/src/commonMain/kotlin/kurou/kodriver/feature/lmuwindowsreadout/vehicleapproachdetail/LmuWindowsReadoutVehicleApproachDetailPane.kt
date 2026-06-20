@@ -59,17 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LmuWindowsReadoutVehicleApproachDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    LmuWindowsReadoutVehicleApproachDetailPane(
-        modifier = modifier,
-        viewModel = koinViewModel(),
-    )
-}
-
-@Composable
-private fun LmuWindowsReadoutVehicleApproachDetailPane(
-    modifier: Modifier = Modifier,
-    viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel,
-) {
+    val viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutVehicleApproachDetailPaneContent(
         uiState = uiState,
