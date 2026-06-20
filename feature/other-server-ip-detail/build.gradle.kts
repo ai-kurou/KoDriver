@@ -5,6 +5,7 @@ plugins {
 kotlin {
     android {
         namespace = "kurou.kodriver.feature.otherserveripdetail"
+        withHostTest {}
     }
 
     sourceSets {
@@ -21,6 +22,12 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+            }
         }
     }
 }
