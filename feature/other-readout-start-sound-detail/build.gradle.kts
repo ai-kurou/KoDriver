@@ -1,5 +1,5 @@
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
@@ -22,7 +22,6 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
-            implementation(libs.kotlin.testJunit)
             implementation(libs.kotlinx.coroutinesTest)
         }
     }
