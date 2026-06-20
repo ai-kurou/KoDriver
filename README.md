@@ -12,6 +12,8 @@
 
 Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
+https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
+
 ## 機能
 
 - アナウンスする項目の選択・有効/無効の切り替え
