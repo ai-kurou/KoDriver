@@ -59,17 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LmuWindowsReadoutVehicleApproachDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    LmuWindowsReadoutVehicleApproachDetailPane(
-        modifier = modifier,
-        viewModel = koinViewModel(),
-    )
-}
-
-@Composable
-private fun LmuWindowsReadoutVehicleApproachDetailPane(
-    modifier: Modifier = Modifier,
-    viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel,
-) {
+    val viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutVehicleApproachDetailPaneContent(
         uiState = uiState,
@@ -103,7 +93,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            VehicleApproachHelpSheetContent()
+            VehicleApproachHelpSheetContent(modifier = Modifier.testTag("vehicle_approach_help_sheet"))
         }
     }
 
@@ -179,10 +169,10 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
 }
 
 @Composable
-internal fun VehicleApproachHelpSheetContent() {
+internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
     ) {
         Text(
             text = stringResource(Res.string.vehicle_approach_help_description),
