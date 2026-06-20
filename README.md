@@ -38,7 +38,7 @@ Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルを
 
 [Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の MSI インストーラーをダウンロードして実行してください。
 
-LMU が起動していない状態でアプリを起動しても問題ありません。LMU の起動を検知すると自動的に接続します。
+Windows 版 KoDriver をあらかじめ起動しておいてください。LMU が起動すると KoDriver が自動的に接続します。
 
 インストール時に Windows SmartScreen の警告が表示される場合があります。詳しい手順、ファイアウォール設定、既知の制限は [Windows 版のインストール手順](docs/windows-install.md) を参照してください。
 

@@ -6,7 +6,7 @@
 2. ダウンロードした MSI インストーラーを実行します。
 3. インストール後、スタートメニューまたはデスクトップショートカットから KoDriver を起動します。
 
-LMU が起動していない状態で KoDriver を起動しても問題ありません。KoDriver は LMU の起動を検知すると自動的に接続します。
+Windows 版 KoDriver をあらかじめ起動しておいてください。LMU が起動すると KoDriver が自動的に接続します。
 
 ## Windows SmartScreen の警告
 
