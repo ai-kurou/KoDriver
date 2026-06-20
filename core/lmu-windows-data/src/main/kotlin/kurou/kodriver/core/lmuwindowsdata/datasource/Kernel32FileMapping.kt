@@ -6,10 +6,10 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
 
 @Suppress("FunctionNaming")
-internal interface Kernel32Ext : Library {
+internal interface Kernel32FileMapping : Library {
     companion object {
-        val INSTANCE: Kernel32Ext by lazy {
-            Native.load("kernel32", Kernel32Ext::class.java)
+        val INSTANCE: Kernel32FileMapping by lazy {
+            Native.load("kernel32", Kernel32FileMapping::class.java)
         }
         const val FILE_MAP_READ = 0x0004
     }

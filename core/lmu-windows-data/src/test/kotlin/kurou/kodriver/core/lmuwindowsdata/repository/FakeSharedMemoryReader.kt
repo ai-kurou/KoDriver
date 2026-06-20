@@ -1,14 +1,14 @@
 package kurou.kodriver.core.lmuwindowsdata.repository
 
-import kurou.kodriver.core.lmuwindowsdata.datasource.MemoryReader
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-internal class FakeMemoryReader(
+internal class FakeSharedMemoryReader(
     initialOpen: Boolean = false,
     openResults: List<Boolean> = listOf(true),
     private val returnNullBuffer: Boolean = false,
-) : MemoryReader {
+) : SharedMemoryReader {
 
     private var opened = initialOpen
     private val remainingOpenResults = ArrayDeque(openResults)

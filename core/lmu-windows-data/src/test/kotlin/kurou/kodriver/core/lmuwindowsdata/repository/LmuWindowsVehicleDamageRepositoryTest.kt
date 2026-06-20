@@ -9,8 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kurou.kodriver.core.lmuwindowsdata.datasource.MemoryReader
-import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicInteger
@@ -19,13 +19,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class SharedMemoryVehicleDamageRepositoryTest {
+class LmuWindowsVehicleDamageRepositoryTest {
 
     private fun makeSource(
-        reader: MemoryReader,
+        reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
-    ) = SharedLmuWindowsMemorySource(
+    ) = LmuWindowsSharedMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
@@ -43,7 +43,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
                 ),
             ),
         )
-        val repo = SharedMemoryVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
 
         val result = repo.vehicleDamageStream().first()
 
@@ -57,7 +57,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
         val reader = FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(overheating = false, partDetached = false)),
         )
-        val repo = SharedMemoryVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
 
         val result = repo.vehicleDamageStream().first()
 
@@ -70,7 +70,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
         val reader = FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(activeVehicles = 0)),
         )
-        val repo = SharedMemoryVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
@@ -85,7 +85,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
         val reader = FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
         )
-        val repo = SharedMemoryVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
@@ -101,7 +101,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
             buffer = buildDamageBuffer(),
             openResult = false,
         )
-        val repo = SharedMemoryVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
@@ -140,7 +140,7 @@ class SharedMemoryVehicleDamageRepositoryTest {
 private class FakeDamageMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
-) : MemoryReader {
+) : SharedMemoryReader {
 
     private var opened = openResult
 

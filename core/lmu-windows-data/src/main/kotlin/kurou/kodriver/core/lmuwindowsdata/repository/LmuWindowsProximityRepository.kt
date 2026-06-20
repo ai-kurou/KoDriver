@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
-import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
@@ -17,10 +17,10 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class SharedMemoryProximityRepository(
+internal class LmuWindowsProximityRepository(
     private val thresholdsRepository: ProximityThresholdsRepository,
     private val lateralMinimumMeters: Double = 1.0,
-    private val source: SharedLmuWindowsMemorySource,
+    private val source: LmuWindowsSharedMemorySource,
 ) : ProximityRepository {
 
     override fun proximityStream(): Flow<ProximityData> =

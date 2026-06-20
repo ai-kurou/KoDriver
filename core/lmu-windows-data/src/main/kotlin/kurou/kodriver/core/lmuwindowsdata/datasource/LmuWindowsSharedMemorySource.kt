@@ -13,10 +13,10 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
 
-internal class SharedLmuWindowsMemorySource(
+internal class LmuWindowsSharedMemorySource(
     private val pollingIntervalMs: Long = 16L,
     private val reconnectIntervalMs: Long = 1_000L,
-    internal val reader: MemoryReader = SharedMemoryReader(
+    internal val reader: SharedMemoryReader = WindowsSharedMemoryReader(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
     ),
