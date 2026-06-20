@@ -68,7 +68,7 @@ fun OtherContent(
 @Composable
 internal fun OtherContent(
     uiState: OtherListUiState,
-    onItemSelected: (String) -> Unit,
+    onItemSelected: (OtherListItemType) -> Unit,
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenServerIpDialog: () -> Unit = {},
@@ -129,13 +129,13 @@ internal fun OtherContent(
         listPane = {
             OtherListPane(
                 uiState = uiState,
-                onItemClick = { itemId ->
-                    when (itemId) {
-                        OtherListItemType.ServerIp.id -> onOpenServerIpDialog()
-                        OtherListItemType.ReadoutStartSound.id -> onOpenReadoutStartSoundDialog()
-                        OtherListItemType.GitHubRepository.id -> onOpenGitHubRepository()
-                        OtherListItemType.ReleasePage.id -> onOpenReleasePage()
-                        else -> onItemSelected(itemId)
+                onItemClick = { itemType ->
+                    when (itemType) {
+                        OtherListItemType.ServerIp -> onOpenServerIpDialog()
+                        OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
+                        OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
+                        OtherListItemType.ReleasePage -> onOpenReleasePage()
+                        else -> onItemSelected(itemType)
                     }
                 },
             )

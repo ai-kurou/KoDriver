@@ -41,18 +41,17 @@ import kodriver.feature.otherlist.generated.resources.item_volume
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-private fun otherItemDisplayName(itemId: String): String = when (itemId) {
-    OtherListItemType.ServerIp.id -> stringResource(Res.string.item_server_ip)
-    OtherListItemType.Volume.id -> stringResource(Res.string.item_volume)
-    OtherListItemType.ReadoutStartSound.id -> stringResource(Res.string.item_readout_start_sound)
-    OtherListItemType.GitHubRepository.id -> stringResource(Res.string.item_github_repository)
-    OtherListItemType.ReleasePage.id -> stringResource(Res.string.item_release_page)
-    OtherListItemType.License.id -> stringResource(Res.string.item_license)
-    else -> itemId
+private fun otherItemDisplayName(itemType: OtherListItemType): String = when (itemType) {
+    OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
+    OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+    OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
+    OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
+    OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
+    OtherListItemType.License -> stringResource(Res.string.item_license)
 }
 
 @Composable
-private fun OtherListItemLeadingIcon(itemType: OtherListItemType?, hasAppUpdate: Boolean) {
+private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: Boolean) {
     when (itemType) {
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Wifi, contentDescription = null)
         OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
@@ -62,12 +61,11 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType?, hasAppUpdate:
             Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
         }
         OtherListItemType.License -> Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
-        null -> Unit
     }
 }
 
 @Composable
-private fun OtherListItemTrailingIcon(itemType: OtherListItemType?) {
+private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
     when (itemType) {
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
@@ -77,14 +75,13 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType?) {
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
-        null -> Unit
     }
 }
 
 @Composable
 fun OtherListPane(
     uiState: OtherListUiState,
-    onItemClick: (String) -> Unit,
+    onItemClick: (OtherListItemType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -92,10 +89,9 @@ fun OtherListPane(
             .fillMaxSize()
             .padding(vertical = 8.dp),
     ) {
-        itemsIndexed(uiState.items, key = { _, item -> item }) { index, item ->
-            val itemType = OtherListItemType.fromId(item)
+        itemsIndexed(uiState.items, key = { _, item -> item.id }) { index, item ->
             Surface(
-                color = if (itemType == uiState.selectedItem) {
+                color = if (item == uiState.selectedItem) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
                     MaterialTheme.colorScheme.surface
@@ -103,17 +99,9 @@ fun OtherListPane(
             ) {
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
-                    leadingContent = if (itemType != null) {
-                        { OtherListItemLeadingIcon(itemType, uiState.hasAppUpdate) }
-                    } else {
-                        null
-                    },
-                    trailingContent = if (itemType != null) {
-                        { OtherListItemTrailingIcon(itemType) }
-                    } else {
-                        null
-                    },
-                    colors = if (itemType == uiState.selectedItem) {
+                    leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
+                    trailingContent = { OtherListItemTrailingIcon(item) },
+                    colors = if (item == uiState.selectedItem) {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,

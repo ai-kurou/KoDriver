@@ -25,7 +25,7 @@ class OtherListViewModelTest {
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
-        assertEquals(buildOtherListItems().map { it.id }, viewModel.uiState.first().items)
+        assertEquals(buildOtherListItems(), viewModel.uiState.first().items)
         assertEquals("Windows版KoDriverバージョン", viewModel.uiState.first().appVersionLabel)
         assertEquals("0.5.0", viewModel.uiState.first().appVersion)
         assertNull(viewModel.uiState.first().selectedItem)
@@ -33,7 +33,7 @@ class OtherListViewModelTest {
 
     @Test
     fun `音量を選択すると選択状態になる`() = runTest {
-        viewModel.onItemSelected(OtherListItemType.Volume.id)
+        viewModel.onItemSelected(OtherListItemType.Volume)
 
         assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
     }
@@ -42,7 +42,7 @@ class OtherListViewModelTest {
     fun `GitHubレポジトリを選択しても状態は変わらない`() = runTest {
         val initialState = viewModel.uiState.first()
 
-        viewModel.onItemSelected(OtherListItemType.GitHubRepository.id)
+        viewModel.onItemSelected(OtherListItemType.GitHubRepository)
 
         assertEquals(initialState, viewModel.uiState.first())
     }
@@ -51,34 +51,25 @@ class OtherListViewModelTest {
     fun `リリースページを選択しても状態は変わらない`() = runTest {
         val initialState = viewModel.uiState.first()
 
-        viewModel.onItemSelected(OtherListItemType.ReleasePage.id)
+        viewModel.onItemSelected(OtherListItemType.ReleasePage)
 
         assertEquals(initialState, viewModel.uiState.first())
     }
 
     @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
-        viewModel.onItemSelected(OtherListItemType.License.id)
+        viewModel.onItemSelected(OtherListItemType.License)
 
         assertEquals(OtherListItemType.License, viewModel.uiState.first().selectedItem)
 
-        viewModel.onItemSelected(OtherListItemType.License.id)
+        viewModel.onItemSelected(OtherListItemType.License)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
 
     @Test
-    fun `存在しない項目を選択しても状態は変わらない`() = runTest {
-        val initialState = viewModel.uiState.first()
-
-        viewModel.onItemSelected("unknown")
-
-        assertEquals(initialState, viewModel.uiState.first())
-    }
-
-    @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
-        viewModel.onItemSelected(OtherListItemType.License.id)
+        viewModel.onItemSelected(OtherListItemType.License)
 
         viewModel.clearSelectedItem()
 
