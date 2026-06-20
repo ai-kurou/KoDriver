@@ -53,7 +53,7 @@ subprojects {
                 filters {
                     excludes {
                         annotatedBy("androidx.compose.ui.tooling.preview.Preview")
-                        classes("kurou.kodriver.Empty*")
+                        classes("*Empty*")
                     }
                 }
             }
@@ -280,7 +280,7 @@ kover {
         filters {
             excludes {
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
-                classes("kurou.kodriver.Empty*")
+                classes("*Empty*")
             }
         }
     }
