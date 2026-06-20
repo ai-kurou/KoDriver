@@ -30,7 +30,7 @@ import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
@@ -39,7 +39,7 @@ import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
-    val observeSkipFirstLap: ObserveSkipFirstLapUseCase,
+    val observeSkipFirstLap: ObserveVehicleApproachSkipFirstLapUseCase,
     val observeStartReadoutEnabled: ObserveVehicleApproachStartReadoutEnabledUseCase,
     val observeStartReadoutType: ObserveVehicleApproachStartReadoutTypeUseCase,
 )

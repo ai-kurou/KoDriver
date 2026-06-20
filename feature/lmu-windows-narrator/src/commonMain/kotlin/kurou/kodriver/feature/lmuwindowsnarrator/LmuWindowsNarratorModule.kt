@@ -9,8 +9,8 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
+import kurou.kodriver.domain.usecase.ObserveVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
@@ -31,7 +31,7 @@ val lmuNarratorModule: Module = module {
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveSkipFirstLapUseCase(get()) }
+    factory { ObserveVehicleApproachSkipFirstLapUseCase(get()) }
     factory { ObserveVehicleApproachStartReadoutEnabledUseCase(get()) }
     factory { ObserveVehicleApproachStartReadoutTypeUseCase(get()) }
     factory { ObserveVehicleDamageEnabledStatesUseCase(get()) }
