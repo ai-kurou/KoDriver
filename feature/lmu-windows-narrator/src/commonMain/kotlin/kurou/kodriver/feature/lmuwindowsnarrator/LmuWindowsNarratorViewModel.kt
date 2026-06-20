@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
@@ -67,6 +66,7 @@ class LmuWindowsNarratorViewModel(
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
     private val ttsEngine: TextToSpeechEngine,
+    private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
@@ -106,20 +106,51 @@ class LmuWindowsNarratorViewModel(
     private val proximityJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != LMU_WINDOWS_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            val initialScan =
+                ApproachTimestamps(emptyMap(), emptyMap()) to (VehicleApproachEvent.None as VehicleApproachEvent)
             vehicleApproachUseCases.observeProximity()
-                .scan(null as ProximityData? to null as ProximityData?) { acc, current ->
-                    acc.second to current
+                .scan(initialScan) { (timestamps, _), current ->
+                    val now = currentTimeMs()
+                    var leftAnnounce = false
+                    var rightAnnounce = false
+
+                    val newLeft = current.sideBySideLeftVehicleIds.associateWith { id ->
+                        val prev = timestamps.left[id]
+                        if (prev == null) {
+                            ApproachState(startedAtMs = now, announced = false)
+                        } else {
+                            val shouldAnnounce = !prev.announced && now - prev.startedAtMs >= APPROACH_DEBOUNCE_MS
+                            if (shouldAnnounce) leftAnnounce = true
+                            prev.copy(announced = prev.announced || shouldAnnounce)
+                        }
+                    }
+                    val newRight = current.sideBySideRightVehicleIds.associateWith { id ->
+                        val prev = timestamps.right[id]
+                        if (prev == null) {
+                            ApproachState(startedAtMs = now, announced = false)
+                        } else {
+                            val shouldAnnounce = !prev.announced && now - prev.startedAtMs >= APPROACH_DEBOUNCE_MS
+                            if (shouldAnnounce) rightAnnounce = true
+                            prev.copy(announced = prev.announced || shouldAnnounce)
+                        }
+                    }
+
+                    val event = when {
+                        leftAnnounce && rightAnnounce -> VehicleApproachEvent.Simultaneous
+                        leftAnnounce -> VehicleApproachEvent.Single(ApproachSide.LEFT)
+                        rightAnnounce -> VehicleApproachEvent.Single(ApproachSide.RIGHT)
+                        else -> VehicleApproachEvent.None
+                    }
+                    ApproachTimestamps(newLeft, newRight) to event
                 }
-                .drop(1)
         }
-        .onEach { (prev, current) ->
-            if (current == null) return@onEach
+        .onEach { (_, event) ->
             if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
             if (!startReadoutEnabled.value) return@onEach
             // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
             if (skipFirstLap.value && currentLap.value <= 0) return@onEach
 
-            when (val event = VehicleApproachEvent.from(prev, current)) {
+            when (event) {
                 is VehicleApproachEvent.Single -> {
                     speakWithPriority(event.side.toSpeechEvent(startReadoutType.value))
                 }
@@ -201,6 +232,7 @@ class LmuWindowsNarratorViewModel(
 
     private companion object {
         const val LMU_WINDOWS_SIMULATOR_KEY = "lmu_windows"
+        const val APPROACH_DEBOUNCE_MS = 50L
     }
 
     /**
@@ -239,24 +271,18 @@ private enum class ApproachSide {
         }
 }
 
+private data class ApproachState(
+    val startedAtMs: Long,
+    val announced: Boolean,
+)
+
+private data class ApproachTimestamps(
+    val left: Map<Int, ApproachState>,
+    val right: Map<Int, ApproachState>,
+)
+
 private sealed interface VehicleApproachEvent {
     data object None : VehicleApproachEvent
     data object Simultaneous : VehicleApproachEvent
     data class Single(val side: ApproachSide) : VehicleApproachEvent
-
-    companion object {
-        fun from(prev: ProximityData?, current: ProximityData): VehicleApproachEvent {
-            val prevLeftIds = prev?.sideBySideLeftVehicleIds ?: emptySet()
-            val prevRightIds = prev?.sideBySideRightVehicleIds ?: emptySet()
-            val newLeftVehicle = (current.sideBySideLeftVehicleIds - prevLeftIds).isNotEmpty()
-            val newRightVehicle = (current.sideBySideRightVehicleIds - prevRightIds).isNotEmpty()
-
-            return when {
-                newLeftVehicle && newRightVehicle -> Simultaneous
-                newLeftVehicle -> Single(ApproachSide.LEFT)
-                newRightVehicle -> Single(ApproachSide.RIGHT)
-                else -> None
-            }
-        }
-    }
 }
