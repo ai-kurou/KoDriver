@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "kurou.kodriver.feature.otherlicensedetail"
     }
 

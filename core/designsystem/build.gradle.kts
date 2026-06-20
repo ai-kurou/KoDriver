@@ -21,7 +21,7 @@ kotlin {
         browser()
     }
 
-    androidLibrary {
+    android {
         namespace = "kurou.kodriver.core.designsystem"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
