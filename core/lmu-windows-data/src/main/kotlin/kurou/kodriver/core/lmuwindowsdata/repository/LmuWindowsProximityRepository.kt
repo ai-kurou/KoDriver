@@ -17,7 +17,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class SharedMemoryProximityRepository(
+internal class LmuWindowsProximityRepository(
     private val thresholdsRepository: ProximityThresholdsRepository,
     private val lateralMinimumMeters: Double = 1.0,
     private val source: SharedLmuWindowsMemorySource,

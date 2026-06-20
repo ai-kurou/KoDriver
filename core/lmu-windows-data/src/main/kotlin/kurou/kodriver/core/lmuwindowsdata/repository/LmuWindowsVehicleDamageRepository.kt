@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import java.nio.ByteBuffer
 
-internal class SharedMemoryVehicleDamageRepository(
+internal class LmuWindowsVehicleDamageRepository(
     private val source: SharedLmuWindowsMemorySource,
 ) : VehicleDamageRepository {
 

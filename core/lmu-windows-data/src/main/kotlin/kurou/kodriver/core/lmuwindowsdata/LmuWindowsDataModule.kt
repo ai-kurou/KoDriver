@@ -5,10 +5,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepository
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsProximityRepository
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
-import kurou.kodriver.core.lmuwindowsdata.repository.SharedMemoryFlagRepository
-import kurou.kodriver.core.lmuwindowsdata.repository.SharedMemoryProximityRepository
-import kurou.kodriver.core.lmuwindowsdata.repository.SharedMemoryVehicleDamageRepository
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -29,16 +29,16 @@ val lmuWindowsDataModule = module {
     }
     single<ProximityRepository> {
         if (isWindows) {
-            SharedMemoryProximityRepository(thresholdsRepository = get(), source = get())
+            LmuWindowsProximityRepository(thresholdsRepository = get(), source = get())
         } else {
             NoOpProximityRepository()
         }
     }
     single<FlagRepository> {
-        if (isWindows) SharedMemoryFlagRepository(source = get()) else NoOpFlagRepository()
+        if (isWindows) LmuWindowsFlagRepository(source = get()) else NoOpFlagRepository()
     }
     single<VehicleDamageRepository> {
-        if (isWindows) SharedMemoryVehicleDamageRepository(source = get()) else NoOpVehicleDamageRepository()
+        if (isWindows) LmuWindowsVehicleDamageRepository(source = get()) else NoOpVehicleDamageRepository()
     }
 }
 

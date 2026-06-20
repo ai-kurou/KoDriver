@@ -3,10 +3,10 @@ package kurou.kodriver.core.lmuwindowsdata.datasource
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
 
-internal class FakeKernel32Ext(
+internal class FakeKernel32FileMapping(
     private val openFileMappingResult: HANDLE? = HANDLE(Pointer.createConstant(1L)),
     private val mapViewOfFileResult: Pointer? = Pointer.createConstant(2L),
-) : Kernel32Ext {
+) : Kernel32FileMapping {
 
     var closeHandleCallCount = 0
     var unmapViewOfFileCalled = false

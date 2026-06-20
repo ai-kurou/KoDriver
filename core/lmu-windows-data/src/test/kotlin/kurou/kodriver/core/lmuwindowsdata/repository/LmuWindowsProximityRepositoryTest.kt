@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kurou.kodriver.core.lmuwindowsdata.datasource.MemoryReader
 import kurou.kodriver.core.lmuwindowsdata.datasource.SharedLmuWindowsMemorySource
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedMemoryReader
 import kurou.kodriver.domain.repository.ProximityThresholdsRepository
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -33,10 +33,10 @@ import kotlin.test.assertTrue
  *   relX = opp.posX  (負=左, 正=右)
  *   relY = -opp.posZ (負=前, 正=後)
  */
-class SharedMemoryProximityRepositoryTest {
+class LmuWindowsProximityRepositoryTest {
 
     private fun makeSource(
-        reader: MemoryReader,
+        reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
     ) = SharedLmuWindowsMemorySource(
@@ -53,7 +53,7 @@ class SharedMemoryProximityRepositoryTest {
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
         val reader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 1, playerIdx = 0))
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(reader),
         )
@@ -72,7 +72,7 @@ class SharedMemoryProximityRepositoryTest {
             buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
             openResult = false,
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(reader),
         )
@@ -93,7 +93,7 @@ class SharedMemoryProximityRepositoryTest {
             buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
             returnNullBuffer = true,
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(reader),
         )
@@ -120,7 +120,7 @@ class SharedMemoryProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -139,7 +139,7 @@ class SharedMemoryProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = 3.0, posZ = 0.0)),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -160,7 +160,7 @@ class SharedMemoryProximityRepositoryTest {
                 VehiclePos(posX = 3.0, posZ = 0.0),
             ),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -183,7 +183,7 @@ class SharedMemoryProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = -10.0)),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -203,7 +203,7 @@ class SharedMemoryProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = -5.4)),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = vehicleLength),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -222,7 +222,7 @@ class SharedMemoryProximityRepositoryTest {
         // activeVehicles=1, playerIdx=2 → 2 >= 1 → スキップ
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 2)
         val fakeReader = FakeProximityMemoryReader(buffer)
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(fakeReader),
         )
@@ -239,7 +239,7 @@ class SharedMemoryProximityRepositoryTest {
     @Test
     fun `activeVehicles が0の場合は emit しない`() = runBlocking {
         val fakeReader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 0, playerIdx = 0))
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(fakeReader),
         )
@@ -257,7 +257,7 @@ class SharedMemoryProximityRepositoryTest {
         // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
         // BufferUnderflowException が発生しないことを確認
         val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -268,7 +268,7 @@ class SharedMemoryProximityRepositoryTest {
 
     @Test
     fun `ヘッダー未満のバッファでは最大車両数は0になる`() {
-        assertEquals(0, SharedMemoryProximityRepository.maxVehicleCount(ByteBuffer.allocate(1)))
+        assertEquals(0, LmuWindowsProximityRepository.maxVehicleCount(ByteBuffer.allocate(1)))
     }
 
     // -------------------------------------------------------------------------
@@ -283,7 +283,7 @@ class SharedMemoryProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -305,7 +305,7 @@ class SharedMemoryProximityRepositoryTest {
                 VehiclePos(posX = -5.0, posZ = 0.0),
             ),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -325,7 +325,7 @@ class SharedMemoryProximityRepositoryTest {
                 VehiclePos(posX = 5.0, posZ = 0.0),
             ),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -345,7 +345,7 @@ class SharedMemoryProximityRepositoryTest {
                 VehiclePos(posX = 6.0, posZ = 0.0),
             ),
         )
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(
                 longitudinal = 4.5,
                 lateral = 5.0,
@@ -362,7 +362,7 @@ class SharedMemoryProximityRepositoryTest {
     @Test
     fun `横方向閾値が更新されると新しい閾値で判定する`() = runBlocking {
         val thresholds = MutableProximityThresholdsRepository(lateral = 2.0)
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = thresholds,
             source = makeSource(
                 FakeProximityMemoryReader(
@@ -398,7 +398,7 @@ class SharedMemoryProximityRepositoryTest {
     @Test
     fun `並走車がいない場合は横距離が MAX_VALUE になる`() = runBlocking {
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 0)
-        val repo = SharedMemoryProximityRepository(
+        val repo = LmuWindowsProximityRepository(
             thresholdsRepository = FakeProximityThresholdsRepository(),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -489,7 +489,7 @@ private class FakeProximityMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
     private val returnNullBuffer: Boolean = false,
-) : MemoryReader {
+) : SharedMemoryReader {
 
     var closeCalled = false
     val closed = CompletableDeferred<Unit>()

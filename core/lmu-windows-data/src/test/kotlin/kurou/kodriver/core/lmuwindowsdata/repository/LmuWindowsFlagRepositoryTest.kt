@@ -20,10 +20,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class SharedMemoryFlagRepositoryTest {
+class LmuWindowsFlagRepositoryTest {
 
     private fun makeSource(
-        reader: FakeStaticMemoryReader,
+        reader: FakeStaticSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
     ) = SharedLmuWindowsMemorySource(
@@ -35,7 +35,7 @@ class SharedMemoryFlagRepositoryTest {
 
     @Test
     fun `共有メモリからセッション旗とプレイヤー旗を読み取る`() = runBlocking {
-        val reader = FakeStaticMemoryReader(
+        val reader = FakeStaticSharedMemoryReader(
             buildFlagsBuffer(
                 FlagBufferConfig(
                     gamePhase = 4,
@@ -49,7 +49,7 @@ class SharedMemoryFlagRepositoryTest {
                 ),
             ),
         )
-        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
+        val repo = LmuWindowsFlagRepository(source = makeSource(reader))
 
         val result = repo.flagStream().first()
 
@@ -65,8 +65,8 @@ class SharedMemoryFlagRepositoryTest {
 
     @Test
     fun `player が見つからない間は emit しない`() = runBlocking {
-        val reader = FakeStaticMemoryReader(buildFlagsBuffer(FlagBufferConfig(hasPlayer = false)))
-        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
+        val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer(FlagBufferConfig(hasPlayer = false)))
+        val repo = LmuWindowsFlagRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
@@ -78,12 +78,12 @@ class SharedMemoryFlagRepositoryTest {
 
     @Test
     fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeStaticMemoryReader(
+        val reader = FakeStaticSharedMemoryReader(
             buffer = buildFlagsBuffer(),
             initialOpen = false,
             openResult = false,
         )
-        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
+        val repo = LmuWindowsFlagRepository(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
@@ -95,8 +95,8 @@ class SharedMemoryFlagRepositoryTest {
 
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
-        val reader = FakeStaticMemoryReader(buildFlagsBuffer())
-        val repo = SharedMemoryFlagRepository(source = makeSource(reader))
+        val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer())
+        val repo = LmuWindowsFlagRepository(source = makeSource(reader))
 
         val job = launch { repo.flagStream().collect { } }
         delay(50)

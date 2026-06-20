@@ -12,7 +12,7 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.FlagRepository
 import java.nio.ByteBuffer
 
-internal class SharedMemoryFlagRepository(
+internal class LmuWindowsFlagRepository(
     private val source: SharedLmuWindowsMemorySource,
 ) : FlagRepository {
 

@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 class LmuWindowsRepositoryImplTest {
 
     private fun makeSource(
-        reader: FakeMemoryReader,
+        reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 16L,
         reconnectIntervalMs: Long = 1_000L,
     ) = SharedLmuWindowsMemorySource(
@@ -30,7 +30,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `reader が open 済みかつデータを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true, openResults = listOf(true))
+        val fake = FakeSharedMemoryReader(initialOpen = true, openResults = listOf(true))
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake))
 
         assertTrue(repo.isConnected())
@@ -38,7 +38,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `reader が未 open かつ open 後にデータを読み取れるとき isConnected は true を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(true))
+        val fake = FakeSharedMemoryReader(initialOpen = false, openResults = listOf(true))
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake))
 
         assertTrue(repo.isConnected())
@@ -46,7 +46,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `reader が未 open かつ open 失敗のとき isConnected は false を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(false))
+        val fake = FakeSharedMemoryReader(initialOpen = false, openResults = listOf(false))
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake))
 
         assertFalse(repo.isConnected())
@@ -54,7 +54,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `reader が open 済みでもデータを読み取れないとき isConnected は false を返す`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true, openResults = listOf(true), returnNullBuffer = true)
+        val fake = FakeSharedMemoryReader(initialOpen = true, openResults = listOf(true), returnNullBuffer = true)
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake))
 
         assertFalse(repo.isConnected())
@@ -62,7 +62,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `disconnect は reader の close を呼ぶ`() = runBlocking {
-        val fake = FakeMemoryReader()
+        val fake = FakeSharedMemoryReader()
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake))
 
         repo.disconnect()
@@ -72,7 +72,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `reader が open 済みのときデータを emit する`() = runBlocking<Unit> {
-        val fake = FakeMemoryReader(initialOpen = true)
+        val fake = FakeSharedMemoryReader(initialOpen = true)
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
 
         repo.telemetryStream().first()
@@ -80,7 +80,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `未接続から open に成功するとデータを emit する`() = runBlocking<Unit> {
-        val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(true))
+        val fake = FakeSharedMemoryReader(initialOpen = false, openResults = listOf(true))
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
 
         repo.telemetryStream().first()
@@ -90,7 +90,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `open 失敗後に再接続してデータを emit する`() = runBlocking<Unit> {
-        val fake = FakeMemoryReader(initialOpen = false, openResults = listOf(false, true))
+        val fake = FakeSharedMemoryReader(initialOpen = false, openResults = listOf(false, true))
         val repo = LmuWindowsRepositoryImpl(
             source = makeSource(
                 reader = fake,
@@ -106,7 +106,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `readBuffer が null の間は emit せずキャンセル時に close する`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true, returnNullBuffer = true)
+        val fake = FakeSharedMemoryReader(initialOpen = true, returnNullBuffer = true)
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
         var emitCount = 0
 
@@ -122,7 +122,7 @@ class LmuWindowsRepositoryImplTest {
 
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
-        val fake = FakeMemoryReader(initialOpen = true)
+        val fake = FakeSharedMemoryReader(initialOpen = true)
         val repo = LmuWindowsRepositoryImpl(source = makeSource(fake, pollingIntervalMs = 1))
 
         val job = launch { repo.telemetryStream().collect { } }

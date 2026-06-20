@@ -6,12 +6,12 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class SharedMemoryReaderTest {
+class WindowsSharedMemoryReaderTest {
 
     private fun reader(
-        fake: FakeKernel32Ext = FakeKernel32Ext(),
+        fake: FakeKernel32FileMapping = FakeKernel32FileMapping(),
         isWindows: Boolean = true,
-    ) = SharedMemoryReader(
+    ) = WindowsSharedMemoryReader(
         segmentName = "TEST",
         sizeBytes = 1024,
         isWindows = isWindows,
@@ -28,7 +28,7 @@ class SharedMemoryReaderTest {
 
     @Test
     fun `OpenFileMappingA が null を返すとき open は false を返す`() {
-        val fake = FakeKernel32Ext(openFileMappingResult = null)
+        val fake = FakeKernel32FileMapping(openFileMappingResult = null)
         val r = reader(fake)
 
         assertFalse(r.open())
@@ -37,7 +37,7 @@ class SharedMemoryReaderTest {
 
     @Test
     fun `MapViewOfFile が null を返すとき CloseHandle を呼び open は false を返す`() {
-        val fake = FakeKernel32Ext(mapViewOfFileResult = null)
+        val fake = FakeKernel32FileMapping(mapViewOfFileResult = null)
         val r = reader(fake)
 
         assertFalse(r.open())
@@ -62,7 +62,7 @@ class SharedMemoryReaderTest {
 
     @Test
     fun `close は UnmapViewOfFile と CloseHandle を呼ぶ`() {
-        val fake = FakeKernel32Ext()
+        val fake = FakeKernel32FileMapping()
         val r = reader(fake)
         r.open()
 
@@ -75,7 +75,7 @@ class SharedMemoryReaderTest {
 
     @Test
     fun `close 後に再度 close を呼んでも UnmapViewOfFile と CloseHandle は呼ばれない`() {
-        val fake = FakeKernel32Ext()
+        val fake = FakeKernel32FileMapping()
         val r = reader(fake)
         r.open()
         r.close()

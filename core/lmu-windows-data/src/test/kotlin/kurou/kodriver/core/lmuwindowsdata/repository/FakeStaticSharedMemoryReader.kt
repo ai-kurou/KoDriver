@@ -1,13 +1,13 @@
 package kurou.kodriver.core.lmuwindowsdata.repository
 
-import kurou.kodriver.core.lmuwindowsdata.datasource.MemoryReader
+import kurou.kodriver.core.lmuwindowsdata.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 
-internal class FakeStaticMemoryReader(
+internal class FakeStaticSharedMemoryReader(
     private val buffer: ByteBuffer,
     initialOpen: Boolean = true,
     private val openResult: Boolean = true,
-) : MemoryReader {
+) : SharedMemoryReader {
 
     private var opened = initialOpen
     var closeCalled = false
