@@ -14,7 +14,7 @@ class ConnectionBannerTest {
     @Test
     fun `CONNECTED状態でメッセージが表示される`() {
         composeRule.setContent {
-            ConnectionBanner(
+            ConnectionBannerContent(
                 uiState = ConnectionBannerUiState(
                     status = ConnectionBannerStatus.CONNECTED,
                     message = "接続済み",
@@ -29,7 +29,7 @@ class ConnectionBannerTest {
     @Test
     fun `DISCONNECTED状態でメッセージが表示される`() {
         composeRule.setContent {
-            ConnectionBanner(
+            ConnectionBannerContent(
                 uiState = ConnectionBannerUiState(
                     status = ConnectionBannerStatus.DISCONNECTED,
                     message = "切断中",
@@ -44,7 +44,7 @@ class ConnectionBannerTest {
     @Test
     fun `UNCHECKED状態でメッセージが表示される`() {
         composeRule.setContent {
-            ConnectionBanner(
+            ConnectionBannerContent(
                 uiState = ConnectionBannerUiState(
                     status = ConnectionBannerStatus.UNCHECKED,
                     message = "確認中",
@@ -59,7 +59,7 @@ class ConnectionBannerTest {
     @Test
     fun `SIMULATORアイコンタイプかつCONNECTEDでメッセージが表示される`() {
         composeRule.setContent {
-            ConnectionBanner(
+            ConnectionBannerContent(
                 uiState = ConnectionBannerUiState(
                     status = ConnectionBannerStatus.CONNECTED,
                     message = "LMU接続済み",
@@ -74,7 +74,7 @@ class ConnectionBannerTest {
     @Test
     fun `SIMULATORアイコンタイプかつDISCONNECTEDでメッセージが表示される`() {
         composeRule.setContent {
-            ConnectionBanner(
+            ConnectionBannerContent(
                 uiState = ConnectionBannerUiState(
                     status = ConnectionBannerStatus.DISCONNECTED,
                     message = "LMU未接続",

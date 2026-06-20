@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ConnectionBanner(
+fun ConnectionBannerContent(
     uiState: ConnectionBannerUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -105,6 +105,6 @@ private fun ConnectionBannerPreview(
     @PreviewParameter(ConnectionBannerPreviewProvider::class) uiState: ConnectionBannerUiState,
 ) {
     KoDriverTheme {
-        ConnectionBanner(uiState = uiState)
+        ConnectionBannerContent(uiState = uiState)
     }
 }

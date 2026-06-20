@@ -277,7 +277,7 @@ internal fun AppScreenContent(
                         },
                     )
                 Column(modifier = contentModifier) {
-                    ConnectionBanner(uiState = bannerUiState)
+                    ConnectionBannerContent(uiState = bannerUiState)
                     AnimatedContent(
                         targetState = currentDestination,
                         transitionSpec = { fadeIn() togetherWith fadeOut() },
