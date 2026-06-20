@@ -103,7 +103,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            VehicleApproachHelpSheetContent()
+            VehicleApproachHelpSheetContent(modifier = Modifier.testTag("vehicle_approach_help_sheet"))
         }
     }
 
@@ -179,10 +179,10 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
 }
 
 @Composable
-internal fun VehicleApproachHelpSheetContent() {
+internal fun VehicleApproachHelpSheetContent(modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
     ) {
         Text(
             text = stringResource(Res.string.vehicle_approach_help_description),
