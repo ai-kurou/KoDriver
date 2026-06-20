@@ -56,6 +56,7 @@ class AppScreenScreenshotTest {
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = twoPaneDirective)
                     },
@@ -79,6 +80,7 @@ class AppScreenScreenshotTest {
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = twoPaneDirective)
                     },
@@ -101,6 +103,7 @@ class AppScreenScreenshotTest {
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -124,6 +127,7 @@ class AppScreenScreenshotTest {
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -146,6 +150,7 @@ class AppScreenScreenshotTest {
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -169,6 +174,7 @@ class AppScreenScreenshotTest {
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
                     ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -177,69 +183,6 @@ class AppScreenScreenshotTest {
         }
         composeRule.onNodeWithText(navMore).performClick()
         composeRule.waitForIdle()
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun `NavigationBar アップデートバッジ`() {
-        composeRule.setContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationBar,
-                    bannerUiState = ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
-                    },
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun `NavigationRail アップデートバッジ`() {
-        composeRule.setContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationRail,
-                    bannerUiState = ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
-                    },
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun `NavigationDrawer アップデートバッジ`() {
-        composeRule.setContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationDrawer,
-                    bannerUiState = ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = twoPaneDirective)
-                    },
-                )
-            }
-        }
         composeRule.onRoot().captureRoboImage()
     }
 }

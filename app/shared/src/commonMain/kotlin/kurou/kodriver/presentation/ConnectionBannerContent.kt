@@ -19,10 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ConnectionBanner(
+fun ConnectionBannerContent(
     uiState: ConnectionBannerUiState,
     modifier: Modifier = Modifier,
 ) {
@@ -64,4 +67,42 @@ fun ConnectionBanner(
             color = contentColor,
         )
     }
+}
+
+private class ConnectionBannerContentPreviewParameterProvider : PreviewParameterProvider<ConnectionBannerUiState> {
+    override val values = sequenceOf(
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.CONNECTED,
+            message = "シミュレータに接続中",
+            iconType = ConnectionBannerIconType.SIMULATOR,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.DISCONNECTED,
+            message = "シミュレータ接続待機中",
+            iconType = ConnectionBannerIconType.SIMULATOR,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.CONNECTED,
+            message = "Windows版KoDriverに接続中",
+            iconType = ConnectionBannerIconType.NETWORK,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.DISCONNECTED,
+            message = "Windows版KoDriver接続待機中",
+            iconType = ConnectionBannerIconType.NETWORK,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.DISCONNECTED,
+            message = "接続先IPアドレスが未設定です",
+            iconType = ConnectionBannerIconType.NETWORK,
+        ),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ConnectionBannerContentPreview(
+    @PreviewParameter(ConnectionBannerContentPreviewParameterProvider::class) uiState: ConnectionBannerUiState,
+) {
+    ConnectionBannerContent(uiState = uiState)
 }
