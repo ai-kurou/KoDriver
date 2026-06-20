@@ -235,7 +235,7 @@ class ApplicationTest {
             port = port,
             host = "127.0.0.1",
         )
-        server.start(wait = false)
+        server.start()
         try {
             val response = URI("http://127.0.0.1:$port/").toURL().readText()
             assertEquals("Hello, Ktor!", response)
