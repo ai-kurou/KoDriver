@@ -14,7 +14,7 @@ class CheckAppUpdateAvailableUseCase(
 
     private fun parseVersion(version: String): List<Int> {
         val parts = version.split(".").map { it.toIntOrNull() ?: 0 }
-        return List(3) { parts.getOrElse(it) { 0 } }
+        return List(3) { if (it < parts.size) parts[it] else 0 }
     }
 
     private fun List<Int>.compareTo(other: List<Int>): Int {
