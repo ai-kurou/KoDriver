@@ -104,7 +104,5 @@ private class ConnectionBannerContentPreviewParameterProvider : PreviewParameter
 private fun ConnectionBannerContentPreview(
     @PreviewParameter(ConnectionBannerContentPreviewParameterProvider::class) uiState: ConnectionBannerUiState,
 ) {
-    KoDriverTheme {
-        ConnectionBannerContent(uiState = uiState)
-    }
+    ConnectionBannerContent(uiState = uiState)
 }
