@@ -20,7 +20,7 @@ fun DetailPaneScaffold(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            DetailPaneHeader(
+            DetailPaneTopAppBar(
                 title = title,
                 canNavigateBack = canNavigateBack,
                 navigateBackContentDescription = navigateBackContentDescription,

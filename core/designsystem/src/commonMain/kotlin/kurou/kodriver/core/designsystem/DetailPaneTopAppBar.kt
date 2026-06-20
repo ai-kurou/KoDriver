@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailPaneHeader(
+fun DetailPaneTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateBackContentDescription: String,
