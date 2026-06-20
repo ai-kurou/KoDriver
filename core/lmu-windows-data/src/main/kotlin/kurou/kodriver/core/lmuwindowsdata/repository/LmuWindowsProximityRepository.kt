@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.repository.ProximityRepository
-import kurou.kodriver.domain.repository.ProximityThresholdsRepository
+import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import java.nio.ByteBuffer
 import kotlin.math.PI
 import kotlin.math.abs
@@ -18,7 +18,7 @@ import kotlin.math.sin
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class LmuWindowsProximityRepository(
-    private val thresholdsRepository: ProximityThresholdsRepository,
+    private val thresholdsRepository: ProximityThresholdsPreferencesRepository,
     private val lateralMinimumMeters: Double = 1.0,
     private val source: LmuWindowsSharedMemorySource,
 ) : ProximityRepository {

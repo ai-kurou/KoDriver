@@ -13,7 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SoundVolumeRepositoryImplTest {
+class SoundVolumePreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_sound_volume_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -22,7 +22,7 @@ class SoundVolumeRepositoryImplTest {
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )
-    private val repository = SoundVolumeRepositoryImpl(dataStore)
+    private val repository = SoundVolumePreferencesRepositoryImpl(dataStore)
 
     @AfterTest
     fun tearDown() {

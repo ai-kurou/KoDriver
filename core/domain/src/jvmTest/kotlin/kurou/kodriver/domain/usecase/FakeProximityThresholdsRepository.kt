@@ -4,12 +4,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.repository.ProximityThresholdsRepository
+import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 
-internal class FakeProximityThresholdsRepository(
+internal class FakeProximityThresholdsPreferencesRepository(
     initialLongitudinal: Double = 10.0,
     initialLateral: Double = 5.0,
-) : ProximityThresholdsRepository {
+) : ProximityThresholdsPreferencesRepository {
     private data class State(val longitudinal: Double, val lateral: Double)
 
     private val state = MutableStateFlow(State(initialLongitudinal, initialLateral))

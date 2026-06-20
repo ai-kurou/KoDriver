@@ -9,7 +9,7 @@ class ObserveLateralThresholdUseCaseTest {
 
     @Test
     fun `初期値を返す`() = runBlocking {
-        val repo = FakeProximityThresholdsRepository(initialLateral = 2.0)
+        val repo = FakeProximityThresholdsPreferencesRepository(initialLateral = 2.0)
         val useCase = ObserveLateralThresholdUseCase(repo)
 
         assertEquals(2.0, useCase().first())
@@ -17,7 +17,7 @@ class ObserveLateralThresholdUseCaseTest {
 
     @Test
     fun `保存済みの横方向閾値をそのまま返す`() = runBlocking {
-        val repo = FakeProximityThresholdsRepository(initialLateral = 2.0)
+        val repo = FakeProximityThresholdsPreferencesRepository(initialLateral = 2.0)
         val useCase = ObserveLateralThresholdUseCase(repo)
 
         repo.saveLateralThresholdMeters(3.5)

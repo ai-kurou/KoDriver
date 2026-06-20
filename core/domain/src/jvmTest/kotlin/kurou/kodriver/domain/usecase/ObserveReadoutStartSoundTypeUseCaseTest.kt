@@ -10,7 +10,7 @@ class ObserveReadoutStartSoundTypeUseCaseTest {
 
     @Test
     fun `読み上げ開始音種別を監視できる`() = runBlocking {
-        val repository = FakeReadoutStartSoundRepository(
+        val repository = FakeReadoutStartSoundPreferencesRepository(
             initialType = ReadoutStartSoundType.FORMULA_RADIO,
         )
         val useCase = ObserveReadoutStartSoundTypeUseCase(repository)

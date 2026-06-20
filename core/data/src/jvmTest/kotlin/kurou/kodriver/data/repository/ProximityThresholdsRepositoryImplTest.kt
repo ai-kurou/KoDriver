@@ -13,7 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ProximityThresholdsRepositoryImplTest {
+class ProximityThresholdsPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_proximity_thresholds_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -22,7 +22,7 @@ class ProximityThresholdsRepositoryImplTest {
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )
-    private val repository = ProximityThresholdsRepositoryImpl(dataStore)
+    private val repository = ProximityThresholdsPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
     fun tearDown() {

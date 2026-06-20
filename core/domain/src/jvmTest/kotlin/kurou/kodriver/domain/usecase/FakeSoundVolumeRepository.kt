@@ -2,9 +2,9 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kurou.kodriver.domain.repository.SoundVolumeRepository
+import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 
-internal class FakeSoundVolumeRepository(initial: Int = 100) : SoundVolumeRepository {
+internal class FakeSoundVolumePreferencesRepository(initial: Int = 100) : SoundVolumePreferencesRepository {
     private val flow = MutableStateFlow(initial)
 
     override fun volume(): Flow<Int> = flow

@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.ReadoutStartSoundPreferences
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.repository.ReadoutStartSoundRepository
+import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 
-internal class ReadoutStartSoundRepositoryImpl(
+internal class ReadoutStartSoundPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutStartSoundPreferences>,
-) : ReadoutStartSoundRepository {
+) : ReadoutStartSoundPreferencesRepository {
 
     override fun observeType(): Flow<ReadoutStartSoundType> =
         dataStore.data.map { ReadoutStartSoundType.fromId(it.type) }

@@ -20,13 +20,13 @@ import kotlin.test.assertEquals
 class OtherVolumeDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeSoundVolumeRepository
+    private lateinit var repository: FakeSoundVolumePreferencesRepository
     private lateinit var viewModel: OtherVolumeDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeSoundVolumeRepository(initialVolume = 80)
+        repository = FakeSoundVolumePreferencesRepository(initialVolume = 80)
         viewModel = OtherVolumeDetailViewModel(
             observeSoundVolume = ObserveSoundVolumeUseCase(repository),
             saveSoundVolume = SaveSoundVolumeUseCase(repository),

@@ -10,7 +10,7 @@ class SaveReadoutStartSoundTypeUseCaseTest {
 
     @Test
     fun `読み上げ開始音種別を保存できる`() = runBlocking {
-        val repository = FakeReadoutStartSoundRepository()
+        val repository = FakeReadoutStartSoundPreferencesRepository()
         val saveUseCase = SaveReadoutStartSoundTypeUseCase(repository)
         val observeUseCase = ObserveReadoutStartSoundTypeUseCase(repository)
 
