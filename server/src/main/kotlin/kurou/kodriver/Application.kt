@@ -86,7 +86,7 @@ fun Application.module(
         }
         flagWebSocket(observeRaceFlags)
         proximityWebSocket(observeProximity)
-        damageWebSocket(observeVehicleDamage)
+        vehicleDamageWebSocket(observeVehicleDamage)
     }
 }
 

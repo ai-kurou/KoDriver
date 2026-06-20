@@ -10,7 +10,7 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 
-private val json = Json {
+private val flagsJson = Json {
     encodeDefaults = true
 }
 
@@ -19,7 +19,7 @@ internal fun Route.flagWebSocket(observeRaceFlags: ObserveRaceFlagsUseCase) {
         observeRaceFlags()
             .distinctUntilChanged()
             .collect { flags ->
-                send(Frame.Text(json.encodeToString(flags)))
+                send(Frame.Text(flagsJson.encodeToString(flags)))
             }
     }
 }
