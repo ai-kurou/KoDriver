@@ -7,7 +7,7 @@ plugins {
 private val libs = versionCatalogs.named("libs")
 
 kotlin {
-    androidLibrary {
+    android {
         androidResources {
             enable = true
         }

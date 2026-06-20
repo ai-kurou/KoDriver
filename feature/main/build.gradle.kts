@@ -3,7 +3,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "kurou.kodriver.feature.main"
         withHostTest {
             isIncludeAndroidResources = true
