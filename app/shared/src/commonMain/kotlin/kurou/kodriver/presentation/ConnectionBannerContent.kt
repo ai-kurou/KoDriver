@@ -69,7 +69,7 @@ fun ConnectionBannerContent(
     }
 }
 
-private class ConnectionBannerContentPreviewProvider : PreviewParameterProvider<ConnectionBannerUiState> {
+private class ConnectionBannerContentPreviewParameterProvider : PreviewParameterProvider<ConnectionBannerUiState> {
     override val values = sequenceOf(
         ConnectionBannerUiState(
             status = ConnectionBannerStatus.CONNECTED,
@@ -102,7 +102,7 @@ private class ConnectionBannerContentPreviewProvider : PreviewParameterProvider<
 @Preview(showBackground = true)
 @Composable
 private fun ConnectionBannerContentPreview(
-    @PreviewParameter(ConnectionBannerContentPreviewProvider::class) uiState: ConnectionBannerUiState,
+    @PreviewParameter(ConnectionBannerContentPreviewParameterProvider::class) uiState: ConnectionBannerUiState,
 ) {
     KoDriverTheme {
         ConnectionBannerContent(uiState = uiState)

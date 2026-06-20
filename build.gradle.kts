@@ -54,6 +54,7 @@ subprojects {
                     excludes {
                         annotatedBy("androidx.compose.ui.tooling.preview.Preview")
                         classes("*Empty*")
+                        classes("*PreviewParameterProvider")
                     }
                 }
             }
