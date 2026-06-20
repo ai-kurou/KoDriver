@@ -73,22 +73,27 @@ private class ConnectionBannerPreviewProvider : PreviewParameterProvider<Connect
     override val values = sequenceOf(
         ConnectionBannerUiState(
             status = ConnectionBannerStatus.CONNECTED,
-            message = "LMUに接続しました",
+            message = "シミュレータに接続中",
+            iconType = ConnectionBannerIconType.SIMULATOR,
+        ),
+        ConnectionBannerUiState(
+            status = ConnectionBannerStatus.DISCONNECTED,
+            message = "シミュレータ接続待機中",
             iconType = ConnectionBannerIconType.SIMULATOR,
         ),
         ConnectionBannerUiState(
             status = ConnectionBannerStatus.CONNECTED,
-            message = "サーバーに接続しました",
+            message = "Windows版KoDriverに接続中",
             iconType = ConnectionBannerIconType.NETWORK,
         ),
         ConnectionBannerUiState(
             status = ConnectionBannerStatus.DISCONNECTED,
-            message = "LMUとの接続を待機しています",
-            iconType = ConnectionBannerIconType.SIMULATOR,
+            message = "Windows版KoDriver接続待機中",
+            iconType = ConnectionBannerIconType.NETWORK,
         ),
         ConnectionBannerUiState(
             status = ConnectionBannerStatus.DISCONNECTED,
-            message = "サーバーへの接続を待機しています",
+            message = "接続先IPアドレスが未設定です",
             iconType = ConnectionBannerIconType.NETWORK,
         ),
     )
