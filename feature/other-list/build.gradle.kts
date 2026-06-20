@@ -24,7 +24,7 @@ val generateAppVersionSource = tasks.register("generateAppVersionSource") {
 }
 
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
@@ -57,13 +57,6 @@ kotlin {
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.test)
         }
-        jvmTest.dependencies {
-            implementation(libs.compose.uiTest)
-            implementation(libs.compose.uiTestJunit4)
-            implementation(libs.kotlin.testJunit)
-            implementation(compose.desktop.currentOs)
-            implementation(libs.roborazzi.composeDesktop)
-        }
     }
 }
 
@@ -75,5 +68,3 @@ compose.resources {
     packageOfResClass = "kodriver.feature.otherlist.generated.resources"
     publicResClass = true
 }
-
-apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
