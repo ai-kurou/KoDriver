@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -62,6 +63,20 @@ fun ConnectionBanner(
             text = uiState.message,
             style = MaterialTheme.typography.labelMedium,
             color = contentColor,
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ConnectionBannerUncheckedPreview() {
+    KoDriverTheme {
+        ConnectionBanner(
+            uiState = ConnectionBannerUiState(
+                status = ConnectionBannerStatus.UNCHECKED,
+                message = "接続を確認しています...",
+                iconType = ConnectionBannerIconType.SIMULATOR,
+            ),
         )
     }
 }
