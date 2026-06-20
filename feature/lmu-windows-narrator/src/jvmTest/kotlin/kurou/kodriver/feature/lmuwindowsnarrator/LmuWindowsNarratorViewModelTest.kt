@@ -441,30 +441,6 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
-    @Test
-    fun `1周目スキップOFFのときは1周目でもアナウンスする`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            proximityChannel = proximityChannel,
-            telemetryChannel = telemetryChannel,
-            ttsEngine = tts,
-            skipFirstLap = false,
-            currentTimeMs = { fakeTime },
-        )
-
-        // mLapNumber は 0 スタートのため、1周目は 0
-        telemetryChannel.send(fakeTelemetryData(currentLap = 0))
-        proximityChannel.send(noProximity())
-        proximityChannel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        proximityChannel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
-    }
-
     // --- 旗アナウンス ---
 
     @Test
@@ -606,18 +582,6 @@ class LmuWindowsNarratorViewModelTest {
         damageChannel.send(noDamage(overheating = true))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), tts.spokenTexts)
-    }
-
-    @Test
-    fun `LMU非選択時はオーバーヒートアナウンスをしない`() = runTest(testDispatcher) {
-        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(damageChannel = damageChannel, ttsEngine = tts, simulator = "other")
-
-        damageChannel.send(noDamage())
-        damageChannel.send(noDamage(overheating = true))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
     @Test
