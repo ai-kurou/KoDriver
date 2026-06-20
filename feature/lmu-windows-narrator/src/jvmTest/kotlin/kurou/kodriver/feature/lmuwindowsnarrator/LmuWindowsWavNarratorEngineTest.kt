@@ -203,6 +203,80 @@ class LmuWindowsWavNarratorEngineTest {
         assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[3])
     }
 
+    @Test
+    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        engine.stop()
+        advanceUntilIdle()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
+    @Test
+    fun `stop後にspeakすると正常に再生できる`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.stop()
+        engine.speak(SpeechEvent.CarLeft)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `previewStartSoundは開始音のみを再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
+        runCurrent()
+
+        assertEquals(1, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
+    }
+
+    @Test
+    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                when (path) {
+                    CAR_LEFT_PATH -> CAR_LEFT_SOUND
+                    FORMULA_RADIO_PATH -> error("load failed")
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
+    @Test
+    fun `previewStartSoundは再生中なら何も再生しない`() = runTest {
+        val player = FakeSoundPlayer(isPlaying = true)
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
