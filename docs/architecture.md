@@ -2,12 +2,6 @@
 
 Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 
-<!-- MODULE-GRAPH-START -->
-## Module Graph
-
-![Module Graph](graphs/full-graph.svg)
-<!-- MODULE-GRAPH-END -->
-
 | モジュール | 役割 | モジュール図 |
 |---|---|---|
 | `:app:desktopApp` | JVM デスクトップアプリのエントリーポイント。Windows 共有メモリ読み取りと Ktor サーバーを同一プロセスで起動する | [図](graphs/app-desktopApp.svg) |
