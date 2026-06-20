@@ -1,5 +1,5 @@
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
     `java-test-fixtures`
 }
 
@@ -31,11 +31,6 @@ kotlin {
             implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
-            implementation(libs.compose.uiTest)
-            implementation(libs.compose.uiTestJunit4)
-            implementation(libs.kotlin.testJunit)
-            implementation(compose.desktop.currentOs)
-            implementation(libs.roborazzi.composeDesktop)
             implementation(libs.kotlinx.coroutinesTest)
         }
     }
@@ -50,5 +45,3 @@ dependencies {
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }
-
-apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
