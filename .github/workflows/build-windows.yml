@@ -32,9 +32,13 @@ jobs:
       - name: Build MSI
         run: ./gradlew :app:desktopApp:packageMsi
 
+      - name: Rename MSI
+        shell: bash
+        run: mv app/desktopApp/build/compose/binaries/main/msi/*.msi app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${{ steps.version.outputs.version }}-release.msi
+
       - name: Upload MSI
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: KoDriver-windows-${{ steps.version.outputs.version }}-release
-          path: app/desktopApp/build/compose/binaries/main/msi/*.msi
+          path: app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${{ steps.version.outputs.version }}-release.msi
           retention-days: 30
