@@ -26,7 +26,8 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "version=$(grep '^appVersion=' gradle.properties | cut -d'=' -f2)" >> $env:GITHUB_OUTPUT
+        shell: bash
+        run: echo "version=$(grep '^appVersion=' gradle.properties | cut -d'=' -f2)" >> $GITHUB_OUTPUT
 
       - name: Build MSI
         run: ./gradlew :app:desktopApp:packageMsi
