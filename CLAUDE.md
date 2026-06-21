@@ -14,6 +14,7 @@ KoDriver/
 │   ├── domain/        ドメインモデル・リポジトリ抽象・ユースケース
 │   ├── data/          DataStore・HTTP/WebSocketクライアント・リポジトリ実装
 │   ├── lmu-windows-data/ LMU Windows共有メモリ読み取り・リポジトリ実装
+│   ├── gt7-ps5-data/  GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
 │   ├── lmu-windows-connection/   LMU 接続状態の監視
