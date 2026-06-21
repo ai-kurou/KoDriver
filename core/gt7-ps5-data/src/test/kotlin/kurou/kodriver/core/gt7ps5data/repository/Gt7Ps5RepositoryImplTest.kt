@@ -12,13 +12,12 @@ import kotlin.test.assertEquals
 class Gt7Ps5RepositoryImplTest {
 
     private fun makePacket(lapCount: Short = 1, lapsInRace: Short = 10): ByteBuffer {
-        val buf = ByteBuffer.allocate(0x128).order(ByteOrder.LITTLE_ENDIAN)
+        val buf = ByteBuffer.allocate(0x170).order(ByteOrder.LITTLE_ENDIAN)
         buf.putShort(0x74, lapCount)
         buf.putShort(0x76, lapsInRace)
         buf.putInt(0x78, -1)
-        buf.putFloat(0x84, 50f)
-        buf.putFloat(0x88, 100f)
-        buf.putFloat(0xC4, 0f)
+        buf.putFloat(0x44, 50f)
+        buf.putFloat(0x48, 100f)
         return buf
     }
 
