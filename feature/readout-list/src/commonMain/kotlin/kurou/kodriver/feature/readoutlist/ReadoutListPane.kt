@@ -57,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
+import kodriver.feature.readoutlist.generated.resources.gt7
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
@@ -65,6 +66,7 @@ import kodriver.feature.readoutlist.generated.resources.priority_hint_descriptio
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
+import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.painterResource
@@ -75,7 +77,14 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 private fun simulatorDisplayName(simulatorId: String): String = when (simulatorId) {
     "lmu_windows" -> stringResource(Res.string.simulator_name_lmu)
+    "gt7_ps5" -> stringResource(Res.string.simulator_name_gt7_ps5)
     else -> simulatorId
+}
+
+@Composable
+private fun simulatorIcon(simulatorId: String) = when (simulatorId) {
+    "gt7_ps5" -> painterResource(Res.drawable.gt7)
+    else -> painterResource(Res.drawable.lmu)
 }
 
 @Composable
@@ -171,7 +180,7 @@ internal fun ReadoutListPane(
                 leadingIcon = if (uiState.selectedSimulator != null) {
                     {
                         Image(
-                            painter = painterResource(Res.drawable.lmu),
+                            painter = simulatorIcon(uiState.selectedSimulator),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
                         )
@@ -196,7 +205,7 @@ internal fun ReadoutListPane(
                         },
                         leadingIcon = {
                             Image(
-                                painter = painterResource(Res.drawable.lmu),
+                                painter = simulatorIcon(simulator),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
                             )
