@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
+import kodriver.feature.readoutlist.generated.resources.item_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
@@ -128,6 +129,7 @@ internal fun ReadoutContent(
                     ReadoutListItemType.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
                     ReadoutListItemType.Flag -> stringResource(Res.string.item_flag)
                     ReadoutListItemType.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+                    ReadoutListItemType.BestLap -> stringResource(Res.string.item_best_lap)
                 }
                 ReadoutDetailPane(
                     title = title,
