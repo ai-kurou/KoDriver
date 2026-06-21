@@ -12,6 +12,19 @@ import java.net.DatagramPacket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+private fun ByteArray.readIntLE(offset: Int): Int =
+    (this[offset].toInt() and 0xFF) or
+        ((this[offset + 1].toInt() and 0xFF) shl 8) or
+        ((this[offset + 2].toInt() and 0xFF) shl 16) or
+        ((this[offset + 3].toInt() and 0xFF) shl 24)
+
+private fun ByteArray.writeIntLE(offset: Int, value: Int) {
+    this[offset] = (value and 0xFF).toByte()
+    this[offset + 1] = ((value ushr 8) and 0xFF).toByte()
+    this[offset + 2] = ((value ushr 16) and 0xFF).toByte()
+    this[offset + 3] = ((value ushr 24) and 0xFF).toByte()
+}
+
 internal class Gt7Ps5UdpSource(
     private val ps5Address: String,
     private val sendPort: Int = SEND_PORT,
@@ -25,7 +38,7 @@ internal class Gt7Ps5UdpSource(
             socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
             var heartbeatCounter = 0
 
-            val buf = ByteArray(PACKET_SIZE)
+            val buf = ByteArray(PACKET_MIN_SIZE)
             val dgram = DatagramPacket(buf, buf.size)
 
             while (true) {
@@ -52,22 +65,26 @@ internal class Gt7Ps5UdpSource(
         .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     private fun decrypt(data: ByteArray): ByteArray? {
-        if (data.size < PACKET_SIZE) return null
-        val iv = data.copyOfRange(IV_OFFSET, IV_OFFSET + 8)
-        return Salsa20.decrypt(GT7_KEY, iv, data)
+        if (data.size < PACKET_MIN_SIZE) return null
+        val iv1 = data.readIntLE(IV_OFFSET)
+        val iv2 = iv1 xor 0xDEADBEEF.toInt()
+        val nonce = ByteArray(8)
+        nonce.writeIntLE(0, iv2)
+        nonce.writeIntLE(4, iv1)
+        return Salsa20.decrypt(GT7_KEY, nonce, data)
     }
 
     companion object {
         const val LISTEN_PORT = 33740
         const val SEND_PORT = 33739
-        const val PACKET_SIZE = 0x128 // 296 bytes
+        const val PACKET_MIN_SIZE = 0x170 // 368 bytes
         const val MAGIC_OFFSET = 0
         const val MAGIC = 0x47375330 // 'G750' in little-endian
         const val IV_OFFSET = 0x40
         const val HEARTBEAT_INTERVAL_PACKETS = 100
-        const val SOCKET_TIMEOUT_MS = 2_000
+        const val SOCKET_TIMEOUT_MS = 3_000
 
-        val GT7_KEY = "Btta7y3Gp4kH3p3kLmfqAUVsF0YVsPFr".toByteArray(Charsets.US_ASCII)
-        val HEARTBEAT_PAYLOAD = byteArrayOf(0x41, 0x10, 0x00, 0x00)
+        val GT7_KEY = "Simulator Interface Packet GT7 ver 0.0".toByteArray().copyOf(32)
+        val HEARTBEAT_PAYLOAD = "C".toByteArray(Charsets.UTF_8)
     }
 }

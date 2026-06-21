@@ -11,10 +11,9 @@ class Gt7Ps5MapperTest {
         const val LAP_COUNT_OFFSET = 0x74
         const val LAPS_IN_RACE_OFFSET = 0x76
         const val BEST_LAP_TIME_OFFSET = 0x78
-        const val GAS_LEVEL_OFFSET = 0x84
-        const val GAS_CAPACITY_OFFSET = 0x88
-        const val ENERGY_RECOVERY_OFFSET = 0xC4
-        const val PACKET_SIZE = 0x128
+        const val GAS_LEVEL_OFFSET = 0x44
+        const val GAS_CAPACITY_OFFSET = 0x48
+        const val PACKET_SIZE = 0x170
 
         fun packetWith(
             lapCount: Short = 0,
@@ -22,7 +21,6 @@ class Gt7Ps5MapperTest {
             bestLapTimeMs: Int = -1,
             gasLevel: Float = 0f,
             gasCapacity: Float = 100f,
-            energyRecovery: Float = 0f,
         ): ByteBuffer {
             val buf = ByteBuffer.allocate(PACKET_SIZE).order(ByteOrder.LITTLE_ENDIAN)
             buf.putShort(LAP_COUNT_OFFSET, lapCount)
@@ -30,7 +28,6 @@ class Gt7Ps5MapperTest {
             buf.putInt(BEST_LAP_TIME_OFFSET, bestLapTimeMs)
             buf.putFloat(GAS_LEVEL_OFFSET, gasLevel)
             buf.putFloat(GAS_CAPACITY_OFFSET, gasCapacity)
-            buf.putFloat(ENERGY_RECOVERY_OFFSET, energyRecovery)
             return buf
         }
     }
@@ -78,13 +75,6 @@ class Gt7Ps5MapperTest {
     }
 
     @Test
-    fun `EnergyRecoveryを正しくマッピングする`() {
-        val packet = packetWith(energyRecovery = 0.75f)
-        val result = Gt7Ps5Mapper.map(packet)
-        assertEquals(0.75f, result.energyRecovery)
-    }
-
-    @Test
     fun `全フィールドを同時に正しくマッピングする`() {
         val packet = packetWith(
             lapCount = 3,
@@ -92,7 +82,6 @@ class Gt7Ps5MapperTest {
             bestLapTimeMs = 85_432,
             gasLevel = 30.2f,
             gasCapacity = 80f,
-            energyRecovery = 0.5f,
         )
         val result = Gt7Ps5Mapper.map(packet)
         assertEquals(3, result.lapCount)
@@ -100,6 +89,5 @@ class Gt7Ps5MapperTest {
         assertEquals(85_432, result.bestLapTimeMs)
         assertEquals(30.2f, result.gasLevel)
         assertEquals(80f, result.gasCapacity)
-        assertEquals(0.5f, result.energyRecovery)
     }
 }

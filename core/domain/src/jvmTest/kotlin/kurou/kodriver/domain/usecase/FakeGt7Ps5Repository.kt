@@ -17,5 +17,4 @@ internal fun fakeGt7Ps5TelemetryData(lapCount: Int = 0) = Gt7Ps5TelemetryData(
     bestLapTimeMs = -1,
     gasLevel = 0f,
     gasCapacity = 100f,
-    energyRecovery = 0f,
 )

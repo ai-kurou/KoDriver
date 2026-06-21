@@ -17,33 +17,36 @@ class Gt7Ps5UdpSourceTest {
 
     /**
      * GT7 パケット暗号化の構築ルール:
-     *   - 暗号化パケットの offset 0x40..0x47 に IV を平文で埋め込む
-     *   - 残りのフィールドは Salsa20(key, iv) XOR 平文値 で埋める
-     *   - 復号側は encrypted[0x40..0x47] を IV として読み取り
-     *     Salsa20(key, iv) XOR encrypted でフィールドを復元する
+     *   - iv1 を offset 0x40 に LE4 バイトで書き込む（復号側がここを読み取る）
+     *   - ノンス = [iv1 XOR 0xDEADBEEF (LE4), iv1 (LE4)]
+     *   - 残りのフィールドは Salsa20(key, nonce) XOR 平文値 で埋める
      */
     private fun makeEncryptedPacket(
         magic: Int = Gt7Ps5UdpSource.MAGIC,
         lapCount: Short = 1,
-        iv: ByteArray = ByteArray(8),
+        iv1: Int = 0,
     ): ByteArray {
-        require(iv.size == 8)
+        val iv2 = iv1 xor 0xDEADBEEF.toInt()
+        val nonce = ByteArray(8)
+        nonce.writeIntLE(0, iv2)
+        nonce.writeIntLE(4, iv1)
+
         val keystream = Salsa20.decrypt(
             Gt7Ps5UdpSource.GT7_KEY,
-            iv,
-            ByteArray(Gt7Ps5UdpSource.PACKET_SIZE),
+            nonce,
+            ByteArray(Gt7Ps5UdpSource.PACKET_MIN_SIZE),
         )
 
-        val plain = ByteArray(Gt7Ps5UdpSource.PACKET_SIZE)
+        val plain = ByteArray(Gt7Ps5UdpSource.PACKET_MIN_SIZE)
         val plainBuf = ByteBuffer.wrap(plain).order(ByteOrder.LITTLE_ENDIAN)
         plainBuf.putInt(Gt7Ps5UdpSource.MAGIC_OFFSET, magic)
         plainBuf.putShort(0x74, lapCount)
 
-        val encrypted = ByteArray(Gt7Ps5UdpSource.PACKET_SIZE) { i ->
+        val encrypted = ByteArray(Gt7Ps5UdpSource.PACKET_MIN_SIZE) { i ->
             (plain[i].toInt() xor keystream[i].toInt()).toByte()
         }
-        // 復号側が IV として読み取る位置に平文 IV を埋め込む
-        iv.copyInto(encrypted, Gt7Ps5UdpSource.IV_OFFSET)
+        // 復号側が iv1 として読み取る位置に iv1 を平文で埋め込む
+        encrypted.writeIntLE(Gt7Ps5UdpSource.IV_OFFSET, iv1)
 
         return encrypted
     }
@@ -151,4 +154,11 @@ class Gt7Ps5UdpSourceTest {
 
         assertTrue(socket.closed)
     }
+}
+
+private fun ByteArray.writeIntLE(offset: Int, value: Int) {
+    this[offset] = (value and 0xFF).toByte()
+    this[offset + 1] = ((value ushr 8) and 0xFF).toByte()
+    this[offset + 2] = ((value ushr 16) and 0xFF).toByte()
+    this[offset + 3] = ((value ushr 24) and 0xFF).toByte()
 }

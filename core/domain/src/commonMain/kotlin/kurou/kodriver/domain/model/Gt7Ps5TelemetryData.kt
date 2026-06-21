@@ -6,5 +6,4 @@ data class Gt7Ps5TelemetryData(
     val bestLapTimeMs: Int,
     val gasLevel: Float,
     val gasCapacity: Float,
-    val energyRecovery: Float,
 )
