@@ -54,7 +54,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     @Test
     fun `onEnabledChanged true を渡すと enabled=true になる`() = runTest {
-        repository.saveReadoutEnabledState("gt7_ps5", ReadoutItemKey.BEST_LAP, false)
+        repository.saveReadoutEnabledState("gt7_ps5", ReadoutItemKey.MY_BEST_LAP, false)
         viewModel.onEnabledChanged(true)
         val state = viewModel.uiState.first()
         assertEquals(true, state.enabled)

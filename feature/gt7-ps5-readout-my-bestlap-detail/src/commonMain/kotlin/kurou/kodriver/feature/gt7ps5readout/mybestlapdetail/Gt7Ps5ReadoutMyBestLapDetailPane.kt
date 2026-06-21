@@ -12,9 +12,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.Res
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.best_lap_description
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.best_lap_enabled
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.best_lap_switch_subtitle
+import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_description
+import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_enabled
+import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_switch_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
@@ -45,10 +45,10 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneDescription(text = stringResource(Res.string.best_lap_description))
-        DetailPaneSubtitle(text = stringResource(Res.string.best_lap_switch_subtitle))
+        DetailPaneDescription(text = stringResource(Res.string.my_best_lap_description))
+        DetailPaneSubtitle(text = stringResource(Res.string.my_best_lap_switch_subtitle))
         DetailPaneCard(
-            title = stringResource(Res.string.best_lap_enabled),
+            title = stringResource(Res.string.my_best_lap_enabled),
             checked = uiState.enabled,
             chipLabels = emptyList(),
             selectedChipLabels = emptySet(),

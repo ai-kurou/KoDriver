@@ -83,9 +83,9 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf("lmu_windows", "gt7_ps5"),
                                 selectedSimulator = "gt7_ps5",
-                                items = listOf(ReadoutItemKey.BEST_LAP),
+                                items = listOf(ReadoutItemKey.MY_BEST_LAP),
                                 readoutEnabledStates = mapOf(
-                                    ReadoutItemKey.BEST_LAP to true,
+                                    ReadoutItemKey.MY_BEST_LAP to true,
                                 ),
                             ),
                             onSimulatorSelected = {},

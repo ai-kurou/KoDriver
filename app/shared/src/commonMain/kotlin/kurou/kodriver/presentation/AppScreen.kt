@@ -104,7 +104,7 @@ fun AppScreen(
                     ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
                     ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
                     ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
-                    ReadoutListItemType.Gt7Ps5.BestLap -> Unit
+                    ReadoutListItemType.Gt7Ps5.MyBestLap -> Unit
                 }
             },
         )

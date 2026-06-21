@@ -6,7 +6,7 @@
     <string name="item_vehicle_approach">車両接近</string>
     <string name="item_flag">フラッグ</string>
     <string name="item_vehicle_damage">車両故障</string>
-    <string name="item_best_lap">自己ベストラップ</string>
+    <string name="item_my_best_lap">自己ベストラップ</string>
     <string name="drag_handle">ドラッグして並び替え</string>
     <string name="priority_hint_label">読み上げ優先度</string>
     <string name="priority_hint_description">上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます</string>

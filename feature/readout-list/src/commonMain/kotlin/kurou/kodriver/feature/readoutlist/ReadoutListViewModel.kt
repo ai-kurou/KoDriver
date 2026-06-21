@@ -27,7 +27,7 @@ private val simulatorItems: Map<String, List<ReadoutItemKey>> = mapOf(
         ReadoutItemKey.VEHICLE_DAMAGE,
     ),
     "gt7_ps5" to listOf(
-        ReadoutItemKey.BEST_LAP,
+        ReadoutItemKey.MY_BEST_LAP,
     ),
 )
 
