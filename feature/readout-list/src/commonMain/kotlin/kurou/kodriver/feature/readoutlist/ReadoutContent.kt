@@ -126,10 +126,10 @@ internal fun ReadoutContent(
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
                 val title = when (selectedItem) {
-                    ReadoutListItemType.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
-                    ReadoutListItemType.Flag -> stringResource(Res.string.item_flag)
-                    ReadoutListItemType.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
-                    ReadoutListItemType.BestLap -> stringResource(Res.string.item_best_lap)
+                    ReadoutListItemType.LmuWindows.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+                    ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
+                    ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+                    ReadoutListItemType.Gt7Ps5.BestLap -> stringResource(Res.string.item_best_lap)
                 }
                 ReadoutDetailPane(
                     title = title,

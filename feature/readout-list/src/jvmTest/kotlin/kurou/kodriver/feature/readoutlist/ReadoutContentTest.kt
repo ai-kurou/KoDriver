@@ -55,7 +55,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
-                onItemSelected = { selectedItem = ReadoutListItemType.fromId(it) },
+                onItemSelected = { selectedItem = ReadoutListItemType.fromId("lmu_windows", it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,

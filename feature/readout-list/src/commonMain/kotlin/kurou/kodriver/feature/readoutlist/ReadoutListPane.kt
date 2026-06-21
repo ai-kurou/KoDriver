@@ -236,7 +236,9 @@ internal fun ReadoutListPane(
                 ) {
                     itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                         ReorderableItem(reorderableState, key = item.value) {
-                            val isSelected = ReadoutListItemType.fromId(item) == uiState.selectedItem
+                            val isSelected = uiState.selectedSimulator?.let {
+                                ReadoutListItemType.fromId(it, item)
+                            } == uiState.selectedItem
                             val cardContainerColor by animateColorAsState(
                                 targetValue = if (isSelected) {
                                     MaterialTheme.colorScheme.secondaryContainer

@@ -125,7 +125,8 @@ internal class ReadoutListViewModel(
     }
 
     fun onItemSelected(item: ReadoutItemKey) {
-        val type = ReadoutListItemType.fromId(item) ?: return
+        val simulator = _selectedSimulator.value ?: return
+        val type = ReadoutListItemType.fromId(simulator, item) ?: return
         _selectedItem.update { if (it == type) null else type }
     }
 
