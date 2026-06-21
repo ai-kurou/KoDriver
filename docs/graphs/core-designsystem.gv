@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":feature:gt7-ps5-readout-my-bestlap-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:designsystem"
