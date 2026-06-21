@@ -14,6 +14,8 @@ Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルを
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
+<img width="1445" height="715" alt="スクリーンショット 2026-06-21 16 47 49" src="https://github.com/user-attachments/assets/20278c9f-eeda-424b-a693-17163d7ef0ff" />
+
 ## 機能
 
 - アナウンスする項目の選択・有効/無効の切り替え
