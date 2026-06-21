@@ -33,6 +33,7 @@ dependencies {
 android {
     namespace = "kurou.kodriver"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    base.archivesName = "KoDriver-android-${providers.gradleProperty("appVersion").get()}"
 
     buildFeatures {
         buildConfig = true
