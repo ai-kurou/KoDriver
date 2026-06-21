@@ -171,11 +171,11 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5を選択するとアイテムは空リストになる`() = runTest {
+    fun `gt7_ps5を選択するとベストラップアイテムが表示される`() = runTest {
         viewModel.onSimulatorSelected("gt7_ps5")
 
         val state = viewModel.uiState.first()
         assertEquals("gt7_ps5", state.selectedSimulator)
-        assertEquals(emptyList(), state.items)
+        assertEquals(listOf(ReadoutItemKey.BEST_LAP), state.items)
     }
 }

@@ -104,6 +104,7 @@ fun AppScreen(
                     ReadoutListItemType.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
                     ReadoutListItemType.Flag -> LmuWindowsReadoutFlagDetailPane()
                     ReadoutListItemType.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.BestLap -> Unit
                 }
             },
         )

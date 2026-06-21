@@ -23,6 +23,11 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
+    fun `best_lap は BestLap を返す`() {
+        assertEquals(ReadoutListItemType.BestLap, ReadoutListItemType.fromId(ReadoutItemKey.BEST_LAP))
+    }
+
+    @Test
     fun `一覧に含まれないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(ReadoutItemKey.BLUE_FLAG))
     }
