@@ -169,4 +169,13 @@ class ReadoutListViewModelTest {
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
+
+    @Test
+    fun `gt7_ps5を選択するとアイテムは空リストになる`() = runTest {
+        viewModel.onSimulatorSelected("gt7_ps5")
+
+        val state = viewModel.uiState.first()
+        assertEquals("gt7_ps5", state.selectedSimulator)
+        assertEquals(emptyList(), state.items)
+    }
 }
