@@ -59,8 +59,8 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
 import kodriver.feature.readoutlist.generated.resources.gt7
-import kodriver.feature.readoutlist.generated.resources.item_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_flag
+import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.lmu
@@ -94,7 +94,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     ReadoutItemKey.VEHICLE_APPROACH -> stringResource(Res.string.item_vehicle_approach)
     ReadoutItemKey.FLAG -> stringResource(Res.string.item_flag)
     ReadoutItemKey.VEHICLE_DAMAGE -> stringResource(Res.string.item_vehicle_damage)
-    ReadoutItemKey.BEST_LAP -> stringResource(Res.string.item_best_lap)
+    ReadoutItemKey.MY_BEST_LAP -> stringResource(Res.string.item_my_best_lap)
     else -> itemId.value
 }
 
@@ -102,7 +102,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     ReadoutItemKey.VEHICLE_APPROACH -> Icons.Filled.DirectionsCar
     ReadoutItemKey.FLAG -> Icons.Filled.Flag
     ReadoutItemKey.VEHICLE_DAMAGE -> Icons.Filled.Build
-    ReadoutItemKey.BEST_LAP -> Icons.Filled.Timer
+    ReadoutItemKey.MY_BEST_LAP -> Icons.Filled.Timer
     else -> Icons.Filled.DirectionsCar
 }
 

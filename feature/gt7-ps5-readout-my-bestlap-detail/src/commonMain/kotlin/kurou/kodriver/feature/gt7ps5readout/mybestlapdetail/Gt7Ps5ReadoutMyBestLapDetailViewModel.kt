@@ -22,7 +22,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
         observeReadoutEnabledStates(SIMULATOR_ID)
             .map { states ->
                 Gt7Ps5ReadoutMyBestLapDetailUiState(
-                    enabled = states[ReadoutItemKey.BEST_LAP] ?: true,
+                    enabled = states[ReadoutItemKey.MY_BEST_LAP] ?: true,
                 )
             }
             .stateIn(
@@ -33,7 +33,7 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
 
     fun onEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
-            saveReadoutEnabledState(SIMULATOR_ID, ReadoutItemKey.BEST_LAP, enabled)
+            saveReadoutEnabledState(SIMULATOR_ID, ReadoutItemKey.MY_BEST_LAP, enabled)
         }
     }
 }

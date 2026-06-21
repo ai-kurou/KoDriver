@@ -11,7 +11,7 @@ class ReadoutItemKeyTest {
         assertEquals(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.fromValue("vehicle_approach"))
         assertEquals(ReadoutItemKey.FLAG, ReadoutItemKey.fromValue("flag"))
         assertEquals(ReadoutItemKey.VEHICLE_DAMAGE, ReadoutItemKey.fromValue("vehicle_damage"))
-        assertEquals(ReadoutItemKey.BEST_LAP, ReadoutItemKey.fromValue("best_lap"))
+        assertEquals(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.fromValue("my_best_lap"))
     }
 
     @Test
