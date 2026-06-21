@@ -1,0 +1,4 @@
+digraph G {
+  rankdir=TB
+  ":core:gt7-ps5-data" -> ":core:domain"
+}
