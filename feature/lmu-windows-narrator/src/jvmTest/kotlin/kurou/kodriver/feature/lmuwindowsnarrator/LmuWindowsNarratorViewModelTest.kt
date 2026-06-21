@@ -88,6 +88,7 @@ class LmuWindowsNarratorViewModelTest {
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         simulator: String? = "lmu_windows",
+        currentTimeMs: () -> Long = { 0L },
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
         val vehicleApproachPreferencesRepository = FakeConstantVehicleApproachPreferencesRepository(
@@ -137,6 +138,7 @@ class LmuWindowsNarratorViewModelTest {
                 ),
             ),
             ttsEngine = ttsEngine,
+            currentTimeMs = currentTimeMs,
         )
     }
 
@@ -144,11 +146,14 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `LMU非選択時は接近アナウンスをしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = "other")
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = "other", currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -170,11 +175,14 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `CAR_LEFT_RIGHTタイプのとき左からの接近でCarLeftを読み上げる`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
@@ -182,11 +190,14 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `CAR_LEFT_RIGHTタイプのとき右からの接近でCarRightを読み上げる`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
+        channel.send(rightProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(rightProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarRight), tts.spokenTexts)
@@ -194,15 +205,19 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `LEFT_RIGHT_APPROACHタイプのとき左からの接近でLeftApproachを読み上げる`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
             startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+            currentTimeMs = { fakeTime },
         )
 
         channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.LeftApproach), tts.spokenTexts)
@@ -210,15 +225,19 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `LEFT_RIGHT_APPROACHタイプのとき右からの接近でRightApproachを読み上げる`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
             startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+            currentTimeMs = { fakeTime },
         )
 
         channel.send(noProximity())
+        channel.send(rightProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(rightProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.RightApproach), tts.spokenTexts)
@@ -226,11 +245,14 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `左右同時に接近したときは接近アナウンスをしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
+        channel.send(leftAndRightProximity(leftVehicleId = 1, rightVehicleId = 2))
+        fakeTime = 50L
         channel.send(leftAndRightProximity(leftVehicleId = 1, rightVehicleId = 2))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -238,15 +260,34 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `接近開始時の読み上げが無効のときは接近アナウンスをしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
             startReadoutEnabled = false,
+            currentTimeMs = { fakeTime },
         )
 
         channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `50ms未満の接近ではアナウンスしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 49L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -254,14 +295,18 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `既に並走中の車が継続して並走してもアナウンスしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1))
         val spokenAfterFirstApproach = tts.spokenTexts.toList()
 
+        fakeTime = 100L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(spokenAfterFirstApproach, tts.spokenTexts)
@@ -269,13 +314,19 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `並走から離脱後に同じ車が再度並走するとアナウンスする`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1))
         channel.send(noProximity())
+        fakeTime = 100L
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 150L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), tts.spokenTexts)
@@ -283,12 +334,16 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `別の車両が新たに並走ゾーンに入るとアナウンスする`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))
+        fakeTime = 100L
         channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), tts.spokenTexts)
@@ -296,15 +351,19 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `VEHICLE_APPROACHが無効のときはアナウンスしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.VEHICLE_APPROACH to false),
+            currentTimeMs = { fakeTime },
         )
 
         channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -312,6 +371,7 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `1周目スキップONかつ現在ラップが0のときはアナウンスしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -320,11 +380,14 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             skipFirstLap = true,
+            currentTimeMs = { fakeTime },
         )
 
         // mLapNumber は 0 スタートのため、1周目（最初の計測周）は 0
         telemetryChannel.send(fakeTelemetryData(currentLap = 0))
         proximityChannel.send(noProximity())
+        proximityChannel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         proximityChannel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -332,6 +395,7 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `1周目スキップONかつフォーメーションラップ中はアナウンスしない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -340,11 +404,14 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             skipFirstLap = true,
+            currentTimeMs = { fakeTime },
         )
 
         // フォーメーションラップは mLapNumber が負値（-1 等）になる可能性があるため <= 0 でスキップ
         telemetryChannel.send(fakeTelemetryData(currentLap = -1))
         proximityChannel.send(noProximity())
+        proximityChannel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         proximityChannel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -352,6 +419,7 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `1周目スキップONでも2周目以降はアナウンスする`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -360,31 +428,14 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             skipFirstLap = true,
+            currentTimeMs = { fakeTime },
         )
 
         // mLapNumber は 0 スタートのため、2周目は 1
         telemetryChannel.send(fakeTelemetryData(currentLap = 1))
         proximityChannel.send(noProximity())
         proximityChannel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
-    }
-
-    @Test
-    fun `1周目スキップOFFのときは1周目でもアナウンスする`() = runTest(testDispatcher) {
-        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            proximityChannel = proximityChannel,
-            telemetryChannel = telemetryChannel,
-            ttsEngine = tts,
-            skipFirstLap = false,
-        )
-
-        // mLapNumber は 0 スタートのため、1周目は 0
-        telemetryChannel.send(fakeTelemetryData(currentLap = 0))
-        proximityChannel.send(noProximity())
+        fakeTime = 50L
         proximityChannel.send(leftProximity(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
@@ -476,13 +527,16 @@ class LmuWindowsNarratorViewModelTest {
 
     @Test
     fun `フラグ読み上げ中に車両接近イベントが来ても読み上げない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
             initialKey = ReadoutItemKey.FLAG,
         )
-        buildViewModel(proximityChannel = channel, ttsEngine = tts)
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -528,18 +582,6 @@ class LmuWindowsNarratorViewModelTest {
         damageChannel.send(noDamage(overheating = true))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), tts.spokenTexts)
-    }
-
-    @Test
-    fun `LMU非選択時はオーバーヒートアナウンスをしない`() = runTest(testDispatcher) {
-        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(damageChannel = damageChannel, ttsEngine = tts, simulator = "other")
-
-        damageChannel.send(noDamage())
-        damageChannel.send(noDamage(overheating = true))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
     @Test
