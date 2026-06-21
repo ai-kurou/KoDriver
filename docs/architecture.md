@@ -11,6 +11,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
+| `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-gt7-ps5-data.svg) |
 | `:core:designsystem` | アプリ全体で共有する Composable コンポーネント | [図](graphs/core-designsystem.svg) |
 | `:feature:lmu-windows-connection` | LMU との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-lmu-windows-connection.svg) |
 | `:feature:main` | アプリ全体のメイン画面状態管理 | [図](graphs/feature-main.svg) |
