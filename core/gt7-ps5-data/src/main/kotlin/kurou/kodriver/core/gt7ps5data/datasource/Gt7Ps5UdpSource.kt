@@ -79,7 +79,7 @@ internal class Gt7Ps5UdpSource(
         const val SEND_PORT = 33739
         const val PACKET_MIN_SIZE = 0x170 // 368 bytes
         const val MAGIC_OFFSET = 0
-        const val MAGIC = 0x47375330 // 'G750' in little-endian
+        const val MAGIC = 0x47375330 // 'G7S0' in little-endian
         const val IV_OFFSET = 0x40
         const val HEARTBEAT_INTERVAL_PACKETS = 100
         const val SOCKET_TIMEOUT_MS = 3_000
