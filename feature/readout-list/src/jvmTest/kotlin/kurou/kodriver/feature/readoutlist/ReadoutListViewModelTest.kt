@@ -142,20 +142,30 @@ class ReadoutListViewModelTest {
 
     @Test
     fun `onItemSelectedでアイテムが選択される`() = runTest {
+        viewModel.onSimulatorSelected("lmu_windows")
         viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
 
-        assertEquals(ReadoutListItemType.VehicleApproach, viewModel.uiState.first().selectedItem)
+        assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
     }
 
     @Test
-    fun `存在しないアイテムを選択しても選択状態は変わらない`() = runTest {
-        viewModel.onItemSelected(ReadoutItemKey.BLUE_FLAG)
+    fun `シミュレータ未選択時はonItemSelectedで選択状態は変わらない`() = runTest {
+        viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
+
+        assertNull(viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() = runTest {
+        viewModel.onSimulatorSelected("lmu_windows")
+        viewModel.onItemSelected(ReadoutItemKey.BEST_LAP)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
 
     @Test
     fun `同じアイテムを再度選択すると選択解除される`() = runTest {
+        viewModel.onSimulatorSelected("lmu_windows")
         viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
         viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
 
@@ -171,11 +181,11 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5を選択するとアイテムは空リストになる`() = runTest {
+    fun `gt7_ps5を選択するとベストラップアイテムが表示される`() = runTest {
         viewModel.onSimulatorSelected("gt7_ps5")
 
         val state = viewModel.uiState.first()
         assertEquals("gt7_ps5", state.selectedSimulator)
-        assertEquals(emptyList(), state.items)
+        assertEquals(listOf(ReadoutItemKey.BEST_LAP), state.items)
     }
 }

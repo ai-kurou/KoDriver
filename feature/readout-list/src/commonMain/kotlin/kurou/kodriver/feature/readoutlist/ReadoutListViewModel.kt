@@ -26,7 +26,9 @@ private val simulatorItems: Map<String, List<ReadoutItemKey>> = mapOf(
         ReadoutItemKey.VEHICLE_APPROACH,
         ReadoutItemKey.VEHICLE_DAMAGE,
     ),
-    "gt7_ps5" to emptyList(),
+    "gt7_ps5" to listOf(
+        ReadoutItemKey.BEST_LAP,
+    ),
 )
 
 private val simulators: List<String> = simulatorItems.keys.toList()
@@ -123,7 +125,8 @@ internal class ReadoutListViewModel(
     }
 
     fun onItemSelected(item: ReadoutItemKey) {
-        val type = ReadoutListItemType.fromId(item) ?: return
+        val simulator = _selectedSimulator.value ?: return
+        val type = ReadoutListItemType.fromId(simulator, item) ?: return
         _selectedItem.update { if (it == type) null else type }
     }
 

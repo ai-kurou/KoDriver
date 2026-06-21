@@ -101,9 +101,10 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
-                    ReadoutListItemType.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
-                    ReadoutListItemType.Flag -> LmuWindowsReadoutFlagDetailPane()
-                    ReadoutListItemType.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
+                    ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
+                    ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.Gt7Ps5.BestLap -> Unit
                 }
             },
         )

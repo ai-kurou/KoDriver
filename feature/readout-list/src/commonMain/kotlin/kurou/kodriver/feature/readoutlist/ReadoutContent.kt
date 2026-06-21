@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
+import kodriver.feature.readoutlist.generated.resources.item_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
@@ -125,9 +126,10 @@ internal fun ReadoutContent(
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
                 val title = when (selectedItem) {
-                    ReadoutListItemType.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
-                    ReadoutListItemType.Flag -> stringResource(Res.string.item_flag)
-                    ReadoutListItemType.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+                    ReadoutListItemType.LmuWindows.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+                    ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
+                    ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+                    ReadoutListItemType.Gt7Ps5.BestLap -> stringResource(Res.string.item_best_lap)
                 }
                 ReadoutDetailPane(
                     title = title,
