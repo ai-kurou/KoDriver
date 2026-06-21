@@ -42,7 +42,7 @@ internal class FakeUdpSocket : UdpSocket {
 
     override fun close() {
         closed = true
-        // 待機中の receive() を解放するためにダミーエントリを挿入する
+        // キューを空にする。receive() は 1ms ポーリングのため close() 後も永久にブロックされない
         responses.clear()
     }
 
