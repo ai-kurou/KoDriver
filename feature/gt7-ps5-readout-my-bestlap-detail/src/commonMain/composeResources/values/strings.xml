@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="best_lap_description">ベストラップを更新したときにアナウンスします。</string>
+    <string name="best_lap_switch_subtitle">アナウンス設定</string>
+    <string name="best_lap_enabled">ベストラップ更新</string>
+</resources>
