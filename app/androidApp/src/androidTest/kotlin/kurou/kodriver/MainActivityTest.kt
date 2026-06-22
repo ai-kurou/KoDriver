@@ -61,7 +61,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()
 
-        // 接続先サーバーをタップ（other_item_0 = ServerIp）
+        // 接続先PCをタップ（other_item_0 = ServerIp）
         composeTestRule.onNodeWithTag("other_item_0").performClick()
         composeTestRule.waitForIdle()
 
