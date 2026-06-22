@@ -29,7 +29,8 @@ KoDriver/
 │   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
 │   ├── lmu-windows-readout-flag-detail/          フラグアナウンスの詳細設定
 │   ├── lmu-windows-readout-vehicle-approach-detail/ 車両接近アナウンスの詳細設定
-│   └── lmu-windows-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
+│   ├── lmu-windows-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
+│   └── gt7-ps5-readout-my-bestlap-detail/       GT7自己ベストラップアナウンスの詳細設定
 ├── app/
 │   ├── androidApp/ Android アプリのエントリーポイント
 │   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント

@@ -20,6 +20,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-vehicle-approach-detail` | 車両接近アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-approach-detail.svg) |
 | `:feature:lmu-windows-readout-vehicle-damage-detail` | 車両故障アナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-vehicle-damage-detail.svg) |
 | `:feature:lmu-windows-readout-flag-detail` | フラグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
+| `:feature:gt7-ps5-readout-my-bestlap-detail` | GT7 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-my-bestlap-detail.svg) |
 | `:feature:lmu-windows-narrator` | WAV 音声ファイルの再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 | [図](graphs/feature-other-license-detail.svg) |
 | `:feature:other-list` | その他画面の一覧表示・選択状態管理 | [図](graphs/feature-other-list.svg) |
