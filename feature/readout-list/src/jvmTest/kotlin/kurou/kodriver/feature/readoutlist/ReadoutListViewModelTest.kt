@@ -158,7 +158,7 @@ class ReadoutListViewModelTest {
     @Test
     fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() = runTest {
         viewModel.onSimulatorSelected("lmu_windows")
-        viewModel.onItemSelected(ReadoutItemKey.BEST_LAP)
+        viewModel.onItemSelected(ReadoutItemKey.MY_BEST_LAP)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -186,6 +186,6 @@ class ReadoutListViewModelTest {
 
         val state = viewModel.uiState.first()
         assertEquals("gt7_ps5", state.selectedSimulator)
-        assertEquals(listOf(ReadoutItemKey.BEST_LAP), state.items)
+        assertEquals(listOf(ReadoutItemKey.MY_BEST_LAP), state.items)
     }
 }

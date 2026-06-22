@@ -10,7 +10,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
     }
 
     sealed class Gt7Ps5(id: ReadoutItemKey) : ReadoutListItemType(id) {
-        data object BestLap : Gt7Ps5(ReadoutItemKey.BEST_LAP)
+        data object MyBestLap : Gt7Ps5(ReadoutItemKey.MY_BEST_LAP)
     }
 
     companion object {
@@ -22,7 +22,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 else -> null
             }
             "gt7_ps5" -> when (id) {
-                ReadoutItemKey.BEST_LAP -> Gt7Ps5.BestLap
+                ReadoutItemKey.MY_BEST_LAP -> Gt7Ps5.MyBestLap
                 else -> null
             }
             else -> null
