@@ -11,6 +11,7 @@ import kotlinx.coroutines.yield
 import java.net.DatagramPacket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.util.concurrent.atomic.AtomicLong
 
 private fun ByteArray.readIntLE(offset: Int): Int =
     (this[offset].toInt() and 0xFF) or
@@ -32,7 +33,13 @@ internal class Gt7Ps5UdpSource(
         RealUdpSocket(listenPort = LISTEN_PORT, timeoutMs = SOCKET_TIMEOUT_MS)
     },
     scope: CoroutineScope,
+    private val currentTimeMillis: () -> Long = System::currentTimeMillis,
 ) : Gt7Ps5PacketSource {
+
+    private val _lastPacketReceivedAt = AtomicLong(0L)
+
+    override fun lastPacketReceivedAt(): Long = _lastPacketReceivedAt.get()
+
     override val packetFlow: Flow<ByteBuffer> = flow {
         socketFactory().use { socket ->
             socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
@@ -47,6 +54,7 @@ internal class Gt7Ps5UdpSource(
                     val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue
                     val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)
                     if (bb.getInt(MAGIC_OFFSET) != MAGIC) continue
+                    _lastPacketReceivedAt.set(currentTimeMillis())
                     emit(bb)
 
                     heartbeatCounter++

@@ -6,6 +6,8 @@ import java.nio.ByteBuffer
 
 internal class FakeGt7Ps5PacketSource(
     private val flow: Flow<ByteBuffer>,
+    private val lastReceivedAt: Long = 0L,
 ) : Gt7Ps5PacketSource {
     override val packetFlow: Flow<ByteBuffer> = flow
+    override fun lastPacketReceivedAt(): Long = lastReceivedAt
 }

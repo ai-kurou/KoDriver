@@ -51,10 +51,14 @@ class Gt7Ps5UdpSourceTest {
         return encrypted
     }
 
-    private fun makeSource(socket: FakeUdpSocket): Gt7Ps5UdpSource = Gt7Ps5UdpSource(
+    private fun makeSource(
+        socket: FakeUdpSocket,
+        currentTimeMillis: () -> Long = System::currentTimeMillis,
+    ): Gt7Ps5UdpSource = Gt7Ps5UdpSource(
         ps5Address = "192.168.1.100",
         socketFactory = { socket },
         scope = CoroutineScope(SupervisorJob()),
+        currentTimeMillis = currentTimeMillis,
     )
 
     @Test
@@ -136,6 +140,31 @@ class Gt7Ps5UdpSourceTest {
 
         // 起動時1回 + interval到達後1回の最低2回
         assertTrue(socket.sentPackets.size >= 2)
+    }
+
+    @Test
+    fun `正常パケット受信時にlastPacketReceivedAtを更新する`() = runBlocking {
+        val fixedTime = 12_345_678L
+        val socket = FakeUdpSocket()
+        socket.enqueuePacket(makeEncryptedPacket())
+        val source = makeSource(socket, currentTimeMillis = { fixedTime })
+
+        source.packetFlow.first()
+
+        assertEquals(fixedTime, source.lastPacketReceivedAt())
+    }
+
+    @Test
+    fun `マジック不一致のパケット受信ではlastPacketReceivedAtを更新しない`() = runBlocking {
+        val socket = FakeUdpSocket()
+        socket.enqueuePacket(makeEncryptedPacket(magic = 0xDEADBEEF.toInt()))
+        socket.enqueuePacket(makeEncryptedPacket(lapCount = 1))
+        val source = makeSource(socket, currentTimeMillis = { 99_999L })
+
+        source.packetFlow.first()
+
+        // 最初の不正パケットでは更新されず、2番目の正常パケットで初めて更新される
+        assertEquals(99_999L, source.lastPacketReceivedAt())
     }
 
     @Test
