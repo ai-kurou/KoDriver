@@ -14,10 +14,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.Res
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_description
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_enabled
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_switch_subtitle
+import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_subtitle
+import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
+import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -29,31 +32,42 @@ fun Gt7Ps5ReadoutMyBestLapDetailPane(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutMyBestLapDetailPaneContent(
         uiState = uiState,
-        onEnabledChanged = viewModel::onEnabledChanged,
+        onVoiceTypeChanged = viewModel::onVoiceTypeChanged,
         modifier = modifier,
     )
 }
 
 @Composable
 internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
-    uiState: Gt7Ps5ReadoutMyBestLapDetailUiState,
-    onEnabledChanged: (Boolean) -> Unit,
+    uiState: Gt7Ps5ReadoutMyBestLapDetailUiState = Gt7Ps5ReadoutMyBestLapDetailUiState(),
+    onVoiceTypeChanged: (MyBestLapVoiceType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    val formalLabel = stringResource(Res.string.my_best_lap_voice_type_formal)
+    val casualLabel = stringResource(Res.string.my_best_lap_voice_type_casual)
+    val chipLabels = listOf(formalLabel, casualLabel)
+    val selectedLabel = when (uiState.voiceType) {
+        MyBestLapVoiceType.FORMAL -> formalLabel
+        MyBestLapVoiceType.CASUAL -> casualLabel
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
         DetailPaneDescription(text = stringResource(Res.string.my_best_lap_description))
-        DetailPaneSubtitle(text = stringResource(Res.string.my_best_lap_switch_subtitle))
+        DetailPaneSubtitle(text = stringResource(Res.string.my_best_lap_subtitle))
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
-            checked = uiState.enabled,
-            chipLabels = emptyList(),
-            selectedChipLabels = emptySet(),
-            onCheckedChange = onEnabledChanged,
-            onChipClick = {},
+            chipLabels = chipLabels,
+            selectedChipLabels = setOf(selectedLabel),
+            onChipClick = { label ->
+                val type = when (label) {
+                    casualLabel -> MyBestLapVoiceType.CASUAL
+                    else -> MyBestLapVoiceType.FORMAL
+                }
+                onVoiceTypeChanged(type)
+            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }
@@ -63,7 +77,6 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
 @Composable
 private fun Gt7Ps5ReadoutMyBestLapDetailPanePreview() {
     Gt7Ps5ReadoutMyBestLapDetailPaneContent(
-        uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(enabled = true),
-        onEnabledChanged = {},
+        uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
     )
 }
