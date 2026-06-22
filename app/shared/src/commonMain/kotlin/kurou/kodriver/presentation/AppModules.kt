@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuNarratorModule
@@ -18,6 +19,7 @@ import org.koin.core.module.Module
 val appModules: List<Module> = listOf(
     mainModule,
     lmuConnectionModule,
+    gt7Ps5ConnectionModule,
     serverConnectionModule,
     lmuNarratorModule,
     otherListModule,
