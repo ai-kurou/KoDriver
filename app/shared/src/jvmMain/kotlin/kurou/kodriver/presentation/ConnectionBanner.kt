@@ -6,26 +6,26 @@ import androidx.compose.runtime.getValue
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.banner_simulator_connected
 import kodriver.app.shared.generated.resources.banner_simulator_disconnected
-import kurou.kodriver.feature.lmuwindowsconnection.LmuWindowsConnectionStatus
-import kurou.kodriver.feature.lmuwindowsconnection.LmuWindowsConnectionViewModel
+import kurou.kodriver.feature.main.ConnectionBannerViewModel
+import kurou.kodriver.feature.main.ConnectionBannerVmStatus
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
-    val viewModel: LmuWindowsConnectionViewModel = koinViewModel()
+    val viewModel: ConnectionBannerViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val connectedMessage = stringResource(Res.string.banner_simulator_connected)
     val disconnectedMessage = stringResource(Res.string.banner_simulator_disconnected)
     val status = when (uiState.connectionStatus) {
-        LmuWindowsConnectionStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
-        LmuWindowsConnectionStatus.DISCONNECTED -> ConnectionBannerStatus.DISCONNECTED
-        LmuWindowsConnectionStatus.UNCHECKED -> ConnectionBannerStatus.UNCHECKED
+        ConnectionBannerVmStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
+        ConnectionBannerVmStatus.DISCONNECTED -> ConnectionBannerStatus.DISCONNECTED
+        ConnectionBannerVmStatus.UNCHECKED -> ConnectionBannerStatus.UNCHECKED
     }
     val message = when (uiState.connectionStatus) {
-        LmuWindowsConnectionStatus.CONNECTED -> connectedMessage
-        LmuWindowsConnectionStatus.DISCONNECTED,
-        LmuWindowsConnectionStatus.UNCHECKED,
+        ConnectionBannerVmStatus.CONNECTED -> connectedMessage
+        ConnectionBannerVmStatus.DISCONNECTED,
+        ConnectionBannerVmStatus.UNCHECKED,
         -> disconnectedMessage
     }
     return ConnectionBannerUiState(
