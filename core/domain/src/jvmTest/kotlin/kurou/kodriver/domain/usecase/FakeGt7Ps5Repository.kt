@@ -7,8 +7,10 @@ import kurou.kodriver.domain.repository.Gt7Ps5Repository
 
 internal class FakeGt7Ps5Repository(
     private val stream: Flow<Gt7Ps5TelemetryData> = flowOf(),
+    private val connected: Boolean = false,
 ) : Gt7Ps5Repository {
     override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = stream
+    override suspend fun isConnected(): Boolean = connected
 }
 
 internal fun fakeGt7Ps5TelemetryData(lapCount: Int = 0) = Gt7Ps5TelemetryData(

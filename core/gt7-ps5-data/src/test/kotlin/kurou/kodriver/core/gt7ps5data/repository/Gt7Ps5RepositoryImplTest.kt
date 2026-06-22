@@ -8,6 +8,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class Gt7Ps5RepositoryImplTest {
 
@@ -42,5 +44,31 @@ class Gt7Ps5RepositoryImplTest {
         val results = buildList { repo.telemetryStream().collect { add(it) } }
 
         assertEquals(listOf(Gt7Ps5Mapper.map(p1), Gt7Ps5Mapper.map(p2)), results)
+    }
+
+    @Test
+    fun `最終パケット受信からタイムアウト未満であれば接続中と判定する`() = runBlocking {
+        val now = 10_000L
+        val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = now - 4_999L)
+        val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { now })
+
+        assertTrue(repo.isConnected())
+    }
+
+    @Test
+    fun `最終パケット受信からタイムアウト以上経過していれば未接続と判定する`() = runBlocking {
+        val now = 10_000L
+        val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = now - 5_000L)
+        val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { now })
+
+        assertFalse(repo.isConnected())
+    }
+
+    @Test
+    fun `パケットを一度も受信していなければ未接続と判定する`() = runBlocking {
+        val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = 0L)
+        val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { 10_000L })
+
+        assertFalse(repo.isConnected())
     }
 }
