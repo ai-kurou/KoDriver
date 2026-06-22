@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
@@ -26,6 +27,7 @@ enum class ConnectionBannerVmStatus {
 
 class ConnectionBannerViewModel(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
+    private val checkGt7Ps5Connection: CheckGt7Ps5ConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
 
@@ -33,7 +35,8 @@ class ConnectionBannerViewModel(
     val uiState: StateFlow<ConnectionBannerVmUiState> = observeSelectedSimulator()
         .flatMapLatest { simulator ->
             when (simulator) {
-                LMU_WINDOWS_SIMULATOR_KEY -> lmuConnectionCheckFlow()
+                LMU_WINDOWS_SIMULATOR_KEY -> connectionCheckFlow { checkLmuWindowsConnection() }
+                GT7_PS5_SIMULATOR_KEY -> connectionCheckFlow { checkGt7Ps5Connection() }
                 else -> flowOf(ConnectionBannerVmUiState())
             }
         }
@@ -43,10 +46,10 @@ class ConnectionBannerViewModel(
             initialValue = ConnectionBannerVmUiState(),
         )
 
-    private fun lmuConnectionCheckFlow() = flow {
+    private fun connectionCheckFlow(check: suspend () -> Boolean) = flow {
         while (true) {
             val isConnected = try {
-                checkLmuWindowsConnection()
+                check()
             } catch (e: CancellationException) {
                 throw e
             } catch (_: Exception) {
@@ -68,5 +71,6 @@ class ConnectionBannerViewModel(
     private companion object {
         const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
         const val LMU_WINDOWS_SIMULATOR_KEY = "lmu_windows"
+        const val GT7_PS5_SIMULATOR_KEY = "gt7_ps5"
     }
 }
