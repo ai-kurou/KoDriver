@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -285,7 +286,9 @@ internal fun AppScreenContent(
                         },
                     )
                 Column(modifier = contentModifier) {
-                    ConnectionBannerContent(uiState = bannerUiState)
+                    AnimatedVisibility(visible = bannerUiState.isVisible) {
+                        ConnectionBannerContent(uiState = bannerUiState)
+                    }
                     AnimatedContent(
                         targetState = currentDestination,
                         transitionSpec = { fadeIn() togetherWith fadeOut() },

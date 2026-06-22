@@ -22,6 +22,8 @@ private const val GT7_PS5_SIMULATOR_KEY = "gt7_ps5"
 actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val viewModel: ConnectionBannerViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    if (uiState.selectedSimulator == null) return ConnectionBannerUiState(isVisible = false)
+
     val isGt7 = uiState.selectedSimulator == GT7_PS5_SIMULATOR_KEY
     val connectedMessage = stringResource(Res.string.banner_simulator_connected)
     val disconnectedMessage = stringResource(Res.string.banner_simulator_disconnected)
