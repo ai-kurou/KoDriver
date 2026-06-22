@@ -7,33 +7,27 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
-
-private const val SIMULATOR_ID = "gt7_ps5"
+import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.SaveMyBestLapVoiceTypeUseCase
 
 internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    observeMyBestLapVoiceType: ObserveMyBestLapVoiceTypeUseCase,
+    private val saveMyBestLapVoiceType: SaveMyBestLapVoiceTypeUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<Gt7Ps5ReadoutMyBestLapDetailUiState> =
-        observeReadoutEnabledStates(SIMULATOR_ID)
-            .map { states ->
-                Gt7Ps5ReadoutMyBestLapDetailUiState(
-                    enabled = states[ReadoutItemKey.MY_BEST_LAP] ?: true,
-                )
-            }
+        observeMyBestLapVoiceType()
+            .map { Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = it) }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5_000),
                 Gt7Ps5ReadoutMyBestLapDetailUiState(),
             )
 
-    fun onEnabledChanged(enabled: Boolean) {
+    fun onVoiceTypeChanged(type: MyBestLapVoiceType) {
         viewModelScope.launch {
-            saveReadoutEnabledState(SIMULATOR_ID, ReadoutItemKey.MY_BEST_LAP, enabled)
+            saveMyBestLapVoiceType(type)
         }
     }
 }
