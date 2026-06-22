@@ -3,7 +3,9 @@ package kurou.kodriver.core.gt7ps5data.datasource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
@@ -54,8 +56,9 @@ class Gt7Ps5UdpSourceTest {
     private fun makeSource(
         socket: FakeUdpSocket,
         currentTimeMillis: () -> Long = System::currentTimeMillis,
+        address: String = "192.168.1.100",
     ): Gt7Ps5UdpSource = Gt7Ps5UdpSource(
-        ps5Address = "192.168.1.100",
+        ps5AddressFlow = flowOf(address),
         socketFactory = { socket },
         scope = CoroutineScope(SupervisorJob()),
         currentTimeMillis = currentTimeMillis,
@@ -182,6 +185,20 @@ class Gt7Ps5UdpSourceTest {
         }
 
         assertTrue(socket.closed)
+    }
+
+    @Test
+    fun `アドレスがnullの間はパケットを受信しない`() = runBlocking {
+        val addressFlow = MutableStateFlow<String?>(null)
+        val socket = FakeUdpSocket()
+        socket.enqueuePacket(makeEncryptedPacket(lapCount = 1))
+        val source = Gt7Ps5UdpSource(
+            ps5AddressFlow = addressFlow,
+            socketFactory = { socket },
+            scope = CoroutineScope(SupervisorJob()),
+        )
+        // アドレス未設定では packetFlow は何も emit しない（emptyFlow）
+        assertEquals(0L, source.lastPacketReceivedAt())
     }
 }
 

@@ -4,6 +4,7 @@ enum class OtherListItemType(
     val id: String,
 ) {
     ServerIp("server_ip"),
+    Ps5Ip("ps5_ip"),
     Volume("volume"),
     ReadoutStartSound("readout_start_sound"),
     GitHubRepository("github_repository"),

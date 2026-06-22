@@ -2,8 +2,11 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.shareIn
@@ -26,8 +29,9 @@ private fun ByteArray.writeIntLE(offset: Int, value: Int) {
     this[offset + 3] = ((value ushr 24) and 0xFF).toByte()
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class Gt7Ps5UdpSource(
-    private val ps5Address: String,
+    private val ps5AddressFlow: Flow<String?>,
     private val sendPort: Int = SEND_PORT,
     private val socketFactory: () -> UdpSocket = {
         RealUdpSocket(listenPort = LISTEN_PORT, timeoutMs = SOCKET_TIMEOUT_MS)
@@ -40,7 +44,17 @@ internal class Gt7Ps5UdpSource(
 
     override fun lastPacketReceivedAt(): Long = _lastPacketReceivedAt.get()
 
-    override val packetFlow: Flow<ByteBuffer> = flow {
+    override val packetFlow: Flow<ByteBuffer> = ps5AddressFlow
+        .flatMapLatest { address ->
+            if (address.isNullOrBlank()) {
+                emptyFlow()
+            } else {
+                udpPacketFlow(address)
+            }
+        }
+        .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
+
+    private fun udpPacketFlow(ps5Address: String): Flow<ByteBuffer> = flow {
         socketFactory().use { socket ->
             socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
             var heartbeatCounter = 0
@@ -68,9 +82,7 @@ internal class Gt7Ps5UdpSource(
                 }
             }
         }
-    }
-        .flowOn(Dispatchers.IO)
-        .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
+    }.flowOn(Dispatchers.IO)
 
     private fun decrypt(data: ByteArray): ByteArray? {
         if (data.size < PACKET_MIN_SIZE) return null

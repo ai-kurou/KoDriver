@@ -59,6 +59,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlag
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
+import kurou.kodriver.feature.othergt7ps5ipdetail.OtherGt7Ps5IpDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
@@ -94,6 +95,37 @@ private fun AppNavIcon(
 }
 
 @Composable
+private fun DefaultOtherContent(
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit,
+) {
+    var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
+    var showPs5IpDialog by rememberSaveable { mutableStateOf(false) }
+    var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
+    if (showServerIpDialog) {
+        OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
+    }
+    if (showPs5IpDialog) {
+        OtherGt7Ps5IpDetailDialog(onDismiss = { showPs5IpDialog = false })
+    }
+    if (showReadoutStartSoundDialog) {
+        OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
+    }
+    OtherContent(
+        backHandler = backHandler,
+        onOpenServerIpDialog = { showServerIpDialog = true },
+        onOpenPs5IpDialog = { showPs5IpDialog = true },
+        onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
+        detailContent = { itemType, canNavigateBack, onBack ->
+            when (itemType) {
+                OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
+                OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
+                else -> {}
+            }
+        },
+    )
+}
+
+@Composable
 fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
@@ -111,29 +143,7 @@ fun AppScreen(
         )
     },
     otherContent: @Composable () -> Unit = {
-        var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
-        var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
-        if (showServerIpDialog) {
-            OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
-        }
-        if (showReadoutStartSoundDialog) {
-            OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
-        }
-        OtherContent(
-            backHandler = backHandler,
-            onOpenServerIpDialog = { showServerIpDialog = true },
-            onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
-            detailContent = { itemType, canNavigateBack, onBack ->
-                when (itemType) {
-                    OtherListItemType.ServerIp -> {}
-                    OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
-                    OtherListItemType.ReadoutStartSound -> {}
-                    OtherListItemType.GitHubRepository -> {}
-                    OtherListItemType.ReleasePage -> {}
-                    OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
-                }
-            },
-        )
+        DefaultOtherContent(backHandler = backHandler)
     },
 ) {
     val bannerUiState = rememberConnectionBannerUiState()

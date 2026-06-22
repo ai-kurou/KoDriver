@@ -303,6 +303,7 @@ dependencies {
     kover(project(":feature:other-license-detail"))
     kover(project(":feature:other-list"))
     kover(project(":feature:other-server-ip-detail"))
+    kover(project(":feature:other-gt7-ps5-ip-detail"))
     kover(project(":feature:other-readout-start-sound-detail"))
     kover(project(":feature:other-volume-detail"))
     kover(project(":feature:readout-list"))
