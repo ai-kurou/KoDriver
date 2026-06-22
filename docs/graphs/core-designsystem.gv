@@ -4,7 +4,7 @@ digraph G {
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:designsystem"
-  ":feature:other-gt7-ps5-ip-detail" -> ":core:designsystem"
+  ":feature:other-console-ip-detail" -> ":core:designsystem"
   ":feature:other-license-detail" -> ":core:designsystem"
   ":feature:other-server-ip-detail" -> ":core:designsystem"
   ":feature:other-volume-detail" -> ":core:designsystem"
