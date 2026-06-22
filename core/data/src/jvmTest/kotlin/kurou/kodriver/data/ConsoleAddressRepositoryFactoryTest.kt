@@ -6,9 +6,9 @@ import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
-import kotlin.test.assertEquals
 
 class ConsoleAddressRepositoryFactoryTest {
 

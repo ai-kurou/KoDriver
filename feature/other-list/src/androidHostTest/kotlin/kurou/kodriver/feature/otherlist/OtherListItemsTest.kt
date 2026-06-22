@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package kurou.kodriver.feature.otherlist
 
 import kotlin.test.Test
