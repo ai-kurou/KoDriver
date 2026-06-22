@@ -39,6 +39,7 @@ class OtherContentTest {
     @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
+        var consoleIpDialogOpened = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
         var capturedOnBack: (() -> Unit)? = null
@@ -50,6 +51,7 @@ class OtherContentTest {
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
+                onOpenConsoleIpDialog = { consoleIpDialogOpened = true },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -63,8 +65,15 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
-        // item_0: Volume (詳細あり、Desktop では ServerIp が含まれないためインデックス 0)
+        // item_0: ConsoleIp (ダイアログを開く、Desktop では ServerIp が含まれないためインデックス 0)
         rule.onNodeWithTag("other_item_0").performClick()
+        rule.waitForIdle()
+
+        assertTrue(consoleIpDialogOpened)
+        assertFalse(backEnabled)
+
+        // item_1: Volume (詳細あり)
+        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
         rule.onNodeWithText("Detail: volume").assertExists()
@@ -73,28 +82,28 @@ class OtherContentTest {
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitUntil { !backEnabled }
 
-        // item_1: ReadoutStartSound (ダイアログを開く)
-        rule.onNodeWithTag("other_item_1").performClick()
+        // item_2: ReadoutStartSound (ダイアログを開く)
+        rule.onNodeWithTag("other_item_2").performClick()
         rule.waitForIdle()
 
         assertFalse(backEnabled)
 
-        // item_2: GitHubRepository
-        rule.onNodeWithTag("other_item_2").performClick()
+        // item_3: GitHubRepository
+        rule.onNodeWithTag("other_item_3").performClick()
         rule.waitForIdle()
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)
 
-        // item_3: ReleasePage
-        rule.onNodeWithTag("other_item_3").performClick()
+        // item_4: ReleasePage
+        rule.onNodeWithTag("other_item_4").performClick()
         rule.waitForIdle()
 
         assertTrue(releasePageOpened)
         assertFalse(backEnabled)
 
-        // item_4: License (詳細あり)
-        rule.onNodeWithTag("other_item_4").performClick()
+        // item_5: License (詳細あり)
+        rule.onNodeWithTag("other_item_5").performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)
