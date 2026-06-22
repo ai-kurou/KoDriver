@@ -38,7 +38,7 @@ fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     onOpenServerIpDialog: () -> Unit = {},
-    onOpenPs5IpDialog: () -> Unit = {},
+    onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
@@ -56,7 +56,7 @@ fun OtherContent(
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenServerIpDialog = onOpenServerIpDialog,
-        onOpenPs5IpDialog = onOpenPs5IpDialog,
+        onOpenConsoleIpDialog = onOpenConsoleIpDialog,
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -72,12 +72,12 @@ private fun handleOtherItemClick(
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
     onOpenServerIpDialog: () -> Unit,
-    onOpenPs5IpDialog: () -> Unit,
+    onOpenConsoleIpDialog: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
 ) {
     when (itemType) {
         OtherListItemType.ServerIp -> onOpenServerIpDialog()
-        OtherListItemType.Ps5Ip -> onOpenPs5IpDialog()
+        OtherListItemType.ConsoleIp -> onOpenConsoleIpDialog()
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
         OtherListItemType.ReleasePage -> onOpenReleasePage()
@@ -93,7 +93,7 @@ internal fun OtherContent(
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenServerIpDialog: () -> Unit = {},
-    onOpenPs5IpDialog: () -> Unit = {},
+    onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -158,7 +158,7 @@ internal fun OtherContent(
                         onOpenGitHubRepository = onOpenGitHubRepository,
                         onOpenReleasePage = onOpenReleasePage,
                         onOpenServerIpDialog = onOpenServerIpDialog,
-                        onOpenPs5IpDialog = onOpenPs5IpDialog,
+                        onOpenConsoleIpDialog = onOpenConsoleIpDialog,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                     )
                 },

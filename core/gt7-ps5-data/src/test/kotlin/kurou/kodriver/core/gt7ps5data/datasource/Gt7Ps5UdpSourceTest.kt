@@ -58,7 +58,7 @@ class Gt7Ps5UdpSourceTest {
         currentTimeMillis: () -> Long = System::currentTimeMillis,
         address: String = "192.168.1.100",
     ): Gt7Ps5UdpSource = Gt7Ps5UdpSource(
-        ps5AddressFlow = flowOf(address),
+        consoleAddressFlow = flowOf(address),
         socketFactory = { socket },
         scope = CoroutineScope(SupervisorJob()),
         currentTimeMillis = currentTimeMillis,
@@ -193,7 +193,7 @@ class Gt7Ps5UdpSourceTest {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket(lapCount = 1))
         val source = Gt7Ps5UdpSource(
-            ps5AddressFlow = addressFlow,
+            consoleAddressFlow = addressFlow,
             socketFactory = { socket },
             scope = CoroutineScope(SupervisorJob()),
         )

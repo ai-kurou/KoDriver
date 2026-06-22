@@ -59,7 +59,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlag
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
-import kurou.kodriver.feature.othergt7ps5ipdetail.OtherGt7Ps5IpDetailDialog
+import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
@@ -99,13 +99,13 @@ private fun DefaultOtherContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
 ) {
     var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
-    var showPs5IpDialog by rememberSaveable { mutableStateOf(false) }
+    var showConsoleIpDialog by rememberSaveable { mutableStateOf(false) }
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     if (showServerIpDialog) {
         OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
     }
-    if (showPs5IpDialog) {
-        OtherGt7Ps5IpDetailDialog(onDismiss = { showPs5IpDialog = false })
+    if (showConsoleIpDialog) {
+        OtherConsoleIpDetailDialog(onDismiss = { showConsoleIpDialog = false })
     }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
@@ -113,7 +113,7 @@ private fun DefaultOtherContent(
     OtherContent(
         backHandler = backHandler,
         onOpenServerIpDialog = { showServerIpDialog = true },
-        onOpenPs5IpDialog = { showPs5IpDialog = true },
+        onOpenConsoleIpDialog = { showConsoleIpDialog = true },
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {

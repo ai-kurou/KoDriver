@@ -58,7 +58,7 @@ kotlin {
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.otherServerIpDetail)
-            implementation(projects.feature.otherGt7Ps5IpDetail)
+            implementation(projects.feature.otherConsoleIpDetail)
             implementation(projects.feature.otherReadoutStartSoundDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.readoutList)
