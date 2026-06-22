@@ -6,6 +6,7 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
@@ -34,6 +35,7 @@ fun androidDataModule(context: Context) = module {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
     }
     single<LmuWindowsRepository> { EmptyLmuWindowsRepository() }
+    single<Gt7Ps5Repository> { EmptyGt7Ps5Repository() }
     single<FlagRepository> { WebSocketFlagRepository(get()) }
     single<ProximityRepository> { WebSocketProximityRepository(get()) }
     single<VehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
