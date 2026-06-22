@@ -49,8 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.lmu_connected
-import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
@@ -148,8 +146,6 @@ fun AppScreen(
 ) {
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val connectedMessage = stringResource(Res.string.lmu_connected)
-    val disconnectedMessage = stringResource(Res.string.lmu_disconnected)
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -160,8 +156,8 @@ fun AppScreen(
         isConnectionChecked = bannerUiState.isConnectionChecked,
         isConnected = bannerUiState.isConnected,
         snackbarHostState = snackbarHostState,
-        connectedMessage = connectedMessage,
-        disconnectedMessage = disconnectedMessage,
+        connectedMessage = bannerUiState.snackbarConnectedMessage,
+        disconnectedMessage = bannerUiState.snackbarDisconnectedMessage,
     )
 
     LmuWindowsNarratorEffect()

@@ -8,6 +8,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlag
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.main.mainModule
+import kurou.kodriver.feature.main.mainPlatformModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
@@ -19,6 +20,7 @@ import org.koin.core.module.Module
 
 val appModules: List<Module> = listOf(
     mainModule,
+    mainPlatformModule,
     lmuConnectionModule,
     gt7Ps5ConnectionModule,
     serverConnectionModule,
