@@ -16,6 +16,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
+import kodriver.feature.otherlist.generated.resources.item_console_ip
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_license
 import kodriver.feature.otherlist.generated.resources.item_readout_start_sound
@@ -43,6 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 private fun otherItemDisplayName(itemType: OtherListItemType): String = when (itemType) {
     OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
+    OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
     OtherListItemType.Volume -> stringResource(Res.string.item_volume)
     OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
     OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
@@ -54,6 +57,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
 private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: Boolean) {
     when (itemType) {
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Wifi, contentDescription = null)
+        OtherListItemType.ConsoleIp -> Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = null)
         OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
         OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
@@ -68,6 +72,7 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: 
 private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
     when (itemType) {
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.ConsoleIp -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.Volume,
         OtherListItemType.License,

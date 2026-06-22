@@ -1,0 +1,6 @@
+digraph G {
+  rankdir=TB
+  ":app:shared" -> ":feature:other-gt7-ps5-ip-detail"
+  ":feature:other-gt7-ps5-ip-detail" -> ":core:domain"
+  ":feature:other-gt7-ps5-ip-detail" -> ":core:designsystem"
+}

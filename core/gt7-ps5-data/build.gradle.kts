@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
 }
 
@@ -7,6 +8,8 @@ dependencies {
     implementation(projects.core.domain)
     implementation(libs.kotlinx.coroutinesCore)
     implementation(libs.koin.core)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.kotlinx.serialization.protobuf)
 
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)

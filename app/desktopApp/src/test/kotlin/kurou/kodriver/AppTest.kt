@@ -78,20 +78,20 @@ class AppTest {
         rule.onNodeWithTag("nav_more").performClick()
         rule.waitForIdle()
 
-        // 音量をタップ
-        rule.onNodeWithTag("other_item_0").performClick()
+        // 音量をタップ（Desktop では ServerIp が除外され、ConsoleIp が含まれるため other_item_1）
+        rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
-        // 読み上げ開始音をタップ（Desktop では ServerIp が含まれないため other_item_1）
-        rule.onNodeWithTag("other_item_1").performClick()
+        // 読み上げ開始音をタップ（Desktop では other_item_2）
+        rule.onNodeWithTag("other_item_2").performClick()
         rule.waitForIdle()
 
         // ダイアログをキャンセル
         rule.onNodeWithText("キャンセル").performClick()
         rule.waitForIdle()
 
-        // ライセンスをタップ（Desktop では ServerIp が含まれないため other_item_4）
-        rule.onNodeWithTag("other_item_4").performClick()
+        // ライセンスをタップ（Desktop では ConsoleIp が含まれるため other_item_5）
+        rule.onNodeWithTag("other_item_5").performClick()
         rule.waitForIdle()
     }
 }
