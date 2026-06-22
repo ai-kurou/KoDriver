@@ -310,6 +310,7 @@ dependencies {
     kover(project(":feature:lmu-windows-readout-flag-detail"))
     kover(project(":feature:lmu-windows-readout-vehicle-damage-detail"))
     kover(project(":feature:gt7-ps5-readout-my-bestlap-detail"))
+    kover(project(":feature:gt7-ps5-narrator"))
     kover(project(":app:androidApp"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))
