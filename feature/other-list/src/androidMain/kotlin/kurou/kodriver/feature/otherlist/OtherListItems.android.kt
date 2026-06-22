@@ -1,3 +1,4 @@
 package kurou.kodriver.feature.otherlist
 
-actual fun buildOtherListItems(): List<OtherListItemType> = OtherListItemType.entries
+actual fun buildOtherListItems(): List<OtherListItemType> =
+    OtherListItemType.entries.filter { it != OtherListItemType.Ps5Ip }
