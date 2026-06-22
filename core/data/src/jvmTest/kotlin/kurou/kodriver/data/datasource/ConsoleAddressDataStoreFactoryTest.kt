@@ -31,7 +31,7 @@ class ConsoleAddressDataStoreFactoryTest {
     fun `ファイルパスはdirectory配下のconsole_address_pbである`() = runTest {
         val dataStore = createConsoleAddressDataStore(tempDir.absolutePath)
 
-        dataStore.updateData { it }
+        dataStore.updateData { ConsoleAddressPreferences(address = "192.168.1.1") }
 
         val file = tempDir.resolve("console_address.pb")
         assert(file.exists()) { "console_address.pb が作成されていない" }
