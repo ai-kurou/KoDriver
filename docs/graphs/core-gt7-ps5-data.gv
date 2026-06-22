@@ -1,4 +1,5 @@
 digraph G {
   rankdir=TB
+  ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":core:gt7-ps5-data" -> ":core:domain"
 }
