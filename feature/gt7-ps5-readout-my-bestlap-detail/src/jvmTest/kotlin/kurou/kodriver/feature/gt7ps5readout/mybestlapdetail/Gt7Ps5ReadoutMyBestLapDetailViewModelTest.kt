@@ -9,9 +9,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
+import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.SaveMyBestLapVoiceTypeUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -21,16 +21,16 @@ import kotlin.test.assertEquals
 class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeReadoutPreferencesRepository
+    private lateinit var repository: FakeMyBestLapPreferencesRepository
     private lateinit var viewModel: Gt7Ps5ReadoutMyBestLapDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeReadoutPreferencesRepository()
+        repository = FakeMyBestLapPreferencesRepository()
         viewModel = Gt7Ps5ReadoutMyBestLapDetailViewModel(
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(repository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(repository),
+            observeMyBestLapVoiceType = ObserveMyBestLapVoiceTypeUseCase(repository),
+            saveMyBestLapVoiceType = SaveMyBestLapVoiceTypeUseCase(repository),
         )
     }
 
@@ -40,23 +40,21 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
     }
 
     @Test
-    fun `初期状態は enabled=true の UiState を返す`() = runTest {
+    fun `初期状態は voiceType=FORMAL の UiState を返す`() = runTest {
         val state = viewModel.uiState.first()
-        assertEquals(true, state.enabled)
+        assertEquals(MyBestLapVoiceType.FORMAL, state.voiceType)
     }
 
     @Test
-    fun `onEnabledChanged false を渡すと enabled=false になる`() = runTest {
-        viewModel.onEnabledChanged(false)
-        val state = viewModel.uiState.first()
-        assertEquals(false, state.enabled)
+    fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() = runTest {
+        viewModel.onVoiceTypeChanged(MyBestLapVoiceType.CASUAL)
+        assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
     }
 
     @Test
-    fun `onEnabledChanged true を渡すと enabled=true になる`() = runTest {
-        repository.saveReadoutEnabledState("gt7_ps5", ReadoutItemKey.MY_BEST_LAP, false)
-        viewModel.onEnabledChanged(true)
-        val state = viewModel.uiState.first()
-        assertEquals(true, state.enabled)
+    fun `onVoiceTypeChanged に FORMAL を渡すと voiceType=FORMAL になる`() = runTest {
+        repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
+        viewModel.onVoiceTypeChanged(MyBestLapVoiceType.FORMAL)
+        assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
     }
 }
