@@ -13,7 +13,7 @@ digraph G {
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:main" -> ":core:domain"
-  ":feature:other-gt7-ps5-ip-detail" -> ":core:domain"
+  ":feature:other-console-ip-detail" -> ":core:domain"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-readout-start-sound-detail" -> ":core:domain"
   ":feature:other-server-ip-detail" -> ":core:domain"
