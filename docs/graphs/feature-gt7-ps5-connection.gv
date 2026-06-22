@@ -1,0 +1,4 @@
+digraph G {
+  rankdir=TB
+  ":feature:gt7-ps5-connection" -> ":core:domain"
+}
