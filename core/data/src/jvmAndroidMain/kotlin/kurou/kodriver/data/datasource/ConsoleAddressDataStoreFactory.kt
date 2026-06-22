@@ -1,7 +1,8 @@
-package kurou.kodriver.core.gt7ps5data.datasource
+package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import kurou.kodriver.data.model.ConsoleAddressPreferences
 import java.io.File
 
 internal fun createConsoleAddressDataStore(directory: String): DataStore<ConsoleAddressPreferences> =

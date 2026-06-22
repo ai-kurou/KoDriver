@@ -1,9 +1,10 @@
-package kurou.kodriver.core.gt7ps5data.datasource
+package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
+import kurou.kodriver.data.model.ConsoleAddressPreferences
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test

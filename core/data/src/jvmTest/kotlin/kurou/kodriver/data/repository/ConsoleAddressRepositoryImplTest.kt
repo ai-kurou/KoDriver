@@ -1,11 +1,11 @@
-package kurou.kodriver.core.gt7ps5data.repository
+package kurou.kodriver.data.repository
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.core.gt7ps5data.datasource.createConsoleAddressDataStore
+import kurou.kodriver.data.datasource.createConsoleAddressDataStore
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

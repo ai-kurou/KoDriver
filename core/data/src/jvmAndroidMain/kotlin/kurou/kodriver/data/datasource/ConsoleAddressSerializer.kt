@@ -1,10 +1,12 @@
-package kurou.kodriver.core.gt7ps5data.datasource
+package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
+import io.sentry.Sentry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.protobuf.ProtoBuf
+import kurou.kodriver.data.model.ConsoleAddressPreferences
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -16,6 +18,7 @@ internal object ConsoleAddressSerializer : Serializer<ConsoleAddressPreferences>
         try {
             ProtoBuf.decodeFromByteArray(ConsoleAddressPreferences.serializer(), input.readBytes())
         } catch (e: SerializationException) {
+            Sentry.captureException(e)
             throw CorruptionException("Cannot read ConsoleAddressPreferences.", e)
         }
 

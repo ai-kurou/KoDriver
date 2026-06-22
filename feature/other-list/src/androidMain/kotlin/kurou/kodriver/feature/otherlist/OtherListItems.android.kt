@@ -1,4 +1,3 @@
 package kurou.kodriver.feature.otherlist
 
-actual fun buildOtherListItems(): List<OtherListItemType> =
-    OtherListItemType.entries.filter { it != OtherListItemType.ConsoleIp }
+actual fun buildOtherListItems(): List<OtherListItemType> = OtherListItemType.entries
