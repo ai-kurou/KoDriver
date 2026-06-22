@@ -12,6 +12,7 @@ data class ConnectionBannerUiState(
     val iconType: ConnectionBannerIconType = ConnectionBannerIconType.SIMULATOR,
     val snackbarConnectedMessage: String = "",
     val snackbarDisconnectedMessage: String = "",
+    val isVisible: Boolean = true,
 ) {
     val isConnected: Boolean get() = status == ConnectionBannerStatus.CONNECTED
     val isConnectionChecked: Boolean get() = status != ConnectionBannerStatus.UNCHECKED
