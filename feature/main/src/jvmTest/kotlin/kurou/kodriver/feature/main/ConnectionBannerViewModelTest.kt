@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -228,8 +229,8 @@ private class FakeLmuBannerConnectionChecker(
 private class FakeConsoleAddressRepository(initial: String?) : ConsoleAddressRepository {
     private val flow = MutableStateFlow(initial)
     override fun consoleAddress(): Flow<String?> = flow
-    override suspend fun saveConsoleAddress(address: String) { flow.value = address }
-    fun save(address: String?) { flow.value = address }
+    override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
+    fun save(address: String?) { flow.update { address } }
 }
 
 private class FakeGt7Ps5Repository(
@@ -253,5 +254,5 @@ private class FakeSimulatorPreferencesRepository(
     private val flow = MutableStateFlow(initial)
 
     override fun selectedSimulator(): Flow<String?> = flow
-    override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
+    override suspend fun saveSelectedSimulator(simulator: String) { flow.update { simulator } }
 }

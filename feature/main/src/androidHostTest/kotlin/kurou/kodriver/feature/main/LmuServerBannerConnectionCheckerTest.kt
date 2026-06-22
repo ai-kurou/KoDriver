@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -80,8 +81,8 @@ class LmuServerBannerConnectionCheckerTest {
 private class FakeServerIpRepository(initial: String?) : ServerIpRepository {
     private val flow = MutableStateFlow(initial)
     override fun serverIp(): Flow<String?> = flow
-    override suspend fun saveServerIp(ip: String) { flow.value = ip }
-    fun save(ip: String?) { flow.value = ip }
+    override suspend fun saveServerIp(ip: String) { flow.update { ip } }
+    fun save(ip: String?) { flow.update { ip } }
 }
 
 private class FakeServerVersionRepository(
