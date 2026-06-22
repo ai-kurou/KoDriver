@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
@@ -27,4 +28,5 @@ val appModules: List<Module> = listOf(
     lmuReadoutVehicleApproachDetailModule,
     lmuWindowsReadoutFlagDetailModule,
     lmuWindowsReadoutVehicleDamageDetailModule,
+    gt7Ps5ReadoutMyBestLapDetailModule,
 )
