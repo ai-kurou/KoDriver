@@ -4,6 +4,7 @@ digraph G {
   ":core:data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
+  ":feature:gt7-ps5-narrator" -> ":core:domain"
   ":feature:gt7-ps5-readout-my-bestlap-detail" -> ":core:domain"
   ":feature:lmu-windows-connection" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:domain"
