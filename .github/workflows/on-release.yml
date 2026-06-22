@@ -101,14 +101,22 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/androidApp/kodriver.jks
+
       - name: Build APK
+        env:
+          STORE_FILE: app/androidApp/kodriver.jks
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew :app:androidApp:assembleRelease
 
       - name: Rename APK
         env:
           VERSION_NAME: ${{ needs.version-bump.outputs.version }}
         run: |
-          mv app/androidApp/build/outputs/apk/release/androidApp-release.apk \
+          mv app/androidApp/build/outputs/apk/release/KoDriver-android-${VERSION_NAME}-release.apk \
              app/androidApp/build/outputs/apk/release/KoDriver-android-${VERSION_NAME}.apk
 
       - name: Upload APK artifact
