@@ -53,6 +53,7 @@ import kodriver.app.shared.generated.resources.lmu_connected
 import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
@@ -104,7 +105,7 @@ fun AppScreen(
                     ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
                     ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
                     ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
-                    ReadoutListItemType.Gt7Ps5.MyBestLap -> Unit
+                    ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
                 }
             },
         )
