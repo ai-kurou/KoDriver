@@ -35,13 +35,70 @@ fun DetailPaneCard(
     selectedChipLabels: Set<String> = emptySet(),
     onChipClick: (String) -> Unit = {},
 ) {
+    DetailPaneCardLayout(
+        title = title,
+        chipLabels = chipLabels,
+        selectedChipLabels = selectedChipLabels,
+        chipEnabled = checked,
+        onChipClick = onChipClick,
+        modifier = modifier,
+        titleAlpha = if (checked) 1f else DisabledContentAlpha,
+        dividerAlpha = if (checked) 1f else DisabledContentAlpha,
+        chipRowAlpha = if (checked) 1f else DisabledContentAlpha,
+        headerContent = {
+            Switch(
+                checked = checked,
+                onCheckedChange = null,
+            )
+        },
+        onHeaderClick = { onCheckedChange(!checked) },
+    )
+}
+
+@Composable
+fun DetailPaneCard(
+    title: String,
+    chipLabels: List<String>,
+    modifier: Modifier = Modifier,
+    selectedChipLabels: Set<String> = emptySet(),
+    onChipClick: (String) -> Unit = {},
+) {
+    DetailPaneCardLayout(
+        title = title,
+        chipLabels = chipLabels,
+        selectedChipLabels = selectedChipLabels,
+        chipEnabled = true,
+        onChipClick = onChipClick,
+        modifier = modifier,
+        titleAlpha = 1f,
+        dividerAlpha = 1f,
+        chipRowAlpha = 1f,
+        headerContent = {},
+        onHeaderClick = null,
+    )
+}
+
+@Composable
+private fun DetailPaneCardLayout(
+    title: String,
+    chipLabels: List<String>,
+    selectedChipLabels: Set<String>,
+    chipEnabled: Boolean,
+    onChipClick: (String) -> Unit,
+    titleAlpha: Float,
+    dividerAlpha: Float,
+    chipRowAlpha: Float,
+    headerContent: @Composable () -> Unit,
+    onHeaderClick: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onCheckedChange(!checked) }
+                    .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 Text(
@@ -49,29 +106,26 @@ fun DetailPaneCard(
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .weight(1f)
-                        .alpha(if (checked) 1f else DisabledContentAlpha),
+                        .alpha(titleAlpha),
                 )
-                Switch(
-                    checked = checked,
-                    onCheckedChange = null,
-                )
+                headerContent()
             }
             HorizontalDivider(
-                modifier = Modifier.alpha(if (checked) 1f else DisabledContentAlpha),
+                modifier = Modifier.alpha(dividerAlpha),
             )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .alpha(if (checked) 1f else DisabledContentAlpha)
+                    .alpha(chipRowAlpha)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 chipLabels.forEach { label ->
                     val selected = label in selectedChipLabels
                     FilterChip(
                         selected = selected,
-                        enabled = checked,
+                        enabled = chipEnabled,
                         onClick = { onChipClick(label) },
                         label = { Text(text = label) },
                         leadingIcon = if (selected) {
@@ -110,6 +164,11 @@ private fun DetailPaneCardPreview() {
                 chipLabels = listOf("カーレフト", "カーライト"),
                 selectedChipLabels = setOf("カーレフト"),
                 onCheckedChange = {},
+                modifier = Modifier.padding(16.dp),
+            )
+            DetailPaneCard(
+                title = "自己ベストラップ更新",
+                chipLabels = emptyList(),
                 modifier = Modifier.padding(16.dp),
             )
         }

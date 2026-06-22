@@ -19,23 +19,15 @@ class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
 
     @Test
     fun `デフォルト`() {
-        capturePane(enabled = true)
+        capturePane()
     }
 
-    @Test
-    fun `無効`() {
-        capturePane(enabled = false)
-    }
-
-    private fun capturePane(enabled: Boolean) {
+    private fun capturePane() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                        Gt7Ps5ReadoutMyBestLapDetailPaneContent(
-                            uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(enabled = enabled),
-                            onEnabledChanged = {},
-                        )
+                        Gt7Ps5ReadoutMyBestLapDetailPaneContent()
                     }
                 }
             }
