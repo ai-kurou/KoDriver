@@ -1,4 +1,5 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":feature:gt7-ps5-connection"
   ":feature:gt7-ps5-connection" -> ":core:domain"
 }

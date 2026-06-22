@@ -5,6 +5,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
@@ -28,6 +29,7 @@ class AppTest {
                     listOf(
                         desktopDataModule,
                         lmuWindowsDataModule,
+                        gt7Ps5DataModule,
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
                     ) + appModules,

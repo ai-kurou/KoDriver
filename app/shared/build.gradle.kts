@@ -52,6 +52,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.main)
             implementation(projects.feature.lmuWindowsConnection)
+            implementation(projects.feature.gt7Ps5Connection)
             implementation(projects.feature.serverConnection)
             implementation(projects.feature.lmuWindowsNarrator)
             implementation(projects.feature.otherLicenseDetail)
