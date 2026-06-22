@@ -4,6 +4,7 @@ digraph G {
   ":app:desktopApp" -> ":app:shared"
   ":app:shared" -> ":feature:main"
   ":app:shared" -> ":feature:lmu-windows-connection"
+  ":app:shared" -> ":feature:gt7-ps5-connection"
   ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-windows-narrator"
   ":app:shared" -> ":feature:other-license-detail"
