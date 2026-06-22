@@ -78,7 +78,7 @@ class AppTest {
         rule.onNodeWithTag("nav_more").performClick()
         rule.waitForIdle()
 
-        // 音量をタップ（Desktop では ServerIp が除外され、Ps5Ip が含まれるため other_item_1）
+        // 音量をタップ（Desktop では ServerIp が除外され、ConsoleIp が含まれるため other_item_1）
         rule.onNodeWithTag("other_item_1").performClick()
         rule.waitForIdle()
 
@@ -90,7 +90,7 @@ class AppTest {
         rule.onNodeWithText("キャンセル").performClick()
         rule.waitForIdle()
 
-        // ライセンスをタップ（Desktop では Ps5Ip が含まれるため other_item_5）
+        // ライセンスをタップ（Desktop では ConsoleIp が含まれるため other_item_5）
         rule.onNodeWithTag("other_item_5").performClick()
         rule.waitForIdle()
     }

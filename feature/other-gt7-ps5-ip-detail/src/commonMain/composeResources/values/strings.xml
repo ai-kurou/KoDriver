@@ -1,9 +1,0 @@
-<resources>
-    <string name="ps5_ip_title">PS5のIPアドレス</string>
-    <string name="ps5_ip_label">IPアドレス</string>
-    <string name="ps5_ip_placeholder">例: 192.168.1.100</string>
-    <string name="ps5_ip_save">保存</string>
-    <string name="ps5_ip_cancel">キャンセル</string>
-    <string name="ps5_ip_invalid">無効なIPアドレスです</string>
-    <string name="ps5_ip_description">GT7が動作しているPS5のIPアドレスを入力してください。</string>
-</resources>

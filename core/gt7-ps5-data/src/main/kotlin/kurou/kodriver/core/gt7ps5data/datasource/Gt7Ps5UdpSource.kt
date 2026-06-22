@@ -31,7 +31,7 @@ private fun ByteArray.writeIntLE(offset: Int, value: Int) {
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class Gt7Ps5UdpSource(
-    private val ps5AddressFlow: Flow<String?>,
+    private val consoleAddressFlow: Flow<String?>,
     private val sendPort: Int = SEND_PORT,
     private val socketFactory: () -> UdpSocket = {
         RealUdpSocket(listenPort = LISTEN_PORT, timeoutMs = SOCKET_TIMEOUT_MS)
@@ -44,7 +44,7 @@ internal class Gt7Ps5UdpSource(
 
     override fun lastPacketReceivedAt(): Long = _lastPacketReceivedAt.get()
 
-    override val packetFlow: Flow<ByteBuffer> = ps5AddressFlow
+    override val packetFlow: Flow<ByteBuffer> = consoleAddressFlow
         .flatMapLatest { address ->
             if (address.isNullOrBlank()) {
                 emptyFlow()
