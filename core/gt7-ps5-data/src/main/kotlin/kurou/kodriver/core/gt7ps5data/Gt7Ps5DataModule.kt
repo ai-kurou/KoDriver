@@ -35,4 +35,5 @@ val gt7Ps5DataModule = module {
 
 private class NoOpGt7Ps5Repository : Gt7Ps5Repository {
     override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = emptyFlow()
+    override suspend fun isConnected(): Boolean = false
 }
