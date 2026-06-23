@@ -33,6 +33,7 @@ fun Gt7Ps5ReadoutMyBestLapDetailPane(
     Gt7Ps5ReadoutMyBestLapDetailPaneContent(
         uiState = uiState,
         onVoiceTypeChanged = viewModel::onVoiceTypeChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -41,6 +42,7 @@ fun Gt7Ps5ReadoutMyBestLapDetailPane(
 internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
     uiState: Gt7Ps5ReadoutMyBestLapDetailUiState = Gt7Ps5ReadoutMyBestLapDetailUiState(),
     onVoiceTypeChanged: (MyBestLapVoiceType) -> Unit = {},
+    onPreviewClicked: (MyBestLapVoiceType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val formalLabel = stringResource(Res.string.my_best_lap_voice_type_formal)
@@ -67,6 +69,7 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
                     else -> MyBestLapVoiceType.FORMAL
                 }
                 onVoiceTypeChanged(type)
+                onPreviewClicked(type)
             },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )

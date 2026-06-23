@@ -4,5 +4,5 @@
     <string name="my_best_lap_subtitle">設定</string>
     <string name="my_best_lap_enabled">自己ベストラップ更新</string>
     <string name="my_best_lap_voice_type_formal">自己ベストラップ更新</string>
-    <string name="my_best_lap_voice_type_casual">ベストラップを更新したぞ</string>
+    <string name="my_best_lap_voice_type_casual">自己ベストラップを更新したぞ</string>
 </resources>

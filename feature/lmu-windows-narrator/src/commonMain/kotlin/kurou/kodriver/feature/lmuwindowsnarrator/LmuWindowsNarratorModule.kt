@@ -19,10 +19,11 @@ import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val lmuNarratorModule: Module = module {
-    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get()) }
+    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(named("lmu_windows"))) }
     factory { ObserveFlagEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
@@ -41,10 +42,10 @@ val lmuNarratorModule: Module = module {
     factory { ReadoutListUseCases(get(), get(), get()) }
     factory { ObserveReadoutStartSoundTypeUseCase(get()) }
     factory { ObserveSoundVolumeUseCase(get()) }
-    factory { PlaySpeechEventUseCase(get()) }
-    factory { PreviewStartSoundUseCase(get()) }
+    factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
+    factory(named("lmu_windows")) { PreviewStartSoundUseCase(get(named("lmu_windows"))) }
     includes(platformSoundModule)
-    single<TextToSpeechEngine> {
+    single<TextToSpeechEngine>(named("lmu_windows")) {
         LmuWindowsWavNarratorEngine(
             soundPlayer = get(),
             volumeFlow = get<ObserveSoundVolumeUseCase>()(),

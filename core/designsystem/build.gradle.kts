@@ -26,6 +26,10 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
+        androidResources {
+            enable = true
+        }
+
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
         }
@@ -55,11 +59,17 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.material.icons.extended)
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.components.resources)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.core.designsystem.generated.resources"
+    publicResClass = true
 }
 
 dependencies {

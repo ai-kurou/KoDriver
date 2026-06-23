@@ -9,19 +9,34 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveMyBestLapVoiceTypeUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private class FakeTextToSpeechEngine(
+    private val onSpeak: (SpeechEvent) -> Unit,
+) : TextToSpeechEngine {
+    override val currentReadoutItemKey: ReadoutItemKey? = null
+    override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
+    override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakeMyBestLapPreferencesRepository
+    private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: Gt7Ps5ReadoutMyBestLapDetailViewModel
 
     @Before
@@ -31,6 +46,7 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         viewModel = Gt7Ps5ReadoutMyBestLapDetailViewModel(
             observeMyBestLapVoiceType = ObserveMyBestLapVoiceTypeUseCase(repository),
             saveMyBestLapVoiceType = SaveMyBestLapVoiceTypeUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
 
@@ -56,5 +72,17 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
         viewModel.onVoiceTypeChanged(MyBestLapVoiceType.FORMAL)
         assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
+    }
+
+    @Test
+    fun `onPreviewClicked に FORMAL を渡すと MyBestLapFormal イベントが再生される`() {
+        viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), playedEvents)
+    }
+
+    @Test
+    fun `onPreviewClicked に CASUAL を渡すと MyBestLapCasual イベントが再生される`() {
+        viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), playedEvents)
     }
 }
