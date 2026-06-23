@@ -7,6 +7,7 @@ digraph G {
   ":app:shared" -> ":feature:gt7-ps5-connection"
   ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-windows-narrator"
+  ":app:shared" -> ":feature:gt7-ps5-narrator"
   ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
   ":app:shared" -> ":feature:other-server-ip-detail"
