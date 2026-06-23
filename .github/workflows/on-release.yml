@@ -34,6 +34,12 @@ jobs:
       - name: Update appVersion in gradle.properties
         run: sed -i "s/^appVersion=.*/appVersion=$VERSION_NAME/" gradle.properties
 
+      - name: Increment androidVersionCode in gradle.properties
+        run: |
+          CURRENT=$(grep "^androidVersionCode=" gradle.properties | cut -d= -f2)
+          NEW_CODE=$((CURRENT + 1))
+          sed -i "s/^androidVersionCode=.*/androidVersionCode=$NEW_CODE/" gradle.properties
+
       - name: Commit version bump
         run: |
           git config user.name "github-actions[bot]"
