@@ -8,13 +8,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.readStartSoundBytes
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 @OptIn(ExperimentalResourceApi::class)
 internal class LmuWindowsWavNarratorEngine(
@@ -22,7 +22,7 @@ internal class LmuWindowsWavNarratorEngine(
     volumeFlow: Flow<Int> = flowOf(100),
     startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
-    private val startSoundResourceLoader: suspend (String) -> ByteArray = DesignSystemRes::readBytes,
+    private val startSoundResourceLoader: suspend (String) -> ByteArray = ::readStartSoundBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
 
