@@ -10,6 +10,7 @@ import javax.sound.sampled.FloatControl
 import javax.sound.sampled.SourceDataLine
 
 class JvmSoundPlayer : SoundPlayer {
+    @Volatile
     private var currentLine: SourceDataLine? = null
 
     override val isPlaying: Boolean
