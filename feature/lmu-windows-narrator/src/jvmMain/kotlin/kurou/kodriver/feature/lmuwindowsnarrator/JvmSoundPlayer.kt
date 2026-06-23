@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 import javax.sound.sampled.AudioSystem
@@ -30,6 +31,7 @@ class JvmSoundPlayer : SoundPlayer {
                         val buf = ByteArray(8192)
                         var n: Int
                         while (stream.read(buf).also { n = it } != -1) {
+                            ensureActive()
                             line.write(buf, 0, n)
                         }
                         // Bluetooth A2DP の伝送バッファを押し流すために無音を末尾に追記する。
