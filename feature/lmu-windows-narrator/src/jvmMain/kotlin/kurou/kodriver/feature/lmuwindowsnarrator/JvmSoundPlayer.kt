@@ -18,32 +18,33 @@ class JvmSoundPlayer : SoundPlayer {
 
     override suspend fun play(bytes: ByteArray, volume: Int) {
         try {
-            val stream = AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes))
-            val format = stream.format
-            val line = AudioSystem.getSourceDataLine(format)
-            line.open(format)
-            applyVolume(line, volume)
-            line.start()
-            currentLine = line
-            try {
-                withContext(Dispatchers.IO) {
-                    val buf = ByteArray(8192)
-                    var n: Int
-                    while (stream.read(buf).also { n = it } != -1) {
-                        line.write(buf, 0, n)
+            AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes)).use { stream ->
+                val format = stream.format
+                val line = AudioSystem.getSourceDataLine(format)
+                line.open(format)
+                applyVolume(line, volume)
+                line.start()
+                currentLine = line
+                try {
+                    withContext(Dispatchers.IO) {
+                        val buf = ByteArray(8192)
+                        var n: Int
+                        while (stream.read(buf).also { n = it } != -1) {
+                            line.write(buf, 0, n)
+                        }
+                        // Bluetooth A2DP の伝送バッファを押し流すために無音を末尾に追記する。
+                        // drain() は Java Sound バッファの終端しか検知できず、A2DP スタックの
+                        // 伝送バッファ分（最大 ~200ms）は検知できないため、その分の無音を書く。
+                        val silenceFrames = (format.frameRate * BLUETOOTH_TAIL_SILENCE_SEC).toInt()
+                        val silence = ByteArray(silenceFrames * format.frameSize)
+                        line.write(silence, 0, silence.size)
+                        line.drain()
                     }
-                    // Bluetooth A2DP の伝送バッファを押し流すために無音を末尾に追記する。
-                    // drain() は Java Sound バッファの終端しか検知できず、A2DP スタックの
-                    // 伝送バッファ分（最大 ~200ms）は検知できないため、その分の無音を書く。
-                    val silenceFrames = (format.frameRate * BLUETOOTH_TAIL_SILENCE_SEC).toInt()
-                    val silence = ByteArray(silenceFrames * format.frameSize)
-                    line.write(silence, 0, silence.size)
-                    line.drain()
+                } finally {
+                    line.stop()
+                    line.close()
+                    currentLine = null
                 }
-            } finally {
-                line.stop()
-                line.close()
-                currentLine = null
             }
         } catch (e: CancellationException) {
             throw e
