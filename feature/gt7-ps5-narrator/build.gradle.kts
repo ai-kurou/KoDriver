@@ -20,6 +20,7 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(libs.compose.components.resources)
             implementation(libs.kotlinx.coroutinesCore)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
