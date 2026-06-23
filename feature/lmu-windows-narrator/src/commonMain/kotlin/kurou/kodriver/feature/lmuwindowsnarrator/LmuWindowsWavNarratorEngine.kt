@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 @OptIn(ExperimentalResourceApi::class)
 internal class LmuWindowsWavNarratorEngine(
@@ -21,6 +22,7 @@ internal class LmuWindowsWavNarratorEngine(
     volumeFlow: Flow<Int> = flowOf(100),
     startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
+    private val startSoundResourceLoader: suspend (String) -> ByteArray = DesignSystemRes::readBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
 
@@ -80,7 +82,7 @@ internal class LmuWindowsWavNarratorEngine(
             val loadedStartSounds = mutableMapOf<ReadoutStartSoundType, ByteArray>()
             startSoundTypeToFile.forEach { (type, path) ->
                 try {
-                    loadedStartSounds[type] = resourceLoader(path)
+                    loadedStartSounds[type] = startSoundResourceLoader(path)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {

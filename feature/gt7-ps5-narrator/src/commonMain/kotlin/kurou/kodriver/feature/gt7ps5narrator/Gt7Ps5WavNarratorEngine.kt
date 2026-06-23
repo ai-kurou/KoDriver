@@ -5,6 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
@@ -12,15 +14,22 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.gt7ps5narrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 @OptIn(ExperimentalResourceApi::class)
 internal class Gt7Ps5WavNarratorEngine(
     private val soundPlayer: SoundPlayer,
+    startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
+    private val startSoundResourceLoader: suspend (String) -> ByteArray = DesignSystemRes::readBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
 
+    @Volatile
+    private var currentStartSoundType: ReadoutStartSoundType = ReadoutStartSoundType.FORMULA_RADIO
+
     private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
+    private var startSounds: Map<ReadoutStartSoundType, ByteArray> = emptyMap()
     private var playJob: Job? = null
 
     @Volatile
@@ -34,7 +43,13 @@ internal class Gt7Ps5WavNarratorEngine(
         SpeechEvent.MyBestLapCasual to "files/my_best_lap_casual.wav",
     )
 
+    private val startSoundTypeToFile = mapOf(
+        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+    )
+
     init {
+        scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
         scope.launch {
             val loaded = mutableMapOf<SpeechEvent, ByteArray>()
             eventToFile.forEach { (event, path) ->
@@ -47,16 +62,28 @@ internal class Gt7Ps5WavNarratorEngine(
                 }
             }
             sounds = loaded
+            val loadedStartSounds = mutableMapOf<ReadoutStartSoundType, ByteArray>()
+            startSoundTypeToFile.forEach { (type, path) ->
+                try {
+                    loadedStartSounds[type] = startSoundResourceLoader(path)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    captureNarratorError(e)
+                }
+            }
+            startSounds = loadedStartSounds
         }
     }
 
     override fun speak(event: SpeechEvent, queue: Boolean) {
-        val sound = sounds[event] ?: return
+        val mainSound = sounds[event] ?: return
         if (soundPlayer.isPlaying) return
         playJob?.cancel()
         playJob = scope.launch {
             _currentReadoutItemKey = event.readoutItemKey
-            soundPlayer.play(sound)
+            startSounds[currentStartSoundType]?.let { soundPlayer.play(it) }
+            soundPlayer.play(mainSound)
             _currentReadoutItemKey = null
         }
     }
@@ -66,5 +93,10 @@ internal class Gt7Ps5WavNarratorEngine(
         playJob = null
     }
 
-    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) {
+        val sound = startSounds[type] ?: return
+        if (soundPlayer.isPlaying) return
+        playJob?.cancel()
+        playJob = scope.launch { soundPlayer.play(sound) }
+    }
 }

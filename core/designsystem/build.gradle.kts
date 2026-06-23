@@ -55,11 +55,17 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.material.icons.extended)
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.components.resources)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "kurou.kodriver.core.designsystem.generated.resources"
+    publicResClass = true
 }
 
 dependencies {

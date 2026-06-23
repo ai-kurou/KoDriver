@@ -37,9 +37,7 @@ class LmuWindowsWavNarratorEngineTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
-            resourceLoader = { path ->
-                if (path == FORMULA_RADIO_PATH) FORMULA_RADIO_SOUND else error("load failed")
-            },
+            resourceLoader = { error("load failed") },
         )
         runCurrent()
 
@@ -69,13 +67,6 @@ class LmuWindowsWavNarratorEngineTest {
         val engine = createEngine(
             player = player,
             startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE),
-            resourceLoader = { path ->
-                when (path) {
-                    CAR_LEFT_PATH -> CAR_LEFT_SOUND
-                    ELECTRONIC_NOISE_PATH -> ELECTRONIC_NOISE_SOUND
-                    else -> EVENT_SOUND
-                }
-            },
         )
         runCurrent()
 
@@ -93,11 +84,7 @@ class LmuWindowsWavNarratorEngineTest {
         val engine = createEngine(
             player = player,
             resourceLoader = { path ->
-                when (path) {
-                    LEFT_APPROACH_PATH -> LEFT_APPROACH_SOUND
-                    FORMULA_RADIO_PATH -> FORMULA_RADIO_SOUND
-                    else -> EVENT_SOUND
-                }
+                if (path == LEFT_APPROACH_PATH) LEFT_APPROACH_SOUND else EVENT_SOUND
             },
         )
         runCurrent()
@@ -132,13 +119,7 @@ class LmuWindowsWavNarratorEngineTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
-            resourceLoader = { path ->
-                when (path) {
-                    CAR_LEFT_PATH -> CAR_LEFT_SOUND
-                    FORMULA_RADIO_PATH -> error("load failed")
-                    else -> EVENT_SOUND
-                }
-            },
+            startSoundResourceLoader = { error("load failed") },
         )
         runCurrent()
 
@@ -249,13 +230,7 @@ class LmuWindowsWavNarratorEngineTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
-            resourceLoader = { path ->
-                when (path) {
-                    CAR_LEFT_PATH -> CAR_LEFT_SOUND
-                    FORMULA_RADIO_PATH -> error("load failed")
-                    else -> EVENT_SOUND
-                }
-            },
+            startSoundResourceLoader = { error("load failed") },
         )
         runCurrent()
 
@@ -284,9 +259,14 @@ class LmuWindowsWavNarratorEngineTest {
         resourceLoader: suspend (String) -> ByteArray = { path ->
             when (path) {
                 CAR_LEFT_PATH -> CAR_LEFT_SOUND
+                else -> EVENT_SOUND
+            }
+        },
+        startSoundResourceLoader: suspend (String) -> ByteArray = { path ->
+            when (path) {
                 FORMULA_RADIO_PATH -> FORMULA_RADIO_SOUND
                 ELECTRONIC_NOISE_PATH -> ELECTRONIC_NOISE_SOUND
-                else -> EVENT_SOUND
+                else -> FORMULA_RADIO_SOUND
             }
         },
     ): LmuWindowsWavNarratorEngine = LmuWindowsWavNarratorEngine(
@@ -294,6 +274,7 @@ class LmuWindowsWavNarratorEngineTest {
         volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,
         resourceLoader = resourceLoader,
+        startSoundResourceLoader = startSoundResourceLoader,
         scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
     )
 
