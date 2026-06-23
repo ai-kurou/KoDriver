@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
+import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuNarratorModule
@@ -25,6 +26,7 @@ val appModules: List<Module> = listOf(
     gt7Ps5ConnectionModule,
     serverConnectionModule,
     lmuNarratorModule,
+    gt7Ps5NarratorModule,
     otherListModule,
     otherReadoutStartSoundDetailModule,
     otherServerIpDetailModule,
