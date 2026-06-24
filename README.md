@@ -34,7 +34,8 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 **Android アプリ**
 
 - Android 9.0 以降
-- デスクトップアプリと同一 LAN への接続
+- LMU 情報を受信する場合: デスクトップアプリと同一 LAN への接続
+- GT7 PS5 テレメトリを受信する場合: PS5 と同一 LAN への接続
 
 ## インストール
 

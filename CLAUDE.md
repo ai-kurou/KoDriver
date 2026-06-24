@@ -25,6 +25,7 @@ KoDriver/
 │   ├── other-list/               その他画面の一覧表示・選択状態管理
 │   ├── other-readout-start-sound-detail/ その他画面の読み上げ開始音設定詳細
 │   ├── other-server-ip-detail/   その他画面の接続先サーバーIP設定ダイアログ
+│   ├── other-console-ip-detail/  その他画面のゲーム機 IP 設定ダイアログ
 │   ├── other-volume-detail/      その他画面の音量設定詳細
 │   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
 │   ├── lmu-windows-readout-flag-detail/          フラグアナウンスの詳細設定
