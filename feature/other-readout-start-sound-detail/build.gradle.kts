@@ -5,6 +5,9 @@ plugins {
 kotlin {
     android {
         namespace = "kurou.kodriver.feature.otherreadoutstartsounddetail"
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
 
     sourceSets {
@@ -23,6 +26,15 @@ kotlin {
         }
         jvmTest.dependencies {
             implementation(libs.kotlinx.coroutinesTest)
+        }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.roborazzi.compose)
+                implementation(libs.robolectric)
+                implementation(libs.roborazzi.core)
+            }
         }
     }
 }

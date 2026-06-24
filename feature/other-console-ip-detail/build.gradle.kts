@@ -5,7 +5,9 @@ plugins {
 kotlin {
     android {
         namespace = "kurou.kodriver.feature.otherconsoleipdetail"
-        withHostTest {}
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
 
     sourceSets {
@@ -27,6 +29,9 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.testJunit)
                 implementation(libs.junit)
+                implementation(libs.roborazzi.compose)
+                implementation(libs.robolectric)
+                implementation(libs.roborazzi.core)
             }
         }
     }
