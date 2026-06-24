@@ -2,6 +2,7 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket
+import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.SocketException
 import java.net.SocketTimeoutException
