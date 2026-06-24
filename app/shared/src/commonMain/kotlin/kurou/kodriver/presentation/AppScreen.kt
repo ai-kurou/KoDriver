@@ -52,6 +52,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
@@ -162,6 +163,7 @@ fun AppScreen(
     )
 
     LmuWindowsNarratorEffect()
+    Gt7Ps5NarratorEffect()
     VersionMismatchBottomSheetEffect()
     AppScreenContent(
         bannerUiState = bannerUiState,

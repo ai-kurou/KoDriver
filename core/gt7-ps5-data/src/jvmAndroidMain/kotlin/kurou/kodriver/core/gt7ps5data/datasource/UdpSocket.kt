@@ -10,7 +10,11 @@ internal interface UdpSocket : AutoCloseable {
 }
 
 internal class RealUdpSocket(listenPort: Int, timeoutMs: Int) : UdpSocket {
-    private val socket = DatagramSocket(listenPort).apply { soTimeout = timeoutMs }
+    private val socket = DatagramSocket(null).apply {
+        reuseAddress = true
+        bind(java.net.InetSocketAddress(listenPort))
+        soTimeout = timeoutMs
+    }
 
     override fun receive(packet: DatagramPacket) = socket.receive(packet)
 

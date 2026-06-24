@@ -2,6 +2,7 @@ package kurou.kodriver
 
 import android.app.Application
 import io.sentry.android.core.SentryAndroid
+import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.data.androidDataModule
 import kurou.kodriver.presentation.appModules
 import org.koin.core.context.startKoin
@@ -20,7 +21,7 @@ class KoDriverApplication : Application() {
         }
         startKoin {
             modules(
-                listOf(androidDataModule(this@KoDriverApplication)) +
+                listOf(androidDataModule(this@KoDriverApplication), gt7Ps5DataModule) +
                     appModules +
                     listOf(module { single(named("appVersion")) { BuildConfig.VERSION_NAME } }),
             )
