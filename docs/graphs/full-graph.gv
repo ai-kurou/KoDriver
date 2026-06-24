@@ -3,6 +3,7 @@ digraph G {
   ":server" -> ":core:domain"
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
+  ":app:androidApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":app:shared"
   ":app:desktopApp" -> ":core:data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
