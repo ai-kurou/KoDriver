@@ -39,7 +39,6 @@ class OtherContentTest {
     @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
-        var consoleIpDialogOpened = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
         var capturedOnBack: (() -> Unit)? = null
@@ -51,26 +50,28 @@ class OtherContentTest {
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
-                onOpenConsoleIpDialog = { consoleIpDialogOpened = true },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
-                backHandler = { enabled, onBack ->
+                backHandler = { enabled: Boolean, onBack: () -> Unit ->
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
-                detailContent = { item, _, _ -> Text("Detail: ${item.id}") },
+                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit -> Text("Detail: ${item.id}") },
             )
         }
 
         assertFalse(backEnabled)
 
-        // item_0: ConsoleIp (ダイアログを開く、Desktop では ServerIp が含まれないためインデックス 0)
+        // item_0: ConsoleIp (詳細ペインに遷移、Desktop では ServerIp が含まれないためインデックス 0)
         rule.onNodeWithTag("other_item_0").performClick()
         rule.waitForIdle()
 
-        assertTrue(consoleIpDialogOpened)
-        assertFalse(backEnabled)
+        rule.onNodeWithText("Detail: console_ip").assertExists()
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitUntil { !backEnabled }
 
         // item_1: Volume (詳細あり)
         rule.onNodeWithTag("other_item_1").performClick()
