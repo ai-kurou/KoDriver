@@ -1,6 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -49,15 +50,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.lmu_connected
-import kodriver.app.shared.generated.resources.lmu_disconnected
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
+import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
@@ -93,6 +95,37 @@ private fun AppNavIcon(
 }
 
 @Composable
+private fun DefaultOtherContent(
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit,
+) {
+    var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
+    var showConsoleIpDialog by rememberSaveable { mutableStateOf(false) }
+    var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
+    if (showServerIpDialog) {
+        OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
+    }
+    if (showConsoleIpDialog) {
+        OtherConsoleIpDetailDialog(onDismiss = { showConsoleIpDialog = false })
+    }
+    if (showReadoutStartSoundDialog) {
+        OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
+    }
+    OtherContent(
+        backHandler = backHandler,
+        onOpenServerIpDialog = { showServerIpDialog = true },
+        onOpenConsoleIpDialog = { showConsoleIpDialog = true },
+        onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
+        detailContent = { itemType, canNavigateBack, onBack ->
+            when (itemType) {
+                OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
+                OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
+                else -> {}
+            }
+        },
+    )
+}
+
+@Composable
 fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
@@ -101,43 +134,20 @@ fun AppScreen(
             backHandler = backHandler,
             detailContent = { itemType ->
                 when (itemType) {
-                    ReadoutListItemType.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
-                    ReadoutListItemType.Flag -> LmuWindowsReadoutFlagDetailPane()
-                    ReadoutListItemType.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
+                    ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
+                    ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+                    ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
                 }
             },
         )
     },
     otherContent: @Composable () -> Unit = {
-        var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
-        var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
-        if (showServerIpDialog) {
-            OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
-        }
-        if (showReadoutStartSoundDialog) {
-            OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
-        }
-        OtherContent(
-            backHandler = backHandler,
-            onOpenServerIpDialog = { showServerIpDialog = true },
-            onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
-            detailContent = { itemType, canNavigateBack, onBack ->
-                when (itemType) {
-                    OtherListItemType.ServerIp -> {}
-                    OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
-                    OtherListItemType.ReadoutStartSound -> {}
-                    OtherListItemType.GitHubRepository -> {}
-                    OtherListItemType.ReleasePage -> {}
-                    OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
-                }
-            },
-        )
+        DefaultOtherContent(backHandler = backHandler)
     },
 ) {
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val connectedMessage = stringResource(Res.string.lmu_connected)
-    val disconnectedMessage = stringResource(Res.string.lmu_disconnected)
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -148,11 +158,12 @@ fun AppScreen(
         isConnectionChecked = bannerUiState.isConnectionChecked,
         isConnected = bannerUiState.isConnected,
         snackbarHostState = snackbarHostState,
-        connectedMessage = connectedMessage,
-        disconnectedMessage = disconnectedMessage,
+        connectedMessage = bannerUiState.snackbarConnectedMessage,
+        disconnectedMessage = bannerUiState.snackbarDisconnectedMessage,
     )
 
     LmuWindowsNarratorEffect()
+    Gt7Ps5NarratorEffect()
     VersionMismatchBottomSheetEffect()
     AppScreenContent(
         bannerUiState = bannerUiState,
@@ -277,7 +288,9 @@ internal fun AppScreenContent(
                         },
                     )
                 Column(modifier = contentModifier) {
-                    ConnectionBannerContent(uiState = bannerUiState)
+                    AnimatedVisibility(visible = bannerUiState.isVisible) {
+                        ConnectionBannerContent(uiState = bannerUiState)
+                    }
                     AnimatedContent(
                         targetState = currentDestination,
                         transitionSpec = { fadeIn() togetherWith fadeOut() },

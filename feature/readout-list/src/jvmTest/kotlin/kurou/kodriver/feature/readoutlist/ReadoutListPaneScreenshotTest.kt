@@ -26,7 +26,7 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu_windows"),
+                                simulators = listOf("lmu_windows", "gt7_ps5"),
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
@@ -41,14 +41,14 @@ class ReadoutListPaneScreenshotTest {
     }
 
     @Test
-    fun `シミュレータ選択済みでアイテム表示`() {
+    fun `lmu_windows選択`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu_windows"),
+                                simulators = listOf("lmu_windows", "gt7_ps5"),
                                 selectedSimulator = "lmu_windows",
                                 items = listOf(
                                     ReadoutItemKey.VEHICLE_APPROACH,
@@ -57,7 +57,7 @@ class ReadoutListPaneScreenshotTest {
                                 ),
                                 readoutEnabledStates = mapOf(
                                     ReadoutItemKey.VEHICLE_APPROACH to true,
-                                    ReadoutItemKey.FLAG to false,
+                                    ReadoutItemKey.FLAG to true,
                                     ReadoutItemKey.VEHICLE_DAMAGE to true,
                                 ),
                             ),
@@ -74,26 +74,19 @@ class ReadoutListPaneScreenshotTest {
     }
 
     @Test
-    fun `アイテム選択済みでハイライト表示`() {
+    fun `gt7_ps5選択`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu_windows"),
-                                selectedSimulator = "lmu_windows",
-                                items = listOf(
-                                    ReadoutItemKey.VEHICLE_APPROACH,
-                                    ReadoutItemKey.FLAG,
-                                    ReadoutItemKey.VEHICLE_DAMAGE,
-                                ),
+                                simulators = listOf("lmu_windows", "gt7_ps5"),
+                                selectedSimulator = "gt7_ps5",
+                                items = listOf(ReadoutItemKey.MY_BEST_LAP),
                                 readoutEnabledStates = mapOf(
-                                    ReadoutItemKey.VEHICLE_APPROACH to true,
-                                    ReadoutItemKey.FLAG to false,
-                                    ReadoutItemKey.VEHICLE_DAMAGE to true,
+                                    ReadoutItemKey.MY_BEST_LAP to true,
                                 ),
-                                selectedItem = ReadoutListItemType.VehicleApproach,
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },

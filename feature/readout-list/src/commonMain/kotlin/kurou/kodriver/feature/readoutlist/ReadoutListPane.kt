@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -57,7 +58,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
+import kodriver.feature.readoutlist.generated.resources.gt7
 import kodriver.feature.readoutlist.generated.resources.item_flag
+import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.lmu
@@ -65,6 +68,7 @@ import kodriver.feature.readoutlist.generated.resources.priority_hint_descriptio
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
+import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.painterResource
@@ -75,7 +79,14 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 private fun simulatorDisplayName(simulatorId: String): String = when (simulatorId) {
     "lmu_windows" -> stringResource(Res.string.simulator_name_lmu)
+    "gt7_ps5" -> stringResource(Res.string.simulator_name_gt7_ps5)
     else -> simulatorId
+}
+
+@Composable
+private fun simulatorIcon(simulatorId: String) = when (simulatorId) {
+    "gt7_ps5" -> painterResource(Res.drawable.gt7)
+    else -> painterResource(Res.drawable.lmu)
 }
 
 @Composable
@@ -83,6 +94,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     ReadoutItemKey.VEHICLE_APPROACH -> stringResource(Res.string.item_vehicle_approach)
     ReadoutItemKey.FLAG -> stringResource(Res.string.item_flag)
     ReadoutItemKey.VEHICLE_DAMAGE -> stringResource(Res.string.item_vehicle_damage)
+    ReadoutItemKey.MY_BEST_LAP -> stringResource(Res.string.item_my_best_lap)
     else -> itemId.value
 }
 
@@ -90,6 +102,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     ReadoutItemKey.VEHICLE_APPROACH -> Icons.Filled.DirectionsCar
     ReadoutItemKey.FLAG -> Icons.Filled.Flag
     ReadoutItemKey.VEHICLE_DAMAGE -> Icons.Filled.Build
+    ReadoutItemKey.MY_BEST_LAP -> Icons.Filled.Timer
     else -> Icons.Filled.DirectionsCar
 }
 
@@ -171,7 +184,7 @@ internal fun ReadoutListPane(
                 leadingIcon = if (uiState.selectedSimulator != null) {
                     {
                         Image(
-                            painter = painterResource(Res.drawable.lmu),
+                            painter = simulatorIcon(uiState.selectedSimulator),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp),
                         )
@@ -196,7 +209,7 @@ internal fun ReadoutListPane(
                         },
                         leadingIcon = {
                             Image(
-                                painter = painterResource(Res.drawable.lmu),
+                                painter = simulatorIcon(simulator),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
                             )
@@ -223,7 +236,9 @@ internal fun ReadoutListPane(
                 ) {
                     itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                         ReorderableItem(reorderableState, key = item.value) {
-                            val isSelected = ReadoutListItemType.fromId(item) == uiState.selectedItem
+                            val isSelected = uiState.selectedSimulator?.let {
+                                ReadoutListItemType.fromId(it, item)
+                            } == uiState.selectedItem
                             val cardContainerColor by animateColorAsState(
                                 targetValue = if (isSelected) {
                                     MaterialTheme.colorScheme.secondaryContainer

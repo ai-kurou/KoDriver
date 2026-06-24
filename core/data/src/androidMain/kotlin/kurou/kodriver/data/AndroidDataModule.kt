@@ -3,9 +3,11 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -53,8 +55,14 @@ fun androidDataModule(context: Context) = module {
     single<ReadoutStartSoundPreferencesRepository> {
         createReadoutStartSoundPreferencesRepository(context.filesDir.absolutePath)
     }
+    single<MyBestLapPreferencesRepository> {
+        createMyBestLapPreferencesRepository(context.filesDir.absolutePath)
+    }
     single<ServerIpRepository> {
         AndroidServerIpRepository(context.serverIpDataStore)
+    }
+    single<ConsoleAddressRepository> {
+        createConsoleAddressRepository(context.filesDir.absolutePath)
     }
     single<ServerVersionRepository> { HttpServerVersionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }

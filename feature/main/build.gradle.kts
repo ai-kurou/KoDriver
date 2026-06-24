@@ -22,5 +22,12 @@ kotlin {
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutinesTest)
         }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.kotlinx.coroutinesTest)
+            }
+        }
     }
 }

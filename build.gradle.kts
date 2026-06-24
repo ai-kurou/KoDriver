@@ -111,6 +111,7 @@ moduleGraphAssert {
         ":app:webApp -> :app:shared",
         // app エントリーポイント → core:data（composition root で DI バインドするための参照）
         ":app:androidApp -> :core:data",
+        ":app:androidApp -> :core:gt7-ps5-data",
         ":app:desktopApp -> :core:data",
         ":app:desktopApp -> :core:lmu-windows-data",
         ":app:desktopApp -> :core:gt7-ps5-data",
@@ -303,12 +304,16 @@ dependencies {
     kover(project(":feature:other-license-detail"))
     kover(project(":feature:other-list"))
     kover(project(":feature:other-server-ip-detail"))
+    kover(project(":feature:other-console-ip-detail"))
     kover(project(":feature:other-readout-start-sound-detail"))
     kover(project(":feature:other-volume-detail"))
     kover(project(":feature:readout-list"))
     kover(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
     kover(project(":feature:lmu-windows-readout-flag-detail"))
     kover(project(":feature:lmu-windows-readout-vehicle-damage-detail"))
+    kover(project(":feature:gt7-ps5-connection"))
+    kover(project(":feature:gt7-ps5-readout-my-bestlap-detail"))
+    kover(project(":feature:gt7-ps5-narrator"))
     kover(project(":app:androidApp"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))

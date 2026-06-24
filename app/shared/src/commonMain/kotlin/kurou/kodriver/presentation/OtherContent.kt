@@ -38,6 +38,7 @@ fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     onOpenServerIpDialog: () -> Unit = {},
+    onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
@@ -55,6 +56,7 @@ fun OtherContent(
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenServerIpDialog = onOpenServerIpDialog,
+        onOpenConsoleIpDialog = onOpenConsoleIpDialog,
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -62,6 +64,25 @@ fun OtherContent(
         backHandler = backHandler,
         detailContent = detailContent,
     )
+}
+
+private fun handleOtherItemClick(
+    itemType: OtherListItemType,
+    onItemSelected: (OtherListItemType) -> Unit,
+    onOpenGitHubRepository: () -> Unit,
+    onOpenReleasePage: () -> Unit,
+    onOpenServerIpDialog: () -> Unit,
+    onOpenConsoleIpDialog: () -> Unit,
+    onOpenReadoutStartSoundDialog: () -> Unit,
+) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> onOpenServerIpDialog()
+        OtherListItemType.ConsoleIp -> onOpenConsoleIpDialog()
+        OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
+        OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
+        OtherListItemType.ReleasePage -> onOpenReleasePage()
+        else -> onItemSelected(itemType)
+    }
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -72,6 +93,7 @@ internal fun OtherContent(
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenServerIpDialog: () -> Unit = {},
+    onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -130,13 +152,15 @@ internal fun OtherContent(
             OtherListPane(
                 uiState = uiState,
                 onItemClick = { itemType ->
-                    when (itemType) {
-                        OtherListItemType.ServerIp -> onOpenServerIpDialog()
-                        OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
-                        OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
-                        OtherListItemType.ReleasePage -> onOpenReleasePage()
-                        else -> onItemSelected(itemType)
-                    }
+                    handleOtherItemClick(
+                        itemType = itemType,
+                        onItemSelected = onItemSelected,
+                        onOpenGitHubRepository = onOpenGitHubRepository,
+                        onOpenReleasePage = onOpenReleasePage,
+                        onOpenServerIpDialog = onOpenServerIpDialog,
+                        onOpenConsoleIpDialog = onOpenConsoleIpDialog,
+                        onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
+                    )
                 },
             )
         },

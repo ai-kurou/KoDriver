@@ -61,7 +61,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("nav_more").performClick()
         composeTestRule.waitForIdle()
 
-        // 接続先サーバーをタップ（AndroidではServerIpが含まれるためother_item_0）
+        // 接続先PCをタップ（other_item_0 = ServerIp）
         composeTestRule.onNodeWithTag("other_item_0").performClick()
         composeTestRule.waitForIdle()
 
@@ -69,24 +69,32 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("キャンセル").performClick()
         composeTestRule.waitForIdle()
 
-        // 音量をタップ（AndroidではServerIpが含まれるためother_item_1）
+        // コンソールIPをタップ（other_item_1 = ConsoleIp）
         composeTestRule.onNodeWithTag("other_item_1").performClick()
-        composeTestRule.waitForIdle()
-
-        // 音量詳細から戻る（Androidではシングルペインのためリスト非表示になる）
-        composeTestRule.onNodeWithTag("other_detail_back").performClick()
-        composeTestRule.waitForIdle()
-
-        // 読み上げ開始音をタップ（AndroidではServerIpが含まれるためother_item_2）
-        composeTestRule.onNodeWithTag("other_item_2").performClick()
         composeTestRule.waitForIdle()
 
         // ダイアログをキャンセル
         composeTestRule.onNodeWithText("キャンセル").performClick()
         composeTestRule.waitForIdle()
 
-        // ライセンスをタップ（AndroidではServerIpが含まれるためother_item_5）
-        composeTestRule.onNodeWithTag("other_item_5").performClick()
+        // 音量をタップ（other_item_2 = Volume）
+        composeTestRule.onNodeWithTag("other_item_2").performClick()
+        composeTestRule.waitForIdle()
+
+        // 音量詳細から戻る（Androidではシングルペインのためリスト非表示になる）
+        composeTestRule.onNodeWithTag("other_detail_back").performClick()
+        composeTestRule.waitForIdle()
+
+        // 読み上げ開始音をタップ（other_item_3 = ReadoutStartSound）
+        composeTestRule.onNodeWithTag("other_item_3").performClick()
+        composeTestRule.waitForIdle()
+
+        // ダイアログをキャンセル
+        composeTestRule.onNodeWithText("キャンセル").performClick()
+        composeTestRule.waitForIdle()
+
+        // ライセンスをタップ（other_item_6 = License）
+        composeTestRule.onNodeWithTag("other_item_6").performClick()
         composeTestRule.waitForIdle()
     }
 }
