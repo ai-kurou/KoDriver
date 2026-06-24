@@ -59,7 +59,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlag
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
-import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailDialog
+import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
@@ -98,21 +98,17 @@ private fun AppNavIcon(
 private fun DefaultOtherContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
 ) {
-    var showConsoleIpDialog by rememberSaveable { mutableStateOf(false) }
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
-    if (showConsoleIpDialog) {
-        OtherConsoleIpDetailDialog(onDismiss = { showConsoleIpDialog = false })
-    }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
     }
     OtherContent(
         backHandler = backHandler,
-        onOpenConsoleIpDialog = { showConsoleIpDialog = true },
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {
                 OtherListItemType.ServerIp -> OtherServerIpDetailPane(canNavigateBack, onBack)
+                OtherListItemType.ConsoleIp -> OtherConsoleIpDetailPane(canNavigateBack, onBack)
                 OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                 OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
                 else -> {}

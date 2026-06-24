@@ -37,7 +37,6 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
@@ -54,7 +53,6 @@ fun OtherContent(
         onItemSelected = viewModel::onItemSelected,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
-        onOpenConsoleIpDialog = onOpenConsoleIpDialog,
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -69,11 +67,9 @@ private fun handleOtherItemClick(
     onItemSelected: (OtherListItemType) -> Unit,
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
-    onOpenConsoleIpDialog: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
 ) {
     when (itemType) {
-        OtherListItemType.ConsoleIp -> onOpenConsoleIpDialog()
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
         OtherListItemType.ReleasePage -> onOpenReleasePage()
@@ -88,7 +84,6 @@ internal fun OtherContent(
     onItemSelected: (OtherListItemType) -> Unit,
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
-    onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -152,7 +147,6 @@ internal fun OtherContent(
                         onItemSelected = onItemSelected,
                         onOpenGitHubRepository = onOpenGitHubRepository,
                         onOpenReleasePage = onOpenReleasePage,
-                        onOpenConsoleIpDialog = onOpenConsoleIpDialog,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                     )
                 },
