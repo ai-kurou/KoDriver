@@ -3,10 +3,9 @@
     <string name="server_ip_label">IPアドレス</string>
     <string name="server_ip_placeholder">例: 192.168.1.100</string>
     <string name="server_ip_save">保存</string>
-    <string name="server_ip_cancel">キャンセル</string>
     <string name="server_ip_invalid">無効なIPアドレスです</string>
     <string name="server_ip_description">Windows版KoDriverが動作しているPCのIPアドレスを入力してください。</string>
     <string name="server_ip_connectivity_warning">サーバーに接続できませんでした。IPアドレスとファイアウォールの設定を確認してください。</string>
     <string name="server_ip_save_anyway">このまま保存</string>
-    <string name="server_ip_checking">接続を確認中…</string>
+    <string name="navigate_back">戻る</string>
 </resources>

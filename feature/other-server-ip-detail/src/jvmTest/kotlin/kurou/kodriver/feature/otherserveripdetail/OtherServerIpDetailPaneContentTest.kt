@@ -9,7 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class OtherServerIpDetailDialogContentTest {
+class OtherServerIpDetailPaneContentTest {
 
     @get:Rule
     val rule = createComposeRule()
@@ -18,15 +18,15 @@ class OtherServerIpDetailDialogContentTest {
         uiState: OtherServerIpDetailUiState = OtherServerIpDetailUiState(inputIp = "192.168.1.1", isInputValid = true),
         onSave: () -> Unit = {},
         onSaveAnyway: () -> Unit = {},
-        onDismiss: () -> Unit = {},
+        onBack: () -> Unit = {},
         onSaved: () -> Unit = {},
     ) {
         rule.setContent {
-            OtherServerIpDetailDialogContent(
+            OtherServerIpDetailPaneContent(
                 uiState = uiState,
                 onSave = onSave,
                 onSaveAnyway = onSaveAnyway,
-                onDismiss = onDismiss,
+                onBack = onBack,
                 onSaved = onSaved,
             )
         }
@@ -40,16 +40,6 @@ class OtherServerIpDetailDialogContentTest {
         rule.onNodeWithText("保存").performClick()
 
         assertEquals(1, saveCount)
-    }
-
-    @Test
-    fun `キャンセルボタンをクリックするとonDismissが呼ばれる`() {
-        var dismissCount = 0
-        setContent(onDismiss = { dismissCount++ })
-
-        rule.onNodeWithText("キャンセル").performClick()
-
-        assertEquals(1, dismissCount)
     }
 
     @Test
