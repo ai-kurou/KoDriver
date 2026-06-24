@@ -2,8 +2,6 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket
-import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import kotlin.test.Test
@@ -33,9 +31,7 @@ class RealUdpSocketTest {
 
     @Test
     fun `sendで指定アドレスとポートへデータを送信できる`() {
-        val receiver = DatagramSocket(null).apply {
-            reuseAddress = true
-            bind(InetSocketAddress(InetAddress.getLoopbackAddress(), 0))
+        val receiver = DatagramSocket(0).apply {
             soTimeout = 1_000
         }
         val receiverPort = receiver.localPort
