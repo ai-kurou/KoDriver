@@ -2,7 +2,6 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket
-import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.SocketException
 import java.net.SocketTimeoutException
@@ -42,7 +41,7 @@ class RealUdpSocketTest {
 
         val socket = RealUdpSocket(listenPort = 0, timeoutMs = 1_000)
         val payload = byteArrayOf(10, 20, 30)
-        socket.send(payload, InetAddress.getLoopbackAddress().hostAddress, receiverPort)
+        socket.send(payload, "127.0.0.1", receiverPort)
 
         val buf = ByteArray(64)
         val packet = DatagramPacket(buf, buf.size)
