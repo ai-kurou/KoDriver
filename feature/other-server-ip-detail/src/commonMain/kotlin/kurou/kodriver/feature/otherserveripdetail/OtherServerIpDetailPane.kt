@@ -49,15 +49,9 @@ fun OtherServerIpDetailPane(
         onIpChanged = viewModel::onIpChanged,
         onSave = viewModel::onSave,
         onSaveAnyway = viewModel::onSaveAnyway,
+        onDismiss = viewModel::onDismiss,
         canNavigateBack = canNavigateBack,
-        onBack = {
-            viewModel.onDismiss()
-            onBack()
-        },
-        onSaved = {
-            viewModel.onDismiss()
-            onBack()
-        },
+        onBack = onBack,
         modifier = modifier,
     )
 }
@@ -68,19 +62,25 @@ internal fun OtherServerIpDetailPaneContent(
     onIpChanged: (String) -> Unit = {},
     onSave: () -> Unit = {},
     onSaveAnyway: () -> Unit = {},
+    onDismiss: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
-    onSaved: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(uiState.isSaved) {
-        if (uiState.isSaved) onSaved()
+        if (uiState.isSaved) {
+            onDismiss()
+            onBack()
+        }
     }
     DetailPaneScaffold(
         title = stringResource(Res.string.server_ip_title),
         canNavigateBack = canNavigateBack,
         navigateBackContentDescription = stringResource(Res.string.navigate_back),
-        onBack = onBack,
+        onBack = {
+            onDismiss()
+            onBack()
+        },
         modifier = modifier,
         navigationIconModifier = Modifier.testTag("other_detail_back"),
     ) {

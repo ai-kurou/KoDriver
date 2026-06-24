@@ -3,6 +3,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
@@ -18,16 +19,16 @@ class OtherServerIpDetailPaneContentTest {
         uiState: OtherServerIpDetailUiState = OtherServerIpDetailUiState(inputIp = "192.168.1.1", isInputValid = true),
         onSave: () -> Unit = {},
         onSaveAnyway: () -> Unit = {},
+        onDismiss: () -> Unit = {},
         onBack: () -> Unit = {},
-        onSaved: () -> Unit = {},
     ) {
         rule.setContent {
             OtherServerIpDetailPaneContent(
                 uiState = uiState,
                 onSave = onSave,
                 onSaveAnyway = onSaveAnyway,
+                onDismiss = onDismiss,
                 onBack = onBack,
-                onSaved = onSaved,
             )
         }
     }
@@ -60,15 +61,33 @@ class OtherServerIpDetailPaneContentTest {
     }
 
     @Test
-    fun `isSavedがtrueになるとonSavedが呼ばれる`() {
-        var savedCount = 0
+    fun `isSavedがtrueになるとonDismissとonBackが呼ばれる`() {
+        var dismissCount = 0
+        var backCount = 0
         setContent(
             uiState = OtherServerIpDetailUiState(isSaved = true),
-            onSaved = { savedCount++ },
+            onDismiss = { dismissCount++ },
+            onBack = { backCount++ },
         )
 
         rule.waitForIdle()
 
-        assertEquals(1, savedCount)
+        assertEquals(1, dismissCount)
+        assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `戻るボタンをクリックするとonDismissとonBackが呼ばれる`() {
+        var dismissCount = 0
+        var backCount = 0
+        setContent(
+            onDismiss = { dismissCount++ },
+            onBack = { backCount++ },
+        )
+
+        rule.onNodeWithTag("other_detail_back").performClick()
+
+        assertEquals(1, dismissCount)
+        assertEquals(1, backCount)
     }
 }
