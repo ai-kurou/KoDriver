@@ -3,12 +3,14 @@ package kurou.kodriver.core.gt7ps5data.datasource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.yield
 import java.net.DatagramPacket
@@ -82,6 +84,13 @@ internal class Gt7Ps5UdpSource(
                 }
             }
         }
+    }.retryWhen { cause, attempt ->
+        if (cause is java.net.BindException) {
+            delay(BIND_RETRY_DELAY_MS * (attempt + 1))
+            true
+        } else {
+            false
+        }
     }.flowOn(Dispatchers.IO)
 
     private fun decrypt(data: ByteArray): ByteArray? {
@@ -103,6 +112,7 @@ internal class Gt7Ps5UdpSource(
         const val IV_OFFSET = 0x40
         const val HEARTBEAT_INTERVAL_PACKETS = 100
         const val SOCKET_TIMEOUT_MS = 3_000
+        const val BIND_RETRY_DELAY_MS = 1_000L
 
         val GT7_KEY = "Simulator Interface Packet GT7 ver 0.0".toByteArray().copyOf(32)
         val HEARTBEAT_PAYLOAD = "C".toByteArray(Charsets.UTF_8)
