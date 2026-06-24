@@ -35,7 +35,7 @@ class RealUdpSocketTest {
     fun `sendで指定アドレスとポートへデータを送信できる`() {
         val receiver = DatagramSocket(null).apply {
             reuseAddress = true
-            bind(InetSocketAddress(0))
+            bind(InetSocketAddress(InetAddress.getLoopbackAddress(), 0))
             soTimeout = 1_000
         }
         val receiverPort = receiver.localPort
