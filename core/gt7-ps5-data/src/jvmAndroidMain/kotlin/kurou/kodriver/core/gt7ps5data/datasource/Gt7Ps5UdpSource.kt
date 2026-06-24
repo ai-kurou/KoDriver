@@ -104,7 +104,7 @@ internal class Gt7Ps5UdpSource(
     }
 
     companion object {
-        const val LISTEN_PORT = 33740
+        const val LISTEN_PORT = 33741
         const val SEND_PORT = 33739
         const val PACKET_MIN_SIZE = 0x170 // 368 bytes
         const val MAGIC_OFFSET = 0
