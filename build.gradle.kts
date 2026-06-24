@@ -111,6 +111,7 @@ moduleGraphAssert {
         ":app:webApp -> :app:shared",
         // app エントリーポイント → core:data（composition root で DI バインドするための参照）
         ":app:androidApp -> :core:data",
+        ":app:androidApp -> :core:gt7-ps5-data",
         ":app:desktopApp -> :core:data",
         ":app:desktopApp -> :core:lmu-windows-data",
         ":app:desktopApp -> :core:gt7-ps5-data",
