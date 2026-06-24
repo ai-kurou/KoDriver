@@ -1,6 +1,6 @@
 # gt7-ps5-data
 
-グランツーリスモ7（PS5）の UDP テレメトリを受信し、ドメイン層のRepositoryを実装するJVM専用モジュールです。
+グランツーリスモ7（PS5）の UDP テレメトリを受信し、ドメイン層のRepositoryを実装するJVM / Androidマルチプラットフォームモジュールです。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
