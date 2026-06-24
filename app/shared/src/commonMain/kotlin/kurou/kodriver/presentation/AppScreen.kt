@@ -63,7 +63,7 @@ import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
-import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailDialog
+import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
@@ -98,12 +98,8 @@ private fun AppNavIcon(
 private fun DefaultOtherContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
 ) {
-    var showServerIpDialog by rememberSaveable { mutableStateOf(false) }
     var showConsoleIpDialog by rememberSaveable { mutableStateOf(false) }
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
-    if (showServerIpDialog) {
-        OtherServerIpDetailDialog(onDismiss = { showServerIpDialog = false })
-    }
     if (showConsoleIpDialog) {
         OtherConsoleIpDetailDialog(onDismiss = { showConsoleIpDialog = false })
     }
@@ -112,11 +108,11 @@ private fun DefaultOtherContent(
     }
     OtherContent(
         backHandler = backHandler,
-        onOpenServerIpDialog = { showServerIpDialog = true },
         onOpenConsoleIpDialog = { showConsoleIpDialog = true },
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {
+                OtherListItemType.ServerIp -> OtherServerIpDetailPane(canNavigateBack, onBack)
                 OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                 OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
                 else -> {}

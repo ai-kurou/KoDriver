@@ -3,13 +3,14 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class OtherServerIpDetailDialogContentTest {
+class OtherServerIpDetailPaneContentTest {
 
     @get:Rule
     val rule = createComposeRule()
@@ -19,15 +20,15 @@ class OtherServerIpDetailDialogContentTest {
         onSave: () -> Unit = {},
         onSaveAnyway: () -> Unit = {},
         onDismiss: () -> Unit = {},
-        onSaved: () -> Unit = {},
+        onBack: () -> Unit = {},
     ) {
         rule.setContent {
-            OtherServerIpDetailDialogContent(
+            OtherServerIpDetailPaneContent(
                 uiState = uiState,
                 onSave = onSave,
                 onSaveAnyway = onSaveAnyway,
                 onDismiss = onDismiss,
-                onSaved = onSaved,
+                onBack = onBack,
             )
         }
     }
@@ -40,16 +41,6 @@ class OtherServerIpDetailDialogContentTest {
         rule.onNodeWithText("保存").performClick()
 
         assertEquals(1, saveCount)
-    }
-
-    @Test
-    fun `キャンセルボタンをクリックするとonDismissが呼ばれる`() {
-        var dismissCount = 0
-        setContent(onDismiss = { dismissCount++ })
-
-        rule.onNodeWithText("キャンセル").performClick()
-
-        assertEquals(1, dismissCount)
     }
 
     @Test
@@ -70,15 +61,33 @@ class OtherServerIpDetailDialogContentTest {
     }
 
     @Test
-    fun `isSavedがtrueになるとonSavedが呼ばれる`() {
-        var savedCount = 0
+    fun `isSavedがtrueになるとonDismissとonBackが呼ばれる`() {
+        var dismissCount = 0
+        var backCount = 0
         setContent(
             uiState = OtherServerIpDetailUiState(isSaved = true),
-            onSaved = { savedCount++ },
+            onDismiss = { dismissCount++ },
+            onBack = { backCount++ },
         )
 
         rule.waitForIdle()
 
-        assertEquals(1, savedCount)
+        assertEquals(1, dismissCount)
+        assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `戻るボタンをクリックするとonDismissとonBackが呼ばれる`() {
+        var dismissCount = 0
+        var backCount = 0
+        setContent(
+            onDismiss = { dismissCount++ },
+            onBack = { backCount++ },
+        )
+
+        rule.onNodeWithTag("other_detail_back").performClick()
+
+        assertEquals(1, dismissCount)
+        assertEquals(1, backCount)
     }
 }

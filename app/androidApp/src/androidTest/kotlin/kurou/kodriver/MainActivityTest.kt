@@ -65,8 +65,8 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("other_item_0").performClick()
         composeTestRule.waitForIdle()
 
-        // ダイアログをキャンセル
-        composeTestRule.onNodeWithText("キャンセル").performClick()
+        // 詳細ペインから戻る
+        composeTestRule.onNodeWithTag("other_detail_back").performClick()
         composeTestRule.waitForIdle()
 
         // コンソールIPをタップ（other_item_1 = ConsoleIp）

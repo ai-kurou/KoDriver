@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 
-class OtherServerIpDetailDialogScreenshotTest {
+class OtherServerIpDetailPaneScreenshotTest {
 
     @get:Rule
     val rule = createComposeRule()
@@ -23,14 +23,14 @@ class OtherServerIpDetailDialogScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        OtherServerIpDetailDialogContent(
+                        OtherServerIpDetailPaneContent(
                             uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
                         )
                     }
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
 
     @Test
@@ -39,14 +39,14 @@ class OtherServerIpDetailDialogScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        OtherServerIpDetailDialogContent(
+                        OtherServerIpDetailPaneContent(
                             uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
                         )
                     }
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
 
     @Test
@@ -55,14 +55,14 @@ class OtherServerIpDetailDialogScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        OtherServerIpDetailDialogContent(
+                        OtherServerIpDetailPaneContent(
                             uiState = OtherServerIpDetailUiState(inputIp = ""),
                         )
                     }
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
 
     @Test
@@ -71,7 +71,7 @@ class OtherServerIpDetailDialogScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        OtherServerIpDetailDialogContent(
+                        OtherServerIpDetailPaneContent(
                             uiState = OtherServerIpDetailUiState(
                                 inputIp = "192.168.1.100",
                                 isCheckingConnectivity = true,
@@ -81,7 +81,7 @@ class OtherServerIpDetailDialogScreenshotTest {
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
 
     @Test
@@ -90,7 +90,7 @@ class OtherServerIpDetailDialogScreenshotTest {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        OtherServerIpDetailDialogContent(
+                        OtherServerIpDetailPaneContent(
                             uiState = OtherServerIpDetailUiState(
                                 inputIp = "192.168.1.100",
                                 connectivityWarning = true,
@@ -100,6 +100,6 @@ class OtherServerIpDetailDialogScreenshotTest {
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
 }

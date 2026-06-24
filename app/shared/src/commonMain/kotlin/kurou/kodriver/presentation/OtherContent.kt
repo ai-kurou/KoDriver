@@ -37,7 +37,6 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
-    onOpenServerIpDialog: () -> Unit = {},
     onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
@@ -55,7 +54,6 @@ fun OtherContent(
         onItemSelected = viewModel::onItemSelected,
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
-        onOpenServerIpDialog = onOpenServerIpDialog,
         onOpenConsoleIpDialog = onOpenConsoleIpDialog,
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onClearSelectedItem = viewModel::clearSelectedItem,
@@ -71,12 +69,10 @@ private fun handleOtherItemClick(
     onItemSelected: (OtherListItemType) -> Unit,
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
-    onOpenServerIpDialog: () -> Unit,
     onOpenConsoleIpDialog: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
 ) {
     when (itemType) {
-        OtherListItemType.ServerIp -> onOpenServerIpDialog()
         OtherListItemType.ConsoleIp -> onOpenConsoleIpDialog()
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
@@ -92,7 +88,6 @@ internal fun OtherContent(
     onItemSelected: (OtherListItemType) -> Unit,
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
-    onOpenServerIpDialog: () -> Unit = {},
     onOpenConsoleIpDialog: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
@@ -157,7 +152,6 @@ internal fun OtherContent(
                         onItemSelected = onItemSelected,
                         onOpenGitHubRepository = onOpenGitHubRepository,
                         onOpenReleasePage = onOpenReleasePage,
-                        onOpenServerIpDialog = onOpenServerIpDialog,
                         onOpenConsoleIpDialog = onOpenConsoleIpDialog,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
                     )
