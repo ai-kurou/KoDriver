@@ -1,6 +1,7 @@
 package kurou.kodriver
 
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -41,6 +42,7 @@ fun main() {
                 onCloseRequest = ::exitApplication,
                 title = "KoDriver",
                 state = windowState,
+                icon = painterResource("launcher.png"),
             ) {
                 SideEffect { window.minimumSize = Dimension(600, 500) }
                 AppScreen()
