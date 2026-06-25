@@ -109,6 +109,26 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     @Test
+    fun `onResetLongitudinalThreshold を呼ぶと longitudinalThresholdMeters がデフォルト値に戻る`() = runTest {
+        viewModel.onLongitudinalThresholdChanged(3.0)
+        viewModel.onResetLongitudinalThreshold()
+        assertEquals(
+            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+            viewModel.uiState.first().longitudinalThresholdMeters,
+        )
+    }
+
+    @Test
+    fun `onResetLateralThreshold を呼ぶと lateralThresholdMeters がデフォルト値に戻る`() = runTest {
+        viewModel.onLateralThresholdChanged(3.0)
+        viewModel.onResetLateralThreshold()
+        assertEquals(
+            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS,
+            viewModel.uiState.first().lateralThresholdMeters,
+        )
+    }
+
+    @Test
     fun `onStartReadoutPreviewClicked を呼ぶと CarLeft の後に CarRight がキュー再生される`() {
         viewModel.onStartReadoutPreviewClicked()
 

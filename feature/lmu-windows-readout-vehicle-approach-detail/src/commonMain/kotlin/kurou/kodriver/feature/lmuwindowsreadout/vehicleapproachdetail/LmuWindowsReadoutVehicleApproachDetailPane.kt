@@ -65,6 +65,8 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(
         uiState = uiState,
         onLongitudinalThresholdChanged = viewModel::onLongitudinalThresholdChanged,
         onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
+        onResetLongitudinalThreshold = viewModel::onResetLongitudinalThreshold,
+        onResetLateralThreshold = viewModel::onResetLateralThreshold,
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onStartReadoutTypeChanged = viewModel::onStartReadoutTypeChanged,
@@ -78,6 +80,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     uiState: LmuWindowsReadoutVehicleApproachDetailUiState,
     onLongitudinalThresholdChanged: (Double) -> Unit = {},
     onLateralThresholdChanged: (Double) -> Unit = {},
+    onResetLongitudinalThreshold: () -> Unit = {},
+    onResetLateralThreshold: () -> Unit = {},
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onStartReadoutTypeChanged: (VehicleApproachStartReadoutType) -> Unit = {},
@@ -114,17 +118,25 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                 }
             },
         )
+        val defaultLongitudinal =
+            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS.toFloat()
+        val defaultLateral =
+            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS.toFloat()
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
             valueRange = 0.1f..10f,
             labelFormatter = { longitudinalLabel.format(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
+            defaultValue = defaultLongitudinal,
+            onResetToDefault = onResetLongitudinalThreshold,
         )
         ThresholdSlider(
             value = uiState.lateralThresholdMeters.toFloat(),
             valueRange = 2f..8f,
             labelFormatter = { lateralLabel.format(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
+            defaultValue = defaultLateral,
+            onResetToDefault = onResetLateralThreshold,
         )
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
         Row(
