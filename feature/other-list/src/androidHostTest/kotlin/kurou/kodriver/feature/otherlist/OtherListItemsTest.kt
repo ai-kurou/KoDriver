@@ -15,6 +15,13 @@ class OtherListItemsTest {
     }
 
     @Test
+    fun `KeepScreenOnを含む`() {
+        val items = buildOtherListItems()
+
+        assertContains(items, OtherListItemType.KeepScreenOn)
+    }
+
+    @Test
     fun `ConsoleIpを含む`() {
         val items = buildOtherListItems()
 

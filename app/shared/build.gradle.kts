@@ -62,6 +62,7 @@ kotlin {
             implementation(projects.feature.otherConsoleIpDetail)
             implementation(projects.feature.otherReadoutStartSoundDetail)
             implementation(projects.feature.otherVolumeDetail)
+            implementation(projects.feature.otherKeepScreenOnDetail)
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuWindowsReadoutFlagDetail)

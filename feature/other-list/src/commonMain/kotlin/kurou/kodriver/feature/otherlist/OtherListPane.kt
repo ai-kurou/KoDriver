@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
+import androidx.compose.material.icons.outlined.BrightnessHigh
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Computer
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_console_ip
 import kodriver.feature.otherlist.generated.resources.item_github_repository
+import kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kodriver.feature.otherlist.generated.resources.item_license
 import kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kodriver.feature.otherlist.generated.resources.item_release_page
@@ -47,6 +49,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
     OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
     OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
     OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+    OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
     OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
     OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
@@ -59,6 +62,7 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: 
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Computer, contentDescription = null)
         OtherListItemType.ConsoleIp -> Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = null)
         OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
+        OtherListItemType.KeepScreenOn -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
         OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
         OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
@@ -76,7 +80,9 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.Volume,
         OtherListItemType.License,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
-        OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.KeepScreenOn,
+        OtherListItemType.ReadoutStartSound,
+        -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)

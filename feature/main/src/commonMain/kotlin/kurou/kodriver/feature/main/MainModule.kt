@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -14,7 +15,8 @@ val mainModule = module {
     factory { CheckGt7Ps5ConnectionUseCase(get()) }
     factory { ObserveConsoleAddressUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
-    viewModel { AppScreenViewModel(get(), currentAppVersion()) }
+    factory { ObserveKeepScreenOnUseCase(get()) }
+    viewModel { AppScreenViewModel(get(), currentAppVersion(), get()) }
     viewModelOf(::ConnectionBannerViewModel)
 }
 
