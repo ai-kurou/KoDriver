@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,12 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherconsoleipdetail.generated.resources.Res
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description
+import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_guide_description
+import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_guide_link
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_invalid
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_label
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_placeholder
@@ -29,6 +33,9 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val GT7_CONNECTION_SETUP_URL =
+    "https://github.com/ai-kurou/KoDriver/blob/main/docs/gt7-connection-setup.md"
+
 @Composable
 fun OtherConsoleIpDetailPane(
     canNavigateBack: Boolean,
@@ -37,11 +44,13 @@ fun OtherConsoleIpDetailPane(
 ) {
     val viewModel: OtherConsoleIpDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     OtherConsoleIpDetailPaneContent(
         uiState = uiState,
         onAddressChanged = viewModel::onAddressChanged,
         onSave = viewModel::onSave,
         onDismiss = viewModel::onDismiss,
+        onOpenGuide = { uriHandler.openUri(GT7_CONNECTION_SETUP_URL) },
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -54,6 +63,7 @@ internal fun OtherConsoleIpDetailPaneContent(
     onAddressChanged: (String) -> Unit = {},
     onSave: () -> Unit = {},
     onDismiss: () -> Unit = {},
+    onOpenGuide: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -108,6 +118,19 @@ internal fun OtherConsoleIpDetailPaneContent(
             ) {
                 Text(stringResource(Res.string.console_ip_save))
             }
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(Res.string.console_ip_guide_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(Res.string.console_ip_guide_link),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable(onClick = onOpenGuide),
+            )
         }
     }
 }
