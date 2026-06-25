@@ -59,7 +59,7 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
         ConnectionBannerVmStatus.UNCHECKED,
         -> disconnectedMessage
     }
-    val iconType = if (isGt7) ConnectionBannerIconType.SIMULATOR else ConnectionBannerIconType.NETWORK
+    val iconType = ConnectionBannerIconType.NETWORK
     return ConnectionBannerUiState(
         status = status,
         message = message,
