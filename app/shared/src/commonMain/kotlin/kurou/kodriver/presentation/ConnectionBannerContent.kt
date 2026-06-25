@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -31,12 +32,12 @@ fun ConnectionBannerContent(
 ) {
     val backgroundColor = when (uiState.status) {
         ConnectionBannerStatus.CONNECTED -> MaterialTheme.colorScheme.secondaryContainer
-        ConnectionBannerStatus.DISCONNECTED -> MaterialTheme.colorScheme.surfaceVariant
+        ConnectionBannerStatus.DISCONNECTED -> Color(0xFFFFF9C4)
         ConnectionBannerStatus.UNCHECKED -> MaterialTheme.colorScheme.errorContainer
     }
     val contentColor = when (uiState.status) {
         ConnectionBannerStatus.CONNECTED -> MaterialTheme.colorScheme.onSecondaryContainer
-        ConnectionBannerStatus.DISCONNECTED -> MaterialTheme.colorScheme.onSurfaceVariant
+        ConnectionBannerStatus.DISCONNECTED -> Color(0xFF5F4B00)
         ConnectionBannerStatus.UNCHECKED -> MaterialTheme.colorScheme.onErrorContainer
     }
     val icon = when (uiState.iconType) {
