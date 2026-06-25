@@ -20,6 +20,7 @@ class OtherConsoleIpDetailPaneContentTest {
             inputAddress = "192.168.1.1",
             isInputValid = true,
         ),
+        onPortSelected: (Int) -> Unit = {},
         onSave: () -> Unit = {},
         onDismiss: () -> Unit = {},
         onBack: () -> Unit = {},
@@ -28,6 +29,7 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.setContent {
             OtherConsoleIpDetailPaneContent(
                 uiState = uiState,
+                onPortSelected = onPortSelected,
                 onSave = onSave,
                 onDismiss = onDismiss,
                 onBack = onBack,
@@ -85,5 +87,31 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("接続設定ガイドを開く").performClick()
 
         assertEquals(1, guideCount)
+    }
+
+    @Test
+    fun `33740のラジオボタンをクリックするとonPortSelected(33740)が呼ばれる`() {
+        var selected: Int? = null
+        setContent(
+            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33741),
+            onPortSelected = { selected = it },
+        )
+
+        rule.onNodeWithText("33740（PS5に直接接続）").performClick()
+
+        assertEquals(33740, selected)
+    }
+
+    @Test
+    fun `33741のラジオボタンをクリックするとonPortSelected(33741)が呼ばれる`() {
+        var selected: Int? = null
+        setContent(
+            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
+            onPortSelected = { selected = it },
+        )
+
+        rule.onNodeWithText("33741（SimHub経由で接続）").performClick()
+
+        assertEquals(33741, selected)
     }
 }

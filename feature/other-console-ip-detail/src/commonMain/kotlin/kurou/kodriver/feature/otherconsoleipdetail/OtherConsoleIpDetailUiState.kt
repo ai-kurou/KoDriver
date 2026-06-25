@@ -5,4 +5,5 @@ data class OtherConsoleIpDetailUiState(
     val isInputValid: Boolean = true,
     val saveFailed: Boolean = false,
     val isSaved: Boolean = false,
+    val selectedPort: Int = 33740,
 )
