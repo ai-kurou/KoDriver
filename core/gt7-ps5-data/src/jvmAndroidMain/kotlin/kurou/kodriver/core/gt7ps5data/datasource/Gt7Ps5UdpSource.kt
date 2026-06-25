@@ -6,9 +6,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
@@ -34,9 +36,10 @@ private fun ByteArray.writeIntLE(offset: Int, value: Int) {
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class Gt7Ps5UdpSource(
     private val consoleAddressFlow: Flow<String?>,
+    private val listenPortFlow: Flow<Int> = flowOf(LISTEN_PORT),
     private val sendPort: Int = SEND_PORT,
-    private val socketFactory: () -> UdpSocket = {
-        RealUdpSocket(listenPort = LISTEN_PORT, timeoutMs = SOCKET_TIMEOUT_MS)
+    private val socketFactory: (Int) -> UdpSocket = { port ->
+        RealUdpSocket(listenPort = port, timeoutMs = SOCKET_TIMEOUT_MS)
     },
     scope: CoroutineScope,
     private val currentTimeMillis: () -> Long = System::currentTimeMillis,
@@ -46,18 +49,20 @@ internal class Gt7Ps5UdpSource(
 
     override fun lastPacketReceivedAt(): Long = _lastPacketReceivedAt.get()
 
-    override val packetFlow: Flow<ByteBuffer> = consoleAddressFlow
-        .flatMapLatest { address ->
+    override val packetFlow: Flow<ByteBuffer> = combine(consoleAddressFlow, listenPortFlow) { address, port ->
+        address to port
+    }
+        .flatMapLatest { (address, port) ->
             if (address.isNullOrBlank()) {
                 emptyFlow()
             } else {
-                udpPacketFlow(address)
+                udpPacketFlow(address, port)
             }
         }
         .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
-    private fun udpPacketFlow(ps5Address: String): Flow<ByteBuffer> = flow {
-        socketFactory().use { socket ->
+    private fun udpPacketFlow(ps5Address: String, listenPort: Int): Flow<ByteBuffer> = flow {
+        socketFactory(listenPort).use { socket ->
             socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
             var heartbeatCounter = 0
 
