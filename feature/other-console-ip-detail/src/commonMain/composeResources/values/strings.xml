@@ -6,4 +6,6 @@
     <string name="navigate_back">戻る</string>
     <string name="console_ip_invalid">無効なIPアドレスです</string>
     <string name="console_ip_description">接続するゲーム機のIPアドレスを入力してください。</string>
+    <string name="console_ip_guide_description">IPアドレスの確認方法や接続ケースごとの設定手順は、接続設定ガイドを参照してください。</string>
+    <string name="console_ip_guide_link">接続設定ガイドを開く</string>
 </resources>

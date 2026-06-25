@@ -23,6 +23,7 @@ class OtherConsoleIpDetailPaneContentTest {
         onSave: () -> Unit = {},
         onDismiss: () -> Unit = {},
         onBack: () -> Unit = {},
+        onOpenGuide: () -> Unit = {},
     ) {
         rule.setContent {
             OtherConsoleIpDetailPaneContent(
@@ -30,6 +31,7 @@ class OtherConsoleIpDetailPaneContentTest {
                 onSave = onSave,
                 onDismiss = onDismiss,
                 onBack = onBack,
+                onOpenGuide = onOpenGuide,
             )
         }
     }
@@ -73,5 +75,15 @@ class OtherConsoleIpDetailPaneContentTest {
 
         assertEquals(1, dismissCount)
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `接続設定ガイドリンクをクリックするとonOpenGuideが呼ばれる`() {
+        var guideCount = 0
+        setContent(onOpenGuide = { guideCount++ })
+
+        rule.onNodeWithText("接続設定ガイドを開く").performClick()
+
+        assertEquals(1, guideCount)
     }
 }
