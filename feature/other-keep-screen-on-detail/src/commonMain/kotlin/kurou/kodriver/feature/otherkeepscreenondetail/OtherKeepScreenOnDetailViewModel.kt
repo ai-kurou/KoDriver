@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnUseCase
@@ -25,16 +26,16 @@ class OtherKeepScreenOnDetailViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherKeepScreenOnDetailUiState())
 
     fun onPendingValueChanged(enabled: Boolean) {
-        pendingValue.value = enabled
+        pendingValue.update { enabled }
     }
 
     fun onConfirm() {
         val value = pendingValue.value ?: return
         viewModelScope.launch { saveKeepScreenOn(value) }
-        pendingValue.value = null
+        pendingValue.update { null }
     }
 
     fun onDismiss() {
-        pendingValue.value = null
+        pendingValue.update { null }
     }
 }
