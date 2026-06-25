@@ -38,7 +38,7 @@ private data class LocalOrderState(
     val items: List<ReadoutItemKey>,
 )
 
-internal class ReadoutListViewModel(
+class ReadoutListViewModel(
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
     private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
