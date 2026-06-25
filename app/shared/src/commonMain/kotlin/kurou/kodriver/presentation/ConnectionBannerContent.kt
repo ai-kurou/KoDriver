@@ -31,12 +31,12 @@ fun ConnectionBannerContent(
 ) {
     val backgroundColor = when (uiState.status) {
         ConnectionBannerStatus.CONNECTED -> MaterialTheme.colorScheme.secondaryContainer
-        ConnectionBannerStatus.DISCONNECTED -> MaterialTheme.colorScheme.surfaceVariant
+        ConnectionBannerStatus.DISCONNECTED -> MaterialTheme.colorScheme.primaryContainer
         ConnectionBannerStatus.UNCHECKED -> MaterialTheme.colorScheme.errorContainer
     }
     val contentColor = when (uiState.status) {
         ConnectionBannerStatus.CONNECTED -> MaterialTheme.colorScheme.onSecondaryContainer
-        ConnectionBannerStatus.DISCONNECTED -> MaterialTheme.colorScheme.onSurfaceVariant
+        ConnectionBannerStatus.DISCONNECTED -> MaterialTheme.colorScheme.onPrimaryContainer
         ConnectionBannerStatus.UNCHECKED -> MaterialTheme.colorScheme.onErrorContainer
     }
     val icon = when (uiState.iconType) {
