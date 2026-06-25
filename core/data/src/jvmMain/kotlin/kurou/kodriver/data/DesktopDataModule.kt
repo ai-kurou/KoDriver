@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
@@ -48,4 +49,7 @@ val desktopDataModule = module {
     }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
     single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
+    single<Gt7UdpPortPreferencesRepository> {
+        createGt7UdpPortPreferencesRepository(directory = kodriverDirectory)
+    }
 }

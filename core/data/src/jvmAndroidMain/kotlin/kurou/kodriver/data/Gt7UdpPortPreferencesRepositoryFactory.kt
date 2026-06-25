@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createGt7UdpPortPreferencesDataStore
+import kurou.kodriver.data.repository.Gt7UdpPortPreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
+
+fun createGt7UdpPortPreferencesRepository(directory: String): Gt7UdpPortPreferencesRepository =
+    Gt7UdpPortPreferencesRepositoryImpl(createGt7UdpPortPreferencesDataStore(directory))
