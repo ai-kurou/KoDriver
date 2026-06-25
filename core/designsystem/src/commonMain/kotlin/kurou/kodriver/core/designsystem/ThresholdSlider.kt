@@ -35,6 +35,7 @@ fun ThresholdSlider(
     steps: Int = (((valueRange.endInclusive - valueRange.start) / 0.1f).roundToInt() - 1).coerceAtLeast(0),
     defaultValue: Float? = null,
     onResetToDefault: (() -> Unit)? = null,
+    resetContentDescription: String? = null,
 ) {
     var sliderValue by remember(value) { mutableStateOf(value) }
     val isDifferentFromDefault = defaultValue != null && abs(sliderValue - defaultValue) > 0.001f
@@ -48,12 +49,13 @@ fun ThresholdSlider(
             )
             if (onResetToDefault != null) {
                 IconButton(
-                    onClick = { if (isDifferentFromDefault) onResetToDefault() },
+                    onClick = onResetToDefault,
+                    enabled = isDifferentFromDefault,
                     modifier = Modifier.size(32.dp).graphicsLayer { alpha = resetButtonAlpha },
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.RestartAlt,
-                        contentDescription = null,
+                        contentDescription = resetContentDescription,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp),
                     )

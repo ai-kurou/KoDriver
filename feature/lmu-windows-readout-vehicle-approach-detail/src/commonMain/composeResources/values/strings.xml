@@ -11,4 +11,5 @@
     <string name="vehicle_approach_start_readout_switch_label">接近開始時の読み上げ</string>
     <string name="vehicle_approach_car_left_right_chip_label">カーレフト・カーライト</string>
     <string name="vehicle_approach_left_right_approach_chip_label">左接近・右接近</string>
+    <string name="vehicle_approach_threshold_reset_to_default">デフォルト値にリセット</string>
 </resources>

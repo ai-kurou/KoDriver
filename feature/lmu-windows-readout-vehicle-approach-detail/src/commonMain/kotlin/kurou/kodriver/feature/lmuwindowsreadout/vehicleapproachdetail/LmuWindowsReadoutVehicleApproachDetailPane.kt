@@ -45,6 +45,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_readout_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_readout_switch_label
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -122,6 +123,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS.toFloat()
         val defaultLateral =
             LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS.toFloat()
+        val resetToDefaultLabel = stringResource(Res.string.vehicle_approach_threshold_reset_to_default)
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
             valueRange = 0.1f..10f,
@@ -129,6 +131,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
             defaultValue = defaultLongitudinal,
             onResetToDefault = onResetLongitudinalThreshold,
+            resetContentDescription = resetToDefaultLabel,
         )
         ThresholdSlider(
             value = uiState.lateralThresholdMeters.toFloat(),
@@ -137,6 +140,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
             defaultValue = defaultLateral,
             onResetToDefault = onResetLateralThreshold,
+            resetContentDescription = resetToDefaultLabel,
         )
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
         Row(
