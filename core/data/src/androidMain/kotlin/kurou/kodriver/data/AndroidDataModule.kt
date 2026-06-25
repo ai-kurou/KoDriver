@@ -6,6 +6,7 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
@@ -24,6 +25,7 @@ import org.koin.dsl.module
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
 private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
 private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
+private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
 
 fun androidDataModule(context: Context) = module {
     single<Context> { context }
@@ -66,4 +68,7 @@ fun androidDataModule(context: Context) = module {
     }
     single<ServerVersionRepository> { HttpServerVersionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+    single<KeepScreenOnPreferencesRepository> {
+        AndroidKeepScreenOnPreferencesRepository(context.keepScreenOnDataStore)
+    }
 }

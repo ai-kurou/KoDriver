@@ -60,6 +60,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
+import kurou.kodriver.feature.otherkeepscreenondetail.OtherKeepScreenOnDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
@@ -99,12 +100,17 @@ private fun DefaultOtherContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
+    var showKeepScreenOnDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
+    }
+    if (showKeepScreenOnDialog) {
+        OtherKeepScreenOnDetailDialog(onDismiss = { showKeepScreenOnDialog = false })
     }
     OtherContent(
         backHandler = backHandler,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
+        onOpenKeepScreenOnDialog = { showKeepScreenOnDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {
                 OtherListItemType.ServerIp -> OtherServerIpDetailPane(canNavigateBack, onBack)
@@ -161,6 +167,7 @@ fun AppScreen(
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
+        keepScreenOn = uiState.keepScreenOn,
         readoutContent = readoutContent,
         otherContent = otherContent,
     )
@@ -195,6 +202,7 @@ internal fun AppScreenContent(
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
+    keepScreenOn: Boolean = false,
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
@@ -209,6 +217,7 @@ internal fun AppScreenContent(
                 NavigationSuiteType.NavigationRail
             else -> NavigationSuiteType.NavigationBar
         }
+        KeepScreenOnEffect(keepScreenOn)
         Box(modifier = Modifier.navigationBarsPadding()) {
             NavigationSuiteScaffold(
                 modifier = Modifier.padding(top = 4.dp),

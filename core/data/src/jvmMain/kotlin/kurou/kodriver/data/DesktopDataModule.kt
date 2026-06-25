@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
+import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -46,4 +47,5 @@ val desktopDataModule = module {
         createConsoleAddressRepository(directory = kodriverDirectory)
     }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+    single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
 }

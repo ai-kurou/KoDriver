@@ -6,6 +6,7 @@ enum class OtherListItemType(
     ServerIp("server_ip"),
     ConsoleIp("console_ip"),
     Volume("volume"),
+    KeepScreenOn("keep_screen_on"),
     ReadoutStartSound("readout_start_sound"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
