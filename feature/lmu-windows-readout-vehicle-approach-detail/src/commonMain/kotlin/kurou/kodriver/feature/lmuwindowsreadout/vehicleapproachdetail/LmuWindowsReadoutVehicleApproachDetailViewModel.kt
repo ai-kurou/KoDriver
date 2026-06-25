@@ -49,6 +49,14 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         viewModelScope.launch { saveLongitudinalThreshold(meters) }
     }
 
+    fun onResetLongitudinalThreshold() {
+        viewModelScope.launch { saveLongitudinalThreshold(DEFAULT_LONGITUDINAL_THRESHOLD_METERS) }
+    }
+
+    fun onResetLateralThreshold() {
+        viewModelScope.launch { saveLateralThreshold(DEFAULT_LATERAL_THRESHOLD_METERS) }
+    }
+
     fun onSkipFirstLapChanged(skip: Boolean) {
         viewModelScope.launch { vehicleApproachPreferences.saveSkipFirstLap(skip) }
     }
@@ -73,5 +81,10 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         }
         playSpeechEvent(events.first)
         playSpeechEvent(events.second, queue = true)
+    }
+
+    companion object {
+        const val DEFAULT_LONGITUDINAL_THRESHOLD_METERS = 5.0
+        const val DEFAULT_LATERAL_THRESHOLD_METERS = 5.0
     }
 }
