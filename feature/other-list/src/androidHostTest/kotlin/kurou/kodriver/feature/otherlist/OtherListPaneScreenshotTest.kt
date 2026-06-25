@@ -3,12 +3,11 @@
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,7 +17,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35])
+@Config(sdk = [35], qualifiers = "w360dp-h640dp")
 class OtherListPaneScreenshotTest {
 
     @Test
@@ -26,7 +25,7 @@ class OtherListPaneScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         OtherListPane(
                             uiState = OtherListUiState(),
                             onItemClick = {},
@@ -42,7 +41,7 @@ class OtherListPaneScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         OtherListPane(
                             uiState = OtherListUiState(hasAppUpdate = true),
                             onItemClick = {},

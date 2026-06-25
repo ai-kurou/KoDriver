@@ -3,12 +3,11 @@
 package kurou.kodriver.feature.otherreadoutstartsounddetail
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import org.junit.Test
@@ -19,7 +18,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35])
+@Config(sdk = [35], qualifiers = "w480dp-h320dp")
 class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
 
     @Test
@@ -27,7 +26,7 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         OtherReadoutStartSoundDetailDialogContent(
                             uiState = OtherReadoutStartSoundDetailUiState(),
                         )
@@ -42,7 +41,7 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         OtherReadoutStartSoundDetailDialogContent(
                             uiState = OtherReadoutStartSoundDetailUiState(
                                 selectedType = ReadoutStartSoundType.FORMULA_RADIO,
