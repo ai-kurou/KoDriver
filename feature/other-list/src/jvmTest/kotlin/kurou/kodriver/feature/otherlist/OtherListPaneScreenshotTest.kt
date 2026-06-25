@@ -18,6 +18,24 @@ class OtherListPaneScreenshotTest {
     val rule = createComposeRule()
 
     @Test
+    fun `デフォルト`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                        OtherListPane(
+                            uiState = OtherListUiState(),
+                            onItemClick = {},
+                        )
+                    }
+                }
+            }
+        }
+
+        rule.onRoot().captureRoboImage()
+    }
+
+    @Test
     fun `アップデートバッジを表示`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
