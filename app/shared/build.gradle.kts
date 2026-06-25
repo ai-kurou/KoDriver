@@ -92,6 +92,16 @@ kotlin {
             implementation(libs.roborazzi.composeDesktop)
             implementation(libs.compose.material3.adaptive.layout)
         }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.roborazzi.compose)
+                implementation(libs.compose.material3.adaptive.layout)
+                implementation(libs.robolectric)
+                implementation(libs.roborazzi.core)
+            }
+        }
     }
 }
 
