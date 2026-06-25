@@ -1,28 +1,31 @@
+@file:Suppress("FunctionNaming")
+
 package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.unit.dp
-import org.junit.Rule
+import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(sdk = [35], qualifiers = "w360dp-h640dp")
 class OtherListPaneScreenshotTest {
-
-    @get:Rule
-    val rule = createComposeRule()
 
     @Test
     fun `デフォルト`() {
-        rule.setContent {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         OtherListPane(
                             uiState = OtherListUiState(),
                             onItemClick = {},
@@ -31,16 +34,14 @@ class OtherListPaneScreenshotTest {
                 }
             }
         }
-
-        rule.onRoot().captureRoboImage()
     }
 
     @Test
     fun `アップデートバッジを表示`() {
-        rule.setContent {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         OtherListPane(
                             uiState = OtherListUiState(hasAppUpdate = true),
                             onItemClick = {},
@@ -49,7 +50,5 @@ class OtherListPaneScreenshotTest {
                 }
             }
         }
-
-        rule.onRoot().captureRoboImage()
     }
 }
