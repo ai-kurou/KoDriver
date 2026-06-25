@@ -2,12 +2,16 @@ package kurou.kodriver.core.gt7ps5data.datasource
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -57,8 +61,10 @@ class Gt7Ps5UdpSourceTest {
         socket: FakeUdpSocket,
         currentTimeMillis: () -> Long = System::currentTimeMillis,
         address: String = "192.168.1.100",
+        listenPort: Int = Gt7Ps5UdpSource.LISTEN_PORT,
     ): Gt7Ps5UdpSource = Gt7Ps5UdpSource(
         consoleAddressFlow = flowOf(address),
+        listenPortFlow = flowOf(listenPort),
         socketFactory = { socket },
         scope = CoroutineScope(SupervisorJob()),
         currentTimeMillis = currentTimeMillis,
@@ -199,6 +205,50 @@ class Gt7Ps5UdpSourceTest {
         )
         // アドレス未設定では packetFlow は何も emit しない（emptyFlow）
         assertEquals(0L, source.lastPacketReceivedAt())
+    }
+
+    @Test
+    fun `listenPortFlowが変化するとsocketFactoryに新しいポートが渡される`() = runBlocking {
+        val portFlow = MutableStateFlow(33740)
+        val receivedPorts = mutableListOf<Int>()
+        val socket1 = FakeUdpSocket()
+        val socket2 = FakeUdpSocket()
+        // 各ソケットに複数パケットを積んでおき、収集が長続きするようにする
+        repeat(100) { socket1.enqueuePacket(makeEncryptedPacket(lapCount = 1)) }
+        socket2.enqueuePacket(makeEncryptedPacket(lapCount = 2))
+        val sockets = listOf(socket1, socket2)
+        var callCount = 0
+
+        val collectScope = CoroutineScope(SupervisorJob())
+        val source = Gt7Ps5UdpSource(
+            consoleAddressFlow = flowOf("192.168.1.100"),
+            listenPortFlow = portFlow,
+            socketFactory = { port ->
+                receivedPorts += port
+                sockets[callCount++]
+            },
+            scope = collectScope,
+        )
+
+        // 継続して収集することで WhileSubscribed を維持する
+        source.packetFlow.onEach { }.launchIn(collectScope)
+
+        // 最初のソケットが開かれるまで待機
+        val deadline1 = System.currentTimeMillis() + 2_000L
+        while (receivedPorts.isEmpty() && System.currentTimeMillis() < deadline1) {
+            delay(10)
+        }
+
+        portFlow.update { 33741 }
+
+        // ポート変更後に新しいソケットが開かれるまで待機
+        val deadline2 = System.currentTimeMillis() + 2_000L
+        while (receivedPorts.size < 2 && System.currentTimeMillis() < deadline2) {
+            delay(10)
+        }
+
+        collectScope.cancel()
+        assertEquals(listOf(33740, 33741), receivedPorts)
     }
 }
 
