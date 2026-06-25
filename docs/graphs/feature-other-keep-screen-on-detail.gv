@@ -1,0 +1,5 @@
+digraph G {
+  rankdir=TB
+  ":app:shared" -> ":feature:other-keep-screen-on-detail"
+  ":feature:other-keep-screen-on-detail" -> ":core:domain"
+}
