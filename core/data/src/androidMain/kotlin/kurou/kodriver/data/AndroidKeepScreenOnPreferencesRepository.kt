@@ -14,7 +14,7 @@ internal class AndroidKeepScreenOnPreferencesRepository(
 
     private val keepScreenOnKey = booleanPreferencesKey("keep_screen_on")
 
-    override fun keepScreenOn(): Flow<Boolean> = dataStore.data.map { it[keepScreenOnKey] ?: false }
+    override fun keepScreenOn(): Flow<Boolean> = dataStore.data.map { it[keepScreenOnKey] ?: true }
 
     override suspend fun saveKeepScreenOn(enabled: Boolean) {
         dataStore.edit { it[keepScreenOnKey] = enabled }

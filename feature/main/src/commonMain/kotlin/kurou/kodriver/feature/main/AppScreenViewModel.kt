@@ -35,5 +35,5 @@ class AppScreenViewModel(
 
 data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
-    val keepScreenOn: Boolean = false,
+    val keepScreenOn: Boolean = true,
 )

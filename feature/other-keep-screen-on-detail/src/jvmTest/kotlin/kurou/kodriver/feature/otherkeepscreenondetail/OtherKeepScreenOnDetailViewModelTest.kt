@@ -41,35 +41,35 @@ class OtherKeepScreenOnDetailViewModelTest {
     }
 
     @Test
-    fun `初期状態はkeepScreenOnがfalseである`() = runTest {
+    fun `初期状態はkeepScreenOnがtrueである`() = runTest {
         val uiState = viewModel.uiState.first()
-        assertFalse(uiState.keepScreenOn)
-        assertFalse(uiState.pendingKeepScreenOn)
-    }
-
-    @Test
-    fun `onPendingValueChangedでpendingが更新される`() = runTest {
-        viewModel.onPendingValueChanged(true)
-
-        val uiState = viewModel.uiState.first()
+        assertTrue(uiState.keepScreenOn)
         assertTrue(uiState.pendingKeepScreenOn)
     }
 
     @Test
+    fun `onPendingValueChangedでpendingがfalseに更新される`() = runTest {
+        viewModel.onPendingValueChanged(false)
+
+        val uiState = viewModel.uiState.first()
+        assertFalse(uiState.pendingKeepScreenOn)
+    }
+
+    @Test
     fun `onConfirmで設定が保存される`() = runTest {
-        viewModel.onPendingValueChanged(true)
+        viewModel.onPendingValueChanged(false)
         viewModel.onConfirm()
 
         val uiState = viewModel.uiState.first()
-        assertTrue(uiState.keepScreenOn)
+        assertFalse(uiState.keepScreenOn)
     }
 
     @Test
     fun `onDismissでpendingがリセットされる`() = runTest {
-        viewModel.onPendingValueChanged(true)
+        viewModel.onPendingValueChanged(false)
         viewModel.onDismiss()
 
         val uiState = viewModel.uiState.first()
-        assertEquals(false, uiState.pendingKeepScreenOn)
+        assertEquals(true, uiState.pendingKeepScreenOn)
     }
 }

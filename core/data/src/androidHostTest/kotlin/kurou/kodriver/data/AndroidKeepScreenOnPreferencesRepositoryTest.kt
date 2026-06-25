@@ -39,22 +39,22 @@ class AndroidKeepScreenOnPreferencesRepositoryTest {
     }
 
     @Test
-    fun `初期状態はfalseを返す`() = runTest(testDispatcher) {
-        assertFalse(repository.keepScreenOn().first())
-    }
-
-    @Test
-    fun `saveKeepScreenOn trueの後にtrueを返す`() = runTest(testDispatcher) {
-        repository.saveKeepScreenOn(true)
-
+    fun `初期状態はtrueを返す`() = runTest(testDispatcher) {
         assertTrue(repository.keepScreenOn().first())
     }
 
     @Test
-    fun `saveKeepScreenOn falseで上書きするとfalseを返す`() = runTest(testDispatcher) {
-        repository.saveKeepScreenOn(true)
+    fun `saveKeepScreenOn falseの後にfalseを返す`() = runTest(testDispatcher) {
         repository.saveKeepScreenOn(false)
 
         assertFalse(repository.keepScreenOn().first())
+    }
+
+    @Test
+    fun `saveKeepScreenOn trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
+        repository.saveKeepScreenOn(false)
+        repository.saveKeepScreenOn(true)
+
+        assertTrue(repository.keepScreenOn().first())
     }
 }
