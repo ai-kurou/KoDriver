@@ -6,6 +6,7 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
@@ -70,5 +71,8 @@ fun androidDataModule(context: Context) = module {
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
     single<KeepScreenOnPreferencesRepository> {
         AndroidKeepScreenOnPreferencesRepository(context.keepScreenOnDataStore)
+    }
+    single<Gt7UdpPortPreferencesRepository> {
+        createGt7UdpPortPreferencesRepository(context.filesDir.absolutePath)
     }
 }
