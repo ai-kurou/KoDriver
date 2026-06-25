@@ -63,13 +63,31 @@ import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
 import kurou.kodriver.feature.otherkeepscreenondetail.OtherKeepScreenOnDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
+import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
+import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private fun handleTabClick(
+    dest: AppDestination,
+    currentDestination: AppDestination,
+    onReadoutTabReselected: () -> Unit,
+    onOtherTabReselected: () -> Unit,
+    setCurrentDestination: (AppDestination) -> Unit,
+) {
+    if (currentDestination == dest) {
+        when (dest) {
+            AppDestination.Readout -> onReadoutTabReselected()
+            AppDestination.More -> onOtherTabReselected()
+        }
+    }
+    setCurrentDestination(dest)
+}
 
 private enum class AppDestination(
     val icon: ImageVector,
@@ -126,6 +144,8 @@ private fun DefaultOtherContent(
 @Composable
 fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
+    readoutListViewModel: ReadoutListViewModel = koinViewModel(),
+    otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
@@ -168,6 +188,8 @@ fun AppScreen(
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
         keepScreenOn = uiState.keepScreenOn,
+        onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
+        onOtherTabReselected = otherListViewModel::clearSelectedItem,
         readoutContent = readoutContent,
         otherContent = otherContent,
     )
@@ -203,6 +225,8 @@ internal fun AppScreenContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
     keepScreenOn: Boolean = false,
+    onReadoutTabReselected: () -> Unit = {},
+    onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
@@ -261,7 +285,15 @@ internal fun AppScreenContent(
                                 }
                             },
                             selected = currentDestination == dest,
-                            onClick = { currentDestination = dest },
+                            onClick = {
+                                handleTabClick(
+                                    dest = dest,
+                                    currentDestination = currentDestination,
+                                    onReadoutTabReselected = onReadoutTabReselected,
+                                    onOtherTabReselected = onOtherTabReselected,
+                                    setCurrentDestination = { currentDestination = it },
+                                )
+                            },
                             modifier = itemModifier,
                         )
                     }
