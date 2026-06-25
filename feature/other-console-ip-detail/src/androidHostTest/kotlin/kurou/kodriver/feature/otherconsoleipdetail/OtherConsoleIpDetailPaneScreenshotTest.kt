@@ -2,9 +2,13 @@
 
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,9 +26,11 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-                    )
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+                        )
+                    }
                 }
             }
         }
@@ -35,9 +41,11 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
-                    )
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
+                        )
+                    }
                 }
             }
         }
@@ -48,9 +56,11 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
-                    )
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+                        )
+                    }
                 }
             }
         }
@@ -61,12 +71,14 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(
-                            inputAddress = "192.168.1.100",
-                            saveFailed = true,
-                        ),
-                    )
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(
+                                inputAddress = "192.168.1.100",
+                                saveFailed = true,
+                            ),
+                        )
+                    }
                 }
             }
         }
