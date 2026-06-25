@@ -106,20 +106,27 @@ jobs:
       - name: Install Japanese fonts
         run: sudo apt-get install -y fonts-noto-cjk
 
-      - name: Record golden images
-        run: ./gradlew :feature:readout-list:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:recordRoborazziJvmTest :feature:other-license-detail:recordRoborazziJvmTest :feature:other-list:recordRoborazziJvmTest :feature:other-server-ip-detail:recordRoborazziJvmTest :feature:other-volume-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
+      - name: Record JVM golden images
+        run: ./gradlew :feature:readout-list:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:recordRoborazziJvmTest :feature:other-license-detail:recordRoborazziJvmTest :feature:other-list:recordRoborazziJvmTest :feature:other-readout-start-sound-detail:recordRoborazziJvmTest :feature:other-server-ip-detail:recordRoborazziJvmTest :feature:other-volume-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
+
+      - name: Record Android golden images
+        run: ./gradlew :feature:other-list:recordRoborazziAndroidHostTest :feature:other-volume-detail:recordRoborazziAndroidHostTest :feature:other-license-detail:recordRoborazziAndroidHostTest :feature:other-console-ip-detail:recordRoborazziAndroidHostTest :feature:other-readout-start-sound-detail:recordRoborazziAndroidHostTest :app:shared:recordRoborazziAndroidHostTest
 
       - name: Commit updated golden images
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           find . -path "*/jvmTest/snapshots/*.png" -not -path "*/build/*" -print0 | xargs -0 -r git add
+          find . -path "*/androidHostTest/snapshots/*.png" -not -path "*/build/*" -print0 | xargs -0 -r git add
           git diff --staged --quiet || git commit -m "chore: update golden images [skip ci]"
           git pull --rebase origin main
           git push
 
-      - name: Verify screenshot tests
-        run: ./gradlew :feature:readout-list:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:verifyRoborazziJvmTest :feature:other-license-detail:verifyRoborazziJvmTest :feature:other-list:verifyRoborazziJvmTest :feature:other-server-ip-detail:verifyRoborazziJvmTest :feature:other-volume-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
+      - name: Verify JVM screenshot tests
+        run: ./gradlew :feature:readout-list:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:verifyRoborazziJvmTest :feature:other-license-detail:verifyRoborazziJvmTest :feature:other-list:verifyRoborazziJvmTest :feature:other-readout-start-sound-detail:verifyRoborazziJvmTest :feature:other-server-ip-detail:verifyRoborazziJvmTest :feature:other-volume-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
+
+      - name: Verify Android screenshot tests
+        run: ./gradlew :feature:other-list:verifyRoborazziAndroidHostTest :feature:other-volume-detail:verifyRoborazziAndroidHostTest :feature:other-license-detail:verifyRoborazziAndroidHostTest :feature:other-console-ip-detail:verifyRoborazziAndroidHostTest :feature:other-readout-start-sound-detail:verifyRoborazziAndroidHostTest :app:shared:verifyRoborazziAndroidHostTest
 
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
