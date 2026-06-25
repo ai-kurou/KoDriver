@@ -36,15 +36,15 @@ class OtherKeepScreenOnDetailDialogContentScreenshotTest {
     }
 
     @Test
-    fun `ONを選択中`() {
+    fun `OFFを選択中`() {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
                         OtherKeepScreenOnDetailDialogContent(
                             uiState = OtherKeepScreenOnDetailUiState(
-                                keepScreenOn = false,
-                                pendingKeepScreenOn = true,
+                                keepScreenOn = true,
+                                pendingKeepScreenOn = false,
                             ),
                         )
                     }

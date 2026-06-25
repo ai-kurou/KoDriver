@@ -36,15 +36,15 @@ class OtherKeepScreenOnDetailDialogContentScreenshotTest {
     }
 
     @Test
-    fun `ONを選択中`() {
+    fun `OFFを選択中`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherKeepScreenOnDetailDialogContent(
                             uiState = OtherKeepScreenOnDetailUiState(
-                                keepScreenOn = false,
-                                pendingKeepScreenOn = true,
+                                keepScreenOn = true,
+                                pendingKeepScreenOn = false,
                             ),
                         )
                     }
