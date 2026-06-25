@@ -25,8 +25,8 @@ class SaveGt7UdpPortUseCaseTest {
 
     @Test
     fun `33740でも33741でもない値はIllegalArgumentExceptionをスローする`() = runBlocking<Unit> {
-        assertFailsWith<IllegalArgumentException> { useCase(33739) }
-        assertFailsWith<IllegalArgumentException> { useCase(33742) }
-        assertFailsWith<IllegalArgumentException> { useCase(0) }
+        assertFailsWith<IllegalArgumentException> { runBlocking { useCase(33739) } }
+        assertFailsWith<IllegalArgumentException> { runBlocking { useCase(33742) } }
+        assertFailsWith<IllegalArgumentException> { runBlocking { useCase(0) } }
     }
 }
