@@ -14,7 +14,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Gt7RemainingFuelLapsPreferencesRepositoryImplTest {
+class Gt7Ps5RemainingFuelLapsPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_gt7_remaining_fuel_laps_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +23,7 @@ class Gt7RemainingFuelLapsPreferencesRepositoryImplTest {
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )
-    private val repository = Gt7RemainingFuelLapsPreferencesRepositoryImpl(
+    private val repository = Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl(
         ReadoutPreferencesRepositoryImpl(dataStore),
     )
 
