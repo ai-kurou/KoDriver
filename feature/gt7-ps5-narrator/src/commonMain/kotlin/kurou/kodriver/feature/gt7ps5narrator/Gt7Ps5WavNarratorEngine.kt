@@ -41,6 +41,7 @@ internal class Gt7Ps5WavNarratorEngine(
     private val eventToFile = mapOf(
         SpeechEvent.MyBestLapFormal to "files/my_best_lap_formal.wav",
         SpeechEvent.MyBestLapCasual to "files/my_best_lap_casual.wav",
+        SpeechEvent.RemainingFuelLapsWarning to "files/remaining_fuel_laps_warning.wav",
     )
 
     private val startSoundTypeToFile = mapOf(

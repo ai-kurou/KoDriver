@@ -138,6 +138,20 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
+    fun `RemainingFuelLapsWarningを再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(EVENT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
     fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)

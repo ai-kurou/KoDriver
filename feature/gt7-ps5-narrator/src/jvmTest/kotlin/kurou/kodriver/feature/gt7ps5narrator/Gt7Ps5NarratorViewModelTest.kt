@@ -20,10 +20,12 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -57,6 +59,7 @@ class Gt7Ps5NarratorViewModelTest {
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MyBestLap),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         simulator: Simulator? = Simulator.Gt7Ps5,
+        fuelThreshold: Int = 3,
     ): Gt7Ps5NarratorViewModel {
         val readoutRepo = FakeReadoutPreferencesRepo(enabledOverrides, orderOverride)
         return Gt7Ps5NarratorViewModel(
@@ -74,6 +77,11 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
+            ),
+            remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
+                observeRemainingFuelLapsThreshold = ObserveGt7Ps5RemainingFuelLapsUseCase(
+                    FakeRemainingFuelLapsPreferencesRepo(fuelThreshold),
+                ),
             ),
             ttsEngine = ttsEngine,
         )
@@ -255,6 +263,127 @@ class Gt7Ps5NarratorViewModelTest {
         )
     }
 
+    // --- 燃料残り周回数 ---
+
+    @Test
+    fun `GT7非選択時は燃料アナウンスをしない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            simulator = null,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 2,
+        )
+
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 40f, gasCapacity = 100f))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `燃料残り周回数が閾値以下になるとアナウンスする`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 3,
+        )
+
+        // レーススタート: lapCount=0 → gasLevel=60L
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
+        // 1周完了: lapCount=1 → gasLevel=50L（10L消費）
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+        // 2周完了: lapCount=2 → gasLevel=40L（平均10L/周、残り4周 → 閾値3以下なのでアナウンス待ち）
+        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 40f, gasCapacity = 100f))
+        // 3周完了: lapCount=3 → gasLevel=30L（残り3周 → 閾値以下でアナウンス）
+        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 30f, gasCapacity = 100f))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning), tts.spokenTexts)
+    }
+
+    @Test
+    fun `燃料残り周回数が閾値より多い場合はアナウンスしない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 2,
+        )
+
+        // 1周あたり10L消費、60Lスタートなら残り6周 → 閾値2を超えるのでアナウンスしない
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `燃料残り周回数アナウンスが無効のときはアナウンスしない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to false),
+            fuelThreshold = 3,
+        )
+
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+        // 残り2周（閾値3以下）だが無効
+        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 10f, gasCapacity = 100f))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `lapCountがリセットされると燃料追跡がリセットされる`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 3,
+        )
+
+        // 1周目セッション
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 30f, gasCapacity = 100f))
+        // リセット後: lapCountが減少してリセット
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+
+        // リセット後の1周完了では残り5周(>閾値3)なのでアナウンスしない
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning), tts.spokenTexts)
+    }
+
+    @Test
+    fun `燃料消費が0以下のときはアナウンスしない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 3,
+        )
+
+        // 燃料が増えている（補給等）
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
     // --- 優先度 ---
 
     @Test
@@ -297,6 +426,14 @@ private fun gt7Telemetry(bestLapTimeMs: Int) = Gt7Ps5TelemetryData(
     bestLapTimeMs = bestLapTimeMs,
     gasLevel = 0f,
     gasCapacity = 100f,
+)
+
+private fun gt7Telemetry(lapCount: Int, gasLevel: Float, gasCapacity: Float) = Gt7Ps5TelemetryData(
+    lapCount = lapCount,
+    lapsInRace = 5,
+    bestLapTimeMs = -1,
+    gasLevel = gasLevel,
+    gasCapacity = gasCapacity,
 )
 
 private class RecordingTextToSpeechEngine : TextToSpeechEngine {
@@ -355,4 +492,11 @@ private class FakeMyBestLapPreferencesRepo(
     override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
         this.type.update { type }
     }
+}
+
+private class FakeRemainingFuelLapsPreferencesRepo(
+    private val threshold: Int = 3,
+) : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    override fun observeRemainingFuelLaps(): Flow<Int> = MutableStateFlow(threshold)
+    override suspend fun saveRemainingFuelLaps(laps: Int) = Unit
 }
