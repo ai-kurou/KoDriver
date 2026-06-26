@@ -109,12 +109,9 @@ moduleGraphAssert {
         ":app:androidApp -> :app:shared",
         ":app:desktopApp -> :app:shared",
         ":app:webApp -> :app:shared",
-        // app エントリーポイント → core:data（composition root で DI バインドするための参照）
-        ":app:androidApp -> :core:data",
-        ":app:androidApp -> :core:gt7-ps5-data",
-        ":app:desktopApp -> :core:data",
-        ":app:desktopApp -> :core:lmu-windows-data",
-        ":app:desktopApp -> :core:gt7-ps5-data",
+        // app エントリーポイント → core（composition root で DI バインドするための参照。core:domain は restricted で除外）
+        ":app:androidApp -> :core:.*",
+        ":app:desktopApp -> :core:.*",
         // Desktop app → server（同一プロセスで Ktor サーバーを起動するため）
         ":app:desktopApp -> :server",
         // app:shared → feature
@@ -123,10 +120,8 @@ moduleGraphAssert {
         ":feature:.* -> :core:domain",
         // feature → core:designsystem（共通 UI コンポーネントの利用）
         ":feature:.* -> :core:designsystem",
-        // インフラ・サーバー → core:domain
-        ":core:data -> :core:domain",
-        ":core:lmu-windows-data -> :core:domain",
-        ":core:gt7-ps5-data -> :core:domain",
+        // インフラ・サーバー → core:domain（core:domain -X> core:data は restricted で除外）
+        ":core:.* -> :core:domain",
         ":server -> :core:domain",
     )
     restricted = arrayOf(
