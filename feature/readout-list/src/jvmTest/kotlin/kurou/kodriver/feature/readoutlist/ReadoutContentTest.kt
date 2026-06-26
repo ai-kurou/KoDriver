@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
+import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
@@ -70,6 +71,49 @@ class ReadoutContentTest {
 
         // LazyColumn のアイテムをタップして詳細ペインへ遷移
         rule.onNodeWithText(vehicleApproachText).performClick()
+        rule.waitForIdle()
+
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitForIdle()
+
+        assertFalse(backEnabled)
+    }
+
+    @Test
+    fun `gt7_ps5の詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
+        var backEnabled = false
+        var capturedOnBack: (() -> Unit)? = null
+        var remainingFuelLapsText by mutableStateOf("")
+        var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
+
+        rule.setContent {
+            remainingFuelLapsText = stringResource(Res.string.item_remaining_fuel_laps)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf("gt7_ps5"),
+                    selectedSimulator = "gt7_ps5",
+                    items = listOf(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.REMAINING_FUEL_LAPS),
+                    selectedItem = selectedItem,
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onItemSelected = { selectedItem = ReadoutListItemType.fromId("gt7_ps5", it) },
+                onClearSelectedItem = { selectedItem = null },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, onBack ->
+                    backEnabled = enabled
+                    capturedOnBack = onBack
+                },
+            )
+        }
+
+        assertFalse(backEnabled)
+
+        rule.onNodeWithText(remainingFuelLapsText).performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)
