@@ -22,6 +22,7 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:lmu-windows-readout-flag-detail` | フラグアナウンスの詳細設定 UI | [図](graphs/feature-lmu-windows-readout-flag-detail.svg) |
 | `:feature:gt7-ps5-connection` | GT7 PS5 との接続状態を監視し、接続中・未接続・エラーを UI に反映する | [図](graphs/feature-gt7-ps5-connection.svg) |
 | `:feature:gt7-ps5-readout-my-bestlap-detail` | GT7 自己ベストラップアナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-my-bestlap-detail.svg) |
+| `:feature:gt7-ps5-readout-remaining-fuel-laps-detail` | GT7 燃料残り周回数アナウンスの詳細設定 UI | [図](graphs/feature-gt7-ps5-readout-remaining-fuel-laps-detail.svg) |
 | `:feature:lmu-windows-narrator` | WAV 音声ファイルの再生とアナウンス制御を担当する | [図](graphs/feature-lmu-windows-narrator.svg) |
 | `:feature:gt7-ps5-narrator` | GT7 PS5 向け WAV 音声ファイルの再生とアナウンス制御を担当する | [図](graphs/feature-gt7-ps5-narrator.svg) |
 | `:feature:other-license-detail` | その他画面のライセンス詳細表示 | [図](graphs/feature-other-license-detail.svg) |
