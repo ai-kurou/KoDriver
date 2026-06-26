@@ -68,6 +68,15 @@ class OtherListViewModelTest {
     }
 
     @Test
+    fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() = runTest {
+        viewModel.selectItem(OtherListItemType.ConsoleIp)
+        assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
+
+        viewModel.selectItem(OtherListItemType.ConsoleIp)
+        assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
         viewModel.onItemSelected(OtherListItemType.License)
 

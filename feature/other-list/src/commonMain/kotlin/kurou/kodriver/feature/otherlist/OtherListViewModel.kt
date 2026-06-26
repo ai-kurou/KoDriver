@@ -43,6 +43,10 @@ class OtherListViewModel(
         }
     }
 
+    fun selectItem(itemType: OtherListItemType) {
+        _uiState.update { it.copy(selectedItem = itemType) }
+    }
+
     fun clearSelectedItem() {
         _uiState.update { it.copy(selectedItem = null) }
     }

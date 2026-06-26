@@ -97,4 +97,23 @@ class ConnectionBannerContentScreenshotTest {
         }
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `NETWORK IPアドレス未設定 タップ可能`() {
+        rule.setContent {
+            KoDriverTheme {
+                ConnectionBannerContent(
+                    uiState = ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "接続先IPアドレスが未設定です",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = true,
+                    ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                    onClick = {},
+                )
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
 }

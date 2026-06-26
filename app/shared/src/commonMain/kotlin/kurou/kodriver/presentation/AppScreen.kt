@@ -73,6 +73,18 @@ import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+private fun bannerTapWithTabSwitch(
+    onBannerTap: (() -> Unit)?,
+    switchToMore: () -> Unit,
+): (() -> Unit)? = if (onBannerTap != null) {
+    {
+        switchToMore()
+        onBannerTap()
+    }
+} else {
+    null
+}
+
 private fun handleTabClick(
     dest: AppDestination,
     currentDestination: AppDestination,
@@ -168,6 +180,16 @@ fun AppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
 
+    val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationItemId != null) {
+        {
+            OtherListItemType.fromId(bannerUiState.tapNavigationItemId)
+                ?.let { otherListViewModel.selectItem(it) }
+            Unit
+        }
+    } else {
+        null
+    }
+
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
     }
@@ -188,6 +210,7 @@ fun AppScreen(
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
         keepScreenOn = uiState.keepScreenOn,
+        onBannerTap = onBannerTap,
         onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
         onOtherTabReselected = otherListViewModel::clearSelectedItem,
         readoutContent = readoutContent,
@@ -225,12 +248,16 @@ internal fun AppScreenContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
     keepScreenOn: Boolean = false,
+    onBannerTap: (() -> Unit)? = null,
     onReadoutTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
+    val onBannerTapWithTabSwitch = bannerTapWithTabSwitch(onBannerTap) {
+        currentDestination = AppDestination.More
+    }
 
     KoDriverTheme {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -322,7 +349,10 @@ internal fun AppScreenContent(
                     )
                 Column(modifier = contentModifier) {
                     AnimatedVisibility(visible = bannerUiState.isVisible) {
-                        ConnectionBannerContent(uiState = bannerUiState)
+                        ConnectionBannerContent(
+                            uiState = bannerUiState,
+                            onClick = onBannerTapWithTabSwitch,
+                        )
                     }
                     AnimatedContent(
                         targetState = currentDestination,
