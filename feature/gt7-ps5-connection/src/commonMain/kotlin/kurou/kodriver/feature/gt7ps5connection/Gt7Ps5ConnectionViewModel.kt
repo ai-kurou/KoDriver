@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
@@ -35,7 +36,7 @@ class Gt7Ps5ConnectionViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<Gt7Ps5ConnectionUiState> = observeSelectedSimulator()
         .flatMapLatest { simulator ->
-            if (simulator == GT7_PS5_SIMULATOR_KEY) {
+            if (simulator is Simulator.Gt7Ps5) {
                 connectionCheckFlow()
             } else {
                 flowOf(Gt7Ps5ConnectionUiState())
@@ -71,6 +72,5 @@ class Gt7Ps5ConnectionViewModel(
 
     private companion object {
         const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-        const val GT7_PS5_SIMULATOR_KEY = "gt7_ps5"
     }
 }

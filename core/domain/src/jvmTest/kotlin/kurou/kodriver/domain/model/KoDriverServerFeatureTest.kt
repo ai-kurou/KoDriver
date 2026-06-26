@@ -7,8 +7,8 @@ class KoDriverServerFeatureTest {
 
     @Test
     fun `webSocketPathはSimulator idとfeatureからパスを生成する`() {
-        assertEquals("/ws/lmu_windows/flags", KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LMU))
-        assertEquals("/ws/lmu_windows/proximity", KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LMU))
-        assertEquals("/ws/lmu_windows/damage", KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LMU))
+        assertEquals("/ws/lmu_windows/flags", KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows))
+        assertEquals("/ws/lmu_windows/proximity", KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LmuWindows))
+        assertEquals("/ws/lmu_windows/damage", KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows))
     }
 }

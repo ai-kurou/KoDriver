@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 
 internal fun Route.proximityWebSocket(observeProximity: ObserveProximityUseCase) {
-    webSocket(KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LMU)) {
+    webSocket(KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LmuWindows)) {
         observeProximity()
             .distinctUntilChanged()
             .collect { proximity ->

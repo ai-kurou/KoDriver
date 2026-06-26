@@ -19,6 +19,7 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -55,7 +56,7 @@ class Gt7Ps5NarratorViewModelTest {
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MY_BEST_LAP),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-        simulator: String? = "gt7_ps5",
+        simulator: Simulator? = Simulator.Gt7Ps5,
     ): Gt7Ps5NarratorViewModel {
         val readoutRepo = FakeReadoutPreferencesRepo(enabledOverrides, orderOverride)
         return Gt7Ps5NarratorViewModel(
@@ -74,7 +75,7 @@ class Gt7Ps5NarratorViewModelTest {
     fun `GT7非選択時はベストラップアナウンスをしない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts, simulator = "other")
+        buildViewModel(telemetryChannel = channel, ttsEngine = tts, simulator = null)
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
@@ -318,10 +319,10 @@ private class FakeChannelGt7Ps5Repository(
 }
 
 private class FakeSimulatorPreferencesRepo(
-    private val simulator: String?,
+    private val simulator: Simulator?,
 ) : SimulatorPreferencesRepository {
-    override fun selectedSimulator(): Flow<String?> = MutableStateFlow(simulator)
-    override suspend fun saveSelectedSimulator(simulator: String) = Unit
+    override fun selectedSimulator(): Flow<Simulator?> = MutableStateFlow(simulator)
+    override suspend fun saveSelectedSimulator(simulator: Simulator) = Unit
 }
 
 private class FakeReadoutPreferencesRepo(

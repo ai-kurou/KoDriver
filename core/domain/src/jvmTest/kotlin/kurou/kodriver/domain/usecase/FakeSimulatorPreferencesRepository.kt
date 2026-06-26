@@ -2,13 +2,14 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 
 internal class FakeSimulatorPreferencesRepository(
-    initial: String? = null,
+    initial: Simulator? = null,
 ) : SimulatorPreferencesRepository {
-    private val flow = MutableStateFlow(initial)
+    val flow = MutableStateFlow(initial)
 
-    override fun selectedSimulator(): Flow<String?> = flow
-    override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
+    override fun selectedSimulator(): Flow<Simulator?> = flow
+    override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.value = simulator }
 }

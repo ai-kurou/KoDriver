@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
@@ -35,7 +36,7 @@ class LmuWindowsConnectionViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<LmuWindowsConnectionUiState> = observeSelectedSimulator()
         .flatMapLatest { simulator ->
-            if (simulator == LMU_WINDOWS_SIMULATOR_KEY) {
+            if (simulator is Simulator.LmuWindows) {
                 connectionCheckFlow()
             } else {
                 flowOf(LmuWindowsConnectionUiState())
@@ -71,6 +72,5 @@ class LmuWindowsConnectionViewModel(
 
     private companion object {
         const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-        const val LMU_WINDOWS_SIMULATOR_KEY = "lmu_windows"
     }
 }

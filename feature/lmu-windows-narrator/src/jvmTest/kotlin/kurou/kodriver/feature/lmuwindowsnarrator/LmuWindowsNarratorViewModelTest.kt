@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -87,7 +88,7 @@ class LmuWindowsNarratorViewModelTest {
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-        simulator: String? = "lmu_windows",
+        simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
@@ -149,7 +150,7 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = "other", currentTimeMs = { fakeTime })
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = null, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
@@ -163,7 +164,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `LMU非選択時は旗アナウンスをしない`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = "other")
+        buildViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = null)
 
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
@@ -695,10 +696,10 @@ private class FakeChannelFlagRepository(
 }
 
 private class FakeConstantSimulatorRepository(
-    private val simulator: String?,
+    private val simulator: Simulator?,
 ) : SimulatorPreferencesRepository {
-    override fun selectedSimulator(): Flow<String?> = MutableStateFlow(simulator)
-    override suspend fun saveSelectedSimulator(simulator: String) = Unit
+    override fun selectedSimulator(): Flow<Simulator?> = MutableStateFlow(simulator)
+    override suspend fun saveSelectedSimulator(simulator: Simulator) = Unit
 }
 
 private class FakeAllEnabledReadoutPreferencesRepository(

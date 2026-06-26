@@ -1,8 +1,9 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.Simulator
 
 interface SimulatorPreferencesRepository {
-    fun selectedSimulator(): Flow<String?>
-    suspend fun saveSelectedSimulator(simulator: String)
+    fun selectedSimulator(): Flow<Simulator?>
+    suspend fun saveSelectedSimulator(simulator: Simulator)
 }

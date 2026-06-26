@@ -51,7 +51,7 @@ internal class WebSocketFlagRepository(
                 client.webSocket(
                     host = ip,
                     port = port,
-                    path = KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LMU),
+                    path = KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows),
                 ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {

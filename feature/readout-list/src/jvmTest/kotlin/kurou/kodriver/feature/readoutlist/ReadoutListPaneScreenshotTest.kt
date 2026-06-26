@@ -10,6 +10,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 
@@ -26,7 +27,7 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu_windows", "gt7_ps5"),
+                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
@@ -48,8 +49,8 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu_windows", "gt7_ps5"),
-                                selectedSimulator = "lmu_windows",
+                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                                selectedSimulator = Simulator.LmuWindows,
                                 items = listOf(
                                     ReadoutItemKey.VEHICLE_APPROACH,
                                     ReadoutItemKey.FLAG,
@@ -81,8 +82,8 @@ class ReadoutListPaneScreenshotTest {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
                             uiState = ReadoutListUiState(
-                                simulators = listOf("lmu_windows", "gt7_ps5"),
-                                selectedSimulator = "gt7_ps5",
+                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                                selectedSimulator = Simulator.Gt7Ps5,
                                 items = listOf(
                                     ReadoutItemKey.MY_BEST_LAP,
                                     ReadoutItemKey.REMAINING_FUEL_LAPS,
