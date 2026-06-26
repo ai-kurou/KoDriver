@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
 }
 
@@ -26,6 +27,9 @@ kotlin {
                 implementation(projects.core.domain)
                 implementation(libs.kotlinx.coroutinesCore)
                 implementation(libs.koin.core)
+                implementation(libs.androidx.datastore.core)
+                implementation(libs.kotlinx.serialization.protobuf)
+                implementation(libs.sentry)
             }
         }
         jvmMain {
@@ -38,6 +42,7 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutinesTest)
+            implementation(libs.androidx.datastore.core)
         }
     }
 }

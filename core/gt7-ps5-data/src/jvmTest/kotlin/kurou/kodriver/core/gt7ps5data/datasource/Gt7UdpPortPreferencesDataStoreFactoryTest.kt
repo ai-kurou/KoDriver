@@ -1,4 +1,4 @@
-package kurou.kodriver.data.datasource
+package kurou.kodriver.core.gt7ps5data.datasource
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope

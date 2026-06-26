@@ -1,4 +1,4 @@
-package kurou.kodriver.data.model
+package kurou.kodriver.core.gt7ps5data.model
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable

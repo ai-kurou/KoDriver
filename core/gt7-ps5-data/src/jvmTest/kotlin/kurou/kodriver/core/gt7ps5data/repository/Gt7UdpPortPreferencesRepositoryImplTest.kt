@@ -1,4 +1,4 @@
-package kurou.kodriver.data.repository
+package kurou.kodriver.core.gt7ps5data.repository
 
 import androidx.datastore.core.DataStoreFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.data.datasource.Gt7UdpPortPreferencesSerializer
+import kurou.kodriver.core.gt7ps5data.datasource.Gt7UdpPortPreferencesSerializer
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
