@@ -12,9 +12,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.domain)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.koin.compose.viewmodel)
             implementation(libs.kotlinx.coroutinesCore)
         }
         jvmTest.dependencies {
