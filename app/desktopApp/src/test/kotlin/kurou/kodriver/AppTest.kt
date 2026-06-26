@@ -5,7 +5,9 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.core.gt7ps5data.createGt7UdpPortPreferencesRepository
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
+import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
@@ -29,7 +31,14 @@ class AppTest {
                     listOf(
                         desktopDataModule,
                         lmuWindowsDataModule,
-                        gt7Ps5DataModule("${System.getProperty("user.home")}/.kodriver-test"),
+                        gt7Ps5DataModule,
+                        module {
+                            single<Gt7UdpPortPreferencesRepository> {
+                                createGt7UdpPortPreferencesRepository(
+                                    "${System.getProperty("user.home")}/.kodriver",
+                                )
+                            }
+                        },
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
                     ) + appModules,

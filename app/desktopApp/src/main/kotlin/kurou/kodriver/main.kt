@@ -8,9 +8,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import io.sentry.Sentry
+import kurou.kodriver.core.gt7ps5data.createGt7UdpPortPreferencesRepository
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
+import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
 import org.koin.core.context.startKoin
@@ -28,7 +30,16 @@ fun main() {
     val koinApplication = startKoin {
         val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
         modules(
-            listOf(desktopDataModule, lmuWindowsDataModule, gt7Ps5DataModule(kodriverDirectory)) +
+            listOf(
+                desktopDataModule,
+                lmuWindowsDataModule,
+                gt7Ps5DataModule,
+                module {
+                    single<Gt7UdpPortPreferencesRepository> {
+                        createGt7UdpPortPreferencesRepository(kodriverDirectory)
+                    }
+                },
+            ) +
                 appModules +
                 listOf(module { single(named("appVersion")) { APP_VERSION } }),
         )

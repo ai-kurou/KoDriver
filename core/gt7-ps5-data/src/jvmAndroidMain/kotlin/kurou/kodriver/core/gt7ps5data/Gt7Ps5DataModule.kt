@@ -13,11 +13,8 @@ import org.koin.dsl.module
 
 private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
 
-fun gt7Ps5DataModule(directory: String) = module {
+val gt7Ps5DataModule = module {
     single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
-    single<Gt7UdpPortPreferencesRepository> {
-        createGt7UdpPortPreferencesRepository(directory = directory)
-    }
     single<Gt7Ps5PacketSource> {
         Gt7Ps5UdpSource(
             consoleAddressFlow = get<ConsoleAddressRepository>().consoleAddress(),
