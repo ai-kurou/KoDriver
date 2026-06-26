@@ -20,6 +20,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
@@ -40,6 +41,7 @@ data class ReadoutListUseCases(
 
 data class RemainingFuelLapsUseCases(
     val observeRemainingFuelLapsThreshold: ObserveGt7Ps5RemainingFuelLapsUseCase,
+    val observeRemainingFuelLapsEnabled: ObserveGt7Ps5RemainingFuelLapsEnabledUseCase,
 )
 
 private data class FuelTrackingState(
@@ -78,6 +80,9 @@ class Gt7Ps5NarratorViewModel(
 
     private val fuelThreshold = remainingFuelLapsUseCases.observeRemainingFuelLapsThreshold()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
+
+    private val remainingFuelLapsEnabled = remainingFuelLapsUseCases.observeRemainingFuelLapsEnabled()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     private var personalBestMs: Int = Int.MAX_VALUE
     private var lastAnnouncedRemainingLaps: Int = -1
@@ -150,7 +155,7 @@ class Gt7Ps5NarratorViewModel(
             val threshold = fuelThreshold.value
             if (remainingLapsFloor < 1 || remainingLapsFloor > threshold) return@onEach
             if (remainingLapsFloor == lastAnnouncedRemainingLaps) return@onEach
-            if (enabledStates.value[ReadoutItemKey.RemainingFuelLaps] == false) return@onEach
+            if (!remainingFuelLapsEnabled.value) return@onEach
             lastAnnouncedRemainingLaps = remainingLapsFloor
             speakWithPriority(SpeechEvent.RemainingFuelLapsWarning(remainingLapsFloor))
         }

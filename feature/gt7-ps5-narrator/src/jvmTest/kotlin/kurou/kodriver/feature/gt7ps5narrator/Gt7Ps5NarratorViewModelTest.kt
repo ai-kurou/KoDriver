@@ -20,11 +20,13 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
@@ -52,16 +54,21 @@ class Gt7Ps5NarratorViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private data class ReadoutSettings(
+        val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        val remainingFuelLapsEnabled: Boolean = true,
+    )
+
     private fun buildViewModel(
         telemetryChannel: Channel<Gt7Ps5TelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
-        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        readoutSettings: ReadoutSettings = ReadoutSettings(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MyBestLap),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         simulator: Simulator? = Simulator.Gt7Ps5,
         fuelThreshold: Int = 3,
     ): Gt7Ps5NarratorViewModel {
-        val readoutRepo = FakeReadoutPreferencesRepo(enabledOverrides, orderOverride)
+        val readoutRepo = FakeReadoutPreferencesRepo(readoutSettings.enabledOverrides, orderOverride)
         return Gt7Ps5NarratorViewModel(
             myBestLapUseCases = MyBestLapUseCases(
                 observeGt7Ps5 = ObserveGt7Ps5UseCase(
@@ -81,6 +88,9 @@ class Gt7Ps5NarratorViewModelTest {
             remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
                 observeRemainingFuelLapsThreshold = ObserveGt7Ps5RemainingFuelLapsUseCase(
                     FakeRemainingFuelLapsPreferencesRepo(fuelThreshold),
+                ),
+                observeRemainingFuelLapsEnabled = ObserveGt7Ps5RemainingFuelLapsEnabledUseCase(
+                    FakeGt7Ps5RemainingFuelLapsEnabledRepo(readoutSettings.remainingFuelLapsEnabled),
                 ),
             ),
             ttsEngine = ttsEngine,
@@ -195,7 +205,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.MyBestLap to false),
+            readoutSettings = ReadoutSettings(enabledOverrides = mapOf(ReadoutItemKey.MyBestLap to false)),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -273,7 +283,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryChannel = channel,
             ttsEngine = tts,
             simulator = null,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 2,
         )
 
@@ -291,7 +301,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 3,
         )
 
@@ -321,7 +331,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 5,
         )
 
@@ -352,7 +362,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 2,
         )
 
@@ -370,7 +380,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 3,
         )
 
@@ -403,7 +413,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to false),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = false),
             fuelThreshold = 3,
         )
 
@@ -421,7 +431,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 3,
         )
 
@@ -449,7 +459,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
             fuelThreshold = 3,
         )
 
@@ -575,4 +585,11 @@ private class FakeRemainingFuelLapsPreferencesRepo(
 ) : Gt7Ps5RemainingFuelLapsPreferencesRepository {
     override fun observeRemainingFuelLaps(): Flow<Int> = MutableStateFlow(threshold)
     override suspend fun saveRemainingFuelLaps(laps: Int) = Unit
+}
+
+private class FakeGt7Ps5RemainingFuelLapsEnabledRepo(
+    private val enabled: Boolean = true,
+) : Gt7Ps5RemainingFuelLapsEnabledRepository {
+    override fun observeEnabled(): Flow<Boolean> = MutableStateFlow(enabled)
+    override suspend fun saveEnabled(enabled: Boolean) = Unit
 }
