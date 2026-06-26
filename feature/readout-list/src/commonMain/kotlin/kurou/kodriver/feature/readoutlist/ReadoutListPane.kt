@@ -58,6 +58,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
@@ -305,10 +307,23 @@ internal fun ReadoutListPane(
 
 @Preview(showBackground = true)
 @Composable
-private fun ReadoutListPanePreview() {
+private fun ReadoutListPanePreview(
+    @PreviewParameter(ReadoutListPanePreviewParameterProvider::class)
+    uiState: ReadoutListUiState,
+) {
     ReadoutListPane(
-        uiState = ReadoutListUiState(
-            simulators = listOf("lmu_windows"),
+        uiState = uiState,
+        onSimulatorSelected = {},
+        onMove = { _, _ -> },
+        onReadoutEnabledChanged = { _, _ -> },
+        onItemClick = { _ -> },
+    )
+}
+
+private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider<ReadoutListUiState> {
+    override val values: Sequence<ReadoutListUiState> = sequenceOf(
+        ReadoutListUiState(
+            simulators = listOf("lmu_windows", "gt7_ps5"),
             selectedSimulator = "lmu_windows",
             items = listOf(
                 ReadoutItemKey.VEHICLE_APPROACH,
@@ -316,9 +331,13 @@ private fun ReadoutListPanePreview() {
                 ReadoutItemKey.VEHICLE_DAMAGE,
             ),
         ),
-        onSimulatorSelected = {},
-        onMove = { _, _ -> },
-        onReadoutEnabledChanged = { _, _ -> },
-        onItemClick = { _ -> },
+        ReadoutListUiState(
+            simulators = listOf("lmu_windows", "gt7_ps5"),
+            selectedSimulator = "gt7_ps5",
+            items = listOf(
+                ReadoutItemKey.MY_BEST_LAP,
+                ReadoutItemKey.REMAINING_FUEL_LAPS,
+            ),
+        ),
     )
 }
