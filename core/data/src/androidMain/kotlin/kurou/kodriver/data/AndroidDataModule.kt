@@ -2,10 +2,12 @@ package kurou.kodriver.data
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -35,6 +37,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<ReadoutPreferencesRepository> {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
+    }
+    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
+        Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl(get())
     }
     single<LmuWindowsRepository> { EmptyLmuWindowsRepository() }
     single<FlagRepository> { WebSocketFlagRepository(get()) }
