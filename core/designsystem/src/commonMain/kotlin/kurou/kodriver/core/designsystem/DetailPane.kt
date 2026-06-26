@@ -16,27 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DetailPaneTitle(
-    title: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(modifier = modifier.height(IntrinsicSize.Min).padding(horizontal = 16.dp, vertical = 12.dp)) {
-        Box(
-            modifier = Modifier
-                .width(4.dp)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.primary),
-        )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 8.dp),
-        )
-    }
-}
-
-@Composable
 fun DetailPaneDescription(
     text: String,
     modifier: Modifier = Modifier,
