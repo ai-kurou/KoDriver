@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -57,12 +58,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
 import kodriver.feature.readoutlist.generated.resources.gt7
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
+import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.lmu
@@ -97,6 +101,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     ReadoutItemKey.FLAG -> stringResource(Res.string.item_flag)
     ReadoutItemKey.VEHICLE_DAMAGE -> stringResource(Res.string.item_vehicle_damage)
     ReadoutItemKey.MY_BEST_LAP -> stringResource(Res.string.item_my_best_lap)
+    ReadoutItemKey.REMAINING_FUEL_LAPS -> stringResource(Res.string.item_remaining_fuel_laps)
     else -> itemId.value
 }
 
@@ -105,6 +110,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     ReadoutItemKey.FLAG -> Icons.Filled.Flag
     ReadoutItemKey.VEHICLE_DAMAGE -> Icons.Filled.Build
     ReadoutItemKey.MY_BEST_LAP -> Icons.Filled.Timer
+    ReadoutItemKey.REMAINING_FUEL_LAPS -> Icons.Filled.LocalGasStation
     else -> Icons.Filled.DirectionsCar
 }
 
@@ -301,10 +307,23 @@ internal fun ReadoutListPane(
 
 @Preview(showBackground = true)
 @Composable
-private fun ReadoutListPanePreview() {
+private fun ReadoutListPanePreview(
+    @PreviewParameter(ReadoutListPanePreviewParameterProvider::class)
+    uiState: ReadoutListUiState,
+) {
     ReadoutListPane(
-        uiState = ReadoutListUiState(
-            simulators = listOf("lmu_windows"),
+        uiState = uiState,
+        onSimulatorSelected = {},
+        onMove = { _, _ -> },
+        onReadoutEnabledChanged = { _, _ -> },
+        onItemClick = { _ -> },
+    )
+}
+
+private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider<ReadoutListUiState> {
+    override val values: Sequence<ReadoutListUiState> = sequenceOf(
+        ReadoutListUiState(
+            simulators = listOf("lmu_windows", "gt7_ps5"),
             selectedSimulator = "lmu_windows",
             items = listOf(
                 ReadoutItemKey.VEHICLE_APPROACH,
@@ -312,9 +331,13 @@ private fun ReadoutListPanePreview() {
                 ReadoutItemKey.VEHICLE_DAMAGE,
             ),
         ),
-        onSimulatorSelected = {},
-        onMove = { _, _ -> },
-        onReadoutEnabledChanged = { _, _ -> },
-        onItemClick = { _ -> },
+        ReadoutListUiState(
+            simulators = listOf("lmu_windows", "gt7_ps5"),
+            selectedSimulator = "gt7_ps5",
+            items = listOf(
+                ReadoutItemKey.MY_BEST_LAP,
+                ReadoutItemKey.REMAINING_FUEL_LAPS,
+            ),
+        ),
     )
 }

@@ -22,6 +22,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
+import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kotlinx.coroutines.launch
@@ -130,6 +131,8 @@ internal fun ReadoutContent(
                     ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
                     ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
                     ReadoutListItemType.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
+                    ReadoutListItemType.Gt7Ps5.RemainingFuelLaps ->
+                        stringResource(Res.string.item_remaining_fuel_laps)
                 }
                 ReadoutDetailPane(
                     title = title,

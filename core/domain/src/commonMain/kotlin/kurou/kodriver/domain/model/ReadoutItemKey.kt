@@ -12,6 +12,7 @@ sealed interface ReadoutItemKey {
     data object VehicleDamage : ReadoutItemKey { override val value = "vehicle_damage" }
     data object Overheat : ReadoutItemKey { override val value = "overheat" }
     data object MyBestLap : ReadoutItemKey { override val value = "my_best_lap" }
+    data object RemainingFuelLaps : ReadoutItemKey { override val value = "remaining_fuel_laps" }
 
     companion object {
         val VEHICLE_APPROACH: ReadoutItemKey = VehicleApproach
@@ -23,6 +24,7 @@ sealed interface ReadoutItemKey {
         val VEHICLE_DAMAGE: ReadoutItemKey = VehicleDamage
         val OVERHEAT: ReadoutItemKey = Overheat
         val MY_BEST_LAP: ReadoutItemKey = MyBestLap
+        val REMAINING_FUEL_LAPS: ReadoutItemKey = RemainingFuelLaps
 
         private val entries = listOf(
             VEHICLE_APPROACH,
@@ -34,6 +36,7 @@ sealed interface ReadoutItemKey {
             VEHICLE_DAMAGE,
             OVERHEAT,
             MY_BEST_LAP,
+            REMAINING_FUEL_LAPS,
         )
 
         fun fromValue(value: String): ReadoutItemKey? = entries.find { it.value == value }

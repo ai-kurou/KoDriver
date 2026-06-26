@@ -12,6 +12,7 @@ class ReadoutItemKeyTest {
         assertEquals(ReadoutItemKey.FLAG, ReadoutItemKey.fromValue("flag"))
         assertEquals(ReadoutItemKey.VEHICLE_DAMAGE, ReadoutItemKey.fromValue("vehicle_damage"))
         assertEquals(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.fromValue("my_best_lap"))
+        assertEquals(ReadoutItemKey.REMAINING_FUEL_LAPS, ReadoutItemKey.fromValue("remaining_fuel_laps"))
     }
 
     @Test

@@ -40,6 +40,14 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
+    fun `gt7_ps5 の remaining_fuel_laps は Gt7Ps5_RemainingFuelLaps を返す`() {
+        assertEquals(
+            ReadoutListItemType.Gt7Ps5.RemainingFuelLaps,
+            ReadoutListItemType.fromId("gt7_ps5", ReadoutItemKey.REMAINING_FUEL_LAPS),
+        )
+    }
+
+    @Test
     fun `lmu_windows でシミュレータに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId("lmu_windows", ReadoutItemKey.MY_BEST_LAP))
     }
