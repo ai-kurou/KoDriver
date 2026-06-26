@@ -1,4 +1,4 @@
-package kurou.kodriver.data.repository
+package kurou.kodriver.core.gt7ps5data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

@@ -1,10 +1,10 @@
-package kurou.kodriver.data.datasource
+package kurou.kodriver.core.gt7ps5data.datasource
 
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
-import kurou.kodriver.data.model.Gt7UdpPortPreferences
+import kurou.kodriver.core.gt7ps5data.model.Gt7UdpPortPreferences
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test

@@ -1,4 +1,4 @@
-package kurou.kodriver.data
+package kurou.kodriver.core.gt7ps5data
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -11,7 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Gt7UdpPortPreferencesRepositoryTest {
+class Gt7UdpPortPreferencesRepositoryFactoryTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_gt7_udp_port_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())

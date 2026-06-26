@@ -1,11 +1,8 @@
 package kurou.kodriver.data
 
-import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
@@ -24,9 +21,6 @@ val desktopDataModule = module {
     }
     single<ReadoutPreferencesRepository> {
         createReadoutPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
-        Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl(get())
     }
     single<ProximityThresholdsPreferencesRepository> {
         createProximityThresholdsPreferencesRepository(directory = kodriverDirectory)
@@ -54,7 +48,4 @@ val desktopDataModule = module {
     }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
     single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
-    single<Gt7UdpPortPreferencesRepository> {
-        createGt7UdpPortPreferencesRepository(directory = kodriverDirectory)
-    }
 }

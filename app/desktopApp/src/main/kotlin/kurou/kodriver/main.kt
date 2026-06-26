@@ -26,8 +26,9 @@ fun main() {
         options.dsn = SENTRY_DSN
     }
     val koinApplication = startKoin {
+        val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
         modules(
-            listOf(desktopDataModule, lmuWindowsDataModule, gt7Ps5DataModule) +
+            listOf(desktopDataModule, lmuWindowsDataModule, gt7Ps5DataModule(kodriverDirectory)) +
                 appModules +
                 listOf(module { single(named("appVersion")) { APP_VERSION } }),
         )

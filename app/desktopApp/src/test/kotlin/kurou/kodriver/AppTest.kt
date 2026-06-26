@@ -29,7 +29,7 @@ class AppTest {
                     listOf(
                         desktopDataModule,
                         lmuWindowsDataModule,
-                        gt7Ps5DataModule,
+                        gt7Ps5DataModule("${System.getProperty("user.home")}/.kodriver-test"),
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
                     ) + appModules,

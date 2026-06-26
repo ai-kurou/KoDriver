@@ -21,7 +21,10 @@ class KoDriverApplication : Application() {
         }
         startKoin {
             modules(
-                listOf(androidDataModule(this@KoDriverApplication), gt7Ps5DataModule) +
+                listOf(
+                    androidDataModule(this@KoDriverApplication),
+                    gt7Ps5DataModule(filesDir.absolutePath),
+                ) +
                     appModules +
                     listOf(module { single(named("appVersion")) { BuildConfig.VERSION_NAME } }),
             )
