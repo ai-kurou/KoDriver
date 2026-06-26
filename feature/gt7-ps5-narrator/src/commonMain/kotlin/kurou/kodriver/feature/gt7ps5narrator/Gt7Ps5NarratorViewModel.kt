@@ -24,32 +24,40 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
+data class MyBestLapUseCases(
+    val observeGt7Ps5: ObserveGt7Ps5UseCase,
+    val observeMyBestLapVoiceType: ObserveMyBestLapVoiceTypeUseCase,
+)
+
+data class ReadoutListUseCases(
+    val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val observeReadoutOrder: ObserveReadoutOrderUseCase,
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5NarratorViewModel(
-    observeGt7Ps5: ObserveGt7Ps5UseCase,
-    observeMyBestLapVoiceType: ObserveMyBestLapVoiceTypeUseCase,
-    observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    observeReadoutOrder: ObserveReadoutOrderUseCase,
-    observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    myBestLapUseCases: MyBestLapUseCases,
+    readoutListUseCases: ReadoutListUseCases,
     private val ttsEngine: TextToSpeechEngine,
 ) : ViewModel() {
 
-    private val selectedSimulator = observeSelectedSimulator()
+    private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val enabledStates = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else observeReadoutEnabledStates(simulator.id)
+            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val readoutOrder = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else observeReadoutOrder(simulator.id)
+            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val voiceType = observeMyBestLapVoiceType()
+    private val voiceType = myBestLapUseCases.observeMyBestLapVoiceType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
 
     private var personalBestMs: Int = Int.MAX_VALUE
@@ -58,7 +66,7 @@ class Gt7Ps5NarratorViewModel(
     private val myBestLapJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.Gt7Ps5) return@flatMapLatest emptyFlow()
-            observeGt7Ps5()
+            myBestLapUseCases.observeGt7Ps5()
                 .map { it.bestLapTimeMs }
                 .distinctUntilChanged()
                 .scan(null as Int? to null as Int?) { acc, current -> acc.second to current }
@@ -89,8 +97,5 @@ class Gt7Ps5NarratorViewModel(
             ttsEngine.stop()
         }
         ttsEngine.speak(event)
-    }
-
-    private companion object {
     }
 }
