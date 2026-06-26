@@ -29,7 +29,7 @@ class ReadoutListViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var simulatorRepository: FakeSimulatorPreferencesRepository
     private lateinit var readoutRepository: FakeReadoutPreferencesRepository
-    private lateinit var gt7Ps5RemainingFuelLapsRepository: FakeGt7Ps5RemainingFuelLapsPreferencesRepository
+    private lateinit var gt7Ps5RemainingFuelLapsRepository: FakeGt7Ps5RemainingFuelLapsEnabledRepository
     private lateinit var viewModel: ReadoutListViewModel
 
     @Before
@@ -37,7 +37,7 @@ class ReadoutListViewModelTest {
         Dispatchers.setMain(testDispatcher)
         simulatorRepository = FakeSimulatorPreferencesRepository()
         readoutRepository = FakeReadoutPreferencesRepository()
-        gt7Ps5RemainingFuelLapsRepository = FakeGt7Ps5RemainingFuelLapsPreferencesRepository()
+        gt7Ps5RemainingFuelLapsRepository = FakeGt7Ps5RemainingFuelLapsEnabledRepository()
         viewModel = ReadoutListViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),

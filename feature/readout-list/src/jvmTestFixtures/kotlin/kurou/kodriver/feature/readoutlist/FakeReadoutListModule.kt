@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -16,7 +16,7 @@ import org.koin.dsl.module
 val fakeReadoutListModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
-    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepositoryImpl() }
+    single<Gt7Ps5RemainingFuelLapsEnabledRepository> { FakeGt7Ps5RemainingFuelLapsEnabledRepositoryImpl() }
     single<ProximityThresholdsPreferencesRepository> { FakeProximityThresholdsPreferencesRepositoryImpl() }
     single<FlagPreferencesRepository> { FakeFlagPreferencesRepositoryImpl() }
 }
@@ -66,7 +66,7 @@ private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepositor
     }
 }
 
-private class FakeGt7Ps5RemainingFuelLapsPreferencesRepositoryImpl : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+private class FakeGt7Ps5RemainingFuelLapsEnabledRepositoryImpl : Gt7Ps5RemainingFuelLapsEnabledRepository {
     private val enabled = MutableStateFlow(true)
 
     override fun observeEnabled(): Flow<Boolean> = enabled

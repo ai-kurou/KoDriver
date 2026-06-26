@@ -24,7 +24,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
     fun `デフォルト値3周のスライダーと説明を表示する`() {
         rule.setContent {
             MaterialTheme {
-                Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
+                Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent()
             }
         }
 
@@ -39,7 +39,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
-                    remainingFuelLaps = 1f,
+                    uiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 1),
                     onRemainingFuelLapsChanged = {},
                 )
             }
@@ -50,11 +50,11 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
 
     @Test
     fun `スライダーの値を確定するとonRemainingFuelLapsChangedが呼ばれる`() {
-        var changedRemainingFuelLaps: Float? = null
+        var changedRemainingFuelLaps: Int? = null
         rule.setContent {
             MaterialTheme {
                 Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
-                    remainingFuelLaps = 3f,
+                    uiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 3),
                     onRemainingFuelLapsChanged = { changedRemainingFuelLaps = it },
                 )
             }
@@ -66,7 +66,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             it(5f)
         }
 
-        assertEquals(5f, changedRemainingFuelLaps)
+        assertEquals(5, changedRemainingFuelLaps)
     }
 
     @Test
@@ -75,7 +75,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         rule.setContent {
             MaterialTheme {
                 Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
-                    remainingFuelLaps = 5f,
+                    uiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 5),
                     onRemainingFuelLapsChanged = {},
                     onResetRemainingFuelLaps = { resetCalled = true },
                 )
