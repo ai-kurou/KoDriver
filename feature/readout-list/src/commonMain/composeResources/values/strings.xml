@@ -5,7 +5,12 @@
     <string name="simulator_name_gt7_ps5">GranTurismo 7（PS5）</string>
     <string name="item_vehicle_approach">車両接近</string>
     <string name="item_flag">フラッグ</string>
+    <string name="item_blue_flag">ブルーフラッグ</string>
+    <string name="item_sector_yellow_flag">イエローフラッグ</string>
+    <string name="item_full_course_yellow">フルコースイエロー</string>
+    <string name="item_red_flag">レッドフラッグ</string>
     <string name="item_vehicle_damage">車両故障</string>
+    <string name="item_overheat">オーバーヒート</string>
     <string name="item_my_best_lap">自己ベストラップ</string>
     <string name="item_remaining_fuel_laps">燃料残り周回数</string>
     <string name="drag_handle">ドラッグして並び替え</string>

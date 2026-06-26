@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -47,7 +48,7 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `LMU選択時に接続確認結果を反映する`() = runTest {
         val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
         val viewModel = createViewModel(lmuChecker = lmuChecker, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -60,7 +61,7 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `GT7選択時に接続確認結果を反映する`() = runTest {
         val gt7Repository = FakeGt7Ps5Repository(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "gt7_ps5")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
         val viewModel = createViewModel(gt7Repository = gt7Repository, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -81,12 +82,12 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `LMU選択に切り替えると接続確認を開始する`() = runTest {
         val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "gt7_ps5")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
         val viewModel = createViewModel(lmuChecker = lmuChecker, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
 
-        simulatorRepository.saveSelectedSimulator("lmu_windows")
+        simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows)
         dispatcher.scheduler.runCurrent()
 
         assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
@@ -96,12 +97,12 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `GT7選択に切り替えると接続確認を開始する`() = runTest {
         val gt7Repository = FakeGt7Ps5Repository(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
         val viewModel = createViewModel(gt7Repository = gt7Repository, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
 
-        simulatorRepository.saveSelectedSimulator("gt7_ps5")
+        simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5)
         dispatcher.scheduler.runCurrent()
 
         assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
@@ -111,13 +112,13 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `LMUから別シミュレータへ切り替えると未確認にリセットされる`() = runTest {
         val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
         val viewModel = createViewModel(lmuChecker = lmuChecker, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertEquals(ConnectionBannerVmStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
 
-        simulatorRepository.saveSelectedSimulator("other")
+        simulatorRepository.flow.value = null
         dispatcher.scheduler.runCurrent()
 
         assertEquals(ConnectionBannerVmStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
@@ -127,7 +128,7 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `LMU接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
         val lmuChecker = FakeLmuBannerConnectionChecker(isConnected = false, throwCount = 1)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
         val viewModel = createViewModel(lmuChecker = lmuChecker, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
@@ -144,7 +145,7 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `GT7接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
         val gt7Repository = FakeGt7Ps5Repository(isConnected = false, failureCount = 1)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "gt7_ps5")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
         val viewModel = createViewModel(gt7Repository = gt7Repository, simulatorRepository = simulatorRepository)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
@@ -160,7 +161,7 @@ class ConnectionBannerViewModelTest {
 
     @Test
     fun `GT7選択時にコンソールIP未設定であればIP_NOT_CONFIGUREDを返す`() = runTest {
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "gt7_ps5")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
         val viewModel = createViewModel(
             simulatorRepository = simulatorRepository,
             consoleAddressRepository = FakeConsoleAddressRepository(initial = null),
@@ -175,7 +176,7 @@ class ConnectionBannerViewModelTest {
     @Test
     fun `GT7選択時にコンソールIPが設定されると接続確認を開始する`() = runTest {
         val gt7Repository = FakeGt7Ps5Repository(isConnected = true)
-        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = "gt7_ps5")
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
         val consoleAddressRepository = FakeConsoleAddressRepository(initial = null)
         val viewModel = createViewModel(
             gt7Repository = gt7Repository,
@@ -249,10 +250,10 @@ private class FakeGt7Ps5Repository(
 }
 
 private class FakeSimulatorPreferencesRepository(
-    initial: String? = null,
+    initial: Simulator? = null,
 ) : SimulatorPreferencesRepository {
-    private val flow = MutableStateFlow(initial)
+    val flow = MutableStateFlow(initial)
 
-    override fun selectedSimulator(): Flow<String?> = flow
-    override suspend fun saveSelectedSimulator(simulator: String) { flow.update { simulator } }
+    override fun selectedSimulator(): Flow<Simulator?> = flow
+    override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
 }

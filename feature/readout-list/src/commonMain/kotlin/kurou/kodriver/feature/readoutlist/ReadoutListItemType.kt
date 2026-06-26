@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 
 sealed class ReadoutListItemType(val id: ReadoutItemKey) {
     sealed class LmuWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
@@ -15,19 +16,18 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
     }
 
     companion object {
-        fun fromId(simulatorId: String, id: ReadoutItemKey): ReadoutListItemType? = when (simulatorId) {
-            "lmu_windows" -> when (id) {
+        fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
+            is Simulator.LmuWindows -> when (id) {
                 ReadoutItemKey.VEHICLE_APPROACH -> LmuWindows.VehicleApproach
                 ReadoutItemKey.FLAG -> LmuWindows.Flag
                 ReadoutItemKey.VEHICLE_DAMAGE -> LmuWindows.VehicleDamage
                 else -> null
             }
-            "gt7_ps5" -> when (id) {
+            is Simulator.Gt7Ps5 -> when (id) {
                 ReadoutItemKey.MY_BEST_LAP -> Gt7Ps5.MyBestLap
                 ReadoutItemKey.REMAINING_FUEL_LAPS -> Gt7Ps5.RemainingFuelLaps
                 else -> null
             }
-            else -> null
         }
     }
 }

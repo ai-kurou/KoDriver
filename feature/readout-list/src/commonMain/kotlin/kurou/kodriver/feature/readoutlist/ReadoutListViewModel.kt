@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -22,22 +23,22 @@ import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
-private val simulatorItems: Map<String, List<ReadoutItemKey>> = mapOf(
-    "lmu_windows" to listOf(
+private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
+    Simulator.LmuWindows to listOf(
         ReadoutItemKey.FLAG,
         ReadoutItemKey.VEHICLE_APPROACH,
         ReadoutItemKey.VEHICLE_DAMAGE,
     ),
-    "gt7_ps5" to listOf(
+    Simulator.Gt7Ps5 to listOf(
         ReadoutItemKey.MY_BEST_LAP,
         ReadoutItemKey.REMAINING_FUEL_LAPS,
     ),
 )
 
-private val simulators: List<String> = simulatorItems.keys.toList()
+private val simulators: List<Simulator> = simulatorItems.keys.toList()
 
 private data class LocalOrderState(
-    val simulator: String?,
+    val simulator: Simulator?,
     val items: List<ReadoutItemKey>,
 )
 
@@ -53,7 +54,7 @@ class ReadoutListViewModel(
     private val saveReadoutOrder: SaveReadoutOrderUseCase,
 ) : ViewModel() {
 
-    private val _selectedSimulator: StateFlow<String?> = observeSelectedSimulator()
+    private val _selectedSimulator: StateFlow<Simulator?> = observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
@@ -62,7 +63,7 @@ class ReadoutListViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _persistedOrder: StateFlow<List<ReadoutItemKey>> = _selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != null) observeReadoutOrder(simulator)
+            if (simulator != null) observeReadoutOrder(simulator.id)
             else flowOf(emptyList())
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -70,7 +71,7 @@ class ReadoutListViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != null) observeReadoutEnabledStates(simulator)
+            if (simulator != null) observeReadoutEnabledStates(simulator.id)
             else flowOf(emptyMap())
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
@@ -109,7 +110,7 @@ class ReadoutListViewModel(
             selectedSimulator = selected,
             simulators = simulators,
             items = items,
-            readoutEnabledStates = if (selected == GT7_PS5_SIMULATOR_ID) {
+            readoutEnabledStates = if (selected == Simulator.Gt7Ps5) {
                 readoutEnabledStates + (ReadoutItemKey.REMAINING_FUEL_LAPS to remainingFuelLapsEnabled)
             } else {
                 readoutEnabledStates
@@ -122,7 +123,7 @@ class ReadoutListViewModel(
         ReadoutListUiState(simulators = simulators),
     )
 
-    fun onSimulatorSelected(simulator: String) {
+    fun onSimulatorSelected(simulator: Simulator) {
         viewModelScope.launch {
             saveSelectedSimulator(simulator)
         }
@@ -134,7 +135,7 @@ class ReadoutListViewModel(
             .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
         viewModelScope.launch {
-            saveReadoutOrder(selected, newItems)
+            saveReadoutOrder(selected.id, newItems)
         }
     }
 
@@ -151,15 +152,11 @@ class ReadoutListViewModel(
     fun onReadoutEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
-            if (simulator == GT7_PS5_SIMULATOR_ID && key == ReadoutItemKey.REMAINING_FUEL_LAPS) {
+            if (simulator == Simulator.Gt7Ps5 && key == ReadoutItemKey.REMAINING_FUEL_LAPS) {
                 saveGt7Ps5RemainingFuelLapsEnabled(enabled)
             } else {
-                saveReadoutEnabledState(simulator, key, enabled)
+                saveReadoutEnabledState(simulator.id, key, enabled)
             }
         }
-    }
-
-    private companion object {
-        const val GT7_PS5_SIMULATOR_ID = "gt7_ps5"
     }
 }

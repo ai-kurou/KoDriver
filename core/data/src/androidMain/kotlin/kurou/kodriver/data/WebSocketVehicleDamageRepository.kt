@@ -50,7 +50,7 @@ internal class WebSocketVehicleDamageRepository(
                 client.webSocket(
                     host = ip,
                     port = port,
-                    path = KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LMU),
+                    path = KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows),
                 ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {

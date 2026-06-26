@@ -22,7 +22,7 @@ enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONN
 data class ServerConnectionUiState(
     val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = false,
-    val selectedSimulator: String? = null,
+    val selectedSimulator: Simulator? = null,
     val serverVersion: String? = null,
     val showVersionMismatchBottomSheet: Boolean = false,
     val appVersion: String = "",
@@ -50,7 +50,7 @@ class ServerConnectionViewModel(
         observeSelectedSimulator(),
     ) { ip, simulator -> ip to simulator }
         .flatMapLatest { (ip, simulator) ->
-            val requiresServer = Simulator.fromId(simulator.orEmpty())?.requiresKoDriverServer == true
+            val requiresServer = simulator?.requiresKoDriverServer == true
             if (ip != null) {
                 connectionCheckFlow(ip, simulator, requiresServer)
             } else {
@@ -79,7 +79,7 @@ class ServerConnectionViewModel(
         _showVersionMismatchBottomSheet.value = false
     }
 
-    private fun connectionCheckFlow(ip: String, simulator: String?, requiresServer: Boolean) = flow {
+    private fun connectionCheckFlow(ip: String, simulator: Simulator?, requiresServer: Boolean) = flow {
         emit(
             ServerConnectionUiState(
                 connectionStatus = ServerConnectionStatus.CHECKING,

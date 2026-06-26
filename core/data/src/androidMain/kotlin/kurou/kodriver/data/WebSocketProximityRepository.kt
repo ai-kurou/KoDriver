@@ -51,7 +51,7 @@ internal class WebSocketProximityRepository(
                 client.webSocket(
                     host = ip,
                     port = port,
-                    path = KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LMU),
+                    path = KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LmuWindows),
                 ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {

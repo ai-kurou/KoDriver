@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.SimulatorPreferencesSerializer
+import kurou.kodriver.domain.model.Simulator
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -34,10 +35,10 @@ class SimulatorPreferencesRepositoryImplTest {
     fun `初期値はnull・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertNull(repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator("lmu_windows")
-        assertEquals("lmu_windows", repository.selectedSimulator().first())
+        repository.saveSelectedSimulator(Simulator.LmuWindows)
+        assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator("rFactor 2")
-        assertEquals("rFactor 2", repository.selectedSimulator().first())
+        repository.saveSelectedSimulator(Simulator.Gt7Ps5)
+        assertEquals(Simulator.Gt7Ps5, repository.selectedSimulator().first())
     }
 }

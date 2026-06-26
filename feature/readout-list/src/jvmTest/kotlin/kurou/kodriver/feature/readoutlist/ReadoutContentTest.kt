@@ -17,6 +17,7 @@ import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
 import org.junit.Rule
 import org.junit.Test
@@ -55,15 +56,15 @@ class ReadoutContentTest {
             )
             ReadoutContent(
                 uiState = ReadoutListUiState(
-                    simulators = listOf("lmu_windows"),
-                    selectedSimulator = "lmu_windows",
+                    simulators = listOf(Simulator.LmuWindows),
+                    selectedSimulator = Simulator.LmuWindows,
                     items = listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
-                onItemSelected = { selectedItem = ReadoutListItemType.fromId("lmu_windows", it) },
+                onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.LmuWindows, it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -91,15 +92,15 @@ class ReadoutContentTest {
             )
             ReadoutContent(
                 uiState = ReadoutListUiState(
-                    simulators = listOf("gt7_ps5"),
-                    selectedSimulator = "gt7_ps5",
+                    simulators = listOf(Simulator.Gt7Ps5),
+                    selectedSimulator = Simulator.Gt7Ps5,
                     items = listOf(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.REMAINING_FUEL_LAPS),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
-                onItemSelected = { selectedItem = ReadoutListItemType.fromId("gt7_ps5", it) },
+                onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.Gt7Ps5, it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
