@@ -1,14 +1,12 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 
-internal class FakeGt7Ps5RemainingFuelLapsPreferencesRepository(
-    initialRemainingFuelLaps: Int = 3,
-) : Gt7Ps5RemainingFuelLapsPreferencesRepository {
-    private val remainingFuelLaps = MutableStateFlow(initialRemainingFuelLaps)
+class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    private val remainingFuelLaps = MutableStateFlow(3)
 
     override fun observeRemainingFuelLaps(): Flow<Int> = remainingFuelLaps
 

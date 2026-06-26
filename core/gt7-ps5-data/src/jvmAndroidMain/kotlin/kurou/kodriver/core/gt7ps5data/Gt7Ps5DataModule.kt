@@ -4,13 +4,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5PacketSource
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpSource
-import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl
 import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RepositoryImpl
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
-import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -20,9 +17,6 @@ fun gt7Ps5DataModule(directory: String) = module {
     single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
     single<Gt7UdpPortPreferencesRepository> {
         createGt7UdpPortPreferencesRepository(directory = directory)
-    }
-    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
-        Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl(get<ReadoutPreferencesRepository>())
     }
     single<Gt7Ps5PacketSource> {
         Gt7Ps5UdpSource(

@@ -9,7 +9,7 @@ class SaveGt7Ps5RemainingFuelLapsEnabledUseCaseTest {
 
     @Test
     fun `有効状態を保存できる`() = runBlocking {
-        val repository = FakeGt7Ps5RemainingFuelLapsPreferencesRepository()
+        val repository = FakeGt7Ps5RemainingFuelLapsEnabledRepository()
         val saveUseCase = SaveGt7Ps5RemainingFuelLapsEnabledUseCase(repository)
         val observeUseCase = ObserveGt7Ps5RemainingFuelLapsEnabledUseCase(repository)
 
