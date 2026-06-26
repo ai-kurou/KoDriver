@@ -33,4 +33,15 @@ kotlin {
             warningsAsErrors = false
         }
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core:domain"))
+            implementation(libs.findLibrary("androidx-lifecycle-viewmodelCompose").get())
+            implementation(libs.findLibrary("koin-compose-viewmodel").get())
+        }
+        commonTest.dependencies {
+            implementation(libs.findLibrary("kotlin-test").get())
+        }
+    }
 }

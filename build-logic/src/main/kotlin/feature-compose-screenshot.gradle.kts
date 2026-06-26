@@ -6,6 +6,11 @@ private val libs = versionCatalogs.named("libs")
 
 kotlin {
     sourceSets {
+        commonMain.dependencies {
+            implementation(libs.findLibrary("compose-foundation").get())
+            implementation(libs.findLibrary("compose-material3").get())
+            implementation(libs.findLibrary("compose-uiToolingPreview").get())
+        }
         jvmTest.dependencies {
             implementation(libs.findLibrary("compose-uiTest").get())
             implementation(libs.findLibrary("compose-uiTestJunit4").get())
