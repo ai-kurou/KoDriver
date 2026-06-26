@@ -23,11 +23,10 @@ val gt7Ps5NarratorModule: Module = module {
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveReadoutStartSoundTypeUseCase(get()) }
     single<TextToSpeechEngine>(named("gt7_ps5")) {
         Gt7Ps5WavNarratorEngine(
             soundPlayer = get(),
-            startSoundTypeFlow = get<ObserveReadoutStartSoundTypeUseCase>()(),
+            startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
         )
     }
     factory(named("gt7_ps5")) { PlaySpeechEventUseCase(get(named("gt7_ps5"))) }
