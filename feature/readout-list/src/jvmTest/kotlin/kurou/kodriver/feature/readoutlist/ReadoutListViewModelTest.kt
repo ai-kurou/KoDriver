@@ -8,9 +8,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -26,6 +28,7 @@ class ReadoutListViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var simulatorRepository: FakeSimulatorPreferencesRepository
     private lateinit var readoutRepository: FakeReadoutPreferencesRepository
+    private lateinit var gt7Ps5RemainingFuelLapsRepository: FakeGt7Ps5RemainingFuelLapsPreferencesRepository
     private lateinit var viewModel: ReadoutListViewModel
 
     @Before
@@ -33,11 +36,18 @@ class ReadoutListViewModelTest {
         Dispatchers.setMain(testDispatcher)
         simulatorRepository = FakeSimulatorPreferencesRepository()
         readoutRepository = FakeReadoutPreferencesRepository()
+        gt7Ps5RemainingFuelLapsRepository = FakeGt7Ps5RemainingFuelLapsPreferencesRepository()
         viewModel = ReadoutListViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
+            observeGt7Ps5RemainingFuelLapsEnabled = ObserveGt7Ps5RemainingFuelLapsEnabledUseCase(
+                gt7Ps5RemainingFuelLapsRepository,
+            ),
+            saveGt7Ps5RemainingFuelLapsEnabled = SaveGt7Ps5RemainingFuelLapsEnabledUseCase(
+                gt7Ps5RemainingFuelLapsRepository,
+            ),
             observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
             saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
         )
@@ -190,5 +200,23 @@ class ReadoutListViewModelTest {
             listOf(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.REMAINING_FUEL_LAPS),
             state.items,
         )
+    }
+
+    @Test
+    fun `gt7_ps5を選択すると燃料残り周回数の保存済みON_OFF状態が表示される`() = runTest {
+        gt7Ps5RemainingFuelLapsRepository.saveEnabled(false)
+
+        viewModel.onSimulatorSelected("gt7_ps5")
+
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.REMAINING_FUEL_LAPS])
+    }
+
+    @Test
+    fun `gt7_ps5の燃料残り周回数のON_OFF状態を変更すると専用設定に保存される`() = runTest {
+        viewModel.onSimulatorSelected("gt7_ps5")
+
+        viewModel.onReadoutEnabledChanged(ReadoutItemKey.REMAINING_FUEL_LAPS, false)
+
+        assertEquals(false, gt7Ps5RemainingFuelLapsRepository.observeEnabled().first())
     }
 }

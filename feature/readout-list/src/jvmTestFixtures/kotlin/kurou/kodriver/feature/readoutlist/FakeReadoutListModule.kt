@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -14,6 +15,7 @@ import org.koin.dsl.module
 val fakeReadoutListModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
+    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepositoryImpl() }
     single<ProximityThresholdsPreferencesRepository> { FakeProximityThresholdsPreferencesRepositoryImpl() }
     single<FlagPreferencesRepository> { FakeFlagPreferencesRepositoryImpl() }
 }
@@ -60,5 +62,15 @@ private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepositor
 
     override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) {
         orders.update { it + (simulator to order) }
+    }
+}
+
+private class FakeGt7Ps5RemainingFuelLapsPreferencesRepositoryImpl : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    private val enabled = MutableStateFlow(true)
+
+    override fun observeEnabled(): Flow<Boolean> = enabled
+
+    override suspend fun saveEnabled(enabled: Boolean) {
+        this.enabled.update { enabled }
     }
 }
