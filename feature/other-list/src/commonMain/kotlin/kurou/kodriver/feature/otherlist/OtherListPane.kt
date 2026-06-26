@@ -30,7 +30,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
@@ -129,8 +128,7 @@ fun OtherListPane(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onItemClick(item) }
-                        .testTag("other_item_$index"),
+                        .clickable { onItemClick(item) },
                 )
             }
             HorizontalDivider()
@@ -172,9 +170,7 @@ private fun OtherAppVersionListItem(
             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("other_app_version"),
+        modifier = Modifier.fillMaxWidth(),
     )
 }
 

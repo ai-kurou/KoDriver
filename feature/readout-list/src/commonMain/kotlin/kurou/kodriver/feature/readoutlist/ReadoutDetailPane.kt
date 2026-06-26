@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.navigate_back
@@ -35,10 +34,7 @@ internal fun ReadoutDetailPane(
                 title = { Text(title) },
                 navigationIcon = {
                     if (canNavigateBack) {
-                        IconButton(
-                            onClick = onBack,
-                            modifier = Modifier.testTag("readout_detail_back"),
-                        ) {
+                        IconButton(onClick = onBack) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(Res.string.navigate_back),

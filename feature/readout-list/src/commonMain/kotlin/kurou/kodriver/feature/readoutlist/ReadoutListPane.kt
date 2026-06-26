@@ -55,7 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -214,8 +215,11 @@ internal fun ReadoutListPane(
                     null
                 },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                modifier = Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                    .testTag("simulator_dropdown_trigger"),
+                modifier = run {
+                    val hint = stringResource(Res.string.select_simulator_hint)
+                    Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .semantics { contentDescription = hint }
+                },
             )
             ExposedDropdownMenu(
                 expanded = expanded,
@@ -236,7 +240,6 @@ internal fun ReadoutListPane(
                             )
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        modifier = Modifier.testTag("simulator_item_${simulator.id}"),
                     )
                 }
             }
@@ -273,8 +276,7 @@ internal fun ReadoutListPane(
                                 onClick = { onItemClick(item) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                                    .testTag("readout_item_$index"),
+                                    .padding(vertical = 4.dp),
                                 colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
                             ) {
                                 ListItem(

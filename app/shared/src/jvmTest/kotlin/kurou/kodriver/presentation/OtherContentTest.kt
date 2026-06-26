@@ -6,8 +6,8 @@ import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -63,8 +63,8 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
 
-        // item_0: ConsoleIp (詳細ペインに遷移、Desktop では ServerIp が含まれないためインデックス 0)
-        rule.onNodeWithTag("other_item_0").performClick()
+        // ConsoleIp（Desktop では ServerIp・KeepScreenOn が除外されるため最初のアイテム）
+        rule.onNode(hasText("ゲーム機のIPアドレス")).performClick()
         rule.waitForIdle()
 
         rule.onNodeWithText("Detail: console_ip").assertExists()
@@ -73,8 +73,8 @@ class OtherContentTest {
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitUntil { !backEnabled }
 
-        // item_1: Volume (詳細あり)
-        rule.onNodeWithTag("other_item_1").performClick()
+        // Volume
+        rule.onNode(hasText("音量")).performClick()
         rule.waitForIdle()
 
         rule.onNodeWithText("Detail: volume").assertExists()
@@ -83,28 +83,28 @@ class OtherContentTest {
         rule.runOnIdle { capturedOnBack?.invoke() }
         rule.waitUntil { !backEnabled }
 
-        // item_2: ReadoutStartSound (ダイアログを開く)
-        rule.onNodeWithTag("other_item_2").performClick()
+        // ReadoutStartSound（ダイアログを開く）
+        rule.onNode(hasText("読み上げ開始音")).performClick()
         rule.waitForIdle()
 
         assertFalse(backEnabled)
 
-        // item_3: GitHubRepository
-        rule.onNodeWithTag("other_item_3").performClick()
+        // GitHubRepository
+        rule.onNode(hasText("GitHubレポジトリ")).performClick()
         rule.waitForIdle()
 
         assertTrue(githubRepositoryOpened)
         assertFalse(backEnabled)
 
-        // item_4: ReleasePage
-        rule.onNodeWithTag("other_item_4").performClick()
+        // ReleasePage
+        rule.onNode(hasText("リリースページ")).performClick()
         rule.waitForIdle()
 
         assertTrue(releasePageOpened)
         assertFalse(backEnabled)
 
-        // item_5: License (詳細あり)
-        rule.onNodeWithTag("other_item_5").performClick()
+        // License（詳細あり）
+        rule.onNode(hasText("ライセンス")).performClick()
         rule.waitForIdle()
 
         assertTrue(backEnabled)

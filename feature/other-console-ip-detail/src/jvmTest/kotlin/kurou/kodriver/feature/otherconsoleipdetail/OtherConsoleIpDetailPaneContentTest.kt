@@ -2,8 +2,8 @@
 
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
@@ -73,7 +73,7 @@ class OtherConsoleIpDetailPaneContentTest {
             onBack = { backCount++ },
         )
 
-        rule.onNodeWithTag("other_detail_back").performClick()
+        rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, dismissCount)
         assertEquals(1, backCount)

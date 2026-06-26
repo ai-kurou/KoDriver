@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.othervolumedetail.generated.resources.Res
@@ -56,7 +55,6 @@ fun OtherVolumeDetailPaneContent(
         navigateBackContentDescription = stringResource(Res.string.navigate_back),
         onBack = onBack,
         modifier = modifier,
-        navigationIconModifier = Modifier.testTag("other_detail_back"),
     ) {
         Column {
             DetailPaneDescription(text = stringResource(Res.string.volume_description))

@@ -1,8 +1,8 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
@@ -26,7 +26,7 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNodeWithTag("nav_readout").performClick()
+        rule.onNode(hasText("読み上げ")).performClick()
         rule.waitForIdle()
 
         assertEquals(1, readoutReselectedCount)
@@ -46,11 +46,11 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNodeWithTag("nav_more").performClick()
+        rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
         assertEquals(0, otherReselectedCount)
 
-        rule.onNodeWithTag("nav_more").performClick()
+        rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)
@@ -70,9 +70,9 @@ class AppScreenContentTest {
             )
         }
 
-        rule.onNodeWithTag("nav_more").performClick()
+        rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
-        rule.onNodeWithTag("nav_readout").performClick()
+        rule.onNode(hasText("読み上げ")).performClick()
         rule.waitForIdle()
 
         assertEquals(0, readoutReselectedCount)

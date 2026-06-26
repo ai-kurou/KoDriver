@@ -18,7 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,7 +81,6 @@ internal fun OtherServerIpDetailPaneContent(
             onBack()
         },
         modifier = modifier,
-        navigationIconModifier = Modifier.testTag("other_detail_back"),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(stringResource(Res.string.server_ip_description))

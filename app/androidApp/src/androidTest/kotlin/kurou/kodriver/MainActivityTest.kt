@@ -1,8 +1,8 @@
 package kurou.kodriver
 
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,83 +18,83 @@ class MainActivityTest {
     @Test
     fun `シミュレータ選択後に読み上げ項目を順にタップしその他タブへ移動しライセンスを開く`() {
         // シミュレータ選択ドロップダウンを開く
-        composeTestRule.onNodeWithTag("simulator_dropdown_trigger").performClick()
+        composeTestRule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         composeTestRule.waitForIdle()
 
         // LMU Windowsシミュレータを選択
-        composeTestRule.onNodeWithTag("simulator_item_lmu_windows").performClick()
+        composeTestRule.onNode(hasText("Le Mans Ultimate（Windows版）")).performClick()
         composeTestRule.waitForIdle()
 
         // 読み上げリストが表示されるまで待機
         composeTestRule.waitUntil(timeoutMillis = 5_000L) {
-            composeTestRule.onAllNodesWithTag("readout_item_0").fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(hasText("フラッグ")).fetchSemanticsNodes().isNotEmpty()
         }
-        // 読み上げ項目0をタップ
-        composeTestRule.onNodeWithTag("readout_item_0").performClick()
+        // 読み上げ項目「フラッグ」をタップ
+        composeTestRule.onNode(hasText("フラッグ")).performClick()
         composeTestRule.waitForIdle()
 
         // 詳細ペインから戻る
-        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
         composeTestRule.waitForIdle()
 
-        // 読み上げ項目1をタップ
-        composeTestRule.onNodeWithTag("readout_item_1").performClick()
+        // 読み上げ項目「車両接近」をタップ
+        composeTestRule.onNode(hasText("車両接近")).performClick()
         composeTestRule.waitForIdle()
 
         // はてなマークをタップ
-        composeTestRule.onNodeWithTag("vehicle_approach_help_button").performClick()
+        composeTestRule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
         composeTestRule.waitForIdle()
 
         // 詳細ペインから戻る
-        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
         composeTestRule.waitForIdle()
 
-        // 読み上げ項目2をタップ
-        composeTestRule.onNodeWithTag("readout_item_2").performClick()
+        // 読み上げ項目「車両故障」をタップ
+        composeTestRule.onNode(hasText("車両故障")).performClick()
         composeTestRule.waitForIdle()
 
         // 詳細ペインから戻る
-        composeTestRule.onNodeWithTag("readout_detail_back").performClick()
+        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
         composeTestRule.waitForIdle()
 
         // その他タブへ移動
-        composeTestRule.onNodeWithTag("nav_more").performClick()
+        composeTestRule.onNode(hasText("その他")).performClick()
         composeTestRule.waitForIdle()
 
-        // 接続先PCをタップ（other_item_0 = ServerIp）
-        composeTestRule.onNodeWithTag("other_item_0").performClick()
-        composeTestRule.waitForIdle()
-
-        // 詳細ペインから戻る
-        composeTestRule.onNodeWithTag("other_detail_back").performClick()
-        composeTestRule.waitForIdle()
-
-        // コンソールIPをタップ（other_item_1 = ConsoleIp）
-        composeTestRule.onNodeWithTag("other_item_1").performClick()
+        // 接続先PCをタップ
+        composeTestRule.onNode(hasText("接続先PCのIPアドレス")).performClick()
         composeTestRule.waitForIdle()
 
         // 詳細ペインから戻る
-        composeTestRule.onNodeWithTag("other_detail_back").performClick()
+        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
         composeTestRule.waitForIdle()
 
-        // 音量をタップ（other_item_2 = Volume）
-        composeTestRule.onNodeWithTag("other_item_2").performClick()
+        // コンソールIPをタップ
+        composeTestRule.onNode(hasText("ゲーム機のIPアドレス")).performClick()
         composeTestRule.waitForIdle()
 
-        // 音量詳細から戻る（Androidではシングルペインのためリスト非表示になる）
-        composeTestRule.onNodeWithTag("other_detail_back").performClick()
+        // 詳細ペインから戻る
+        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
         composeTestRule.waitForIdle()
 
-        // 読み上げ開始音をタップ（other_item_3 = ReadoutStartSound）
-        composeTestRule.onNodeWithTag("other_item_3").performClick()
+        // 音量をタップ
+        composeTestRule.onNode(hasText("音量")).performClick()
+        composeTestRule.waitForIdle()
+
+        // 音量詳細から戻る
+        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
+        composeTestRule.waitForIdle()
+
+        // 読み上げ開始音をタップ
+        composeTestRule.onNode(hasText("読み上げ開始音")).performClick()
         composeTestRule.waitForIdle()
 
         // ダイアログをキャンセル
         composeTestRule.onNodeWithText("キャンセル").performClick()
         composeTestRule.waitForIdle()
 
-        // ライセンスをタップ（other_item_6 = License）
-        composeTestRule.onNodeWithTag("other_item_6").performClick()
+        // ライセンスをタップ
+        composeTestRule.onNode(hasText("ライセンス")).performClick()
         composeTestRule.waitForIdle()
     }
 }
