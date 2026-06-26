@@ -7,23 +7,25 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5ConnectionViewModelTest {
@@ -54,6 +56,45 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
+    fun `GT7選択時に燃料と周回数を保持する`() = runTest {
+        val connectionRepository = FakeGt7Ps5Repository(
+            isConnected = true,
+            initialTelemetry = Gt7Ps5TelemetryData(
+                lapCount = 4,
+                lapsInRace = 12,
+                bestLapTimeMs = 0,
+                gasLevel = 32.5f,
+                gasCapacity = 50f,
+            ),
+        )
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
+        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertEquals(32.5f, viewModel.uiState.value.fuelLevel)
+        assertEquals(50f, viewModel.uiState.value.fuelCapacity)
+        assertEquals(4, viewModel.uiState.value.currentLap)
+        assertEquals(12, viewModel.uiState.value.totalLaps)
+
+        connectionRepository.updateTelemetry(
+            Gt7Ps5TelemetryData(
+                lapCount = 5,
+                lapsInRace = 12,
+                bestLapTimeMs = 0,
+                gasLevel = 28f,
+                gasCapacity = 50f,
+            ),
+        )
+        dispatcher.scheduler.runCurrent()
+
+        assertEquals(28f, viewModel.uiState.value.fuelLevel)
+        assertEquals(5, viewModel.uiState.value.currentLap)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
     fun `GT7非選択時は未確認状態を返す`() = runTest {
         val connectionRepository = FakeGt7Ps5Repository(isConnected = true)
         val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
@@ -63,6 +104,10 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+        assertNull(viewModel.uiState.value.fuelLevel)
+        assertNull(viewModel.uiState.value.fuelCapacity)
+        assertNull(viewModel.uiState.value.currentLap)
+        assertNull(viewModel.uiState.value.totalLaps)
         collectionJob.cancelAndJoin()
     }
 
@@ -104,6 +149,10 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+        assertNull(viewModel.uiState.value.fuelLevel)
+        assertNull(viewModel.uiState.value.fuelCapacity)
+        assertNull(viewModel.uiState.value.currentLap)
+        assertNull(viewModel.uiState.value.totalLaps)
         collectionJob.cancelAndJoin()
     }
 
@@ -146,6 +195,7 @@ class Gt7Ps5ConnectionViewModelTest {
         simulatorRepository: SimulatorPreferencesRepository,
     ) = Gt7Ps5ConnectionViewModel(
         checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(connectionRepository),
+        observeGt7Ps5 = ObserveGt7Ps5UseCase(connectionRepository),
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     )
 }
@@ -153,8 +203,17 @@ class Gt7Ps5ConnectionViewModelTest {
 private class FakeGt7Ps5Repository(
     var isConnected: Boolean,
     var failureCount: Int = 0,
+    initialTelemetry: Gt7Ps5TelemetryData = Gt7Ps5TelemetryData(
+        lapCount = 0,
+        lapsInRace = 0,
+        bestLapTimeMs = 0,
+        gasLevel = 0f,
+        gasCapacity = 0f,
+    ),
 ) : Gt7Ps5Repository {
-    override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = emptyFlow()
+    private val telemetry = MutableStateFlow(initialTelemetry)
+
+    override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = telemetry
 
     override suspend fun isConnected(): Boolean {
         if (failureCount > 0) {
@@ -162,6 +221,10 @@ private class FakeGt7Ps5Repository(
             error("connection check failed")
         }
         return isConnected
+    }
+
+    fun updateTelemetry(data: Gt7Ps5TelemetryData) {
+        telemetry.update { data }
     }
 }
 
