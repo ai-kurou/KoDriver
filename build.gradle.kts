@@ -121,8 +121,8 @@ moduleGraphAssert {
         ":feature:.* -> :core:domain",
         // feature → core:designsystem（共通 UI コンポーネントの利用）
         ":feature:.* -> :core:designsystem",
-        // インフラ・サーバー → core:domain（core:domain -X> core:data は restricted で除外）
-        ":core:.* -> :core:domain",
+        // core:data 系 → core:domain（.*data にマッチ: core:data, core:*-data。core:designsystem は除外される）
+        ":core:.*data -> :core:domain",
         ":server -> :core:domain",
     )
     restricted = arrayOf(
