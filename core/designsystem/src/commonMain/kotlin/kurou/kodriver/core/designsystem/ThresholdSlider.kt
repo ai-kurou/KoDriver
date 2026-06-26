@@ -21,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -37,7 +36,6 @@ fun ThresholdSlider(
     defaultValue: Float? = null,
     onResetToDefault: (() -> Unit)? = null,
     resetContentDescription: String? = null,
-    sliderTestTag: String? = null,
 ) {
     var sliderValue by remember(value) { mutableStateOf(value) }
     val isDifferentFromDefault = defaultValue != null && abs(sliderValue - defaultValue) > 0.001f
@@ -70,7 +68,6 @@ fun ThresholdSlider(
             valueRange = valueRange,
             steps = steps,
             onValueChangeFinished = { onValueChangeFinished(sliderValue) },
-            modifier = if (sliderTestTag != null) Modifier.testTag(sliderTestTag) else Modifier,
         )
     }
 }
