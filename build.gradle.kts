@@ -109,9 +109,10 @@ moduleGraphAssert {
         ":app:androidApp -> :app:shared",
         ":app:desktopApp -> :app:shared",
         ":app:webApp -> :app:shared",
-        // app エントリーポイント → core（composition root で DI バインドするための参照。core:domain は restricted で除外）
-        ":app:androidApp -> :core:.*",
-        ":app:desktopApp -> :core:.*",
+        // app エントリーポイント → core:data 系（composition root で DI バインドするための参照）
+        // .*data にマッチ: core:data, core:*-data。core:domain / core:designsystem は除外される
+        ":app:androidApp -> :core:.*data",
+        ":app:desktopApp -> :core:.*data",
         // Desktop app → server（同一プロセスで Ktor サーバーを起動するため）
         ":app:desktopApp -> :server",
         // app:shared → feature
