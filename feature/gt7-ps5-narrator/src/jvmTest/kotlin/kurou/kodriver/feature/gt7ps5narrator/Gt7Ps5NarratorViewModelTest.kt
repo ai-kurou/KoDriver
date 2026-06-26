@@ -213,6 +213,37 @@ class Gt7Ps5NarratorViewModelTest {
         )
     }
 
+    @Test
+    fun `セッションリセット後に同じベストラップが来てもアナウンスしない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
+
+        channel.send(gt7Telemetry(bestLapTimeMs = -1))
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = -1))
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
+    }
+
+    @Test
+    fun `セッションリセット後により良いタイムが来たらアナウンスする`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
+
+        channel.send(gt7Telemetry(bestLapTimeMs = -1))
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = -1))
+        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+        assertEquals(
+            listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal, SpeechEvent.MyBestLapFormal),
+            tts.spokenTexts,
+        )
+    }
+
     // --- 優先度 ---
 
     @Test
