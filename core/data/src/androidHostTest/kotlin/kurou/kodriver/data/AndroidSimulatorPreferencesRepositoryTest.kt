@@ -9,6 +9,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Simulator
 import org.junit.After
 import org.junit.Before
 import java.io.File
@@ -42,8 +43,8 @@ class AndroidSimulatorPreferencesRepositoryTest {
     fun `selectedSimulatorは初期状態でnullを返し保存後に選択したシミュレータを返す`() = runTest(testDispatcher) {
         assertNull(repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator("lmu_windows")
+        repository.saveSelectedSimulator(Simulator.LmuWindows)
 
-        assertEquals("lmu_windows", repository.selectedSimulator().first())
+        assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
     }
 }

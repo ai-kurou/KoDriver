@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -19,9 +20,9 @@ val fakeReadoutListModule = module {
 }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
-    private val flow = MutableStateFlow<String?>(null)
-    override fun selectedSimulator(): Flow<String?> = flow
-    override suspend fun saveSelectedSimulator(simulator: String) { flow.value = simulator }
+    private val flow = MutableStateFlow<Simulator?>(null)
+    override fun selectedSimulator(): Flow<Simulator?> = flow
+    override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
 }
 
 private class FakeProximityThresholdsPreferencesRepositoryImpl : ProximityThresholdsPreferencesRepository {

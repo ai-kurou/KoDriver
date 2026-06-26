@@ -20,11 +20,11 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase

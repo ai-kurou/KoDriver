@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -15,7 +16,7 @@ class ObserveSelectedSimulatorUseCaseTest {
 
         assertNull(useCase().first())
 
-        repo.saveSelectedSimulator("lmu_windows")
-        assertEquals("lmu_windows", useCase().first())
+        repo.saveSelectedSimulator(Simulator.LmuWindows)
+        assertEquals(Simulator.LmuWindows, useCase().first())
     }
 }

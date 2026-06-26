@@ -64,9 +64,14 @@ import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
 import kodriver.feature.readoutlist.generated.resources.gt7
+import kodriver.feature.readoutlist.generated.resources.item_blue_flag
 import kodriver.feature.readoutlist.generated.resources.item_flag
+import kodriver.feature.readoutlist.generated.resources.item_full_course_yellow
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
+import kodriver.feature.readoutlist.generated.resources.item_overheat
+import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
+import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.lmu
@@ -97,21 +102,29 @@ private fun simulatorIcon(simulator: Simulator) = when (simulator) {
 
 @Composable
 private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
-    ReadoutItemKey.VEHICLE_APPROACH -> stringResource(Res.string.item_vehicle_approach)
-    ReadoutItemKey.FLAG -> stringResource(Res.string.item_flag)
-    ReadoutItemKey.VEHICLE_DAMAGE -> stringResource(Res.string.item_vehicle_damage)
-    ReadoutItemKey.MY_BEST_LAP -> stringResource(Res.string.item_my_best_lap)
-    ReadoutItemKey.REMAINING_FUEL_LAPS -> stringResource(Res.string.item_remaining_fuel_laps)
-
+    is ReadoutItemKey.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+    is ReadoutItemKey.Flag -> stringResource(Res.string.item_flag)
+    is ReadoutItemKey.BlueFlag -> stringResource(Res.string.item_blue_flag)
+    is ReadoutItemKey.SectorYellowFlag -> stringResource(Res.string.item_sector_yellow_flag)
+    is ReadoutItemKey.FullCourseYellow -> stringResource(Res.string.item_full_course_yellow)
+    is ReadoutItemKey.RedFlag -> stringResource(Res.string.item_red_flag)
+    is ReadoutItemKey.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+    is ReadoutItemKey.Overheat -> stringResource(Res.string.item_overheat)
+    is ReadoutItemKey.MyBestLap -> stringResource(Res.string.item_my_best_lap)
+    is ReadoutItemKey.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
 }
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
-    ReadoutItemKey.VEHICLE_APPROACH -> Icons.Filled.DirectionsCar
-    ReadoutItemKey.FLAG -> Icons.Filled.Flag
-    ReadoutItemKey.VEHICLE_DAMAGE -> Icons.Filled.Build
-    ReadoutItemKey.MY_BEST_LAP -> Icons.Filled.Timer
-    ReadoutItemKey.REMAINING_FUEL_LAPS -> Icons.Filled.LocalGasStation
-
+    is ReadoutItemKey.VehicleApproach -> Icons.Filled.DirectionsCar
+    is ReadoutItemKey.Flag -> Icons.Filled.Flag
+    is ReadoutItemKey.BlueFlag -> Icons.Filled.Flag
+    is ReadoutItemKey.SectorYellowFlag -> Icons.Filled.Flag
+    is ReadoutItemKey.FullCourseYellow -> Icons.Filled.Flag
+    is ReadoutItemKey.RedFlag -> Icons.Filled.Flag
+    is ReadoutItemKey.VehicleDamage -> Icons.Filled.Build
+    is ReadoutItemKey.Overheat -> Icons.Filled.Build
+    is ReadoutItemKey.MyBestLap -> Icons.Filled.Timer
+    is ReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

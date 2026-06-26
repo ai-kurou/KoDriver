@@ -25,8 +25,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -150,7 +150,7 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = "other", currentTimeMs = { fakeTime })
+        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = null, currentTimeMs = { fakeTime })
 
         channel.send(noProximity())
         channel.send(leftProximity(vehicleId = 1))
@@ -164,7 +164,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `LMU非選択時は旗アナウンスをしない`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = "other")
+        buildViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = null)
 
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))

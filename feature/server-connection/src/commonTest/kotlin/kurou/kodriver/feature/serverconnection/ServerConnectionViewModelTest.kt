@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -72,13 +73,13 @@ class ServerConnectionViewModelTest {
     @Test
     fun `選択シミュレータがuiStateに反映される`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
+        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
         val viewModel = createViewModel(serverIpRepo, simulatorRepository = simulatorRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
 
-        assertEquals("lmu_windows", viewModel.uiState.first().selectedSimulator)
+        assertEquals(Simulator.LmuWindows, viewModel.uiState.first().selectedSimulator)
         collectionJob.cancelAndJoin()
     }
 
@@ -135,7 +136,7 @@ class ServerConnectionViewModelTest {
     @Test
     fun `LMU選択時はrequiresKoDriverServerがtrueになる`() = runTest {
         val serverIpRepo = FakeServerIpRepository(initial = "192.168.1.1")
-        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = "lmu_windows")
+        val simulatorRepo = FakeSimulatorPreferencesRepository(initial = Simulator.LmuWindows)
         val viewModel = createViewModel(serverIpRepo, simulatorRepository = simulatorRepo)
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -277,12 +278,12 @@ private class FakeServerIpRepository(
 }
 
 private class FakeSimulatorPreferencesRepository(
-    initial: String? = null,
+    initial: Simulator? = null,
 ) : SimulatorPreferencesRepository {
-    private val flow = MutableStateFlow(initial)
+    val flow = MutableStateFlow(initial)
 
-    override fun selectedSimulator(): Flow<String?> = flow
-    override suspend fun saveSelectedSimulator(simulator: String) { flow.update { simulator } }
+    override fun selectedSimulator(): Flow<Simulator?> = flow
+    override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
 }
 
 private class FakeServerVersionRepository(
