@@ -181,11 +181,14 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5を選択するとベストラップアイテムが表示される`() = runTest {
+    fun `gt7_ps5を選択するとGT7用の読み上げアイテムが表示される`() = runTest {
         viewModel.onSimulatorSelected("gt7_ps5")
 
         val state = viewModel.uiState.first()
         assertEquals("gt7_ps5", state.selectedSimulator)
-        assertEquals(listOf(ReadoutItemKey.MY_BEST_LAP), state.items)
+        assertEquals(
+            listOf(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.REMAINING_FUEL_LAPS),
+            state.items,
+        )
     }
 }
