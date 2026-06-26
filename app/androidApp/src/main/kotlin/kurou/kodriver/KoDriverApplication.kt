@@ -2,10 +2,8 @@ package kurou.kodriver
 
 import android.app.Application
 import io.sentry.android.core.SentryAndroid
-import kurou.kodriver.core.gt7ps5data.createGt7UdpPortPreferencesRepository
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.data.androidDataModule
-import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
 import kurou.kodriver.presentation.appModules
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
@@ -26,11 +24,6 @@ class KoDriverApplication : Application() {
                 listOf(
                     androidDataModule(this@KoDriverApplication),
                     gt7Ps5DataModule,
-                    module {
-                        single<Gt7UdpPortPreferencesRepository> {
-                            createGt7UdpPortPreferencesRepository(filesDir.absolutePath)
-                        }
-                    },
                 ) +
                     appModules +
                     listOf(module { single(named("appVersion")) { BuildConfig.VERSION_NAME } }),

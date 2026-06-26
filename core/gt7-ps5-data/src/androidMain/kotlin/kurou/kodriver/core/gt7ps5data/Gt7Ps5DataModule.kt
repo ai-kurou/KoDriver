@@ -1,5 +1,6 @@
 package kurou.kodriver.core.gt7ps5data
 
+import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5PacketSource
@@ -15,6 +16,9 @@ private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
 
 val gt7Ps5DataModule = module {
     single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
+    single<Gt7UdpPortPreferencesRepository> {
+        createGt7UdpPortPreferencesRepository(get<Context>().filesDir.absolutePath)
+    }
     single<Gt7Ps5PacketSource> {
         Gt7Ps5UdpSource(
             consoleAddressFlow = get<ConsoleAddressRepository>().consoleAddress(),
