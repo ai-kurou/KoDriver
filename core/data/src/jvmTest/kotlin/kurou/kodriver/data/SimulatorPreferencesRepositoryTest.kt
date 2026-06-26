@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.Simulator
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -24,8 +25,8 @@ class SimulatorPreferencesRepositoryTest {
     @Test
     fun `simulator_preferences_pbに書き込まれる`() = testScope.runTest {
         val repository = createSimulatorPreferencesRepository(tempDir.absolutePath)
-        repository.saveSelectedSimulator("lmu_windows")
+        repository.saveSelectedSimulator(Simulator.LmuWindows)
 
-        assertEquals("lmu_windows", repository.selectedSimulator().first())
+        assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
     }
 }

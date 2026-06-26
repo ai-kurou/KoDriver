@@ -15,11 +15,11 @@ import kodriver.app.shared.generated.resources.gt7_disconnected
 import kodriver.app.shared.generated.resources.lmu_connected
 import kodriver.app.shared.generated.resources.lmu_disconnected
 import kurou.kodriver.feature.main.ConnectionBannerViewModel
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.main.ConnectionBannerVmStatus
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private const val GT7_PS5_SIMULATOR_KEY = "gt7_ps5"
 
 private fun vmStatusToBannerStatus(vmStatus: ConnectionBannerVmStatus): ConnectionBannerStatus =
     when (vmStatus) {
@@ -41,7 +41,7 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     if (uiState.selectedSimulator == null) return ConnectionBannerUiState(isVisible = false)
 
-    val isGt7 = uiState.selectedSimulator == GT7_PS5_SIMULATOR_KEY
+    val isGt7 = uiState.selectedSimulator is Simulator.Gt7Ps5
 
     val connectedMessage = stringResource(
         if (isGt7) Res.string.banner_simulator_connected else Res.string.banner_server_connected,

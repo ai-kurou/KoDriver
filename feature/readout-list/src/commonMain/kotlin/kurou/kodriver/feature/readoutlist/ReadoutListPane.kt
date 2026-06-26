@@ -77,22 +77,22 @@ import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
-private fun simulatorDisplayName(simulatorId: String): String = when (simulatorId) {
-    "lmu_windows" -> stringResource(Res.string.simulator_name_lmu)
-    "gt7_ps5" -> stringResource(Res.string.simulator_name_gt7_ps5)
-    else -> simulatorId
+private fun simulatorDisplayName(simulator: Simulator): String = when (simulator) {
+    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu)
+    is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
 }
 
 @Composable
-private fun simulatorIcon(simulatorId: String) = when (simulatorId) {
-    "gt7_ps5" -> painterResource(Res.drawable.gt7)
-    else -> painterResource(Res.drawable.lmu)
+private fun simulatorIcon(simulator: Simulator) = when (simulator) {
+    is Simulator.Gt7Ps5 -> painterResource(Res.drawable.gt7)
+    is Simulator.LmuWindows -> painterResource(Res.drawable.lmu)
 }
 
 @Composable
@@ -102,7 +102,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     ReadoutItemKey.VEHICLE_DAMAGE -> stringResource(Res.string.item_vehicle_damage)
     ReadoutItemKey.MY_BEST_LAP -> stringResource(Res.string.item_my_best_lap)
     ReadoutItemKey.REMAINING_FUEL_LAPS -> stringResource(Res.string.item_remaining_fuel_laps)
-    else -> itemId.value
+
 }
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
@@ -111,7 +111,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     ReadoutItemKey.VEHICLE_DAMAGE -> Icons.Filled.Build
     ReadoutItemKey.MY_BEST_LAP -> Icons.Filled.Timer
     ReadoutItemKey.REMAINING_FUEL_LAPS -> Icons.Filled.LocalGasStation
-    else -> Icons.Filled.DirectionsCar
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,7 +162,7 @@ private fun PriorityHintRow() {
 @Composable
 internal fun ReadoutListPane(
     uiState: ReadoutListUiState,
-    onSimulatorSelected: (String) -> Unit,
+    onSimulatorSelected: (Simulator) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
@@ -223,7 +223,7 @@ internal fun ReadoutListPane(
                             )
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        modifier = Modifier.testTag("simulator_item_$simulator"),
+                        modifier = Modifier.testTag("simulator_item_${simulator.id}"),
                     )
                 }
             }
@@ -323,8 +323,8 @@ private fun ReadoutListPanePreview(
 private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider<ReadoutListUiState> {
     override val values: Sequence<ReadoutListUiState> = sequenceOf(
         ReadoutListUiState(
-            simulators = listOf("lmu_windows", "gt7_ps5"),
-            selectedSimulator = "lmu_windows",
+            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+            selectedSimulator = Simulator.LmuWindows,
             items = listOf(
                 ReadoutItemKey.VEHICLE_APPROACH,
                 ReadoutItemKey.FLAG,
@@ -332,8 +332,8 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
             ),
         ),
         ReadoutListUiState(
-            simulators = listOf("lmu_windows", "gt7_ps5"),
-            selectedSimulator = "gt7_ps5",
+            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+            selectedSimulator = Simulator.Gt7Ps5,
             items = listOf(
                 ReadoutItemKey.MY_BEST_LAP,
                 ReadoutItemKey.REMAINING_FUEL_LAPS,

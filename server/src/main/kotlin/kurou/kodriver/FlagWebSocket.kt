@@ -15,7 +15,7 @@ private val flagsJson = Json {
 }
 
 internal fun Route.flagWebSocket(observeRaceFlags: ObserveRaceFlagsUseCase) {
-    webSocket(KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LMU)) {
+    webSocket(KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows)) {
         observeRaceFlags()
             .distinctUntilChanged()
             .collect { flags ->

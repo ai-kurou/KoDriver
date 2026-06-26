@@ -27,6 +27,7 @@ import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -59,7 +60,7 @@ fun ReadoutContent(
 @Composable
 internal fun ReadoutContent(
     uiState: ReadoutListUiState,
-    onSimulatorSelected: (String) -> Unit,
+    onSimulatorSelected: (Simulator) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemSelected: (ReadoutItemKey) -> Unit,
@@ -150,8 +151,8 @@ internal fun ReadoutContent(
 private fun ReadoutContentPreview() {
     ReadoutContent(
         uiState = ReadoutListUiState(
-            simulators = listOf("lmu_windows"),
-            selectedSimulator = "lmu_windows",
+            simulators = listOf(Simulator.LmuWindows),
+            selectedSimulator = Simulator.LmuWindows,
             items = listOf(
                 ReadoutItemKey.VEHICLE_APPROACH,
                 ReadoutItemKey.FLAG,

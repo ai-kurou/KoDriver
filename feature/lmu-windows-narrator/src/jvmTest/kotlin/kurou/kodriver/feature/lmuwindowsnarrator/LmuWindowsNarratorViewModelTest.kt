@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
@@ -87,7 +88,7 @@ class LmuWindowsNarratorViewModelTest {
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-        simulator: String? = "lmu_windows",
+        simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
@@ -695,10 +696,10 @@ private class FakeChannelFlagRepository(
 }
 
 private class FakeConstantSimulatorRepository(
-    private val simulator: String?,
+    private val simulator: Simulator?,
 ) : SimulatorPreferencesRepository {
-    override fun selectedSimulator(): Flow<String?> = MutableStateFlow(simulator)
-    override suspend fun saveSelectedSimulator(simulator: String) = Unit
+    override fun selectedSimulator(): Flow<Simulator?> = MutableStateFlow(simulator)
+    override suspend fun saveSelectedSimulator(simulator: Simulator) = Unit
 }
 
 private class FakeAllEnabledReadoutPreferencesRepository(

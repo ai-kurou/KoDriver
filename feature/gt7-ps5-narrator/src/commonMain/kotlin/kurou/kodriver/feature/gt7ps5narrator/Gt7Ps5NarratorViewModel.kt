@@ -17,6 +17,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -38,13 +39,13 @@ class Gt7Ps5NarratorViewModel(
 
     private val enabledStates = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else observeReadoutEnabledStates(simulator)
+            if (simulator == null) emptyFlow() else observeReadoutEnabledStates(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val readoutOrder = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else observeReadoutOrder(simulator)
+            if (simulator == null) emptyFlow() else observeReadoutOrder(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -56,7 +57,7 @@ class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != GT7_PS5_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            if (simulator !is Simulator.Gt7Ps5) return@flatMapLatest emptyFlow()
             observeGt7Ps5()
                 .map { it.bestLapTimeMs }
                 .distinctUntilChanged()
@@ -91,6 +92,5 @@ class Gt7Ps5NarratorViewModel(
     }
 
     private companion object {
-        const val GT7_PS5_SIMULATOR_KEY = "gt7_ps5"
     }
 }

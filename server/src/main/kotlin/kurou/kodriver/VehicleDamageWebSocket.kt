@@ -11,7 +11,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 
 internal fun Route.vehicleDamageWebSocket(observeVehicleDamage: ObserveVehicleDamageUseCase) {
-    webSocket(KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LMU)) {
+    webSocket(KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows)) {
         observeVehicleDamage()
             .distinctUntilChanged()
             .collect { damage ->

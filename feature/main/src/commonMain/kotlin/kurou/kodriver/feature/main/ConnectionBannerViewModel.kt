@@ -12,13 +12,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
 data class ConnectionBannerVmUiState(
     val connectionStatus: ConnectionBannerVmStatus = ConnectionBannerVmStatus.UNCHECKED,
-    val selectedSimulator: String? = null,
+    val selectedSimulator: Simulator? = null,
 )
 
 enum class ConnectionBannerVmStatus {
@@ -39,10 +40,10 @@ class ConnectionBannerViewModel(
     val uiState: StateFlow<ConnectionBannerVmUiState> = observeSelectedSimulator()
         .flatMapLatest { simulator ->
             when (simulator) {
-                LMU_WINDOWS_SIMULATOR_KEY -> checkLmuConnection.statusFlow()
+                is Simulator.LmuWindows -> checkLmuConnection.statusFlow()
                     .map { ConnectionBannerVmUiState(it, simulator) }
-                GT7_PS5_SIMULATOR_KEY -> gt7ConnectionFlow(simulator)
-                else -> flowOf(ConnectionBannerVmUiState())
+                is Simulator.Gt7Ps5 -> gt7ConnectionFlow(simulator)
+                null -> flowOf(ConnectionBannerVmUiState())
             }
         }
         .stateIn(
@@ -52,7 +53,7 @@ class ConnectionBannerViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun gt7ConnectionFlow(simulator: String) = observeConsoleAddress()
+    private fun gt7ConnectionFlow(simulator: Simulator) = observeConsoleAddress()
         .flatMapLatest { address ->
             if (address == null) {
                 flowOf(ConnectionBannerVmUiState(ConnectionBannerVmStatus.IP_NOT_CONFIGURED, simulator))
@@ -61,7 +62,7 @@ class ConnectionBannerViewModel(
             }
         }
 
-    private fun connectionCheckFlow(simulator: String, check: suspend () -> Boolean) = flow {
+    private fun connectionCheckFlow(simulator: Simulator, check: suspend () -> Boolean) = flow {
         while (true) {
             val isConnected = try {
                 check()
@@ -86,7 +87,5 @@ class ConnectionBannerViewModel(
 
     private companion object {
         const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-        const val LMU_WINDOWS_SIMULATOR_KEY = "lmu_windows"
-        const val GT7_PS5_SIMULATOR_KEY = "gt7_ps5"
     }
 }

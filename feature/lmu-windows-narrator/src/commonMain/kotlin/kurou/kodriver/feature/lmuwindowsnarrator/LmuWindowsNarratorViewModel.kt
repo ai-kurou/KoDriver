@@ -24,6 +24,7 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -75,7 +76,7 @@ class LmuWindowsNarratorViewModel(
     private val enabledStates = combine(
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator)
+                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
             },
         flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
@@ -85,7 +86,7 @@ class LmuWindowsNarratorViewModel(
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
     private val readoutOrder = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator)
+            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -105,7 +106,7 @@ class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val proximityJob = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != LMU_WINDOWS_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
             val initialScan =
                 ApproachTimestamps(emptyMap(), emptyMap()) to (VehicleApproachEvent.None as VehicleApproachEvent)
             vehicleApproachUseCases.observeProximity()
@@ -164,7 +165,7 @@ class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val overheatingJob = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != LMU_WINDOWS_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
             vehicleDamageUseCases.observeVehicleDamage()
                 .scan(null as VehicleDamageData? to null as VehicleDamageData?) { acc, current ->
                     acc.second to current
@@ -183,7 +184,7 @@ class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val flagJob = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != LMU_WINDOWS_SIMULATOR_KEY) return@flatMapLatest emptyFlow()
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
             flagUseCases.observeRaceFlags()
                 .scan(null as RaceFlagsData? to null as RaceFlagsData?) { acc, current ->
                     acc.second to current
@@ -231,7 +232,6 @@ class LmuWindowsNarratorViewModel(
     }
 
     private companion object {
-        const val LMU_WINDOWS_SIMULATOR_KEY = "lmu_windows"
         const val APPROACH_DEBOUNCE_MS = 50L
     }
 
