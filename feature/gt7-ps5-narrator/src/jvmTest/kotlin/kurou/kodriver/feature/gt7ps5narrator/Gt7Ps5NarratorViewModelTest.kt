@@ -60,11 +60,21 @@ class Gt7Ps5NarratorViewModelTest {
     ): Gt7Ps5NarratorViewModel {
         val readoutRepo = FakeReadoutPreferencesRepo(enabledOverrides, orderOverride)
         return Gt7Ps5NarratorViewModel(
-            observeGt7Ps5 = ObserveGt7Ps5UseCase(FakeChannelGt7Ps5Repository(telemetryChannel.receiveAsFlow())),
-            observeMyBestLapVoiceType = ObserveMyBestLapVoiceTypeUseCase(FakeMyBestLapPreferencesRepo(voiceType)),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
-            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
-            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(FakeSimulatorPreferencesRepo(simulator)),
+            myBestLapUseCases = MyBestLapUseCases(
+                observeGt7Ps5 = ObserveGt7Ps5UseCase(
+                    FakeChannelGt7Ps5Repository(telemetryChannel.receiveAsFlow()),
+                ),
+                observeMyBestLapVoiceType = ObserveMyBestLapVoiceTypeUseCase(
+                    FakeMyBestLapPreferencesRepo(voiceType),
+                ),
+            ),
+            readoutListUseCases = ReadoutListUseCases(
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(
+                    FakeSimulatorPreferencesRepo(simulator),
+                ),
+                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
+                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
+            ),
             ttsEngine = ttsEngine,
         )
     }

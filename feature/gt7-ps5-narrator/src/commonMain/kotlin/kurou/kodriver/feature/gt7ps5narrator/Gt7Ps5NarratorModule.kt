@@ -14,15 +14,15 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val gt7Ps5NarratorModule: Module = module {
-    viewModel {
-        Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get(named("gt7_ps5")))
-    }
+    viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(named("gt7_ps5"))) }
     includes(platformSoundModule)
     factory { ObserveGt7Ps5UseCase(get()) }
     factory { ObserveMyBestLapVoiceTypeUseCase(get()) }
+    factory { MyBestLapUseCases(get(), get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
+    factory { ReadoutListUseCases(get(), get(), get()) }
     single<TextToSpeechEngine>(named("gt7_ps5")) {
         Gt7Ps5WavNarratorEngine(
             soundPlayer = get(),
