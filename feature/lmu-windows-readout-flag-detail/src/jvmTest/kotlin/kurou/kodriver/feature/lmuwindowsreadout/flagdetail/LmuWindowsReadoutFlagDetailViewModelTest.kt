@@ -57,16 +57,16 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() = runTest {
         val state = viewModel.uiState.first()
-        assertEquals(true, state.enabledStates[ReadoutItemKey.BLUE_FLAG])
-        assertEquals(true, state.enabledStates[ReadoutItemKey.SECTOR_YELLOW_FLAG])
-        assertEquals(true, state.enabledStates[ReadoutItemKey.FULL_COURSE_YELLOW])
-        assertEquals(true, state.enabledStates[ReadoutItemKey.RED_FLAG])
+        assertEquals(true, state.enabledStates[ReadoutItemKey.BlueFlag])
+        assertEquals(true, state.enabledStates[ReadoutItemKey.SectorYellowFlag])
+        assertEquals(true, state.enabledStates[ReadoutItemKey.FullCourseYellow])
+        assertEquals(true, state.enabledStates[ReadoutItemKey.RedFlag])
     }
 
     @Test
     fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
         viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
-        assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.BLUE_FLAG])
+        assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.BlueFlag])
     }
 
     @Test

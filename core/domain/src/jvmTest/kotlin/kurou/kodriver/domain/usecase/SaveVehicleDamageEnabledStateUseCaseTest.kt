@@ -16,10 +16,10 @@ class SaveVehicleDamageEnabledStateUseCaseTest {
         val saveUseCase = SaveVehicleDamageEnabledStateUseCase(repo)
         val observeUseCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
 
-        saveUseCase(ReadoutItemKey.OVERHEAT, true)
-        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true), observeUseCase().first())
+        saveUseCase(ReadoutItemKey.Overheat, true)
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true), observeUseCase().first())
 
-        saveUseCase(ReadoutItemKey.OVERHEAT, false)
-        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to false), observeUseCase().first())
+        saveUseCase(ReadoutItemKey.Overheat, false)
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false), observeUseCase().first())
     }
 }

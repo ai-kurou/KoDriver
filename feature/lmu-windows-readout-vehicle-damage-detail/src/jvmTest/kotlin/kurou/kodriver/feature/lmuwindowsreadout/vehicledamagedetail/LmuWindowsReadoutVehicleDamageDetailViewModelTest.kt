@@ -62,7 +62,7 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     @Test
     fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() = runTest {
         val repo = FakeVehicleDamagePreferencesRepository(
-            initialStates = mapOf(ReadoutItemKey.OVERHEAT to false),
+            initialStates = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
         )
         val vm = LmuWindowsReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repo),

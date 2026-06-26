@@ -25,13 +25,13 @@ import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
     Simulator.LmuWindows to listOf(
-        ReadoutItemKey.FLAG,
-        ReadoutItemKey.VEHICLE_APPROACH,
-        ReadoutItemKey.VEHICLE_DAMAGE,
+        ReadoutItemKey.Flag,
+        ReadoutItemKey.VehicleApproach,
+        ReadoutItemKey.VehicleDamage,
     ),
     Simulator.Gt7Ps5 to listOf(
-        ReadoutItemKey.MY_BEST_LAP,
-        ReadoutItemKey.REMAINING_FUEL_LAPS,
+        ReadoutItemKey.MyBestLap,
+        ReadoutItemKey.RemainingFuelLaps,
     ),
 )
 
@@ -111,7 +111,7 @@ class ReadoutListViewModel(
             simulators = simulators,
             items = items,
             readoutEnabledStates = if (selected == Simulator.Gt7Ps5) {
-                readoutEnabledStates + (ReadoutItemKey.REMAINING_FUEL_LAPS to remainingFuelLapsEnabled)
+                readoutEnabledStates + (ReadoutItemKey.RemainingFuelLaps to remainingFuelLapsEnabled)
             } else {
                 readoutEnabledStates
             },
@@ -152,7 +152,7 @@ class ReadoutListViewModel(
     fun onReadoutEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
-            if (simulator == Simulator.Gt7Ps5 && key == ReadoutItemKey.REMAINING_FUEL_LAPS) {
+            if (simulator == Simulator.Gt7Ps5 && key == ReadoutItemKey.RemainingFuelLaps) {
                 saveGt7Ps5RemainingFuelLapsEnabled(enabled)
             } else {
                 saveReadoutEnabledState(simulator.id, key, enabled)

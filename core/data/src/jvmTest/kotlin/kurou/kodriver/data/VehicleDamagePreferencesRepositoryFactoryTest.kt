@@ -36,8 +36,11 @@ class VehicleDamagePreferencesRepositoryFactoryTest {
     fun `保存した enabledStates を読み出せる`() = testScope.runTest {
         val repository = createVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
-        repository.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
+        repository.saveEnabledState(ReadoutItemKey.Overheat, true)
 
-        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true), repository.observeEnabledStates().first())
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true),
+            repository.observeEnabledStates().first(),
+        )
     }
 }

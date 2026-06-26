@@ -35,24 +35,30 @@ class FlagPreferencesRepositoryImplTest {
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
 
-        repository.saveFlagEnabledState(ReadoutItemKey.BLUE_FLAG, true)
-        assertEquals(mapOf(ReadoutItemKey.BLUE_FLAG to true), repository.observeFlagEnabledStates().first())
+        repository.saveFlagEnabledState(ReadoutItemKey.BlueFlag, true)
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.BlueFlag to true),
+            repository.observeFlagEnabledStates().first(),
+        )
 
-        repository.saveFlagEnabledState(ReadoutItemKey.BLUE_FLAG, false)
-        assertEquals(mapOf(ReadoutItemKey.BLUE_FLAG to false), repository.observeFlagEnabledStates().first())
+        repository.saveFlagEnabledState(ReadoutItemKey.BlueFlag, false)
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.BlueFlag to false),
+            repository.observeFlagEnabledStates().first(),
+        )
     }
 
     @Test
     fun `複数フラグを独立して保存・取得できる`() = testScope.runTest {
-        repository.saveFlagEnabledState(ReadoutItemKey.BLUE_FLAG, true)
-        repository.saveFlagEnabledState(ReadoutItemKey.SECTOR_YELLOW_FLAG, false)
-        repository.saveFlagEnabledState(ReadoutItemKey.RED_FLAG, true)
+        repository.saveFlagEnabledState(ReadoutItemKey.BlueFlag, true)
+        repository.saveFlagEnabledState(ReadoutItemKey.SectorYellowFlag, false)
+        repository.saveFlagEnabledState(ReadoutItemKey.RedFlag, true)
 
         assertEquals(
             mapOf(
-                ReadoutItemKey.BLUE_FLAG to true,
-                ReadoutItemKey.SECTOR_YELLOW_FLAG to false,
-                ReadoutItemKey.RED_FLAG to true,
+                ReadoutItemKey.BlueFlag to true,
+                ReadoutItemKey.SectorYellowFlag to false,
+                ReadoutItemKey.RedFlag to true,
             ),
             repository.observeFlagEnabledStates().first(),
         )

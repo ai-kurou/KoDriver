@@ -42,14 +42,14 @@ class AndroidReadoutPreferencesRepositoryTest {
     fun `enabledStatesは初期状態で空を返し保存後にON_OFF状態を返す`() = runTest(testDispatcher) {
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
 
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.FLAG, false)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_DAMAGE, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.Flag, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleDamage, true)
 
         val states = repository.observeReadoutEnabledStates("lmu_windows").first()
-        assertEquals(true, states[ReadoutItemKey.VEHICLE_APPROACH])
-        assertEquals(false, states[ReadoutItemKey.FLAG])
-        assertEquals(true, states[ReadoutItemKey.VEHICLE_DAMAGE])
+        assertEquals(true, states[ReadoutItemKey.VehicleApproach])
+        assertEquals(false, states[ReadoutItemKey.Flag])
+        assertEquals(true, states[ReadoutItemKey.VehicleDamage])
     }
 
     @Test
@@ -58,11 +58,11 @@ class AndroidReadoutPreferencesRepositoryTest {
 
         repository.saveReadoutOrder(
             "lmu_windows",
-            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
         )
 
         assertEquals(
-            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
     }
@@ -76,8 +76,8 @@ class AndroidReadoutPreferencesRepositoryTest {
 
     @Test
     fun `異なるシミュレータのデータは互いに影響しない`() = runTest(testDispatcher) {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
-        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VEHICLE_APPROACH))
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VehicleApproach))
 
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("other").first())
         assertEquals(emptyList(), repository.observeReadoutOrder("other").first())

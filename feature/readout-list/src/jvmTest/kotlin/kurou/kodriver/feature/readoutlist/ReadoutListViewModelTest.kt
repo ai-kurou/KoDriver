@@ -69,7 +69,7 @@ class ReadoutListViewModelTest {
         val state = viewModel.uiState.first()
         assertEquals(Simulator.LmuWindows, state.selectedSimulator)
         assertEquals(
-            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
             state.items,
         )
     }
@@ -80,7 +80,7 @@ class ReadoutListViewModelTest {
         viewModel.moveItem(0, 1)
 
         assertEquals(
-            listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
             viewModel.uiState.first().items,
         )
     }
@@ -95,35 +95,35 @@ class ReadoutListViewModelTest {
     @Test
     fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() = runTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
-        viewModel.onReadoutEnabledChanged(ReadoutItemKey.VEHICLE_APPROACH, false)
+        viewModel.onReadoutEnabledChanged(ReadoutItemKey.VehicleApproach, false)
 
-        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.VEHICLE_APPROACH])
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.VehicleApproach])
     }
 
     @Test
     fun `シミュレータ未選択時はON_OFF状態を保存しない`() = runTest {
-        viewModel.onReadoutEnabledChanged(ReadoutItemKey.VEHICLE_APPROACH, false)
+        viewModel.onReadoutEnabledChanged(ReadoutItemKey.VehicleApproach, false)
 
         assertEquals(emptyMap(), readoutRepository.observeReadoutEnabledStates("lmu_windows").first())
     }
 
     @Test
     fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() = runTest {
-        readoutRepository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.FLAG, false)
+        readoutRepository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.Flag, false)
 
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
 
-        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.FLAG])
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.Flag])
     }
 
     @Test
     fun `シミュレータを選択するとRepositoryから永続化済みの順序が読み込まれる`() = runTest {
-        readoutRepository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH))
+        readoutRepository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach))
 
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
 
         assertEquals(
-            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
             viewModel.uiState.first().items,
         )
     }
@@ -134,7 +134,7 @@ class ReadoutListViewModelTest {
         viewModel.moveItem(0, 1)
 
         assertEquals(
-            listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
             readoutRepository.observeReadoutOrder("lmu_windows").first(),
         )
     }
@@ -146,7 +146,7 @@ class ReadoutListViewModelTest {
         viewModel.moveItem(0, 1) // [flag, vehicle_approach, vehicle_damage]（初期順序に戻る）
 
         assertEquals(
-            listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
             viewModel.uiState.first().items,
         )
     }
@@ -154,14 +154,14 @@ class ReadoutListViewModelTest {
     @Test
     fun `onItemSelectedでアイテムが選択される`() = runTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
-        viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
+        viewModel.onItemSelected(ReadoutItemKey.VehicleApproach)
 
         assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
     }
 
     @Test
     fun `シミュレータ未選択時はonItemSelectedで選択状態は変わらない`() = runTest {
-        viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
+        viewModel.onItemSelected(ReadoutItemKey.VehicleApproach)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -169,7 +169,7 @@ class ReadoutListViewModelTest {
     @Test
     fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() = runTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
-        viewModel.onItemSelected(ReadoutItemKey.MY_BEST_LAP)
+        viewModel.onItemSelected(ReadoutItemKey.MyBestLap)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -177,15 +177,15 @@ class ReadoutListViewModelTest {
     @Test
     fun `同じアイテムを再度選択すると選択解除される`() = runTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
-        viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
-        viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
+        viewModel.onItemSelected(ReadoutItemKey.VehicleApproach)
+        viewModel.onItemSelected(ReadoutItemKey.VehicleApproach)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
 
     @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
-        viewModel.onItemSelected(ReadoutItemKey.VEHICLE_APPROACH)
+        viewModel.onItemSelected(ReadoutItemKey.VehicleApproach)
         viewModel.clearSelectedItem()
 
         assertNull(viewModel.uiState.first().selectedItem)
@@ -198,7 +198,7 @@ class ReadoutListViewModelTest {
         val state = viewModel.uiState.first()
         assertEquals(Simulator.Gt7Ps5, state.selectedSimulator)
         assertEquals(
-            listOf(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.REMAINING_FUEL_LAPS),
+            listOf(ReadoutItemKey.MyBestLap, ReadoutItemKey.RemainingFuelLaps),
             state.items,
         )
     }
@@ -209,14 +209,14 @@ class ReadoutListViewModelTest {
 
         viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
-        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.REMAINING_FUEL_LAPS])
+        assertEquals(false, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.RemainingFuelLaps])
     }
 
     @Test
     fun `gt7_ps5の燃料残り周回数のON_OFF状態を変更すると専用設定に保存される`() = runTest {
         viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
-        viewModel.onReadoutEnabledChanged(ReadoutItemKey.REMAINING_FUEL_LAPS, false)
+        viewModel.onReadoutEnabledChanged(ReadoutItemKey.RemainingFuelLaps, false)
 
         assertEquals(false, gt7Ps5RemainingFuelLapsRepository.observeEnabled().first())
     }

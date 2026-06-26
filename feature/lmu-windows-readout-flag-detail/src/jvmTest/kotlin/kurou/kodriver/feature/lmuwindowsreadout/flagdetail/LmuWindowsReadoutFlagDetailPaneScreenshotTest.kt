@@ -22,10 +22,10 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
     fun `デフォルト`() {
         captureLmuWindowsReadoutFlagDetailPane(
             enabledStates = mapOf(
-                ReadoutItemKey.BLUE_FLAG to true,
-                ReadoutItemKey.SECTOR_YELLOW_FLAG to true,
-                ReadoutItemKey.FULL_COURSE_YELLOW to true,
-                ReadoutItemKey.RED_FLAG to true,
+                ReadoutItemKey.BlueFlag to true,
+                ReadoutItemKey.SectorYellowFlag to true,
+                ReadoutItemKey.FullCourseYellow to true,
+                ReadoutItemKey.RedFlag to true,
             ),
         )
     }
@@ -34,10 +34,10 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
     fun `全カード無効`() {
         captureLmuWindowsReadoutFlagDetailPane(
             enabledStates = mapOf(
-                ReadoutItemKey.BLUE_FLAG to false,
-                ReadoutItemKey.SECTOR_YELLOW_FLAG to false,
-                ReadoutItemKey.FULL_COURSE_YELLOW to false,
-                ReadoutItemKey.RED_FLAG to false,
+                ReadoutItemKey.BlueFlag to false,
+                ReadoutItemKey.SectorYellowFlag to false,
+                ReadoutItemKey.FullCourseYellow to false,
+                ReadoutItemKey.RedFlag to false,
             ),
         )
     }
