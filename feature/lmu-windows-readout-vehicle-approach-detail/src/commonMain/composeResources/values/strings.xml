@@ -12,4 +12,6 @@
     <string name="vehicle_approach_car_left_right_chip_label">カーレフト・カーライト</string>
     <string name="vehicle_approach_left_right_approach_chip_label">左接近・右接近</string>
     <string name="vehicle_approach_threshold_reset_to_default">デフォルト値にリセット</string>
+    <string name="vehicle_approach_help_icon_content_description">閾値の説明を表示</string>
+    <string name="vehicle_approach_skip_first_lap_switch_content_description">フォーメーションラップ・1周目スキップ</string>
 </resources>

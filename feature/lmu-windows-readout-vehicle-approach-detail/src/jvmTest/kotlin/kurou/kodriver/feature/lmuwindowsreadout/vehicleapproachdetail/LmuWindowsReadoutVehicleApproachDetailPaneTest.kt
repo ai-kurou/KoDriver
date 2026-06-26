@@ -5,8 +5,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
@@ -31,9 +31,9 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onNode(hasTestTag("vehicle_approach_help_button")).performClick()
+        rule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
 
-        rule.onNode(hasTestTag("vehicle_approach_help_sheet")).assertIsDisplayed()
+        rule.onNode(hasText("閾値は自車中心から相手車両中心までの距離です", substring = true)).assertIsDisplayed()
     }
 
     @Test

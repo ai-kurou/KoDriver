@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -281,9 +280,8 @@ internal fun AppScreenContent(
                             Modifier
                                 .fillMaxWidth()
                                 .padding(4.dp)
-                                .testTag("nav_${dest.name.lowercase()}")
                         } else {
-                            Modifier.testTag("nav_${dest.name.lowercase()}")
+                            Modifier
                         }
                         val showBadge = dest == AppDestination.More && hasAppUpdate
                         item(

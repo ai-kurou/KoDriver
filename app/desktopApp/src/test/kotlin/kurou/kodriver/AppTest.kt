@@ -1,8 +1,8 @@
 package kurou.kodriver
 
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
@@ -51,47 +51,47 @@ class AppTest {
         rule.setContent { AppScreen() }
 
         // シミュレータ選択ドロップダウンを開く
-        rule.onNodeWithTag("simulator_dropdown_trigger").performClick()
+        rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()
 
         // LMU Windowsシミュレータを選択
-        rule.onNodeWithTag("simulator_item_lmu_windows").performClick()
+        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).performClick()
         rule.waitForIdle()
 
         // 読み上げリストが表示されるまで待機
         rule.waitUntil(timeoutMillis = 5_000L) {
-            rule.onAllNodesWithTag("readout_item_0").fetchSemanticsNodes().isNotEmpty()
+            rule.onAllNodes(hasText("フラッグ")).fetchSemanticsNodes().isNotEmpty()
         }
-        // 読み上げ項目0をタップ
-        rule.onNodeWithTag("readout_item_0").performClick()
+        // 読み上げ項目「フラッグ」をタップ
+        rule.onNode(hasText("フラッグ")).performClick()
         rule.waitForIdle()
 
-        // 読み上げ項目1をタップ
-        rule.onNodeWithTag("readout_item_1").performClick()
+        // 読み上げ項目「車両接近」をタップ
+        rule.onNode(hasText("車両接近")).performClick()
         rule.waitForIdle()
 
-        // 読み上げ項目2をタップ
-        rule.onNodeWithTag("readout_item_2").performClick()
+        // 読み上げ項目「車両故障」をタップ
+        rule.onNode(hasText("車両故障")).performClick()
         rule.waitForIdle()
 
         // その他タブへ移動
-        rule.onNodeWithTag("nav_more").performClick()
+        rule.onNode(hasText("その他")).performClick()
         rule.waitForIdle()
 
-        // 音量をタップ（Desktop では ServerIp が除外され、ConsoleIp が含まれるため other_item_1）
-        rule.onNodeWithTag("other_item_1").performClick()
+        // 音量をタップ
+        rule.onNode(hasText("音量")).performClick()
         rule.waitForIdle()
 
-        // 読み上げ開始音をタップ（Desktop では other_item_2）
-        rule.onNodeWithTag("other_item_2").performClick()
+        // 読み上げ開始音をタップ
+        rule.onNode(hasText("読み上げ開始音")).performClick()
         rule.waitForIdle()
 
         // ダイアログをキャンセル
         rule.onNodeWithText("キャンセル").performClick()
         rule.waitForIdle()
 
-        // ライセンスをタップ（Desktop では ConsoleIp が含まれるため other_item_5）
-        rule.onNodeWithTag("other_item_5").performClick()
+        // ライセンスをタップ
+        rule.onNode(hasText("ライセンス")).performClick()
         rule.waitForIdle()
     }
 }

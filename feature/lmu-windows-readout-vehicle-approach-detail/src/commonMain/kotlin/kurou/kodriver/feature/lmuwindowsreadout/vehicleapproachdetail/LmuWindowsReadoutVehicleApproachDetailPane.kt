@@ -29,7 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,11 +40,13 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_description
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_icon_content_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_lateral_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_approach_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_readout_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_switch_content_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_readout_switch_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
@@ -98,7 +101,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onDismissRequest = { showHelpSheet = false },
             sheetState = sheetState,
         ) {
-            VehicleApproachHelpSheetContent(modifier = Modifier.testTag("vehicle_approach_help_sheet"))
+            VehicleApproachHelpSheetContent()
         }
     }
 
@@ -107,13 +110,10 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
             trailingContent = {
-                IconButton(
-                    onClick = { showHelpSheet = true },
-                    modifier = Modifier.testTag("vehicle_approach_help_button"),
-                ) {
+                IconButton(onClick = { showHelpSheet = true }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                        contentDescription = null,
+                        contentDescription = stringResource(Res.string.vehicle_approach_help_icon_content_description),
                         tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
@@ -154,10 +154,12 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                 modifier = Modifier.weight(1f),
             )
             Spacer(modifier = Modifier.width(16.dp))
+            val skipFirstLapSwitchDescription =
+                stringResource(Res.string.vehicle_approach_skip_first_lap_switch_content_description)
             Switch(
                 checked = uiState.skipFirstLap,
                 onCheckedChange = onSkipFirstLapChanged,
-                modifier = Modifier.testTag("vehicle_approach_skip_first_lap_switch"),
+                modifier = Modifier.semantics { contentDescription = skipFirstLapSwitchDescription },
             )
         }
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_readout_subtitle))
