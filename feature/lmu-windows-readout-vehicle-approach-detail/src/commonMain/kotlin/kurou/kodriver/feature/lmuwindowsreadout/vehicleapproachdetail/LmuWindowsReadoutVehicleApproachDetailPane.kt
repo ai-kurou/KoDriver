@@ -132,6 +132,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             defaultValue = defaultLongitudinal,
             onResetToDefault = onResetLongitudinalThreshold,
             resetContentDescription = resetToDefaultLabel,
+            sliderTestTag = "vehicle_approach_longitudinal_slider",
         )
         ThresholdSlider(
             value = uiState.lateralThresholdMeters.toFloat(),
@@ -141,6 +142,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             defaultValue = defaultLateral,
             onResetToDefault = onResetLateralThreshold,
             resetContentDescription = resetToDefaultLabel,
+            sliderTestTag = "vehicle_approach_lateral_slider",
         )
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
         Row(
