@@ -285,7 +285,7 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `燃料残り周回数が閾値以下になるとアナウンスする`() = runTest(testDispatcher) {
+    fun `Slider3のとき残り3周から1周まで合計3回アナウンスする`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -295,20 +295,58 @@ class Gt7Ps5NarratorViewModelTest {
             fuelThreshold = 3,
         )
 
-        // レーススタート: lapCount=0 → gasLevel=60L
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
-        // 1周完了: lapCount=1 → gasLevel=50L（10L消費）
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
-        // 2周完了: lapCount=2 → gasLevel=40L（平均10L/周、残り4周 → 閾値3以下なのでアナウンス待ち）
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 40f, gasCapacity = 100f))
-        // 3周完了: lapCount=3 → gasLevel=30L（残り3周 → 閾値以下でアナウンス）
-        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 30f, gasCapacity = 100f))
+        // スタート: gasLevel=40L、1周10L消費
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
+        // lap1完了 → 残り30/10=3.0周 → アナウンス(3)
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+        // lap2完了 → 残り20/10=2.0周 → アナウンス(2)
+        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
+        // lap3完了 → 残り10/10=1.0周 → アナウンス(1)
+        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 10f, gasCapacity = 100f))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning), tts.spokenTexts)
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.RemainingFuelLapsWarning(3),
+                SpeechEvent.RemainingFuelLapsWarning(2),
+                SpeechEvent.RemainingFuelLapsWarning(1),
+            ),
+            tts.spokenTexts,
+        )
     }
 
     @Test
-    fun `燃料残り周回数が閾値より多い場合はアナウンスしない`() = runTest(testDispatcher) {
+    fun `Slider5のとき残り5周から1周まで合計5回アナウンスする`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 5,
+        )
+
+        // スタート: gasLevel=60L、1周10L消費
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f)) // 残り5周
+        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 40f, gasCapacity = 100f)) // 残り4周
+        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 30f, gasCapacity = 100f)) // 残り3周
+        channel.send(gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f)) // 残り2周
+        channel.send(gt7Telemetry(lapCount = 5, gasLevel = 10f, gasCapacity = 100f)) // 残り1周
+
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.RemainingFuelLapsWarning(5),
+                SpeechEvent.RemainingFuelLapsWarning(4),
+                SpeechEvent.RemainingFuelLapsWarning(3),
+                SpeechEvent.RemainingFuelLapsWarning(2),
+                SpeechEvent.RemainingFuelLapsWarning(1),
+            ),
+            tts.spokenTexts,
+        )
+    }
+
+    @Test
+    fun `残り周回数がSliderより多いときはアナウンスしない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -318,11 +356,44 @@ class Gt7Ps5NarratorViewModelTest {
             fuelThreshold = 2,
         )
 
-        // 1周あたり10L消費、60Lスタートなら残り6周 → 閾値2を超えるのでアナウンスしない
+        // 1周あたり10L消費、60Lスタートなら残り6周 → Slider2を超えるのでアナウンスしない
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `同じ残り周回数が連続してもアナウンスは1回だけ`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to true),
+            fuelThreshold = 3,
+        )
+
+        // スタート: gasLevel=70L、1周10L消費
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 70f, gasCapacity = 100f))
+        // lap1完了 → 残り6.0周 → アナウンスなし
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 60f, gasCapacity = 100f))
+        // lap2完了 → 残り5.0周 → アナウンスなし
+        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 50f, gasCapacity = 100f))
+        // lap3完了 → 残り40/10=4.0周 → まだアナウンスなし
+        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 100f))
+        // lap4完了 → 残り30/10=3.0周 → アナウンス(3)
+        channel.send(gt7Telemetry(lapCount = 4, gasLevel = 30f, gasCapacity = 100f))
+        // lap5完了 → 残り30/10=3.0周（燃料消費が一時的に少なかった想定、floor=3.0）
+        // ※実際は消費が変動するが、今回は同じfloor値が連続する状況をテスト
+        channel.send(gt7Telemetry(lapCount = 5, gasLevel = 30f, gasCapacity = 100f))
+
+        // lapCount=5では gasLevel が変わらず lapsCompleted=5, consumedFuel=70-30=40, avg=8
+        // remainingLapsFloor = floor(30/8) = 3 → 同じfloor値なのでアナウンスしない
+        assertEquals(
+            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(3)),
+            tts.spokenTexts,
+        )
     }
 
     @Test
@@ -338,14 +409,13 @@ class Gt7Ps5NarratorViewModelTest {
 
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
-        // 残り2周（閾値3以下）だが無効
         channel.send(gt7Telemetry(lapCount = 2, gasLevel = 10f, gasCapacity = 100f))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
     @Test
-    fun `lapCountがリセットされると燃料追跡がリセットされる`() = runTest(testDispatcher) {
+    fun `lapCountがリセットされると燃料追跡とアナウンス履歴がリセットされる`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -355,15 +425,21 @@ class Gt7Ps5NarratorViewModelTest {
             fuelThreshold = 3,
         )
 
-        // 1周目セッション
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 30f, gasCapacity = 100f))
-        // リセット後: lapCountが減少してリセット
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+        // 1周目セッション: 残り3周でアナウンス済み
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f)) // 残り3周
+        // リセット
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
+        // リセット後1周完了 → 残り3周 → アナウンス履歴がリセットされているので再アナウンス
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
 
-        // リセット後の1周完了では残り5周(>閾値3)なのでアナウンスしない
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning), tts.spokenTexts)
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.RemainingFuelLapsWarning(3),
+                SpeechEvent.RemainingFuelLapsWarning(3),
+            ),
+            tts.spokenTexts,
+        )
     }
 
     @Test

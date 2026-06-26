@@ -143,7 +143,7 @@ class Gt7Ps5WavNarratorEngineTest {
         val engine = createEngine(player)
         runCurrent()
 
-        engine.speak(SpeechEvent.RemainingFuelLapsWarning)
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(3))
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)

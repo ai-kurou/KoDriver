@@ -47,6 +47,7 @@ private data class FuelTrackingState(
     val raceStartLap: Int?,
     val currentLap: Int,
     val currentGasLevel: Float,
+    val isNewSession: Boolean,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -79,6 +80,7 @@ class Gt7Ps5NarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
 
     private var personalBestMs: Int = Int.MAX_VALUE
+    private var lastAnnouncedRemainingLaps: Int = -1
 
     private val gt7TelemetryFlow = selectedSimulator
         .flatMapLatest { simulator ->
@@ -111,28 +113,32 @@ class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val remainingFuelLapsJob = gt7TelemetryFlow
         .distinctUntilChangedBy { it.lapCount }
-        .scan(FuelTrackingState(null, null, -1, 0f)) { state, data ->
+        .scan(FuelTrackingState(null, null, -1, 0f, false)) { state, data ->
             when {
                 data.lapCount < state.currentLap -> FuelTrackingState(
                     raceStartFuel = data.gasLevel,
                     raceStartLap = data.lapCount,
                     currentLap = data.lapCount,
                     currentGasLevel = data.gasLevel,
+                    isNewSession = true,
                 )
                 state.raceStartFuel == null -> FuelTrackingState(
                     raceStartFuel = data.gasLevel,
                     raceStartLap = data.lapCount,
                     currentLap = data.lapCount,
                     currentGasLevel = data.gasLevel,
+                    isNewSession = false,
                 )
                 else -> state.copy(
                     currentLap = data.lapCount,
                     currentGasLevel = data.gasLevel,
+                    isNewSession = false,
                 )
             }
         }
         .drop(1)
         .onEach { state ->
+            if (state.isNewSession) lastAnnouncedRemainingLaps = -1
             val startFuel = state.raceStartFuel ?: return@onEach
             val startLap = state.raceStartLap ?: return@onEach
             val lapsCompleted = state.currentLap - startLap
@@ -140,10 +146,13 @@ class Gt7Ps5NarratorViewModel(
             val consumedFuel = startFuel - state.currentGasLevel
             if (consumedFuel <= 0f) return@onEach
             val avgConsumption = consumedFuel / lapsCompleted
-            val remainingLaps = (state.currentGasLevel / avgConsumption).toInt()
-            if (remainingLaps > fuelThreshold.value) return@onEach
+            val remainingLapsFloor = (state.currentGasLevel / avgConsumption).toInt()
+            val threshold = fuelThreshold.value
+            if (remainingLapsFloor < 1 || remainingLapsFloor > threshold) return@onEach
+            if (remainingLapsFloor == lastAnnouncedRemainingLaps) return@onEach
             if (enabledStates.value[ReadoutItemKey.RemainingFuelLaps] == false) return@onEach
-            speakWithPriority(SpeechEvent.RemainingFuelLapsWarning)
+            lastAnnouncedRemainingLaps = remainingLapsFloor
+            speakWithPriority(SpeechEvent.RemainingFuelLapsWarning(remainingLapsFloor))
         }
         .launchIn(viewModelScope)
 
