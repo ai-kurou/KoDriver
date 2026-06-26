@@ -40,22 +40,13 @@ kotlin {
             kotlin.srcDir(generatedAppVersionDir)
         }
         commonMain.dependencies {
-            implementation(projects.core.domain)
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
             implementation(libs.compose.material3.adaptive.layout)
             implementation(libs.compose.material3.adaptive.navigation)
-            implementation(libs.compose.components.resources)
-            implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.material.icons.extended)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.koin.compose.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutinesTest)
-            implementation(libs.kotlin.test)
         }
         named("androidHostTest") {
             dependencies {

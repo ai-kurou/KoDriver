@@ -16,16 +16,8 @@ kotlin {
             implementation(libs.sentry)
         }
         commonMain.dependencies {
-            implementation(projects.core.domain)
             implementation(projects.core.designsystem)
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.components.resources)
             implementation(libs.kotlinx.coroutinesCore)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.koin.compose.viewmodel)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)

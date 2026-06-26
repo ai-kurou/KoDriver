@@ -21,6 +21,10 @@ kotlin {
         jsMain.get().dependsOn(nonAndroidMain)
         wasmJsMain.get().dependsOn(nonAndroidMain)
 
+        commonMain.dependencies {
+            implementation(libs.findLibrary("compose-runtime").get())
+            implementation(libs.findLibrary("compose-components-resources").get())
+        }
         androidMain.dependencies {
             implementation(libs.findLibrary("compose-uiToolingPreview").get())
         }

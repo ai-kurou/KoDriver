@@ -52,6 +52,7 @@ digraph G {
   ":feature:other-console-ip-detail" -> ":core:domain"
   ":feature:other-console-ip-detail" -> ":core:designsystem"
   ":feature:other-keep-screen-on-detail" -> ":core:domain"
+  ":feature:other-license-detail" -> ":core:domain"
   ":feature:other-license-detail" -> ":core:designsystem"
   ":feature:other-list" -> ":core:domain"
   ":feature:other-readout-start-sound-detail" -> ":core:domain"
