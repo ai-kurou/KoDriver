@@ -12,7 +12,7 @@ class ReadoutListItemTypeTest {
     fun `lmu_windows の vehicle_approach は LmuWindows_VehicleApproach を返す`() {
         assertEquals(
             ReadoutListItemType.LmuWindows.VehicleApproach,
-            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.VEHICLE_APPROACH),
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.VehicleApproach),
         )
     }
 
@@ -20,7 +20,7 @@ class ReadoutListItemTypeTest {
     fun `lmu_windows の flag は LmuWindows_Flag を返す`() {
         assertEquals(
             ReadoutListItemType.LmuWindows.Flag,
-            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.FLAG),
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.Flag),
         )
     }
 
@@ -28,7 +28,7 @@ class ReadoutListItemTypeTest {
     fun `lmu_windows の vehicle_damage は LmuWindows_VehicleDamage を返す`() {
         assertEquals(
             ReadoutListItemType.LmuWindows.VehicleDamage,
-            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.VEHICLE_DAMAGE),
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.VehicleDamage),
         )
     }
 
@@ -36,7 +36,7 @@ class ReadoutListItemTypeTest {
     fun `gt7_ps5 の best_lap は Gt7Ps5_BestLap を返す`() {
         assertEquals(
             ReadoutListItemType.Gt7Ps5.MyBestLap,
-            ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.MY_BEST_LAP),
+            ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.MyBestLap),
         )
     }
 
@@ -44,17 +44,17 @@ class ReadoutListItemTypeTest {
     fun `gt7_ps5 の remaining_fuel_laps は Gt7Ps5_RemainingFuelLaps を返す`() {
         assertEquals(
             ReadoutListItemType.Gt7Ps5.RemainingFuelLaps,
-            ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.REMAINING_FUEL_LAPS),
+            ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.RemainingFuelLaps),
         )
     }
 
     @Test
     fun `lmu_windows でシミュレータに属さないキーは null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.MY_BEST_LAP))
+        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.MyBestLap))
     }
 
     @Test
     fun `gt7_ps5 でシミュレータに属さないキーは null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.FLAG))
+        assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.Flag))
     }
 }

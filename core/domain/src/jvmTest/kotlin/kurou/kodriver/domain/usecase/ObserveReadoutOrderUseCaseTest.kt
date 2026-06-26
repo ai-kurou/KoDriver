@@ -18,14 +18,14 @@ class ObserveReadoutOrderUseCaseTest {
 
         repo.saveReadoutOrder(
             "lmu_windows",
-            listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
         )
-        repo.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.FLAG))
+        repo.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.Flag))
 
         assertEquals(
-            listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
+            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
             useCase("lmu_windows").first(),
         )
-        assertEquals(listOf(ReadoutItemKey.FLAG), useCase("rFactor 2").first())
+        assertEquals(listOf(ReadoutItemKey.Flag), useCase("rFactor 2").first())
     }
 }

@@ -58,7 +58,7 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.VEHICLE_APPROACH, ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_DAMAGE),
+                    items = listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},
@@ -94,7 +94,7 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.Gt7Ps5),
                     selectedSimulator = Simulator.Gt7Ps5,
-                    items = listOf(ReadoutItemKey.MY_BEST_LAP, ReadoutItemKey.REMAINING_FUEL_LAPS),
+                    items = listOf(ReadoutItemKey.MyBestLap, ReadoutItemKey.RemainingFuelLaps),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},

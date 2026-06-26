@@ -16,10 +16,16 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
         assertTrue(useCase("lmu_windows").first().isEmpty())
 
-        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VEHICLE_APPROACH, true)
-        repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.VEHICLE_APPROACH, false)
+        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.VehicleApproach, false)
 
-        assertEquals(mapOf(ReadoutItemKey.VEHICLE_APPROACH to true), useCase("lmu_windows").first())
-        assertEquals(mapOf(ReadoutItemKey.VEHICLE_APPROACH to false), useCase("rFactor 2").first())
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            useCase("lmu_windows").first(),
+        )
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
+            useCase("rFactor 2").first(),
+        )
     }
 }

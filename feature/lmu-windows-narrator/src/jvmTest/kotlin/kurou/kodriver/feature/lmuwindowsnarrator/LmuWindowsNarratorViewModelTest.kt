@@ -84,7 +84,7 @@ class LmuWindowsNarratorViewModelTest {
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
+        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach),
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -358,7 +358,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.VEHICLE_APPROACH to false),
+            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
             currentTimeMs = { fakeTime },
         )
 
@@ -531,7 +531,7 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.FLAG,
+            initialKey = ReadoutItemKey.Flag,
         )
         buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
@@ -547,7 +547,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `車両接近読み上げ中にフラグイベントが来ると読み上げを停止して割り込む`() = runTest(testDispatcher) {
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.VEHICLE_APPROACH,
+            initialKey = ReadoutItemKey.VehicleApproach,
         )
         buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
 
@@ -592,7 +592,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             damageChannel = damageChannel,
             ttsEngine = tts,
-            vehicleDamageEnabledOverrides = mapOf(ReadoutItemKey.OVERHEAT to false),
+            vehicleDamageEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
         )
 
         damageChannel.send(noDamage())
@@ -608,7 +608,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            flagEnabledOverrides = mapOf(ReadoutItemKey.BLUE_FLAG to false),
+            flagEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.BlueFlag to false),
         )
 
         flagChannel.send(clearFlags())
@@ -704,7 +704,7 @@ private class FakeConstantSimulatorRepository(
 
 private class FakeAllEnabledReadoutPreferencesRepository(
     private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.FLAG, ReadoutItemKey.VEHICLE_APPROACH),
+    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach),
 ) : ReadoutPreferencesRepository {
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)

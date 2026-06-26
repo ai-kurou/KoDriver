@@ -146,7 +146,7 @@ class LmuWindowsNarratorViewModel(
                 }
         }
         .onEach { (_, event) ->
-            if (enabledStates.value[ReadoutItemKey.VEHICLE_APPROACH] == false) return@onEach
+            if (enabledStates.value[ReadoutItemKey.VehicleApproach] == false) return@onEach
             if (!startReadoutEnabled.value) return@onEach
             // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
             if (skipFirstLap.value && currentLap.value <= 0) return@onEach
@@ -174,7 +174,7 @@ class LmuWindowsNarratorViewModel(
         }
         .onEach { (prev, current) ->
             if (current == null) return@onEach
-            if (enabledStates.value[ReadoutItemKey.OVERHEAT] == false) return@onEach
+            if (enabledStates.value[ReadoutItemKey.Overheat] == false) return@onEach
             if (prev?.overheating != true && current.overheating) {
                 speakWithPriority(SpeechEvent.Overheating)
             }
@@ -198,13 +198,13 @@ class LmuWindowsNarratorViewModel(
         .launchIn(viewModelScope)
 
     private fun announceFlags(prev: RaceFlagsData, current: RaceFlagsData) {
-        if (enabledStates.value[ReadoutItemKey.BLUE_FLAG] != false) {
+        if (enabledStates.value[ReadoutItemKey.BlueFlag] != false) {
             if (prev.playerFlag != PrimaryFlag.BLUE && current.playerFlag == PrimaryFlag.BLUE) {
                 speakWithPriority(SpeechEvent.BlueFlag)
             }
         }
 
-        if (enabledStates.value[ReadoutItemKey.SECTOR_YELLOW_FLAG] != false) {
+        if (enabledStates.value[ReadoutItemKey.SectorYellowFlag] != false) {
             val newYellowSector = current.sectorFlags.indices.any { i ->
                 current.sectorFlags[i] == SectorFlagState.YELLOW &&
                     prev.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
@@ -214,7 +214,7 @@ class LmuWindowsNarratorViewModel(
             }
         }
 
-        if (enabledStates.value[ReadoutItemKey.FULL_COURSE_YELLOW] != false) {
+        if (enabledStates.value[ReadoutItemKey.FullCourseYellow] != false) {
             if (prev.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
                 current.gamePhase == SessionPhase.FULL_COURSE_YELLOW
             ) {
@@ -222,7 +222,7 @@ class LmuWindowsNarratorViewModel(
             }
         }
 
-        if (enabledStates.value[ReadoutItemKey.RED_FLAG] != false) {
+        if (enabledStates.value[ReadoutItemKey.RedFlag] != false) {
             if (prev.gamePhase != SessionPhase.RED_FLAG &&
                 current.gamePhase == SessionPhase.RED_FLAG
             ) {

@@ -18,8 +18,11 @@ class FlagPreferencesRepositoryTest {
 
             assertTrue(repo.observeFlagEnabledStates().first().isEmpty())
 
-            repo.saveFlagEnabledState(ReadoutItemKey.BLUE_FLAG, true)
-            assertEquals(mapOf(ReadoutItemKey.BLUE_FLAG to true), repo.observeFlagEnabledStates().first())
+            repo.saveFlagEnabledState(ReadoutItemKey.BlueFlag, true)
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.BlueFlag to true),
+                repo.observeFlagEnabledStates().first(),
+            )
         } finally {
             tempDir.deleteRecursively()
         }

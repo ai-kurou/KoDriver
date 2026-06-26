@@ -15,29 +15,20 @@ sealed interface ReadoutItemKey {
     data object RemainingFuelLaps : ReadoutItemKey { override val value = "remaining_fuel_laps" }
 
     companion object {
-        val VEHICLE_APPROACH: ReadoutItemKey = VehicleApproach
-        val FLAG: ReadoutItemKey = Flag
-        val BLUE_FLAG: ReadoutItemKey = BlueFlag
-        val SECTOR_YELLOW_FLAG: ReadoutItemKey = SectorYellowFlag
-        val FULL_COURSE_YELLOW: ReadoutItemKey = FullCourseYellow
-        val RED_FLAG: ReadoutItemKey = RedFlag
-        val VEHICLE_DAMAGE: ReadoutItemKey = VehicleDamage
-        val OVERHEAT: ReadoutItemKey = Overheat
-        val MY_BEST_LAP: ReadoutItemKey = MyBestLap
-        val REMAINING_FUEL_LAPS: ReadoutItemKey = RemainingFuelLaps
-
-        private val entries = listOf(
-            VEHICLE_APPROACH,
-            FLAG,
-            BLUE_FLAG,
-            SECTOR_YELLOW_FLAG,
-            FULL_COURSE_YELLOW,
-            RED_FLAG,
-            VEHICLE_DAMAGE,
-            OVERHEAT,
-            MY_BEST_LAP,
-            REMAINING_FUEL_LAPS,
-        )
+        private val entries by lazy {
+            listOf(
+                VehicleApproach,
+                Flag,
+                BlueFlag,
+                SectorYellowFlag,
+                FullCourseYellow,
+                RedFlag,
+                VehicleDamage,
+                Overheat,
+                MyBestLap,
+                RemainingFuelLaps,
+            )
+        }
 
         fun fromValue(value: String): ReadoutItemKey? = entries.find { it.value == value }
     }

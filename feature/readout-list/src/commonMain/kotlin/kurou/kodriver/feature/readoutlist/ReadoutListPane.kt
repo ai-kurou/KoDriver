@@ -339,17 +339,17 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
             simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
             selectedSimulator = Simulator.LmuWindows,
             items = listOf(
-                ReadoutItemKey.VEHICLE_APPROACH,
-                ReadoutItemKey.FLAG,
-                ReadoutItemKey.VEHICLE_DAMAGE,
+                ReadoutItemKey.VehicleApproach,
+                ReadoutItemKey.Flag,
+                ReadoutItemKey.VehicleDamage,
             ),
         ),
         ReadoutListUiState(
             simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
             selectedSimulator = Simulator.Gt7Ps5,
             items = listOf(
-                ReadoutItemKey.MY_BEST_LAP,
-                ReadoutItemKey.REMAINING_FUEL_LAPS,
+                ReadoutItemKey.MyBestLap,
+                ReadoutItemKey.RemainingFuelLaps,
             ),
         ),
     )

@@ -69,7 +69,7 @@ class Gt7Ps5NarratorViewModel(
             if (current == null || current <= 0) return@onEach
             if (prev > 0 && current >= prev) return@onEach
             if (current >= personalBestMs) return@onEach
-            if (enabledStates.value[ReadoutItemKey.MY_BEST_LAP] == false) return@onEach
+            if (enabledStates.value[ReadoutItemKey.MyBestLap] == false) return@onEach
             personalBestMs = current
             val event = when (voiceType.value) {
                 MyBestLapVoiceType.FORMAL -> SpeechEvent.MyBestLapFormal

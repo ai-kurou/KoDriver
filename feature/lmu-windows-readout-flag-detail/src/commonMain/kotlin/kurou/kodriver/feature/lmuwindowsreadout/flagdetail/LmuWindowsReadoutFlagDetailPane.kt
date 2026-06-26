@@ -70,10 +70,10 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
     LmuWindowsReadoutFlagDetailPaneContent(
         uiState = LmuWindowsReadoutFlagDetailUiState(
             enabledStates = mapOf(
-                ReadoutItemKey.BLUE_FLAG to true,
-                ReadoutItemKey.SECTOR_YELLOW_FLAG to true,
-                ReadoutItemKey.FULL_COURSE_YELLOW to true,
-                ReadoutItemKey.RED_FLAG to true,
+                ReadoutItemKey.BlueFlag to true,
+                ReadoutItemKey.SectorYellowFlag to true,
+                ReadoutItemKey.FullCourseYellow to true,
+                ReadoutItemKey.RedFlag to true,
             ),
         ),
         onFlagEnabledChanged = { _, _ -> },

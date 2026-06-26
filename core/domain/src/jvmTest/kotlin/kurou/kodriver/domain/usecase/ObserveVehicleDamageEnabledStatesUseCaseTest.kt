@@ -28,9 +28,9 @@ class ObserveVehicleDamageEnabledStatesUseCaseTest {
         val repo = FakeVehicleDamagePreferencesRepository()
         val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
+        repo.saveEnabledState(ReadoutItemKey.Overheat, true)
 
-        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true), useCase().first())
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true), useCase().first())
     }
 
     @Test
@@ -38,10 +38,13 @@ class ObserveVehicleDamageEnabledStatesUseCaseTest {
         val repo = FakeVehicleDamagePreferencesRepository()
         val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.OVERHEAT, true)
-        repo.saveEnabledState(ReadoutItemKey.VEHICLE_DAMAGE, false)
+        repo.saveEnabledState(ReadoutItemKey.Overheat, true)
+        repo.saveEnabledState(ReadoutItemKey.VehicleDamage, false)
 
-        assertEquals(mapOf(ReadoutItemKey.OVERHEAT to true, ReadoutItemKey.VEHICLE_DAMAGE to false), useCase().first())
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true, ReadoutItemKey.VehicleDamage to false),
+            useCase().first(),
+        )
     }
 }
 
