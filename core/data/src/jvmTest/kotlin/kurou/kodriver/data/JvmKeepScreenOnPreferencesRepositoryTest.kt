@@ -10,6 +10,11 @@ class JvmKeepScreenOnPreferencesRepositoryTest {
     private val repository = JvmKeepScreenOnPreferencesRepository()
 
     @Test
+    fun `keepScreenOnはfalseを返す`() = runTest {
+        assertFalse(repository.keepScreenOn().first())
+    }
+
+    @Test
     fun `saveKeepScreenOnを呼び出してもfalseを返す`() = runTest {
         repository.saveKeepScreenOn(true)
 
