@@ -19,11 +19,15 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @OptIn(ExperimentalResourceApi::class)
 internal class Gt7Ps5WavNarratorEngine(
     private val soundPlayer: SoundPlayer,
+    volumeFlow: Flow<Int> = flowOf(100),
     startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
     private val startSoundResourceLoader: suspend (String) -> ByteArray = ::readStartSoundBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
+
+    @Volatile
+    private var currentVolume: Int = 100
 
     @Volatile
     private var currentStartSoundType: ReadoutStartSoundType = ReadoutStartSoundType.FORMULA_RADIO
@@ -52,6 +56,7 @@ internal class Gt7Ps5WavNarratorEngine(
     )
 
     init {
+        scope.launch { volumeFlow.collect { currentVolume = it } }
         scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
         scope.launch {
             val loaded = mutableMapOf<SpeechEvent, ByteArray>()
@@ -96,8 +101,9 @@ internal class Gt7Ps5WavNarratorEngine(
 
     private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {
         _currentReadoutItemKey = event.readoutItemKey
-        startSounds[currentStartSoundType]?.let { soundPlayer.play(it) }
-        soundPlayer.play(mainSound)
+        val vol = currentVolume
+        startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
+        soundPlayer.play(mainSound, vol)
         _currentReadoutItemKey = null
     }
 
@@ -110,7 +116,7 @@ internal class Gt7Ps5WavNarratorEngine(
         val sound = startSounds[type] ?: return
         if (soundPlayer.isPlaying) return
         playJob?.cancel()
-        playJob = scope.launch { soundPlayer.play(sound) }
+        playJob = scope.launch { soundPlayer.play(sound, currentVolume) }
     }
 
     internal companion object {

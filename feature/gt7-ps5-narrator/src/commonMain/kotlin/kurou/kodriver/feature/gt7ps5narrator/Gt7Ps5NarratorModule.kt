@@ -8,6 +8,7 @@ import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import org.koin.core.module.Module
@@ -31,6 +32,7 @@ val gt7Ps5NarratorModule: Module = module {
     single<TextToSpeechEngine>(named("gt7_ps5")) {
         Gt7Ps5WavNarratorEngine(
             soundPlayer = get(),
+            volumeFlow = ObserveSoundVolumeUseCase(get())(),
             startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
         )
     }
