@@ -80,6 +80,7 @@ internal fun OtherConsoleIpDetailPaneContent(
     onOpenGuide: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
+    portSelectable: Boolean = isPortSelectable,
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(uiState.isSaved) {
@@ -133,10 +134,11 @@ internal fun OtherConsoleIpDetailPaneContent(
                 RadioButton(
                     selected = uiState.selectedPort == 33740,
                     onClick = { onPortSelected(33740) },
+                    enabled = portSelectable,
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33740_label),
-                    modifier = Modifier.clickable { onPortSelected(33740) },
+                    modifier = if (portSelectable) Modifier.clickable { onPortSelected(33740) } else Modifier,
                 )
             }
             Row(
@@ -146,10 +148,11 @@ internal fun OtherConsoleIpDetailPaneContent(
                 RadioButton(
                     selected = uiState.selectedPort == 33741,
                     onClick = { onPortSelected(33741) },
+                    enabled = portSelectable,
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33741_label),
-                    modifier = Modifier.clickable { onPortSelected(33741) },
+                    modifier = if (portSelectable) Modifier.clickable { onPortSelected(33741) } else Modifier,
                 )
             }
             if (uiState.saveFailed) {
