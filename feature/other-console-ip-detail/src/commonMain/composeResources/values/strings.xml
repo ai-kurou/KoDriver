@@ -11,5 +11,4 @@
     <string name="console_ip_port_label">接続ポート</string>
     <string name="console_ip_port_33740_label">33740（ゲーム機に直接接続）</string>
     <string name="console_ip_port_33741_label">33741（SimHub経由で接続）</string>
-    <string name="console_ip_voice_source_notice">読み上げ音声はゲーム機ではなく、デスクトップ版KoDriverから再生されます</string>
 </resources>

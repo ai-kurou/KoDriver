@@ -13,10 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -43,7 +40,6 @@ import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_port
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_port_label
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_title
-import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_voice_source_notice
 import kodriver.feature.otherconsoleipdetail.generated.resources.navigate_back
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import org.jetbrains.compose.resources.stringResource
@@ -84,8 +80,6 @@ internal fun OtherConsoleIpDetailPaneContent(
     onOpenGuide: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
-    portSelectable: Boolean = isPortSelectable,
-    showVoiceSourceNotice: Boolean = !isPortSelectable,
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(uiState.isSaved) {
@@ -110,33 +104,6 @@ internal fun OtherConsoleIpDetailPaneContent(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
         ) {
-            if (showVoiceSourceNotice) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.Top,
-                        modifier = Modifier.padding(12.dp),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(16.dp),
-                        )
-                        Spacer(modifier = Modifier.size(8.dp))
-                        Text(
-                            text = stringResource(Res.string.console_ip_voice_source_notice),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
             Text(stringResource(Res.string.console_ip_description))
             Spacer(modifier = Modifier.height(12.dp))
             TextField(
@@ -166,11 +133,10 @@ internal fun OtherConsoleIpDetailPaneContent(
                 RadioButton(
                     selected = uiState.selectedPort == 33740,
                     onClick = { onPortSelected(33740) },
-                    enabled = portSelectable,
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33740_label),
-                    modifier = if (portSelectable) Modifier.clickable { onPortSelected(33740) } else Modifier,
+                    modifier = Modifier.clickable { onPortSelected(33740) },
                 )
             }
             Row(
@@ -180,11 +146,10 @@ internal fun OtherConsoleIpDetailPaneContent(
                 RadioButton(
                     selected = uiState.selectedPort == 33741,
                     onClick = { onPortSelected(33741) },
-                    enabled = portSelectable,
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33741_label),
-                    modifier = if (portSelectable) Modifier.clickable { onPortSelected(33741) } else Modifier,
+                    modifier = Modifier.clickable { onPortSelected(33741) },
                 )
             }
             if (uiState.saveFailed) {
@@ -233,60 +198,24 @@ internal fun OtherConsoleIpDetailPaneContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPaneAndroidDefaultPreview() {
+private fun OtherConsoleIpDetailPaneDefaultPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-        portSelectable = true,
-        showVoiceSourceNotice = false,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPaneAndroidInvalidPreview() {
+private fun OtherConsoleIpDetailPaneInvalidPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
-        portSelectable = true,
-        showVoiceSourceNotice = false,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPaneAndroidSaveFailedPreview() {
+private fun OtherConsoleIpDetailPaneSaveFailedPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100", saveFailed = true),
-        portSelectable = true,
-        showVoiceSourceNotice = false,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtherConsoleIpDetailPaneDesktopDefaultPreview() {
-    OtherConsoleIpDetailPaneContent(
-        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-        portSelectable = false,
-        showVoiceSourceNotice = true,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtherConsoleIpDetailPaneDesktopInvalidPreview() {
-    OtherConsoleIpDetailPaneContent(
-        uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
-        portSelectable = false,
-        showVoiceSourceNotice = true,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OtherConsoleIpDetailPaneDesktopSaveFailedPreview() {
-    OtherConsoleIpDetailPaneContent(
-        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100", saveFailed = true),
-        portSelectable = false,
-        showVoiceSourceNotice = true,
     )
 }

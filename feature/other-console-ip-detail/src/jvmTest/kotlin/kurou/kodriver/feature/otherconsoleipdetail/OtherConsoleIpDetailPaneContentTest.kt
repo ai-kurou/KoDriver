@@ -9,7 +9,6 @@ import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 class OtherConsoleIpDetailPaneContentTest {
 
@@ -26,8 +25,6 @@ class OtherConsoleIpDetailPaneContentTest {
         val onDismiss: () -> Unit = {},
         val onBack: () -> Unit = {},
         val onOpenGuide: () -> Unit = {},
-        val portSelectable: Boolean = true,
-        val showVoiceSourceNotice: Boolean = false,
     )
 
     private fun setContent(params: ContentParams = ContentParams()) {
@@ -39,8 +36,6 @@ class OtherConsoleIpDetailPaneContentTest {
                 onDismiss = params.onDismiss,
                 onBack = params.onBack,
                 onOpenGuide = params.onOpenGuide,
-                portSelectable = params.portSelectable,
-                showVoiceSourceNotice = params.showVoiceSourceNotice,
             )
         }
     }
@@ -128,37 +123,5 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("33741（SimHub経由で接続）").performClick()
 
         assertEquals(33741, selected)
-    }
-
-    @Test
-    fun `portSelectableがfalseのときonPortSelectedが呼ばれない`() {
-        var selected: Int? = null
-        setContent(
-            ContentParams(
-                uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
-                onPortSelected = { selected = it },
-                portSelectable = false,
-            ),
-        )
-
-        rule.waitForIdle()
-
-        assertNull(selected)
-    }
-
-    @Test
-    fun `showVoiceSourceNoticeがtrueのとき音声通知が表示される`() {
-        setContent(ContentParams(showVoiceSourceNotice = true))
-
-        rule.onNodeWithText("読み上げ音声はゲーム機ではなく、デスクトップ版KoDriverから再生されます")
-            .assertExists()
-    }
-
-    @Test
-    fun `showVoiceSourceNoticeがfalseのとき音声通知が表示されない`() {
-        setContent(ContentParams(showVoiceSourceNotice = false))
-
-        rule.onNodeWithText("読み上げ音声はゲーム機ではなく、デスクトップ版KoDriverから再生されます")
-            .assertDoesNotExist()
     }
 }
