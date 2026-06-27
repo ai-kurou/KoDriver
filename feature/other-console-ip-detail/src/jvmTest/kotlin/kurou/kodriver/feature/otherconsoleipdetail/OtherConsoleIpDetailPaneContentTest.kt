@@ -16,27 +16,31 @@ class OtherConsoleIpDetailPaneContentTest {
     @get:Rule
     val rule = createComposeRule()
 
-    private fun setContent(
-        uiState: OtherConsoleIpDetailUiState = OtherConsoleIpDetailUiState(
+    private data class ContentParams(
+        val uiState: OtherConsoleIpDetailUiState = OtherConsoleIpDetailUiState(
             inputAddress = "192.168.1.1",
             isInputValid = true,
         ),
-        onPortSelected: (Int) -> Unit = {},
-        onSave: () -> Unit = {},
-        onDismiss: () -> Unit = {},
-        onBack: () -> Unit = {},
-        onOpenGuide: () -> Unit = {},
-        portSelectable: Boolean = true,
-    ) {
+        val onPortSelected: (Int) -> Unit = {},
+        val onSave: () -> Unit = {},
+        val onDismiss: () -> Unit = {},
+        val onBack: () -> Unit = {},
+        val onOpenGuide: () -> Unit = {},
+        val portSelectable: Boolean = true,
+        val showVoiceSourceNotice: Boolean = false,
+    )
+
+    private fun setContent(params: ContentParams = ContentParams()) {
         rule.setContent {
             OtherConsoleIpDetailPaneContent(
-                uiState = uiState,
-                onPortSelected = onPortSelected,
-                onSave = onSave,
-                onDismiss = onDismiss,
-                onBack = onBack,
-                onOpenGuide = onOpenGuide,
-                portSelectable = portSelectable,
+                uiState = params.uiState,
+                onPortSelected = params.onPortSelected,
+                onSave = params.onSave,
+                onDismiss = params.onDismiss,
+                onBack = params.onBack,
+                onOpenGuide = params.onOpenGuide,
+                portSelectable = params.portSelectable,
+                showVoiceSourceNotice = params.showVoiceSourceNotice,
             )
         }
     }
@@ -44,7 +48,7 @@ class OtherConsoleIpDetailPaneContentTest {
     @Test
     fun `保存ボタンをクリックするとonSaveが呼ばれる`() {
         var saveCount = 0
-        setContent(onSave = { saveCount++ })
+        setContent(ContentParams(onSave = { saveCount++ }))
 
         rule.onNodeWithText("保存").performClick()
 
@@ -56,9 +60,11 @@ class OtherConsoleIpDetailPaneContentTest {
         var dismissCount = 0
         var backCount = 0
         setContent(
-            uiState = OtherConsoleIpDetailUiState(isSaved = true),
-            onDismiss = { dismissCount++ },
-            onBack = { backCount++ },
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(isSaved = true),
+                onDismiss = { dismissCount++ },
+                onBack = { backCount++ },
+            ),
         )
 
         rule.waitForIdle()
@@ -72,8 +78,10 @@ class OtherConsoleIpDetailPaneContentTest {
         var dismissCount = 0
         var backCount = 0
         setContent(
-            onDismiss = { dismissCount++ },
-            onBack = { backCount++ },
+            ContentParams(
+                onDismiss = { dismissCount++ },
+                onBack = { backCount++ },
+            ),
         )
 
         rule.onNode(hasContentDescription("戻る")).performClick()
@@ -85,7 +93,7 @@ class OtherConsoleIpDetailPaneContentTest {
     @Test
     fun `接続設定ガイドリンクをクリックするとonOpenGuideが呼ばれる`() {
         var guideCount = 0
-        setContent(onOpenGuide = { guideCount++ })
+        setContent(ContentParams(onOpenGuide = { guideCount++ }))
 
         rule.onNodeWithText("接続設定ガイドを開く").performClick()
 
@@ -96,11 +104,13 @@ class OtherConsoleIpDetailPaneContentTest {
     fun `33740のラジオボタンをクリックするとonPortSelected(33740)が呼ばれる`() {
         var selected: Int? = null
         setContent(
-            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33741),
-            onPortSelected = { selected = it },
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33741),
+                onPortSelected = { selected = it },
+            ),
         )
 
-        rule.onNodeWithText("33740（PS5に直接接続）").performClick()
+        rule.onNodeWithText("33740（ゲーム機に直接接続）").performClick()
 
         assertEquals(33740, selected)
     }
@@ -109,8 +119,10 @@ class OtherConsoleIpDetailPaneContentTest {
     fun `33741のラジオボタンをクリックするとonPortSelected(33741)が呼ばれる`() {
         var selected: Int? = null
         setContent(
-            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
-            onPortSelected = { selected = it },
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
+                onPortSelected = { selected = it },
+            ),
         )
 
         rule.onNodeWithText("33741（SimHub経由で接続）").performClick()
@@ -122,13 +134,31 @@ class OtherConsoleIpDetailPaneContentTest {
     fun `portSelectableがfalseのときonPortSelectedが呼ばれない`() {
         var selected: Int? = null
         setContent(
-            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
-            onPortSelected = { selected = it },
-            portSelectable = false,
+            ContentParams(
+                uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
+                onPortSelected = { selected = it },
+                portSelectable = false,
+            ),
         )
 
         rule.waitForIdle()
 
         assertNull(selected)
+    }
+
+    @Test
+    fun `showVoiceSourceNoticeがtrueのとき音声通知が表示される`() {
+        setContent(ContentParams(showVoiceSourceNotice = true))
+
+        rule.onNodeWithText("読み上げ音声はゲーム機ではなく、デスクトップ版KoDriverから再生されます")
+            .assertExists()
+    }
+
+    @Test
+    fun `showVoiceSourceNoticeがfalseのとき音声通知が表示されない`() {
+        setContent(ContentParams(showVoiceSourceNotice = false))
+
+        rule.onNodeWithText("読み上げ音声はゲーム機ではなく、デスクトップ版KoDriverから再生されます")
+            .assertDoesNotExist()
     }
 }

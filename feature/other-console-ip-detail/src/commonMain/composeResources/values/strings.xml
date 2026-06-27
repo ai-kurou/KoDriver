@@ -9,6 +9,7 @@
     <string name="console_ip_guide_description">IPアドレスの確認方法や接続ケースごとの設定手順は、接続設定ガイドを参照してください。</string>
     <string name="console_ip_guide_link">接続設定ガイドを開く</string>
     <string name="console_ip_port_label">接続ポート</string>
-    <string name="console_ip_port_33740_label">33740（PS5に直接接続）</string>
+    <string name="console_ip_port_33740_label">33740（ゲーム機に直接接続）</string>
     <string name="console_ip_port_33741_label">33741（SimHub経由で接続）</string>
+    <string name="console_ip_voice_source_notice">読み上げ音声はゲーム機ではなく、デスクトップ版KoDriverから再生されます</string>
 </resources>

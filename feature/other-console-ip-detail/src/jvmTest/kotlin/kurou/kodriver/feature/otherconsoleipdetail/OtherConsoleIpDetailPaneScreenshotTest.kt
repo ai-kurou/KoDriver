@@ -71,4 +71,19 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         }
         rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
+
+    @Test
+    fun `音声通知なし`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    OtherConsoleIpDetailPaneContent(
+                        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+                        showVoiceSourceNotice = false,
+                    )
+                }
+            }
+        }
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
+    }
 }

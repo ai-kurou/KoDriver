@@ -13,7 +13,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -40,6 +43,7 @@ import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_port
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_port_label
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_title
+import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_voice_source_notice
 import kodriver.feature.otherconsoleipdetail.generated.resources.navigate_back
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import org.jetbrains.compose.resources.stringResource
@@ -81,6 +85,7 @@ internal fun OtherConsoleIpDetailPaneContent(
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     portSelectable: Boolean = isPortSelectable,
+    showVoiceSourceNotice: Boolean = !isPortSelectable,
     modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(uiState.isSaved) {
@@ -105,6 +110,33 @@ internal fun OtherConsoleIpDetailPaneContent(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
         ) {
+            if (showVoiceSourceNotice) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        modifier = Modifier.padding(12.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Info,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        Text(
+                            text = stringResource(Res.string.console_ip_voice_source_notice),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
             Text(stringResource(Res.string.console_ip_description))
             Spacer(modifier = Modifier.height(12.dp))
             TextField(
@@ -204,6 +236,15 @@ internal fun OtherConsoleIpDetailPaneContent(
 private fun OtherConsoleIpDetailPanePreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherConsoleIpDetailPaneWithNoticePreview() {
+    OtherConsoleIpDetailPaneContent(
+        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+        showVoiceSourceNotice = true,
     )
 }
 
