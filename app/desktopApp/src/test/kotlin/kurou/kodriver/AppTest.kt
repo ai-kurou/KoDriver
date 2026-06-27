@@ -47,51 +47,53 @@ class AppTest {
     val rule = createComposeRule()
 
     @Test
-    fun `シミュレータ選択後に最上位の読み上げ項目をタップしその他タブへ移動しライセンスを開く`() {
+    fun `LMU選択時に読み上げ項目を順にタップする`() {
         rule.setContent { AppScreen() }
 
-        // シミュレータ選択ドロップダウンを開く
+        selectSimulator("Le Mans Ultimate（Windows版）")
+
+        waitUntilDisplayed("フラッグ")
+        clickItem("フラッグ")
+        clickItem("車両接近")
+        clickItem("車両故障")
+    }
+
+    @Test
+    fun `GT7選択時に読み上げ項目を順にタップする`() {
+        rule.setContent { AppScreen() }
+
+        selectSimulator("GranTurismo 7（PS5）")
+
+        waitUntilDisplayed("燃料残り周回数")
+        clickItem("燃料残り周回数")
+        clickItem("自己ベストラップ")
+    }
+
+    @Test
+    fun `その他タブの項目を順にタップする`() {
+        rule.setContent { AppScreen() }
+
+        clickItem("その他")
+        clickItem("音量")
+        clickItem("読み上げ開始音")
+        clickItem("キャンセル")
+        clickItem("ライセンス")
+    }
+
+    private fun selectSimulator(simulatorName: String) {
         rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()
+        clickItem(simulatorName)
+    }
 
-        // LMU Windowsシミュレータを選択
-        rule.onNode(hasText("Le Mans Ultimate（Windows版）")).performClick()
-        rule.waitForIdle()
-
-        // 読み上げリストが表示されるまで待機
+    private fun waitUntilDisplayed(text: String) {
         rule.waitUntil(timeoutMillis = 5_000L) {
-            rule.onAllNodes(hasText("フラッグ")).fetchSemanticsNodes().isNotEmpty()
+            rule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
         }
-        // 読み上げ項目「フラッグ」をタップ
-        rule.onNode(hasText("フラッグ")).performClick()
-        rule.waitForIdle()
+    }
 
-        // 読み上げ項目「車両接近」をタップ
-        rule.onNode(hasText("車両接近")).performClick()
-        rule.waitForIdle()
-
-        // 読み上げ項目「車両故障」をタップ
-        rule.onNode(hasText("車両故障")).performClick()
-        rule.waitForIdle()
-
-        // その他タブへ移動
-        rule.onNode(hasText("その他")).performClick()
-        rule.waitForIdle()
-
-        // 音量をタップ
-        rule.onNode(hasText("音量")).performClick()
-        rule.waitForIdle()
-
-        // 読み上げ開始音をタップ
-        rule.onNode(hasText("読み上げ開始音")).performClick()
-        rule.waitForIdle()
-
-        // ダイアログをキャンセル
-        rule.onNodeWithText("キャンセル").performClick()
-        rule.waitForIdle()
-
-        // ライセンスをタップ
-        rule.onNode(hasText("ライセンス")).performClick()
+    private fun clickItem(text: String) {
+        rule.onNodeWithText(text).performClick()
         rule.waitForIdle()
     }
 }

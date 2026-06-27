@@ -16,85 +16,66 @@ class MainActivityTest {
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
     @Test
-    fun `シミュレータ選択後に読み上げ項目を順にタップしその他タブへ移動しライセンスを開く`() {
-        // シミュレータ選択ドロップダウンを開く
+    fun `LMU選択時に読み上げ項目を順にタップする`() {
+        selectSimulator("Le Mans Ultimate（Windows版）")
+
+        waitUntilDisplayed("フラッグ")
+        clickItemAndNavigateBack("フラッグ")
+        clickItem("車両接近")
+        clickContentDescription("閾値の説明を表示")
+        navigateBack()
+        clickItemAndNavigateBack("車両故障")
+    }
+
+    @Test
+    fun `GT7選択時に読み上げ項目を順にタップする`() {
+        selectSimulator("GranTurismo 7（PS5）")
+
+        waitUntilDisplayed("燃料残り周回数")
+        clickItemAndNavigateBack("燃料残り周回数")
+        clickItemAndNavigateBack("自己ベストラップ")
+    }
+
+    @Test
+    fun `その他タブの項目を順にタップする`() {
+        clickItem("その他")
+        clickItemAndNavigateBack("接続先PCのIPアドレス")
+        clickItemAndNavigateBack("ゲーム機のIPアドレス")
+        clickItemAndNavigateBack("音量")
+        clickItem("読み上げ開始音")
+        clickItem("キャンセル")
+        clickItem("ライセンス")
+    }
+
+    private fun selectSimulator(simulatorName: String) {
         composeTestRule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         composeTestRule.waitForIdle()
+        clickItem(simulatorName)
+    }
 
-        // LMU Windowsシミュレータを選択
-        composeTestRule.onNode(hasText("Le Mans Ultimate（Windows版）")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 読み上げリストが表示されるまで待機
+    private fun waitUntilDisplayed(text: String) {
         composeTestRule.waitUntil(timeoutMillis = 5_000L) {
-            composeTestRule.onAllNodes(hasText("フラッグ")).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
         }
-        // 読み上げ項目「フラッグ」をタップ
-        composeTestRule.onNode(hasText("フラッグ")).performClick()
-        composeTestRule.waitForIdle()
+    }
 
-        // 詳細ペインから戻る
+    private fun clickItemAndNavigateBack(text: String) {
+        clickItem(text)
+        navigateBack()
+    }
+
+    private fun navigateBack() {
         composeTestRule.onNode(hasContentDescription("戻る")).performClick()
         composeTestRule.waitForIdle()
+    }
 
-        // 読み上げ項目「車両接近」をタップ
-        composeTestRule.onNode(hasText("車両接近")).performClick()
+    private fun clickItem(text: String) {
+        composeTestRule.onNodeWithText(text).performClick()
         composeTestRule.waitForIdle()
+    }
 
-        // はてなマークをタップ
-        composeTestRule.onNode(hasContentDescription("閾値の説明を表示")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 詳細ペインから戻る
-        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 読み上げ項目「車両故障」をタップ
-        composeTestRule.onNode(hasText("車両故障")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 詳細ペインから戻る
-        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
-        composeTestRule.waitForIdle()
-
-        // その他タブへ移動
-        composeTestRule.onNode(hasText("その他")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 接続先PCをタップ
-        composeTestRule.onNode(hasText("接続先PCのIPアドレス")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 詳細ペインから戻る
-        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
-        composeTestRule.waitForIdle()
-
-        // コンソールIPをタップ
-        composeTestRule.onNode(hasText("ゲーム機のIPアドレス")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 詳細ペインから戻る
-        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 音量をタップ
-        composeTestRule.onNode(hasText("音量")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 音量詳細から戻る
-        composeTestRule.onNode(hasContentDescription("戻る")).performClick()
-        composeTestRule.waitForIdle()
-
-        // 読み上げ開始音をタップ
-        composeTestRule.onNode(hasText("読み上げ開始音")).performClick()
-        composeTestRule.waitForIdle()
-
-        // ダイアログをキャンセル
-        composeTestRule.onNodeWithText("キャンセル").performClick()
-        composeTestRule.waitForIdle()
-
-        // ライセンスをタップ
-        composeTestRule.onNode(hasText("ライセンス")).performClick()
+    private fun clickContentDescription(contentDescription: String) {
+        composeTestRule.onNode(hasContentDescription(contentDescription)).performClick()
         composeTestRule.waitForIdle()
     }
 }
