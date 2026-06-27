@@ -2,6 +2,8 @@ package kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -47,7 +49,11 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
     val sliderLabel = stringResource(Res.string.remaining_fuel_laps_slider_label)
     val resetToDefaultLabel = stringResource(Res.string.remaining_fuel_laps_reset_to_default)
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(text = stringResource(Res.string.remaining_fuel_laps_description))
         DetailPaneSubtitle(text = stringResource(Res.string.remaining_fuel_laps_subtitle))
         ThresholdSlider(
