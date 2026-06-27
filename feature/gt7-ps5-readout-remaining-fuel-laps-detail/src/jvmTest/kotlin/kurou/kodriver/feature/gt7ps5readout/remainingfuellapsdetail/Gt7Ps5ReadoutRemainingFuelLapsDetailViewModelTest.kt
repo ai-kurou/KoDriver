@@ -83,7 +83,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
         viewModel.onPreviewClicked()
 
         assertEquals(
-            listOf(SpeechEvent.RemainingFuelLapsWarning(4), SpeechEvent.RemainingFuelLapsWarning(0)),
+            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(4), SpeechEvent.RemainingFuelLapsWarning(0)),
             playedEvents,
         )
     }
