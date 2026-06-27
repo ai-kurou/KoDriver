@@ -233,33 +233,60 @@ internal fun OtherConsoleIpDetailPaneContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPanePreview() {
+private fun OtherConsoleIpDetailPaneAndroidDefaultPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+        portSelectable = true,
+        showVoiceSourceNotice = false,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPaneWithNoticePreview() {
+private fun OtherConsoleIpDetailPaneAndroidInvalidPreview() {
+    OtherConsoleIpDetailPaneContent(
+        uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+        portSelectable = true,
+        showVoiceSourceNotice = false,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherConsoleIpDetailPaneAndroidSaveFailedPreview() {
+    OtherConsoleIpDetailPaneContent(
+        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100", saveFailed = true),
+        portSelectable = true,
+        showVoiceSourceNotice = false,
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherConsoleIpDetailPaneDesktopDefaultPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+        portSelectable = false,
         showVoiceSourceNotice = true,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPaneInvalidPreview() {
+private fun OtherConsoleIpDetailPaneDesktopInvalidPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+        portSelectable = false,
+        showVoiceSourceNotice = true,
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun OtherConsoleIpDetailPaneSaveFailedPreview() {
+private fun OtherConsoleIpDetailPaneDesktopSaveFailedPreview() {
     OtherConsoleIpDetailPaneContent(
         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100", saveFailed = true),
+        portSelectable = false,
+        showVoiceSourceNotice = true,
     )
 }
