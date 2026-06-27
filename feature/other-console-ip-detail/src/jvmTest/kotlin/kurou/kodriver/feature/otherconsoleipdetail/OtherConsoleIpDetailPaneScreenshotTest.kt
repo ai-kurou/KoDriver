@@ -71,5 +71,4 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         }
         rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
-
 }
