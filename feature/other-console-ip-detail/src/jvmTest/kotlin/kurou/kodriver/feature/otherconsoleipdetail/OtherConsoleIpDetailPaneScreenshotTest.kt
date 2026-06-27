@@ -20,6 +20,8 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+                        portSelectable = false,
+                        showVoiceSourceNotice = true,
                     )
                 }
             }
@@ -34,6 +36,8 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
+                        portSelectable = false,
+                        showVoiceSourceNotice = true,
                     )
                 }
             }
@@ -48,6 +52,8 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+                        portSelectable = false,
+                        showVoiceSourceNotice = true,
                     )
                 }
             }
@@ -65,6 +71,8 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                             inputAddress = "192.168.1.100",
                             saveFailed = true,
                         ),
+                        portSelectable = false,
+                        showVoiceSourceNotice = true,
                     )
                 }
             }
