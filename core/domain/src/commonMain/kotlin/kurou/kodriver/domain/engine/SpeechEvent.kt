@@ -16,4 +16,7 @@ sealed interface SpeechEvent {
     data object Overheating : SpeechEvent { override val readoutItemKey = ReadoutItemKey.VehicleDamage }
     data object MyBestLapFormal : SpeechEvent { override val readoutItemKey = ReadoutItemKey.MyBestLap }
     data object MyBestLapCasual : SpeechEvent { override val readoutItemKey = ReadoutItemKey.MyBestLap }
+    data class RemainingFuelLapsWarning(val laps: Int) : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.RemainingFuelLaps
+    }
 }

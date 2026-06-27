@@ -38,10 +38,13 @@ internal class Gt7Ps5WavNarratorEngine(
     override val currentReadoutItemKey: ReadoutItemKey?
         get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
-    private val eventToFile = mapOf(
-        SpeechEvent.MyBestLapFormal to "files/my_best_lap_formal.wav",
-        SpeechEvent.MyBestLapCasual to "files/my_best_lap_casual.wav",
-    )
+    private val eventToFile: Map<SpeechEvent, String> = buildMap {
+        put(SpeechEvent.MyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.MyBestLapCasual, "files/my_best_lap_casual.wav")
+        for (laps in 1..MAX_REMAINING_FUEL_LAPS) {
+            put(SpeechEvent.RemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
+        }
+    }
 
     private val startSoundTypeToFile = mapOf(
         ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
@@ -98,5 +101,9 @@ internal class Gt7Ps5WavNarratorEngine(
         if (soundPlayer.isPlaying) return
         playJob?.cancel()
         playJob = scope.launch { soundPlayer.play(sound) }
+    }
+
+    internal companion object {
+        const val MAX_REMAINING_FUEL_LAPS = 5
     }
 }
