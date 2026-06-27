@@ -67,6 +67,7 @@ class AppTest {
         waitUntilDisplayed("フラッグ")
         clickItem("フラッグ")
         clickItem("車両接近")
+        clickContentDescription("閾値の説明を表示")
         clickItem("車両故障")
     }
 
@@ -87,6 +88,7 @@ class AppTest {
         setContent()
 
         clickItem("その他")
+        clickItem("ゲーム機のIPアドレス")
         clickItem("音量")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
@@ -115,6 +117,11 @@ class AppTest {
 
     private fun clickItem(text: String) {
         rule.onNodeWithText(text).performClick()
+        rule.waitForIdle()
+    }
+
+    private fun clickContentDescription(contentDescription: String) {
+        rule.onNode(hasContentDescription(contentDescription)).performClick()
         rule.waitForIdle()
     }
 
