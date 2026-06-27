@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -48,9 +47,12 @@ private data class FuelTrackingState(
     val raceStartFuel: Float?,
     val raceStartLap: Int?,
     val currentLap: Int,
+    val currentLapStartedAtMs: Long,
     val currentGasLevel: Float,
+    val bestLapTimeMs: Int,
     val totalRefueled: Float,
     val isNewSession: Boolean,
+    val observedAtMs: Long,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -59,6 +61,7 @@ class Gt7Ps5NarratorViewModel(
     readoutListUseCases: ReadoutListUseCases,
     remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
     private val ttsEngine: TextToSpeechEngine,
+    private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
@@ -87,6 +90,7 @@ class Gt7Ps5NarratorViewModel(
 
     private var personalBestMs: Int = Int.MAX_VALUE
     private var lastAnnouncedRemainingLaps: Int = -1
+    private var lastFuelEvaluationLap: Int = -1
 
     private val gt7TelemetryFlow = selectedSimulator
         .flatMapLatest { simulator ->
@@ -118,43 +122,67 @@ class Gt7Ps5NarratorViewModel(
 
     @Suppress("UnusedPrivateProperty")
     private val remainingFuelLapsJob = gt7TelemetryFlow
-        .distinctUntilChangedBy { it.lapCount }
-        .scan(FuelTrackingState(null, null, -1, 0f, 0f, false)) { state, data ->
+        .scan(FuelTrackingState(null, null, -1, 0L, 0f, -1, 0f, false, 0L)) { state, data ->
+            val now = currentTimeMs()
             when {
                 data.lapCount < state.currentLap -> FuelTrackingState(
                     raceStartFuel = data.gasLevel,
                     raceStartLap = data.lapCount,
                     currentLap = data.lapCount,
+                    currentLapStartedAtMs = now,
                     currentGasLevel = data.gasLevel,
+                    bestLapTimeMs = data.bestLapTimeMs,
                     totalRefueled = 0f,
                     isNewSession = true,
+                    observedAtMs = now,
                 )
                 state.raceStartFuel == null -> FuelTrackingState(
                     raceStartFuel = data.gasLevel,
                     raceStartLap = data.lapCount,
                     currentLap = data.lapCount,
+                    currentLapStartedAtMs = now,
                     currentGasLevel = data.gasLevel,
+                    bestLapTimeMs = data.bestLapTimeMs,
                     totalRefueled = 0f,
                     isNewSession = false,
+                    observedAtMs = now,
                 )
                 else -> {
                     val refueled = (data.gasLevel - state.currentGasLevel).coerceAtLeast(0f)
+                    val currentLapStartedAtMs = if (data.lapCount != state.currentLap) {
+                        now
+                    } else {
+                        state.currentLapStartedAtMs
+                    }
                     state.copy(
                         currentLap = data.lapCount,
+                        currentLapStartedAtMs = currentLapStartedAtMs,
                         currentGasLevel = data.gasLevel,
+                        bestLapTimeMs = data.bestLapTimeMs,
                         totalRefueled = state.totalRefueled + refueled,
                         isNewSession = false,
+                        observedAtMs = now,
                     )
                 }
             }
         }
         .drop(1)
         .onEach { state ->
-            if (state.isNewSession) lastAnnouncedRemainingLaps = -1
+            if (state.isNewSession) {
+                lastAnnouncedRemainingLaps = -1
+                lastFuelEvaluationLap = -1
+            }
+            if (state.currentLap == lastFuelEvaluationLap) return@onEach
+            val bestLapTimeMs = state.bestLapTimeMs
+            if (bestLapTimeMs <= 0) return@onEach
+            val readoutTimingMs = (bestLapTimeMs - REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS).coerceAtLeast(0)
+            val currentLapElapsedMs = state.observedAtMs - state.currentLapStartedAtMs
+            if (currentLapElapsedMs < readoutTimingMs) return@onEach
             val startFuel = state.raceStartFuel ?: return@onEach
             val startLap = state.raceStartLap ?: return@onEach
             val lapsCompleted = state.currentLap - startLap
             if (lapsCompleted <= 0) return@onEach
+            lastFuelEvaluationLap = state.currentLap
             val consumedFuel = startFuel + state.totalRefueled - state.currentGasLevel
             if (consumedFuel <= 0f) return@onEach
             val avgConsumption = consumedFuel / lapsCompleted
@@ -178,5 +206,9 @@ class Gt7Ps5NarratorViewModel(
             ttsEngine.stop()
         }
         ttsEngine.speak(event)
+    }
+
+    private companion object {
+        const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000
     }
 }
