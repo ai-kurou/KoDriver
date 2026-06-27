@@ -47,9 +47,11 @@ class MainActivityTest {
         clickItemAndNavigateBack("接続先PCのIPアドレス")
         clickItemAndNavigateBack("ゲーム機のIPアドレス")
         clickItemAndNavigateBack("音量")
+        clickItem("画面をスリープさせない")
+        clickItem("キャンセル")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
-        clickItem("ライセンス")
+        clickItemAndNavigateBack("ライセンス")
     }
 
     private fun selectSimulator(simulatorName: String) {
