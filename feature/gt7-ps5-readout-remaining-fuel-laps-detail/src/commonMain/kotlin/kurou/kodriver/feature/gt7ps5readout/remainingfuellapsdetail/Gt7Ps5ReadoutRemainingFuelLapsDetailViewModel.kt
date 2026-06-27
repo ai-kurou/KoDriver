@@ -39,5 +39,6 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
 
     fun onPreviewClicked() {
         playSpeechEvent(SpeechEvent.RemainingFuelLapsWarning(uiState.value.remainingFuelLaps))
+        playSpeechEvent(SpeechEvent.RemainingFuelLapsWarning(0), queue = true)
     }
 }

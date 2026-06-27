@@ -160,6 +160,32 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
+    fun `queue=trueで呼ぶと前の音声の後に続けて再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                when (path) {
+                    REMAINING_FUEL_LAPS_3_PATH -> REMAINING_FUEL_LAPS_3_SOUND
+                    REMAINING_FUEL_LAPS_0_PATH -> REMAINING_FUEL_LAPS_0_SOUND
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(3))
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(0), queue = true)
+        advanceUntilIdle()
+
+        assertEquals(4, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(REMAINING_FUEL_LAPS_3_SOUND, player.playedSounds[1])
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+        assertContentEquals(REMAINING_FUEL_LAPS_0_SOUND, player.playedSounds[3])
+    }
+
+    @Test
     fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
@@ -257,13 +283,15 @@ class Gt7Ps5WavNarratorEngineTest {
         const val MY_BEST_LAP_CASUAL_PATH = "files/my_best_lap_casual.wav"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
+        const val REMAINING_FUEL_LAPS_0_PATH = "files/remaining_fuel_laps_0.wav"
         const val REMAINING_FUEL_LAPS_3_PATH = "files/remaining_fuel_laps_3.wav"
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(1)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(2)
         val EVENT_SOUND = byteArrayOf(3)
         val FORMULA_RADIO_SOUND = byteArrayOf(4)
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
-        val REMAINING_FUEL_LAPS_3_SOUND = byteArrayOf(6)
+        val REMAINING_FUEL_LAPS_0_SOUND = byteArrayOf(6)
+        val REMAINING_FUEL_LAPS_3_SOUND = byteArrayOf(7)
     }
 }
 
