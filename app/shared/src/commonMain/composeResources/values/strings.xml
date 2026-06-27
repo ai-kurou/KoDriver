@@ -9,8 +9,8 @@
     <string name="banner_simulator_disconnected">シミュレータ接続待機中</string>
     <string name="banner_server_connected">Windows版KoDriverに接続中</string>
     <string name="banner_server_disconnected">Windows版KoDriver接続待機中</string>
-    <string name="banner_server_ip_not_configured">接続先PCのIPアドレスが未設定です</string>
-    <string name="banner_console_ip_not_configured">ゲーム機のIPアドレスが未設定です</string>
+    <string name="banner_server_ip_not_configured">Windows版KoDriverへ接続するIPアドレスが未設定です</string>
+    <string name="banner_console_ip_not_configured">ゲーム機・SimHubへ接続するIPアドレスが未設定です</string>
     <string name="version_mismatch_title">バージョンが一致しません</string>
     <string name="version_mismatch_body">バージョンが一致しないため、クラッシュや正常に動作しない可能性があります。</string>
     <string name="version_mismatch_windows_version">Windows版KoDriver: %1$s</string>

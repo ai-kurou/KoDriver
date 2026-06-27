@@ -44,24 +44,24 @@ class MainActivityTest {
     @Test
     fun `LMU選択時に接続状況バナーをタップして戻る`() {
         selectSimulator("Le Mans Ultimate（Windows版）")
-        waitUntilDisplayed("接続先PCのIPアドレスが未設定です")
-        clickItem("接続先PCのIPアドレスが未設定です")
+        waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
+        clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
         navigateBack()
     }
 
     @Test
     fun `GT7選択時に接続状況バナーをタップして戻る`() {
         selectSimulator("GranTurismo 7（PS5）")
-        waitUntilDisplayed("ゲーム機のIPアドレスが未設定です")
-        clickItem("ゲーム機のIPアドレスが未設定です")
+        waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
+        clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         navigateBack()
     }
 
     @Test
     fun `その他タブの項目を順にタップする`() {
         clickItem("その他")
-        clickItemAndNavigateBack("接続先PCのIPアドレス")
-        clickItemAndNavigateBack("ゲーム機のIPアドレス")
+        clickItemAndNavigateBack("Windows版KoDriverへ接続するIPアドレス")
+        clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
         clickItem("画面をスリープさせない")
         clickItem("キャンセル")

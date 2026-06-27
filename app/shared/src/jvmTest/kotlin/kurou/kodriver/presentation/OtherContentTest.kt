@@ -64,7 +64,7 @@ class OtherContentTest {
         assertFalse(backEnabled)
 
         // ConsoleIp（Desktop では ServerIp・KeepScreenOn が除外されるため最初のアイテム）
-        rule.onNode(hasText("ゲーム機のIPアドレス")).performClick()
+        rule.onNode(hasText("ゲーム機・SimHubへ接続するIPアドレス")).performClick()
         rule.waitForIdle()
 
         rule.onNodeWithText("Detail: console_ip").assertExists()

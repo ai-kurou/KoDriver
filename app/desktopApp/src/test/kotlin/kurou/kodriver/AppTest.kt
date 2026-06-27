@@ -96,8 +96,8 @@ class AppTest {
         setContent()
 
         selectSimulator("GranTurismo 7（PS5）")
-        waitUntilDisplayed("ゲーム機のIPアドレスが未設定です")
-        clickItem("ゲーム機のIPアドレスが未設定です")
+        waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
+        clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("読み上げ")
     }
 
@@ -106,7 +106,7 @@ class AppTest {
         setContent()
 
         clickItem("その他")
-        clickItem("ゲーム機のIPアドレス")
+        clickItem("ゲーム機・SimHubへ接続するIPアドレス")
         clickItem("音量")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")

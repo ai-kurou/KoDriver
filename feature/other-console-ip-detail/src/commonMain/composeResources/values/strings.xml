@@ -1,11 +1,11 @@
 <resources>
-    <string name="console_ip_title">ゲーム機のIPアドレス</string>
+    <string name="console_ip_title">ゲーム機・SimHubへ接続するIPアドレス</string>
     <string name="console_ip_label">IPアドレス</string>
     <string name="console_ip_placeholder">例: 192.168.1.100</string>
     <string name="console_ip_save">保存</string>
     <string name="navigate_back">戻る</string>
     <string name="console_ip_invalid">無効なIPアドレスです</string>
-    <string name="console_ip_description">接続するゲーム機のIPアドレスを入力してください。</string>
+    <string name="console_ip_description">ゲーム機またはSimHubを実行しているPCのIPアドレスを入力してください。</string>
     <string name="console_ip_guide_description">IPアドレスの確認方法や接続ケースごとの設定手順は、接続設定ガイドを参照してください。</string>
     <string name="console_ip_guide_link">接続設定ガイドを開く</string>
     <string name="console_ip_port_label">接続ポート</string>

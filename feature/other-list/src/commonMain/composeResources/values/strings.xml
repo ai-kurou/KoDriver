@@ -5,6 +5,6 @@
     <string name="item_github_repository">GitHubレポジトリ</string>
     <string name="item_release_page">リリースページ</string>
     <string name="item_license">ライセンス</string>
-    <string name="item_server_ip">接続先PCのIPアドレス</string>
-    <string name="item_console_ip">ゲーム機のIPアドレス</string>
+    <string name="item_server_ip">Windows版KoDriverへ接続するIPアドレス</string>
+    <string name="item_console_ip">ゲーム機・SimHubへ接続するIPアドレス</string>
 </resources>
