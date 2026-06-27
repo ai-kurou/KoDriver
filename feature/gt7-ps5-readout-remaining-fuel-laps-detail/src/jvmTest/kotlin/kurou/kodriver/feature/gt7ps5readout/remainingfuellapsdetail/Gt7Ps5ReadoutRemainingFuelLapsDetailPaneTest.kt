@@ -28,9 +28,9 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("コースを1周するごとに燃料と走行可能な残り周回数を計算し、設定した周回数以下になると音声でお知らせします。")
+        rule.onNodeWithText("各ラップでは現在の最速ラップの30秒前にあたるタイミングで判定し", substring = true)
             .assertIsDisplayed()
-        rule.onNodeWithText("読み上げタイミング").assertIsDisplayed()
+        rule.onNodeWithText("閾値設定").assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
     }
 

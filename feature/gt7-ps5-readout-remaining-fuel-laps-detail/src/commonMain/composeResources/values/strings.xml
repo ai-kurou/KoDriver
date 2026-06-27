@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="remaining_fuel_laps_description">コースを1周するごとに燃料と走行可能な残り周回数を計算し、設定した周回数以下になると音声でお知らせします。</string>
-    <string name="remaining_fuel_laps_subtitle">読み上げタイミング</string>
+    <string name="remaining_fuel_laps_description">コースを1周するごとに燃料と走行可能な残り周回数を計算します。各ラップでは現在の最速ラップの30秒前にあたるタイミングで判定し、設定した周回数以下になると音声でお知らせします。</string>
+    <string name="remaining_fuel_laps_subtitle">閾値設定</string>
     <string name="remaining_fuel_laps_slider_label">残り約: %1$d 周</string>
     <string name="remaining_fuel_laps_reset_to_default">デフォルト値にリセット</string>
 </resources>

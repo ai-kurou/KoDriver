@@ -57,6 +57,7 @@ class Gt7Ps5NarratorViewModelTest {
     private data class ReadoutSettings(
         val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         val remainingFuelLapsEnabled: Boolean = true,
+        val fuelThreshold: Int = 3,
     )
 
     private fun buildViewModel(
@@ -66,7 +67,7 @@ class Gt7Ps5NarratorViewModelTest {
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MyBestLap),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         simulator: Simulator? = Simulator.Gt7Ps5,
-        fuelThreshold: Int = 3,
+        currentTimeMs: () -> Long = { 0L },
     ): Gt7Ps5NarratorViewModel {
         val readoutRepo = FakeReadoutPreferencesRepo(readoutSettings.enabledOverrides, orderOverride)
         return Gt7Ps5NarratorViewModel(
@@ -87,13 +88,14 @@ class Gt7Ps5NarratorViewModelTest {
             ),
             remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
                 observeRemainingFuelLapsThreshold = ObserveGt7Ps5RemainingFuelLapsUseCase(
-                    FakeRemainingFuelLapsPreferencesRepo(fuelThreshold),
+                    FakeRemainingFuelLapsPreferencesRepo(readoutSettings.fuelThreshold),
                 ),
                 observeRemainingFuelLapsEnabled = ObserveGt7Ps5RemainingFuelLapsEnabledUseCase(
                     FakeGt7Ps5RemainingFuelLapsEnabledRepo(readoutSettings.remainingFuelLapsEnabled),
                 ),
             ),
             ttsEngine = ttsEngine,
+            currentTimeMs = currentTimeMs,
         )
     }
 
@@ -283,8 +285,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryChannel = channel,
             ttsEngine = tts,
             simulator = null,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 2,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 2),
         )
 
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
@@ -301,8 +302,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 3,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
         // スタート: gasLevel=40L、1周10L消費
@@ -325,14 +325,42 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `最速ラップの30秒前に到達するまでは燃料残り周回数をアナウンスしない`() = runTest(testDispatcher) {
+        var currentTimeMs = 0L
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
+            currentTimeMs = { currentTimeMs },
+        )
+
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+        currentTimeMs = 10_000L
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+        currentTimeMs = 69_999L
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+
+        currentTimeMs = 70_000L
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
+
+        assertEquals(
+            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(3)),
+            tts.spokenTexts,
+        )
+    }
+
+    @Test
     fun `Slider5のとき残り5周から1周まで合計5回アナウンスする`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 5,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 5),
         )
 
         // スタート: gasLevel=60L、1周10L消費
@@ -362,8 +390,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 2,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 2),
         )
 
         // 1周あたり10L消費、60Lスタートなら残り6周 → Slider2を超えるのでアナウンスしない
@@ -380,8 +407,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 3,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
         // スタート: gasLevel=70L、1周10L消費
@@ -413,8 +439,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = false),
-            fuelThreshold = 3,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = false, fuelThreshold = 3),
         )
 
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
@@ -431,8 +456,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 3,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
         // 1周目セッション: 残り3周でアナウンス済み
@@ -459,8 +483,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 3,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
@@ -475,8 +498,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true),
-            fuelThreshold = 3,
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
         // スタート: 40L、1周10L消費
@@ -551,10 +573,15 @@ private fun gt7Telemetry(bestLapTimeMs: Int) = Gt7Ps5TelemetryData(
     gasCapacity = 100f,
 )
 
-private fun gt7Telemetry(lapCount: Int, gasLevel: Float, gasCapacity: Float) = Gt7Ps5TelemetryData(
+private fun gt7Telemetry(
+    lapCount: Int,
+    gasLevel: Float,
+    gasCapacity: Float,
+    bestLapTimeMs: Int = 30_000,
+) = Gt7Ps5TelemetryData(
     lapCount = lapCount,
     lapsInRace = 5,
-    bestLapTimeMs = -1,
+    bestLapTimeMs = bestLapTimeMs,
     gasLevel = gasLevel,
     gasCapacity = gasCapacity,
 )
