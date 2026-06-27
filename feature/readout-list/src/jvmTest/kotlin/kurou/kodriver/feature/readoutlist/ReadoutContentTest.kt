@@ -87,14 +87,14 @@ class ReadoutContentTest {
 
         rule.setContent {
             itemTexts = listOf(
-                stringResource(Res.string.item_my_best_lap),
                 stringResource(Res.string.item_remaining_fuel_laps),
+                stringResource(Res.string.item_my_best_lap),
             )
             ReadoutContent(
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.Gt7Ps5),
                     selectedSimulator = Simulator.Gt7Ps5,
-                    items = listOf(ReadoutItemKey.MyBestLap, ReadoutItemKey.RemainingFuelLaps),
+                    items = listOf(ReadoutItemKey.RemainingFuelLaps, ReadoutItemKey.MyBestLap),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},

@@ -85,8 +85,8 @@ class ReadoutListPaneScreenshotTest {
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                                 selectedSimulator = Simulator.Gt7Ps5,
                                 items = listOf(
-                                    ReadoutItemKey.MyBestLap,
                                     ReadoutItemKey.RemainingFuelLaps,
+                                    ReadoutItemKey.MyBestLap,
                                 ),
                                 readoutEnabledStates = mapOf(
                                     ReadoutItemKey.MyBestLap to true,
