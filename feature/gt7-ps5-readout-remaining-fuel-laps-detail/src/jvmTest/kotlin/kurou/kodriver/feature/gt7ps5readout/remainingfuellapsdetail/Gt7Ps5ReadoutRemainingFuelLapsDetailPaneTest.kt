@@ -28,7 +28,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("各ラップでは現在の最速ラップの30秒前にあたるタイミングで判定し", substring = true)
+        rule.onNodeWithText("現在の最速ラップの30秒前にあたるタイミングで判定し", substring = true)
             .assertIsDisplayed()
         rule.onNodeWithText("閾値設定").assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
