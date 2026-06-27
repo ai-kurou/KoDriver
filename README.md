@@ -10,7 +10,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/ai-kurou/KoDriver)](https://github.com/ai-kurou/KoDriver/releases)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.0-7F52FF?logo=kotlin)
 
-Le Mans Ultimate（LMU）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
+Le Mans Ultimate（LMU）および GranTurismo 7（GT7 PS5）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
@@ -22,6 +22,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 - アナウンス優先度のドラッグ＆ドロップによる並び替え
 - WAV 音声ファイルによるリアルタイムアナウンス
 - LMU 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
+- GT7 PS5 のテレメトリを UDP で直接受信（Android / Windows 対応、SimHub 経由も可）
 - クラッシュが発生した場合、改善のためにクラッシュレポートを Sentry に自動送信
 
 ## 動作要件
@@ -29,13 +30,13 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 **デスクトップアプリ（Windows）**
 
 - Windows 10 以降
-- Le Mans Ultimate（インストール済み）
+- Le Mans Ultimate（LMU 使用時）または GranTurismo 7 PS5（GT7 使用時）
 
 **Android アプリ**
 
 - Android 9.0 以降
 - LMU 情報を受信する場合: デスクトップアプリと同一 LAN への接続
-- GT7 PS5 テレメトリを受信する場合: PS5 と同一 LAN への接続
+- GT7 PS5 テレメトリを受信する場合: PS5 または SimHub を実行している PC と同一 LAN への接続
 
 ## インストール
 

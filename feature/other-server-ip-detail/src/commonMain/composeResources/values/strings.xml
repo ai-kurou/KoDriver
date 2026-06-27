@@ -1,5 +1,5 @@
 <resources>
-    <string name="server_ip_title">接続先PCのIPアドレス</string>
+    <string name="server_ip_title">Windows版KoDriverへ接続するIPアドレス</string>
     <string name="server_ip_label">IPアドレス</string>
     <string name="server_ip_placeholder">例: 192.168.1.100</string>
     <string name="server_ip_save">保存</string>
