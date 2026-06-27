@@ -9,6 +9,7 @@ import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class OtherConsoleIpDetailPaneContentTest {
 
@@ -25,6 +26,7 @@ class OtherConsoleIpDetailPaneContentTest {
         onDismiss: () -> Unit = {},
         onBack: () -> Unit = {},
         onOpenGuide: () -> Unit = {},
+        portSelectable: Boolean = true,
     ) {
         rule.setContent {
             OtherConsoleIpDetailPaneContent(
@@ -34,6 +36,7 @@ class OtherConsoleIpDetailPaneContentTest {
                 onDismiss = onDismiss,
                 onBack = onBack,
                 onOpenGuide = onOpenGuide,
+                portSelectable = portSelectable,
             )
         }
     }
@@ -113,5 +116,19 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("33741（SimHub経由で接続）").performClick()
 
         assertEquals(33741, selected)
+    }
+
+    @Test
+    fun `portSelectableがfalseのときonPortSelectedが呼ばれない`() {
+        var selected: Int? = null
+        setContent(
+            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.1", selectedPort = 33740),
+            onPortSelected = { selected = it },
+            portSelectable = false,
+        )
+
+        rule.waitForIdle()
+
+        assertNull(selected)
     }
 }
