@@ -83,7 +83,7 @@ class AppTest {
     private fun selectSimulator(simulatorName: String) {
         rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()
-        clickItem(simulatorName)
+        clickLastItem(simulatorName)
     }
 
     private fun waitUntilDisplayed(text: String) {
@@ -94,6 +94,12 @@ class AppTest {
 
     private fun clickItem(text: String) {
         rule.onNodeWithText(text).performClick()
+        rule.waitForIdle()
+    }
+
+    private fun clickLastItem(text: String) {
+        val nodeIndex = rule.onAllNodes(hasText(text)).fetchSemanticsNodes().lastIndex
+        rule.onAllNodes(hasText(text)).get(nodeIndex).performClick()
         rule.waitForIdle()
     }
 }

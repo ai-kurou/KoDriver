@@ -50,7 +50,7 @@ class MainActivityTest {
     private fun selectSimulator(simulatorName: String) {
         composeTestRule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         composeTestRule.waitForIdle()
-        clickItem(simulatorName)
+        clickLastItem(simulatorName)
     }
 
     private fun waitUntilDisplayed(text: String) {
@@ -71,6 +71,12 @@ class MainActivityTest {
 
     private fun clickItem(text: String) {
         composeTestRule.onNodeWithText(text).performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    private fun clickLastItem(text: String) {
+        val nodeIndex = composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().lastIndex
+        composeTestRule.onAllNodes(hasText(text)).get(nodeIndex).performClick()
         composeTestRule.waitForIdle()
     }
 
