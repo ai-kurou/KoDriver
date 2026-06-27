@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
 
 internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
     observeGt7Ps5RemainingFuelLaps: ObserveGt7Ps5RemainingFuelLapsUseCase,
     private val saveGt7Ps5RemainingFuelLaps: SaveGt7Ps5RemainingFuelLapsUseCase,
+    private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<Gt7Ps5ReadoutRemainingFuelLapsDetailUiState> =
@@ -32,5 +35,9 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
 
     fun onResetRemainingFuelLaps() {
         onRemainingFuelLapsChanged(DEFAULT_REMAINING_FUEL_LAPS)
+    }
+
+    fun onPreviewClicked() {
+        playSpeechEvent(SpeechEvent.RemainingFuelLapsWarning(uiState.value.remainingFuelLaps))
     }
 }

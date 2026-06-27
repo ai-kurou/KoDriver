@@ -4,4 +4,7 @@
     <string name="remaining_fuel_laps_subtitle">閾値設定</string>
     <string name="remaining_fuel_laps_slider_label">残り約: %1$d 周</string>
     <string name="remaining_fuel_laps_reset_to_default">デフォルト値にリセット</string>
+    <string name="remaining_fuel_laps_readout_subtitle">読み上げ別設定</string>
+    <string name="remaining_fuel_laps_enabled">燃料残り周回数</string>
+    <string name="remaining_fuel_laps_voice_type">燃料は残り約%1$d周</string>
 </resources>

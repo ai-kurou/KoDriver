@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -32,6 +33,11 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             .assertIsDisplayed()
         rule.onNodeWithText("閾値設定").assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
+        rule.onNodeWithText("読み上げ別設定").assertIsDisplayed()
+        rule.onNodeWithText("燃料残り周回数").assertIsDisplayed()
+        rule.onNodeWithText("燃料は残り約3周")
+            .assertIsDisplayed()
+            .assertIsSelected()
     }
 
     @Test
@@ -46,6 +52,9 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         }
 
         rule.onNodeWithText("残り約: 1 周").assertIsDisplayed()
+        rule.onNodeWithText("燃料は残り約1周")
+            .assertIsDisplayed()
+            .assertIsSelected()
     }
 
     @Test
@@ -85,5 +94,21 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         rule.onNode(hasContentDescription("デフォルト値にリセット")).performClick()
 
         assertTrue(resetCalled)
+    }
+
+    @Test
+    fun `チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            MaterialTheme {
+                Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料は残り約3周").performClick()
+
+        assertTrue(previewClicked)
     }
 }
