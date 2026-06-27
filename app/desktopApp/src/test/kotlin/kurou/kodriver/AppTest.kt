@@ -1,10 +1,14 @@
 package kurou.kodriver
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
@@ -48,7 +52,7 @@ class AppTest {
 
     @Test
     fun `LMU選択時に読み上げ項目を順にタップする`() {
-        rule.setContent { AppScreen() }
+        setContent()
 
         selectSimulator("Le Mans Ultimate（Windows版）")
 
@@ -60,7 +64,7 @@ class AppTest {
 
     @Test
     fun `GT7選択時に読み上げ項目を順にタップする`() {
-        rule.setContent { AppScreen() }
+        setContent()
 
         selectSimulator("GranTurismo 7（PS5）")
 
@@ -71,7 +75,7 @@ class AppTest {
 
     @Test
     fun `その他タブの項目を順にタップする`() {
-        rule.setContent { AppScreen() }
+        setContent()
 
         clickItem("その他")
         clickItem("音量")
@@ -84,6 +88,14 @@ class AppTest {
         rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()
         clickLastItem(simulatorName)
+    }
+
+    private fun setContent() {
+        rule.setContent {
+            Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                AppScreen()
+            }
+        }
     }
 
     private fun waitUntilDisplayed(text: String) {
