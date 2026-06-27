@@ -70,7 +70,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         }
 
         rule.onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 0f..5f, steps = 4)),
+            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
         ).performSemanticsAction(SemanticsActions.SetProgress) {
             it(5f)
         }
