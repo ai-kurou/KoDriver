@@ -42,6 +42,22 @@ class MainActivityTest {
     }
 
     @Test
+    fun `LMU選択時に接続状況バナーをタップして戻る`() {
+        selectSimulator("Le Mans Ultimate（Windows版）")
+        waitUntilDisplayed("接続先PCのIPアドレスが未設定です")
+        clickItem("接続先PCのIPアドレスが未設定です")
+        navigateBack()
+    }
+
+    @Test
+    fun `GT7選択時に接続状況バナーをタップして戻る`() {
+        selectSimulator("GranTurismo 7（PS5）")
+        waitUntilDisplayed("ゲーム機のIPアドレスが未設定です")
+        clickItem("ゲーム機のIPアドレスが未設定です")
+        navigateBack()
+    }
+
+    @Test
     fun `その他タブの項目を順にタップする`() {
         clickItem("その他")
         clickItemAndNavigateBack("接続先PCのIPアドレス")

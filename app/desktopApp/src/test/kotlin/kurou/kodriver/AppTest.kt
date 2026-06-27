@@ -84,6 +84,16 @@ class AppTest {
     }
 
     @Test
+    fun `GT7選択時に接続状況バナーをタップして戻る`() {
+        setContent()
+
+        selectSimulator("GranTurismo 7（PS5）")
+        waitUntilDisplayed("ゲーム機のIPアドレスが未設定です")
+        clickItem("ゲーム機のIPアドレスが未設定です")
+        clickItem("読み上げ")
+    }
+
+    @Test
     fun `その他タブの項目を順にタップする`() {
         setContent()
 
