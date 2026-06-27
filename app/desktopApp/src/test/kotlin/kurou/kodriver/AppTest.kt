@@ -84,6 +84,14 @@ class AppTest {
     }
 
     @Test
+    fun `LMU選択時に接続状況バナーが表示される`() {
+        setContent()
+
+        selectSimulator("Le Mans Ultimate（Windows版）")
+        waitUntilDisplayed("シミュレータ接続待機中")
+    }
+
+    @Test
     fun `GT7選択時に接続状況バナーをタップして戻る`() {
         setContent()
 
