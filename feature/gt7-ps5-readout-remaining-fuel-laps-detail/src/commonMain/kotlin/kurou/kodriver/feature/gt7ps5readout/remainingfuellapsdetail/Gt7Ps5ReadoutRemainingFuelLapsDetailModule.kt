@@ -3,10 +3,11 @@ package kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val gt7Ps5ReadoutRemainingFuelLapsDetailModule = module {
-    viewModel { Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(get(), get()) }
+    viewModel { Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(get(), get(), get(named("gt7_ps5"))) }
     factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
     factory { SaveGt7Ps5RemainingFuelLapsUseCase(get()) }
 }

@@ -41,6 +41,7 @@ fun Gt7Ps5ReadoutRemainingFuelLapsDetailPane(
         uiState = uiState,
         onRemainingFuelLapsChanged = viewModel::onRemainingFuelLapsChanged,
         onResetRemainingFuelLaps = viewModel::onResetRemainingFuelLaps,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -50,6 +51,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
     uiState: Gt7Ps5ReadoutRemainingFuelLapsDetailUiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(),
     onRemainingFuelLapsChanged: (Int) -> Unit = {},
     onResetRemainingFuelLaps: () -> Unit = {},
+    onPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val sliderLabel = stringResource(Res.string.remaining_fuel_laps_slider_label)
@@ -81,6 +83,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
             chipLabels = listOf(voiceTypeLabel),
             selectedChipLabels = setOf(voiceTypeLabel),
+            onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }

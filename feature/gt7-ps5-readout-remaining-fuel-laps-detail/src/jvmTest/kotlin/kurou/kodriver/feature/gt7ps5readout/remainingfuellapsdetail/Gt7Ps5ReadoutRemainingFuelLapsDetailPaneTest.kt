@@ -95,4 +95,20 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
 
         assertTrue(resetCalled)
     }
+
+    @Test
+    fun `チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            MaterialTheme {
+                Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料は残り約3周").performClick()
+
+        assertTrue(previewClicked)
+    }
 }

@@ -9,18 +9,33 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private class FakeTextToSpeechEngine(
+    private val onSpeak: (SpeechEvent) -> Unit,
+) : TextToSpeechEngine {
+    override val currentReadoutItemKey: ReadoutItemKey? = null
+    override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
+    override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakeGt7Ps5RemainingFuelLapsPreferencesRepository
+    private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel
 
     @Before
@@ -30,6 +45,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
         viewModel = Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
             observeGt7Ps5RemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
             saveGt7Ps5RemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
 
@@ -57,5 +73,15 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
         viewModel.onResetRemainingFuelLaps()
 
         assertEquals(3, viewModel.uiState.first().remainingFuelLaps)
+    }
+
+    @Test
+    fun `onPreviewClickedを呼ぶと設定中の燃料残り周回数イベントが再生される`() = runTest {
+        viewModel.onRemainingFuelLapsChanged(4)
+        assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
+
+        viewModel.onPreviewClicked()
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(4)), playedEvents)
     }
 }
