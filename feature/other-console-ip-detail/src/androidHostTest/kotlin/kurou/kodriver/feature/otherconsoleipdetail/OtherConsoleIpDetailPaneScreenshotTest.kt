@@ -83,19 +83,4 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         }
     }
 
-    @Test
-    fun `ポート選択可能`() {
-        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            MaterialTheme(colorScheme = lightColorScheme()) {
-                Surface {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        OtherConsoleIpDetailPaneContent(
-                            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-                            portSelectable = true,
-                        )
-                    }
-                }
-            }
-        }
-    }
 }

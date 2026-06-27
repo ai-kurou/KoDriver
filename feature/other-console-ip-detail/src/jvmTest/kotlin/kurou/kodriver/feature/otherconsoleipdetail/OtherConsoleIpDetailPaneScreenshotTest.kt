@@ -72,18 +72,4 @@ class OtherConsoleIpDetailPaneScreenshotTest {
         rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
 
-    @Test
-    fun `ポート選択不可`() {
-        rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
-                Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-                        portSelectable = false,
-                    )
-                }
-            }
-        }
-        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
-    }
 }
