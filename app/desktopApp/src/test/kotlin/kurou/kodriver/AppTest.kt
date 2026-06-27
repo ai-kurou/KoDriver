@@ -3,11 +3,15 @@ package kurou.kodriver
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
@@ -26,6 +30,9 @@ import org.koin.core.context.stopKoin
 class AppTest {
 
     companion object {
+        private const val READOUT_PRIORITY_HELP_DESCRIPTION =
+            "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
+
         @BeforeClass @JvmStatic
         fun setUpKoin() {
             startKoin {
@@ -55,6 +62,7 @@ class AppTest {
         setContent()
 
         selectSimulator("Le Mans Ultimate（Windows版）")
+        clickReadoutPriorityHelp()
 
         waitUntilDisplayed("フラッグ")
         clickItem("フラッグ")
@@ -67,6 +75,7 @@ class AppTest {
         setContent()
 
         selectSimulator("GranTurismo 7（PS5）")
+        clickReadoutPriorityHelp()
 
         waitUntilDisplayed("燃料残り周回数")
         clickItem("燃料残り周回数")
@@ -106,6 +115,13 @@ class AppTest {
 
     private fun clickItem(text: String) {
         rule.onNodeWithText(text).performClick()
+        rule.waitForIdle()
+    }
+
+    private fun clickReadoutPriorityHelp() {
+        rule.onNode(hasContentDescription(READOUT_PRIORITY_HELP_DESCRIPTION)).performClick()
+        rule.waitForIdle()
+        rule.onAllNodes(isRoot()).get(0).performTouchInput { click(Offset(10f, 10f)) }
         rule.waitForIdle()
     }
 
