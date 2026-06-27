@@ -30,8 +30,8 @@ private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
         ReadoutItemKey.VehicleDamage,
     ),
     Simulator.Gt7Ps5 to listOf(
-        ReadoutItemKey.MyBestLap,
         ReadoutItemKey.RemainingFuelLaps,
+        ReadoutItemKey.MyBestLap,
     ),
 )
 

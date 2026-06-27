@@ -198,7 +198,7 @@ class ReadoutListViewModelTest {
         val state = viewModel.uiState.first()
         assertEquals(Simulator.Gt7Ps5, state.selectedSimulator)
         assertEquals(
-            listOf(ReadoutItemKey.MyBestLap, ReadoutItemKey.RemainingFuelLaps),
+            listOf(ReadoutItemKey.RemainingFuelLaps, ReadoutItemKey.MyBestLap),
             state.items,
         )
     }
