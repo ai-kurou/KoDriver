@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
-private const val MINIMUM_REMAINING_FUEL_LAPS = 1f
+private const val MINIMUM_REMAINING_FUEL_LAPS = 0f
 private const val MAXIMUM_REMAINING_FUEL_LAPS = 5f
 internal const val DEFAULT_REMAINING_FUEL_LAPS = 3
 
@@ -73,7 +73,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
             valueRange = MINIMUM_REMAINING_FUEL_LAPS..MAXIMUM_REMAINING_FUEL_LAPS,
             labelFormatter = { sliderLabel.format(it.roundToInt()) },
             onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
-            steps = 3,
+            steps = 4,
             defaultValue = DEFAULT_REMAINING_FUEL_LAPS.toFloat(),
             onResetToDefault = onResetRemainingFuelLaps,
             resetContentDescription = resetToDefaultLabel,
