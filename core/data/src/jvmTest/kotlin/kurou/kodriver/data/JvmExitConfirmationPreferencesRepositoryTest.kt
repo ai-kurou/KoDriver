@@ -10,6 +10,10 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class JvmExitConfirmationPreferencesRepositoryTest {
@@ -47,4 +51,17 @@ class JvmExitConfirmationPreferencesRepositoryTest {
 
         assertTrue(repository.exitConfirmationEnabled().first())
     }
+
+    @Test
+    fun `DataStoreがIOエラーを起こした場合はデフォルト値trueを返す`() = testScope.runTest {
+        val repository = JvmExitConfirmationPreferencesRepository(BrokenDataStore())
+
+        assertTrue(repository.exitConfirmationEnabled().first())
+    }
+}
+
+private class BrokenDataStore : DataStore<Preferences> {
+    override val data: Flow<Preferences> = flow { throw java.io.IOException("simulated IO error") }
+    override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences =
+        throw java.io.IOException("simulated IO error")
 }
