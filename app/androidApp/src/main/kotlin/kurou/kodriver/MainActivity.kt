@@ -14,6 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppScreen(
                 backHandler = { enabled, onBack -> BackHandler(enabled = enabled, onBack = onBack) },
+                onExit = { finish() },
             )
         }
     }

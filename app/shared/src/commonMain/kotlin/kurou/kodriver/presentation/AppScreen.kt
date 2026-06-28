@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,6 +52,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
+import kotlinx.coroutines.launch
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
@@ -164,6 +166,9 @@ fun AppScreen(
     readoutListViewModel: ReadoutListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    onExit: () -> Unit = {},
+    exitRequested: Boolean = false,
+    onExitRequestConsumed: () -> Unit = {},
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
             backHandler = backHandler,
@@ -185,6 +190,8 @@ fun AppScreen(
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    var showExitConfirmationDialog by rememberSaveable { mutableStateOf(false) }
 
     val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
         {
@@ -197,6 +204,34 @@ fun AppScreen(
 
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
+    }
+
+    LaunchedEffect(exitRequested) {
+        if (exitRequested) {
+            onExitRequestConsumed()
+            if (uiState.exitConfirmationEnabled) {
+                showExitConfirmationDialog = true
+            } else {
+                onExit()
+            }
+        }
+    }
+
+    backHandler(uiState.exitConfirmationEnabled) {
+        showExitConfirmationDialog = true
+    }
+
+    if (showExitConfirmationDialog) {
+        ExitConfirmationDialog(
+            onDismiss = { showExitConfirmationDialog = false },
+            onConfirm = { doNotShowAgain ->
+                coroutineScope.launch {
+                    if (doNotShowAgain) viewModel.saveExitConfirmationEnabled(false)
+                    showExitConfirmationDialog = false
+                    onExit()
+                }
+            },
+        )
     }
 
     ConnectionSnackbarEffect(
