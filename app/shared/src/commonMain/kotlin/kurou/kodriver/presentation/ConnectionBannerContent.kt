@@ -137,7 +137,7 @@ private class ConnectionBannerContentPreviewParameterProvider : PreviewParameter
             message = "接続先IPアドレスが未設定です",
             iconType = ConnectionBannerIconType.NETWORK,
             isTappable = true,
-            tapNavigationItemId = "console_ip",
+            tapNavigationTarget = ConnectionBannerNavigationTarget.ConsoleIp,
         ),
     )
 }

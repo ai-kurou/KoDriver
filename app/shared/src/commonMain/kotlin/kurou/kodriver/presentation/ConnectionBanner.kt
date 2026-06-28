@@ -14,10 +14,15 @@ data class ConnectionBannerUiState(
     val snackbarDisconnectedMessage: String = "",
     val isVisible: Boolean = true,
     val isTappable: Boolean = false,
-    val tapNavigationItemId: String? = null,
+    val tapNavigationTarget: ConnectionBannerNavigationTarget? = null,
 ) {
     val isConnected: Boolean get() = status == ConnectionBannerStatus.CONNECTED
     val isConnectionChecked: Boolean get() = status != ConnectionBannerStatus.UNCHECKED
+}
+
+sealed interface ConnectionBannerNavigationTarget {
+    data object ConsoleIp : ConnectionBannerNavigationTarget
+    data object ServerIp : ConnectionBannerNavigationTarget
 }
 
 @Composable
