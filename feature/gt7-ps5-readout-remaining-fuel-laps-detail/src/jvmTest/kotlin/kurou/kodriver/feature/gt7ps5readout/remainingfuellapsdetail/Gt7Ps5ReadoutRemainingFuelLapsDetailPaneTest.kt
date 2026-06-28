@@ -35,7 +35,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
         rule.onNodeWithText("読み上げ別設定").assertIsDisplayed()
         rule.onNodeWithText("燃料残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("燃料は残り約3周")
+        rule.onNodeWithText("燃料は残り約3周・燃料がありません")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -52,7 +52,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         }
 
         rule.onNodeWithText("残り約: 1 周").assertIsDisplayed()
-        rule.onNodeWithText("燃料は残り約1周")
+        rule.onNodeWithText("燃料は残り約1周・燃料がありません")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -107,7 +107,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("燃料は残り約3周").performClick()
+        rule.onNodeWithText("燃料は残り約3周・燃料がありません").performClick()
 
         assertTrue(previewClicked)
     }

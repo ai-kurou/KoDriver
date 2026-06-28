@@ -188,7 +188,7 @@ class Gt7Ps5NarratorViewModel(
             val avgConsumption = consumedFuel / lapsCompleted
             val remainingLapsFloor = (state.currentGasLevel / avgConsumption).toInt()
             val threshold = fuelThreshold.value
-            if (remainingLapsFloor < 1 || remainingLapsFloor > threshold) return@onEach
+            if (remainingLapsFloor < 0 || remainingLapsFloor > threshold) return@onEach
             if (remainingLapsFloor == lastAnnouncedRemainingLaps) return@onEach
             if (!remainingFuelLapsEnabled.value) return@onEach
             lastAnnouncedRemainingLaps = remainingLapsFloor

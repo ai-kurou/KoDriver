@@ -160,6 +160,32 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
+    fun `queue=trueで呼ぶと前の音声の後に続けて再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                when (path) {
+                    REMAINING_FUEL_LAPS_3_PATH -> REMAINING_FUEL_LAPS_3_SOUND
+                    REMAINING_FUEL_LAPS_0_PATH -> REMAINING_FUEL_LAPS_0_SOUND
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(3))
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(0), queue = true)
+        advanceUntilIdle()
+
+        assertEquals(4, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(REMAINING_FUEL_LAPS_3_SOUND, player.playedSounds[1])
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+        assertContentEquals(REMAINING_FUEL_LAPS_0_SOUND, player.playedSounds[3])
+    }
+
+    @Test
     fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
@@ -185,6 +211,18 @@ class Gt7Ps5WavNarratorEngineTest {
         assertEquals(2, player.playedSounds.size)
         assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
         assertContentEquals(MY_BEST_LAP_FORMAL_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `volumeFlowの音量で再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player, volumeFlow = flowOf(50))
+        runCurrent()
+
+        engine.speak(SpeechEvent.MyBestLapFormal)
+        runCurrent()
+
+        assertEquals(listOf(50, 50), player.playedVolumes)
     }
 
     @Test
@@ -229,6 +267,7 @@ class Gt7Ps5WavNarratorEngineTest {
 
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
+        volumeFlow: kotlinx.coroutines.flow.Flow<Int> = flowOf(100),
         startSoundTypeFlow: kotlinx.coroutines.flow.Flow<ReadoutStartSoundType> =
             flowOf(ReadoutStartSoundType.FORMULA_RADIO),
         resourceLoader: suspend (String) -> ByteArray = { path ->
@@ -246,6 +285,7 @@ class Gt7Ps5WavNarratorEngineTest {
         },
     ): Gt7Ps5WavNarratorEngine = Gt7Ps5WavNarratorEngine(
         soundPlayer = player,
+        volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,
         resourceLoader = resourceLoader,
         startSoundResourceLoader = startSoundResourceLoader,
@@ -257,13 +297,15 @@ class Gt7Ps5WavNarratorEngineTest {
         const val MY_BEST_LAP_CASUAL_PATH = "files/my_best_lap_casual.wav"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
+        const val REMAINING_FUEL_LAPS_0_PATH = "files/remaining_fuel_laps_0.wav"
         const val REMAINING_FUEL_LAPS_3_PATH = "files/remaining_fuel_laps_3.wav"
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(1)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(2)
         val EVENT_SOUND = byteArrayOf(3)
         val FORMULA_RADIO_SOUND = byteArrayOf(4)
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
-        val REMAINING_FUEL_LAPS_3_SOUND = byteArrayOf(6)
+        val REMAINING_FUEL_LAPS_0_SOUND = byteArrayOf(6)
+        val REMAINING_FUEL_LAPS_3_SOUND = byteArrayOf(7)
     }
 }
 
@@ -271,8 +313,10 @@ private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
+    val playedVolumes = mutableListOf<Int>()
 
     override suspend fun play(bytes: ByteArray, volume: Int) {
         playedSounds += bytes
+        playedVolumes += volume
     }
 }
