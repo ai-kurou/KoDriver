@@ -28,11 +28,6 @@ private fun vmStatusToBannerStatus(vmStatus: ConnectionBannerVmStatus): Connecti
         -> ConnectionBannerStatus.UNCHECKED
     }
 
-private fun tapNavigationItemId(vmStatus: ConnectionBannerVmStatus, isGt7: Boolean): String? {
-    if (vmStatus != ConnectionBannerVmStatus.IP_NOT_CONFIGURED) return null
-    return if (isGt7) "console_ip" else "server_ip"
-}
-
 @Composable
 actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val viewModel: ConnectionBannerViewModel = koinViewModel()
@@ -58,6 +53,10 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     )
 
     val vmStatus = uiState.connectionStatus
+    val tapNavigationTarget = connectionBannerNavigationTarget(
+        isGt7 = isGt7,
+        supportsLmuServerIpNavigation = true,
+    )
     val message = when (vmStatus) {
         ConnectionBannerVmStatus.CONNECTED -> connectedMessage
         ConnectionBannerVmStatus.IP_NOT_CONFIGURED -> ipNotConfiguredMessage
@@ -71,7 +70,7 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
         iconType = ConnectionBannerIconType.NETWORK,
         snackbarConnectedMessage = snackbarConnectedMessage,
         snackbarDisconnectedMessage = snackbarDisconnectedMessage,
-        isTappable = vmStatus == ConnectionBannerVmStatus.IP_NOT_CONFIGURED,
-        tapNavigationItemId = tapNavigationItemId(vmStatus, isGt7),
+        isTappable = tapNavigationTarget != null,
+        tapNavigationTarget = tapNavigationTarget,
     )
 }

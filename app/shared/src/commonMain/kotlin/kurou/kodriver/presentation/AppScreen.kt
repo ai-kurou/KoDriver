@@ -85,6 +85,11 @@ private fun bannerTapWithTabSwitch(
     null
 }
 
+private fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType = when (this) {
+    ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
+    ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
+}
+
 private fun handleTabClick(
     dest: AppDestination,
     currentDestination: AppDestination,
@@ -181,10 +186,9 @@ fun AppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
 
-    val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationItemId != null) {
+    val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
         {
-            OtherListItemType.fromId(bannerUiState.tapNavigationItemId)
-                ?.let { otherListViewModel.selectItem(it) }
+            otherListViewModel.selectItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
             Unit
         }
     } else {

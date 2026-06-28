@@ -47,15 +47,17 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
         -> disconnectedMessage
     }
     val iconType = if (isGt7) ConnectionBannerIconType.NETWORK else ConnectionBannerIconType.SIMULATOR
-    val isTappable = uiState.connectionStatus == ConnectionBannerVmStatus.IP_NOT_CONFIGURED
-    val tapNavigationItemId = if (isTappable) "console_ip" else null
+    val tapNavigationTarget = connectionBannerNavigationTarget(
+        isGt7 = isGt7,
+        supportsLmuServerIpNavigation = false,
+    )
     return ConnectionBannerUiState(
         status = status,
         message = message,
         iconType = iconType,
         snackbarConnectedMessage = snackbarConnectedMessage,
         snackbarDisconnectedMessage = snackbarDisconnectedMessage,
-        isTappable = isTappable,
-        tapNavigationItemId = tapNavigationItemId,
+        isTappable = tapNavigationTarget != null,
+        tapNavigationTarget = tapNavigationTarget,
     )
 }
