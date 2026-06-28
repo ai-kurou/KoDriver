@@ -5,6 +5,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
@@ -29,6 +30,7 @@ private val Context.simulatorDataStore by preferencesDataStore("simulator_prefer
 private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
 private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
 private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
+private val Context.exitConfirmationDataStore by preferencesDataStore("exit_confirmation_preferences")
 
 fun androidDataModule(context: Context) = module {
     single<Context> { context }
@@ -79,5 +81,8 @@ fun androidDataModule(context: Context) = module {
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
     single<KeepScreenOnPreferencesRepository> {
         AndroidKeepScreenOnPreferencesRepository(context.keepScreenOnDataStore)
+    }
+    single<ExitConfirmationPreferencesRepository> {
+        AndroidExitConfirmationPreferencesRepository(context.exitConfirmationDataStore)
     }
 }
