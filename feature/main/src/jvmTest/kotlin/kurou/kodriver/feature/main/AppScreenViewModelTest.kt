@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -124,6 +125,15 @@ class AppScreenViewModelTest {
 
         assertFalse(fakeRepo.savedValue!!)
     }
+
+    @Test
+    fun `saveExitConfirmationEnabledをfalseで呼ぶとuiStateのexitConfirmationEnabledがfalseになる`() = runTest {
+        val (viewModel) = createViewModel(exitConfirmationEnabled = true)
+
+        viewModel.saveExitConfirmationEnabled(false)
+
+        assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+    }
 }
 
 private class FakeAppUpdateRepository(private val tagName: String?) : AppUpdateRepository {
@@ -136,11 +146,13 @@ private class FakeKeepScreenOnRepository : KeepScreenOnPreferencesRepository {
 }
 
 private class FakeExitConfirmationPreferencesRepository(
-    private val enabled: Boolean,
+    enabled: Boolean,
 ) : ExitConfirmationPreferencesRepository {
+    private val _enabled = MutableStateFlow(enabled)
     var savedValue: Boolean? = null
-    override fun exitConfirmationEnabled(): Flow<Boolean> = flowOf(enabled)
+    override fun exitConfirmationEnabled(): Flow<Boolean> = _enabled
     override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
         savedValue = enabled
+        _enabled.value = enabled
     }
 }
