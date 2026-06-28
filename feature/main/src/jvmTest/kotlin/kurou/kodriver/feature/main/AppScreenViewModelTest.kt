@@ -12,8 +12,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 import org.junit.After
 import org.junit.Before
@@ -36,10 +38,17 @@ class AppScreenViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(tagName: String? = null, version: String = "1.0.0") = AppScreenViewModel(
+    private fun createViewModel(
+        tagName: String? = null,
+        version: String = "1.0.0",
+        exitConfirmationEnabled: Boolean = true,
+    ) = AppScreenViewModel(
         checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(tagName)),
         currentVersion = version,
         observeKeepScreenOn = ObserveKeepScreenOnUseCase(FakeKeepScreenOnRepository()),
+        observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(
+            FakeExitConfirmationPreferencesRepository(exitConfirmationEnabled),
+        ),
     )
 
     @Test
@@ -88,6 +97,20 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
     }
+
+    @Test
+    fun `終了確認が有効な場合exitConfirmationEnabledがtrueになる`() = runTest {
+        val viewModel = createViewModel(exitConfirmationEnabled = true)
+
+        assertTrue(viewModel.uiState.first().exitConfirmationEnabled)
+    }
+
+    @Test
+    fun `終了確認が無効な場合exitConfirmationEnabledがfalseになる`() = runTest {
+        val viewModel = createViewModel(exitConfirmationEnabled = false)
+
+        assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+    }
 }
 
 private class FakeAppUpdateRepository(private val tagName: String?) : AppUpdateRepository {
@@ -97,4 +120,11 @@ private class FakeAppUpdateRepository(private val tagName: String?) : AppUpdateR
 private class FakeKeepScreenOnRepository : KeepScreenOnPreferencesRepository {
     override fun keepScreenOn(): Flow<Boolean> = flowOf(false)
     override suspend fun saveKeepScreenOn(enabled: Boolean) = Unit
+}
+
+private class FakeExitConfirmationPreferencesRepository(
+    private val enabled: Boolean,
+) : ExitConfirmationPreferencesRepository {
+    override fun exitConfirmationEnabled(): Flow<Boolean> = flowOf(enabled)
+    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) = Unit
 }
