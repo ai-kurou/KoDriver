@@ -58,5 +58,7 @@ val desktopDataModule = module {
     }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
     single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
-    single<ExitConfirmationPreferencesRepository> { JvmExitConfirmationPreferencesRepository() }
+    single<ExitConfirmationPreferencesRepository> {
+        createExitConfirmationPreferencesRepository(directory = kodriverDirectory)
+    }
 }

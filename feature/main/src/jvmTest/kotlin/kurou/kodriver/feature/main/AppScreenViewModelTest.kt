@@ -3,6 +3,7 @@ package kurou.kodriver.feature.main
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
+import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -42,18 +44,21 @@ class AppScreenViewModelTest {
         tagName: String? = null,
         version: String = "1.0.0",
         exitConfirmationEnabled: Boolean = true,
-    ) = AppScreenViewModel(
-        checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(tagName)),
-        currentVersion = version,
-        observeKeepScreenOn = ObserveKeepScreenOnUseCase(FakeKeepScreenOnRepository()),
-        observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(
-            FakeExitConfirmationPreferencesRepository(exitConfirmationEnabled),
-        ),
-    )
+    ): Pair<AppScreenViewModel, FakeExitConfirmationPreferencesRepository> {
+        val fakeRepo = FakeExitConfirmationPreferencesRepository(exitConfirmationEnabled)
+        val viewModel = AppScreenViewModel(
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(tagName)),
+            currentVersion = version,
+            observeKeepScreenOn = ObserveKeepScreenOnUseCase(FakeKeepScreenOnRepository()),
+            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(fakeRepo),
+            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(fakeRepo),
+        )
+        return viewModel to fakeRepo
+    }
 
     @Test
     fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
-        val viewModel = createViewModel(tagName = "v9.9.9")
+        val (viewModel) = createViewModel(tagName = "v9.9.9")
 
         viewModel.checkUpdate()
         advanceUntilIdle()
@@ -63,7 +68,7 @@ class AppScreenViewModelTest {
 
     @Test
     fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
-        val viewModel = createViewModel(tagName = "v1.0.0")
+        val (viewModel) = createViewModel(tagName = "v1.0.0")
 
         viewModel.checkUpdate()
         advanceUntilIdle()
@@ -73,14 +78,14 @@ class AppScreenViewModelTest {
 
     @Test
     fun `checkUpdateを呼ぶ前はhasAppUpdateがfalse`() = runTest {
-        val viewModel = createViewModel(tagName = "v9.9.9")
+        val (viewModel) = createViewModel(tagName = "v9.9.9")
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
     }
 
     @Test
     fun `currentVersionが空文字の場合hasAppUpdateがfalseのまま`() = runTest {
-        val viewModel = createViewModel(tagName = "v9.9.9", version = "")
+        val (viewModel) = createViewModel(tagName = "v9.9.9", version = "")
 
         viewModel.checkUpdate()
         advanceUntilIdle()
@@ -90,7 +95,7 @@ class AppScreenViewModelTest {
 
     @Test
     fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() = runTest {
-        val viewModel = createViewModel(tagName = null)
+        val (viewModel) = createViewModel(tagName = null)
 
         viewModel.checkUpdate()
         advanceUntilIdle()
@@ -100,14 +105,32 @@ class AppScreenViewModelTest {
 
     @Test
     fun `終了確認が有効な場合exitConfirmationEnabledがtrueになる`() = runTest {
-        val viewModel = createViewModel(exitConfirmationEnabled = true)
+        val (viewModel) = createViewModel(exitConfirmationEnabled = true)
 
         assertTrue(viewModel.uiState.first().exitConfirmationEnabled)
     }
 
     @Test
     fun `終了確認が無効な場合exitConfirmationEnabledがfalseになる`() = runTest {
-        val viewModel = createViewModel(exitConfirmationEnabled = false)
+        val (viewModel) = createViewModel(exitConfirmationEnabled = false)
+
+        assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+    }
+
+    @Test
+    fun `saveExitConfirmationEnabledを呼ぶとリポジトリに保存される`() = runTest {
+        val (viewModel, fakeRepo) = createViewModel(exitConfirmationEnabled = true)
+
+        viewModel.saveExitConfirmationEnabled(false)
+
+        assertFalse(fakeRepo.savedValue!!)
+    }
+
+    @Test
+    fun `saveExitConfirmationEnabledをfalseで呼ぶとuiStateのexitConfirmationEnabledがfalseになる`() = runTest {
+        val (viewModel) = createViewModel(exitConfirmationEnabled = true)
+
+        viewModel.saveExitConfirmationEnabled(false)
 
         assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
     }
@@ -123,8 +146,13 @@ private class FakeKeepScreenOnRepository : KeepScreenOnPreferencesRepository {
 }
 
 private class FakeExitConfirmationPreferencesRepository(
-    private val enabled: Boolean,
+    enabled: Boolean,
 ) : ExitConfirmationPreferencesRepository {
-    override fun exitConfirmationEnabled(): Flow<Boolean> = flowOf(enabled)
-    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) = Unit
+    private val _enabled = MutableStateFlow(enabled)
+    var savedValue: Boolean? = null
+    override fun exitConfirmationEnabled(): Flow<Boolean> = _enabled
+    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
+        savedValue = enabled
+        _enabled.value = enabled
+    }
 }

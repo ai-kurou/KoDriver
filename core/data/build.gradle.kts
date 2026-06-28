@@ -44,6 +44,9 @@ kotlin {
         }
         jvmMain {
             dependsOn(jvmAndroidMain)
+            dependencies {
+                implementation(libs.androidx.datastore.preferences)
+            }
         }
         androidMain {
             dependsOn(jvmAndroidMain)

@@ -18,4 +18,9 @@
     <string name="version_mismatch_update_app">Androidアプリを最新バージョンに更新してください。</string>
     <string name="version_mismatch_update_windows">Windows版KoDriverを最新バージョンに更新してください。</string>
     <string name="version_mismatch_close">閉じる</string>
+    <string name="exit_confirmation_title">アプリを終了しますか？</string>
+    <string name="exit_confirmation_body">読み上げが途中で終了する可能性があります。</string>
+    <string name="exit_confirmation_do_not_show_again">今後表示しない</string>
+    <string name="exit_confirmation_cancel">キャンセル</string>
+    <string name="exit_confirmation_exit">終了</string>
 </resources>
