@@ -10,18 +10,24 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
     observeKeepScreenOn: ObserveKeepScreenOnUseCase,
+    observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
 ) : ViewModel() {
 
     private val _hasAppUpdate = MutableStateFlow(false)
 
-    val uiState: StateFlow<AppScreenUiState> = combine(_hasAppUpdate, observeKeepScreenOn()) { hasUpdate, keepOn ->
-        AppScreenUiState(hasAppUpdate = hasUpdate, keepScreenOn = keepOn)
+    val uiState: StateFlow<AppScreenUiState> = combine(
+        _hasAppUpdate,
+        observeKeepScreenOn(),
+        observeExitConfirmationEnabled(),
+    ) { hasUpdate, keepOn, exitConfirmation ->
+        AppScreenUiState(hasAppUpdate = hasUpdate, keepScreenOn = keepOn, exitConfirmationEnabled = exitConfirmation)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 
     fun checkUpdate() {
@@ -36,4 +42,5 @@ class AppScreenViewModel(
 data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
     val keepScreenOn: Boolean = true,
+    val exitConfirmationEnabled: Boolean = true,
 )
