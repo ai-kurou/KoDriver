@@ -128,7 +128,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: build/reports/kover/report.xml
 
-  screenshot-test-jvm:
+  desktop-screenshot-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -165,7 +165,7 @@ jobs:
       - name: Verify JVM screenshot tests
         run: ./gradlew :feature:readout-list:verifyRoborazziJvmTest :feature:gt7-ps5-readout-remaining-fuel-laps-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:verifyRoborazziJvmTest :feature:other-license-detail:verifyRoborazziJvmTest :feature:other-list:verifyRoborazziJvmTest :feature:other-readout-start-sound-detail:verifyRoborazziJvmTest :feature:other-console-ip-detail:verifyRoborazziJvmTest :feature:other-server-ip-detail:verifyRoborazziJvmTest :feature:other-volume-detail:verifyRoborazziJvmTest :feature:other-keep-screen-on-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
 
-  screenshot-test-android:
+  android-screenshot-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
