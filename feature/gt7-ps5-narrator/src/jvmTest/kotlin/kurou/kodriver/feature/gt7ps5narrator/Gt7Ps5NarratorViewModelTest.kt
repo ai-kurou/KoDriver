@@ -296,7 +296,7 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `Slider3のとき残り3周から1周まで合計3回アナウンスする`() = runTest(testDispatcher) {
+    fun `Slider3のとき残り2周から1周まで合計2回アナウンスする`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -307,16 +307,15 @@ class Gt7Ps5NarratorViewModelTest {
 
         // スタート: gasLevel=40L、1周10L消費
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        // lap1完了 → 残り30/10=3.0周 → アナウンス(3)
+        // lap1完了 → 残り30/(10/1.9)=5.7周 → アナウンスなし
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
-        // lap2完了 → 残り20/10=2.0周 → アナウンス(2)
+        // lap2完了 → 残り20/(20/2.9)=2.9周 → アナウンス(2)
         channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
-        // lap3完了 → 残り10/10=1.0周 → アナウンス(1)
+        // lap3完了 → 残り10/(30/3.9)=1.3周 → アナウンス(1)
         channel.send(gt7Telemetry(lapCount = 3, gasLevel = 10f, gasCapacity = 100f))
 
         assertEquals(
             listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(3),
                 SpeechEvent.RemainingFuelLapsWarning(2),
                 SpeechEvent.RemainingFuelLapsWarning(1),
             ),
@@ -332,7 +331,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
+            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 5),
             currentTimeMs = { currentTimeMs },
         )
 
@@ -348,7 +347,7 @@ class Gt7Ps5NarratorViewModelTest {
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
 
         assertEquals(
-            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(3)),
+            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(5)),
             tts.spokenTexts,
         )
     }
@@ -374,7 +373,6 @@ class Gt7Ps5NarratorViewModelTest {
         assertEquals(
             listOf<SpeechEvent>(
                 SpeechEvent.RemainingFuelLapsWarning(5),
-                SpeechEvent.RemainingFuelLapsWarning(4),
                 SpeechEvent.RemainingFuelLapsWarning(3),
                 SpeechEvent.RemainingFuelLapsWarning(2),
                 SpeechEvent.RemainingFuelLapsWarning(1),
@@ -459,18 +457,18 @@ class Gt7Ps5NarratorViewModelTest {
             readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
-        // 1周目セッション: 残り3周でアナウンス済み
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f)) // 残り3周
+        // 1周目セッション: 残り2周でアナウンス済み
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 25f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 15f, gasCapacity = 100f)) // 残り2周
         // リセット
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        // リセット後1周完了 → 残り3周 → アナウンス履歴がリセットされているので再アナウンス
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 25f, gasCapacity = 100f))
+        // リセット後1周完了 → 残り2周 → アナウンス履歴がリセットされているので再アナウンス
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 15f, gasCapacity = 100f))
 
         assertEquals(
             listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(3),
-                SpeechEvent.RemainingFuelLapsWarning(3),
+                SpeechEvent.RemainingFuelLapsWarning(2),
+                SpeechEvent.RemainingFuelLapsWarning(2),
             ),
             tts.spokenTexts,
         )
@@ -503,25 +501,24 @@ class Gt7Ps5NarratorViewModelTest {
 
         // スタート: 40L、1周10L消費
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        // lap1完了 → 30L、消費10L、平均10L/周、残り3.0周 → アナウンス(3)
+        // lap1完了 → 30L、消費10L、平均10/1.9L/周、残り5.7周 → アナウンスなし
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
         // ピット給油 → 50L（+20L補給）: lapCount変化なし、同一周なのでscanに流れない
 
-        // lap2完了 → 給油後1周目: gasLevel=50L → totalRefueled=20, consumed=40+20-50=10, avg=10/2=5L/周
-        // 残り=floor(50/5)=10周 → Sliderより多いのでアナウンスしない
+        // lap2完了 → 給油後1周目: gasLevel=50L → totalRefueled=20, consumed=40+20-50=10, avg=10/2.9L/周
+        // 残り=floor(50/(10/2.9))=14周 → Sliderより多いのでアナウンスしない
         channel.send(gt7Telemetry(lapCount = 2, gasLevel = 50f, gasCapacity = 100f))
-        // lap3完了 → 40L、consumed=40+20-40=20, avg=20/3≈6.67, 残り=floor(40/6.67)=5周 → アナウンスなし
+        // lap3完了 → 40L、consumed=40+20-40=20, avg=20/3.9≈5.13, 残り=floor(40/5.13)=7周 → アナウンスなし
         channel.send(gt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 100f))
-        // lap4完了 → 30L、consumed=40+20-30=30, avg=30/4=7.5, 残り=floor(30/7.5)=4周 → アナウンスなし
+        // lap4完了 → 30L、consumed=40+20-30=30, avg=30/4.9≈6.12, 残り=floor(30/6.12)=4周 → アナウンスなし
         channel.send(gt7Telemetry(lapCount = 4, gasLevel = 30f, gasCapacity = 100f))
-        // lap5完了 → 20L、consumed=40+20-20=40, avg=40/5=8, 残り=floor(20/8)=2周 → アナウンス(2)
+        // lap5完了 → 20L、consumed=40+20-20=40, avg=40/5.9≈6.78, 残り=floor(20/6.78)=2周 → アナウンス(2)
         channel.send(gt7Telemetry(lapCount = 5, gasLevel = 20f, gasCapacity = 100f))
-        // lap6完了 → 10L、consumed=40+20-10=50, avg=50/6≈8.33, 残り=floor(10/8.33)=1周 → アナウンス(1)
+        // lap6完了 → 10L、consumed=40+20-10=50, avg=50/6.9≈7.25, 残り=floor(10/7.25)=1周 → アナウンス(1)
         channel.send(gt7Telemetry(lapCount = 6, gasLevel = 10f, gasCapacity = 100f))
 
         assertEquals(
             listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(3),
                 SpeechEvent.RemainingFuelLapsWarning(2),
                 SpeechEvent.RemainingFuelLapsWarning(1),
             ),

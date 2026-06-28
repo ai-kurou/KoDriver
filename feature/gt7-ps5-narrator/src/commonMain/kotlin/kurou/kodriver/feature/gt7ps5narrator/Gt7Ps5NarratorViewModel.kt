@@ -185,7 +185,8 @@ class Gt7Ps5NarratorViewModel(
             lastFuelEvaluationLap = state.currentLap
             val consumedFuel = startFuel + state.totalRefueled - state.currentGasLevel
             if (consumedFuel <= 0f) return@onEach
-            val avgConsumption = consumedFuel / lapsCompleted
+            // 判定時点はラップ途中なので、その周の消費を概算で分母に含める。
+            val avgConsumption = consumedFuel / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
             val remainingLapsFloor = (state.currentGasLevel / avgConsumption).toInt()
             val threshold = fuelThreshold.value
             if (remainingLapsFloor < 0 || remainingLapsFloor > threshold) return@onEach
@@ -210,5 +211,6 @@ class Gt7Ps5NarratorViewModel(
 
     private companion object {
         const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000
+        const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9f
     }
 }
