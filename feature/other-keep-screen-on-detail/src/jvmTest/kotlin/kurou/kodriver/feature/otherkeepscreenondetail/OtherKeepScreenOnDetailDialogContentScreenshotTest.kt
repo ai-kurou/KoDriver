@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import org.junit.Rule
@@ -32,7 +32,7 @@ class OtherKeepScreenOnDetailDialogContentScreenshotTest {
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onNode(isDialog()).captureRoboImage()
     }
 
     @Test
@@ -51,6 +51,6 @@ class OtherKeepScreenOnDetailDialogContentScreenshotTest {
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onNode(isDialog()).captureRoboImage()
     }
 }

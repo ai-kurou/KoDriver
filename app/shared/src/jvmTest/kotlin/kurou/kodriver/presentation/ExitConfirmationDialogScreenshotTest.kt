@@ -5,7 +5,7 @@ package kurou.kodriver.presentation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -29,7 +29,7 @@ class ExitConfirmationDialogScreenshotTest {
                 }
             }
         }
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onNode(isDialog()).captureRoboImage()
     }
 
     @Test
@@ -46,6 +46,6 @@ class ExitConfirmationDialogScreenshotTest {
         }
         rule.onNodeWithText("今後表示しない").performClick()
         rule.waitForIdle()
-        rule.onAllNodes(isRoot()).get(1).captureRoboImage()
+        rule.onNode(isDialog()).captureRoboImage()
     }
 }
