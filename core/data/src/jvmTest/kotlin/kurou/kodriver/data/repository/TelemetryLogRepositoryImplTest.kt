@@ -3,6 +3,7 @@ package kurou.kodriver.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.TelemetryLogDao
 import kurou.kodriver.data.model.TelemetryLogEntity
@@ -76,6 +77,6 @@ private class FakeTelemetryLogDao(
     override fun observeTelemetryLogs(): Flow<List<TelemetryLogEntity>> = logs
 
     override suspend fun insert(log: TelemetryLogEntity) {
-        logs.value += log
+        logs.update { it + log }
     }
 }
