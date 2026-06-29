@@ -41,6 +41,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
+import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
@@ -139,6 +140,7 @@ class LmuWindowsNarratorViewModelTest {
                 ),
             ),
             ttsEngine = ttsEngine,
+            determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
             currentTimeMs = currentTimeMs,
         )
     }

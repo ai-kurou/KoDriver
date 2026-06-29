@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
@@ -22,7 +23,8 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val lmuNarratorModule: Module = module {
-    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(named("lmu_windows"))) }
+    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(named("lmu_windows")), get()) }
+    factory { DetermineLmuWindowsNarratorReadoutUseCase() }
     factory { ObserveFlagEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
