@@ -27,6 +27,7 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -38,6 +39,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
@@ -54,6 +56,7 @@ import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUs
 import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -91,6 +94,7 @@ class LmuWindowsNarratorViewModelTest {
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
+        telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
         val vehicleApproachPreferencesRepository = FakeConstantVehicleApproachPreferencesRepository(
@@ -140,7 +144,10 @@ class LmuWindowsNarratorViewModelTest {
                 ),
             ),
             ttsEngine = ttsEngine,
-            determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
+            narratorUseCases = NarratorUseCases(
+                determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
+                saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            ),
             currentTimeMs = currentTimeMs,
         )
     }
@@ -264,6 +271,43 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
+    @Test
+    fun `接近読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            currentTimeMs = { fakeTime },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 123_456L
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(
+            listOf(
+                TelemetryLog(
+                    createdAt = 123_456L,
+                    simulatorId = Simulator.LmuWindows.id,
+                    readoutItemKey = ReadoutItemKey.VehicleApproach.value,
+                    telemetryJson =
+                        """{"previous":{"sideBySideLeftVehicleIds":[1],""" +
+                            """"sideBySideRightVehicleIds":[],"lateralDistanceLeftMeters":3.0,""" +
+                            """"lateralDistanceRightMeters":${Double.MAX_VALUE}},""" +
+                            """"current":{"sideBySideLeftVehicleIds":[1],""" +
+                            """"sideBySideRightVehicleIds":[],"lateralDistanceLeftMeters":3.0,""" +
+                            """"lateralDistanceRightMeters":${Double.MAX_VALUE}}}""",
+                ),
+            ),
+            telemetryLogRepository.logs.value,
+        )
+    }
+
     // --- 旗アナウンス ---
 
     // --- 優先度 ---
@@ -283,6 +327,29 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = PriorityAwareTextToSpeechEngine(
+            initialKey = ReadoutItemKey.Flag,
+        )
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            currentTimeMs = { fakeTime },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(emptyList<TelemetryLog>(), telemetryLogRepository.logs.value)
     }
 
     @Test
@@ -378,6 +445,97 @@ class LmuWindowsNarratorViewModelTest {
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `青旗読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            currentTimeMs = { fakeTime },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        flagChannel.send(clearFlags())
+        fakeTime = 789L
+        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
+
+        assertEquals(
+            listOf(
+                TelemetryLog(
+                    createdAt = 789L,
+                    simulatorId = Simulator.LmuWindows.id,
+                    readoutItemKey = ReadoutItemKey.Flag.value,
+                    telemetryJson =
+                        """{"previous":{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
+                            """"sectorFlags":["CLEAR","CLEAR","CLEAR"],"startLight":0,"numRedLights":0,""" +
+                            """"playerFlag":"GREEN","playerUnderYellow":false,""" +
+                            """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"},""" +
+                            """"current":{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
+                            """"sectorFlags":["CLEAR","CLEAR","CLEAR"],"startLight":0,"numRedLights":0,""" +
+                            """"playerFlag":"BLUE","playerUnderYellow":false,""" +
+                            """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}}""",
+                ),
+            ),
+            telemetryLogRepository.logs.value,
+        )
+    }
+
+    @Test
+    fun `ログ保存に失敗しても以後の読み上げは継続する`() = runTest(testDispatcher) {
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            telemetryLogRepository = FakeTelemetryLogRepository(throwOnSave = true),
+        )
+
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
+
+        assertEquals(
+            listOf<SpeechEvent>(SpeechEvent.BlueFlag, SpeechEvent.SessionStop),
+            tts.spokenTexts,
+        )
+    }
+
+    @Test
+    fun `オーバーヒート読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            damageChannel = damageChannel,
+            ttsEngine = tts,
+            currentTimeMs = { fakeTime },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        damageChannel.send(noDamage())
+        fakeTime = 987L
+        damageChannel.send(noDamage(overheating = true))
+
+        assertEquals(
+            listOf(
+                TelemetryLog(
+                    createdAt = 987L,
+                    simulatorId = Simulator.LmuWindows.id,
+                    readoutItemKey = ReadoutItemKey.VehicleDamage.value,
+                    telemetryJson =
+                        """{"previous":{"overheating":false,"partDetached":false,"lastImpactMagnitude":0.0},""" +
+                            """"current":{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.0}}""",
+                ),
+            ),
+            telemetryLogRepository.logs.value,
+        )
     }
 }
 
@@ -509,6 +667,17 @@ private class FakeChannelVehicleDamageRepository(
     private val stream: Flow<VehicleDamageData>,
 ) : VehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = stream
+}
+
+private class FakeTelemetryLogRepository(
+    private val throwOnSave: Boolean = false,
+) : TelemetryLogRepository {
+    val logs = MutableStateFlow(emptyList<TelemetryLog>())
+    override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
+    override suspend fun saveTelemetryLog(log: TelemetryLog) {
+        if (throwOnSave) error("Failed to save telemetry log")
+        logs.update { it + log }
+    }
 }
 
 private fun noDamage(overheating: Boolean = false) = VehicleDamageData(

@@ -17,6 +17,7 @@ import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCa
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -25,6 +26,8 @@ import org.koin.dsl.module
 val lmuNarratorModule: Module = module {
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(named("lmu_windows")), get()) }
     factory { DetermineLmuWindowsNarratorReadoutUseCase() }
+    factory { SaveTelemetryLogUseCase(get()) }
+    factory { NarratorUseCases(get(), get()) }
     factory { ObserveFlagEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
