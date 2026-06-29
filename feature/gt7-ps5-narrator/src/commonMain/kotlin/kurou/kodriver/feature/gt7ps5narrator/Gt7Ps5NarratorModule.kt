@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
@@ -17,8 +18,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val gt7Ps5NarratorModule: Module = module {
-    viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(named("gt7_ps5"))) }
+    viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(named("gt7_ps5")), get()) }
     includes(platformSoundModule)
+    factory { DetermineGt7Ps5NarratorReadoutUseCase() }
     factory { ObserveGt7Ps5UseCase(get()) }
     factory { ObserveMyBestLapVoiceTypeUseCase(get()) }
     factory { MyBestLapUseCases(get(), get()) }
