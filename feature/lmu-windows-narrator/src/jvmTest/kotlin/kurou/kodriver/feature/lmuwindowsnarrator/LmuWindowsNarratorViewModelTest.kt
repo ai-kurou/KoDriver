@@ -300,6 +300,52 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
     }
 
+    @Test
+    fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = PriorityAwareTextToSpeechEngine(
+            initialKey = ReadoutItemKey.Flag,
+        )
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            orderOverride = listOf(ReadoutItemKey.VehicleApproach),
+            currentTimeMs = { fakeTime },
+        )
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(true, tts.stopCalled)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
+    }
+
+    @Test
+    fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<ProximityData>(Channel.UNLIMITED)
+        val tts = PriorityAwareTextToSpeechEngine(
+            initialKey = ReadoutItemKey.Flag,
+        )
+        buildViewModel(
+            proximityChannel = channel,
+            ttsEngine = tts,
+            orderOverride = listOf(ReadoutItemKey.Flag),
+            currentTimeMs = { fakeTime },
+        )
+
+        channel.send(noProximity())
+        channel.send(leftProximity(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftProximity(vehicleId = 1))
+
+        assertEquals(false, tts.stopCalled)
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
     // --- オーバーヒート ---
 
     @Test
