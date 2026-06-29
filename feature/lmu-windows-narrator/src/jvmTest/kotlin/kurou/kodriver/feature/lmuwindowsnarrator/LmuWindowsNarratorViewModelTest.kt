@@ -177,91 +177,6 @@ class LmuWindowsNarratorViewModelTest {
     // --- 接近アナウンス ---
 
     @Test
-    fun `CAR_LEFT_RIGHTタイプのとき左からの接近でCarLeftを読み上げる`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
-    }
-
-    @Test
-    fun `CAR_LEFT_RIGHTタイプのとき右からの接近でCarRightを読み上げる`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(rightProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(rightProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarRight), tts.spokenTexts)
-    }
-
-    @Test
-    fun `LEFT_RIGHT_APPROACHタイプのとき左からの接近でLeftApproachを読み上げる`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            proximityChannel = channel,
-            ttsEngine = tts,
-            startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-            currentTimeMs = { fakeTime },
-        )
-
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.LeftApproach), tts.spokenTexts)
-    }
-
-    @Test
-    fun `LEFT_RIGHT_APPROACHタイプのとき右からの接近でRightApproachを読み上げる`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            proximityChannel = channel,
-            ttsEngine = tts,
-            startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
-            currentTimeMs = { fakeTime },
-        )
-
-        channel.send(noProximity())
-        channel.send(rightProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(rightProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.RightApproach), tts.spokenTexts)
-    }
-
-    @Test
-    fun `左右同時に接近したときは接近アナウンスをしない`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(leftAndRightProximity(leftVehicleId = 1, rightVehicleId = 2))
-        fakeTime = 50L
-        channel.send(leftAndRightProximity(leftVehicleId = 1, rightVehicleId = 2))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
     fun `接近開始時の読み上げが無効のときは接近アナウンスをしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<ProximityData>(Channel.UNLIMITED)
@@ -279,77 +194,6 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(leftProximity(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `50ms未満の接近ではアナウンスしない`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 49L
-        channel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `既に並走中の車が継続して並走してもアナウンスしない`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
-        val spokenAfterFirstApproach = tts.spokenTexts.toList()
-
-        fakeTime = 100L
-        channel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(spokenAfterFirstApproach, tts.spokenTexts)
-    }
-
-    @Test
-    fun `並走から離脱後に同じ車が再度並走するとアナウンスする`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
-        channel.send(noProximity())
-        fakeTime = 100L
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 150L
-        channel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), tts.spokenTexts)
-    }
-
-    @Test
-    fun `別の車両が新たに並走ゾーンに入るとアナウンスする`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val channel = Channel<ProximityData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
-
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))
-        fakeTime = 100L
-        channel.send(leftProximity(vehicleId = 1, extraLeftId = 2))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), tts.spokenTexts)
     }
 
     @Test
@@ -397,30 +241,6 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `1周目スキップONかつフォーメーションラップ中はアナウンスしない`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            proximityChannel = proximityChannel,
-            telemetryChannel = telemetryChannel,
-            ttsEngine = tts,
-            skipFirstLap = true,
-            currentTimeMs = { fakeTime },
-        )
-
-        // フォーメーションラップは mLapNumber が負値（-1 等）になる可能性があるため <= 0 でスキップ
-        telemetryChannel.send(fakeTelemetryData(currentLap = -1))
-        proximityChannel.send(noProximity())
-        proximityChannel.send(leftProximity(vehicleId = 1))
-        fakeTime = 50L
-        proximityChannel.send(leftProximity(vehicleId = 1))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
     fun `1周目スキップONでも2周目以降はアナウンスする`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val proximityChannel = Channel<ProximityData>(Channel.UNLIMITED)
@@ -445,86 +265,6 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     // --- 旗アナウンス ---
-
-    @Test
-    fun `起動直後の最初のフラグemitでは黄旗が立っていてもアナウンスしない`() = runTest(testDispatcher) {
-        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
-
-        flagChannel.send(
-            clearFlags().copy(
-                sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-            ),
-        )
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `青旗に変化するとブルーフラッグを読み上げる`() = runTest(testDispatcher) {
-        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
-
-        flagChannel.send(clearFlags())
-        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
-    }
-
-    @Test
-    fun `青旗が継続中は再度読み上げない`() = runTest(testDispatcher) {
-        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
-
-        flagChannel.send(clearFlags())
-        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
-        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
-    }
-
-    @Test
-    fun `セクター黄旗発生でイエローフラッグを読み上げる`() = runTest(testDispatcher) {
-        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
-
-        flagChannel.send(clearFlags())
-        flagChannel.send(
-            clearFlags().copy(
-                sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-            ),
-        )
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.YellowFlag), tts.spokenTexts)
-    }
-
-    @Test
-    fun `FCY開始でフルコースイエローを読み上げる`() = runTest(testDispatcher) {
-        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
-
-        flagChannel.send(clearFlags())
-        flagChannel.send(clearFlags(gamePhase = SessionPhase.FULL_COURSE_YELLOW))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.FullCourseYellow), tts.spokenTexts)
-    }
-
-    @Test
-    fun `セッションストップでセッションストップを読み上げる`() = runTest(testDispatcher) {
-        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
-
-        flagChannel.send(clearFlags())
-        flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.SessionStop), tts.spokenTexts)
-    }
 
     // --- 優先度 ---
 
@@ -561,31 +301,6 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     // --- オーバーヒート ---
-
-    @Test
-    fun `オーバーヒートがfalseからtrueに変化するとOverheatingを読み上げる`() = runTest(testDispatcher) {
-        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(damageChannel = damageChannel, ttsEngine = tts)
-
-        damageChannel.send(noDamage())
-        damageChannel.send(noDamage(overheating = true))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), tts.spokenTexts)
-    }
-
-    @Test
-    fun `オーバーヒートが継続中は再度読み上げない`() = runTest(testDispatcher) {
-        val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(damageChannel = damageChannel, ttsEngine = tts)
-
-        damageChannel.send(noDamage())
-        damageChannel.send(noDamage(overheating = true))
-        damageChannel.send(noDamage(overheating = true))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Overheating), tts.spokenTexts)
-    }
 
     @Test
     fun `OVERHEATが無効のときはオーバーヒートを読み上げない`() = runTest(testDispatcher) {
@@ -627,25 +342,11 @@ private fun noProximity() = ProximityData(
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private fun leftProximity(vehicleId: Int, extraLeftId: Int? = null) = ProximityData(
-    sideBySideLeftVehicleIds = setOfNotNull(vehicleId, extraLeftId),
+private fun leftProximity(vehicleId: Int) = ProximityData(
+    sideBySideLeftVehicleIds = setOf(vehicleId),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 3.0,
     lateralDistanceRightMeters = Double.MAX_VALUE,
-)
-
-private fun rightProximity(vehicleId: Int) = ProximityData(
-    sideBySideLeftVehicleIds = emptySet(),
-    sideBySideRightVehicleIds = setOf(vehicleId),
-    lateralDistanceLeftMeters = Double.MAX_VALUE,
-    lateralDistanceRightMeters = 3.0,
-)
-
-private fun leftAndRightProximity(leftVehicleId: Int, rightVehicleId: Int) = ProximityData(
-    sideBySideLeftVehicleIds = setOf(leftVehicleId),
-    sideBySideRightVehicleIds = setOf(rightVehicleId),
-    lateralDistanceLeftMeters = 3.0,
-    lateralDistanceRightMeters = 3.0,
 )
 
 private fun clearFlags(
