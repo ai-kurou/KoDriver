@@ -37,6 +37,7 @@ kotlin {
             dependsOn(commonMain.get())
             dependencies {
                 implementation(libs.androidx.datastore.core)
+                implementation(libs.androidx.room.runtime)
                 implementation(libs.kotlinx.serialization.protobuf)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.sentry)
