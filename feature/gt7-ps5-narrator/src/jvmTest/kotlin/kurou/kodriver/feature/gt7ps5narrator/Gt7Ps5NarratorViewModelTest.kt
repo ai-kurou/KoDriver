@@ -20,12 +20,14 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
@@ -33,6 +35,7 @@ import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -59,6 +62,11 @@ class Gt7Ps5NarratorViewModelTest {
         val fuelThreshold: Int = 3,
     )
 
+    private data class TelemetryLogSettings(
+        val currentTimeMs: () -> Long = { 0L },
+        val repository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
+    )
+
     private fun buildViewModel(
         telemetryChannel: Channel<Gt7Ps5TelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
@@ -66,7 +74,7 @@ class Gt7Ps5NarratorViewModelTest {
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MyBestLap),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         simulator: Simulator? = Simulator.Gt7Ps5,
-        currentTimeMs: () -> Long = { 0L },
+        telemetryLogSettings: TelemetryLogSettings = TelemetryLogSettings(),
     ): Gt7Ps5NarratorViewModel {
         val readoutRepo = FakeReadoutPreferencesRepo(readoutSettings.enabledOverrides, orderOverride)
         return Gt7Ps5NarratorViewModel(
@@ -94,7 +102,8 @@ class Gt7Ps5NarratorViewModelTest {
                 ),
             ),
             ttsEngine = ttsEngine,
-            currentTimeMs = currentTimeMs,
+            saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogSettings.repository),
+            currentTimeMs = telemetryLogSettings.currentTimeMs,
         )
     }
 
@@ -132,6 +141,39 @@ class Gt7Ps5NarratorViewModelTest {
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), tts.spokenTexts)
+    }
+
+    @Test
+    fun `読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            telemetryLogSettings = TelemetryLogSettings(
+                currentTimeMs = { 123_456L },
+                repository = telemetryLogRepository,
+            ),
+        )
+
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+        assertEquals(
+            listOf(
+                TelemetryLog(
+                    createdAt = 123_456L,
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    readoutItemKey = ReadoutItemKey.MyBestLap.value,
+                    telemetryJson =
+                        """{"previous":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
+                            """"gasLevel":0.0,"gasCapacity":100.0},"current":{"lapCount":0,""" +
+                            """"lapsInRace":0,"bestLapTimeMs":59000,"gasLevel":0.0,"gasCapacity":100.0}}""",
+                ),
+            ),
+            telemetryLogRepository.logs.value,
+        )
     }
 
     @Test
@@ -199,6 +241,24 @@ class Gt7Ps5NarratorViewModelTest {
 
         assertEquals(false, tts.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            orderOverride = listOf(ReadoutItemKey.Flag, ReadoutItemKey.MyBestLap),
+            telemetryLogSettings = TelemetryLogSettings(repository = telemetryLogRepository),
+        )
+
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+        assertEquals(emptyList<TelemetryLog>(), telemetryLogRepository.logs.value)
     }
 
     @Test
@@ -344,4 +404,12 @@ private class FakeGt7Ps5RemainingFuelLapsEnabledRepo(
 ) : Gt7Ps5RemainingFuelLapsEnabledRepository {
     override fun observeEnabled(): Flow<Boolean> = MutableStateFlow(enabled)
     override suspend fun saveEnabled(enabled: Boolean) = Unit
+}
+
+private class FakeTelemetryLogRepository : TelemetryLogRepository {
+    val logs = MutableStateFlow(emptyList<TelemetryLog>())
+    override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
+    override suspend fun saveTelemetryLog(log: TelemetryLog) {
+        logs.update { it + log }
+    }
 }

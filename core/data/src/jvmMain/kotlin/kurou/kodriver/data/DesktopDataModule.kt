@@ -1,6 +1,8 @@
 package kurou.kodriver.data
 
+import kurou.kodriver.data.datasource.InMemoryTelemetryLogDao
 import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl
+import kurou.kodriver.data.repository.TelemetryLogRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
@@ -14,6 +16,7 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import org.koin.dsl.module
@@ -60,5 +63,8 @@ val desktopDataModule = module {
     single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
     single<ExitConfirmationPreferencesRepository> {
         createExitConfirmationPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<TelemetryLogRepository> {
+        TelemetryLogRepositoryImpl(InMemoryTelemetryLogDao())
     }
 }
