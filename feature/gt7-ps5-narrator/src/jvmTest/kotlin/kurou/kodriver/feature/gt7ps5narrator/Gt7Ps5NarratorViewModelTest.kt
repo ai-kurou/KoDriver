@@ -197,6 +197,7 @@ class Gt7Ps5NarratorViewModelTest {
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
+        assertEquals(false, tts.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
