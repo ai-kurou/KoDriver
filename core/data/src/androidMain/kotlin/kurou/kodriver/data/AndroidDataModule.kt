@@ -21,6 +21,7 @@ import kurou.kodriver.domain.repository.ServerIpRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
@@ -84,5 +85,8 @@ fun androidDataModule(context: Context) = module {
     }
     single<ExitConfirmationPreferencesRepository> {
         AndroidExitConfirmationPreferencesRepository(context.exitConfirmationDataStore)
+    }
+    single<TelemetryLogRepository> {
+        createTelemetryLogRepository(context = context)
     }
 }

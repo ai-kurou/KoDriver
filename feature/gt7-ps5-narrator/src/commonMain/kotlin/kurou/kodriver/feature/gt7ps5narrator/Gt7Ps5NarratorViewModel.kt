@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
@@ -47,6 +49,7 @@ class Gt7Ps5NarratorViewModel(
     readoutListUseCases: ReadoutListUseCases,
     remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
     private val ttsEngine: TextToSpeechEngine,
+    private val saveTelemetryLog: SaveTelemetryLogUseCase,
     private val determineGt7Ps5NarratorReadout: DetermineGt7Ps5NarratorReadoutUseCase =
         DetermineGt7Ps5NarratorReadoutUseCase(),
     private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
@@ -77,6 +80,7 @@ class Gt7Ps5NarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     private var narratorState = Gt7Ps5NarratorState()
+    private var previousTelemetry: Gt7Ps5TelemetryData? = null
 
     private val gt7TelemetryFlow = selectedSimulator
         .flatMapLatest { simulator ->
@@ -88,6 +92,8 @@ class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val narratorJob = gt7TelemetryFlow
         .onEach { telemetry ->
+            val previous = previousTelemetry
+            val observedAtMs = currentTimeMs()
             val decision = determineGt7Ps5NarratorReadout(
                 state = narratorState,
                 telemetry = telemetry,
@@ -97,22 +103,45 @@ class Gt7Ps5NarratorViewModel(
                     remainingFuelLapsThreshold = fuelThreshold.value,
                     remainingFuelLapsEnabled = remainingFuelLapsEnabled.value,
                 ),
-                observedAtMs = currentTimeMs(),
+                observedAtMs = observedAtMs,
             )
             narratorState = decision.state
-            decision.events.forEach(::speakWithPriority)
+            decision.events.forEach { event ->
+                if (speakWithPriority(event)) {
+                    saveTelemetryLog(
+                        createdAt = observedAtMs,
+                        simulatorId = Simulator.Gt7Ps5.id,
+                        readoutItemKey = event.readoutItemKey.value,
+                        telemetryJson = buildTelemetryLogJson(previous = previous, current = telemetry),
+                    )
+                }
+            }
+            previousTelemetry = telemetry
         }
         .launchIn(viewModelScope)
 
-    private fun speakWithPriority(event: SpeechEvent) {
+    private fun speakWithPriority(event: SpeechEvent): Boolean {
         val order = readoutOrder.value
         val currentKey = ttsEngine.currentReadoutItemKey
         if (currentKey != null) {
             val currentIndex = order.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
             val newIndex = order.indexOf(event.readoutItemKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            if (newIndex >= currentIndex) return
+            if (newIndex >= currentIndex) return false
             ttsEngine.stop()
         }
         ttsEngine.speak(event)
+        return true
     }
 }
+
+private fun buildTelemetryLogJson(previous: Gt7Ps5TelemetryData?, current: Gt7Ps5TelemetryData): String =
+    """{"previous":${previous?.toJson() ?: "null"},"current":${current.toJson()}}"""
+
+private fun Gt7Ps5TelemetryData.toJson(): String =
+    "{" +
+        """"lapCount":$lapCount,""" +
+        """"lapsInRace":$lapsInRace,""" +
+        """"bestLapTimeMs":$bestLapTimeMs,""" +
+        """"gasLevel":$gasLevel,""" +
+        """"gasCapacity":$gasCapacity""" +
+        "}"

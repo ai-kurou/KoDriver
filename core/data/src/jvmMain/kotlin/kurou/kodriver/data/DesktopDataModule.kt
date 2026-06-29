@@ -14,6 +14,7 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import org.koin.dsl.module
@@ -60,5 +61,8 @@ val desktopDataModule = module {
     single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
     single<ExitConfirmationPreferencesRepository> {
         createExitConfirmationPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<TelemetryLogRepository> {
+        createTelemetryLogRepository(directory = kodriverDirectory)
     }
 }
