@@ -1,8 +1,6 @@
 package kurou.kodriver.data
 
-import kurou.kodriver.data.datasource.InMemoryTelemetryLogDao
 import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl
-import kurou.kodriver.data.repository.TelemetryLogRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
@@ -65,6 +63,6 @@ val desktopDataModule = module {
         createExitConfirmationPreferencesRepository(directory = kodriverDirectory)
     }
     single<TelemetryLogRepository> {
-        TelemetryLogRepositoryImpl(InMemoryTelemetryLogDao())
+        createTelemetryLogRepository(directory = kodriverDirectory)
     }
 }

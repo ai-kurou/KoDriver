@@ -2,9 +2,7 @@ package kurou.kodriver.data
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
-import kurou.kodriver.data.datasource.InMemoryTelemetryLogDao
 import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl
-import kurou.kodriver.data.repository.TelemetryLogRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
@@ -89,6 +87,6 @@ fun androidDataModule(context: Context) = module {
         AndroidExitConfirmationPreferencesRepository(context.exitConfirmationDataStore)
     }
     single<TelemetryLogRepository> {
-        TelemetryLogRepositoryImpl(InMemoryTelemetryLogDao())
+        createTelemetryLogRepository(context = context)
     }
 }
