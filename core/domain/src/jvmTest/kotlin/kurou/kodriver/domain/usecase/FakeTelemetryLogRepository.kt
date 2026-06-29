@@ -2,6 +2,7 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 
@@ -13,6 +14,6 @@ internal class FakeTelemetryLogRepository(
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
 
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
-        logs.value += log
+        logs.update { it + log }
     }
 }
