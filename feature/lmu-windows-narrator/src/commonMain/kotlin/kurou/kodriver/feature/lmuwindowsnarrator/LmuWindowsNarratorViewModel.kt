@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -131,7 +132,7 @@ class LmuWindowsNarratorViewModel(
             narratorState = decision.state
             decision.events.forEach { event ->
                 if (speakWithPriority(event)) {
-                    narratorUseCases.saveTelemetryLog(
+                    saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         simulatorId = Simulator.LmuWindows.id,
                         readoutItemKey = event.readoutItemKey.value,
@@ -160,7 +161,7 @@ class LmuWindowsNarratorViewModel(
             narratorState = decision.state
             decision.events.forEach { event ->
                 if (speakWithPriority(event)) {
-                    narratorUseCases.saveTelemetryLog(
+                    saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         simulatorId = Simulator.LmuWindows.id,
                         readoutItemKey = event.readoutItemKey.value,
@@ -189,7 +190,7 @@ class LmuWindowsNarratorViewModel(
             narratorState = decision.state
             decision.events.forEach { event ->
                 if (speakWithPriority(event)) {
-                    narratorUseCases.saveTelemetryLog(
+                    saveTelemetryLogSafely(
                         createdAt = observedAtMs,
                         simulatorId = Simulator.LmuWindows.id,
                         readoutItemKey = event.readoutItemKey.value,
@@ -226,6 +227,26 @@ class LmuWindowsNarratorViewModel(
         }
         ttsEngine.speak(event)
         return true
+    }
+
+    private suspend fun saveTelemetryLogSafely(
+        createdAt: Long,
+        simulatorId: String,
+        readoutItemKey: String,
+        telemetryJson: String,
+    ) {
+        try {
+            narratorUseCases.saveTelemetryLog(
+                createdAt = createdAt,
+                simulatorId = simulatorId,
+                readoutItemKey = readoutItemKey,
+                telemetryJson = telemetryJson,
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。
+        }
     }
 }
 

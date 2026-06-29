@@ -486,6 +486,27 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `ログ保存に失敗しても以後の読み上げは継続する`() = runTest(testDispatcher) {
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            telemetryLogRepository = FakeTelemetryLogRepository(throwOnSave = true),
+        )
+
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
+
+        assertEquals(
+            listOf<SpeechEvent>(SpeechEvent.BlueFlag, SpeechEvent.SessionStop),
+            tts.spokenTexts,
+        )
+    }
+
+    @Test
     fun `オーバーヒート読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val damageChannel = Channel<VehicleDamageData>(Channel.UNLIMITED)
@@ -648,10 +669,13 @@ private class FakeChannelVehicleDamageRepository(
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = stream
 }
 
-private class FakeTelemetryLogRepository : TelemetryLogRepository {
+private class FakeTelemetryLogRepository(
+    private val throwOnSave: Boolean = false,
+) : TelemetryLogRepository {
     val logs = MutableStateFlow(emptyList<TelemetryLog>())
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
+        if (throwOnSave) error("Failed to save telemetry log")
         logs.update { it + log }
     }
 }
