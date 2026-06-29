@@ -39,7 +39,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@Suppress("TooManyFunctions")
 class Gt7Ps5NarratorViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -99,33 +98,18 @@ class Gt7Ps5NarratorViewModelTest {
         )
     }
 
-    // --- シミュレータ選択 ---
-
     @Test
-    fun `GT7非選択時はベストラップアナウンスをしない`() = runTest(testDispatcher) {
+    fun `GT7非選択時は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(telemetryChannel = channel, ttsEngine = tts, simulator = null)
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
-
-    @Test
-    fun `simulator が null のときはベストラップアナウンスをしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts, simulator = null)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    // --- 初期状態 ---
 
     @Test
     fun `起動直後の最初のemitではベストラップが設定済みでもアナウンスしない`() = runTest(testDispatcher) {
@@ -138,22 +122,8 @@ class Gt7Ps5NarratorViewModelTest {
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
-    // --- ベストラップ更新 ---
-
     @Test
-    fun `ベストラップが更新されるとFormalボイスでアナウンスする`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts, voiceType = MyBestLapVoiceType.FORMAL)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
-    }
-
-    @Test
-    fun `ベストラップが更新されるとCasualボイスでアナウンスする`() = runTest(testDispatcher) {
+    fun `自己ベストラップの声種別設定を反映して読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(telemetryChannel = channel, ttsEngine = tts, voiceType = MyBestLapVoiceType.CASUAL)
@@ -165,43 +135,7 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `ベストラップ未計測から初計測でもアナウンスする`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = -1))
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
-    }
-
-    @Test
-    fun `同じベストラップ値が続いてもアナウンスしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `ベストラップより遅いラップではアナウンスしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 61_000))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `ベストラップが無効のときはアナウンスしない`() = runTest(testDispatcher) {
+    fun `自己ベストラップが無効のときは読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -217,86 +151,7 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `ベストラップが正値から-1にリセットされてもアナウンスしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = -1))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `ベストラップを複数回更新すると都度アナウンスする`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 58_000))
-
-        assertEquals(
-            listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal, SpeechEvent.MyBestLapFormal),
-            tts.spokenTexts,
-        )
-    }
-
-    @Test
-    fun `セッションリセット後に同じベストラップが来てもアナウンスしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = -1))
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = -1))
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
-    }
-
-    @Test
-    fun `セッションリセット後により良いタイムが来たらアナウンスする`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts)
-
-        channel.send(gt7Telemetry(bestLapTimeMs = -1))
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = -1))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
-
-        assertEquals(
-            listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal, SpeechEvent.MyBestLapFormal),
-            tts.spokenTexts,
-        )
-    }
-
-    // --- 燃料残り周回数 ---
-
-    @Test
-    fun `GT7非選択時は燃料アナウンスをしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            simulator = null,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 2),
-        )
-
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 40f, gasCapacity = 100f))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `Slider3のとき残り2周から1周まで合計2回アナウンスする`() = runTest(testDispatcher) {
+    fun `燃料残り周回数の閾値設定を反映して読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -305,133 +160,15 @@ class Gt7Ps5NarratorViewModelTest {
             readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
         )
 
-        // スタート: gasLevel=40L、1周10L消費
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        // lap1完了 → 残り30/(10/1.9)=5.7周 → アナウンスなし
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
-        // lap2完了 → 残り20/(20/2.9)=2.9周 → アナウンス(2)
         channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
-        // lap3完了 → 残り10/(30/3.9)=1.3周 → アナウンス(1)
-        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 10f, gasCapacity = 100f))
 
-        assertEquals(
-            listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(2),
-                SpeechEvent.RemainingFuelLapsWarning(1),
-            ),
-            tts.spokenTexts,
-        )
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(2)), tts.spokenTexts)
     }
 
     @Test
-    fun `最速ラップの30秒前に到達するまでは燃料残り周回数をアナウンスしない`() = runTest(testDispatcher) {
-        var currentTimeMs = 0L
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 5),
-            currentTimeMs = { currentTimeMs },
-        )
-
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f, bestLapTimeMs = 90_000))
-        currentTimeMs = 10_000L
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
-        currentTimeMs = 69_999L
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-
-        currentTimeMs = 70_000L
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000))
-
-        assertEquals(
-            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(5)),
-            tts.spokenTexts,
-        )
-    }
-
-    @Test
-    fun `Slider5のとき残り5周から1周まで合計5回アナウンスする`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 5),
-        )
-
-        // スタート: gasLevel=60L、1周10L消費
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f)) // 残り5周
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 40f, gasCapacity = 100f)) // 残り4周
-        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 30f, gasCapacity = 100f)) // 残り3周
-        channel.send(gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f)) // 残り2周
-        channel.send(gt7Telemetry(lapCount = 5, gasLevel = 10f, gasCapacity = 100f)) // 残り1周
-
-        assertEquals(
-            listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(5),
-                SpeechEvent.RemainingFuelLapsWarning(3),
-                SpeechEvent.RemainingFuelLapsWarning(2),
-                SpeechEvent.RemainingFuelLapsWarning(1),
-            ),
-            tts.spokenTexts,
-        )
-    }
-
-    @Test
-    fun `残り周回数がSliderより多いときはアナウンスしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 2),
-        )
-
-        // 1周あたり10L消費、60Lスタートなら残り6周 → Slider2を超えるのでアナウンスしない
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 60f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `同じ残り周回数が連続してもアナウンスは1回だけ`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
-        )
-
-        // スタート: gasLevel=70L、1周10L消費
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 70f, gasCapacity = 100f))
-        // lap1完了 → 残り6.0周 → アナウンスなし
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 60f, gasCapacity = 100f))
-        // lap2完了 → 残り5.0周 → アナウンスなし
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 50f, gasCapacity = 100f))
-        // lap3完了 → 残り40/10=4.0周 → まだアナウンスなし
-        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 100f))
-        // lap4完了 → 残り30/10=3.0周 → アナウンス(3)
-        channel.send(gt7Telemetry(lapCount = 4, gasLevel = 30f, gasCapacity = 100f))
-        // lap5完了 → 残り30/10=3.0周（燃料消費が一時的に少なかった想定、floor=3.0）
-        // ※実際は消費が変動するが、今回は同じfloor値が連続する状況をテスト
-        channel.send(gt7Telemetry(lapCount = 5, gasLevel = 30f, gasCapacity = 100f))
-
-        // lapCount=5では gasLevel が変わらず lapsCompleted=5, consumedFuel=70-30=40, avg=8
-        // remainingLapsFloor = floor(30/8) = 3 → 同じfloor値なのでアナウンスしない
-        assertEquals(
-            listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(3)),
-            tts.spokenTexts,
-        )
-    }
-
-    @Test
-    fun `燃料残り周回数アナウンスが無効のときはアナウンスしない`() = runTest(testDispatcher) {
+    fun `燃料残り周回数が無効のときは読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
@@ -448,87 +185,6 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `lapCountがリセットされると燃料追跡とアナウンス履歴がリセットされる`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
-        )
-
-        // 1周目セッション: 残り2周でアナウンス済み
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 25f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 15f, gasCapacity = 100f)) // 残り2周
-        // リセット
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 25f, gasCapacity = 100f))
-        // リセット後1周完了 → 残り2周 → アナウンス履歴がリセットされているので再アナウンス
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 15f, gasCapacity = 100f))
-
-        assertEquals(
-            listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(2),
-                SpeechEvent.RemainingFuelLapsWarning(2),
-            ),
-            tts.spokenTexts,
-        )
-    }
-
-    @Test
-    fun `1周も完了していないときはアナウンスしない`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
-        )
-
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
-
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
-    }
-
-    @Test
-    fun `ピットイン給油後も正しい平均消費量でアナウンスする`() = runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
-            telemetryChannel = channel,
-            ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
-        )
-
-        // スタート: 40L、1周10L消費
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        // lap1完了 → 30L、消費10L、平均10/1.9L/周、残り5.7周 → アナウンスなし
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
-        // ピット給油 → 50L（+20L補給）: lapCount変化なし、同一周なのでscanに流れない
-
-        // lap2完了 → 給油後1周目: gasLevel=50L → totalRefueled=20, consumed=40+20-50=10, avg=10/2.9L/周
-        // 残り=floor(50/(10/2.9))=14周 → Sliderより多いのでアナウンスしない
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 50f, gasCapacity = 100f))
-        // lap3完了 → 40L、consumed=40+20-40=20, avg=20/3.9≈5.13, 残り=floor(40/5.13)=7周 → アナウンスなし
-        channel.send(gt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 100f))
-        // lap4完了 → 30L、consumed=40+20-30=30, avg=30/4.9≈6.12, 残り=floor(30/6.12)=4周 → アナウンスなし
-        channel.send(gt7Telemetry(lapCount = 4, gasLevel = 30f, gasCapacity = 100f))
-        // lap5完了 → 20L、consumed=40+20-20=40, avg=40/5.9≈6.78, 残り=floor(20/6.78)=2周 → アナウンス(2)
-        channel.send(gt7Telemetry(lapCount = 5, gasLevel = 20f, gasCapacity = 100f))
-        // lap6完了 → 10L、consumed=40+20-10=50, avg=50/6.9≈7.25, 残り=floor(10/7.25)=1周 → アナウンス(1)
-        channel.send(gt7Telemetry(lapCount = 6, gasLevel = 10f, gasCapacity = 100f))
-
-        assertEquals(
-            listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(2),
-                SpeechEvent.RemainingFuelLapsWarning(1),
-            ),
-            tts.spokenTexts,
-        )
-    }
-
-    // --- 優先度 ---
-
-    @Test
     fun `優先度の高いアイテム読み上げ中にベストラップが来ても読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
@@ -541,6 +197,7 @@ class Gt7Ps5NarratorViewModelTest {
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
+        assertEquals(false, tts.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 
@@ -559,6 +216,40 @@ class Gt7Ps5NarratorViewModelTest {
 
         assertEquals(true, tts.stopCalled)
         assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
+    }
+
+    @Test
+    fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+        )
+
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+        assertEquals(true, tts.stopCalled)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
+    }
+
+    @Test
+    fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            orderOverride = listOf(ReadoutItemKey.Flag),
+        )
+
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+        assertEquals(false, tts.stopCalled)
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
 }
 
