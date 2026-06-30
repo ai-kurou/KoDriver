@@ -14,10 +14,19 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kodriver.app.shared.generated.resources.Res
 import kodriver.app.shared.generated.resources.banner_simulator_disconnected
+import kodriver.app.shared.generated.resources.nav_log
 import kodriver.app.shared.generated.resources.nav_more
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
+import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
+import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
+import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import org.jetbrains.compose.resources.stringResource
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -29,16 +38,31 @@ import org.koin.core.context.stopKoin as koinStop
 class AppScreenScreenshotTest {
 
     companion object {
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val testDispatcher = UnconfinedTestDispatcher()
+
+        @OptIn(ExperimentalCoroutinesApi::class)
         @BeforeClass
         @JvmStatic
         fun setUpKoin() {
-            startKoin { modules(listOf(fakeReadoutListModule, fakeLmuWindowsNarratorModule) + appModules) }
+            Dispatchers.setMain(testDispatcher)
+            startKoin {
+                modules(
+                    listOf(
+                        fakeReadoutListModule,
+                        fakeLmuWindowsNarratorModule,
+                        fakeTelemetryLogListModule,
+                    ) + appModules,
+                )
+            }
         }
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         @AfterClass
         @JvmStatic
         fun tearDownKoin() {
             koinStop()
+            Dispatchers.resetMain()
         }
     }
 
@@ -81,13 +105,42 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = twoPaneDirective)
+                    otherContent = {
+                        OtherContent(
+                            uiState = OtherListUiState(),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            scaffoldDirective = twoPaneDirective,
+                        )
                     },
                 )
             }
         }
         composeRule.onNodeWithText(navMore).performClick()
+        composeRule.waitForIdle()
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `NavigationDrawer ログタブ`() {
+        var navLog by mutableStateOf("")
+
+        composeRule.setContent {
+            navLog = stringResource(Res.string.nav_log)
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+            Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationDrawer,
+                    bannerUiState = ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = bannerMessage,
+                    ),
+                    hasAppUpdate = true,
+                    telemetryLogContent = { TelemetryLogContent() },
+                )
+            }
+        }
+        composeRule.onNodeWithText(navLog).performClick()
         composeRule.waitForIdle()
         composeRule.onRoot().captureRoboImage()
     }
@@ -128,13 +181,42 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
+                    otherContent = {
+                        OtherContent(
+                            uiState = OtherListUiState(),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            scaffoldDirective = singlePaneDirective,
+                        )
                     },
                 )
             }
         }
         composeRule.onNodeWithText(navMore).performClick()
+        composeRule.waitForIdle()
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `NavigationRail ログタブ`() {
+        var navLog by mutableStateOf("")
+
+        composeRule.setContent {
+            navLog = stringResource(Res.string.nav_log)
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationRail,
+                    bannerUiState = ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = bannerMessage,
+                    ),
+                    hasAppUpdate = true,
+                    telemetryLogContent = { TelemetryLogContent() },
+                )
+            }
+        }
+        composeRule.onNodeWithText(navLog).performClick()
         composeRule.waitForIdle()
         composeRule.onRoot().captureRoboImage()
     }
@@ -161,6 +243,30 @@ class AppScreenScreenshotTest {
     }
 
     @Test
+    fun `NavigationBar ログタブ`() {
+        var navLog by mutableStateOf("")
+
+        composeRule.setContent {
+            navLog = stringResource(Res.string.nav_log)
+            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+            Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                AppScreenContent(
+                    layoutType = NavigationSuiteType.NavigationBar,
+                    bannerUiState = ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = bannerMessage,
+                    ),
+                    hasAppUpdate = true,
+                    telemetryLogContent = { TelemetryLogContent() },
+                )
+            }
+        }
+        composeRule.onNodeWithText(navLog).performClick()
+        composeRule.waitForIdle()
+        composeRule.onRoot().captureRoboImage()
+    }
+
+    @Test
     fun `NavigationBar その他タブ`() {
         var navMore by mutableStateOf("")
 
@@ -175,8 +281,13 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
+                    otherContent = {
+                        OtherContent(
+                            uiState = OtherListUiState(),
+                            onItemSelected = {},
+                            onClearSelectedItem = {},
+                            scaffoldDirective = singlePaneDirective,
+                        )
                     },
                 )
             }
