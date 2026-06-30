@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 
 internal class TelemetryLogDetailViewModel(
@@ -41,25 +40,5 @@ internal class TelemetryLogDetailViewModel(
 
     fun setLogId(id: Long) {
         selectedLogId.update { id }
-    }
-}
-
-private fun TelemetryLogDetail?.toItems(): List<TelemetryLogDetailItemUiState> {
-    if (this == null) return emptyList()
-    return buildList {
-        add(
-            TelemetryLogDetailItemUiState(
-                title = "選択したログ",
-                telemetryJson = current.telemetryJson,
-            ),
-        )
-        previous?.let { log ->
-            add(
-                TelemetryLogDetailItemUiState(
-                    title = "一つ前のログ",
-                    telemetryJson = log.telemetryJson,
-                ),
-            )
-        }
     }
 }

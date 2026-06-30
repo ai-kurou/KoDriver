@@ -2,6 +2,9 @@ package kurou.kodriver.feature.telemetrylogdetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
@@ -17,22 +20,26 @@ class TelemetryLogDetailContentScreenshotTest {
     @Test
     fun `デフォルト`() {
         rule.setContent {
-            Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                TelemetryLogDetailContent(
-                    uiState = TelemetryLogDetailUiState(
-                        logId = 2L,
-                        items = listOf(
-                            TelemetryLogDetailItemUiState(
-                                title = "選択したログ",
-                                telemetryJson = """{"speed":120,"gear":4}""",
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        TelemetryLogDetailContent(
+                            uiState = TelemetryLogDetailUiState(
+                                logId = 2L,
+                                items = listOf(
+                                    TelemetryLogDetailItemUiState(
+                                        title = "選択したログ",
+                                        telemetryJson = """{"speed":120,"gear":4}""",
+                                    ),
+                                    TelemetryLogDetailItemUiState(
+                                        title = "一つ前のログ",
+                                        telemetryJson = """{"speed":118,"gear":4}""",
+                                    ),
+                                ),
                             ),
-                            TelemetryLogDetailItemUiState(
-                                title = "一つ前のログ",
-                                telemetryJson = """{"speed":118,"gear":4}""",
-                            ),
-                        ),
-                    ),
-                )
+                        )
+                    }
+                }
             }
         }
 

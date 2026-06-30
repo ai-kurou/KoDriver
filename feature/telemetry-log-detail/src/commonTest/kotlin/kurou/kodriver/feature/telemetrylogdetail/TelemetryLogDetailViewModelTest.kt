@@ -2,17 +2,12 @@ package kurou.kodriver.feature.telemetrylogdetail
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -22,11 +17,15 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class TelemetryLogDetailViewModelTest {
 
-    private val dispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private lateinit var repository: FakeTelemetryLogRepository
+    private lateinit var viewModel: TelemetryLogDetailViewModel
 
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(dispatcher)
+        Dispatchers.setMain(testDispatcher)
+        repository = FakeTelemetryLogRepository()
+        viewModel = createViewModel(repository)
     }
 
     @AfterTest
@@ -35,16 +34,12 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `uiStateの初期値は空の項目を持つ`() = runTest(dispatcher) {
-        val viewModel = createViewModel()
-
+    fun `uiStateの初期値は空の項目を持つ`() = runTest {
         assertEquals(TelemetryLogDetailUiState(), viewModel.uiState.value)
     }
 
     @Test
-    fun `setLogIdでログIDを保持する`() = runTest(dispatcher) {
-        val viewModel = createViewModel()
-
+    fun `setLogIdでログIDを保持する`() = runTest {
         viewModel.setLogId(10)
 
         assertEquals(
@@ -54,10 +49,7 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `選択したログと一つ前のログのJSONを表示項目に変換する`() = runTest(dispatcher) {
-        val repository = FakeTelemetryLogRepository()
-        val viewModel = createViewModel(repository)
-
+    fun `選択したログと一つ前のログのJSONを表示項目に変換する`() = runTest {
         repository.emit(
             listOf(
                 telemetryLog(id = 1L, createdAt = 100L, telemetryJson = """{"speed":118}"""),
@@ -85,13 +77,12 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `ログの更新を観測する`() = runTest(dispatcher) {
-        val repository = FakeTelemetryLogRepository(
-            initialLogs = listOf(
+    fun `ログの更新を観測する`() = runTest {
+        repository.emit(
+            listOf(
                 telemetryLog(id = 1L, createdAt = 100L, telemetryJson = """{"speed":118}"""),
             ),
         )
-        val viewModel = createViewModel(repository)
 
         viewModel.setLogId(1L)
         assertEquals(
@@ -116,9 +107,7 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `選択したログが存在しない場合は項目を空にする`() = runTest(dispatcher) {
-        val viewModel = createViewModel()
-
+    fun `選択したログが存在しない場合は項目を空にする`() = runTest {
         viewModel.setLogId(999L)
 
         assertEquals(
@@ -129,7 +118,7 @@ class TelemetryLogDetailViewModelTest {
 }
 
 private fun createViewModel(
-    repository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
+    repository: FakeTelemetryLogRepository,
 ) = TelemetryLogDetailViewModel(
     observeTelemetryLogDetail = ObserveTelemetryLogDetailUseCase(repository),
 )
@@ -145,34 +134,3 @@ private fun telemetryLog(
     readoutItemKey = "flag",
     telemetryJson = telemetryJson,
 )
-
-private class FakeTelemetryLogRepository(
-    initialLogs: List<TelemetryLog> = emptyList(),
-) : TelemetryLogRepository {
-    private val logs = MutableStateFlow(initialLogs)
-
-    override fun observeTelemetryLogs() = logs
-
-    override fun observeTelemetryLogDetail(id: Long) = logs.map { logs ->
-        val sortedLogs = logs.sortedWith(
-            compareByDescending<TelemetryLog> { it.createdAt }.thenByDescending { it.id },
-        )
-        val index = sortedLogs.indexOfFirst { it.id == id }
-        if (index == -1) {
-            null
-        } else {
-            TelemetryLogDetail(
-                current = sortedLogs[index],
-                previous = sortedLogs.getOrNull(index + 1),
-            )
-        }
-    }
-
-    override suspend fun saveTelemetryLog(log: TelemetryLog) {
-        emit(logs.value + log)
-    }
-
-    fun emit(value: List<TelemetryLog>) {
-        logs.update { value }
-    }
-}
