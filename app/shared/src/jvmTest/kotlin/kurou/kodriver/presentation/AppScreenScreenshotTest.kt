@@ -21,12 +21,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
+import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
+import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
 import org.jetbrains.compose.resources.stringResource
 import org.junit.AfterClass
 import org.junit.BeforeClass
@@ -50,9 +51,10 @@ class AppScreenScreenshotTest {
                 modules(
                     listOf(
                         fakeReadoutListModule,
-                        fakeLmuWindowsNarratorModule,
                         fakeTelemetryLogListModule,
-                    ) + appModules,
+                        readoutListModule,
+                        telemetryLogListModule,
+                    ),
                 )
             }
         }
