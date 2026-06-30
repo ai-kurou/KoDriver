@@ -1,4 +1,5 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":feature:telemetry-log-list"
   ":feature:telemetry-log-list" -> ":core:domain"
 }

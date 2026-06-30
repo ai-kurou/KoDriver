@@ -75,6 +75,7 @@ import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
+import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -116,11 +117,12 @@ private fun handleTabClick(
 private fun AppDestinationContent(
     destination: AppDestination,
     readoutContent: @Composable () -> Unit,
+    telemetryLogContent: @Composable () -> Unit,
     otherContent: @Composable () -> Unit,
 ) {
     when (destination) {
         AppDestination.Readout -> readoutContent()
-        AppDestination.Log -> Box(modifier = Modifier.fillMaxSize())
+        AppDestination.Log -> telemetryLogContent()
         AppDestination.More -> otherContent()
     }
 }
@@ -202,6 +204,9 @@ fun AppScreen(
             },
         )
     },
+    telemetryLogContent: @Composable () -> Unit = {
+        TelemetryLogContent()
+    },
     otherContent: @Composable () -> Unit = {
         DefaultOtherContent(backHandler = backHandler)
     },
@@ -280,6 +285,7 @@ fun AppScreen(
         onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
         onOtherTabReselected = otherListViewModel::clearSelectedItem,
         readoutContent = readoutContent,
+        telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
     )
 }
@@ -318,6 +324,7 @@ internal fun AppScreenContent(
     onReadoutTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable () -> Unit = {},
+    telemetryLogContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
@@ -427,6 +434,7 @@ internal fun AppScreenContent(
                         AppDestinationContent(
                             destination = destination,
                             readoutContent = readoutContent,
+                            telemetryLogContent = telemetryLogContent,
                             otherContent = otherContent,
                         )
                     }

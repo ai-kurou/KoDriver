@@ -63,6 +63,7 @@ kotlin {
             implementation(projects.feature.otherReadoutStartSoundDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.otherKeepScreenOnDetail)
+            implementation(projects.feature.telemetryLogList)
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuWindowsReadoutFlagDetail)
