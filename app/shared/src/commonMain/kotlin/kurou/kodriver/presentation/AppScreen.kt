@@ -75,6 +75,7 @@ import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
+import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -205,7 +206,11 @@ fun AppScreen(
         )
     },
     telemetryLogContent: @Composable () -> Unit = {
-        TelemetryLogContent()
+        TelemetryLogContent(
+            detailContent = { id ->
+                TelemetryLogDetailContent(id = id)
+            },
+        )
     },
     otherContent: @Composable () -> Unit = {
         DefaultOtherContent(backHandler = backHandler)

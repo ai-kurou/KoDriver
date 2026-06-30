@@ -18,6 +18,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TelemetryLogListViewModelTest {
@@ -72,6 +73,49 @@ class TelemetryLogListViewModelTest {
             ),
         )
         assertEquals(listOf(2L, 1L), viewModel.uiState.first { it.logs.firstOrNull()?.id == 2L }.logs.map { it.id })
+    }
+
+    @Test
+    fun `selectLogで選択したログIDを保持する`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+        )
+
+        repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
+        viewModel.selectLog(1)
+
+        assertEquals(1L, viewModel.uiState.first { it.selectedLogId == 1L }.selectedLogId)
+    }
+
+    @Test
+    fun `clearSelectedLogで選択状態を解除する`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+        )
+
+        repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
+        viewModel.selectLog(1)
+        viewModel.uiState.first { it.selectedLogId == 1L }
+        viewModel.clearSelectedLog()
+
+        assertNull(viewModel.uiState.first { it.selectedLogId == null }.selectedLogId)
+    }
+
+    @Test
+    fun `選択中のログが一覧から消えた場合は選択状態を解除する`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+        )
+
+        repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
+        viewModel.selectLog(1)
+        viewModel.uiState.first { it.selectedLogId == 1L }
+        repository.emit(emptyList())
+
+        assertNull(viewModel.uiState.first { it.logs.isEmpty() }.selectedLogId)
     }
 }
 
