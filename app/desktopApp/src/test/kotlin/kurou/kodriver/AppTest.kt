@@ -18,6 +18,7 @@ import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
+import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
 import org.junit.AfterClass
@@ -43,6 +44,7 @@ class AppTest {
                         gt7Ps5DataModule,
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
+                        fakeTelemetryLogListModule,
                     ) + appModules,
                 )
             }
@@ -111,6 +113,15 @@ class AppTest {
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         clickItem("ライセンス")
+    }
+
+    @Test
+    fun `ログタブを表示する`() {
+        setContent()
+
+        clickItem("ログ")
+        waitUntilDisplayed("ログはまだありません")
+        waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
     }
 
     private fun selectSimulator(simulatorName: String) {

@@ -70,6 +70,13 @@ class MainActivityTest {
         clickItemAndNavigateBack("ライセンス")
     }
 
+    @Test
+    fun `ログタブを表示する`() {
+        clickItem("ログ")
+        waitUntilDisplayed("ログはまだありません")
+        waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
+    }
+
     private fun selectSimulator(simulatorName: String) {
         composeTestRule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         composeTestRule.waitForIdle()

@@ -15,15 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.TelemetryLog
-
-internal const val TELEMETRY_LOG_LIST_PANE_TEST_TAG = "telemetry_log_list_pane"
-internal const val TELEMETRY_LOG_EMPTY_STATE_TEST_TAG = "telemetry_log_empty_state"
 
 @Composable
 internal fun TelemetryLogListPane(
@@ -32,9 +28,7 @@ internal fun TelemetryLogListPane(
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
-            modifier = modifier
-                .fillMaxSize()
-                .testTag(TELEMETRY_LOG_LIST_PANE_TEST_TAG),
+            modifier = modifier.fillMaxSize(),
         )
         return
     }
@@ -42,8 +36,7 @@ internal fun TelemetryLogListPane(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(vertical = 8.dp)
-            .testTag(TELEMETRY_LOG_LIST_PANE_TEST_TAG),
+            .padding(vertical = 8.dp),
     ) {
         items(
             items = uiState.logs,
@@ -66,7 +59,6 @@ private fun TelemetryLogEmptyState(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.testTag(TELEMETRY_LOG_EMPTY_STATE_TEST_TAG),
         ) {
             Text(
                 text = "ログはまだありません",
