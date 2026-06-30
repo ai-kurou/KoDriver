@@ -23,6 +23,7 @@ digraph G {
   ":app:shared" -> ":feature:other-volume-detail"
   ":app:shared" -> ":feature:other-keep-screen-on-detail"
   ":app:shared" -> ":feature:telemetry-log-list"
+  ":app:shared" -> ":feature:telemetry-log-detail"
   ":app:shared" -> ":feature:readout-list"
   ":app:shared" -> ":feature:lmu-windows-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:lmu-windows-readout-flag-detail"
