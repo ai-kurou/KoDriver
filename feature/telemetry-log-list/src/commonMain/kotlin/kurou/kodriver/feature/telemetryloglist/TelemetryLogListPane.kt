@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import kurou.kodriver.domain.model.TelemetryLog
 internal fun TelemetryLogListPane(
     uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
     modifier: Modifier = Modifier,
+    onLogClick: (Long) -> Unit = {},
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
@@ -42,7 +44,10 @@ internal fun TelemetryLogListPane(
             items = uiState.logs,
             key = { it.id },
         ) { log ->
-            TelemetryLogListItem(log = log)
+            TelemetryLogListItem(
+                log = log,
+                onClick = { onLogClick(log.id) },
+            )
             HorizontalDivider()
         }
     }
@@ -80,6 +85,7 @@ private fun TelemetryLogEmptyState(
 private fun TelemetryLogListItem(
     log: TelemetryLog,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     ListItem(
         headlineContent = {
@@ -102,7 +108,9 @@ private fun TelemetryLogListItem(
                 style = MaterialTheme.typography.labelMedium,
             )
         },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
     )
 }
 

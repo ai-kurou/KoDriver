@@ -12,11 +12,13 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.layout.rememberPaneExpansionState
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.domain.model.TelemetryLog
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -25,13 +27,16 @@ import org.koin.compose.viewmodel.koinViewModel
 fun TelemetryLogContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    detailContent: @Composable (Long) -> Unit = {},
 ) {
     val viewModel = koinViewModel<TelemetryLogListViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     TelemetryLogContentScaffold(
         uiState = uiState,
+        onLogSelected = viewModel::selectLog,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
+        detailContent = detailContent,
     )
 }
 
@@ -39,17 +44,43 @@ fun TelemetryLogContent(
 @Composable
 internal fun TelemetryLogContentScaffold(
     uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
+    onLogSelected: (Long) -> Unit = {},
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+    detailContent: @Composable (Long) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = scaffoldDirective.copy(maxHorizontalPartitions = 1),
-        initialDestinationHistory = listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List)),
+        scaffoldDirective = when {
+            uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 ->
+                scaffoldDirective.copy(maxHorizontalPartitions = 1)
+            uiState.selectedLogId != null &&
+                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
+                scaffoldDirective.copy(maxHorizontalPartitions = 2)
+            else -> scaffoldDirective
+        },
+        initialDestinationHistory = if (uiState.selectedLogId != null) {
+            listOf(
+                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+            )
+        } else {
+            listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+        },
     )
     val paneExpansionState = rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,
     )
+
+    LaunchedEffect(uiState.selectedLogId) {
+        navigator.navigateTo(
+            if (uiState.selectedLogId != null)
+                ListDetailPaneScaffoldRole.Detail
+            else
+                ListDetailPaneScaffoldRole.List,
+        )
+    }
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
@@ -58,9 +89,15 @@ internal fun TelemetryLogContentScaffold(
         paneExpansionDragHandle = { VerticalDivider() },
         modifier = modifier,
         listPane = {
-            TelemetryLogListPane(uiState = uiState)
+            TelemetryLogListPane(
+                uiState = uiState,
+                onLogClick = onLogSelected,
+            )
         },
         detailPane = {
+            uiState.selectedLogId?.let { selectedLogId ->
+                detailContent(selectedLogId)
+            }
         },
     )
 }

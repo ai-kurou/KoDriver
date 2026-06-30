@@ -10,4 +10,13 @@ class TelemetryLogDetailViewModelTest {
 
         assertEquals(TelemetryLogDetailUiState(), viewModel.uiState.value)
     }
+
+    @Test
+    fun `setLogIdでログIDを保持する`() {
+        val viewModel = TelemetryLogDetailViewModel()
+
+        viewModel.setLogId(10)
+
+        assertEquals(TelemetryLogDetailUiState(logId = 10), viewModel.uiState.value)
+    }
 }
