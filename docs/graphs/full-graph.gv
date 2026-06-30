@@ -62,4 +62,5 @@ digraph G {
   ":feature:other-volume-detail" -> ":core:designsystem"
   ":feature:readout-list" -> ":core:domain"
   ":feature:server-connection" -> ":core:domain"
+  ":feature:telemetry-log-list" -> ":core:domain"
 }
