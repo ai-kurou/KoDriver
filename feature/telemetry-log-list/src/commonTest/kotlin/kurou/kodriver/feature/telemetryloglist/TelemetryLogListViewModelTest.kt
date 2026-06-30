@@ -4,12 +4,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kotlin.test.AfterTest
@@ -88,6 +90,11 @@ private class FakeTelemetryLogRepository : TelemetryLogRepository {
     private val logs = MutableStateFlow(emptyList<TelemetryLog>())
 
     override fun observeTelemetryLogs() = logs
+
+    override fun observeTelemetryLogDetail(id: Long) = logs.map { logs ->
+        val current = logs.firstOrNull { it.id == id } ?: return@map null
+        TelemetryLogDetail(current = current, previous = null)
+    }
 
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
         emit(logs.value + log)

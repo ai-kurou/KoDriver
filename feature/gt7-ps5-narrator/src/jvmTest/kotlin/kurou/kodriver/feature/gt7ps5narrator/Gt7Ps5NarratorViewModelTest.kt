@@ -7,6 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
@@ -409,6 +411,12 @@ private class FakeGt7Ps5RemainingFuelLapsEnabledRepo(
 private class FakeTelemetryLogRepository : TelemetryLogRepository {
     val logs = MutableStateFlow(emptyList<TelemetryLog>())
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
+    override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> =
+        logs.map { logs ->
+            val current = logs.firstOrNull { it.id == id } ?: return@map null
+            TelemetryLogDetail(current = current, previous = null)
+        }
+
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
         logs.update { it + log }
     }

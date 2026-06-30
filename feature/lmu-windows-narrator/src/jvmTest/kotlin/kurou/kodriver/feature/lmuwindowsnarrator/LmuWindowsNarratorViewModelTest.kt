@@ -5,6 +5,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -28,6 +29,7 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.model.TimingData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -674,6 +676,12 @@ private class FakeTelemetryLogRepository(
 ) : TelemetryLogRepository {
     val logs = MutableStateFlow(emptyList<TelemetryLog>())
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
+    override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> =
+        logs.map { logs ->
+            val current = logs.firstOrNull { it.id == id } ?: return@map null
+            TelemetryLogDetail(current = current, previous = null)
+        }
+
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
         if (throwOnSave) error("Failed to save telemetry log")
         logs.update { it + log }
