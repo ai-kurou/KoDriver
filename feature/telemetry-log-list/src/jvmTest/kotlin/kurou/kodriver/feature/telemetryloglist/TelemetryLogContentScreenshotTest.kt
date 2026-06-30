@@ -34,4 +34,21 @@ class TelemetryLogContentScreenshotTest {
 
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `空状態`() {
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                        TelemetryLogContentScaffold(
+                            scaffoldDirective = twoPaneDirective,
+                        )
+                    }
+                }
+            }
+        }
+
+        rule.onRoot().captureRoboImage()
+    }
 }
