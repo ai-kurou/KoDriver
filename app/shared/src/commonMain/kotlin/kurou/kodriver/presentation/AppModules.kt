@@ -19,6 +19,7 @@ import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.serverconnection.serverConnectionModule
+import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
 import org.koin.core.module.Module
 
 val appModules: List<Module> = listOf(
@@ -36,6 +37,7 @@ val appModules: List<Module> = listOf(
     otherConsoleIpDetailModule,
     otherVolumeDetailModule,
     readoutListModule,
+    telemetryLogListModule,
     lmuReadoutVehicleApproachDetailModule,
     lmuWindowsReadoutFlagDetailModule,
     lmuWindowsReadoutVehicleDamageDetailModule,
