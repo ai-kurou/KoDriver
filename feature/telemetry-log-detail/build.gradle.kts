@@ -18,6 +18,12 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutinesTest)
         }
+        jvmTest.dependencies {
+            implementation(libs.compose.uiTest)
+            implementation(libs.compose.uiTestJunit4)
+            implementation(libs.kotlin.testJunit)
+            implementation(compose.desktop.currentOs)
+        }
     }
 }
 
