@@ -1,5 +1,5 @@
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
@@ -15,6 +15,10 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.material3.adaptive.layout)
             implementation(libs.compose.material3.adaptive.navigation)
+            implementation(libs.androidx.lifecycle.runtimeCompose)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlinx.coroutinesTest)
         }
         jvmTest.dependencies {
             implementation(libs.compose.uiTest)
