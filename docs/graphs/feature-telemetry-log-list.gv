@@ -1,0 +1,4 @@
+digraph G {
+  rankdir=TB
+  ":feature:telemetry-log-list" -> ":core:domain"
+}
