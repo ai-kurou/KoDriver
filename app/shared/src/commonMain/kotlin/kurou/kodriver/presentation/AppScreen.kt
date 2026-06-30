@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Badge
@@ -50,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.nav_log
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
@@ -103,22 +105,38 @@ private fun handleTabClick(
     if (currentDestination == dest) {
         when (dest) {
             AppDestination.Readout -> onReadoutTabReselected()
+            AppDestination.Log -> Unit
             AppDestination.More -> onOtherTabReselected()
         }
     }
     setCurrentDestination(dest)
 }
 
+@Composable
+private fun AppDestinationContent(
+    destination: AppDestination,
+    readoutContent: @Composable () -> Unit,
+    otherContent: @Composable () -> Unit,
+) {
+    when (destination) {
+        AppDestination.Readout -> readoutContent()
+        AppDestination.Log -> Box(modifier = Modifier.fillMaxSize())
+        AppDestination.More -> otherContent()
+    }
+}
+
 private enum class AppDestination(
     val icon: ImageVector,
 ) {
     Readout(Icons.Default.HeadsetMic),
+    Log(Icons.Default.Description),
     More(Icons.Default.MoreHoriz),
 }
 
 @Composable
 private fun AppDestination.label(): String = when (this) {
     AppDestination.Readout -> stringResource(Res.string.nav_readout)
+    AppDestination.Log -> stringResource(Res.string.nav_log)
     AppDestination.More -> stringResource(Res.string.nav_more)
 }
 
@@ -406,10 +424,11 @@ internal fun AppScreenContent(
                         transitionSpec = { fadeIn() togetherWith fadeOut() },
                         modifier = Modifier.weight(1f),
                     ) { destination ->
-                        when (destination) {
-                            AppDestination.Readout -> readoutContent()
-                            AppDestination.More -> otherContent()
-                        }
+                        AppDestinationContent(
+                            destination = destination,
+                            readoutContent = readoutContent,
+                            otherContent = otherContent,
+                        )
                     }
                 }
             }
