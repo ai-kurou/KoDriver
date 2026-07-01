@@ -5,9 +5,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
 
@@ -56,4 +60,41 @@ class TelemetryLogContentTest {
 
         rule.onNodeWithText("selected: 2").assertExists()
     }
+
+    @Test
+    fun `先頭から離れているときに新しいログが追加されると先頭へ戻るボタンを表示する`() {
+        val logs = mutableStateOf(createTelemetryLogs())
+
+        rule.setContent {
+            TelemetryLogListPane(
+                uiState = TelemetryLogListUiState(logs = logs.value),
+            )
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("log_20"))
+        rule.runOnIdle {
+            logs.value = listOf(createTelemetryLog(id = 100, readoutItemKey = "new_log")) + logs.value
+        }
+
+        rule.onNodeWithText("新しいログ").assertExists()
+
+        rule.onNodeWithText("新しいログ").performClick()
+
+        rule.onNodeWithText("new_log").assertExists()
+    }
 }
+
+private fun createTelemetryLogs(): List<TelemetryLog> = (30 downTo 1).map { id ->
+    createTelemetryLog(id = id.toLong(), readoutItemKey = "log_$id")
+}
+
+private fun createTelemetryLog(
+    id: Long,
+    readoutItemKey: String,
+) = TelemetryLog(
+    id = id,
+    createdAt = id,
+    simulatorId = "lmu_windows",
+    readoutItemKey = readoutItemKey,
+    telemetryJson = """{"id":$id}""",
+)
