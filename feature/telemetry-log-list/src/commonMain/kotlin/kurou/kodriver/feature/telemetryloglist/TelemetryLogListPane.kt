@@ -1,5 +1,9 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -80,37 +84,46 @@ internal fun TelemetryLogListPane(
         }
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 8.dp),
-        ) {
-            items(
-                items = uiState.logs,
-                key = { it.id },
-            ) { log ->
-                TelemetryLogListItem(
-                    log = log,
-                    onClick = { onLogClick(log.id) },
-                )
-                HorizontalDivider()
-            }
-        }
-
-        if (showNewLogsButton) {
-            NewTelemetryLogsButton(
-                onClick = {
-                    coroutineScope.launch {
-                        listState.animateScrollToItem(0)
-                        showNewLogsButton = false
-                    }
-                },
+    AnimatedVisibility(
+        visible = true,
+        enter = slideInVertically(
+            initialOffsetY = { it },
+            animationSpec = tween(durationMillis = 400),
+        ) + fadeIn(animationSpec = tween(durationMillis = 400)),
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp),
-            )
+                    .fillMaxSize()
+                    .padding(vertical = 8.dp),
+            ) {
+                items(
+                    items = uiState.logs,
+                    key = { it.id },
+                ) { log ->
+                    TelemetryLogListItem(
+                        log = log,
+                        onClick = { onLogClick(log.id) },
+                    )
+                    HorizontalDivider()
+                }
+            }
+
+            if (showNewLogsButton) {
+                NewTelemetryLogsButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            listState.animateScrollToItem(0)
+                            showNewLogsButton = false
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp),
+                )
+            }
         }
     }
 }
