@@ -1,6 +1,0 @@
-<resources>
-    <string name="keep_screen_on_title">画面をスリープさせない</string>
-    <string name="keep_screen_on_description">アプリ使用中にスリープを防ぎ、画面を常に表示します。</string>
-    <string name="keep_screen_on_ok">OK</string>
-    <string name="keep_screen_on_cancel">キャンセル</string>
-</resources>

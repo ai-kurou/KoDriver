@@ -303,7 +303,6 @@ dependencies {
     kover(project(":feature:other-console-ip-detail"))
     kover(project(":feature:other-readout-start-sound-detail"))
     kover(project(":feature:other-volume-detail"))
-    kover(project(":feature:other-keep-screen-on-detail"))
     kover(project(":feature:readout-list"))
     kover(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
     kover(project(":feature:lmu-windows-readout-flag-detail"))
