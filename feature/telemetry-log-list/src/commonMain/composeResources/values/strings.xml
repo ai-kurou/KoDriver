@@ -1,0 +1,5 @@
+<resources>
+    <string name="new_telemetry_logs">新しいログ</string>
+    <string name="telemetry_log_empty_title">ログはまだありません</string>
+    <string name="telemetry_log_empty_description">テレメトリを受信すると、ここに新しい順で表示されます。</string>
+</resources>

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Badge
@@ -50,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.app.shared.generated.resources.Res
+import kodriver.app.shared.generated.resources.nav_log
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
@@ -73,6 +75,8 @@ import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
+import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
+import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -103,22 +107,39 @@ private fun handleTabClick(
     if (currentDestination == dest) {
         when (dest) {
             AppDestination.Readout -> onReadoutTabReselected()
+            AppDestination.Log -> Unit
             AppDestination.More -> onOtherTabReselected()
         }
     }
     setCurrentDestination(dest)
 }
 
+@Composable
+private fun AppDestinationContent(
+    destination: AppDestination,
+    readoutContent: @Composable () -> Unit,
+    telemetryLogContent: @Composable () -> Unit,
+    otherContent: @Composable () -> Unit,
+) {
+    when (destination) {
+        AppDestination.Readout -> readoutContent()
+        AppDestination.Log -> telemetryLogContent()
+        AppDestination.More -> otherContent()
+    }
+}
+
 private enum class AppDestination(
     val icon: ImageVector,
 ) {
     Readout(Icons.Default.HeadsetMic),
+    Log(Icons.Default.Description),
     More(Icons.Default.MoreHoriz),
 }
 
 @Composable
 private fun AppDestination.label(): String = when (this) {
     AppDestination.Readout -> stringResource(Res.string.nav_readout)
+    AppDestination.Log -> stringResource(Res.string.nav_log)
     AppDestination.More -> stringResource(Res.string.nav_more)
 }
 
@@ -181,6 +202,13 @@ fun AppScreen(
                     ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
                     ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
                 }
+            },
+        )
+    },
+    telemetryLogContent: @Composable () -> Unit = {
+        TelemetryLogContent(
+            detailContent = { id ->
+                TelemetryLogDetailContent(id = id)
             },
         )
     },
@@ -262,6 +290,7 @@ fun AppScreen(
         onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
         onOtherTabReselected = otherListViewModel::clearSelectedItem,
         readoutContent = readoutContent,
+        telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
     )
 }
@@ -300,6 +329,7 @@ internal fun AppScreenContent(
     onReadoutTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable () -> Unit = {},
+    telemetryLogContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
@@ -406,10 +436,12 @@ internal fun AppScreenContent(
                         transitionSpec = { fadeIn() togetherWith fadeOut() },
                         modifier = Modifier.weight(1f),
                     ) { destination ->
-                        when (destination) {
-                            AppDestination.Readout -> readoutContent()
-                            AppDestination.More -> otherContent()
-                        }
+                        AppDestinationContent(
+                            destination = destination,
+                            readoutContent = readoutContent,
+                            telemetryLogContent = telemetryLogContent,
+                            otherContent = otherContent,
+                        )
                     }
                 }
             }

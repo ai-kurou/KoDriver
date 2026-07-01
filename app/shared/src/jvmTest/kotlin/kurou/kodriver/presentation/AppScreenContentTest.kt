@@ -1,8 +1,10 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
@@ -77,5 +79,20 @@ class AppScreenContentTest {
 
         assertEquals(0, readoutReselectedCount)
         assertEquals(0, otherReselectedCount)
+    }
+
+    @Test
+    fun `ログタブを選択するとtelemetryLogContentが表示される`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                telemetryLogContent = { Text("TelemetryLogContent") },
+            )
+        }
+
+        rule.onNode(hasText("ログ")).performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithText("TelemetryLogContent").assertExists()
     }
 }

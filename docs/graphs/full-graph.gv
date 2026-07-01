@@ -22,6 +22,8 @@ digraph G {
   ":app:shared" -> ":feature:other-readout-start-sound-detail"
   ":app:shared" -> ":feature:other-volume-detail"
   ":app:shared" -> ":feature:other-keep-screen-on-detail"
+  ":app:shared" -> ":feature:telemetry-log-list"
+  ":app:shared" -> ":feature:telemetry-log-detail"
   ":app:shared" -> ":feature:readout-list"
   ":app:shared" -> ":feature:lmu-windows-readout-vehicle-approach-detail"
   ":app:shared" -> ":feature:lmu-windows-readout-flag-detail"
@@ -62,4 +64,6 @@ digraph G {
   ":feature:other-volume-detail" -> ":core:designsystem"
   ":feature:readout-list" -> ":core:domain"
   ":feature:server-connection" -> ":core:domain"
+  ":feature:telemetry-log-detail" -> ":core:domain"
+  ":feature:telemetry-log-list" -> ":core:domain"
 }

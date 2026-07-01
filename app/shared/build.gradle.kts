@@ -63,6 +63,8 @@ kotlin {
             implementation(projects.feature.otherReadoutStartSoundDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.otherKeepScreenOnDetail)
+            implementation(projects.feature.telemetryLogList)
+            implementation(projects.feature.telemetryLogDetail)
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuWindowsReadoutFlagDetail)
@@ -89,6 +91,7 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.testJunit)
             implementation(compose.desktop.currentOs)
             implementation(libs.roborazzi.composeDesktop)
@@ -111,8 +114,10 @@ dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.feature.lmuWindowsNarrator))
     add("jvmTestImplementation", testFixtures(projects.feature.readoutList))
+    add("jvmTestImplementation", testFixtures(projects.feature.telemetryLogList))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.readoutList))
+    testFixturesApi(testFixtures(projects.feature.telemetryLogList))
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
