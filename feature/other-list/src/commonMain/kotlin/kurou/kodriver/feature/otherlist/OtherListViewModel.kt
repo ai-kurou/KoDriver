@@ -3,8 +3,10 @@ package kurou.kodriver.feature.otherlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
@@ -25,14 +27,12 @@ class OtherListViewModel(
             appVersion = currentVersion,
         ),
     )
-    val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
-
-    @Suppress("unused")
-    private val exitConfirmationEnabledCollector = viewModelScope.launch {
-        observeExitConfirmationEnabled().collect { exitConfirmationEnabled ->
-            _uiState.update { it.copy(exitConfirmationEnabled = exitConfirmationEnabled) }
-        }
-    }
+    val uiState: StateFlow<OtherListUiState> = combine(
+        _uiState,
+        observeExitConfirmationEnabled(),
+    ) { state, exitConfirmationEnabled ->
+        state.copy(exitConfirmationEnabled = exitConfirmationEnabled)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, _uiState.value)
 
     fun checkUpdate() {
         if (currentVersion.isBlank()) return

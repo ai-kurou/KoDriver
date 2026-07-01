@@ -5,8 +5,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -36,11 +36,11 @@ internal class FakeExitConfirmationPreferencesRepository(
     override fun exitConfirmationEnabled(): Flow<Boolean> = flow
 
     override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
-        flow.value = enabled
+        flow.update { enabled }
     }
 
     fun updateExitConfirmationEnabled(enabled: Boolean) {
-        flow.value = enabled
+        flow.update { enabled }
     }
 }
 
@@ -82,6 +82,7 @@ class OtherListViewModelTest {
     @Test
     fun `音量を選択すると選択状態になる`() = runTest {
         viewModel.onItemSelected(OtherListItemType.Volume)
+        advanceMainUntilIdle()
 
         assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
     }
@@ -107,10 +108,12 @@ class OtherListViewModelTest {
     @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
         viewModel.onItemSelected(OtherListItemType.License)
+        advanceMainUntilIdle()
 
         assertEquals(OtherListItemType.License, viewModel.uiState.first().selectedItem)
 
         viewModel.onItemSelected(OtherListItemType.License)
+        advanceMainUntilIdle()
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -118,17 +121,21 @@ class OtherListViewModelTest {
     @Test
     fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() = runTest {
         viewModel.selectItem(OtherListItemType.ConsoleIp)
+        advanceMainUntilIdle()
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
 
         viewModel.selectItem(OtherListItemType.ConsoleIp)
+        advanceMainUntilIdle()
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
     }
 
     @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
         viewModel.onItemSelected(OtherListItemType.License)
+        advanceMainUntilIdle()
 
         viewModel.clearSelectedItem()
+        advanceMainUntilIdle()
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -143,10 +150,10 @@ class OtherListViewModelTest {
             currentVersion = "0.5.0",
             appVersionLabel = "Windows版KoDriverバージョン",
         )
-        advanceUntilIdle()
+        advanceMainUntilIdle()
 
         repository.updateExitConfirmationEnabled(false)
-        advanceUntilIdle()
+        advanceMainUntilIdle()
 
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
     }
@@ -154,7 +161,12 @@ class OtherListViewModelTest {
     @Test
     fun `onExitConfirmationEnabledChangeで終了確認の有効状態を保存できる`() = runTest {
         viewModel.onExitConfirmationEnabledChange(false)
+        advanceMainUntilIdle()
 
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
+    }
+
+    private fun advanceMainUntilIdle() {
+        dispatcher.scheduler.advanceUntilIdle()
     }
 }
