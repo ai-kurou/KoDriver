@@ -7,6 +7,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -96,7 +97,8 @@ class MainActivityTest {
     }
 
     private fun clickItemAndNavigateBack(text: String) {
-        clickItem(text)
+        composeTestRule.onNodeWithText(text).performScrollTo().performClick()
+        composeTestRule.waitForIdle()
         navigateBack()
     }
 
