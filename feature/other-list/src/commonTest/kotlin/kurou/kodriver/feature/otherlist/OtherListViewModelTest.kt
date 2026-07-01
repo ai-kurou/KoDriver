@@ -188,6 +188,7 @@ class OtherListViewModelTest {
         viewModel.onExitConfirmationEnabledChange(false)
         advanceMainUntilIdle()
 
+        assertEquals(false, exitConfirmationPreferencesRepository.exitConfirmationEnabled().first())
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
     }
 
@@ -204,6 +205,7 @@ class OtherListViewModelTest {
         viewModel.onKeepScreenOnChange(false)
         advanceMainUntilIdle()
 
+        assertEquals(false, keepScreenOnPreferencesRepository.keepScreenOn().first())
         assertEquals(false, viewModel.uiState.first().keepScreenOn)
     }
 

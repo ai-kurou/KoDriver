@@ -71,12 +71,10 @@ class OtherListViewModel(
     }
 
     fun onExitConfirmationEnabledChange(enabled: Boolean) {
-        _uiState.update { it.copy(exitConfirmationEnabled = enabled) }
         viewModelScope.launch { saveExitConfirmationEnabled(enabled) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {
-        _uiState.update { it.copy(keepScreenOn = enabled) }
         viewModelScope.launch { saveKeepScreenOn(enabled) }
     }
 }
