@@ -31,8 +31,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kodriver.feature.telemetryloglist.generated.resources.Res
+import kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
+import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
+import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.TelemetryLog
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TelemetryLogListPane(
@@ -124,7 +129,7 @@ private fun NewTelemetryLogsButton(
         ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
     ) {
-        Text("新しいログ")
+        Text(stringResource(Res.string.new_telemetry_logs))
     }
 }
 
@@ -141,13 +146,13 @@ private fun TelemetryLogEmptyState(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = "ログはまだありません",
+                text = stringResource(Res.string.telemetry_log_empty_title),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "テレメトリを受信すると、ここに新しい順で表示されます。",
+                text = stringResource(Res.string.telemetry_log_empty_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
