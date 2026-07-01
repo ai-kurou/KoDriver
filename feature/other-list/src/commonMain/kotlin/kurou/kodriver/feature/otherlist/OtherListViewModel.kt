@@ -11,10 +11,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveKeepScreenOnUseCase
 
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
+    observeKeepScreenOn: ObserveKeepScreenOnUseCase,
+    private val saveKeepScreenOn: SaveKeepScreenOnUseCase,
     observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
     private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
     private val currentVersion: String,
@@ -29,9 +33,13 @@ class OtherListViewModel(
     )
     val uiState: StateFlow<OtherListUiState> = combine(
         _uiState,
+        observeKeepScreenOn(),
         observeExitConfirmationEnabled(),
-    ) { state, exitConfirmationEnabled ->
-        state.copy(exitConfirmationEnabled = exitConfirmationEnabled)
+    ) { state, keepScreenOn, exitConfirmationEnabled ->
+        state.copy(
+            keepScreenOn = keepScreenOn,
+            exitConfirmationEnabled = exitConfirmationEnabled,
+        )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, _uiState.value)
 
     fun checkUpdate() {
@@ -63,7 +71,10 @@ class OtherListViewModel(
     }
 
     fun onExitConfirmationEnabledChange(enabled: Boolean) {
-        _uiState.update { it.copy(exitConfirmationEnabled = enabled) }
         viewModelScope.launch { saveExitConfirmationEnabled(enabled) }
+    }
+
+    fun onKeepScreenOnChange(enabled: Boolean) {
+        viewModelScope.launch { saveKeepScreenOn(enabled) }
     }
 }

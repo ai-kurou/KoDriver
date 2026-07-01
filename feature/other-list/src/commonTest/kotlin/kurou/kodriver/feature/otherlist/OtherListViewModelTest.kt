@@ -13,9 +13,12 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
+import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveKeepScreenOnUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -44,19 +47,39 @@ internal class FakeExitConfirmationPreferencesRepository(
     }
 }
 
+internal class FakeKeepScreenOnPreferencesRepository(
+    initial: Boolean = true,
+) : KeepScreenOnPreferencesRepository {
+    private val flow = MutableStateFlow(initial)
+
+    override fun keepScreenOn(): Flow<Boolean> = flow
+
+    override suspend fun saveKeepScreenOn(enabled: Boolean) {
+        flow.update { enabled }
+    }
+
+    fun updateKeepScreenOn(enabled: Boolean) {
+        flow.update { enabled }
+    }
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtherListViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
+    private lateinit var keepScreenOnPreferencesRepository: FakeKeepScreenOnPreferencesRepository
     private lateinit var exitConfirmationPreferencesRepository: FakeExitConfirmationPreferencesRepository
     private lateinit var viewModel: OtherListViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(dispatcher)
+        keepScreenOnPreferencesRepository = FakeKeepScreenOnPreferencesRepository()
         exitConfirmationPreferencesRepository = FakeExitConfirmationPreferencesRepository()
         viewModel = OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
+            observeKeepScreenOn = ObserveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
+            saveKeepScreenOn = SaveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
             observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(
                 exitConfirmationPreferencesRepository,
             ),
@@ -145,6 +168,8 @@ class OtherListViewModelTest {
         val repository = FakeExitConfirmationPreferencesRepository()
         val viewModel = OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
+            observeKeepScreenOn = ObserveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
+            saveKeepScreenOn = SaveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
             observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(repository),
             saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(repository),
             currentVersion = "0.5.0",
@@ -163,7 +188,25 @@ class OtherListViewModelTest {
         viewModel.onExitConfirmationEnabledChange(false)
         advanceMainUntilIdle()
 
+        assertEquals(false, exitConfirmationPreferencesRepository.exitConfirmationEnabled().first())
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
+    }
+
+    @Test
+    fun `画面スリープ無効の状態を監視できる`() = runTest {
+        keepScreenOnPreferencesRepository.updateKeepScreenOn(false)
+        advanceMainUntilIdle()
+
+        assertEquals(false, viewModel.uiState.first().keepScreenOn)
+    }
+
+    @Test
+    fun `onKeepScreenOnChangeで画面スリープ無効の状態を保存できる`() = runTest {
+        viewModel.onKeepScreenOnChange(false)
+        advanceMainUntilIdle()
+
+        assertEquals(false, keepScreenOnPreferencesRepository.keepScreenOn().first())
+        assertEquals(false, viewModel.uiState.first().keepScreenOn)
     }
 
     private fun advanceMainUntilIdle() {

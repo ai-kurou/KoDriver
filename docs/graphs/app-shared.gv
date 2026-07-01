@@ -14,7 +14,6 @@ digraph G {
   ":app:shared" -> ":feature:other-console-ip-detail"
   ":app:shared" -> ":feature:other-readout-start-sound-detail"
   ":app:shared" -> ":feature:other-volume-detail"
-  ":app:shared" -> ":feature:other-keep-screen-on-detail"
   ":app:shared" -> ":feature:telemetry-log-list"
   ":app:shared" -> ":feature:telemetry-log-detail"
   ":app:shared" -> ":feature:readout-list"

@@ -84,9 +84,9 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.Volume,
         OtherListItemType.License,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
-        OtherListItemType.KeepScreenOn,
         OtherListItemType.ReadoutStartSound,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.KeepScreenOn,
         OtherListItemType.ExitConfirmation,
         -> Unit
         OtherListItemType.GitHubRepository,
@@ -99,6 +99,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (OtherListItemType) -> Unit,
+    onKeepScreenOnChange: (Boolean) -> Unit,
     onExitConfirmationEnabledChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -119,13 +120,16 @@ fun OtherListPane(
                     headlineContent = { Text(otherItemDisplayName(item)) },
                     leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
                     trailingContent = {
-                        if (item == OtherListItemType.ExitConfirmation) {
-                            Switch(
+                        when (item) {
+                            OtherListItemType.KeepScreenOn -> Switch(
+                                checked = uiState.keepScreenOn,
+                                onCheckedChange = onKeepScreenOnChange,
+                            )
+                            OtherListItemType.ExitConfirmation -> Switch(
                                 checked = uiState.exitConfirmationEnabled,
                                 onCheckedChange = onExitConfirmationEnabledChange,
                             )
-                        } else {
-                            OtherListItemTrailingIcon(item)
+                            else -> OtherListItemTrailingIcon(item)
                         }
                     },
                     colors = if (item == uiState.selectedItem) {
@@ -146,10 +150,11 @@ fun OtherListPane(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            if (item == OtherListItemType.ExitConfirmation) {
-                                onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
-                            } else {
-                                onItemClick(item)
+                            when (item) {
+                                OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
+                                OtherListItemType.ExitConfirmation ->
+                                    onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
+                                else -> onItemClick(item)
                             }
                         },
                 )
@@ -203,6 +208,7 @@ private fun OtherListPanePreview() {
     OtherListPane(
         uiState = OtherListUiState(),
         onItemClick = {},
+        onKeepScreenOnChange = {},
         onExitConfirmationEnabledChange = {},
     )
 }

@@ -29,6 +29,7 @@ class OtherListPaneScreenshotTest {
                         OtherListPane(
                             uiState = OtherListUiState(),
                             onItemClick = {},
+                            onKeepScreenOnChange = {},
                             onExitConfirmationEnabledChange = {},
                         )
                     }
@@ -46,6 +47,7 @@ class OtherListPaneScreenshotTest {
                         OtherListPane(
                             uiState = OtherListUiState(hasAppUpdate = true),
                             onItemClick = {},
+                            onKeepScreenOnChange = {},
                             onExitConfirmationEnabledChange = {},
                         )
                     }
