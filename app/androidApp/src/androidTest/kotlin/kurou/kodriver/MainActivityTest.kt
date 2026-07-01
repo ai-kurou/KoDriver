@@ -72,9 +72,15 @@ class MainActivityTest {
 
     @Test
     fun `ログタブを表示する`() {
+        clearTelemetryLogDatabase()
+
         clickItem("ログ")
         waitUntilDisplayed("ログはまだありません")
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
+    }
+
+    private fun clearTelemetryLogDatabase() {
+        composeTestRule.activity.deleteDatabase(TELEMETRY_LOG_DATABASE_NAME)
     }
 
     private fun selectSimulator(simulatorName: String) {
@@ -134,6 +140,7 @@ class MainActivityTest {
     }
 
     private companion object {
+        const val TELEMETRY_LOG_DATABASE_NAME = "telemetry_logs.db"
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
     }

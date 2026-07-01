@@ -35,7 +35,7 @@ class TelemetryLogDetailViewModelTest {
 
     @Test
     fun `uiStateの初期値は空の項目を持つ`() = runTest {
-        assertEquals(TelemetryLogDetailUiState(), viewModel.uiState.value)
+        assertEquals(TelemetryLogDetailUiState(), viewModel.uiState.first())
     }
 
     @Test
