@@ -57,7 +57,9 @@ class OtherListViewModelTest {
         exitConfirmationPreferencesRepository = FakeExitConfirmationPreferencesRepository()
         viewModel = OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
-            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
+            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(
+                exitConfirmationPreferencesRepository,
+            ),
             saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
             currentVersion = "0.5.0",
             appVersionLabel = "Windows版KoDriverバージョン",
