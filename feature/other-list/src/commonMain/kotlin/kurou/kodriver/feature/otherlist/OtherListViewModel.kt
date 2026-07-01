@@ -8,9 +8,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
+    observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
+    private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
     private val currentVersion: String,
     appVersionLabel: String,
 ) : ViewModel() {
@@ -22,6 +26,13 @@ class OtherListViewModel(
         ),
     )
     val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
+
+    @Suppress("unused")
+    private val exitConfirmationEnabledCollector = viewModelScope.launch {
+        observeExitConfirmationEnabled().collect { exitConfirmationEnabled ->
+            _uiState.update { it.copy(exitConfirmationEnabled = exitConfirmationEnabled) }
+        }
+    }
 
     fun checkUpdate() {
         if (currentVersion.isBlank()) return
@@ -49,5 +60,10 @@ class OtherListViewModel(
 
     fun clearSelectedItem() {
         _uiState.update { it.copy(selectedItem = null) }
+    }
+
+    fun onExitConfirmationEnabledChange(enabled: Boolean) {
+        _uiState.update { it.copy(exitConfirmationEnabled = enabled) }
+        viewModelScope.launch { saveExitConfirmationEnabled(enabled) }
     }
 }

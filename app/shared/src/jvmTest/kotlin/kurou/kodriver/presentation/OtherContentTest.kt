@@ -41,15 +41,20 @@ class OtherContentTest {
         var backEnabled = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
+        var exitConfirmationEnabled = true
         var capturedOnBack: (() -> Unit)? = null
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
 
         rule.setContent {
             OtherContent(
-                uiState = OtherListUiState(selectedItem = selectedItem),
+                uiState = OtherListUiState(
+                    selectedItem = selectedItem,
+                    exitConfirmationEnabled = exitConfirmationEnabled,
+                ),
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
+                onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -87,6 +92,13 @@ class OtherContentTest {
         rule.onNode(hasText("読み上げ開始音")).performClick()
         rule.waitForIdle()
 
+        assertFalse(backEnabled)
+
+        // ExitConfirmation（Switchで直接切り替える）
+        rule.onNode(hasText("終了確認を表示")).performClick()
+        rule.waitForIdle()
+
+        assertFalse(exitConfirmationEnabled)
         assertFalse(backEnabled)
 
         // GitHubRepository

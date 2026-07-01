@@ -1,10 +1,23 @@
 package kurou.kodriver.feature.otherlist
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -15,13 +28,46 @@ internal class FakeAppUpdateRepository(
     override suspend fun getLatestRelease(): AppUpdate? = latestRelease
 }
 
+internal class FakeExitConfirmationPreferencesRepository(
+    initial: Boolean = true,
+) : ExitConfirmationPreferencesRepository {
+    private val flow = MutableStateFlow(initial)
+
+    override fun exitConfirmationEnabled(): Flow<Boolean> = flow
+
+    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
+        flow.value = enabled
+    }
+
+    fun updateExitConfirmationEnabled(enabled: Boolean) {
+        flow.value = enabled
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
 class OtherListViewModelTest {
 
-    private val viewModel = OtherListViewModel(
-        checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
-        currentVersion = "0.5.0",
-        appVersionLabel = "Windows版KoDriverバージョン",
-    )
+    private val dispatcher = StandardTestDispatcher()
+    private lateinit var exitConfirmationPreferencesRepository: FakeExitConfirmationPreferencesRepository
+    private lateinit var viewModel: OtherListViewModel
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(dispatcher)
+        exitConfirmationPreferencesRepository = FakeExitConfirmationPreferencesRepository()
+        viewModel = OtherListViewModel(
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
+            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
+            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
+            currentVersion = "0.5.0",
+            appVersionLabel = "Windows版KoDriverバージョン",
+        )
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
@@ -83,5 +129,30 @@ class OtherListViewModelTest {
         viewModel.clearSelectedItem()
 
         assertNull(viewModel.uiState.first().selectedItem)
+    }
+
+    @Test
+    fun `終了確認の有効状態を監視できる`() = runTest {
+        val repository = FakeExitConfirmationPreferencesRepository()
+        val viewModel = OtherListViewModel(
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
+            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(repository),
+            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(repository),
+            currentVersion = "0.5.0",
+            appVersionLabel = "Windows版KoDriverバージョン",
+        )
+        advanceUntilIdle()
+
+        repository.updateExitConfirmationEnabled(false)
+        advanceUntilIdle()
+
+        assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
+    }
+
+    @Test
+    fun `onExitConfirmationEnabledChangeで終了確認の有効状態を保存できる`() = runTest {
+        viewModel.onExitConfirmationEnabledChange(false)
+
+        assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
     }
 }

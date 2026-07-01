@@ -10,6 +10,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -106,9 +108,16 @@ class OtherListViewModelCheckUpdateTest {
     private fun createViewModel(
         checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
         currentVersion: String,
-    ): OtherListViewModel = OtherListViewModel(
-        checkAppUpdateAvailable = checkAppUpdateAvailable,
-        currentVersion = currentVersion,
-        appVersionLabel = "Windows版KoDriverバージョン",
-    )
+    ): OtherListViewModel {
+        val exitConfirmationPreferencesRepository = FakeExitConfirmationPreferencesRepository()
+        val observeExitConfirmationEnabled =
+            ObserveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository)
+        return OtherListViewModel(
+            checkAppUpdateAvailable = checkAppUpdateAvailable,
+            observeExitConfirmationEnabled = observeExitConfirmationEnabled,
+            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
+            currentVersion = currentVersion,
+            appVersionLabel = "Windows版KoDriverバージョン",
+        )
+    }
 }
