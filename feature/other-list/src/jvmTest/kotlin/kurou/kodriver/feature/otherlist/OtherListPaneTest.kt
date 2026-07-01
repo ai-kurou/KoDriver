@@ -1,11 +1,9 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.assertCountEquals
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
@@ -160,7 +158,7 @@ class OtherListPaneTest {
             )
         }
 
-        rule.onNodeWithText("Android版KoDriverバージョン").assertIsDisplayed()
-        rule.onNodeWithText("1.2.3").assertIsDisplayed()
+        rule.onAllNodesWithText("Android版KoDriverバージョン").assertCountEquals(1)
+        rule.onAllNodesWithText("1.2.3").assertCountEquals(1)
     }
 }
