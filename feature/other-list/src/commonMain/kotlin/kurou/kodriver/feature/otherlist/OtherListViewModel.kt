@@ -3,14 +3,20 @@ package kurou.kodriver.feature.otherlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
+    observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
+    private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
     private val currentVersion: String,
     appVersionLabel: String,
 ) : ViewModel() {
@@ -21,7 +27,12 @@ class OtherListViewModel(
             appVersion = currentVersion,
         ),
     )
-    val uiState: StateFlow<OtherListUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<OtherListUiState> = combine(
+        _uiState,
+        observeExitConfirmationEnabled(),
+    ) { state, exitConfirmationEnabled ->
+        state.copy(exitConfirmationEnabled = exitConfirmationEnabled)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, _uiState.value)
 
     fun checkUpdate() {
         if (currentVersion.isBlank()) return
@@ -49,5 +60,10 @@ class OtherListViewModel(
 
     fun clearSelectedItem() {
         _uiState.update { it.copy(selectedItem = null) }
+    }
+
+    fun onExitConfirmationEnabledChange(enabled: Boolean) {
+        _uiState.update { it.copy(exitConfirmationEnabled = enabled) }
+        viewModelScope.launch { saveExitConfirmationEnabled(enabled) }
     }
 }

@@ -56,6 +56,7 @@ fun OtherContent(
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenKeepScreenOnDialog = onOpenKeepScreenOnDialog,
+        onExitConfirmationEnabledChange = viewModel::onExitConfirmationEnabledChange,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
@@ -90,6 +91,7 @@ internal fun OtherContent(
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenKeepScreenOnDialog: () -> Unit = {},
+    onExitConfirmationEnabledChange: (Boolean) -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -146,6 +148,7 @@ internal fun OtherContent(
         listPane = {
             OtherListPane(
                 uiState = uiState,
+                onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
                 onItemClick = { itemType ->
                     handleOtherItemClick(
                         itemType = itemType,

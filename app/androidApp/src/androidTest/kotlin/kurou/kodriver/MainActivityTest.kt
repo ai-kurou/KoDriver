@@ -3,10 +3,12 @@ package kurou.kodriver
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -96,8 +98,14 @@ class MainActivityTest {
     }
 
     private fun clickItemAndNavigateBack(text: String) {
+        scrollToItem(text)
         clickItem(text)
         navigateBack()
+    }
+
+    private fun scrollToItem(text: String) {
+        composeTestRule.onNode(hasScrollAction()).performScrollToNode(hasText(text))
+        composeTestRule.waitForIdle()
     }
 
     private fun navigateBack() {

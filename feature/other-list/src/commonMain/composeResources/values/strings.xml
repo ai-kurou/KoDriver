@@ -2,6 +2,7 @@
     <string name="item_volume">音量</string>
     <string name="item_keep_screen_on">画面をスリープさせない</string>
     <string name="item_readout_start_sound">読み上げ開始音</string>
+    <string name="item_exit_confirmation">終了確認を表示</string>
     <string name="item_github_repository">GitHubレポジトリ</string>
     <string name="item_release_page">リリースページ</string>
     <string name="item_license">ライセンス</string>

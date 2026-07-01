@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
+import androidx.compose.material.icons.outlined.Output
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -27,6 +28,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_console_ip
+import kodriver.feature.otherlist.generated.resources.item_exit_confirmation
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kodriver.feature.otherlist.generated.resources.item_license
@@ -50,6 +53,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
     OtherListItemType.Volume -> stringResource(Res.string.item_volume)
     OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
     OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
+    OtherListItemType.ExitConfirmation -> stringResource(Res.string.item_exit_confirmation)
     OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
     OtherListItemType.License -> stringResource(Res.string.item_license)
@@ -63,6 +67,7 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: 
         OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
         OtherListItemType.KeepScreenOn -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
+        OtherListItemType.ExitConfirmation -> Icon(imageVector = Icons.Outlined.Output, contentDescription = null)
         OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
         OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
             Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
@@ -82,6 +87,8 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ReadoutStartSound,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+        OtherListItemType.ExitConfirmation,
+        -> Unit
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
@@ -92,6 +99,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
 fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (OtherListItemType) -> Unit,
+    onExitConfirmationEnabledChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -110,7 +118,16 @@ fun OtherListPane(
                 ListItem(
                     headlineContent = { Text(otherItemDisplayName(item)) },
                     leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
-                    trailingContent = { OtherListItemTrailingIcon(item) },
+                    trailingContent = {
+                        if (item == OtherListItemType.ExitConfirmation) {
+                            Switch(
+                                checked = uiState.exitConfirmationEnabled,
+                                onCheckedChange = onExitConfirmationEnabledChange,
+                            )
+                        } else {
+                            OtherListItemTrailingIcon(item)
+                        }
+                    },
                     colors = if (item == uiState.selectedItem) {
                         ListItemDefaults.colors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -128,7 +145,13 @@ fun OtherListPane(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onItemClick(item) },
+                        .clickable {
+                            if (item == OtherListItemType.ExitConfirmation) {
+                                onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
+                            } else {
+                                onItemClick(item)
+                            }
+                        },
                 )
             }
             HorizontalDivider()
@@ -180,5 +203,6 @@ private fun OtherListPanePreview() {
     OtherListPane(
         uiState = OtherListUiState(),
         onItemClick = {},
+        onExitConfirmationEnabledChange = {},
     )
 }
