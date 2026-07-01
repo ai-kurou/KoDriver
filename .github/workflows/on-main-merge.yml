@@ -107,7 +107,7 @@ jobs:
         run: sudo apt-get install -y fonts-noto-cjk
 
       - name: Record JVM golden images
-        run: ./gradlew :feature:readout-list:recordRoborazziJvmTest :feature:gt7-ps5-readout-remaining-fuel-laps-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:recordRoborazziJvmTest :feature:other-license-detail:recordRoborazziJvmTest :feature:other-list:recordRoborazziJvmTest :feature:other-readout-start-sound-detail:recordRoborazziJvmTest :feature:other-server-ip-detail:recordRoborazziJvmTest :feature:other-volume-detail:recordRoborazziJvmTest :feature:other-keep-screen-on-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
+        run: ./gradlew :feature:readout-list:recordRoborazziJvmTest :feature:gt7-ps5-readout-remaining-fuel-laps-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:recordRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:recordRoborazziJvmTest :feature:other-license-detail:recordRoborazziJvmTest :feature:other-list:recordRoborazziJvmTest :feature:other-readout-start-sound-detail:recordRoborazziJvmTest :feature:other-server-ip-detail:recordRoborazziJvmTest :feature:other-volume-detail:recordRoborazziJvmTest :feature:other-keep-screen-on-detail:recordRoborazziJvmTest :feature:telemetry-log-detail:recordRoborazziJvmTest :app:shared:recordRoborazziJvmTest
 
       - name: Commit updated JVM golden images
         run: |
@@ -119,7 +119,7 @@ jobs:
           git push
 
       - name: Verify JVM screenshot tests
-        run: ./gradlew :feature:readout-list:verifyRoborazziJvmTest :feature:gt7-ps5-readout-remaining-fuel-laps-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:verifyRoborazziJvmTest :feature:other-license-detail:verifyRoborazziJvmTest :feature:other-list:verifyRoborazziJvmTest :feature:other-readout-start-sound-detail:verifyRoborazziJvmTest :feature:other-server-ip-detail:verifyRoborazziJvmTest :feature:other-volume-detail:verifyRoborazziJvmTest :feature:other-keep-screen-on-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
+        run: ./gradlew :feature:readout-list:verifyRoborazziJvmTest :feature:gt7-ps5-readout-remaining-fuel-laps-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-approach-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-vehicle-damage-detail:verifyRoborazziJvmTest :feature:lmu-windows-readout-flag-detail:verifyRoborazziJvmTest :feature:other-license-detail:verifyRoborazziJvmTest :feature:other-list:verifyRoborazziJvmTest :feature:other-readout-start-sound-detail:verifyRoborazziJvmTest :feature:other-server-ip-detail:verifyRoborazziJvmTest :feature:other-volume-detail:verifyRoborazziJvmTest :feature:other-keep-screen-on-detail:verifyRoborazziJvmTest :feature:telemetry-log-detail:verifyRoborazziJvmTest :app:shared:verifyRoborazziJvmTest
 
   android-screenshot-test:
     runs-on: ubuntu-latest

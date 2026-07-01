@@ -12,6 +12,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.domain)
             implementation(libs.compose.foundation)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
