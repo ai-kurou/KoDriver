@@ -38,7 +38,6 @@ fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     onOpenReadoutStartSoundDialog: () -> Unit = {},
-    onOpenKeepScreenOnDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
@@ -55,7 +54,7 @@ fun OtherContent(
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
-        onOpenKeepScreenOnDialog = onOpenKeepScreenOnDialog,
+        onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onExitConfirmationEnabledChange = viewModel::onExitConfirmationEnabledChange,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -71,11 +70,9 @@ private fun handleOtherItemClick(
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
-    onOpenKeepScreenOnDialog: () -> Unit,
 ) {
     when (itemType) {
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
-        OtherListItemType.KeepScreenOn -> onOpenKeepScreenOnDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
         OtherListItemType.ReleasePage -> onOpenReleasePage()
         else -> onItemSelected(itemType)
@@ -90,7 +87,7 @@ internal fun OtherContent(
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
-    onOpenKeepScreenOnDialog: () -> Unit = {},
+    onKeepScreenOnChange: (Boolean) -> Unit = {},
     onExitConfirmationEnabledChange: (Boolean) -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -148,6 +145,7 @@ internal fun OtherContent(
         listPane = {
             OtherListPane(
                 uiState = uiState,
+                onKeepScreenOnChange = onKeepScreenOnChange,
                 onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
                 onItemClick = { itemType ->
                     handleOtherItemClick(
@@ -156,7 +154,6 @@ internal fun OtherContent(
                         onOpenGitHubRepository = onOpenGitHubRepository,
                         onOpenReleasePage = onOpenReleasePage,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
-                        onOpenKeepScreenOnDialog = onOpenKeepScreenOnDialog,
                     )
                 },
             )

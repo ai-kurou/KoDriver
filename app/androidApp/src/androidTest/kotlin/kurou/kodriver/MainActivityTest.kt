@@ -66,7 +66,6 @@ class MainActivityTest {
         clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
         clickItem("画面をスリープさせない")
-        clickItem("キャンセル")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         clickItemAndNavigateBack("ライセンス")

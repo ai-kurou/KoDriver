@@ -41,6 +41,7 @@ class OtherContentTest {
         var backEnabled = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
+        var keepScreenOn = true
         var exitConfirmationEnabled = true
         var capturedOnBack: (() -> Unit)? = null
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
@@ -49,11 +50,13 @@ class OtherContentTest {
             OtherContent(
                 uiState = OtherListUiState(
                     selectedItem = selectedItem,
+                    keepScreenOn = keepScreenOn,
                     exitConfirmationEnabled = exitConfirmationEnabled,
                 ),
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
+                onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,

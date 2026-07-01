@@ -10,7 +10,9 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveKeepScreenOnUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -109,10 +111,13 @@ class OtherListViewModelCheckUpdateTest {
         currentVersion: String,
     ): OtherListViewModel {
         val exitConfirmationPreferencesRepository = FakeExitConfirmationPreferencesRepository()
+        val keepScreenOnPreferencesRepository = FakeKeepScreenOnPreferencesRepository()
         val observeExitConfirmationEnabled =
             ObserveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository)
         return OtherListViewModel(
             checkAppUpdateAvailable = checkAppUpdateAvailable,
+            observeKeepScreenOn = ObserveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
+            saveKeepScreenOn = SaveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
             observeExitConfirmationEnabled = observeExitConfirmationEnabled,
             saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
             currentVersion = currentVersion,

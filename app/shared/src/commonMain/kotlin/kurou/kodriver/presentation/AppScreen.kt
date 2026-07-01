@@ -65,7 +65,6 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
-import kurou.kodriver.feature.otherkeepscreenondetail.OtherKeepScreenOnDetailDialog
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
@@ -159,17 +158,12 @@ private fun DefaultOtherContent(
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
-    var showKeepScreenOnDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
-    }
-    if (showKeepScreenOnDialog) {
-        OtherKeepScreenOnDetailDialog(onDismiss = { showKeepScreenOnDialog = false })
     }
     OtherContent(
         backHandler = backHandler,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
-        onOpenKeepScreenOnDialog = { showKeepScreenOnDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {
                 OtherListItemType.ServerIp -> OtherServerIpDetailPane(canNavigateBack, onBack)
