@@ -61,7 +61,7 @@ class OtherContentTest {
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
-                backHandler = { enabled: Boolean, onBack: () -> Unit ->
+                backHandler = { enabled: Boolean, _, onBack: () -> Unit ->
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
