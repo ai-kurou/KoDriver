@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:androidApp" -> ":core:domain"
   ":app:androidApp" -> ":core:data"
   ":app:desktopApp" -> ":core:data"
   ":core:data" -> ":core:domain"
