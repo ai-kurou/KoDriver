@@ -125,9 +125,9 @@ class AppTest {
         clickItem("ゲーム機・SimHubへ接続するIPアドレス")
         clickItem("音量")
         clickItem("読み上げ開始音")
+        clickItem("キャンセル")
         // 「画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
         clickItem("終了確認を表示")
-        clickItem("キャンセル")
         clickItem("ライセンス")
     }
 
