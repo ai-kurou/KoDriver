@@ -50,7 +50,7 @@ class MainActivityTest {
         selectSimulator("Le Mans Ultimate（Windows版）")
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
-        waitUntilDisplayed("IPアドレス")
+        waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
         navigateBack()
     }
 
@@ -59,7 +59,7 @@ class MainActivityTest {
         selectSimulator("GranTurismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
-        waitUntilDisplayed("IPアドレス")
+        waitUntilDisplayed("ゲーム機またはSimHubを実行しているPCのIPアドレスを入力してください。")
         navigateBack()
     }
 
@@ -111,6 +111,10 @@ class MainActivityTest {
         waitUntilDisplayed("""{"flag":"green"}""")
         waitUntilDisplayed("lmu_windows / 200")
         waitUntilDisplayed("old_flag")
+        clickItem("new_flag")
+        waitUntilDisplayed("選択したログ")
+        waitUntilDisplayed("一つ前のログ")
+        waitUntilDisplayed("""{"flag":"yellow"}""")
     }
 
     private fun clearTelemetryLogDatabase() {
