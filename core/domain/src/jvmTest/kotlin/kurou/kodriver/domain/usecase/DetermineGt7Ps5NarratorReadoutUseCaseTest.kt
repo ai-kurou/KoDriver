@@ -139,6 +139,52 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `給油後は同じ燃料残り周回数でも再度読み上げる`() {
+        val firstLapDecision = useCase(
+            state = Gt7Ps5NarratorState(),
+            telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val secondLapDecision = useCase(
+            state = firstLapDecision.state,
+            telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
+            settings = settings(),
+            observedAtMs = 100_000L,
+        )
+        val firstWarningDecision = useCase(
+            state = secondLapDecision.state,
+            telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
+            settings = settings(),
+            observedAtMs = 160_000L,
+        )
+        val refueledDecision = useCase(
+            state = firstWarningDecision.state,
+            telemetry = telemetry(lapCount = 3, bestLapTimeMs = 90_000, gasLevel = 80f),
+            settings = settings(),
+            observedAtMs = 200_000L,
+        )
+        val fourthLapDecision = useCase(
+            state = refueledDecision.state,
+            telemetry = telemetry(lapCount = 4, bestLapTimeMs = 90_000, gasLevel = 20f),
+            settings = settings(),
+            observedAtMs = 300_000L,
+        )
+        val secondWarningDecision = useCase(
+            state = fourthLapDecision.state,
+            telemetry = telemetry(lapCount = 4, bestLapTimeMs = 90_000, gasLevel = 20f),
+            settings = settings(),
+            observedAtMs = 360_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), firstWarningDecision.events)
+        assertTrue(refueledDecision.events.isEmpty())
+        assertEquals(-1, refueledDecision.state.lastAnnouncedRemainingLaps)
+        assertEquals(50f, refueledDecision.state.fuelTrackingState.totalRefueled)
+        assertEquals(listOf(SpeechEvent.RemainingFuelLapsWarning(0)), secondWarningDecision.events)
+    }
+
+    @Test
     fun `ラップ数が戻ったら燃料残り周回数の読み上げ履歴をリセットする`() {
         val state = Gt7Ps5NarratorState(
             lastAnnouncedRemainingLaps = 2,

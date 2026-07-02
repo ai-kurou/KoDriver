@@ -21,6 +21,7 @@ data class Gt7Ps5FuelTrackingState(
     val currentGasLevel: Float = 0f,
     val bestLapTimeMs: Int = -1,
     val totalRefueled: Float = 0f,
+    val hasRefueled: Boolean = false,
     val isNewSession: Boolean = false,
     val observedAtMs: Long = 0L,
 )
@@ -87,14 +88,17 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         observedAtMs: Long,
     ): Gt7Ps5NarratorReadoutDecision {
         val fuelTrackingState = trackFuel(state.fuelTrackingState, telemetry, observedAtMs)
-        val stateAfterTracking = if (fuelTrackingState.isNewSession) {
-            state.copy(
+        val stateAfterTracking = when {
+            fuelTrackingState.isNewSession -> state.copy(
                 lastAnnouncedRemainingLaps = -1,
                 lastFuelEvaluationLap = -1,
                 fuelTrackingState = fuelTrackingState,
             )
-        } else {
-            state.copy(fuelTrackingState = fuelTrackingState)
+            fuelTrackingState.hasRefueled -> state.copy(
+                lastAnnouncedRemainingLaps = -1,
+                fuelTrackingState = fuelTrackingState,
+            )
+            else -> state.copy(fuelTrackingState = fuelTrackingState)
         }
         val evaluation = calculateRemainingFuelLaps(stateAfterTracking, settings)
         val stateAfterEvaluation = stateAfterTracking.copy(lastFuelEvaluationLap = evaluation.evaluatedLap)
@@ -122,6 +126,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 currentGasLevel = telemetry.gasLevel,
                 bestLapTimeMs = telemetry.bestLapTimeMs,
                 totalRefueled = 0f,
+                hasRefueled = false,
                 isNewSession = true,
                 observedAtMs = observedAtMs,
             )
@@ -133,6 +138,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 currentGasLevel = telemetry.gasLevel,
                 bestLapTimeMs = telemetry.bestLapTimeMs,
                 totalRefueled = 0f,
+                hasRefueled = false,
                 isNewSession = false,
                 observedAtMs = observedAtMs,
             )
@@ -149,6 +155,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                     currentGasLevel = telemetry.gasLevel,
                     bestLapTimeMs = telemetry.bestLapTimeMs,
                     totalRefueled = state.totalRefueled + refueled,
+                    hasRefueled = refueled > 0f,
                     isNewSession = false,
                     observedAtMs = observedAtMs,
                 )
