@@ -156,6 +156,7 @@ fun OtherListPane(
             if (items.isNotEmpty()) {
                 item(key = "section_${section.name}") {
                     OtherListSectionHeader(section)
+                    HorizontalDivider()
                 }
                 items(items, key = { it.id }) { item ->
                     OtherListItem(
@@ -189,7 +190,7 @@ private fun OtherListSectionHeader(section: OtherListSection) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
     )
 }
 
