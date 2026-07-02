@@ -1,6 +1,3 @@
 package kurou.kodriver.feature.main
 
-actual fun currentAppVersion(): String =
-    AppVersion::class.java.`package`?.implementationVersion ?: ""
-
-private object AppVersion
+actual fun currentAppVersion(): String = GENERATED_APP_VERSION
