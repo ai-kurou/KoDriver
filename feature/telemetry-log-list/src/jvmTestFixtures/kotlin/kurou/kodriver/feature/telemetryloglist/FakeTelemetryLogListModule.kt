@@ -21,7 +21,10 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
 
     override fun observeTelemetryLogDetail(id: Long) = logs.map { logs ->
         val current = logs.firstOrNull { it.id == id } ?: return@map null
-        TelemetryLogDetail(current = current, previous = null)
+        val previous = logs
+            .filter { it.createdAt < current.createdAt || (it.createdAt == current.createdAt && it.id < current.id) }
+            .maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
+        TelemetryLogDetail(current = current, previous = previous)
     }
 
     override suspend fun saveTelemetryLog(log: TelemetryLog) {

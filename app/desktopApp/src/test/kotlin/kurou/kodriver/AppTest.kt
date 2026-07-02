@@ -132,7 +132,7 @@ class AppTest {
     }
 
     @Test
-    fun `ログタブを表示する`() {
+    fun `ログタブにログがない場合は空状態を表示する`() {
         setContent()
 
         clickItem("ログ")
@@ -166,6 +166,10 @@ class AppTest {
         waitUntilDisplayed("""{"flag":"green"}""")
         waitUntilDisplayed("lmu_windows / 200")
         waitUntilDisplayed("old_flag")
+        clickItem("new_flag")
+        waitUntilDisplayed("選択したログ")
+        waitUntilDisplayed("一つ前のログ")
+        waitUntilDisplayed("""{"flag":"yellow"}""")
     }
 
     private fun selectSimulator(simulatorName: String) {
