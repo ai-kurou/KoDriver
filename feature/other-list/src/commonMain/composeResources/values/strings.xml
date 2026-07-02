@@ -8,4 +8,8 @@
     <string name="item_license">ライセンス</string>
     <string name="item_server_ip">Windows版KoDriverへ接続するIPアドレス</string>
     <string name="item_console_ip">ゲーム機・SimHubへ接続するIPアドレス</string>
+    <string name="section_connection_settings">接続設定</string>
+    <string name="section_readout_settings">読み上げ設定</string>
+    <string name="section_app_settings">アプリ設定</string>
+    <string name="section_information">情報</string>
 </resources>

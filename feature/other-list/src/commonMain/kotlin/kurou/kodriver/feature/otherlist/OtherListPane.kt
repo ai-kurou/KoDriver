@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -44,7 +44,41 @@ import kodriver.feature.otherlist.generated.resources.item_readout_start_sound
 import kodriver.feature.otherlist.generated.resources.item_release_page
 import kodriver.feature.otherlist.generated.resources.item_server_ip
 import kodriver.feature.otherlist.generated.resources.item_volume
+import kodriver.feature.otherlist.generated.resources.section_app_settings
+import kodriver.feature.otherlist.generated.resources.section_connection_settings
+import kodriver.feature.otherlist.generated.resources.section_information
+import kodriver.feature.otherlist.generated.resources.section_readout_settings
 import org.jetbrains.compose.resources.stringResource
+
+private enum class OtherListSection {
+    ConnectionSettings,
+    ReadoutSettings,
+    AppSettings,
+    Information,
+}
+
+private val otherListSections = listOf(
+    OtherListSection.ConnectionSettings,
+    OtherListSection.ReadoutSettings,
+    OtherListSection.AppSettings,
+    OtherListSection.Information,
+)
+
+private fun OtherListItemType.section(): OtherListSection = when (this) {
+    OtherListItemType.ServerIp,
+    OtherListItemType.ConsoleIp,
+    -> OtherListSection.ConnectionSettings
+    OtherListItemType.Volume,
+    OtherListItemType.ReadoutStartSound,
+    -> OtherListSection.ReadoutSettings
+    OtherListItemType.KeepScreenOn,
+    OtherListItemType.ExitConfirmation,
+    -> OtherListSection.AppSettings
+    OtherListItemType.GitHubRepository,
+    OtherListItemType.ReleasePage,
+    OtherListItemType.License,
+    -> OtherListSection.Information
+}
 
 @Composable
 private fun otherItemDisplayName(itemType: OtherListItemType): String = when (itemType) {
@@ -57,6 +91,14 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
     OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
     OtherListItemType.License -> stringResource(Res.string.item_license)
+}
+
+@Composable
+private fun otherListSectionTitle(section: OtherListSection): String = when (section) {
+    OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
+    OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
+    OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
+    OtherListSection.Information -> stringResource(Res.string.section_information)
 }
 
 @Composable
@@ -108,66 +150,106 @@ fun OtherListPane(
             .fillMaxSize()
             .padding(vertical = 8.dp),
     ) {
-        itemsIndexed(uiState.items, key = { _, item -> item.id }) { index, item ->
-            Surface(
-                color = if (item == uiState.selectedItem) {
-                    MaterialTheme.colorScheme.secondaryContainer
-                } else {
-                    MaterialTheme.colorScheme.surface
-                },
-            ) {
-                ListItem(
-                    headlineContent = { Text(otherItemDisplayName(item)) },
-                    leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
-                    trailingContent = {
-                        when (item) {
-                            OtherListItemType.KeepScreenOn -> Switch(
-                                checked = uiState.keepScreenOn,
-                                onCheckedChange = onKeepScreenOnChange,
-                            )
-                            OtherListItemType.ExitConfirmation -> Switch(
-                                checked = uiState.exitConfirmationEnabled,
-                                onCheckedChange = onExitConfirmationEnabledChange,
-                            )
-                            else -> OtherListItemTrailingIcon(item)
-                        }
-                    },
-                    colors = if (item == uiState.selectedItem) {
-                        ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                            trailingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        )
-                    } else {
-                        ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            headlineColor = MaterialTheme.colorScheme.onSurface,
-                            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            when (item) {
-                                OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
-                                OtherListItemType.ExitConfirmation ->
-                                    onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
-                                else -> onItemClick(item)
-                            }
-                        },
-                )
+        val groupedItems = uiState.items.groupBy { it.section() }
+        otherListSections.forEach { section ->
+            val items = groupedItems[section].orEmpty()
+            if (items.isNotEmpty()) {
+                item(key = "section_${section.name}") {
+                    OtherListSectionHeader(section)
+                }
+                items(items, key = { it.id }) { item ->
+                    OtherListItem(
+                        item = item,
+                        uiState = uiState,
+                        onKeepScreenOnChange = onKeepScreenOnChange,
+                        onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
+                        onItemClick = onItemClick,
+                    )
+                    HorizontalDivider()
+                }
             }
-            HorizontalDivider()
         }
-        item(key = "app_version") {
-            OtherAppVersionListItem(
-                appVersionLabel = uiState.appVersionLabel,
-                appVersion = uiState.appVersion,
-            )
-            HorizontalDivider()
+        if (uiState.appVersionLabel.isNotBlank() && uiState.appVersion.isNotBlank()) {
+            item(key = "app_version") {
+                OtherAppVersionListItem(
+                    appVersionLabel = uiState.appVersionLabel,
+                    appVersion = uiState.appVersion,
+                )
+                HorizontalDivider()
+            }
         }
+    }
+}
+
+@Composable
+private fun OtherListSectionHeader(section: OtherListSection) {
+    Text(
+        text = otherListSectionTitle(section),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    )
+}
+
+@Composable
+private fun OtherListItem(
+    item: OtherListItemType,
+    uiState: OtherListUiState,
+    onKeepScreenOnChange: (Boolean) -> Unit,
+    onExitConfirmationEnabledChange: (Boolean) -> Unit,
+    onItemClick: (OtherListItemType) -> Unit,
+) {
+    Surface(
+        color = if (item == uiState.selectedItem) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+    ) {
+        ListItem(
+            headlineContent = { Text(otherItemDisplayName(item)) },
+            leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
+            trailingContent = {
+                when (item) {
+                    OtherListItemType.KeepScreenOn -> Switch(
+                        checked = uiState.keepScreenOn,
+                        onCheckedChange = onKeepScreenOnChange,
+                    )
+                    OtherListItemType.ExitConfirmation -> Switch(
+                        checked = uiState.exitConfirmationEnabled,
+                        onCheckedChange = onExitConfirmationEnabledChange,
+                    )
+                    else -> OtherListItemTrailingIcon(item)
+                }
+            },
+            colors = if (item == uiState.selectedItem) {
+                ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    trailingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            } else {
+                ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    headlineColor = MaterialTheme.colorScheme.onSurface,
+                    leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    when (item) {
+                        OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
+                        OtherListItemType.ExitConfirmation ->
+                            onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
+                        else -> onItemClick(item)
+                    }
+                },
+        )
     }
 }
 

@@ -161,4 +161,47 @@ class OtherListPaneTest {
         rule.onAllNodesWithText("Android版KoDriverバージョン").assertCountEquals(1)
         rule.onAllNodesWithText("1.2.3").assertCountEquals(1)
     }
+
+    @Test
+    fun `表示項目に応じたセクション見出しを表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = listOf(
+                        OtherListItemType.ConsoleIp,
+                        OtherListItemType.Volume,
+                        OtherListItemType.ExitConfirmation,
+                        OtherListItemType.License,
+                    ),
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("接続設定").assertCountEquals(1)
+        rule.onAllNodesWithText("読み上げ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("情報").assertCountEquals(1)
+    }
+
+    @Test
+    fun `項目がないセクション見出しは表示しない`() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = listOf(OtherListItemType.Volume),
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("接続設定").assertCountEquals(0)
+        rule.onAllNodesWithText("読み上げ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("アプリ設定").assertCountEquals(0)
+        rule.onAllNodesWithText("情報").assertCountEquals(0)
+    }
 }
