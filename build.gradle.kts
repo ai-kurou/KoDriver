@@ -106,13 +106,10 @@ moduleGraphAssert {
     )
     allowed = arrayOf(
         // app エントリーポイント → app:shared
-        ":app:androidApp -> :app:shared",
-        ":app:desktopApp -> :app:shared",
-        ":app:webApp -> :app:shared",
+        ":app:.*App -> :app:shared",
         // app エントリーポイント → core:data 系（composition root で DI バインドするための参照）
         // .*data にマッチ: core:data, core:*-data。core:domain / core:designsystem は除外される
-        ":app:androidApp -> :core:.*data",
-        ":app:desktopApp -> :core:.*data",
+        ":app:.*App -> :core:.*data",
         // Desktop app → server（同一プロセスで Ktor サーバーを起動するため）
         ":app:desktopApp -> :server",
         // app:shared → feature
@@ -127,12 +124,8 @@ moduleGraphAssert {
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層への直接参照禁止）
-        ":app:androidApp -X> :feature:.*",
-        ":app:desktopApp -X> :feature:.*",
-        ":app:webApp -X> :feature:.*",
-        ":app:androidApp -X> :core:domain",
-        ":app:desktopApp -X> :core:domain",
-        ":app:webApp -X> :core:domain",
+        ":app:.*App -X> :feature:.*",
+        ":app:.*App -X> :core:domain",
         // app:shared（上位 app・core・server への参照禁止）
         ":app:shared -X> :app:.*",
         ":app:shared -X> :core:.*",
