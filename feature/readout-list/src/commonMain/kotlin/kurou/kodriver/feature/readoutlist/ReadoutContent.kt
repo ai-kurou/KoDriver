@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -14,7 +15,10 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,6 +30,8 @@ import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.AppBackHandler
+import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
@@ -36,7 +42,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
-    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    backHandler: AppBackHandler = { _, _, _ -> },
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val viewModel: ReadoutListViewModel = koinViewModel()
@@ -68,7 +74,7 @@ internal fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
-    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    backHandler: AppBackHandler = { _, _, _ -> },
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -90,7 +96,9 @@ internal fun ReadoutContent(
         },
     )
     val scope = rememberCoroutineScope()
+    var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
+        predictiveBackProgress = 0f
         scope.launch { navigator.navigateBack() }
         onClearSelectedItem()
     }
@@ -108,7 +116,7 @@ internal fun ReadoutContent(
         )
     }
 
-    backHandler(navigator.canNavigateBack()) { navigateBack() }
+    backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
@@ -135,12 +143,14 @@ internal fun ReadoutContent(
                     ReadoutListItemType.Gt7Ps5.RemainingFuelLaps ->
                         stringResource(Res.string.item_remaining_fuel_laps)
                 }
-                ReadoutDetailPane(
-                    title = title,
-                    canNavigateBack = navigator.canNavigateBack(),
-                    onBack = { navigateBack() },
-                    content = { detailContent(selectedItem) },
-                )
+                Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
+                    ReadoutDetailPane(
+                        title = title,
+                        canNavigateBack = navigator.canNavigateBack(),
+                        onBack = { navigateBack() },
+                        content = { detailContent(selectedItem) },
+                    )
+                }
             }
         },
     )

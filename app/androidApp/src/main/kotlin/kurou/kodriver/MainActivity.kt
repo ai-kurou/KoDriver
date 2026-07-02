@@ -16,12 +16,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppScreen(
-                backHandler = { enabled, onBack ->
+                backHandler = { enabled, onProgress, onBack ->
                     PredictiveBackHandler(enabled = enabled) { progress ->
                         try {
-                            progress.collect {}
+                            progress.collect { backEvent ->
+                                onProgress(backEvent.progress)
+                            }
+                            onProgress(1f)
                             onBack()
                         } catch (e: CancellationException) {
+                            onProgress(0f)
                             throw e
                         }
                     }

@@ -155,7 +155,7 @@ private fun AppNavIcon(
 
 @Composable
 private fun DefaultOtherContent(
-    backHandler: @Composable (Boolean, () -> Unit) -> Unit,
+    backHandler: AppBackHandler,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
@@ -181,7 +181,7 @@ fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
     readoutListViewModel: ReadoutListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),
-    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
+    backHandler: AppBackHandler = { _, _, _ -> },
     onExit: () -> Unit = {},
     exitRequested: Boolean = false,
     onExitRequestConsumed: () -> Unit = {},
@@ -241,7 +241,7 @@ fun AppScreen(
         }
     }
 
-    backHandler(uiState.exitConfirmationEnabled) {
+    backHandler(uiState.exitConfirmationEnabled, {}) {
         showExitConfirmationDialog = true
     }
 
