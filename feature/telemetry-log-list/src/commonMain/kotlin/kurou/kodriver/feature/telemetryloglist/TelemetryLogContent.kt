@@ -14,11 +14,13 @@ import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
+import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.TelemetryLog
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -27,6 +29,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun TelemetryLogContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val viewModel = koinViewModel<TelemetryLogListViewModel>()
@@ -34,8 +37,10 @@ fun TelemetryLogContent(
     TelemetryLogContentScaffold(
         uiState = uiState,
         onLogSelected = viewModel::selectLog,
+        onClearSelectedLog = viewModel::clearSelectedLog,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
+        backHandler = backHandler,
         detailContent = detailContent,
     )
 }
@@ -45,9 +50,11 @@ fun TelemetryLogContent(
 internal fun TelemetryLogContentScaffold(
     uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
     onLogSelected: (Long) -> Unit = {},
+    onClearSelectedLog: () -> Unit = {},
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+    backHandler: @Composable (Boolean, () -> Unit) -> Unit = { _, _ -> },
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -72,6 +79,11 @@ internal fun TelemetryLogContentScaffold(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,
     )
+    val scope = rememberCoroutineScope()
+    val navigateBack = {
+        scope.launch { navigator.navigateBack() }
+        onClearSelectedLog()
+    }
 
     LaunchedEffect(uiState.selectedLogId) {
         navigator.navigateTo(
@@ -81,6 +93,8 @@ internal fun TelemetryLogContentScaffold(
                 ListDetailPaneScaffoldRole.List,
         )
     }
+
+    backHandler(navigator.canNavigateBack()) { navigateBack() }
 
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
