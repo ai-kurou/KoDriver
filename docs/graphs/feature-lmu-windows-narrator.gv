@@ -1,6 +1,5 @@
 digraph G {
   rankdir=TB
-  ":app:shared" -> ":core:designsystem"
   ":app:shared" -> ":feature:lmu-windows-narrator"
   ":feature:lmu-windows-narrator" -> ":core:domain"
   ":feature:lmu-windows-narrator" -> ":core:designsystem"

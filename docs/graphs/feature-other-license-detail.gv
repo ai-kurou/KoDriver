@@ -1,6 +1,5 @@
 digraph G {
   rankdir=TB
-  ":app:shared" -> ":core:designsystem"
   ":app:shared" -> ":feature:other-license-detail"
   ":feature:other-license-detail" -> ":core:domain"
   ":feature:other-license-detail" -> ":core:designsystem"

@@ -9,7 +9,6 @@ digraph G {
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":server"
-  ":app:shared" -> ":core:designsystem"
   ":app:shared" -> ":feature:main"
   ":app:shared" -> ":feature:lmu-windows-connection"
   ":app:shared" -> ":feature:gt7-ps5-connection"
