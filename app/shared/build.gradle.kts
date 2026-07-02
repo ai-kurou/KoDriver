@@ -50,7 +50,6 @@ kotlin {
             implementation(libs.compose.uiTooling)
         }
         commonMain.dependencies {
-            implementation(projects.core.designsystem)
             implementation(projects.feature.main)
             implementation(projects.feature.lmuWindowsConnection)
             implementation(projects.feature.gt7Ps5Connection)

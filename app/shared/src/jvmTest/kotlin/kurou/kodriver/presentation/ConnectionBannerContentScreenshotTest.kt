@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 
@@ -110,7 +109,7 @@ class ConnectionBannerContentScreenshotTest {
 
     private fun setThemedContent(content: @Composable () -> Unit) {
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 Surface(content = content)
             }
         }

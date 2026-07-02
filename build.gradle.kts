@@ -117,8 +117,6 @@ moduleGraphAssert {
         ":app:desktopApp -> :server",
         // app:shared → feature
         ":app:shared -> :feature:.*",
-        // app:shared → core:designsystem（アプリ全体のテーマ・共通 UI コンポーネントの利用）
-        ":app:shared -> :core:designsystem",
         // feature → core:domain
         ":feature:.* -> :core:domain",
         // feature → core:designsystem（共通 UI コンポーネントの利用）

@@ -3,7 +3,6 @@ package kurou.kodriver.presentation
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -20,7 +19,7 @@ class ExitConfirmationDialogTest {
     fun `キャンセルボタンを押すとonDismissが呼ばれる`() {
         var dismissed = false
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 ExitConfirmationDialog(
                     onDismiss = { dismissed = true },
                     onConfirm = {},
@@ -38,7 +37,7 @@ class ExitConfirmationDialogTest {
     fun `今後表示しないをオフのまま終了するとdoNotShowAgainがfalseでonConfirmが呼ばれる`() {
         var confirmedWith: Boolean? = null
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 ExitConfirmationDialog(
                     onDismiss = {},
                     onConfirm = { confirmedWith = it },
@@ -56,7 +55,7 @@ class ExitConfirmationDialogTest {
     fun `今後表示しないをオンにして終了するとdoNotShowAgainがtrueでonConfirmが呼ばれる`() {
         var confirmedWith: Boolean? = null
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 ExitConfirmationDialog(
                     onDismiss = {},
                     onConfirm = { confirmedWith = it },
@@ -76,7 +75,7 @@ class ExitConfirmationDialogTest {
     fun `キャンセルを押してもonConfirmは呼ばれない`() {
         var confirmedWith: Boolean? = null
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 ExitConfirmationDialog(
                     onDismiss = {},
                     onConfirm = { confirmedWith = it },
@@ -94,7 +93,7 @@ class ExitConfirmationDialogTest {
     fun `終了ボタンを押してもonDismissは呼ばれない`() {
         var dismissed = false
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 ExitConfirmationDialog(
                     onDismiss = { dismissed = true },
                     onConfirm = {},

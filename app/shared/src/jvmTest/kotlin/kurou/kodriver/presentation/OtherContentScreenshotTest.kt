@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
@@ -25,7 +24,7 @@ class OtherContentScreenshotTest {
     @Test
     fun `音量詳細を表示`() {
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                         OtherContent(

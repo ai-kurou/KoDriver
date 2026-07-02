@@ -8,7 +8,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
@@ -28,7 +27,7 @@ class OtherContentScreenshotTest {
     @Test
     fun `音量詳細を表示`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            KoDriverTheme {
+            AppTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherContent(

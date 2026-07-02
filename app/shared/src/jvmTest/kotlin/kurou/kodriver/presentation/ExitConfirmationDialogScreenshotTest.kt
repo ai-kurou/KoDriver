@@ -7,7 +7,6 @@ import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,7 +18,7 @@ class ExitConfirmationDialogScreenshotTest {
     @Test
     fun `デフォルト`() {
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 Surface {
                     ExitConfirmationDialog(
                         onDismiss = {},
@@ -34,7 +33,7 @@ class ExitConfirmationDialogScreenshotTest {
     @Test
     fun `次から表示しないにチェック済み`() {
         rule.setContent {
-            KoDriverTheme {
+            AppTheme {
                 Surface {
                     ExitConfirmationDialog(
                         onDismiss = {},
