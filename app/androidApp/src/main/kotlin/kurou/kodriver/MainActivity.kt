@@ -1,8 +1,10 @@
 package kurou.kodriver
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.ExperimentalActivityApi
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,7 +14,12 @@ import kurou.kodriver.presentation.AppScreen
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalActivityApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                scrim = Color.TRANSPARENT,
+                darkScrim = Color.TRANSPARENT,
+            ),
+        )
         super.onCreate(savedInstanceState)
         setContent {
             AppScreen(
