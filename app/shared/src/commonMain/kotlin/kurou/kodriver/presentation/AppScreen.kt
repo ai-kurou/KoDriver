@@ -201,6 +201,7 @@ fun AppScreen(
     },
     telemetryLogContent: @Composable () -> Unit = {
         TelemetryLogContent(
+            backHandler = backHandler,
             detailContent = { id ->
                 TelemetryLogDetailContent(id = id)
             },

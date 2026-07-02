@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,14 +13,30 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class TelemetryLogContentTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
+
+    private val singlePaneDirective = PaneScaffoldDirective(
+        maxHorizontalPartitions = 1,
+        horizontalPartitionSpacerSize = 0.dp,
+        maxVerticalPartitions = 1,
+        verticalPartitionSpacerSize = 0.dp,
+        defaultPanePreferredWidth = 360.dp,
+        excludedBounds = emptyList(),
+    )
 
     @Test
     fun `一覧ペインにログを表示する`() {
@@ -59,6 +77,43 @@ class TelemetryLogContentTest {
         rule.onNodeWithText("vehicle_approach").performClick()
 
         rule.onNodeWithText("selected: 2").assertExists()
+    }
+
+    @Test
+    fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
+        var backEnabled = false
+        var capturedOnBack: (() -> Unit)? = null
+
+        rule.setContent {
+            var selectedLogId by remember { mutableStateOf<Long?>(null) }
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(selectedLogId = selectedLogId),
+                onLogSelected = { selectedLogId = it },
+                onClearSelectedLog = { selectedLogId = null },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled, onBack ->
+                    backEnabled = enabled
+                    capturedOnBack = onBack
+                },
+                detailContent = { id ->
+                    Text("selected: $id")
+                },
+            )
+        }
+
+        assertFalse(backEnabled)
+
+        rule.onNodeWithText("vehicle_approach").performClick()
+        rule.waitUntil { backEnabled }
+        rule.onNodeWithText("selected: 2").assertExists()
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitUntil { !backEnabled }
+
+        assertFalse(backEnabled)
+        rule.onNodeWithText("vehicle_approach").assertExists()
     }
 
     @Test
