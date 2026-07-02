@@ -28,6 +28,7 @@ dependencies {
 
     androidTestImplementation(libs.androidx.testExt.junit)
     androidTestImplementation(libs.compose.uiTestJunit4)
+    androidTestImplementation(projects.core.domain)
     debugImplementation(libs.compose.uiTest)
 }
 

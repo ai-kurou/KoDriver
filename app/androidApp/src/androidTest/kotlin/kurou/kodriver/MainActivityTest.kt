@@ -1,7 +1,5 @@
 package kurou.kodriver
 
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
@@ -13,9 +11,13 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.repository.TelemetryLogRepository
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.GlobalContext
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -122,34 +124,10 @@ class MainActivityTest {
     }
 
     private fun saveTelemetryLogs(logs: List<TelemetryLogTestData>) {
-        val database = SQLiteDatabase.openOrCreateDatabase(
-            composeTestRule.activity.getDatabasePath(TELEMETRY_LOG_DATABASE_NAME),
-            null,
-        )
-        database.use { db ->
-            db.execSQL(
-                """
-                CREATE TABLE IF NOT EXISTS telemetry_logs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                    createdAt INTEGER NOT NULL,
-                    simulatorId TEXT NOT NULL,
-                    readoutItemKey TEXT NOT NULL,
-                    telemetryJson TEXT NOT NULL
-                )
-                """.trimIndent(),
-            )
+        val repository = GlobalContext.get().get<TelemetryLogRepository>()
+        runBlocking {
             logs.forEach { log ->
-                db.insert(
-                    "telemetry_logs",
-                    null,
-                    ContentValues().apply {
-                        put("id", log.id)
-                        put("createdAt", log.createdAt)
-                        put("simulatorId", log.simulatorId)
-                        put("readoutItemKey", log.readoutItemKey)
-                        put("telemetryJson", log.telemetryJson)
-                    },
-                )
+                repository.saveTelemetryLog(log.toTelemetryLog())
             }
         }
     }
@@ -242,4 +220,12 @@ private data class TelemetryLogTestData(
     val simulatorId: String,
     val readoutItemKey: String,
     val telemetryJson: String,
+)
+
+private fun TelemetryLogTestData.toTelemetryLog() = TelemetryLog(
+    id = id,
+    createdAt = createdAt,
+    simulatorId = simulatorId,
+    readoutItemKey = readoutItemKey,
+    telemetryJson = telemetryJson,
 )
