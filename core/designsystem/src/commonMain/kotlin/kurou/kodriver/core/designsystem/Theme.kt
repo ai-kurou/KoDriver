@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation
+package kurou.kodriver.core.designsystem
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme

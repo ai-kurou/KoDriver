@@ -30,14 +30,26 @@
 <!-- :core:domain -->
 <g id="node3" class="node">
 <title>:core:domain</title>
-<ellipse fill="none" stroke="black" cx="199.53" cy="-18" rx="70.69" ry="18"/>
-<text text-anchor="middle" x="199.53" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
+<ellipse fill="none" stroke="black" cx="104.53" cy="-18" rx="70.69" ry="18"/>
+<text text-anchor="middle" x="104.53" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:domain -->
 <g id="edge2" class="edge">
 <title>:feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M199.53,-71.7C199.53,-63.98 199.53,-54.71 199.53,-46.11"/>
-<polygon fill="black" stroke="black" points="203.03,-46.1 199.53,-36.1 196.03,-46.1 203.03,-46.1"/>
+<path fill="none" stroke="black" d="M176.54,-72.05C163.98,-62.81 148.29,-51.24 134.76,-41.27"/>
+<polygon fill="black" stroke="black" points="136.79,-38.42 126.66,-35.31 132.64,-44.06 136.79,-38.42"/>
+</g>
+<!-- :core:designsystem -->
+<g id="node4" class="node">
+<title>:core:designsystem</title>
+<ellipse fill="none" stroke="black" cx="294.53" cy="-18" rx="100.98" ry="18"/>
+<text text-anchor="middle" x="294.53" y="-14.3" font-family="Times,serif" font-size="14.00">:core:designsystem</text>
+</g>
+<!-- :feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:designsystem -->
+<g id="edge3" class="edge">
+<title>:feature:other&#45;readout&#45;start&#45;sound&#45;detail&#45;&gt;:core:designsystem</title>
+<path fill="none" stroke="black" d="M222.53,-72.05C234.99,-62.87 250.55,-51.41 264.01,-41.49"/>
+<polygon fill="black" stroke="black" points="266.1,-44.3 272.08,-35.55 261.95,-38.66 266.1,-44.3"/>
 </g>
 </g>
 </svg>

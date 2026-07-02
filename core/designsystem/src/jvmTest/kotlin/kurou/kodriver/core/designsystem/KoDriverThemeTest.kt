@@ -1,4 +1,4 @@
-package kurou.kodriver.presentation
+package kurou.kodriver.core.designsystem
 
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Rule

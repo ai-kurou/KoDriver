@@ -2,9 +2,7 @@
 
 package kurou.kodriver.presentation
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -20,7 +18,7 @@ class ExitConfirmationDialogScreenshotTest {
     @Test
     fun `デフォルト`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            AppTheme {
                 Surface {
                     ExitConfirmationDialog(
                         onDismiss = {},
@@ -35,7 +33,7 @@ class ExitConfirmationDialogScreenshotTest {
     @Test
     fun `次から表示しないにチェック済み`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            AppTheme {
                 Surface {
                     ExitConfirmationDialog(
                         onDismiss = {},

@@ -4,10 +4,8 @@ package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.feature.otherlist.OtherListItemType
@@ -29,7 +27,7 @@ class OtherContentScreenshotTest {
     @Test
     fun `音量詳細を表示`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            AppTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherContent(

@@ -4,11 +4,10 @@ package kurou.kodriver.feature.otherreadoutstartsounddetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -24,7 +23,7 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
     @Test
     fun `デフォルト`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherReadoutStartSoundDetailDialogContent(
@@ -39,7 +38,7 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
     @Test
     fun `保存済みと異なる種別を選択中`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherReadoutStartSoundDetailDialogContent(

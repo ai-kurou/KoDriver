@@ -331,7 +331,7 @@ internal fun AppScreenContent(
         currentDestination = AppDestination.More
     }
 
-    KoDriverTheme {
+    AppTheme {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         val resolvedLayoutType = layoutType ?: when {
             windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ->
