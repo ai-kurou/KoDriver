@@ -15,47 +15,41 @@
 <ellipse fill="none" stroke="black" cx="87.09" cy="-162" rx="87.18" ry="18"/>
 <text text-anchor="middle" x="87.09" y="-158.3" font-family="Times,serif" font-size="14.00">:app:androidApp</text>
 </g>
-<!-- :core:domain -->
-<g id="node2" class="node">
-<title>:core:domain</title>
-<ellipse fill="none" stroke="black" cx="129.09" cy="-18" rx="70.69" ry="18"/>
-<text text-anchor="middle" x="129.09" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
-</g>
-<!-- :app:androidApp&#45;&gt;:core:domain -->
-<g id="edge1" class="edge">
-<title>:app:androidApp&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M89.68,-144.01C92.68,-125.9 98.24,-96.53 106.09,-72 108.91,-63.21 112.67,-53.89 116.33,-45.56"/>
-<polygon fill="black" stroke="black" points="119.58,-46.88 120.53,-36.33 113.21,-43.99 119.58,-46.88"/>
-</g>
 <!-- :core:data -->
-<g id="node3" class="node">
+<g id="node2" class="node">
 <title>:core:data</title>
-<ellipse fill="none" stroke="black" cx="172.09" cy="-90" rx="57.39" ry="18"/>
-<text text-anchor="middle" x="172.09" y="-86.3" font-family="Times,serif" font-size="14.00">:core:data</text>
+<ellipse fill="none" stroke="black" cx="183.09" cy="-90" rx="57.39" ry="18"/>
+<text text-anchor="middle" x="183.09" y="-86.3" font-family="Times,serif" font-size="14.00">:core:data</text>
 </g>
 <!-- :app:androidApp&#45;&gt;:core:data -->
-<g id="edge2" class="edge">
+<g id="edge1" class="edge">
 <title>:app:androidApp&#45;&gt;:core:data</title>
-<path fill="none" stroke="black" d="M107.24,-144.41C118.4,-135.21 132.45,-123.64 144.62,-113.63"/>
-<polygon fill="black" stroke="black" points="147.18,-116.05 152.68,-106.99 142.73,-110.64 147.18,-116.05"/>
+<path fill="none" stroke="black" d="M109.84,-144.41C122.79,-134.97 139.17,-123.03 153.15,-112.83"/>
+<polygon fill="black" stroke="black" points="155.48,-115.47 161.49,-106.75 151.35,-109.81 155.48,-115.47"/>
+</g>
+<!-- :core:domain -->
+<g id="node4" class="node">
+<title>:core:domain</title>
+<ellipse fill="none" stroke="black" cx="183.09" cy="-18" rx="70.69" ry="18"/>
+<text text-anchor="middle" x="183.09" y="-14.3" font-family="Times,serif" font-size="14.00">:core:domain</text>
 </g>
 <!-- :core:data&#45;&gt;:core:domain -->
-<g id="edge4" class="edge">
+<g id="edge3" class="edge">
 <title>:core:data&#45;&gt;:core:domain</title>
-<path fill="none" stroke="black" d="M161.68,-72.05C156.69,-63.92 150.59,-54 145.03,-44.94"/>
-<polygon fill="black" stroke="black" points="147.92,-42.96 139.7,-36.28 141.96,-46.63 147.92,-42.96"/>
+<path fill="none" stroke="black" d="M183.09,-71.7C183.09,-63.98 183.09,-54.71 183.09,-46.11"/>
+<polygon fill="black" stroke="black" points="186.59,-46.1 183.09,-36.1 179.59,-46.1 186.59,-46.1"/>
 </g>
 <!-- :app:desktopApp -->
-<g id="node4" class="node">
+<g id="node3" class="node">
 <title>:app:desktopApp</title>
 <ellipse fill="none" stroke="black" cx="280.09" cy="-162" rx="88.28" ry="18"/>
 <text text-anchor="middle" x="280.09" y="-158.3" font-family="Times,serif" font-size="14.00">:app:desktopApp</text>
 </g>
 <!-- :app:desktopApp&#45;&gt;:core:data -->
-<g id="edge3" class="edge">
+<g id="edge2" class="edge">
 <title>:app:desktopApp&#45;&gt;:core:data</title>
-<path fill="none" stroke="black" d="M254.77,-144.59C239.83,-134.9 220.77,-122.55 204.71,-112.14"/>
-<polygon fill="black" stroke="black" points="206.44,-109.09 196.14,-106.59 202.63,-114.96 206.44,-109.09"/>
+<path fill="none" stroke="black" d="M257.1,-144.41C244.02,-134.97 227.48,-123.03 213.35,-112.83"/>
+<polygon fill="black" stroke="black" points="215.07,-109.76 204.92,-106.75 210.98,-115.44 215.07,-109.76"/>
 </g>
 </g>
 </svg>
