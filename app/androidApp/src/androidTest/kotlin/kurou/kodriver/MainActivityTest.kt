@@ -1,5 +1,7 @@
 package kurou.kodriver
 
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
@@ -75,7 +77,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `ログタブを表示する`() {
+    fun `ログタブにログがない場合は空状態を表示する`() {
         clearTelemetryLogDatabase()
 
         clickItem("ログ")
@@ -83,8 +85,69 @@ class MainActivityTest {
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
     }
 
+    @Test
+    fun `ログタブにログがある場合は一覧を表示する`() {
+        clearTelemetryLogDatabase()
+        saveTelemetryLogs(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = "old_flag",
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+                telemetryLog(
+                    id = 2,
+                    createdAt = 200,
+                    readoutItemKey = "new_flag",
+                    telemetryJson = """{"flag":"green"}""",
+                ),
+            ),
+        )
+
+        clickItem("ログ")
+
+        waitUntilDisplayed("new_flag")
+        waitUntilDisplayed("""{"flag":"green"}""")
+        waitUntilDisplayed("lmu_windows / 200")
+        waitUntilDisplayed("old_flag")
+    }
+
     private fun clearTelemetryLogDatabase() {
         composeTestRule.activity.deleteDatabase(TELEMETRY_LOG_DATABASE_NAME)
+    }
+
+    private fun saveTelemetryLogs(logs: List<TelemetryLogTestData>) {
+        val database = SQLiteDatabase.openOrCreateDatabase(
+            composeTestRule.activity.getDatabasePath(TELEMETRY_LOG_DATABASE_NAME),
+            null,
+        )
+        database.use { db ->
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS telemetry_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    createdAt INTEGER NOT NULL,
+                    simulatorId TEXT NOT NULL,
+                    readoutItemKey TEXT NOT NULL,
+                    telemetryJson TEXT NOT NULL
+                )
+                """.trimIndent(),
+            )
+            logs.forEach { log ->
+                db.insert(
+                    "telemetry_logs",
+                    null,
+                    ContentValues().apply {
+                        put("id", log.id)
+                        put("createdAt", log.createdAt)
+                        put("simulatorId", log.simulatorId)
+                        put("readoutItemKey", log.readoutItemKey)
+                        put("telemetryJson", log.telemetryJson)
+                    },
+                )
+            }
+        }
     }
 
     private fun selectSimulator(simulatorName: String) {
@@ -155,3 +218,24 @@ class MainActivityTest {
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
     }
 }
+
+private fun telemetryLog(
+    id: Long,
+    createdAt: Long,
+    readoutItemKey: String,
+    telemetryJson: String,
+) = TelemetryLogTestData(
+    id = id,
+    createdAt = createdAt,
+    simulatorId = "lmu_windows",
+    readoutItemKey = readoutItemKey,
+    telemetryJson = telemetryJson,
+)
+
+private data class TelemetryLogTestData(
+    val id: Long,
+    val createdAt: Long,
+    val simulatorId: String,
+    val readoutItemKey: String,
+    val telemetryJson: String,
+)
