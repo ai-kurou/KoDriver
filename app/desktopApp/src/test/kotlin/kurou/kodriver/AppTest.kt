@@ -19,12 +19,15 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
+import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.lmuwindowsnarrator.fakeLmuWindowsNarratorModule
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
+import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.appModules
 import org.junit.AfterClass
+import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
@@ -61,6 +64,11 @@ class AppTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    @Before
+    fun setUp() {
+        fakeTelemetryLogRepository.clear()
+    }
 
     @Test
     fun `LMU選択時に読み上げ項目を順にタップする`() {
@@ -132,6 +140,34 @@ class AppTest {
         waitUntilDisplayed("テレメトリを受信すると、ここに新しい順で表示されます。")
     }
 
+    @Test
+    fun `ログタブにログがある場合は一覧を表示する`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = "old_flag",
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+                telemetryLog(
+                    id = 2,
+                    createdAt = 200,
+                    readoutItemKey = "new_flag",
+                    telemetryJson = """{"flag":"green"}""",
+                ),
+            ),
+        )
+        setContent()
+
+        clickItem("ログ")
+
+        waitUntilDisplayed("new_flag")
+        waitUntilDisplayed("""{"flag":"green"}""")
+        waitUntilDisplayed("lmu_windows / 200")
+        waitUntilDisplayed("old_flag")
+    }
+
     private fun selectSimulator(simulatorName: String) {
         rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()
@@ -182,3 +218,16 @@ class AppTest {
         rule.waitForIdle()
     }
 }
+
+private fun telemetryLog(
+    id: Long,
+    createdAt: Long,
+    readoutItemKey: String,
+    telemetryJson: String,
+) = TelemetryLog(
+    id = id,
+    createdAt = createdAt,
+    simulatorId = "lmu_windows",
+    readoutItemKey = readoutItemKey,
+    telemetryJson = telemetryJson,
+)
