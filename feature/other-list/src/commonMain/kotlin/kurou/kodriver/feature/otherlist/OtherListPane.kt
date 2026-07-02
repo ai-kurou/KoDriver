@@ -152,13 +152,13 @@ fun OtherListPane(
     ) {
         val groupedItems = uiState.items.groupBy { it.section() }
         otherListSections.forEach { section ->
-            val items = groupedItems[section].orEmpty()
-            if (items.isNotEmpty()) {
+            val sectionItems = groupedItems[section].orEmpty()
+            if (sectionItems.isNotEmpty()) {
                 item(key = "section_${section.name}") {
                     OtherListSectionHeader(section)
                     HorizontalDivider()
                 }
-                items(items, key = { it.id }) { item ->
+                items(sectionItems, key = { it.id }) { item ->
                     OtherListItem(
                         item = item,
                         uiState = uiState,
