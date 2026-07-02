@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":core:designsystem"
   ":app:shared" -> ":feature:other-console-ip-detail"
   ":feature:other-console-ip-detail" -> ":core:domain"
   ":feature:other-console-ip-detail" -> ":core:designsystem"

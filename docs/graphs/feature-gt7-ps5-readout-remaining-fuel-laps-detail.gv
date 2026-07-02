@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":core:designsystem"
   ":app:shared" -> ":feature:gt7-ps5-readout-remaining-fuel-laps-detail"
   ":feature:gt7-ps5-readout-remaining-fuel-laps-detail" -> ":core:domain"
   ":feature:gt7-ps5-readout-remaining-fuel-laps-detail" -> ":core:designsystem"
