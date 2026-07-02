@@ -68,7 +68,7 @@ class ReadoutContentTest {
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
-                backHandler = { enabled, onBack ->
+                backHandler = { enabled, _, onBack ->
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
@@ -104,7 +104,7 @@ class ReadoutContentTest {
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
-                backHandler = { enabled, onBack ->
+                backHandler = { enabled, _, onBack ->
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
