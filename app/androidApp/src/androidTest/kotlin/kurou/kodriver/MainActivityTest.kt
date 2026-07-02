@@ -48,6 +48,7 @@ class MainActivityTest {
         selectSimulator("Le Mans Ultimate（Windows版）")
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
+        waitUntilDisplayed("IPアドレス")
         navigateBack()
     }
 
@@ -56,6 +57,7 @@ class MainActivityTest {
         selectSimulator("GranTurismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
+        waitUntilDisplayed("IPアドレス")
         navigateBack()
     }
 
@@ -68,6 +70,7 @@ class MainActivityTest {
         clickItem("画面をスリープさせない")
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
+        clickItem("終了確認を表示")
         clickItemAndNavigateBack("ライセンス")
     }
 
