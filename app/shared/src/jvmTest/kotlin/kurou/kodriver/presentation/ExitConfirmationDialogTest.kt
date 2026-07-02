@@ -3,6 +3,7 @@ package kurou.kodriver.presentation
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

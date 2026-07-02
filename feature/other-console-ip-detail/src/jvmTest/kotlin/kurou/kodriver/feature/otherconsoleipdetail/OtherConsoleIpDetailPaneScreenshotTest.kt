@@ -1,10 +1,9 @@
 package kurou.kodriver.feature.otherconsoleipdetail
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 
@@ -16,7 +15,7 @@ class OtherConsoleIpDetailPaneScreenshotTest {
     @Test
     fun `デフォルト`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
@@ -30,7 +29,7 @@ class OtherConsoleIpDetailPaneScreenshotTest {
     @Test
     fun `空入力`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
@@ -44,7 +43,7 @@ class OtherConsoleIpDetailPaneScreenshotTest {
     @Test
     fun `不正なIPアドレス`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
@@ -58,7 +57,7 @@ class OtherConsoleIpDetailPaneScreenshotTest {
     @Test
     fun `保存失敗`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
                         uiState = OtherConsoleIpDetailUiState(

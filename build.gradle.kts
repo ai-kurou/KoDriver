@@ -117,6 +117,8 @@ moduleGraphAssert {
         ":app:desktopApp -> :server",
         // app:shared → feature
         ":app:shared -> :feature:.*",
+        // app:shared → core:designsystem（アプリ全体のテーマ・共通 UI コンポーネントの利用）
+        ":app:shared -> :core:designsystem",
         // feature → core:domain
         ":feature:.* -> :core:domain",
         // feature → core:designsystem（共通 UI コンポーネントの利用）
@@ -133,9 +135,10 @@ moduleGraphAssert {
         ":app:androidApp -X> :core:domain",
         ":app:desktopApp -X> :core:domain",
         ":app:webApp -X> :core:domain",
-        // app:shared（上位 app・core・server への参照禁止）
+        // app:shared（上位 app・domain/data・server への参照禁止）
         ":app:shared -X> :app:.*",
-        ":app:shared -X> :core:.*",
+        ":app:shared -X> :core:domain",
+        ":app:shared -X> :core:.*data",
         ":app:shared -X> :server",
         // feature（上位 app・他 feature への参照禁止）
         ":feature:.* -X> :app:.*",

@@ -4,11 +4,10 @@ package kurou.kodriver.feature.otherlicensedetail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -23,7 +22,7 @@ class OtherLicenseDetailPaneScreenshotTest {
     @Test
     fun `デフォルト`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherLicenseDetailPane(

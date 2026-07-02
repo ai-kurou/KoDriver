@@ -2,13 +2,12 @@ package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -22,7 +21,7 @@ class ReadoutListPaneScreenshotTest {
     @Test
     fun `デフォルト`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
@@ -44,7 +43,7 @@ class ReadoutListPaneScreenshotTest {
     @Test
     fun `lmu_windows選択`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
@@ -77,7 +76,7 @@ class ReadoutListPaneScreenshotTest {
     @Test
     fun `gt7_ps5選択`() {
         rule.setContent {
-            MaterialTheme(colorScheme = lightColorScheme()) {
+            KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(

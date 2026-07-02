@@ -56,6 +56,7 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
