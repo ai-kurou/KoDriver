@@ -92,10 +92,10 @@ class MainActivityTest {
         clickItemAndNavigateBack("Windows版KoDriverへ接続するIPアドレス")
         clickItemAndNavigateBack("ゲーム機・SimHubへ接続するIPアドレス")
         clickItemAndNavigateBack("音量")
-        clickItem("画面をスリープさせない")
-        clickItem("読み上げ開始音")
+        clickScrollableItem("画面をスリープさせない")
+        clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
-        clickItem("終了確認を表示")
+        clickScrollableItem("終了確認を表示")
         clickItemAndNavigateBack("ライセンス")
     }
 
@@ -161,6 +161,11 @@ class MainActivityTest {
         scrollToItem(text)
         clickItem(text)
         navigateBack()
+    }
+
+    private fun clickScrollableItem(text: String) {
+        scrollToItem(text)
+        clickItem(text)
     }
 
     private fun scrollToItem(text: String) {
