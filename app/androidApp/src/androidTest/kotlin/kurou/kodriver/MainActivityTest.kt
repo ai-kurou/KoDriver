@@ -1,8 +1,5 @@
 package kurou.kodriver
 
-import android.content.ContentValues
-import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
@@ -14,12 +11,16 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
+import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityTest {
@@ -27,6 +28,12 @@ class MainActivityTest {
     val composeTestRule = createEmptyComposeRule()
 
     private var scenario: ActivityScenario<MainActivity>? = null
+
+    @Before
+    fun setUp() {
+        loadFakeTelemetryLogListModuleIfNeeded()
+        fakeTelemetryLogRepository.clear()
+    }
 
     @After
     fun tearDown() {
@@ -94,7 +101,6 @@ class MainActivityTest {
 
     @Test
     fun `ログタブにログがない場合は空状態を表示する`() {
-        clearTelemetryLogDatabase()
         launchActivity()
 
         clickItem("ログ")
@@ -104,8 +110,7 @@ class MainActivityTest {
 
     @Test
     fun `ログタブにログがある場合は一覧を表示する`() {
-        clearTelemetryLogDatabase()
-        saveTelemetryLogs(
+        fakeTelemetryLogRepository.emit(
             listOf(
                 telemetryLog(
                     id = 1,
@@ -133,43 +138,6 @@ class MainActivityTest {
         waitUntilDisplayed("選択したログ")
         waitUntilDisplayed("一つ前のログ")
         waitUntilDisplayed("""{"flag":"yellow"}""")
-    }
-
-    private fun clearTelemetryLogDatabase() {
-        applicationContext.deleteDatabase(TELEMETRY_LOG_DATABASE_NAME)
-    }
-
-    private fun saveTelemetryLogs(logs: List<TelemetryLogTestData>) {
-        val database = SQLiteDatabase.openOrCreateDatabase(
-            applicationContext.getDatabasePath(TELEMETRY_LOG_DATABASE_NAME),
-            null,
-        )
-        database.use { db ->
-            db.execSQL(
-                """
-                CREATE TABLE IF NOT EXISTS telemetry_logs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                    createdAt INTEGER NOT NULL,
-                    simulatorId TEXT NOT NULL,
-                    readoutItemKey TEXT NOT NULL,
-                    telemetryJson TEXT NOT NULL
-                )
-                """.trimIndent(),
-            )
-            logs.forEach { log ->
-                db.insert(
-                    "telemetry_logs",
-                    null,
-                    ContentValues().apply {
-                        put("id", log.id)
-                        put("createdAt", log.createdAt)
-                        put("simulatorId", log.simulatorId)
-                        put("readoutItemKey", log.readoutItemKey)
-                        put("telemetryJson", log.telemetryJson)
-                    },
-                )
-            }
-        }
     }
 
     private fun launchActivity() {
@@ -240,32 +208,28 @@ class MainActivityTest {
     }
 
     private companion object {
-        const val TELEMETRY_LOG_DATABASE_NAME = "telemetry_logs.db"
         const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
+        var isFakeTelemetryLogListModuleLoaded = false
+
+        fun loadFakeTelemetryLogListModuleIfNeeded() {
+            if (!isFakeTelemetryLogListModuleLoaded) {
+                loadKoinModules(fakeTelemetryLogListModule)
+                isFakeTelemetryLogListModuleLoaded = true
+            }
+        }
     }
 }
-
-private val applicationContext: Context
-    get() = ApplicationProvider.getApplicationContext()
 
 private fun telemetryLog(
     id: Long,
     createdAt: Long,
     readoutItemKey: String,
     telemetryJson: String,
-) = TelemetryLogTestData(
+) = TelemetryLog(
     id = id,
     createdAt = createdAt,
     simulatorId = "lmu_windows",
     readoutItemKey = readoutItemKey,
     telemetryJson = telemetryJson,
-)
-
-private data class TelemetryLogTestData(
-    val id: Long,
-    val createdAt: Long,
-    val simulatorId: String,
-    val readoutItemKey: String,
-    val telemetryJson: String,
 )
