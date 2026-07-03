@@ -51,14 +51,16 @@ class ReadoutListPaneScreenshotTest {
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                                 selectedSimulator = Simulator.LmuWindows,
                                 items = listOf(
-                                    ReadoutItemKey.VehicleApproach,
                                     ReadoutItemKey.Flag,
+                                    ReadoutItemKey.VehicleApproach,
                                     ReadoutItemKey.VehicleDamage,
+                                    ReadoutItemKey.MyBestLap,
                                 ),
                                 readoutEnabledStates = mapOf(
-                                    ReadoutItemKey.VehicleApproach to true,
                                     ReadoutItemKey.Flag to true,
+                                    ReadoutItemKey.VehicleApproach to true,
                                     ReadoutItemKey.VehicleDamage to true,
+                                    ReadoutItemKey.MyBestLap to false,
                                 ),
                             ),
                             onSimulatorSelected = {},

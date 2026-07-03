@@ -135,17 +135,9 @@ internal fun ReadoutContent(
         },
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
-                val title = when (selectedItem) {
-                    ReadoutListItemType.LmuWindows.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
-                    ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
-                    ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
-                    ReadoutListItemType.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
-                    ReadoutListItemType.Gt7Ps5.RemainingFuelLaps ->
-                        stringResource(Res.string.item_remaining_fuel_laps)
-                }
                 Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
                     ReadoutDetailPane(
-                        title = title,
+                        title = selectedItemTitle(selectedItem),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
                         content = { detailContent(selectedItem) },
@@ -154,6 +146,16 @@ internal fun ReadoutContent(
             }
         },
     )
+}
+
+@Composable
+private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when (selectedItem) {
+    ReadoutListItemType.LmuWindows.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+    ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
+    ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+    ReadoutListItemType.LmuWindows.MyBestLap -> stringResource(Res.string.item_my_best_lap)
+    ReadoutListItemType.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
+    ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
 }
 
 @Preview(showBackground = true)
@@ -167,6 +169,7 @@ private fun ReadoutContentPreview() {
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
             ),
         ),
         onSimulatorSelected = {},

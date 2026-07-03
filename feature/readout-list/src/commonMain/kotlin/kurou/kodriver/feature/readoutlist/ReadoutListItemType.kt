@@ -8,6 +8,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object VehicleApproach : LmuWindows(ReadoutItemKey.VehicleApproach)
         data object Flag : LmuWindows(ReadoutItemKey.Flag)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.VehicleDamage)
+        data object MyBestLap : LmuWindows(ReadoutItemKey.MyBestLap)
     }
 
     sealed class Gt7Ps5(id: ReadoutItemKey) : ReadoutListItemType(id) {
@@ -21,6 +22,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.VehicleApproach -> LmuWindows.VehicleApproach
                 ReadoutItemKey.Flag -> LmuWindows.Flag
                 ReadoutItemKey.VehicleDamage -> LmuWindows.VehicleDamage
+                ReadoutItemKey.MyBestLap -> LmuWindows.MyBestLap
                 else -> null
             }
             is Simulator.Gt7Ps5 -> when (id) {

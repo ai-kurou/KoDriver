@@ -344,6 +344,7 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
             ),
         ),
         ReadoutListUiState(

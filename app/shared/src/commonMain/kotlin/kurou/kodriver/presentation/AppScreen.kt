@@ -188,15 +188,7 @@ fun AppScreen(
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
             backHandler = backHandler,
-            detailContent = { itemType ->
-                when (itemType) {
-                    ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
-                    ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
-                    ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
-                    ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
-                    ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
-                }
-            },
+            detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
     telemetryLogContent: @Composable () -> Unit = {
@@ -455,6 +447,18 @@ internal fun AppScreenContent(
                     ),
             )
         }
+    }
+}
+
+@Composable
+private fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
+    when (itemType) {
+        ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
+        ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
+        ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+        ReadoutListItemType.LmuWindows.MyBestLap -> {}
+        ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
+        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
     }
 }
 
