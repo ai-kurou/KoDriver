@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.TyreWheelData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
+import kotlin.math.roundToLong
 
 /**
  * LMU 共有メモリ (LMU_WINDOWS_Data) の ByteBuffer を LmuWindowsTelemetryData に変換する。
@@ -29,6 +30,16 @@ import java.nio.ByteBuffer
  *   mCurrentET (c_double)      : +68
  *   mEndET     (c_double)      : +76
  *   mMaxLaps   (c_int)         : +84
+ *   mNumVehicles (c_int)       : +104
+ *
+ * rF2VehicleScoring オフセット:
+ *   mVehicles[128]             : 先頭オフセット 2192, stride=584
+ *   mBestLapTime               : +144
+ *   mLastLapTime               : +168
+ *   mIsPlayer                  : +196
+ *   mLapStartET                : +256
+ *   mBestLapSector1            : +576
+ *   mBestLapSector2            : +580
  *
  * LMUTelemetryData オフセット (128464 から):
  *   [+0] activeVehicles (uint8)
@@ -60,7 +71,20 @@ import java.nio.ByteBuffer
 internal object LmuWindowsMapper {
 
     private const val SCORING_BASE = 1632
+    private const val VEHICLE_SCORING_BASE = 2192
+    private const val VEHICLE_SCORING_STRIDE = 584
+    private const val MAX_SCORING_VEHICLES = 128
+
+    private const val OFF_SCORING_CURRENT_ET = 68
     private const val OFF_SCORING_MAX_LAPS = 84
+    private const val OFF_SCORING_NUM_VEHICLES = 104
+
+    private const val OFF_SCORING_BEST_LAP_TIME = 144
+    private const val OFF_SCORING_LAST_LAP_TIME = 168
+    private const val OFF_SCORING_IS_PLAYER = 196
+    private const val OFF_SCORING_LAP_START_ET = 256
+    private const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
+    private const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
 
     private const val TELEMETRY_BASE = 128464
 
@@ -95,6 +119,7 @@ internal object LmuWindowsMapper {
     fun map(buffer: ByteBuffer): LmuWindowsTelemetryData {
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
         val vehicleBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+        val vehicleScoringBase = findPlayerVehicleScoringBase(buffer)
 
         return LmuWindowsTelemetryData(
             timestampMs = System.currentTimeMillis(),
@@ -115,11 +140,11 @@ internal object LmuWindowsMapper {
                 capacityLiters = buffer.getDouble(vehicleBase + OFF_FUEL_CAPACITY),
             ),
             timing = TimingData(
-                currentLapTimeMs = 0L,
-                lastLapTimeMs = 0L,
-                bestLapTimeMs = 0L,
-                sector1Ms = 0L,
-                sector2Ms = 0L,
+                currentLapTimeMs = currentLapTimeMs(buffer, vehicleScoringBase),
+                lastLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_LAST_LAP_TIME),
+                bestLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_TIME),
+                sector1Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR1),
+                sector2Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR2),
                 currentLap = buffer.getInt(vehicleBase + OFF_LAP_NUMBER),
                 maxLaps = buffer.getInt(SCORING_BASE + OFF_SCORING_MAX_LAPS),
             ),
@@ -134,6 +159,37 @@ internal object LmuWindowsMapper {
         )
     }
 
+    private fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
+        val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)
+        for (index in 0 until vehicleCount) {
+            val vehicleBase = VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
+            if (buffer.get(vehicleBase + OFF_SCORING_IS_PLAYER).toInt() != 0) {
+                return vehicleBase
+            }
+        }
+        return null
+    }
+
+    private fun currentLapTimeMs(buffer: ByteBuffer, vehicleScoringBase: Int?): Long {
+        if (vehicleScoringBase == null) return 0L
+        val currentSessionTime = buffer.getDouble(SCORING_BASE + OFF_SCORING_CURRENT_ET)
+        val lapStartSessionTime = buffer.getDouble(vehicleScoringBase + OFF_SCORING_LAP_START_ET)
+        return secondsToMillis(currentSessionTime - lapStartSessionTime)
+    }
+
+    private fun Int?.readDoubleSecondsAsMillis(buffer: ByteBuffer, offset: Int): Long =
+        if (this == null) 0L else secondsToMillis(buffer.getDouble(this + offset))
+
+    private fun Int?.readFloatSecondsAsMillis(buffer: ByteBuffer, offset: Int): Long =
+        if (this == null) 0L else secondsToMillis(buffer.getFloat(this + offset).toDouble())
+
+    private fun secondsToMillis(seconds: Double): Long =
+        if (seconds.isFinite() && seconds > 0.0) {
+            (seconds * MILLIS_PER_SECOND).roundToLong()
+        } else {
+            0L
+        }
+
     private fun mapTyres(buffer: ByteBuffer, vehicleBase: Int): TyreData {
         val wheels = WheelIndex.entries.associateWith { wheel ->
             val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
@@ -147,4 +203,6 @@ internal object LmuWindowsMapper {
         }
         return TyreData(wheels)
     }
+
+    private const val MILLIS_PER_SECOND = 1_000
 }
