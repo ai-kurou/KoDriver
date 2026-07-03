@@ -1,0 +1,82 @@
+package kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.Res
+import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_description
+import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_enabled
+import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_subtitle
+import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
+import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
+import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.domain.model.MyBestLapVoiceType
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun LmuWindowsReadoutMyBestLapDetailPane(
+    modifier: Modifier = Modifier,
+) {
+    val viewModel: LmuWindowsReadoutMyBestLapDetailViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LmuWindowsReadoutMyBestLapDetailPaneContent(
+        uiState = uiState,
+        onVoiceTypeChanged = viewModel::onVoiceTypeChanged,
+        modifier = modifier,
+    )
+}
+
+@Composable
+internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
+    uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState(),
+    onVoiceTypeChanged: (MyBestLapVoiceType) -> Unit = {},
+    modifier: Modifier = Modifier,
+) {
+    val formalLabel = stringResource(Res.string.my_best_lap_voice_type_formal)
+    val casualLabel = stringResource(Res.string.my_best_lap_voice_type_casual)
+    val chipLabels = listOf(formalLabel, casualLabel)
+    val selectedLabel = when (uiState.voiceType) {
+        MyBestLapVoiceType.FORMAL -> formalLabel
+        MyBestLapVoiceType.CASUAL -> casualLabel
+    }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+    ) {
+        DetailPaneDescription(text = stringResource(Res.string.my_best_lap_description))
+        DetailPaneSubtitle(text = stringResource(Res.string.my_best_lap_subtitle))
+        DetailPaneCard(
+            title = stringResource(Res.string.my_best_lap_enabled),
+            chipLabels = chipLabels,
+            selectedChipLabels = setOf(selectedLabel),
+            onChipClick = { label ->
+                val type = when (label) {
+                    casualLabel -> MyBestLapVoiceType.CASUAL
+                    else -> MyBestLapVoiceType.FORMAL
+                }
+                onVoiceTypeChanged(type)
+            },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LmuWindowsReadoutMyBestLapDetailPanePreview() {
+    LmuWindowsReadoutMyBestLapDetailPaneContent(
+        uiState = LmuWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
+    )
+}
