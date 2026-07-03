@@ -243,14 +243,10 @@ fun AppScreen(
             onDismiss = { showExitConfirmationDialog = false },
             onConfirm = { doNotShowAgain ->
                 coroutineScope.launch {
-                    if (doNotShowAgain) {
-                        try {
-                            viewModel.saveExitConfirmationEnabled(false)
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (_: Exception) {
-                        }
-                    }
+                    saveExitConfirmationPreferenceForExit(
+                        doNotShowAgain = doNotShowAgain,
+                        saveExitConfirmationEnabled = viewModel::saveExitConfirmationEnabled,
+                    )
                     showExitConfirmationDialog = false
                     onExit()
                 }
@@ -303,6 +299,19 @@ internal fun ConnectionSnackbarEffect(
                 )
             }
         }
+    }
+}
+
+internal suspend fun saveExitConfirmationPreferenceForExit(
+    doNotShowAgain: Boolean,
+    saveExitConfirmationEnabled: suspend (Boolean) -> Unit,
+) {
+    if (!doNotShowAgain) return
+    try {
+        saveExitConfirmationEnabled(false)
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Throwable) {
     }
 }
 
