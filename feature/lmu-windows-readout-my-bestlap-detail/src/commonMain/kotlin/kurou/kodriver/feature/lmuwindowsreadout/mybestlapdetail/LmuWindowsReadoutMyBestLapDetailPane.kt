@@ -33,6 +33,7 @@ fun LmuWindowsReadoutMyBestLapDetailPane(
     LmuWindowsReadoutMyBestLapDetailPaneContent(
         uiState = uiState,
         onVoiceTypeChanged = viewModel::onVoiceTypeChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -41,6 +42,7 @@ fun LmuWindowsReadoutMyBestLapDetailPane(
 internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
     uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState(),
     onVoiceTypeChanged: (MyBestLapVoiceType) -> Unit = {},
+    onPreviewClicked: (MyBestLapVoiceType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val formalLabel = stringResource(Res.string.my_best_lap_voice_type_formal)
@@ -67,6 +69,7 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
                     else -> MyBestLapVoiceType.FORMAL
                 }
                 onVoiceTypeChanged(type)
+                onPreviewClicked(type)
             },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )

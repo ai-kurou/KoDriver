@@ -98,6 +98,44 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
+    fun `MyBestLapFormal は自己ベストラップ通常音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == MY_BEST_LAP_FORMAL_PATH) MY_BEST_LAP_FORMAL_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.MyBestLapFormal)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(MY_BEST_LAP_FORMAL_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `MyBestLapCasual は自己ベストラップカジュアル音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == MY_BEST_LAP_CASUAL_PATH) MY_BEST_LAP_CASUAL_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.MyBestLapCasual)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(MY_BEST_LAP_CASUAL_SOUND, player.playedSounds[1])
+    }
+
+    @Test
     fun `queue true の speak は前の音声が終わってから再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
@@ -281,6 +319,8 @@ class LmuWindowsWavNarratorEngineTest {
     private companion object {
         const val CAR_LEFT_PATH = "files/car_left.wav"
         const val LEFT_APPROACH_PATH = "files/left_approach.wav"
+        const val MY_BEST_LAP_FORMAL_PATH = "files/my_best_lap_formal.wav"
+        const val MY_BEST_LAP_CASUAL_PATH = "files/my_best_lap_casual.wav"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)
@@ -288,6 +328,8 @@ class LmuWindowsWavNarratorEngineTest {
         val FORMULA_RADIO_SOUND = byteArrayOf(3)
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
         val LEFT_APPROACH_SOUND = byteArrayOf(4)
+        val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(6)
+        val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(7)
     }
 }
 

@@ -49,12 +49,14 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
     }
 
     @Test
-    fun `チップをタップするとonVoiceTypeChangedが呼ばれる`() {
+    fun `チップをタップするとonVoiceTypeChangedとonPreviewClickedが呼ばれる`() {
         var changedVoiceType: MyBestLapVoiceType? = null
+        var previewedVoiceType: MyBestLapVoiceType? = null
         rule.setContent {
             MaterialTheme {
                 LmuWindowsReadoutMyBestLapDetailPaneContent(
                     onVoiceTypeChanged = { changedVoiceType = it },
+                    onPreviewClicked = { previewedVoiceType = it },
                 )
             }
         }
@@ -62,5 +64,6 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
         rule.onNodeWithText("自己ベストラップを更新したぞ").performClick()
 
         assertEquals(MyBestLapVoiceType.CASUAL, changedVoiceType)
+        assertEquals(MyBestLapVoiceType.CASUAL, previewedVoiceType)
     }
 }
