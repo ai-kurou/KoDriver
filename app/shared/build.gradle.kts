@@ -67,6 +67,7 @@ kotlin {
             implementation(projects.feature.readoutList)
             implementation(projects.feature.lmuWindowsReadoutVehicleApproachDetail)
             implementation(projects.feature.lmuWindowsReadoutFlagDetail)
+            implementation(projects.feature.lmuWindowsReadoutMyBestlapDetail)
             implementation(projects.feature.lmuWindowsReadoutVehicleDamageDetail)
             implementation(projects.feature.gt7Ps5ReadoutMyBestlapDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelLapsDetail)
