@@ -341,13 +341,7 @@ internal fun AppScreenContent(
 
     AppTheme {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-        val resolvedLayoutType = layoutType ?: when {
-            windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ->
-                NavigationSuiteType.NavigationDrawer
-            windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
-                NavigationSuiteType.NavigationRail
-            else -> NavigationSuiteType.NavigationBar
-        }
+        val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
         KeepScreenOnEffect(keepScreenOn)
         Box(modifier = Modifier.navigationBarsPadding()) {
             NavigationSuiteScaffold(
@@ -464,6 +458,12 @@ internal fun AppScreenContent(
             )
         }
     }
+}
+
+internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType = when {
+    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
+        NavigationSuiteType.NavigationRail
+    else -> NavigationSuiteType.NavigationBar
 }
 
 @Composable

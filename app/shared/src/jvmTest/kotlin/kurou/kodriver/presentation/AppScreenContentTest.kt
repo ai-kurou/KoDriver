@@ -6,6 +6,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.window.core.layout.WindowSizeClass
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,6 +15,36 @@ class AppScreenContentTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `expanded幅ではNavigationRailを使用する`() {
+        val layoutType = WindowSizeClass(
+            minWidthDp = WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
+            minHeightDp = 0,
+        ).resolveNavigationSuiteType()
+
+        assertEquals(NavigationSuiteType.NavigationRail, layoutType)
+    }
+
+    @Test
+    fun `medium幅ではNavigationRailを使用する`() {
+        val layoutType = WindowSizeClass(
+            minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND,
+            minHeightDp = 0,
+        ).resolveNavigationSuiteType()
+
+        assertEquals(NavigationSuiteType.NavigationRail, layoutType)
+    }
+
+    @Test
+    fun `compact幅ではNavigationBarを使用する`() {
+        val layoutType = WindowSizeClass(
+            minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND - 1,
+            minHeightDp = 0,
+        ).resolveNavigationSuiteType()
+
+        assertEquals(NavigationSuiteType.NavigationBar, layoutType)
+    }
 
     @Test
     fun `読み上げタブを再タップするとonReadoutTabReselectedが呼ばれる`() {
