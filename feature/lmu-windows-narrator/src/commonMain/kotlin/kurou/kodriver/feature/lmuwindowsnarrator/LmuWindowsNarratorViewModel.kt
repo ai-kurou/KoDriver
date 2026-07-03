@@ -11,9 +11,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.Simulator
@@ -23,6 +26,7 @@ import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
@@ -62,6 +66,7 @@ data class FlagUseCases(
 
 data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
+    val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val saveTelemetryLog: SaveTelemetryLogUseCase,
 )
 
@@ -78,6 +83,7 @@ class LmuWindowsNarratorViewModel(
 
     private var narratorState = LmuWindowsNarratorState()
     private var previousProximity: ProximityData? = null
+    private var previousLmuWindowsTelemetry: LmuWindowsTelemetryData? = null
     private var previousVehicleDamage: VehicleDamageData? = null
     private var previousRaceFlags: RaceFlagsData? = null
 
@@ -101,9 +107,19 @@ class LmuWindowsNarratorViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val currentLap = vehicleApproachUseCases.observeLmuWindows()
+    private val lmuTelemetryFlow = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) emptyFlow()
+            else vehicleApproachUseCases.observeLmuWindows()
+        }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val currentLap = lmuTelemetryFlow
         .map { it.timing.currentLap }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+
+    private val voiceType = narratorUseCases.observeMyBestLapVoiceType()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -113,6 +129,31 @@ class LmuWindowsNarratorViewModel(
 
     private val startReadoutType = vehicleApproachUseCases.observeStartReadoutType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+
+    @Suppress("UnusedPrivateProperty")
+    private val myBestLapJob = lmuTelemetryFlow
+        .onEach { telemetry ->
+            val previous = previousLmuWindowsTelemetry
+            val observedAtMs = currentTimeMs()
+            val decision = narratorUseCases.determineReadout.determineMyBestLap(
+                state = narratorState,
+                telemetry = telemetry,
+                settings = currentSettings,
+            )
+            narratorState = decision.state
+            decision.events.forEach { event ->
+                if (speakWithPriority(event)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        simulatorId = Simulator.LmuWindows.id,
+                        readoutItemKey = event.readoutItemKey.value,
+                        telemetryJson = buildTelemetryLogJson(previous = previous, current = telemetry),
+                    )
+                }
+            }
+            previousLmuWindowsTelemetry = telemetry
+        }
+        .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val proximityJob = selectedSimulator
@@ -205,6 +246,7 @@ class LmuWindowsNarratorViewModel(
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = enabledStates.value,
+            myBestLapVoiceType = voiceType.value,
             currentLap = currentLap.value,
             skipFirstLap = skipFirstLap.value,
             vehicleApproachStartReadoutEnabled = startReadoutEnabled.value,
@@ -252,6 +294,18 @@ class LmuWindowsNarratorViewModel(
 
 private fun buildTelemetryLogJson(previous: ProximityData?, current: ProximityData): String =
     """{"previous":${previous?.toJson() ?: "null"},"current":${current.toJson()}}"""
+
+private fun buildTelemetryLogJson(previous: LmuWindowsTelemetryData?, current: LmuWindowsTelemetryData): String =
+    """{"previous":${previous?.toJson() ?: "null"},"current":${current.toJson()}}"""
+
+private fun LmuWindowsTelemetryData.toJson(): String =
+    "{" +
+        """"currentLapTimeMs":${timing.currentLapTimeMs},""" +
+        """"lastLapTimeMs":${timing.lastLapTimeMs},""" +
+        """"bestLapTimeMs":${timing.bestLapTimeMs},""" +
+        """"currentLap":${timing.currentLap},""" +
+        """"maxLaps":${timing.maxLaps}""" +
+        "}"
 
 private fun ProximityData.toJson(): String =
     "{" +
