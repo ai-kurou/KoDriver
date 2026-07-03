@@ -1,15 +1,13 @@
-package kurou.kodriver.domain.usecase
+package kurou.kodriver.feature.gt7ps5readout.mybestlapdetail
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 
-class FakeMyBestLapPreferencesRepository(
-    initialVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-) : MyBestLapPreferencesRepository {
-    private val voiceType = MutableStateFlow(initialVoiceType)
+class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferencesRepository {
+    private val voiceType = MutableStateFlow(MyBestLapVoiceType.FORMAL)
 
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = voiceType
 

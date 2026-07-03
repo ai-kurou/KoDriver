@@ -1,8 +1,0 @@
-package kurou.kodriver.data
-
-import kurou.kodriver.data.datasource.createMyBestLapPreferencesDataStore
-import kurou.kodriver.data.repository.MyBestLapPreferencesRepositoryImpl
-import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
-
-fun createMyBestLapPreferencesRepository(directory: String): MyBestLapPreferencesRepository =
-    MyBestLapPreferencesRepositoryImpl(createMyBestLapPreferencesDataStore(directory))

@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.MyBestLapPreferences
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 
-internal class MyBestLapPreferencesRepositoryImpl(
+internal class Gt7Ps5MyBestLapPreferencesRepositoryImpl(
     private val dataStore: DataStore<MyBestLapPreferences>,
-) : MyBestLapPreferencesRepository {
+) : Gt7Ps5MyBestLapPreferencesRepository {
 
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> =
         dataStore.data.map { MyBestLapVoiceType.fromId(it.voiceType) }

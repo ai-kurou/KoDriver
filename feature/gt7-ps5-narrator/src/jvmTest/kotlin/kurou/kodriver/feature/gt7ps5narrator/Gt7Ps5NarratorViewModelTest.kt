@@ -23,15 +23,15 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
-import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -81,8 +81,8 @@ class Gt7Ps5NarratorViewModelTest {
                 observeGt7Ps5 = ObserveGt7Ps5UseCase(
                     FakeChannelGt7Ps5Repository(telemetryChannel.receiveAsFlow()),
                 ),
-                observeMyBestLapVoiceType = ObserveMyBestLapVoiceTypeUseCase(
-                    FakeMyBestLapPreferencesRepo(voiceType),
+                observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(
+                    FakeGt7Ps5MyBestLapPreferencesRepo(voiceType),
                 ),
             ),
             readoutListUseCases = ReadoutListUseCases(
@@ -381,9 +381,9 @@ private class FakeReadoutPreferencesRepo(
     override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) = Unit
 }
 
-private class FakeMyBestLapPreferencesRepo(
+private class FakeGt7Ps5MyBestLapPreferencesRepo(
     initialType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-) : MyBestLapPreferencesRepository {
+) : Gt7Ps5MyBestLapPreferencesRepository {
     private val type = MutableStateFlow(initialType)
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = type
     override suspend fun saveVoiceType(type: MyBestLapVoiceType) {

@@ -14,7 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MyBestLapPreferencesRepositoryImplTest {
+class Gt7Ps5MyBestLapPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_my_best_lap_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +23,7 @@ class MyBestLapPreferencesRepositoryImplTest {
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )
-    private val repository = MyBestLapPreferencesRepositoryImpl(dataStore)
+    private val repository = Gt7Ps5MyBestLapPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
     fun tearDown() {

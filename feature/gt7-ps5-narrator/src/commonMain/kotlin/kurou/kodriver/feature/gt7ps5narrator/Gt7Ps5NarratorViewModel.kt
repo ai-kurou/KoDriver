@@ -19,9 +19,9 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
-import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -29,7 +29,7 @@ import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
-    val observeMyBestLapVoiceType: ObserveMyBestLapVoiceTypeUseCase,
+    val observeMyBestLapVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
 )
 
 data class ReadoutListUseCases(

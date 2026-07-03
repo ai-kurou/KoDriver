@@ -10,7 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class MyBestLapPreferencesDataStoreFactoryTest {
+class Gt7Ps5MyBestLapPreferencesDataStoreFactoryTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_my_best_lap_preferences_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -22,7 +22,7 @@ class MyBestLapPreferencesDataStoreFactoryTest {
 
     @Test
     fun `my_best_lap_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
-        val dataStore = createMyBestLapPreferencesDataStore(tempDir.absolutePath)
+        val dataStore = createGt7Ps5MyBestLapPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(voiceType = "casual") }
 
         assertTrue(tempDir.resolve("my_best_lap_preferences.pb").exists())
