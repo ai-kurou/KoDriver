@@ -34,14 +34,14 @@ private class FakeTextToSpeechEngine(
 class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeVehicleDamagePreferencesRepository
+    private lateinit var repository: FakeLmuWindowsVehicleDamagePreferencesRepository
     private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: LmuWindowsReadoutVehicleDamageDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeVehicleDamagePreferencesRepository()
+        repository = FakeLmuWindowsVehicleDamagePreferencesRepository()
         viewModel = LmuWindowsReadoutVehicleDamageDetailViewModel(
             observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
             saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
@@ -61,7 +61,7 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
 
     @Test
     fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() = runTest {
-        val repo = FakeVehicleDamagePreferencesRepository(
+        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository(
             initialStates = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
         )
         val vm = LmuWindowsReadoutVehicleDamageDetailViewModel(

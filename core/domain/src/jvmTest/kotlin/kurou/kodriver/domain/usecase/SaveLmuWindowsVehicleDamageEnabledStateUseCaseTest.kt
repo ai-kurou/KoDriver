@@ -12,7 +12,7 @@ class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
 
     @Test
     fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
-        val repo = FakeVehicleDamagePreferencesRepository()
+        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
         val saveUseCase = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repo)
         val observeUseCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 

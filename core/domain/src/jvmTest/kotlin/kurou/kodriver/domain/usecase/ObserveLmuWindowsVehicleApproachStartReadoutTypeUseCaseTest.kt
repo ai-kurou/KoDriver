@@ -10,7 +10,7 @@ class ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
 
     @Test
     fun `接近開始時読み上げ種別を監視できる`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(
             initialStartReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
         )
         val useCase = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)

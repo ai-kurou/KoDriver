@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.repository.FlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 
-class SaveLmuWindowsFlagEnabledStateUseCase(private val repository: FlagPreferencesRepository) {
+class SaveLmuWindowsFlagEnabledStateUseCase(private val repository: LmuWindowsFlagPreferencesRepository) {
     suspend operator fun invoke(key: ReadoutItemKey, enabled: Boolean) =
         repository.saveFlagEnabledState(key, enabled)
 }

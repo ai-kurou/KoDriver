@@ -10,7 +10,7 @@ class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
 
     @Test
     fun `trueを渡すとskipFirstLapがtrueとして保存される`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(initialSkipFirstLap = false)
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(initialSkipFirstLap = false)
         val useCase = SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)
 
         useCase(true)
@@ -20,7 +20,7 @@ class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
 
     @Test
     fun `falseを渡すとskipFirstLapがfalseとして保存される`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(initialSkipFirstLap = true)
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(initialSkipFirstLap = true)
         val useCase = SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)
 
         useCase(false)

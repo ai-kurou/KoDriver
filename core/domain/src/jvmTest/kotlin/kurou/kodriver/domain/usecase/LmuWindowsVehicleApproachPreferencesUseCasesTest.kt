@@ -10,7 +10,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `observeSkipFirstLap はリポジトリの設定を返す`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(initialSkipFirstLap = false)
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(initialSkipFirstLap = false)
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         assertEquals(false, useCases.observeSkipFirstLap().first())
@@ -18,7 +18,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `saveSkipFirstLap はスキップ設定を保存する`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository()
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository()
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         useCases.saveSkipFirstLap(false)
@@ -28,7 +28,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `observeStartReadoutEnabled はリポジトリの設定を返す`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(initialStartReadoutEnabled = false)
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(initialStartReadoutEnabled = false)
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         assertEquals(false, useCases.observeStartReadoutEnabled().first())
@@ -36,7 +36,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `saveStartReadoutEnabled は接近開始時読み上げ設定を保存する`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository()
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository()
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         useCases.saveStartReadoutEnabled(false)
@@ -46,7 +46,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `observeStartReadoutType はリポジトリの設定を返す`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(
             initialStartReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
         )
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
@@ -56,7 +56,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `saveStartReadoutType は接近開始時読み上げ種別を保存する`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository()
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository()
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         useCases.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)

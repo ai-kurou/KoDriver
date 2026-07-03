@@ -9,7 +9,7 @@ class SaveLmuWindowsVehicleApproachStartReadoutEnabledUseCaseTest {
 
     @Test
     fun `invoke は接近開始時読み上げ設定を保存する`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository()
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository()
         val saveUseCase = SaveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(repository)
         val observeUseCase = ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(repository)
 

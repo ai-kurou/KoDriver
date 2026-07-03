@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 class SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(
-    private val repository: VehicleApproachPreferencesRepository,
+    private val repository: LmuWindowsVehicleApproachPreferencesRepository,
 ) {
     suspend operator fun invoke(skip: Boolean) = repository.saveSkipFirstLap(skip)
 }

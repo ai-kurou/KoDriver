@@ -27,16 +27,16 @@ import kotlin.test.assertEquals
 class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var thresholdsRepository: FakeProximityThresholdsPreferencesRepository
-    private lateinit var vehicleApproachPreferencesRepository: FakeVehicleApproachPreferencesRepository
+    private lateinit var thresholdsRepository: FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository
+    private lateinit var vehicleApproachPreferencesRepository: FakeLmuWindowsVehicleApproachPreferencesRepository
     private lateinit var playedEvents: MutableList<QueuedSpeechEvent>
     private lateinit var viewModel: LmuWindowsReadoutVehicleApproachDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        thresholdsRepository = FakeProximityThresholdsPreferencesRepository()
-        vehicleApproachPreferencesRepository = FakeVehicleApproachPreferencesRepository()
+        thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
+        vehicleApproachPreferencesRepository = FakeLmuWindowsVehicleApproachPreferencesRepository()
         playedEvents = mutableListOf()
         viewModel = LmuWindowsReadoutVehicleApproachDetailViewModel(
             observeLateralThreshold = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(thresholdsRepository),

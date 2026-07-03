@@ -36,16 +36,16 @@ import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
-import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
@@ -103,7 +103,7 @@ class LmuWindowsNarratorViewModelTest {
         telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
     ): LmuWindowsNarratorViewModel {
         val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
-        val vehicleApproachPreferencesRepository = FakeConstantVehicleApproachPreferencesRepository(
+        val vehicleApproachPreferencesRepository = FakeConstantLmuWindowsVehicleApproachPreferencesRepository(
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = startReadoutEnabled,
             startReadoutType = startReadoutType,
@@ -131,7 +131,7 @@ class LmuWindowsNarratorViewModelTest {
                     FakeChannelVehicleDamageRepository(damageChannel.receiveAsFlow()),
                 ),
                 observeVehicleDamageEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
-                    FakeVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
+                    FakeLmuWindowsVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
                 ),
             ),
             readoutListUseCases = ReadoutListUseCases(
@@ -146,7 +146,7 @@ class LmuWindowsNarratorViewModelTest {
                     FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
                 ),
                 observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(
-                    FakeFlagPreferencesRepository(flagEnabledOverrides),
+                    FakeLmuWindowsFlagPreferencesRepository(flagEnabledOverrides),
                 ),
             ),
             ttsEngine = ttsEngine,
@@ -698,9 +698,9 @@ private class FakeAllEnabledReadoutPreferencesRepository(
     override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) = Unit
 }
 
-private class FakeFlagPreferencesRepository(
+private class FakeLmuWindowsFlagPreferencesRepository(
     private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-) : FlagPreferencesRepository {
+) : LmuWindowsFlagPreferencesRepository {
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)
 
@@ -725,11 +725,11 @@ private class FakeLmuWindowsMyBestLapPreferencesRepository(
     }
 }
 
-private class FakeConstantVehicleApproachPreferencesRepository(
+private class FakeConstantLmuWindowsVehicleApproachPreferencesRepository(
     private val skipFirstLap: Boolean,
     private val startReadoutEnabled: Boolean,
     private val startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-) : VehicleApproachPreferencesRepository {
+) : LmuWindowsVehicleApproachPreferencesRepository {
     override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
     override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
     override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(startReadoutEnabled)
@@ -740,9 +740,9 @@ private class FakeConstantVehicleApproachPreferencesRepository(
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) = Unit
 }
 
-private class FakeVehicleDamagePreferencesRepository(
+private class FakeLmuWindowsVehicleDamagePreferencesRepository(
     initialStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
-) : VehicleDamagePreferencesRepository {
+) : LmuWindowsVehicleDamagePreferencesRepository {
     private val states = MutableStateFlow(initialStates)
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {

@@ -9,7 +9,7 @@ class ProximityThresholdsUseCaseTest {
 
     @Test
     fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
-        val repo = FakeProximityThresholdsPreferencesRepository()
+        val repo = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
         val save = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
         val observe = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
@@ -22,7 +22,7 @@ class ProximityThresholdsUseCaseTest {
 
     @Test
     fun `横方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
-        val repo = FakeProximityThresholdsPreferencesRepository()
+        val repo = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
         val save = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
         val observe = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
 
@@ -35,7 +35,7 @@ class ProximityThresholdsUseCaseTest {
 
     @Test
     fun `縦横の閾値は独立して保持される`() = runBlocking {
-        val repo = FakeProximityThresholdsPreferencesRepository()
+        val repo = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
         val saveLongitudinal = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
         val saveLateral = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
         val observeLongitudinal = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)

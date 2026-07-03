@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.FlagPreferencesRepository
-import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
@@ -15,8 +15,10 @@ import org.koin.dsl.module
 val fakeReadoutListModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
-    single<ProximityThresholdsPreferencesRepository> { FakeProximityThresholdsPreferencesRepositoryImpl() }
-    single<FlagPreferencesRepository> { FakeFlagPreferencesRepositoryImpl() }
+    single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl()
+    }
+    single<LmuWindowsFlagPreferencesRepository> { FakeLmuWindowsFlagPreferencesRepositoryImpl() }
 }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
@@ -25,7 +27,8 @@ private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepos
     override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
 }
 
-private class FakeProximityThresholdsPreferencesRepositoryImpl : ProximityThresholdsPreferencesRepository {
+private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
+    LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     private val lateral = MutableStateFlow(5.0)
     private val longitudinal = MutableStateFlow(1.0)
     override fun observeLateralThresholdMeters(): Flow<Double> = lateral
@@ -34,7 +37,7 @@ private class FakeProximityThresholdsPreferencesRepositoryImpl : ProximityThresh
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.update { meters } }
 }
 
-private class FakeFlagPreferencesRepositoryImpl : FlagPreferencesRepository {
+private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPreferencesRepository {
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
     override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {

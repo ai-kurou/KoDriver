@@ -9,7 +9,7 @@ class ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの接近開始時読み上げ設定を返す`() = runBlocking {
-        val repository = FakeVehicleApproachPreferencesRepository(initialStartReadoutEnabled = false)
+        val repository = FakeLmuWindowsVehicleApproachPreferencesRepository(initialStartReadoutEnabled = false)
         val useCase = ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(repository)
 
         assertEquals(false, useCase().first())

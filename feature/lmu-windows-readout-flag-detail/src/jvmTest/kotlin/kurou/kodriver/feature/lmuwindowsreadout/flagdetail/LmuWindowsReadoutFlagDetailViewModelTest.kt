@@ -34,14 +34,14 @@ private class FakeTextToSpeechEngine(
 class LmuWindowsReadoutFlagDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeFlagPreferencesRepository
+    private lateinit var repository: FakeLmuWindowsFlagPreferencesRepository
     private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: LmuWindowsReadoutFlagDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeFlagPreferencesRepository()
+        repository = FakeLmuWindowsFlagPreferencesRepository()
         viewModel = LmuWindowsReadoutFlagDetailViewModel(
             observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
             saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),

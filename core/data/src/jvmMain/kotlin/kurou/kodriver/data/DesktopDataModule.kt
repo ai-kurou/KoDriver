@@ -5,21 +5,21 @@ import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
-import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
@@ -39,17 +39,17 @@ val desktopDataModule = module {
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(kodriverDirectory)
     }
-    single<ProximityThresholdsPreferencesRepository> {
-        createProximityThresholdsPreferencesRepository(directory = kodriverDirectory)
+    single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+        createLmuWindowsVehicleApproachThresholdsPreferencesRepository(directory = kodriverDirectory)
     }
-    single<FlagPreferencesRepository> {
-        createFlagPreferencesRepository(directory = kodriverDirectory)
+    single<LmuWindowsFlagPreferencesRepository> {
+        createLmuWindowsFlagPreferencesRepository(directory = kodriverDirectory)
     }
-    single<VehicleApproachPreferencesRepository> {
-        createVehicleApproachPreferencesRepository(directory = kodriverDirectory)
+    single<LmuWindowsVehicleApproachPreferencesRepository> {
+        createLmuWindowsVehicleApproachPreferencesRepository(directory = kodriverDirectory)
     }
-    single<VehicleDamagePreferencesRepository> {
-        createVehicleDamagePreferencesRepository(directory = kodriverDirectory)
+    single<LmuWindowsVehicleDamagePreferencesRepository> {
+        createLmuWindowsVehicleDamagePreferencesRepository(directory = kodriverDirectory)
     }
     single<SoundVolumePreferencesRepository> {
         createSoundVolumePreferencesRepository(directory = kodriverDirectory)
