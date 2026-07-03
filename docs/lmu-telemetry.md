@@ -236,7 +236,7 @@ LMU では `SCORING_BASE = 1632` から始まる。
 | `mEndET` | double | 1632+76 | s | セッション終了時刻 |
 | `mMaxLaps` | int32 | 1632+84 | — | 最大ラップ数 |
 | `mLapDist` | double | 1632+88 | m | サーキット1周の距離 |
-| `mNumVehicles` | int32 | — | — | 現在の車両数 |
+| `mNumVehicles` | int32 | 1632+104 | — | 現在の車両数 |
 | `mGamePhase` | uint8 | — | enum | ゲームフェーズ（下表参照） |
 | `mYellowFlagState` | int8 | — | enum | イエローフラッグ状態（下表参照） |
 | `mSectorFlag[3]` | int8[3] | — | — | セクターごとのローカルイエロー |
@@ -318,15 +318,15 @@ LMU では `SCORING_BASE = 1632` から始まる。
 | `mTrackEdge` | double | m | 同じ側のトラックエッジまでの距離 |
 | `mBestSector1` | double | s | ベストセクター1タイム |
 | `mBestSector2` | double | s | ベストセクター2累積タイム（S1+S2） |
-| `mBestLapTime` | double | s | ベストラップタイム |
+| `mBestLapTime` | double | s | ベストラップタイム（オフセット: 2192+n*584+144） |
 | `mLastSector1` | double | s | 前周のセクター1タイム |
 | `mLastSector2` | double | s | 前周のセクター2累積タイム |
-| `mLastLapTime` | double | s | 前周のラップタイム |
+| `mLastLapTime` | double | s | 前周のラップタイム（オフセット: 2192+n*584+168） |
 | `mCurSector1` | double | s | 現在周のセクター1タイム（有効な場合） |
 | `mCurSector2` | double | s | 現在周のセクター2累積タイム（有効な場合） |
 | `mNumPitstops` | int16 | — | ピットストップ回数 |
 | `mNumPenalties` | int16 | — | 未消化ペナルティ数 |
-| `mIsPlayer` | bool | — | プレイヤーの車両か |
+| `mIsPlayer` | bool | — | プレイヤーの車両か（オフセット: 2192+n*584+196） |
 | `mControl` | int8 | — | -1=なし, 0=プレイヤー, 1=AI, 2=リモート, 3=リプレイ |
 | `mInPits` | bool | — | ピットレーン走行中 |
 | `mPlace` | uint8 | — | 順位（1ベース） |
@@ -335,7 +335,7 @@ LMU では `SCORING_BASE = 1632` から始まる。
 | `mLapsBehindNext` | int32 | — | 次の車両との周回差 |
 | `mTimeBehindLeader` | double | s | トップとの時間差 |
 | `mLapsBehindLeader` | int32 | — | トップとの周回差 |
-| `mLapStartET` | double | s | 現在ラップ開始セッション時刻 |
+| `mLapStartET` | double | s | 現在ラップ開始セッション時刻（オフセット: 2192+n*584+256） |
 | `mPos` | rF2Vec3 | m | ワールド座標 |
 | `mLocalVel` | rF2Vec3 | m/s | ローカル速度 |
 | `mLocalAccel` | rF2Vec3 | m/s² | ローカル加速度 |
@@ -356,8 +356,8 @@ LMU では `SCORING_BASE = 1632` から始まる。
 | `mInGarageStall` | bool | — | 正しいガレージストール内にいるか |
 | `mUpgradePack[16]` | uint8[16] | — | アップグレードパック情報（エンコード済み） |
 | `mPitLapDist` | float | m | ピットロケーションのラップ距離位置 |
-| `mBestLapSector1` | float | s | ベストラップ時のセクター1タイム |
-| `mBestLapSector2` | float | s | ベストラップ時のセクター2タイム |
+| `mBestLapSector1` | float | s | ベストラップ時のセクター1タイム（オフセット: 2192+n*584+576） |
+| `mBestLapSector2` | float | s | ベストラップ時のセクター2タイム（オフセット: 2192+n*584+580） |
 
 ---
 

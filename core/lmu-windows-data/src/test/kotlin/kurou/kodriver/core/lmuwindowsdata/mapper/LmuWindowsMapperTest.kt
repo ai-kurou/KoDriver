@@ -11,6 +11,19 @@ class LmuWindowsMapperTest {
 
     // オフセット定数（LmuWindowsMapper と一致）
     private companion object {
+        const val SCORING_BASE = 1_632
+        const val VEHICLE_SCORING_BASE = 2_192
+        const val VEHICLE_SCORING_STRIDE = 584
+
+        const val OFF_SCORING_CURRENT_ET = 68
+        const val OFF_SCORING_NUM_VEHICLES = 104
+        const val OFF_SCORING_BEST_LAP_TIME = 144
+        const val OFF_SCORING_LAST_LAP_TIME = 168
+        const val OFF_SCORING_IS_PLAYER = 196
+        const val OFF_SCORING_LAP_START_ET = 256
+        const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
+        const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
+
         const val TELEMETRY_BASE = 128464
         const val OFF_PLAYER_VEHICLE_IDX = 1
         const val OFF_TELEM_INFO = 4
@@ -49,6 +62,9 @@ class LmuWindowsMapperTest {
 
         fun vehicleBase(playerIdx: Int = 0) =
             TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+
+        fun vehicleScoringBase(index: Int = 0) =
+            VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
     }
 
     @Test
@@ -108,8 +124,37 @@ class LmuWindowsMapperTest {
     }
 
     @Test
-    fun `ラップタイムフィールドは未実装のためゼロである`() {
-        val result = LmuWindowsMapper.map(emptyBuffer())
+    fun `ラップタイムフィールドがScoringのプレイヤー車両から正しくパースされる`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 1)
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 2)
+        buf.putDouble(SCORING_BASE + OFF_SCORING_CURRENT_ET, 123.456)
+        buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
+        buf.putDouble(scoringBase + OFF_SCORING_LAP_START_ET, 100.000)
+        buf.putDouble(scoringBase + OFF_SCORING_LAST_LAP_TIME, 92.345)
+        buf.putDouble(scoringBase + OFF_SCORING_BEST_LAP_TIME, 91.234)
+        buf.putFloat(scoringBase + OFF_SCORING_BEST_LAP_SECTOR1, 30.123f)
+        buf.putFloat(scoringBase + OFF_SCORING_BEST_LAP_SECTOR2, 60.456f)
+
+        val result = LmuWindowsMapper.map(buf)
+
+        assertEquals(23_456L, result.timing.currentLapTimeMs)
+        assertEquals(92_345L, result.timing.lastLapTimeMs)
+        assertEquals(91_234L, result.timing.bestLapTimeMs)
+        assertEquals(30_123L, result.timing.sector1Ms)
+        assertEquals(60_456L, result.timing.sector2Ms)
+    }
+
+    @Test
+    fun `Scoringのプレイヤー車両が見つからない場合はラップタイムフィールドがゼロである`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 1)
+        buf.putDouble(SCORING_BASE + OFF_SCORING_CURRENT_ET, 123.456)
+        buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 0)
+        buf.putDouble(scoringBase + OFF_SCORING_BEST_LAP_TIME, 91.234)
+
+        val result = LmuWindowsMapper.map(buf)
 
         assertEquals(0L, result.timing.currentLapTimeMs)
         assertEquals(0L, result.timing.lastLapTimeMs)
