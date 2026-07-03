@@ -10,10 +10,12 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -30,6 +32,7 @@ class ReadoutListViewModelTest {
     private lateinit var simulatorRepository: FakeSimulatorPreferencesRepository
     private lateinit var readoutRepository: FakeReadoutPreferencesRepository
     private lateinit var gt7Ps5RemainingFuelLapsRepository: FakeGt7Ps5RemainingFuelLapsEnabledRepository
+    private lateinit var lmuWindowsMyBestLapRepository: FakeLmuWindowsMyBestLapEnabledRepository
     private lateinit var viewModel: ReadoutListViewModel
 
     @Before
@@ -38,6 +41,7 @@ class ReadoutListViewModelTest {
         simulatorRepository = FakeSimulatorPreferencesRepository()
         readoutRepository = FakeReadoutPreferencesRepository()
         gt7Ps5RemainingFuelLapsRepository = FakeGt7Ps5RemainingFuelLapsEnabledRepository()
+        lmuWindowsMyBestLapRepository = FakeLmuWindowsMyBestLapEnabledRepository()
         viewModel = ReadoutListViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
@@ -48,6 +52,12 @@ class ReadoutListViewModelTest {
             ),
             saveGt7Ps5RemainingFuelLapsEnabled = SaveGt7Ps5RemainingFuelLapsEnabledUseCase(
                 gt7Ps5RemainingFuelLapsRepository,
+            ),
+            observeLmuWindowsMyBestLapEnabled = ObserveLmuWindowsMyBestLapEnabledUseCase(
+                lmuWindowsMyBestLapRepository,
+            ),
+            saveLmuWindowsMyBestLapEnabled = SaveLmuWindowsMyBestLapEnabledUseCase(
+                lmuWindowsMyBestLapRepository,
             ),
             observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
             saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
@@ -69,9 +79,15 @@ class ReadoutListViewModelTest {
         val state = viewModel.uiState.first()
         assertEquals(Simulator.LmuWindows, state.selectedSimulator)
         assertEquals(
-            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.Flag,
+                ReadoutItemKey.VehicleApproach,
+                ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
+            ),
             state.items,
         )
+        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.MyBestLap])
     }
 
     @Test
@@ -80,7 +96,12 @@ class ReadoutListViewModelTest {
         viewModel.moveItem(0, 1)
 
         assertEquals(
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.VehicleApproach,
+                ReadoutItemKey.Flag,
+                ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
+            ),
             viewModel.uiState.first().items,
         )
     }
@@ -123,7 +144,12 @@ class ReadoutListViewModelTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
 
         assertEquals(
-            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.Flag,
+                ReadoutItemKey.VehicleApproach,
+                ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
+            ),
             viewModel.uiState.first().items,
         )
     }
@@ -134,7 +160,12 @@ class ReadoutListViewModelTest {
         viewModel.moveItem(0, 1)
 
         assertEquals(
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.VehicleApproach,
+                ReadoutItemKey.Flag,
+                ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
+            ),
             readoutRepository.observeReadoutOrder("lmu_windows").first(),
         )
     }
@@ -146,7 +177,12 @@ class ReadoutListViewModelTest {
         viewModel.moveItem(0, 1) // [flag, vehicle_approach, vehicle_damage]（初期順序に戻る）
 
         assertEquals(
-            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.Flag,
+                ReadoutItemKey.VehicleApproach,
+                ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.MyBestLap,
+            ),
             viewModel.uiState.first().items,
         )
     }
@@ -169,7 +205,7 @@ class ReadoutListViewModelTest {
     @Test
     fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() = runTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
-        viewModel.onItemSelected(ReadoutItemKey.MyBestLap)
+        viewModel.onItemSelected(ReadoutItemKey.RemainingFuelLaps)
 
         assertNull(viewModel.uiState.first().selectedItem)
     }
@@ -213,11 +249,16 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5の燃料残り周回数のON_OFF状態を変更すると専用設定に保存される`() = runTest {
+    fun `専用設定を持つ項目のON_OFF状態を変更すると専用設定に保存される`() = runTest {
         viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
         viewModel.onReadoutEnabledChanged(ReadoutItemKey.RemainingFuelLaps, false)
 
         assertEquals(false, gt7Ps5RemainingFuelLapsRepository.observeEnabled().first())
+        viewModel.onSimulatorSelected(Simulator.LmuWindows)
+
+        viewModel.onReadoutEnabledChanged(ReadoutItemKey.MyBestLap, true)
+
+        assertEquals(true, lmuWindowsMyBestLapRepository.observeEnabled().first())
     }
 }

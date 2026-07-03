@@ -42,7 +42,7 @@ class ReadoutContentTest {
     )
 
     @Test
-    fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
+    fun `lmu_windowsの詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
         var capturedOnBack: (() -> Unit)? = null
         var itemTexts by mutableStateOf(emptyList<String>())
@@ -53,12 +53,18 @@ class ReadoutContentTest {
                 stringResource(Res.string.item_vehicle_approach),
                 stringResource(Res.string.item_flag),
                 stringResource(Res.string.item_vehicle_damage),
+                stringResource(Res.string.item_my_best_lap),
             )
             ReadoutContent(
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+                    items = listOf(
+                        ReadoutItemKey.Flag,
+                        ReadoutItemKey.VehicleApproach,
+                        ReadoutItemKey.VehicleDamage,
+                        ReadoutItemKey.MyBestLap,
+                    ),
                     selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},

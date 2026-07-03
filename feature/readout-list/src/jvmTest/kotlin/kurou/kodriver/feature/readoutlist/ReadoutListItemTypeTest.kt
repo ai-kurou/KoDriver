@@ -33,6 +33,14 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
+    fun `lmu_windows の my_best_lap は LmuWindows_MyBestLap を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.MyBestLap,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.MyBestLap),
+        )
+    }
+
+    @Test
     fun `gt7_ps5 の best_lap は Gt7Ps5_BestLap を返す`() {
         assertEquals(
             ReadoutListItemType.Gt7Ps5.MyBestLap,
@@ -50,7 +58,7 @@ class ReadoutListItemTypeTest {
 
     @Test
     fun `lmu_windows でシミュレータに属さないキーは null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.MyBestLap))
+        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.RemainingFuelLaps))
     }
 
     @Test
