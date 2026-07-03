@@ -164,6 +164,19 @@ class LmuWindowsMapperTest {
     }
 
     @Test
+    fun `Scoringの104番目以降のプレイヤー車両からラップタイムフィールドがパースされる`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 127)
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 128)
+        buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
+        buf.putDouble(scoringBase + OFF_SCORING_BEST_LAP_TIME, 88.765)
+
+        val result = LmuWindowsMapper.map(buf)
+
+        assertEquals(88_765L, result.timing.bestLapTimeMs)
+    }
+
+    @Test
     fun `車両位置が正しくパースされる`() {
         val vb = vehicleBase()
         val buf = emptyBuffer()

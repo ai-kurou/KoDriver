@@ -33,7 +33,7 @@ import kotlin.math.roundToLong
  *   mNumVehicles (c_int)       : +104
  *
  * rF2VehicleScoring オフセット:
- *   mVehicles[104]             : 先頭オフセット 2192, stride=584
+ *   mVehicles[128]             : 先頭オフセット 2192, stride=584
  *   mBestLapTime               : +144
  *   mLastLapTime               : +168
  *   mIsPlayer                  : +196
@@ -73,7 +73,7 @@ internal object LmuWindowsMapper {
     private const val SCORING_BASE = 1632
     private const val VEHICLE_SCORING_BASE = 2192
     private const val VEHICLE_SCORING_STRIDE = 584
-    private const val MAX_VEHICLES = 104
+    private const val MAX_SCORING_VEHICLES = 128
 
     private const val OFF_SCORING_CURRENT_ET = 68
     private const val OFF_SCORING_MAX_LAPS = 84
@@ -160,7 +160,7 @@ internal object LmuWindowsMapper {
     }
 
     private fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
-        val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_VEHICLES)
+        val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)
         for (index in 0 until vehicleCount) {
             val vehicleBase = VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
             if (buffer.get(vehicleBase + OFF_SCORING_IS_PLAYER).toInt() != 0) {
