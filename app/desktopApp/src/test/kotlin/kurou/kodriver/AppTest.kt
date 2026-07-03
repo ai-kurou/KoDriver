@@ -204,6 +204,36 @@ class AppTest {
         waitUntilDisplayed("new_flag")
     }
 
+    @Test
+    fun `選択済みのログを再タップするとログ一覧に戻る`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = "old_flag",
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+                telemetryLog(
+                    id = 2,
+                    createdAt = 200,
+                    readoutItemKey = "new_flag",
+                    telemetryJson = """{"flag":"green"}""",
+                ),
+            ),
+        )
+        setContent()
+
+        clickItem("ログ")
+        clickItem("new_flag")
+        waitUntilDisplayed("選択したログ")
+
+        clickItem("new_flag")
+
+        waitUntilNotDisplayed("選択したログ")
+        waitUntilDisplayed("new_flag")
+    }
+
     private fun selectSimulator(simulatorName: String) {
         rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()

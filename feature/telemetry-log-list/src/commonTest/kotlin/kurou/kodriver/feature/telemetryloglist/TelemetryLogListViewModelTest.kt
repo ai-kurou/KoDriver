@@ -76,7 +76,7 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `selectLogで選択したログIDを保持する`() = runTest(dispatcher) {
+    fun `selectLogで未選択のログIDを選択する`() = runTest(dispatcher) {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
@@ -86,6 +86,21 @@ class TelemetryLogListViewModelTest {
         viewModel.selectLog(1)
 
         assertEquals(1L, viewModel.uiState.first { it.selectedLogId == 1L }.selectedLogId)
+    }
+
+    @Test
+    fun `selectLogで選択済みのログIDを再選択すると選択状態を解除する`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+        )
+
+        repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
+        viewModel.selectLog(1)
+        viewModel.uiState.first { it.selectedLogId == 1L }
+        viewModel.selectLog(1)
+
+        assertNull(viewModel.uiState.first { it.selectedLogId == null }.selectedLogId)
     }
 
     @Test
