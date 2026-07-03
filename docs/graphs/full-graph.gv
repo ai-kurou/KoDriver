@@ -45,6 +45,8 @@ digraph G {
   ":feature:lmu-windows-narrator" -> ":core:designsystem"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-readout-my-bestlap-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-my-bestlap-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
