@@ -77,6 +77,7 @@ import kurou.kodriver.feature.readoutlist.ReadoutListItemType
 import kurou.kodriver.feature.readoutlist.ReadoutListViewModel
 import kurou.kodriver.feature.telemetrylogdetail.TelemetryLogDetailContent
 import kurou.kodriver.feature.telemetryloglist.TelemetryLogContent
+import kurou.kodriver.feature.telemetryloglist.TelemetryLogListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -101,13 +102,14 @@ private fun handleTabClick(
     dest: AppDestination,
     currentDestination: AppDestination,
     onReadoutTabReselected: () -> Unit,
+    onLogTabReselected: () -> Unit,
     onOtherTabReselected: () -> Unit,
     setCurrentDestination: (AppDestination) -> Unit,
 ) {
     if (currentDestination == dest) {
         when (dest) {
             AppDestination.Readout -> onReadoutTabReselected()
-            AppDestination.Log -> Unit
+            AppDestination.Log -> onLogTabReselected()
             AppDestination.More -> onOtherTabReselected()
         }
     }
@@ -181,6 +183,7 @@ private fun DefaultOtherContent(
 fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),
     readoutListViewModel: ReadoutListViewModel = koinViewModel(),
+    telemetryLogListViewModel: TelemetryLogListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
     onExit: () -> Unit = {},
@@ -272,6 +275,7 @@ fun AppScreen(
         keepScreenOn = uiState.keepScreenOn,
         onBannerTap = onBannerTap,
         onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
+        onLogTabReselected = telemetryLogListViewModel::clearSelectedLog,
         onOtherTabReselected = otherListViewModel::clearSelectedItem,
         readoutContent = readoutContent,
         telemetryLogContent = telemetryLogContent,
@@ -324,6 +328,7 @@ internal fun AppScreenContent(
     keepScreenOn: Boolean = false,
     onBannerTap: (() -> Unit)? = null,
     onReadoutTabReselected: () -> Unit = {},
+    onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable () -> Unit = {},
     telemetryLogContent: @Composable () -> Unit = {},
@@ -391,6 +396,7 @@ internal fun AppScreenContent(
                                     dest = dest,
                                     currentDestination = currentDestination,
                                     onReadoutTabReselected = onReadoutTabReselected,
+                                    onLogTabReselected = onLogTabReselected,
                                     onOtherTabReselected = onOtherTabReselected,
                                     setCurrentDestination = { currentDestination = it },
                                 )
