@@ -165,7 +165,7 @@ class AppTest {
         clickItem("ログ")
 
         waitUntilDisplayed("new_flag")
-        waitUntilDisplayed("""{"flag":"green"}""")
+        waitUntilDisplayed("00:00:00.200 / レース +00:00:00.100")
         waitUntilDisplayed("lmu_windows / 200")
         waitUntilDisplayed("old_flag")
         clickItem("new_flag")
