@@ -5,12 +5,12 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ObserveLongitudinalThresholdUseCaseTest {
+class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
 
     @Test
     fun `初期値を返す`() = runBlocking {
         val repo = FakeProximityThresholdsPreferencesRepository(initialLongitudinal = 10.0)
-        val useCase = ObserveLongitudinalThresholdUseCase(repo)
+        val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
         assertEquals(10.0, useCase().first())
     }
@@ -18,7 +18,7 @@ class ObserveLongitudinalThresholdUseCaseTest {
     @Test
     fun `保存済みの縦方向閾値をそのまま返す`() = runBlocking {
         val repo = FakeProximityThresholdsPreferencesRepository(initialLongitudinal = 10.0)
-        val useCase = ObserveLongitudinalThresholdUseCase(repo)
+        val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
         repo.saveLongitudinalThresholdMeters(50.0)
         assertEquals(50.0, useCase().first())

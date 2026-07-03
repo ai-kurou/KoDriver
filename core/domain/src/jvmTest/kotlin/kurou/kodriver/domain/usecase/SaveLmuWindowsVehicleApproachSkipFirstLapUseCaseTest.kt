@@ -6,12 +6,12 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class SaveVehicleApproachSkipFirstLapUseCaseTest {
+class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
 
     @Test
     fun `trueを渡すとskipFirstLapがtrueとして保存される`() = runBlocking {
         val repository = FakeVehicleApproachPreferencesRepository(initialSkipFirstLap = false)
-        val useCase = SaveVehicleApproachSkipFirstLapUseCase(repository)
+        val useCase = SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)
 
         useCase(true)
 
@@ -21,7 +21,7 @@ class SaveVehicleApproachSkipFirstLapUseCaseTest {
     @Test
     fun `falseを渡すとskipFirstLapがfalseとして保存される`() = runBlocking {
         val repository = FakeVehicleApproachPreferencesRepository(initialSkipFirstLap = true)
-        val useCase = SaveVehicleApproachSkipFirstLapUseCase(repository)
+        val useCase = SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)
 
         useCase(false)
 

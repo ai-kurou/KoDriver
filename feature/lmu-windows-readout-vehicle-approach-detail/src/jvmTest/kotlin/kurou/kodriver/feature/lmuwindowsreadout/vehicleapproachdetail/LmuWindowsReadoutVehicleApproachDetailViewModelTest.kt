@@ -12,12 +12,12 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLateralThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
-import kurou.kodriver.domain.usecase.VehicleApproachPreferencesUseCases
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLateralThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -39,11 +39,15 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         vehicleApproachPreferencesRepository = FakeVehicleApproachPreferencesRepository()
         playedEvents = mutableListOf()
         viewModel = LmuWindowsReadoutVehicleApproachDetailViewModel(
-            observeLateralThreshold = ObserveLateralThresholdUseCase(thresholdsRepository),
-            observeLongitudinalThreshold = ObserveLongitudinalThresholdUseCase(thresholdsRepository),
-            vehicleApproachPreferences = VehicleApproachPreferencesUseCases(vehicleApproachPreferencesRepository),
-            saveLateralThreshold = SaveLateralThresholdUseCase(thresholdsRepository),
-            saveLongitudinalThreshold = SaveLongitudinalThresholdUseCase(thresholdsRepository),
+            observeLateralThreshold = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(thresholdsRepository),
+            observeLongitudinalThreshold = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(
+                thresholdsRepository,
+            ),
+            vehicleApproachPreferences = LmuWindowsVehicleApproachPreferencesUseCases(
+                vehicleApproachPreferencesRepository,
+            ),
+            saveLateralThreshold = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(thresholdsRepository),
+            saveLongitudinalThreshold = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(thresholdsRepository),
             playSpeechEvent = PlaySpeechEventUseCase(
                 FakeTextToSpeechEngine { event, queue ->
                     playedEvents.add(QueuedSpeechEvent(event, queue))

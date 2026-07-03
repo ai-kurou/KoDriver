@@ -25,32 +25,32 @@ import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
-import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
-    val observeSkipFirstLap: ObserveVehicleApproachSkipFirstLapUseCase,
-    val observeStartReadoutEnabled: ObserveVehicleApproachStartReadoutEnabledUseCase,
-    val observeStartReadoutType: ObserveVehicleApproachStartReadoutTypeUseCase,
+    val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
+    val observeStartReadoutEnabled: ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase,
+    val observeStartReadoutType: ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase,
 )
 
 data class VehicleDamageUseCases(
     val observeVehicleDamage: ObserveVehicleDamageUseCase,
-    val observeVehicleDamageEnabledStates: ObserveVehicleDamageEnabledStatesUseCase,
+    val observeVehicleDamageEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
 )
 
 data class ReadoutListUseCases(
@@ -61,7 +61,7 @@ data class ReadoutListUseCases(
 
 data class FlagUseCases(
     val observeRaceFlags: ObserveRaceFlagsUseCase,
-    val observeFlagEnabledStates: ObserveFlagEnabledStatesUseCase,
+    val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
 )
 
 data class NarratorUseCases(

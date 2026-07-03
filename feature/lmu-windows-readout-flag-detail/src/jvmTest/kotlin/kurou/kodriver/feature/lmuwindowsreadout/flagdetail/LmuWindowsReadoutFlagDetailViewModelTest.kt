@@ -13,9 +13,9 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -43,8 +43,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         Dispatchers.setMain(testDispatcher)
         repository = FakeFlagPreferencesRepository()
         viewModel = LmuWindowsReadoutFlagDetailViewModel(
-            observeFlagEnabledStates = ObserveFlagEnabledStatesUseCase(repository),
-            saveFlagEnabledState = SaveFlagEnabledStateUseCase(repository),
+            observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
+            saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }

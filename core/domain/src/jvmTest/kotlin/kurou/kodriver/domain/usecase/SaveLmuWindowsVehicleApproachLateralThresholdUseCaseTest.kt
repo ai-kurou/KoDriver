@@ -5,12 +5,12 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SaveLateralThresholdUseCaseTest {
+class SaveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
 
     @Test
     fun `保存した横方向閾値がFlowに反映される`() = runBlocking {
         val repo = FakeProximityThresholdsPreferencesRepository()
-        val useCase = SaveLateralThresholdUseCase(repo)
+        val useCase = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
 
         useCase(3.5)
         assertEquals(3.5, repo.observeLateralThresholdMeters().first())
@@ -19,7 +19,7 @@ class SaveLateralThresholdUseCaseTest {
     @Test
     fun `上書き保存すると最新値がFlowに反映される`() = runBlocking {
         val repo = FakeProximityThresholdsPreferencesRepository()
-        val useCase = SaveLateralThresholdUseCase(repo)
+        val useCase = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
 
         useCase(3.5)
         useCase(1.0)

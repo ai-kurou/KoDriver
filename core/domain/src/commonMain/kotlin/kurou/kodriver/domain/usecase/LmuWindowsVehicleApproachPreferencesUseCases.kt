@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 
-class VehicleApproachPreferencesUseCases(
+class LmuWindowsVehicleApproachPreferencesUseCases(
     private val repository: VehicleApproachPreferencesRepository,
 ) {
     fun observeSkipFirstLap(): Flow<Boolean> = repository.observeSkipFirstLap()

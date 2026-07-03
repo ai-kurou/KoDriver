@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveFlagEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsFlagEnabledStateUseCase
 
 internal class LmuWindowsReadoutFlagDetailViewModel(
-    observeFlagEnabledStates: ObserveFlagEnabledStatesUseCase,
-    private val saveFlagEnabledState: SaveFlagEnabledStateUseCase,
+    observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
+    private val saveFlagEnabledState: SaveLmuWindowsFlagEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 

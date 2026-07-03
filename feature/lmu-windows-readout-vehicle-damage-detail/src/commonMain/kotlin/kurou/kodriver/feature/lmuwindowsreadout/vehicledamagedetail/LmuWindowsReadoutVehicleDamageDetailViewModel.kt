@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveVehicleDamageEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseCase
 
 internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
-    observeEnabledStates: ObserveVehicleDamageEnabledStatesUseCase,
-    private val saveEnabledState: SaveVehicleDamageEnabledStateUseCase,
+    observeEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
+    private val saveEnabledState: SaveLmuWindowsVehicleDamageEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 

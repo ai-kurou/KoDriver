@@ -1,10 +1,9 @@
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 
-class ObserveVehicleApproachSkipFirstLapUseCase(
+class SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(
     private val repository: VehicleApproachPreferencesRepository,
 ) {
-    operator fun invoke(): Flow<Boolean> = repository.observeSkipFirstLap()
+    suspend operator fun invoke(skip: Boolean) = repository.saveSkipFirstLap(skip)
 }

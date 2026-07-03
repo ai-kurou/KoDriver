@@ -6,13 +6,13 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SaveVehicleApproachStartReadoutTypeUseCaseTest {
+class SaveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
 
     @Test
     fun `接近開始時読み上げ種別を保存できる`() = runBlocking {
         val repository = FakeVehicleApproachPreferencesRepository()
-        val saveUseCase = SaveVehicleApproachStartReadoutTypeUseCase(repository)
-        val observeUseCase = ObserveVehicleApproachStartReadoutTypeUseCase(repository)
+        val saveUseCase = SaveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)
+        val observeUseCase = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)
 
         saveUseCase(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
 

@@ -1,10 +1,11 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 
-class SaveVehicleApproachStartReadoutTypeUseCase(
+class ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(
     private val repository: VehicleApproachPreferencesRepository,
 ) {
-    suspend operator fun invoke(type: VehicleApproachStartReadoutType) = repository.saveStartReadoutType(type)
+    operator fun invoke(): Flow<VehicleApproachStartReadoutType> = repository.observeStartReadoutType()
 }

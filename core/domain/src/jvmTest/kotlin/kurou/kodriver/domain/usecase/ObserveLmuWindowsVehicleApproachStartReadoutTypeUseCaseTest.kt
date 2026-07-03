@@ -6,14 +6,14 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ObserveVehicleApproachStartReadoutTypeUseCaseTest {
+class ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
 
     @Test
     fun `接近開始時読み上げ種別を監視できる`() = runBlocking {
         val repository = FakeVehicleApproachPreferencesRepository(
             initialStartReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
         )
-        val useCase = ObserveVehicleApproachStartReadoutTypeUseCase(repository)
+        val useCase = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)
 
         assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCase().first())
     }

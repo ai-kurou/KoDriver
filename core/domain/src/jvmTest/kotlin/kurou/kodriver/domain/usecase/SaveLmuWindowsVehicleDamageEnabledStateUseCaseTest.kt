@@ -8,13 +8,13 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SaveVehicleDamageEnabledStateUseCaseTest {
+class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
 
     @Test
     fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
         val repo = FakeVehicleDamagePreferencesRepository()
-        val saveUseCase = SaveVehicleDamageEnabledStateUseCase(repo)
-        val observeUseCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
+        val saveUseCase = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repo)
+        val observeUseCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         saveUseCase(ReadoutItemKey.Overheat, true)
         assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true), observeUseCase().first())

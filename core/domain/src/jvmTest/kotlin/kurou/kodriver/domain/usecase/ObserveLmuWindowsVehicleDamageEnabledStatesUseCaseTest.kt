@@ -13,12 +13,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ObserveVehicleDamageEnabledStatesUseCaseTest {
+class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値は空Mapを返す`() = runBlocking {
         val repo = FakeVehicleDamagePreferencesRepository()
-        val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
+        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         assertTrue(useCase().first().isEmpty())
     }
@@ -26,7 +26,7 @@ class ObserveVehicleDamageEnabledStatesUseCaseTest {
     @Test
     fun `保存済みの値を返す`() = runBlocking {
         val repo = FakeVehicleDamagePreferencesRepository()
-        val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
+        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.Overheat, true)
 
@@ -36,7 +36,7 @@ class ObserveVehicleDamageEnabledStatesUseCaseTest {
     @Test
     fun `複数キーを保存した場合すべてのエントリを返す`() = runBlocking {
         val repo = FakeVehicleDamagePreferencesRepository()
-        val useCase = ObserveVehicleDamageEnabledStatesUseCase(repo)
+        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.Overheat, true)
         repo.saveEnabledState(ReadoutItemKey.VehicleDamage, false)

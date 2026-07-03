@@ -48,18 +48,18 @@ import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
-import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleApproachStartReadoutTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
@@ -116,13 +116,13 @@ class LmuWindowsNarratorViewModelTest {
                 observeLmuWindows = ObserveLmuWindowsUseCase(
                     FakeChannelLmuWindowsRepository(telemetryChannel.receiveAsFlow()),
                 ),
-                observeSkipFirstLap = ObserveVehicleApproachSkipFirstLapUseCase(
+                observeSkipFirstLap = ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
-                observeStartReadoutEnabled = ObserveVehicleApproachStartReadoutEnabledUseCase(
+                observeStartReadoutEnabled = ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
-                observeStartReadoutType = ObserveVehicleApproachStartReadoutTypeUseCase(
+                observeStartReadoutType = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
             ),
@@ -130,7 +130,7 @@ class LmuWindowsNarratorViewModelTest {
                 observeVehicleDamage = ObserveVehicleDamageUseCase(
                     FakeChannelVehicleDamageRepository(damageChannel.receiveAsFlow()),
                 ),
-                observeVehicleDamageEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(
+                observeVehicleDamageEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
                     FakeVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
                 ),
             ),
@@ -145,7 +145,7 @@ class LmuWindowsNarratorViewModelTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(
                     FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
                 ),
-                observeFlagEnabledStates = ObserveFlagEnabledStatesUseCase(
+                observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(
                     FakeFlagPreferencesRepository(flagEnabledOverrides),
                 ),
             ),

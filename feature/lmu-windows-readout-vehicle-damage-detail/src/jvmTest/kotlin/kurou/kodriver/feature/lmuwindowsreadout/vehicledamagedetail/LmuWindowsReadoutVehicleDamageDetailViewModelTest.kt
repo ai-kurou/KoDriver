@@ -13,9 +13,9 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveVehicleDamageEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -43,8 +43,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
         Dispatchers.setMain(testDispatcher)
         repository = FakeVehicleDamagePreferencesRepository()
         viewModel = LmuWindowsReadoutVehicleDamageDetailViewModel(
-            observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repository),
-            saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repository),
+            observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
+            saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
@@ -65,8 +65,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
             initialStates = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
         )
         val vm = LmuWindowsReadoutVehicleDamageDetailViewModel(
-            observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repo),
-            saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repo),
+            observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo),
+            saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repo),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine {}),
         )
 

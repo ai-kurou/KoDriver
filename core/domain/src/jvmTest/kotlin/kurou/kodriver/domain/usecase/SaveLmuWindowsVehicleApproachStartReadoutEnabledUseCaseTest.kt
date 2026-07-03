@@ -5,13 +5,13 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SaveVehicleApproachStartReadoutEnabledUseCaseTest {
+class SaveLmuWindowsVehicleApproachStartReadoutEnabledUseCaseTest {
 
     @Test
     fun `invoke は接近開始時読み上げ設定を保存する`() = runBlocking {
         val repository = FakeVehicleApproachPreferencesRepository()
-        val saveUseCase = SaveVehicleApproachStartReadoutEnabledUseCase(repository)
-        val observeUseCase = ObserveVehicleApproachStartReadoutEnabledUseCase(repository)
+        val saveUseCase = SaveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(repository)
+        val observeUseCase = ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(repository)
 
         saveUseCase(false)
 
