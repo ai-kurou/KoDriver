@@ -13,6 +13,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
+import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
@@ -76,6 +77,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<MyBestLapPreferencesRepository> {
         createMyBestLapPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<LmuWindowsMyBestLapPreferencesRepository> {
+        createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
     }
     single<ServerIpRepository> {
         AndroidServerIpRepository(context.serverIpDataStore)
