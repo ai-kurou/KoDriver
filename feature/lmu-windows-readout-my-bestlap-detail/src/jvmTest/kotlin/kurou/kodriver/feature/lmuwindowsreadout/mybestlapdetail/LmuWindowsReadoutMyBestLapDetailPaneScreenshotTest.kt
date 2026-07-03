@@ -24,10 +24,16 @@ class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
 
     @Test
     fun `casual選択`() {
-        capturePane(uiState = LmuWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.CASUAL))
+        capturePane(
+            uiState = LmuWindowsReadoutMyBestLapDetailUiState(
+                voiceType = MyBestLapVoiceType.CASUAL,
+            ),
+        )
     }
 
-    private fun capturePane(uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState()) {
+    private fun capturePane(
+        uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState(),
+    ) {
         rule.setContent {
             KoDriverTheme {
                 Surface {
