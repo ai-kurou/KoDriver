@@ -2,6 +2,11 @@ package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.EngineData
+import kurou.kodriver.domain.model.FuelData
+import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -9,8 +14,11 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.TimingData
+import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
+import kurou.kodriver.domain.model.VehicleData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -18,6 +26,53 @@ import kotlin.test.assertNotNull
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
+
+    @Test
+    fun `初回の自己ベストラップは状態だけ更新する`() {
+        val decision = useCase.determineMyBestLap(
+            state = LmuWindowsNarratorState(),
+            telemetry = telemetry(bestLapTimeMs = 60_000L),
+            settings = settings(),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(60_000L, decision.state.previousBestLapTimeMs)
+    }
+
+    @Test
+    fun `自己ベストラップが更新されると設定した音声イベントを返す`() {
+        val first = useCase.determineMyBestLap(
+            state = LmuWindowsNarratorState(),
+            telemetry = telemetry(bestLapTimeMs = 60_000L),
+            settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+        )
+
+        val second = useCase.determineMyBestLap(
+            state = first.state,
+            telemetry = telemetry(bestLapTimeMs = 59_000L),
+            settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
+        )
+
+        assertEquals(listOf(SpeechEvent.MyBestLapCasual), second.events)
+        assertEquals(59_000L, second.state.personalBestMs)
+    }
+
+    @Test
+    fun `自己ベストラップ項目が無効なら読み上げない`() {
+        val first = useCase.determineMyBestLap(
+            state = LmuWindowsNarratorState(),
+            telemetry = telemetry(bestLapTimeMs = 60_000L),
+            settings = settings(enabledStates = mapOf(ReadoutItemKey.MyBestLap to false)),
+        )
+
+        val second = useCase.determineMyBestLap(
+            state = first.state,
+            telemetry = telemetry(bestLapTimeMs = 59_000L),
+            settings = settings(enabledStates = mapOf(ReadoutItemKey.MyBestLap to false)),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
 
     @Test
     fun `左接近が50ms継続するとCarLeftを返す`() {
@@ -281,16 +336,43 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
 private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
+    myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
     startReadoutEnabled: Boolean = true,
     startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
+    myBestLapVoiceType = myBestLapVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
     vehicleApproachStartReadoutEnabled = startReadoutEnabled,
     vehicleApproachStartReadoutType = startReadoutType,
+)
+
+private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
+    timestampMs = 0L,
+    engine = EngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+    inputs = InputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+    tyres = TyreData(wheels = emptyMap()),
+    fuel = FuelData(currentLiters = 0.0, capacityLiters = 0.0),
+    timing = TimingData(
+        currentLapTimeMs = 0L,
+        lastLapTimeMs = 0L,
+        bestLapTimeMs = bestLapTimeMs,
+        sector1Ms = 0L,
+        sector2Ms = 0L,
+        currentLap = 0,
+        maxLaps = 0,
+    ),
+    vehicle = VehicleData(
+        localVelocityX = 0.0,
+        localVelocityY = 0.0,
+        localVelocityZ = 0.0,
+        positionX = 0.0,
+        positionY = 0.0,
+        positionZ = 0.0,
+    ),
 )
 
 private fun leftProximity(vehicleId: Int) = ProximityData(

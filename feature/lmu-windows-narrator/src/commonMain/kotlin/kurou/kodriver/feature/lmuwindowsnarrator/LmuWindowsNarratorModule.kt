@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
@@ -27,8 +28,9 @@ val lmuNarratorModule: Module = module {
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(named("lmu_windows")), get()) }
     factory { DetermineLmuWindowsNarratorReadoutUseCase() }
     factory { SaveTelemetryLogUseCase(get()) }
-    factory { NarratorUseCases(get(), get()) }
+    factory { NarratorUseCases(get(), get(), get()) }
     factory { ObserveFlagEnabledStatesUseCase(get()) }
+    factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveProximityUseCase(get()) }
     factory { ObserveRaceFlagsUseCase(get()) }

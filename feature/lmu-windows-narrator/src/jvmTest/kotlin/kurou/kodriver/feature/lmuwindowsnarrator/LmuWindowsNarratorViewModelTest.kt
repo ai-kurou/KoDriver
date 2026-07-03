@@ -19,6 +19,7 @@ import kurou.kodriver.domain.model.EngineData
 import kurou.kodriver.domain.model.FuelData
 import kurou.kodriver.domain.model.InputsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -47,6 +49,7 @@ import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
@@ -91,6 +94,7 @@ class LmuWindowsNarratorViewModelTest {
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach),
+        voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -148,6 +152,9 @@ class LmuWindowsNarratorViewModelTest {
             ttsEngine = ttsEngine,
             narratorUseCases = NarratorUseCases(
                 determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
+                observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(
+                    FakeLmuWindowsMyBestLapPreferencesRepository(voiceType),
+                ),
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
             ),
             currentTimeMs = currentTimeMs,
@@ -181,6 +188,74 @@ class LmuWindowsNarratorViewModelTest {
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    // --- 自己ベストラップ ---
+
+    @Test
+    fun `自己ベストラップの声種別設定を反映して読み上げる`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            voiceType = MyBestLapVoiceType.CASUAL,
+            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+        )
+
+        telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
+        telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), tts.spokenTexts)
+    }
+
+    @Test
+    fun `自己ベストラップが無効のときは読み上げない`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.MyBestLap to false),
+            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+        )
+
+        telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
+        telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `自己ベストラップ読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            telemetryChannel = telemetryChannel,
+            ttsEngine = tts,
+            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+            currentTimeMs = { 456L },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L, currentLap = 1))
+        telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L, currentLap = 2))
+
+        assertEquals(
+            listOf(
+                TelemetryLog(
+                    createdAt = 456L,
+                    simulatorId = Simulator.LmuWindows.id,
+                    readoutItemKey = ReadoutItemKey.MyBestLap.value,
+                    telemetryJson =
+                        """{"previous":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":60000,""" +
+                            """"currentLap":1,"maxLaps":0},"current":{"currentLapTimeMs":0,""" +
+                            """"lastLapTimeMs":0,"bestLapTimeMs":59000,"currentLap":2,"maxLaps":0}}""",
+                ),
+            ),
+            telemetryLogRepository.logs.value,
+        )
     }
 
     // --- 接近アナウンス ---
@@ -640,6 +715,16 @@ private class FakeChannelLmuWindowsRepository(
     override suspend fun disconnect() = Unit
 }
 
+private class FakeLmuWindowsMyBestLapPreferencesRepository(
+    initialVoiceType: MyBestLapVoiceType,
+) : LmuWindowsMyBestLapPreferencesRepository {
+    private val voiceType = MutableStateFlow(initialVoiceType)
+    override fun observeVoiceType(): Flow<MyBestLapVoiceType> = voiceType
+    override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
+        voiceType.value = type
+    }
+}
+
 private class FakeConstantVehicleApproachPreferencesRepository(
     private val skipFirstLap: Boolean,
     private val startReadoutEnabled: Boolean,
@@ -694,7 +779,10 @@ private fun noDamage(overheating: Boolean = false) = VehicleDamageData(
     lastImpactMagnitude = 0.0,
 )
 
-private fun fakeTelemetryData(currentLap: Int) = LmuWindowsTelemetryData(
+private fun fakeTelemetryData(
+    currentLap: Int = 0,
+    bestLapTimeMs: Long = 0L,
+) = LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = EngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = InputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
@@ -703,7 +791,7 @@ private fun fakeTelemetryData(currentLap: Int) = LmuWindowsTelemetryData(
     timing = TimingData(
         currentLapTimeMs = 0L,
         lastLapTimeMs = 0L,
-        bestLapTimeMs = 0L,
+        bestLapTimeMs = bestLapTimeMs,
         sector1Ms = 0L,
         sector2Ms = 0L,
         currentLap = currentLap,

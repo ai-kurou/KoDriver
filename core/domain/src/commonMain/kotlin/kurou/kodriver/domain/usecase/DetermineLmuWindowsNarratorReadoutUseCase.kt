@@ -1,6 +1,8 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
@@ -14,6 +16,8 @@ data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
     val previousRaceFlags: RaceFlagsData? = null,
     val previousVehicleDamage: VehicleDamageData? = null,
+    val personalBestMs: Long = Long.MAX_VALUE,
+    val previousBestLapTimeMs: Long? = null,
 )
 
 data class LmuWindowsVehicleApproachState(
@@ -28,6 +32,7 @@ data class LmuWindowsApproachState(
 
 data class LmuWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
+    val myBestLapVoiceType: MyBestLapVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachStartReadoutEnabled: Boolean,
@@ -40,6 +45,36 @@ data class LmuWindowsNarratorReadoutDecision(
 )
 
 class DetermineLmuWindowsNarratorReadoutUseCase {
+    fun determineMyBestLap(
+        state: LmuWindowsNarratorState,
+        telemetry: LmuWindowsTelemetryData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val current = telemetry.timing.bestLapTimeMs
+        val stateWithCurrentBestLap = state.copy(previousBestLapTimeMs = current)
+        val previous = state.previousBestLapTimeMs
+        if (previous == null) return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        if (current <= 0L) return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        if (previous > 0L && current >= previous) {
+            return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
+        if (current >= state.personalBestMs) {
+            return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
+        if (settings.enabledStates[ReadoutItemKey.MyBestLap] == false) {
+            return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
+        }
+
+        val event = when (settings.myBestLapVoiceType) {
+            MyBestLapVoiceType.FORMAL -> SpeechEvent.MyBestLapFormal
+            MyBestLapVoiceType.CASUAL -> SpeechEvent.MyBestLapCasual
+        }
+        return LmuWindowsNarratorReadoutDecision(
+            state = stateWithCurrentBestLap.copy(personalBestMs = current),
+            events = listOf(event),
+        )
+    }
+
     fun determineVehicleApproach(
         state: LmuWindowsNarratorState,
         proximity: ProximityData,
