@@ -9,11 +9,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -29,7 +27,6 @@ class ReadoutListViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var simulatorRepository: FakeSimulatorPreferencesRepository
     private lateinit var readoutRepository: FakeReadoutPreferencesRepository
-    private lateinit var lmuWindowsMyBestLapRepository: FakeLmuWindowsMyBestLapEnabledRepository
     private lateinit var viewModel: ReadoutListViewModel
 
     @Before
@@ -37,18 +34,11 @@ class ReadoutListViewModelTest {
         Dispatchers.setMain(testDispatcher)
         simulatorRepository = FakeSimulatorPreferencesRepository()
         readoutRepository = FakeReadoutPreferencesRepository()
-        lmuWindowsMyBestLapRepository = FakeLmuWindowsMyBestLapEnabledRepository()
         viewModel = ReadoutListViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
             saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-            observeLmuWindowsMyBestLapEnabled = ObserveLmuWindowsMyBestLapEnabledUseCase(
-                lmuWindowsMyBestLapRepository,
-            ),
-            saveLmuWindowsMyBestLapEnabled = SaveLmuWindowsMyBestLapEnabledUseCase(
-                lmuWindowsMyBestLapRepository,
-            ),
             observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
             saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
         )
@@ -239,7 +229,7 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `ON_OFF状態の保存先が項目ごとのRepositoryに分かれる`() = runTest {
+    fun `ON_OFF状態はシミュレータと項目ごとに共通Repositoryへ保存される`() = runTest {
         viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
         viewModel.onReadoutEnabledChanged(ReadoutItemKey.RemainingFuelLaps, false)
@@ -253,6 +243,9 @@ class ReadoutListViewModelTest {
 
         viewModel.onReadoutEnabledChanged(ReadoutItemKey.MyBestLap, true)
 
-        assertEquals(true, lmuWindowsMyBestLapRepository.observeEnabled().first())
+        assertEquals(
+            true,
+            readoutRepository.observeReadoutEnabledStates("lmu_windows").first()[ReadoutItemKey.MyBestLap],
+        )
     }
 }
