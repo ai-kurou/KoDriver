@@ -23,14 +23,12 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
@@ -60,7 +58,6 @@ class Gt7Ps5NarratorViewModelTest {
 
     private data class ReadoutSettings(
         val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        val remainingFuelLapsEnabled: Boolean = true,
         val fuelThreshold: Int = 3,
     )
 
@@ -98,9 +95,6 @@ class Gt7Ps5NarratorViewModelTest {
             remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
                 observeRemainingFuelLapsThreshold = ObserveGt7Ps5RemainingFuelLapsUseCase(
                     FakeRemainingFuelLapsPreferencesRepo(readoutSettings.fuelThreshold),
-                ),
-                observeRemainingFuelLapsEnabled = ObserveGt7Ps5RemainingFuelLapsEnabledUseCase(
-                    FakeGt7Ps5RemainingFuelLapsEnabledRepo(readoutSettings.remainingFuelLapsEnabled),
                 ),
             ),
             ttsEngine = ttsEngine,
@@ -201,7 +195,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = true, fuelThreshold = 3),
+            readoutSettings = ReadoutSettings(fuelThreshold = 3),
         )
 
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
@@ -218,7 +212,10 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(remainingFuelLapsEnabled = false, fuelThreshold = 3),
+            readoutSettings = ReadoutSettings(
+                enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to false),
+                fuelThreshold = 3,
+            ),
         )
 
         channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
@@ -399,13 +396,6 @@ private class FakeRemainingFuelLapsPreferencesRepo(
 ) : Gt7Ps5RemainingFuelLapsPreferencesRepository {
     override fun observeRemainingFuelLaps(): Flow<Int> = MutableStateFlow(threshold)
     override suspend fun saveRemainingFuelLaps(laps: Int) = Unit
-}
-
-private class FakeGt7Ps5RemainingFuelLapsEnabledRepo(
-    private val enabled: Boolean = true,
-) : Gt7Ps5RemainingFuelLapsEnabledRepository {
-    override fun observeEnabled(): Flow<Boolean> = MutableStateFlow(enabled)
-    override suspend fun saveEnabled(enabled: Boolean) = Unit
 }
 
 private class FakeTelemetryLogRepository : TelemetryLogRepository {

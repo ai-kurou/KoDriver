@@ -14,11 +14,11 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
@@ -40,7 +40,6 @@ data class ReadoutListUseCases(
 
 data class RemainingFuelLapsUseCases(
     val observeRemainingFuelLapsThreshold: ObserveGt7Ps5RemainingFuelLapsUseCase,
-    val observeRemainingFuelLapsEnabled: ObserveGt7Ps5RemainingFuelLapsEnabledUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -76,9 +75,6 @@ class Gt7Ps5NarratorViewModel(
     private val fuelThreshold = remainingFuelLapsUseCases.observeRemainingFuelLapsThreshold()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
 
-    private val remainingFuelLapsEnabled = remainingFuelLapsUseCases.observeRemainingFuelLapsEnabled()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
-
     private var narratorState = Gt7Ps5NarratorState()
     private var previousTelemetry: Gt7Ps5TelemetryData? = null
 
@@ -101,7 +97,7 @@ class Gt7Ps5NarratorViewModel(
                     enabledStates = enabledStates.value,
                     myBestLapVoiceType = voiceType.value,
                     remainingFuelLapsThreshold = fuelThreshold.value,
-                    remainingFuelLapsEnabled = remainingFuelLapsEnabled.value,
+                    remainingFuelLapsEnabled = enabledStates.value[ReadoutItemKey.RemainingFuelLaps] != false,
                 ),
                 observedAtMs = observedAtMs,
             )

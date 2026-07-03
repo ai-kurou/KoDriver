@@ -2,7 +2,6 @@ package kurou.kodriver.feature.gt7ps5narrator
 
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
@@ -31,8 +30,7 @@ val gt7Ps5NarratorModule: Module = module {
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ReadoutListUseCases(get(), get(), get()) }
     factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
-    factory { ObserveGt7Ps5RemainingFuelLapsEnabledUseCase(get()) }
-    factory { RemainingFuelLapsUseCases(get(), get()) }
+    factory { RemainingFuelLapsUseCases(get()) }
     single<TextToSpeechEngine>(named("gt7_ps5")) {
         Gt7Ps5WavNarratorEngine(
             soundPlayer = get(),
