@@ -3,11 +3,11 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.data.model.ProximityThresholdsPreferences
+import kurou.kodriver.data.model.LmuWindowsVehicleApproachThresholdsPreferences
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
 internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
-    private val dataStore: DataStore<ProximityThresholdsPreferences>,
+    private val dataStore: DataStore<LmuWindowsVehicleApproachThresholdsPreferences>,
 ) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
 
     override fun observeLongitudinalThresholdMeters(): Flow<Double> =

@@ -6,6 +6,8 @@ import kotlinx.serialization.protobuf.ProtoNumber
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-internal data class VehicleDamagePreferences(
-    @ProtoNumber(1) val enabledStates: Map<String, Boolean> = emptyMap(),
+internal data class LmuWindowsVehicleApproachPreferences(
+    @ProtoNumber(1) val skipFirstLap: Boolean = true,
+    @ProtoNumber(2) val startReadoutEnabled: Boolean = true,
+    @ProtoNumber(3) val startReadoutType: String = "car_left_right",
 )

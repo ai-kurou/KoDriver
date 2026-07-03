@@ -6,7 +6,7 @@ import kotlinx.serialization.protobuf.ProtoNumber
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-internal data class ProximityThresholdsPreferences(
+internal data class LmuWindowsVehicleApproachThresholdsPreferences(
     @ProtoNumber(1) val longitudinalThresholdMeters: Double = 5.0,
     @ProtoNumber(2) val lateralThresholdMeters: Double = 5.0,
 )

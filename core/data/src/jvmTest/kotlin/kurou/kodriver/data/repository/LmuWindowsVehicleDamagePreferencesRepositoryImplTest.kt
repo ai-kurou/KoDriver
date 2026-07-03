@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.data.datasource.VehicleDamagePreferencesSerializer
+import kurou.kodriver.data.datasource.LmuWindowsVehicleDamagePreferencesSerializer
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -18,10 +18,10 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
-    private val tempDir = Files.createTempDirectory("kodriver_vehicle_damage_preferences_test").toFile()
+    private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_vehicle_damage_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore = DataStoreFactory.create(
-        serializer = VehicleDamagePreferencesSerializer,
+        serializer = LmuWindowsVehicleDamagePreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )

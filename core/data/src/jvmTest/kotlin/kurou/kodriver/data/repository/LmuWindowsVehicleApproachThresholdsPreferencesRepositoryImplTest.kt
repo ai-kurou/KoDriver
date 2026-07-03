@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.data.datasource.ProximityThresholdsSerializer
+import kurou.kodriver.data.datasource.LmuWindowsVehicleApproachThresholdsPreferencesSerializer
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -15,10 +15,12 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
-    private val tempDir = Files.createTempDirectory("kodriver_proximity_thresholds_test").toFile()
+    private val tempDir = Files
+        .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_test")
+        .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore = DataStoreFactory.create(
-        serializer = ProximityThresholdsSerializer,
+        serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )

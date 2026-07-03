@@ -2,11 +2,11 @@ package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import kurou.kodriver.data.model.FlagPreferences
+import kurou.kodriver.data.model.LmuWindowsFlagPreferences
 import java.io.File
 
-internal fun createLmuWindowsFlagPreferencesDataStore(directory: String): DataStore<FlagPreferences> =
+internal fun createLmuWindowsFlagPreferencesDataStore(directory: String): DataStore<LmuWindowsFlagPreferences> =
     DataStoreFactory.create(
-        serializer = FlagPreferencesSerializer,
-        produceFile = { File("$directory/flag_preferences.pb") },
+        serializer = LmuWindowsFlagPreferencesSerializer,
+        produceFile = { File("$directory/lmu_windows_flag_preferences.pb") },
     )

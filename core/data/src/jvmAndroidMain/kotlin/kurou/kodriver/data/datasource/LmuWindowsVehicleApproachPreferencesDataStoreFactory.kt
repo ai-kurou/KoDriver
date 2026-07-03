@@ -2,13 +2,13 @@ package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import kurou.kodriver.data.model.VehicleApproachPreferences
+import kurou.kodriver.data.model.LmuWindowsVehicleApproachPreferences
 import java.io.File
 
 internal fun createLmuWindowsVehicleApproachPreferencesDataStore(
     directory: String,
-): DataStore<VehicleApproachPreferences> =
+): DataStore<LmuWindowsVehicleApproachPreferences> =
     DataStoreFactory.create(
-        serializer = VehicleApproachPreferencesSerializer,
-        produceFile = { File("$directory/vehicle_approach_preferences.pb") },
+        serializer = LmuWindowsVehicleApproachPreferencesSerializer,
+        produceFile = { File("$directory/lmu_windows_vehicle_approach_preferences.pb") },
     )

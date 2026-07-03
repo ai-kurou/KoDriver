@@ -3,12 +3,12 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.data.model.VehicleApproachPreferences
+import kurou.kodriver.data.model.LmuWindowsVehicleApproachPreferences
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
-    private val dataStore: DataStore<VehicleApproachPreferences>,
+    private val dataStore: DataStore<LmuWindowsVehicleApproachPreferences>,
 ) : LmuWindowsVehicleApproachPreferencesRepository {
 
     override fun observeSkipFirstLap(): Flow<Boolean> =

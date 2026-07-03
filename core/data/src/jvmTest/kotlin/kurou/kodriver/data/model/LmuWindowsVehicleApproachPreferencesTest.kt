@@ -4,21 +4,21 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-class VehicleApproachPreferencesTest {
+class LmuWindowsVehicleApproachPreferencesTest {
 
     @Test
     fun `デフォルト値は skipFirstLap が true`() {
-        assertEquals(true, VehicleApproachPreferences().skipFirstLap)
+        assertEquals(true, LmuWindowsVehicleApproachPreferences().skipFirstLap)
     }
 
     @Test
     fun `デフォルト値は startReadoutType が car_left_right`() {
-        assertEquals("car_left_right", VehicleApproachPreferences().startReadoutType)
+        assertEquals("car_left_right", LmuWindowsVehicleApproachPreferences().startReadoutType)
     }
 
     @Test
     fun `copy で skipFirstLap を変更できる`() {
-        val original = VehicleApproachPreferences(skipFirstLap = false)
+        val original = LmuWindowsVehicleApproachPreferences(skipFirstLap = false)
         val updated = original.copy(skipFirstLap = true)
 
         assertEquals(true, updated.skipFirstLap)
@@ -27,14 +27,17 @@ class VehicleApproachPreferencesTest {
 
     @Test
     fun `同じ値を持つインスタンスは等しい`() {
-        assertEquals(VehicleApproachPreferences(skipFirstLap = true), VehicleApproachPreferences(skipFirstLap = true))
+        assertEquals(
+            LmuWindowsVehicleApproachPreferences(skipFirstLap = true),
+            LmuWindowsVehicleApproachPreferences(skipFirstLap = true),
+        )
     }
 
     @Test
     fun `異なる値を持つインスタンスは等しくない`() {
         assertNotEquals(
-            VehicleApproachPreferences(skipFirstLap = false),
-            VehicleApproachPreferences(skipFirstLap = true),
+            LmuWindowsVehicleApproachPreferences(skipFirstLap = false),
+            LmuWindowsVehicleApproachPreferences(skipFirstLap = true),
         )
     }
 }

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.data.datasource.FlagPreferencesSerializer
+import kurou.kodriver.data.datasource.LmuWindowsFlagPreferencesSerializer
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -20,7 +20,7 @@ class LmuWindowsFlagPreferencesRepositoryImplTest {
     private val tempDir = Files.createTempDirectory("kodriver_flag_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore = DataStoreFactory.create(
-        serializer = FlagPreferencesSerializer,
+        serializer = LmuWindowsFlagPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )

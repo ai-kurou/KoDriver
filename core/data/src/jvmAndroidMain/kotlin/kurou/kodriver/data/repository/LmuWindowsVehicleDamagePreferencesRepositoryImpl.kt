@@ -3,12 +3,12 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.data.model.VehicleDamagePreferences
+import kurou.kodriver.data.model.LmuWindowsVehicleDamagePreferences
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 
 internal class LmuWindowsVehicleDamagePreferencesRepositoryImpl(
-    private val dataStore: DataStore<VehicleDamagePreferences>,
+    private val dataStore: DataStore<LmuWindowsVehicleDamagePreferences>,
 ) : LmuWindowsVehicleDamagePreferencesRepository {
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =

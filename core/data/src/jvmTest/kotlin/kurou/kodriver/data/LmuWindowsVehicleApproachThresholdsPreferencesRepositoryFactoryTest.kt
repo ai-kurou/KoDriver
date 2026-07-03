@@ -13,7 +13,9 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files.createTempDirectory("kodriver_proximity_thresholds_repository_factory_test").toFile()
+    private val tempDir = Files
+        .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_repository_factory_test")
+        .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest

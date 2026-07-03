@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.data.datasource.VehicleApproachPreferencesSerializer
+import kurou.kodriver.data.datasource.LmuWindowsVehicleApproachPreferencesSerializer
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -16,10 +16,10 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
 
-    private val tempDir = Files.createTempDirectory("kodriver_vehicle_approach_preferences_test").toFile()
+    private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_vehicle_approach_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore = DataStoreFactory.create(
-        serializer = VehicleApproachPreferencesSerializer,
+        serializer = LmuWindowsVehicleApproachPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )

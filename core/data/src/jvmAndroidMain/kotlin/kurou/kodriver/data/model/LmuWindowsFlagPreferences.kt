@@ -6,6 +6,6 @@ import kotlinx.serialization.protobuf.ProtoNumber
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-internal data class FlagPreferences(
+internal data class LmuWindowsFlagPreferences(
     @ProtoNumber(1) val enabledStates: Map<String, Boolean> = emptyMap(),
 )

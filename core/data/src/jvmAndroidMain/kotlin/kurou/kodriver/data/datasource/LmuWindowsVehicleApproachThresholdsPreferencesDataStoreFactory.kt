@@ -2,13 +2,13 @@ package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
-import kurou.kodriver.data.model.ProximityThresholdsPreferences
+import kurou.kodriver.data.model.LmuWindowsVehicleApproachThresholdsPreferences
 import java.io.File
 
 internal fun createLmuWindowsVehicleApproachThresholdsPreferencesDataStore(
     directory: String,
-): DataStore<ProximityThresholdsPreferences> =
+): DataStore<LmuWindowsVehicleApproachThresholdsPreferences> =
     DataStoreFactory.create(
-        serializer = ProximityThresholdsSerializer,
-        produceFile = { File("$directory/proximity_thresholds.pb") },
+        serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
+        produceFile = { File("$directory/lmu_windows_vehicle_approach_thresholds_preferences.pb") },
     )
