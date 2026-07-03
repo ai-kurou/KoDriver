@@ -84,6 +84,8 @@ class AppTest {
         dismissBottomSheet()
         clickItem("車両故障")
         waitUntilDisplayed("オーバーヒート")
+        clickItem("自己ベストラップ")
+        waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
     }
 
     @Test
