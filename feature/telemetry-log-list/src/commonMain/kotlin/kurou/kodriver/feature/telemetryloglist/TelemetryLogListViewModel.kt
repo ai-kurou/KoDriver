@@ -37,7 +37,7 @@ class TelemetryLogListViewModel(
         )
 
     fun selectLog(id: Long) {
-        selectedLogId.update { id }
+        selectedLogId.update { current -> if (current == id) null else id }
     }
 
     fun clearSelectedLog() {
