@@ -150,40 +150,86 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = state.copy(previousRaceFlags = raceFlags),
             events = emptyList(),
         )
+        if (settings.enabledStates[ReadoutItemKey.Flag] == false) {
+            return LmuWindowsNarratorReadoutDecision(
+                state = state.copy(previousRaceFlags = raceFlags),
+                events = emptyList(),
+            )
+        }
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousRaceFlags = raceFlags),
-            events = buildList {
-                if (
-                    settings.enabledStates[ReadoutItemKey.BlueFlag] != false &&
-                    previous.playerFlag != PrimaryFlag.BLUE &&
-                    raceFlags.playerFlag == PrimaryFlag.BLUE
-                ) {
-                    add(SpeechEvent.BlueFlag)
-                }
-                if (settings.enabledStates[ReadoutItemKey.SectorYellowFlag] != false) {
-                    val newYellowSector = raceFlags.sectorFlags.indices.any { i ->
-                        raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
-                            previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
-                    }
-                    if (newYellowSector) add(SpeechEvent.YellowFlag)
-                }
-                if (
-                    settings.enabledStates[ReadoutItemKey.FullCourseYellow] != false &&
-                    previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
-                    raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW
-                ) {
-                    add(SpeechEvent.FullCourseYellow)
-                }
-                if (
-                    settings.enabledStates[ReadoutItemKey.RedFlag] != false &&
-                    previous.gamePhase != SessionPhase.RED_FLAG &&
-                    raceFlags.gamePhase == SessionPhase.RED_FLAG
-                ) {
-                    add(SpeechEvent.SessionStop)
-                }
-            },
+            events = determineRaceFlagEvents(previous, raceFlags, settings),
         )
     }
+
+    private fun determineRaceFlagEvents(
+        previous: RaceFlagsData,
+        raceFlags: RaceFlagsData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): List<SpeechEvent> = listOfNotNull(
+        determineBlueFlagEvent(previous, raceFlags, settings),
+        determineYellowFlagEvent(previous, raceFlags, settings),
+        determineFullCourseYellowEvent(previous, raceFlags, settings),
+        determineRedFlagEvent(previous, raceFlags, settings),
+    )
+
+    private fun determineBlueFlagEvent(
+        previous: RaceFlagsData,
+        raceFlags: RaceFlagsData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): SpeechEvent? =
+        if (
+            settings.enabledStates[ReadoutItemKey.BlueFlag] != false &&
+            previous.playerFlag != PrimaryFlag.BLUE &&
+            raceFlags.playerFlag == PrimaryFlag.BLUE
+        ) {
+            SpeechEvent.BlueFlag
+        } else {
+            null
+        }
+
+    private fun determineYellowFlagEvent(
+        previous: RaceFlagsData,
+        raceFlags: RaceFlagsData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): SpeechEvent? {
+        if (settings.enabledStates[ReadoutItemKey.SectorYellowFlag] == false) return null
+        val newYellowSector = raceFlags.sectorFlags.indices.any { i ->
+            raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
+                previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
+        }
+        return if (newYellowSector) SpeechEvent.YellowFlag else null
+    }
+
+    private fun determineFullCourseYellowEvent(
+        previous: RaceFlagsData,
+        raceFlags: RaceFlagsData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): SpeechEvent? =
+        if (
+            settings.enabledStates[ReadoutItemKey.FullCourseYellow] != false &&
+            previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
+            raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW
+        ) {
+            SpeechEvent.FullCourseYellow
+        } else {
+            null
+        }
+
+    private fun determineRedFlagEvent(
+        previous: RaceFlagsData,
+        raceFlags: RaceFlagsData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): SpeechEvent? =
+        if (
+            settings.enabledStates[ReadoutItemKey.RedFlag] != false &&
+            previous.gamePhase != SessionPhase.RED_FLAG &&
+            raceFlags.gamePhase == SessionPhase.RED_FLAG
+        ) {
+            SpeechEvent.SessionStop
+        } else {
+            null
+        }
 
     private fun determineVehicleApproachEvent(
         leftAnnounce: Boolean,

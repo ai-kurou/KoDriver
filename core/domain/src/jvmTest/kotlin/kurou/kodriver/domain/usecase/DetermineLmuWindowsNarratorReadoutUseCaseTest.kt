@@ -283,6 +283,36 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `フラッグ項目が無効なら詳細フラッグ項目が有効でも読み上げない`() {
+        val first = useCase.determineRaceFlags(
+            state = LmuWindowsNarratorState(),
+            raceFlags = clearFlags(),
+            settings = settings(),
+        )
+
+        val second = useCase.determineRaceFlags(
+            state = first.state,
+            raceFlags = clearFlags(
+                gamePhase = SessionPhase.FULL_COURSE_YELLOW,
+                playerFlag = PrimaryFlag.BLUE,
+                sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+            ),
+            settings = settings(
+                enabledStates = mapOf(
+                    ReadoutItemKey.Flag to false,
+                    ReadoutItemKey.BlueFlag to true,
+                    ReadoutItemKey.SectorYellowFlag to true,
+                    ReadoutItemKey.FullCourseYellow to true,
+                    ReadoutItemKey.RedFlag to true,
+                ),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+        assertEquals(SessionPhase.FULL_COURSE_YELLOW, second.state.previousRaceFlags?.gamePhase)
+    }
+
+    @Test
     fun `初回の車両故障情報は状態だけ更新する`() {
         val decision = useCase.determineVehicleDamage(
             state = LmuWindowsNarratorState(),

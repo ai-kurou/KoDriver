@@ -525,6 +525,34 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `フラッグが無効のときは詳細フラッグ設定が有効でも読み上げない`() = runTest(testDispatcher) {
+        val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.Flag to false),
+            flagEnabledOverrides = mapOf(
+                ReadoutItemKey.BlueFlag to true,
+                ReadoutItemKey.SectorYellowFlag to true,
+                ReadoutItemKey.FullCourseYellow to true,
+                ReadoutItemKey.RedFlag to true,
+            ),
+        )
+
+        flagChannel.send(clearFlags())
+        flagChannel.send(
+            clearFlags(
+                gamePhase = SessionPhase.FULL_COURSE_YELLOW,
+                playerFlag = PrimaryFlag.BLUE,
+                sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `青旗読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val flagChannel = Channel<RaceFlagsData>(Channel.UNLIMITED)
@@ -633,10 +661,15 @@ private fun leftProximity(vehicleId: Int) = ProximityData(
 private fun clearFlags(
     gamePhase: SessionPhase = SessionPhase.GREEN_FLAG,
     playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
+    sectorFlags: List<SectorFlagState> = listOf(
+        SectorFlagState.CLEAR,
+        SectorFlagState.CLEAR,
+        SectorFlagState.CLEAR,
+    ),
 ) = RaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = SessionYellowFlagState.NONE,
-    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+    sectorFlags = sectorFlags,
     startLight = 0,
     numRedLights = 0,
     playerFlag = playerFlag,
