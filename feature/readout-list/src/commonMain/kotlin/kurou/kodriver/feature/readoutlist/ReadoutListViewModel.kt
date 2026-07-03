@@ -14,12 +14,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsMyBestLapEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
@@ -51,8 +49,6 @@ class ReadoutListViewModel(
     private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
     private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
-    private val observeGt7Ps5RemainingFuelLapsEnabled: ObserveGt7Ps5RemainingFuelLapsEnabledUseCase,
-    private val saveGt7Ps5RemainingFuelLapsEnabled: SaveGt7Ps5RemainingFuelLapsEnabledUseCase,
     private val observeLmuWindowsMyBestLapEnabled: ObserveLmuWindowsMyBestLapEnabledUseCase,
     private val saveLmuWindowsMyBestLapEnabled: SaveLmuWindowsMyBestLapEnabledUseCase,
     private val observeReadoutOrder: ObserveReadoutOrderUseCase,
@@ -77,12 +73,7 @@ class ReadoutListViewModel(
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
             when (simulator) {
-                Simulator.Gt7Ps5 -> combine(
-                    observeReadoutEnabledStates(simulator.id),
-                    observeGt7Ps5RemainingFuelLapsEnabled(),
-                ) { enabledStates, remainingFuelLapsEnabled ->
-                    enabledStates + (ReadoutItemKey.RemainingFuelLaps to remainingFuelLapsEnabled)
-                }
+                Simulator.Gt7Ps5 -> observeReadoutEnabledStates(simulator.id)
                 Simulator.LmuWindows -> combine(
                     observeReadoutEnabledStates(simulator.id),
                     observeLmuWindowsMyBestLapEnabled(),
@@ -163,8 +154,6 @@ class ReadoutListViewModel(
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
             when {
-                simulator == Simulator.Gt7Ps5 && key == ReadoutItemKey.RemainingFuelLaps ->
-                    saveGt7Ps5RemainingFuelLapsEnabled(enabled)
                 simulator == Simulator.LmuWindows && key == ReadoutItemKey.MyBestLap ->
                     saveLmuWindowsMyBestLapEnabled(enabled)
                 else -> saveReadoutEnabledState(simulator.id, key, enabled)
