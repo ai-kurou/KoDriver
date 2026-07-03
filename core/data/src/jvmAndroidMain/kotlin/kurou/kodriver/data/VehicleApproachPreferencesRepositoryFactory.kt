@@ -1,8 +1,0 @@
-package kurou.kodriver.data
-
-import kurou.kodriver.data.datasource.createVehicleApproachPreferencesDataStore
-import kurou.kodriver.data.repository.VehicleApproachPreferencesRepositoryImpl
-import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
-
-fun createVehicleApproachPreferencesRepository(directory: String): VehicleApproachPreferencesRepository =
-    VehicleApproachPreferencesRepositoryImpl(createVehicleApproachPreferencesDataStore(directory))

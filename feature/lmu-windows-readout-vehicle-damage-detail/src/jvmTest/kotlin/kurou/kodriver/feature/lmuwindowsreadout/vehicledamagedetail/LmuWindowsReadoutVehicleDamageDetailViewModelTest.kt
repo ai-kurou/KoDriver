@@ -13,9 +13,9 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveVehicleDamageEnabledStateUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -34,17 +34,17 @@ private class FakeTextToSpeechEngine(
 class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeVehicleDamagePreferencesRepository
+    private lateinit var repository: FakeLmuWindowsVehicleDamagePreferencesRepository
     private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: LmuWindowsReadoutVehicleDamageDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeVehicleDamagePreferencesRepository()
+        repository = FakeLmuWindowsVehicleDamagePreferencesRepository()
         viewModel = LmuWindowsReadoutVehicleDamageDetailViewModel(
-            observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repository),
-            saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repository),
+            observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
+            saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
@@ -61,12 +61,12 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
 
     @Test
     fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() = runTest {
-        val repo = FakeVehicleDamagePreferencesRepository(
+        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository(
             initialStates = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
         )
         val vm = LmuWindowsReadoutVehicleDamageDetailViewModel(
-            observeEnabledStates = ObserveVehicleDamageEnabledStatesUseCase(repo),
-            saveEnabledState = SaveVehicleDamageEnabledStateUseCase(repo),
+            observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo),
+            saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repo),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine {}),
         )
 

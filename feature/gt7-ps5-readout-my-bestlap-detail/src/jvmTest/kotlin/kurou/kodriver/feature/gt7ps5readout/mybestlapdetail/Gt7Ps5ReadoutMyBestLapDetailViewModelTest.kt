@@ -14,9 +14,9 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapVoiceTypeUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -35,17 +35,17 @@ private class FakeTextToSpeechEngine(
 class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeMyBestLapPreferencesRepository
+    private lateinit var repository: FakeGt7Ps5MyBestLapPreferencesRepository
     private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: Gt7Ps5ReadoutMyBestLapDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeMyBestLapPreferencesRepository()
+        repository = FakeGt7Ps5MyBestLapPreferencesRepository()
         viewModel = Gt7Ps5ReadoutMyBestLapDetailViewModel(
-            observeMyBestLapVoiceType = ObserveMyBestLapVoiceTypeUseCase(repository),
-            saveMyBestLapVoiceType = SaveMyBestLapVoiceTypeUseCase(repository),
+            observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
+            saveMyBestLapVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }

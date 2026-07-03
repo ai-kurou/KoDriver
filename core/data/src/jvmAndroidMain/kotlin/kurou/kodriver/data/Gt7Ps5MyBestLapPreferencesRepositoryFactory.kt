@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createGt7Ps5MyBestLapPreferencesDataStore
+import kurou.kodriver.data.repository.Gt7Ps5MyBestLapPreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
+
+fun createGt7Ps5MyBestLapPreferencesRepository(directory: String): Gt7Ps5MyBestLapPreferencesRepository =
+    Gt7Ps5MyBestLapPreferencesRepositoryImpl(createGt7Ps5MyBestLapPreferencesDataStore(directory))

@@ -1,8 +1,0 @@
-package kurou.kodriver.data
-
-import kurou.kodriver.data.datasource.createProximityThresholdsDataStore
-import kurou.kodriver.data.repository.ProximityThresholdsPreferencesRepositoryImpl
-import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
-
-fun createProximityThresholdsPreferencesRepository(directory: String): ProximityThresholdsPreferencesRepository =
-    ProximityThresholdsPreferencesRepositoryImpl(createProximityThresholdsDataStore(directory))

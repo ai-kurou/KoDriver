@@ -9,19 +9,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.usecase.ObserveLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLateralThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveLongitudinalThresholdUseCase
-import kurou.kodriver.domain.usecase.VehicleApproachPreferencesUseCases
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLateralThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
 
 internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
-    observeLateralThreshold: ObserveLateralThresholdUseCase,
-    observeLongitudinalThreshold: ObserveLongitudinalThresholdUseCase,
-    private val vehicleApproachPreferences: VehicleApproachPreferencesUseCases,
-    private val saveLateralThreshold: SaveLateralThresholdUseCase,
-    private val saveLongitudinalThreshold: SaveLongitudinalThresholdUseCase,
+    observeLateralThreshold: ObserveLmuWindowsVehicleApproachLateralThresholdUseCase,
+    observeLongitudinalThreshold: ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase,
+    private val vehicleApproachPreferences: LmuWindowsVehicleApproachPreferencesUseCases,
+    private val saveLateralThreshold: SaveLmuWindowsVehicleApproachLateralThresholdUseCase,
+    private val saveLongitudinalThreshold: SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 

@@ -7,17 +7,19 @@ import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
-import kurou.kodriver.domain.repository.FlagPreferencesRepository
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
-import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
@@ -25,8 +27,6 @@ import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
-import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -57,17 +57,17 @@ fun androidDataModule(context: Context) = module {
     single<FlagRepository> { WebSocketFlagRepository(get()) }
     single<ProximityRepository> { WebSocketProximityRepository(get()) }
     single<VehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
-    single<ProximityThresholdsPreferencesRepository> {
-        createProximityThresholdsPreferencesRepository(context.filesDir.absolutePath)
+    single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+        createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }
-    single<FlagPreferencesRepository> {
-        createFlagPreferencesRepository(context.filesDir.absolutePath)
+    single<LmuWindowsFlagPreferencesRepository> {
+        createLmuWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
     }
-    single<VehicleApproachPreferencesRepository> {
-        createVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
+    single<LmuWindowsVehicleApproachPreferencesRepository> {
+        createLmuWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
     }
-    single<VehicleDamagePreferencesRepository> {
-        createVehicleDamagePreferencesRepository(context.filesDir.absolutePath)
+    single<LmuWindowsVehicleDamagePreferencesRepository> {
+        createLmuWindowsVehicleDamagePreferencesRepository(context.filesDir.absolutePath)
     }
     single<SoundVolumePreferencesRepository> {
         createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
@@ -75,8 +75,8 @@ fun androidDataModule(context: Context) = module {
     single<ReadoutStartSoundPreferencesRepository> {
         createReadoutStartSoundPreferencesRepository(context.filesDir.absolutePath)
     }
-    single<MyBestLapPreferencesRepository> {
-        createMyBestLapPreferencesRepository(context.filesDir.absolutePath)
+    single<Gt7Ps5MyBestLapPreferencesRepository> {
+        createGt7Ps5MyBestLapPreferencesRepository(context.filesDir.absolutePath)
     }
     single<LmuWindowsMyBestLapPreferencesRepository> {
         createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)

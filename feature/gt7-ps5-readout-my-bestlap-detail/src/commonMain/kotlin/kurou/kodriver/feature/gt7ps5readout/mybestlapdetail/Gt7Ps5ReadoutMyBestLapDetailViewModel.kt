@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.usecase.ObserveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapVoiceTypeUseCase
 
 internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
-    observeMyBestLapVoiceType: ObserveMyBestLapVoiceTypeUseCase,
-    private val saveMyBestLapVoiceType: SaveMyBestLapVoiceTypeUseCase,
+    observeMyBestLapVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
+    private val saveMyBestLapVoiceType: SaveGt7Ps5MyBestLapVoiceTypeUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 

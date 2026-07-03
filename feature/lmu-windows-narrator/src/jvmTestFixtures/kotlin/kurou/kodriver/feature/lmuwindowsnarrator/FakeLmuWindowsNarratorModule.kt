@@ -12,10 +12,10 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
-import kurou.kodriver.domain.repository.VehicleApproachPreferencesRepository
-import kurou.kodriver.domain.repository.VehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -23,8 +23,8 @@ val fakeLmuWindowsNarratorModule = module {
     single<ProximityRepository> { FakeProximityRepository() }
     single<FlagRepository> { FakeFlagRepository() }
     single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
-    single<VehicleApproachPreferencesRepository> { FakeVehicleApproachPreferencesRepository() }
-    single<VehicleDamagePreferencesRepository> { FakeVehicleDamagePreferencesRepository() }
+    single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
+    single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
     single<VehicleDamageRepository> { FakeVehicleDamageRepository() }
     single<SoundPlayer> { NoOpSoundPlayer() }
     single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
@@ -44,7 +44,7 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
     override suspend fun disconnect() = Unit
 }
 
-class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepository {
+class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
     private val startReadoutEnabledFlow = MutableStateFlow(true)
     private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
@@ -58,7 +58,7 @@ class FakeVehicleApproachPreferencesRepository : VehicleApproachPreferencesRepos
     }
 }
 
-class FakeVehicleDamagePreferencesRepository : VehicleDamagePreferencesRepository {
+class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamagePreferencesRepository {
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = MutableStateFlow(emptyMap())
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
 }
