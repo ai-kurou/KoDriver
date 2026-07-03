@@ -174,6 +174,36 @@ class AppTest {
         waitUntilDisplayed("""{"flag":"yellow"}""")
     }
 
+    @Test
+    fun `ログタブを再タップするとログ一覧に戻る`() {
+        fakeTelemetryLogRepository.emit(
+            listOf(
+                telemetryLog(
+                    id = 1,
+                    createdAt = 100,
+                    readoutItemKey = "old_flag",
+                    telemetryJson = """{"flag":"yellow"}""",
+                ),
+                telemetryLog(
+                    id = 2,
+                    createdAt = 200,
+                    readoutItemKey = "new_flag",
+                    telemetryJson = """{"flag":"green"}""",
+                ),
+            ),
+        )
+        setContent()
+
+        clickItem("ログ")
+        clickItem("new_flag")
+        waitUntilDisplayed("選択したログ")
+
+        clickItem("ログ")
+
+        waitUntilNotDisplayed("選択したログ")
+        waitUntilDisplayed("new_flag")
+    }
+
     private fun selectSimulator(simulatorName: String) {
         rule.onNode(hasContentDescription("シミュレータを選択")).performClick()
         rule.waitForIdle()
@@ -191,6 +221,12 @@ class AppTest {
     private fun waitUntilDisplayed(text: String) {
         rule.waitUntil(timeoutMillis = 5_000L) {
             rule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
+    private fun waitUntilNotDisplayed(text: String) {
+        rule.waitUntil(timeoutMillis = 5_000L) {
+            rule.onAllNodes(hasText(text)).fetchSemanticsNodes().isEmpty()
         }
     }
 
