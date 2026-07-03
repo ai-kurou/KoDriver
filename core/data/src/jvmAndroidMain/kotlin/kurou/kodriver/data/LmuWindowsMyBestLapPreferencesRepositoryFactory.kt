@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createLmuWindowsMyBestLapPreferencesDataStore
+import kurou.kodriver.data.repository.LmuWindowsMyBestLapPreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+
+fun createLmuWindowsMyBestLapPreferencesRepository(directory: String): LmuWindowsMyBestLapPreferencesRepository =
+    LmuWindowsMyBestLapPreferencesRepositoryImpl(createLmuWindowsMyBestLapPreferencesDataStore(directory))

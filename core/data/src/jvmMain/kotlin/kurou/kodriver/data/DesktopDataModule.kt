@@ -10,6 +10,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
+import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.ProximityThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -58,6 +59,9 @@ val desktopDataModule = module {
     }
     single<MyBestLapPreferencesRepository> {
         createMyBestLapPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<LmuWindowsMyBestLapPreferencesRepository> {
+        createLmuWindowsMyBestLapPreferencesRepository(directory = kodriverDirectory)
     }
     single<ConsoleAddressRepository> {
         createConsoleAddressRepository(directory = kodriverDirectory)
