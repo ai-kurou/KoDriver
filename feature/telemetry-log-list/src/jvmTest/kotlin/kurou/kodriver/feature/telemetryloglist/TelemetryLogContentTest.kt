@@ -49,6 +49,9 @@ class TelemetryLogContentTest {
         rule.onNodeWithText("flag").assertExists()
         rule.onNodeWithText("vehicle_approach").assertExists()
         rule.onNodeWithText("remaining_fuel_laps").assertExists()
+        rule.onNodeWithText("00:30:20.000 / レース +00:00:20.000").assertExists()
+        val telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}"""
+        rule.onNodeWithText(telemetryJson).assertDoesNotExist()
     }
 
     @Test

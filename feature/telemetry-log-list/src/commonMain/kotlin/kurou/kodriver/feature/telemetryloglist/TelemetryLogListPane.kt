@@ -59,6 +59,9 @@ internal fun TelemetryLogListPane(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val firstLogId = uiState.logs.first().id
+    val raceStartedAt = remember(uiState.logs) {
+        uiState.logs.minOf { it.createdAt }
+    }
     var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
     var showNewLogsButton by remember { mutableStateOf(false) }
     val isAtTop by remember {
@@ -105,6 +108,7 @@ internal fun TelemetryLogListPane(
                 ) { log ->
                     TelemetryLogListItem(
                         log = log,
+                        raceStartedAt = raceStartedAt,
                         onClick = { onLogClick(log.id) },
                     )
                     HorizontalDivider()
@@ -177,6 +181,7 @@ private fun TelemetryLogEmptyState(
 @Composable
 private fun TelemetryLogListItem(
     log: TelemetryLog,
+    raceStartedAt: Long,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
@@ -190,8 +195,11 @@ private fun TelemetryLogListItem(
         },
         supportingContent = {
             Text(
-                text = log.telemetryJson,
-                maxLines = 2,
+                text = formatTelemetryLogTime(
+                    createdAt = log.createdAt,
+                    raceElapsedMs = (log.createdAt - raceStartedAt).coerceAtLeast(0),
+                ),
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         },
@@ -207,7 +215,36 @@ private fun TelemetryLogListItem(
     )
 }
 
+internal fun formatTelemetryLogTime(
+    createdAt: Long,
+    raceElapsedMs: Long,
+): String = "${formatTimeOfDay(createdAt)} / レース +${formatDuration(raceElapsedMs)}"
+
+private fun formatTimeOfDay(milliseconds: Long): String {
+    val millisInDay = milliseconds.floorMod(MILLISECONDS_PER_DAY)
+    return formatDuration(millisInDay)
+}
+
+private fun formatDuration(milliseconds: Long): String {
+    val hours = milliseconds / MILLISECONDS_PER_HOUR
+    val minutes = milliseconds % MILLISECONDS_PER_HOUR / MILLISECONDS_PER_MINUTE
+    val seconds = milliseconds % MILLISECONDS_PER_MINUTE / MILLISECONDS_PER_SECOND
+    val millis = milliseconds % MILLISECONDS_PER_SECOND
+
+    return "${hours.pad2()}:${minutes.pad2()}:${seconds.pad2()}.${millis.pad3()}"
+}
+
+private fun Long.floorMod(other: Long): Long = ((this % other) + other) % other
+
+private fun Long.pad2(): String = toString().padStart(2, '0')
+
+private fun Long.pad3(): String = toString().padStart(3, '0')
+
 private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
+private const val MILLISECONDS_PER_SECOND = 1_000L
+private const val MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND
+private const val MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE
+private const val MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR
 
 @Preview(showBackground = true)
 @Composable
