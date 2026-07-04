@@ -59,7 +59,7 @@ fun OtherServerIpDetailPane(
 }
 
 @Composable
-internal fun OtherServerIpDetailPaneContent(
+fun OtherServerIpDetailPaneContent(
     uiState: OtherServerIpDetailUiState,
     onIpChanged: (String) -> Unit = {},
     onSave: () -> Unit = {},

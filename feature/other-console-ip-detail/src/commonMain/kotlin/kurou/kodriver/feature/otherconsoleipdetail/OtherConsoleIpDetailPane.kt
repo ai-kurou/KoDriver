@@ -71,7 +71,7 @@ fun OtherConsoleIpDetailPane(
 }
 
 @Composable
-internal fun OtherConsoleIpDetailPaneContent(
+fun OtherConsoleIpDetailPaneContent(
     uiState: OtherConsoleIpDetailUiState,
     onAddressChanged: (String) -> Unit = {},
     onPortSelected: (Int) -> Unit = {},
