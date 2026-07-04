@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ThemeMode
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -26,7 +27,7 @@ class OtherThemeDetailDialogContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherThemeDetailDialogContent(
-                            selectedThemeMode = ThemeMode.SYSTEM,
+                            uiState = OtherThemeDetailUiState(pendingThemeMode = ThemeMode.SYSTEM),
                         )
                     }
                 }
@@ -41,7 +42,7 @@ class OtherThemeDetailDialogContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherThemeDetailDialogContent(
-                            selectedThemeMode = ThemeMode.DARK,
+                            uiState = OtherThemeDetailUiState(pendingThemeMode = ThemeMode.DARK),
                         )
                     }
                 }

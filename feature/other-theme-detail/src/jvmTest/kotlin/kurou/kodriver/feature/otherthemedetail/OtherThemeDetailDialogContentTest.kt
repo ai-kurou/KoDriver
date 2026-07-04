@@ -5,6 +5,7 @@ package kurou.kodriver.feature.otherthemedetail
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import kurou.kodriver.domain.model.ThemeMode
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -15,14 +16,14 @@ class OtherThemeDetailDialogContentTest {
     val rule = createComposeRule()
 
     private fun setContent(
-        selectedThemeMode: ThemeMode = ThemeMode.SYSTEM,
+        uiState: OtherThemeDetailUiState = OtherThemeDetailUiState(),
         onThemeModeSelected: (ThemeMode) -> Unit = {},
         onConfirm: () -> Unit = {},
         onDismiss: () -> Unit = {},
     ) {
         rule.setContent {
             OtherThemeDetailDialogContent(
-                selectedThemeMode = selectedThemeMode,
+                uiState = uiState,
                 onThemeModeSelected = onThemeModeSelected,
                 onConfirm = onConfirm,
                 onDismiss = onDismiss,

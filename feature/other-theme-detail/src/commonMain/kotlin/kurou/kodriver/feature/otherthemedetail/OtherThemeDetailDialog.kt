@@ -12,13 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherthemedetail.generated.resources.Res
 import kodriver.feature.otherthemedetail.generated.resources.theme_cancel
 import kodriver.feature.otherthemedetail.generated.resources.theme_dark
@@ -26,26 +24,35 @@ import kodriver.feature.otherthemedetail.generated.resources.theme_light
 import kodriver.feature.otherthemedetail.generated.resources.theme_ok
 import kodriver.feature.otherthemedetail.generated.resources.theme_system
 import kodriver.feature.otherthemedetail.generated.resources.theme_title
+import kurou.kodriver.domain.model.ThemeMode
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun OtherThemeDetailDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var selectedThemeMode by remember { mutableStateOf(ThemeMode.SYSTEM) }
+    val viewModel: OtherThemeDetailViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     OtherThemeDetailDialogContent(
-        selectedThemeMode = selectedThemeMode,
-        onThemeModeSelected = { selectedThemeMode = it },
-        onConfirm = onDismiss,
-        onDismiss = onDismiss,
+        uiState = uiState,
+        onThemeModeSelected = viewModel::onPendingThemeModeSelected,
+        onConfirm = {
+            viewModel.onConfirm()
+            onDismiss()
+        },
+        onDismiss = {
+            viewModel.onDismiss()
+            onDismiss()
+        },
         modifier = modifier,
     )
 }
 
 @Composable
 internal fun OtherThemeDetailDialogContent(
-    selectedThemeMode: ThemeMode,
+    uiState: OtherThemeDetailUiState,
     onThemeModeSelected: (ThemeMode) -> Unit = {},
     onConfirm: () -> Unit = {},
     onDismiss: () -> Unit = {},
@@ -70,7 +77,7 @@ internal fun OtherThemeDetailDialogContent(
                             .clickable { onThemeModeSelected(themeMode) },
                     ) {
                         RadioButton(
-                            selected = selectedThemeMode == themeMode,
+                            selected = uiState.pendingThemeMode == themeMode,
                             onClick = { onThemeModeSelected(themeMode) },
                         )
                         Text(label)
@@ -98,6 +105,6 @@ internal fun OtherThemeDetailDialogContent(
 @Composable
 private fun OtherThemeDetailDialogPreview() {
     OtherThemeDetailDialogContent(
-        selectedThemeMode = ThemeMode.SYSTEM,
+        uiState = OtherThemeDetailUiState(),
     )
 }
