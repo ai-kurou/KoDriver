@@ -12,8 +12,6 @@ import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneConte
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
-import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPaneContent
-import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailUiState
 import org.junit.Rule
@@ -25,34 +23,7 @@ class OtherContentScreenshotTest {
     @get:Rule
     val rule = createComposeRule()
 
-    @Test
-    fun `Windows版KoDriverへ接続するIPアドレス詳細を表示`() {
-        rule.setContent {
-            AppTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                        OtherContent(
-                            uiState = OtherListUiState(selectedItem = OtherListItemType.ServerIp),
-                            onItemSelected = {},
-                            onClearSelectedItem = {},
-                            scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack ->
-                                if (itemType == OtherListItemType.ServerIp) {
-                                    OtherServerIpDetailPaneContent(
-                                        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
-                                        canNavigateBack = canNavigateBack,
-                                        onBack = onBack,
-                                    )
-                                }
-                            },
-                        )
-                    }
-                }
-            }
-        }
-
-        rule.onRoot().captureRoboImage()
-    }
+    // Windows版KoDriverへ接続するIPアドレスは Android 専用項目のため JVM では表示しない。
 
     @Test
     fun `ゲーム機とSimHubへ接続するIPアドレス詳細を表示`() {
