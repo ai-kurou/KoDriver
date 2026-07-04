@@ -1,0 +1,8 @@
+<resources>
+    <string name="theme_title">テーマ</string>
+    <string name="theme_system">システムに従う</string>
+    <string name="theme_light">ライト</string>
+    <string name="theme_dark">ダーク</string>
+    <string name="theme_ok">OK</string>
+    <string name="theme_cancel">キャンセル</string>
+</resources>

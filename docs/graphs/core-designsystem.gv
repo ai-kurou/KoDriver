@@ -13,6 +13,7 @@ digraph G {
   ":feature:other-list" -> ":core:designsystem"
   ":feature:other-readout-start-sound-detail" -> ":core:designsystem"
   ":feature:other-server-ip-detail" -> ":core:designsystem"
+  ":feature:other-theme-detail" -> ":core:designsystem"
   ":feature:other-volume-detail" -> ":core:designsystem"
   ":feature:readout-list" -> ":core:designsystem"
   ":feature:telemetry-log-detail" -> ":core:designsystem"

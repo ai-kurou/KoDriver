@@ -38,6 +38,18 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 onExit = { finish() },
+                onDarkThemeChanged = { darkTheme ->
+                    enableEdgeToEdge(
+                        statusBarStyle = if (darkTheme) {
+                            SystemBarStyle.dark(Color.TRANSPARENT)
+                        } else {
+                            SystemBarStyle.light(
+                                scrim = Color.TRANSPARENT,
+                                darkScrim = Color.TRANSPARENT,
+                            )
+                        },
+                    )
+                },
             )
         }
     }

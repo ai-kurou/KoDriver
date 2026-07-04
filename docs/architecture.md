@@ -32,5 +32,6 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:feature:other-readout-start-sound-detail` | その他画面の読み上げ開始音設定詳細 | [図](graphs/feature-other-readout-start-sound-detail.svg) |
 | `:feature:other-server-ip-detail` | その他画面の接続先サーバー IP 設定ダイアログ | [図](graphs/feature-other-server-ip-detail.svg) |
 | `:feature:other-console-ip-detail` | その他画面のゲーム機 IP 設定ダイアログ | [図](graphs/feature-other-console-ip-detail.svg) |
+| `:feature:other-theme-detail` | その他画面のテーマ設定詳細 | [図](graphs/feature-other-theme-detail.svg) |
 | `:feature:other-volume-detail` | その他画面の読み上げ音量設定詳細 | [図](graphs/feature-other-volume-detail.svg) |
 | `:server` | デスクトップアプリと同一プロセスで起動する Ktor サーバー。`/ws/<Simulator.id>/<feature>` WebSocket で共有メモリ由来の走行情報を配信する | [図](graphs/server.svg) |

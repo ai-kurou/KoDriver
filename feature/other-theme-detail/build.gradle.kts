@@ -1,0 +1,34 @@
+plugins {
+    id("feature-compose-screenshot")
+}
+
+kotlin {
+    android {
+        namespace = "kurou.kodriver.feature.otherthemedetail"
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.designsystem)
+        }
+        jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutinesTest)
+        }
+        named("androidHostTest") {
+            dependencies {
+                implementation(libs.kotlin.testJunit)
+                implementation(libs.junit)
+                implementation(libs.roborazzi.compose)
+                implementation(libs.robolectric)
+                implementation(libs.roborazzi.core)
+            }
+        }
+    }
+}
+
+compose.resources {
+    packageOfResClass = "kodriver.feature.otherthemedetail.generated.resources"
+}

@@ -16,6 +16,7 @@ import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
+import kurou.kodriver.feature.otherthemedetail.otherThemeDetailModule
 import kurou.kodriver.feature.othervolumedetail.otherVolumeDetailModule
 import kurou.kodriver.feature.readoutlist.readoutListModule
 import kurou.kodriver.feature.serverconnection.serverConnectionModule
@@ -33,6 +34,7 @@ val appModules: List<Module> = listOf(
     gt7Ps5NarratorModule,
     otherListModule,
     otherReadoutStartSoundDetailModule,
+    otherThemeDetailModule,
     otherServerIpDetailModule,
     otherConsoleIpDetailModule,
     otherVolumeDetailModule,

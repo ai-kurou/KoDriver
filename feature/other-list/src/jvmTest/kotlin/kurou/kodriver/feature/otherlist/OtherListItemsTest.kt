@@ -1,29 +1,26 @@
 package kurou.kodriver.feature.otherlist
 
 import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertFalse
+import kotlin.test.assertEquals
 
 class OtherListItemsTest {
 
     @Test
-    fun `ServerIpを含まない`() {
+    fun `nonAndroidではServerIpとKeepScreenOnを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()
 
-        assertFalse(items.contains(OtherListItemType.ServerIp))
-    }
-
-    @Test
-    fun `KeepScreenOnを含まない`() {
-        val items = buildOtherListItems()
-
-        assertFalse(items.contains(OtherListItemType.KeepScreenOn))
-    }
-
-    @Test
-    fun `ConsoleIpを含む`() {
-        val items = buildOtherListItems()
-
-        assertContains(items, OtherListItemType.ConsoleIp)
+        assertEquals(
+            listOf(
+                OtherListItemType.ConsoleIp,
+                OtherListItemType.Volume,
+                OtherListItemType.ReadoutStartSound,
+                OtherListItemType.ExitConfirmation,
+                OtherListItemType.Theme,
+                OtherListItemType.GitHubRepository,
+                OtherListItemType.ReleasePage,
+                OtherListItemType.License,
+            ),
+            items,
+        )
     }
 }
