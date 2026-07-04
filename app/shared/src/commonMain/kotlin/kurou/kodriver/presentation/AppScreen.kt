@@ -195,6 +195,7 @@ fun AppScreen(
     onExit: () -> Unit = {},
     exitRequested: Boolean = false,
     onExitRequestConsumed: () -> Unit = {},
+    onDarkThemeChanged: (Boolean) -> Unit = {},
     readoutContent: @Composable () -> Unit = {
         ReadoutContent(
             backHandler = backHandler,
@@ -213,6 +214,7 @@ fun AppScreen(
         DefaultOtherContent(backHandler = backHandler)
     },
 ) {
+    val darkTheme = rememberAppDarkTheme()
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
@@ -230,6 +232,10 @@ fun AppScreen(
 
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
+    }
+
+    LaunchedEffect(darkTheme) {
+        onDarkThemeChanged(darkTheme)
     }
 
     LaunchedEffect(exitRequested) {
@@ -275,6 +281,7 @@ fun AppScreen(
     Gt7Ps5NarratorEffect()
     VersionMismatchBottomSheetEffect()
     AppScreenContent(
+        darkTheme = darkTheme,
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
@@ -327,6 +334,7 @@ internal suspend fun saveExitConfirmationPreferenceForExit(
 
 @Composable
 internal fun AppScreenContent(
+    darkTheme: Boolean = false,
     layoutType: NavigationSuiteType? = null,
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -345,7 +353,7 @@ internal fun AppScreenContent(
         currentDestination = AppDestination.More
     }
 
-    AppTheme {
+    AppTheme(darkTheme = darkTheme) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
         KeepScreenOnEffect(keepScreenOn)
