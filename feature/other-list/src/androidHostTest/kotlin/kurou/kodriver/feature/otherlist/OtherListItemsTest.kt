@@ -27,4 +27,11 @@ class OtherListItemsTest {
 
         assertContains(items, OtherListItemType.ConsoleIp)
     }
+
+    @Test
+    fun `Themeを含む`() {
+        val items = buildOtherListItems()
+
+        assertContains(items, OtherListItemType.Theme)
+    }
 }

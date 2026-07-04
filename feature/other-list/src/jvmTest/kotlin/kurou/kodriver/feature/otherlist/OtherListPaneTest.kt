@@ -204,4 +204,21 @@ class OtherListPaneTest {
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(0)
         rule.onAllNodesWithText("情報").assertCountEquals(0)
     }
+
+    @Test
+    fun `テーマ項目をアプリ設定セクションに表示する`() {
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = listOf(OtherListItemType.Theme),
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+            )
+        }
+
+        rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
+        rule.onAllNodesWithText("テーマ").assertCountEquals(1)
+    }
 }
