@@ -9,6 +9,7 @@ enum class OtherListItemType(
     KeepScreenOn("keep_screen_on"),
     ReadoutStartSound("readout_start_sound"),
     ExitConfirmation("exit_confirmation"),
+    Theme("theme"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
     License("license"),

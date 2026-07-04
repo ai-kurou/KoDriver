@@ -79,6 +79,7 @@ private fun handleOtherItemClick(
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
         OtherListItemType.ReleasePage -> onOpenReleasePage()
+        OtherListItemType.Theme -> Unit
         else -> onItemSelected(itemType)
     }
 }

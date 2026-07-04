@@ -104,6 +104,12 @@ class OtherContentTest {
         assertFalse(exitConfirmationEnabled)
         assertFalse(backEnabled)
 
+        // Theme（detail未実装のため何もしない）
+        rule.onNode(hasText("テーマ")).performClick()
+        rule.waitForIdle()
+
+        assertFalse(backEnabled)
+
         // GitHubRepository
         rule.onNode(hasText("GitHubレポジトリ")).performClick()
         rule.waitForIdle()
