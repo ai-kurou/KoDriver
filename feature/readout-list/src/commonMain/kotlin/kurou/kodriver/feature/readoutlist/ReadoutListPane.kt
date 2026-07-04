@@ -64,7 +64,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.drag_handle
-import kodriver.feature.readoutlist.generated.resources.gt7
 import kodriver.feature.readoutlist.generated.resources.item_blue_flag
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_full_course_yellow
@@ -75,19 +74,21 @@ import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
-import kodriver.feature.readoutlist.generated.resources.lmu
 import kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
+import kurou.kodriver.core.designsystem.generated.resources.gt7
+import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 @Composable
 private fun simulatorDisplayName(simulator: Simulator): String = when (simulator) {
@@ -97,8 +98,8 @@ private fun simulatorDisplayName(simulator: Simulator): String = when (simulator
 
 @Composable
 private fun simulatorIcon(simulator: Simulator) = when (simulator) {
-    is Simulator.Gt7Ps5 -> painterResource(Res.drawable.gt7)
-    is Simulator.LmuWindows -> painterResource(Res.drawable.lmu)
+    is Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
+    is Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
 }
 
 @Composable

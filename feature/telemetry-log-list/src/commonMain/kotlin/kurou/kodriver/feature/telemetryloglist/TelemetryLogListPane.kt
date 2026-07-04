@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,9 +12,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
@@ -31,6 +34,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,8 +45,13 @@ import kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.generated.resources.gt7
+import kurou.kodriver.core.designsystem.generated.resources.lmu
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 @Composable
 internal fun TelemetryLogListPane(
@@ -209,10 +219,33 @@ private fun TelemetryLogListItem(
                 style = MaterialTheme.typography.labelMedium,
             )
         },
+        leadingContent = simulatorIcon(log.simulatorId)?.let { painter ->
+            {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(width = 40.dp, height = 64.dp),
+                ) {
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(6.dp)),
+                    )
+                }
+            }
+        },
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
     )
+}
+
+@Composable
+private fun simulatorIcon(simulatorId: String): Painter? = when (simulatorId) {
+    Simulator.Gt7Ps5.id -> painterResource(DesignSystemRes.drawable.gt7)
+    Simulator.LmuWindows.id -> painterResource(DesignSystemRes.drawable.lmu)
+    else -> null
 }
 
 internal fun formatTelemetryLogTime(
