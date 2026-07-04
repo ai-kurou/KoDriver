@@ -295,6 +295,7 @@ dependencies {
     kover(project(":feature:other-server-ip-detail"))
     kover(project(":feature:other-console-ip-detail"))
     kover(project(":feature:other-readout-start-sound-detail"))
+    kover(project(":feature:other-theme-detail"))
     kover(project(":feature:other-volume-detail"))
     kover(project(":feature:readout-list"))
     kover(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
