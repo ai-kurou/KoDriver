@@ -221,13 +221,18 @@ private fun TelemetryLogListItem(
         },
         leadingContent = simulatorIcon(log.simulatorId)?.let { painter ->
             {
-                Image(
-                    painter = painter,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(6.dp)),
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(width = 40.dp, height = 64.dp),
+                ) {
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(6.dp)),
+                    )
+                }
             }
         },
         modifier = modifier
