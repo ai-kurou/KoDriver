@@ -105,4 +105,19 @@ class OtherThemeDetailViewModelTest {
         )
         assertEquals(ThemeMode.SYSTEM, repository.observeThemeMode().first())
     }
+
+    @Test
+    fun `リポジトリのテーマモードが変わるとselectedThemeModeに反映される`() = runTest(dispatcher) {
+        val viewModel = createViewModel()
+
+        repository.saveThemeMode(ThemeMode.DARK)
+
+        assertEquals(
+            OtherThemeDetailUiState(
+                selectedThemeMode = ThemeMode.DARK,
+                pendingThemeMode = ThemeMode.DARK,
+            ),
+            viewModel.uiState.first(),
+        )
+    }
 }
