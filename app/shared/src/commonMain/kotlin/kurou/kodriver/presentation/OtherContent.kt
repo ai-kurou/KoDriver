@@ -42,6 +42,7 @@ fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
     onOpenReadoutStartSoundDialog: () -> Unit = {},
+    onOpenThemeDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
@@ -58,6 +59,7 @@ fun OtherContent(
         onOpenGitHubRepository = { uriHandler.openUri(GITHUB_REPOSITORY_URL) },
         onOpenReleasePage = { uriHandler.openUri(RELEASE_PAGE_URL) },
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
+        onOpenThemeDialog = onOpenThemeDialog,
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onExitConfirmationEnabledChange = viewModel::onExitConfirmationEnabledChange,
         onClearSelectedItem = viewModel::clearSelectedItem,
@@ -74,12 +76,13 @@ private fun handleOtherItemClick(
     onOpenGitHubRepository: () -> Unit,
     onOpenReleasePage: () -> Unit,
     onOpenReadoutStartSoundDialog: () -> Unit,
+    onOpenThemeDialog: () -> Unit,
 ) {
     when (itemType) {
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
+        OtherListItemType.Theme -> onOpenThemeDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
         OtherListItemType.ReleasePage -> onOpenReleasePage()
-        OtherListItemType.Theme -> Unit
         else -> onItemSelected(itemType)
     }
 }
@@ -92,6 +95,7 @@ internal fun OtherContent(
     onOpenGitHubRepository: () -> Unit = {},
     onOpenReleasePage: () -> Unit = {},
     onOpenReadoutStartSoundDialog: () -> Unit = {},
+    onOpenThemeDialog: () -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onExitConfirmationEnabledChange: (Boolean) -> Unit = {},
     onClearSelectedItem: () -> Unit,
@@ -161,6 +165,7 @@ internal fun OtherContent(
                         onOpenGitHubRepository = onOpenGitHubRepository,
                         onOpenReleasePage = onOpenReleasePage,
                         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
+                        onOpenThemeDialog = onOpenThemeDialog,
                     )
                 },
             )

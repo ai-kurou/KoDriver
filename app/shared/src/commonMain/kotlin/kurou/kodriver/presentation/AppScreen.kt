@@ -71,6 +71,7 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
 import kurou.kodriver.feature.otherreadoutstartsounddetail.OtherReadoutStartSoundDetailDialog
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPane
+import kurou.kodriver.feature.otherthemedetail.OtherThemeDetailDialog
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPane
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.ReadoutListItemType
@@ -161,12 +162,17 @@ private fun DefaultOtherContent(
     backHandler: AppBackHandler,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
+    var showThemeDialog by rememberSaveable { mutableStateOf(false) }
     if (showReadoutStartSoundDialog) {
         OtherReadoutStartSoundDetailDialog(onDismiss = { showReadoutStartSoundDialog = false })
+    }
+    if (showThemeDialog) {
+        OtherThemeDetailDialog(onDismiss = { showThemeDialog = false })
     }
     OtherContent(
         backHandler = backHandler,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
+        onOpenThemeDialog = { showThemeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {
                 OtherListItemType.ServerIp -> OtherServerIpDetailPane(canNavigateBack, onBack)
