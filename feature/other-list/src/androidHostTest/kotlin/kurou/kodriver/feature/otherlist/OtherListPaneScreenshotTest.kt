@@ -4,6 +4,7 @@ package kurou.kodriver.feature.otherlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -48,6 +49,7 @@ class OtherListPaneScreenshotTest {
                             onItemClick = {},
                             onKeepScreenOnChange = {},
                             onExitConfirmationEnabledChange = {},
+                            listState = rememberLazyListState(initialFirstVisibleItemIndex = 10),
                         )
                     }
                 }

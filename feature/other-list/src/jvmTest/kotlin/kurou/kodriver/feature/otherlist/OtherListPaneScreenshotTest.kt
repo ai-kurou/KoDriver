@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
@@ -53,6 +56,7 @@ class OtherListPaneScreenshotTest {
             }
         }
 
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("リリースページ"))
         rule.onRoot().captureRoboImage()
     }
 }
