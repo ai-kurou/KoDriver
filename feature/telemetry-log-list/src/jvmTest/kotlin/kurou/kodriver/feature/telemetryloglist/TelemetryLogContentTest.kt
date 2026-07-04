@@ -15,6 +15,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
@@ -46,9 +47,8 @@ class TelemetryLogContentTest {
             )
         }
 
-        rule.onNodeWithText("flag").assertExists()
-        rule.onNodeWithText("vehicle_approach").assertExists()
-        rule.onNodeWithText("remaining_fuel_laps").assertExists()
+        rule.onNodeWithText("フラッグ").assertExists()
+        rule.onNodeWithText("燃料残り周回数").assertExists()
         rule.onNodeWithText("00:30:20.000 / レース +00:00:20.000").assertExists()
         val telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}"""
         rule.onNodeWithText(telemetryJson).assertDoesNotExist()
@@ -77,7 +77,7 @@ class TelemetryLogContentTest {
             )
         }
 
-        rule.onNodeWithText("vehicle_approach").performClick()
+        rule.onNodeWithText("フラッグ").performClick()
 
         rule.onNodeWithText("selected: 2").assertExists()
     }
@@ -107,7 +107,7 @@ class TelemetryLogContentTest {
 
         assertFalse(backEnabled)
 
-        rule.onNodeWithText("vehicle_approach").performClick()
+        rule.onNodeWithText("フラッグ").performClick()
         rule.waitUntil { backEnabled }
         rule.onNodeWithText("selected: 2").assertExists()
         assertTrue(backEnabled)
@@ -116,7 +116,42 @@ class TelemetryLogContentTest {
         rule.waitUntil { !backEnabled }
 
         assertFalse(backEnabled)
-        rule.onNodeWithText("vehicle_approach").assertExists()
+        rule.onNodeWithText("フラッグ").assertExists()
+    }
+
+    @Test
+    fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
+        val expectedDisplayNames = listOf(
+            ReadoutItemKey.VehicleApproach.value to "車両接近",
+            ReadoutItemKey.Flag.value to "フラッグ",
+            ReadoutItemKey.BlueFlag.value to "ブルーフラッグ",
+            ReadoutItemKey.SectorYellowFlag.value to "イエローフラッグ",
+            ReadoutItemKey.FullCourseYellow.value to "フルコースイエロー",
+            ReadoutItemKey.RedFlag.value to "レッドフラッグ",
+            ReadoutItemKey.VehicleDamage.value to "車両故障",
+            ReadoutItemKey.Overheat.value to "オーバーヒート",
+            ReadoutItemKey.MyBestLap.value to "自己ベストラップ",
+            ReadoutItemKey.RemainingFuelLaps.value to "燃料残り周回数",
+        )
+
+        rule.setContent {
+            expectedDisplayNames.forEach { (readoutItemKey, _) ->
+                Text(readoutItemDisplayName(readoutItemKey))
+            }
+        }
+
+        expectedDisplayNames.forEach { (_, displayName) ->
+            rule.onNodeWithText(displayName).assertExists()
+        }
+    }
+
+    @Test
+    fun `readoutItemDisplayNameは未知の読み上げ項目IDをそのまま返す`() {
+        rule.setContent {
+            Text(readoutItemDisplayName("unknown_readout_item"))
+        }
+
+        rule.onNodeWithText("unknown_readout_item").assertExists()
     }
 
     @Test

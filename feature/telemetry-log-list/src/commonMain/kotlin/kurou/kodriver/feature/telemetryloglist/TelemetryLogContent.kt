@@ -138,18 +138,11 @@ private fun TelemetryLogContentPreview() {
 internal val previewTelemetryLogListUiState = TelemetryLogListUiState(
     logs = listOf(
         TelemetryLog(
-            id = 3,
+            id = 2,
             createdAt = 1_820_000,
             simulatorId = "lmu_windows",
             readoutItemKey = "flag",
             telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
-        ),
-        TelemetryLog(
-            id = 2,
-            createdAt = 1_810_000,
-            simulatorId = "lmu_windows",
-            readoutItemKey = "vehicle_approach",
-            telemetryJson = """{"left":false,"right":true,"distanceMeters":12.4}""",
         ),
         TelemetryLog(
             id = 1,
