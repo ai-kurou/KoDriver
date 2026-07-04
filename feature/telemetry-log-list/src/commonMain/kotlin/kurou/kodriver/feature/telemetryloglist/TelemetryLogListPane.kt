@@ -260,7 +260,7 @@ private fun simulatorIcon(simulatorId: String): Painter? = when (simulatorId) {
 }
 
 @Composable
-private fun readoutItemDisplayName(readoutItemKey: String): String {
+internal fun readoutItemDisplayName(readoutItemKey: String): String {
     return when (ReadoutItemKey.fromValue(readoutItemKey)) {
         is ReadoutItemKey.VehicleApproach -> stringResource(Res.string.readout_item_vehicle_approach)
         is ReadoutItemKey.Flag -> stringResource(Res.string.readout_item_flag)
