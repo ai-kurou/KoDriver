@@ -61,6 +61,7 @@ kotlin {
             implementation(projects.feature.otherServerIpDetail)
             implementation(projects.feature.otherConsoleIpDetail)
             implementation(projects.feature.otherReadoutStartSoundDetail)
+            implementation(projects.feature.otherThemeDetail)
             implementation(projects.feature.otherVolumeDetail)
             implementation(projects.feature.telemetryLogList)
             implementation(projects.feature.telemetryLogDetail)

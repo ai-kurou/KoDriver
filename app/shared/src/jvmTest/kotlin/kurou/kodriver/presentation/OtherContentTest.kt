@@ -41,6 +41,7 @@ class OtherContentTest {
         var backEnabled = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
+        var themeDialogOpened = false
         var keepScreenOn = true
         var exitConfirmationEnabled = true
         var capturedOnBack: (() -> Unit)? = null
@@ -56,6 +57,7 @@ class OtherContentTest {
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
+                onOpenThemeDialog = { themeDialogOpened = true },
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onClearSelectedItem = { selectedItem = null },
@@ -104,10 +106,11 @@ class OtherContentTest {
         assertFalse(exitConfirmationEnabled)
         assertFalse(backEnabled)
 
-        // Theme（detail未実装のため何もしない）
+        // Theme（ダイアログを開く）
         rule.onNode(hasText("テーマ")).performClick()
         rule.waitForIdle()
 
+        assertTrue(themeDialogOpened)
         assertFalse(backEnabled)
 
         // GitHubRepository
