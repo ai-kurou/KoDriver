@@ -46,9 +46,9 @@ class TelemetryLogContentTest {
             )
         }
 
-        rule.onNodeWithText("flag").assertExists()
-        rule.onNodeWithText("vehicle_approach").assertExists()
-        rule.onNodeWithText("remaining_fuel_laps").assertExists()
+        rule.onNodeWithText("フラッグ").assertExists()
+        rule.onNodeWithText("車両接近").assertExists()
+        rule.onNodeWithText("燃料残り周回数").assertExists()
         rule.onNodeWithText("00:30:20.000 / レース +00:00:20.000").assertExists()
         val telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}"""
         rule.onNodeWithText(telemetryJson).assertDoesNotExist()
@@ -77,7 +77,7 @@ class TelemetryLogContentTest {
             )
         }
 
-        rule.onNodeWithText("vehicle_approach").performClick()
+        rule.onNodeWithText("車両接近").performClick()
 
         rule.onNodeWithText("selected: 2").assertExists()
     }
@@ -107,7 +107,7 @@ class TelemetryLogContentTest {
 
         assertFalse(backEnabled)
 
-        rule.onNodeWithText("vehicle_approach").performClick()
+        rule.onNodeWithText("車両接近").performClick()
         rule.waitUntil { backEnabled }
         rule.onNodeWithText("selected: 2").assertExists()
         assertTrue(backEnabled)
@@ -116,7 +116,7 @@ class TelemetryLogContentTest {
         rule.waitUntil { !backEnabled }
 
         assertFalse(backEnabled)
-        rule.onNodeWithText("vehicle_approach").assertExists()
+        rule.onNodeWithText("車両接近").assertExists()
     }
 
     @Test
