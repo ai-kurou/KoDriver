@@ -131,10 +131,10 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.License,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
         OtherListItemType.ReadoutStartSound,
+        OtherListItemType.Theme,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ExitConfirmation,
-        OtherListItemType.Theme,
         -> Unit
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
