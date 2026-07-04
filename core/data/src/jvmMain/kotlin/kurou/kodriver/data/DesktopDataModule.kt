@@ -20,6 +20,7 @@ import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
@@ -56,6 +57,9 @@ val desktopDataModule = module {
     }
     single<ReadoutStartSoundPreferencesRepository> {
         createReadoutStartSoundPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<ThemePreferencesRepository> {
+        createThemePreferencesRepository(directory = kodriverDirectory)
     }
     single<Gt7Ps5MyBestLapPreferencesRepository> {
         createGt7Ps5MyBestLapPreferencesRepository(directory = kodriverDirectory)

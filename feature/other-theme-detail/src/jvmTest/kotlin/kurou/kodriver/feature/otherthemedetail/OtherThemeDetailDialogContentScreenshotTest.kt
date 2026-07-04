@@ -10,6 +10,7 @@ import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.ThemeMode
 import org.junit.Rule
 import org.junit.Test
 
@@ -25,7 +26,7 @@ class OtherThemeDetailDialogContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
                         OtherThemeDetailDialogContent(
-                            selectedThemeMode = ThemeMode.SYSTEM,
+                            uiState = OtherThemeDetailUiState(pendingThemeMode = ThemeMode.SYSTEM),
                         )
                     }
                 }
@@ -41,7 +42,7 @@ class OtherThemeDetailDialogContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
                         OtherThemeDetailDialogContent(
-                            selectedThemeMode = ThemeMode.DARK,
+                            uiState = OtherThemeDetailUiState(pendingThemeMode = ThemeMode.DARK),
                         )
                     }
                 }

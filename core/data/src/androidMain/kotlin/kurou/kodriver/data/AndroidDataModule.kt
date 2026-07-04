@@ -27,6 +27,7 @@ import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -74,6 +75,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<ReadoutStartSoundPreferencesRepository> {
         createReadoutStartSoundPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<ThemePreferencesRepository> {
+        createThemePreferencesRepository(context.filesDir.absolutePath)
     }
     single<Gt7Ps5MyBestLapPreferencesRepository> {
         createGt7Ps5MyBestLapPreferencesRepository(context.filesDir.absolutePath)
