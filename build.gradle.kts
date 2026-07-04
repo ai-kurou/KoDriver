@@ -15,6 +15,18 @@ plugins {
 }
 
 val isCI = System.getenv("CI") != null
+data class RoborazziAggregateTask(
+    val aggregateTaskName: String,
+    val childTaskName: String,
+    val requiredTaskName: String,
+)
+
+val roborazziAggregateTasks = listOf(
+    RoborazziAggregateTask("recordRoborazziJvmTests", "recordRoborazziJvmTest", "jvmTest"),
+    RoborazziAggregateTask("verifyRoborazziJvmTests", "verifyRoborazziJvmTest", "jvmTest"),
+    RoborazziAggregateTask("recordRoborazziAndroidHostTests", "recordRoborazziAndroidHostTest", "testAndroidHostTest"),
+    RoborazziAggregateTask("verifyRoborazziAndroidHostTests", "verifyRoborazziAndroidHostTest", "testAndroidHostTest"),
+)
 
 detekt {
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
@@ -265,6 +277,25 @@ tasks.register("generateModuleGraphImages") {
         }
 
         println("\nDone. Commit docs/graphs/ and any updated README.md files.")
+    }
+}
+
+roborazziAggregateTasks.forEach { roborazziTask ->
+    val aggregateTask = tasks.register(roborazziTask.aggregateTaskName) {
+        group = "roborazzi"
+        description = "Runs ${roborazziTask.childTaskName} for all projects that define it."
+    }
+
+    gradle.projectsEvaluated {
+        aggregateTask.configure {
+            dependsOn(
+                subprojects
+                    .filter { project -> project.tasks.findByName(roborazziTask.requiredTaskName) != null }
+                    .map { project ->
+                        project.tasks.matching { it.name == roborazziTask.childTaskName }
+                    },
+            )
+        }
     }
 }
 
