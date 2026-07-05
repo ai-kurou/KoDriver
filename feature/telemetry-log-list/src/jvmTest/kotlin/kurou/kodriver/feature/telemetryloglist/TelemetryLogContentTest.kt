@@ -130,6 +130,7 @@ class TelemetryLogContentTest {
             ReadoutItemKey.RedFlag.value to "レッドフラッグ",
             ReadoutItemKey.VehicleDamage.value to "車両故障",
             ReadoutItemKey.Overheat.value to "オーバーヒート",
+            ReadoutItemKey.TyreTemperature.value to "タイヤ温度",
             ReadoutItemKey.MyBestLap.value to "自己ベストラップ",
             ReadoutItemKey.RemainingFuelLaps.value to "燃料残り周回数",
         )

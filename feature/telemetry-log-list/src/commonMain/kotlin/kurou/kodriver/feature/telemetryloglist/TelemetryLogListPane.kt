@@ -50,6 +50,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_overhe
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_temperature
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_damage
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
@@ -270,6 +271,7 @@ internal fun readoutItemDisplayName(readoutItemKey: String): String {
         is ReadoutItemKey.RedFlag -> stringResource(Res.string.readout_item_red_flag)
         is ReadoutItemKey.VehicleDamage -> stringResource(Res.string.readout_item_vehicle_damage)
         is ReadoutItemKey.Overheat -> stringResource(Res.string.readout_item_overheat)
+        is ReadoutItemKey.TyreTemperature -> stringResource(Res.string.readout_item_tyre_temperature)
         is ReadoutItemKey.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.RemainingFuelLaps -> stringResource(Res.string.readout_item_remaining_fuel_laps)
         null -> readoutItemKey

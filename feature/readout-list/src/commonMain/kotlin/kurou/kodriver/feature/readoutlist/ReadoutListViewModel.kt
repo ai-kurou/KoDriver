@@ -27,6 +27,7 @@ private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
         ReadoutItemKey.Flag,
         ReadoutItemKey.VehicleApproach,
         ReadoutItemKey.VehicleDamage,
+        ReadoutItemKey.TyreTemperature,
         ReadoutItemKey.MyBestLap,
     ),
     Simulator.Gt7Ps5 to listOf(

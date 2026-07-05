@@ -52,6 +52,8 @@ class MainActivityTest {
         clickContentDescription("閾値の説明を表示")
         navigateBack()
         clickItemAndNavigateBack("車両故障")
+        scrollToItem("タイヤ温度")
+        scrollToItem("自己ベストラップ")
         clickItem("自己ベストラップ")
         waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
         navigateBack()
