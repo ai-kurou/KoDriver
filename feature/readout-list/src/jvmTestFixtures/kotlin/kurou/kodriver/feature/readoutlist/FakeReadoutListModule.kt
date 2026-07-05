@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperatureEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -19,6 +20,7 @@ val fakeReadoutListModule = module {
         FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl()
     }
     single<LmuWindowsFlagPreferencesRepository> { FakeLmuWindowsFlagPreferencesRepositoryImpl() }
+    single<LmuWindowsTyreTemperatureEnabledRepository> { FakeLmuWindowsTyreTemperatureEnabledRepositoryImpl() }
 }
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
@@ -42,6 +44,14 @@ private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPrefer
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
     override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         states.update { it + (key to enabled) }
+    }
+}
+
+private class FakeLmuWindowsTyreTemperatureEnabledRepositoryImpl : LmuWindowsTyreTemperatureEnabledRepository {
+    private val enabled = MutableStateFlow(false)
+    override fun observeEnabled(): Flow<Boolean> = enabled
+    override suspend fun saveEnabled(enabled: Boolean) {
+        this.enabled.update { enabled }
     }
 }
 
