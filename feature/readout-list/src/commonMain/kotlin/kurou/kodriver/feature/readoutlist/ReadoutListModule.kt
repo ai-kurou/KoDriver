@@ -13,6 +13,7 @@ import org.koin.dsl.module
 
 val readoutListModule = module {
     viewModelOf(::ReadoutListViewModel)
+    factory { ReadoutListUseCases(get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { SaveSelectedSimulatorUseCase(get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }

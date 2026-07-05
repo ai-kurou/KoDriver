@@ -39,18 +39,20 @@ class ReadoutListViewModelTest {
         readoutRepository = FakeReadoutPreferencesRepository()
         tyreTemperatureEnabledRepository = FakeLmuWindowsTyreTemperatureEnabledRepository()
         viewModel = ReadoutListViewModel(
-            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-            observeLmuWindowsTyreTemperatureEnabled = ObserveLmuWindowsTyreTemperatureEnabledUseCase(
-                tyreTemperatureEnabledRepository,
+            useCases = ReadoutListUseCases(
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+                saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
+                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
+                saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
+                observeLmuWindowsTyreTemperatureEnabled = ObserveLmuWindowsTyreTemperatureEnabledUseCase(
+                    tyreTemperatureEnabledRepository,
+                ),
+                saveLmuWindowsTyreTemperatureEnabled = SaveLmuWindowsTyreTemperatureEnabledUseCase(
+                    tyreTemperatureEnabledRepository,
+                ),
+                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
+                saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
             ),
-            saveLmuWindowsTyreTemperatureEnabled = SaveLmuWindowsTyreTemperatureEnabledUseCase(
-                tyreTemperatureEnabledRepository,
-            ),
-            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
-            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
         )
     }
 

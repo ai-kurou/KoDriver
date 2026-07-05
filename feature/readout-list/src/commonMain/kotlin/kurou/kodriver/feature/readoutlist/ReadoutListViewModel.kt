@@ -49,19 +49,22 @@ private data class LocalOrderState(
     val items: List<ReadoutItemKey>,
 )
 
-@Suppress("LongParameterList")
+data class ReadoutListUseCases(
+    val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
+    val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
+    val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    val observeLmuWindowsTyreTemperatureEnabled: ObserveLmuWindowsTyreTemperatureEnabledUseCase,
+    val saveLmuWindowsTyreTemperatureEnabled: SaveLmuWindowsTyreTemperatureEnabledUseCase,
+    val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    val saveReadoutOrder: SaveReadoutOrderUseCase,
+)
+
 class ReadoutListViewModel(
-    private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
-    private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
-    private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
-    private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
-    private val observeLmuWindowsTyreTemperatureEnabled: ObserveLmuWindowsTyreTemperatureEnabledUseCase,
-    private val saveLmuWindowsTyreTemperatureEnabled: SaveLmuWindowsTyreTemperatureEnabledUseCase,
-    private val observeReadoutOrder: ObserveReadoutOrderUseCase,
-    private val saveReadoutOrder: SaveReadoutOrderUseCase,
+    private val useCases: ReadoutListUseCases,
 ) : ViewModel() {
 
-    private val _selectedSimulator: StateFlow<Simulator?> = observeSelectedSimulator()
+    private val _selectedSimulator: StateFlow<Simulator?> = useCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
@@ -70,7 +73,7 @@ class ReadoutListViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _persistedOrder: StateFlow<List<ReadoutItemKey>> = _selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != null) observeReadoutOrder(simulator.id)
+            if (simulator != null) useCases.observeReadoutOrder(simulator.id)
             else flowOf(emptyList())
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -80,14 +83,14 @@ class ReadoutListViewModel(
         .flatMapLatest { simulator ->
             when (simulator) {
                 Simulator.LmuWindows -> combine(
-                    observeReadoutEnabledStates(simulator.id),
-                    observeLmuWindowsTyreTemperatureEnabled(),
+                    useCases.observeReadoutEnabledStates(simulator.id),
+                    useCases.observeLmuWindowsTyreTemperatureEnabled(),
                 ) { enabledStates, tyreTemperatureEnabled ->
                     defaultEnabledStates[simulator].orEmpty() +
                         enabledStates +
                         (ReadoutItemKey.TyreTemperature to tyreTemperatureEnabled)
                 }
-                Simulator.Gt7Ps5 -> observeReadoutEnabledStates(simulator.id).map { enabledStates ->
+                Simulator.Gt7Ps5 -> useCases.observeReadoutEnabledStates(simulator.id).map { enabledStates ->
                     defaultEnabledStates[simulator].orEmpty() + enabledStates
                 }
                 null -> flowOf(emptyMap())
@@ -136,7 +139,7 @@ class ReadoutListViewModel(
 
     fun onSimulatorSelected(simulator: Simulator) {
         viewModelScope.launch {
-            saveSelectedSimulator(simulator)
+            useCases.saveSelectedSimulator(simulator)
         }
     }
 
@@ -146,7 +149,7 @@ class ReadoutListViewModel(
             .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
         viewModelScope.launch {
-            saveReadoutOrder(selected.id, newItems)
+            useCases.saveReadoutOrder(selected.id, newItems)
         }
     }
 
@@ -164,9 +167,9 @@ class ReadoutListViewModel(
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
             if (simulator == Simulator.LmuWindows && key == ReadoutItemKey.TyreTemperature) {
-                saveLmuWindowsTyreTemperatureEnabled(enabled)
+                useCases.saveLmuWindowsTyreTemperatureEnabled(enabled)
             } else {
-                saveReadoutEnabledState(simulator.id, key, enabled)
+                useCases.saveReadoutEnabledState(simulator.id, key, enabled)
             }
         }
     }
