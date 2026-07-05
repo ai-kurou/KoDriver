@@ -14,6 +14,7 @@ import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
+import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -46,9 +47,11 @@ class ReadoutContentTest {
         var backEnabled = false
         var capturedOnBack: (() -> Unit)? = null
         var itemTexts by mutableStateOf(emptyList<String>())
+        var tyreTemperatureText by mutableStateOf("")
         var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
 
         rule.setContent {
+            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
             itemTexts = listOf(
                 stringResource(Res.string.item_vehicle_approach),
                 stringResource(Res.string.item_flag),
@@ -63,6 +66,7 @@ class ReadoutContentTest {
                         ReadoutItemKey.Flag,
                         ReadoutItemKey.VehicleApproach,
                         ReadoutItemKey.VehicleDamage,
+                        ReadoutItemKey.TyreTemperature,
                         ReadoutItemKey.MyBestLap,
                     ),
                     selectedItem = selectedItem,
@@ -81,6 +85,7 @@ class ReadoutContentTest {
             )
         }
 
+        rule.onNodeWithText(tyreTemperatureText).assertExists()
         assertAllItemsCanNavigateBack(itemTexts, { backEnabled }, { capturedOnBack?.invoke() })
     }
 

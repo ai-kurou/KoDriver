@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
@@ -72,6 +73,7 @@ import kodriver.feature.readoutlist.generated.resources.item_overheat
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
+import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.priority_hint_description
@@ -112,6 +114,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.RedFlag -> stringResource(Res.string.item_red_flag)
     is ReadoutItemKey.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
     is ReadoutItemKey.Overheat -> stringResource(Res.string.item_overheat)
+    is ReadoutItemKey.TyreTemperature -> stringResource(Res.string.item_tyre_temperature)
     is ReadoutItemKey.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
 }
@@ -125,6 +128,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.RedFlag -> Icons.Filled.Flag
     is ReadoutItemKey.VehicleDamage -> Icons.Filled.Build
     is ReadoutItemKey.Overheat -> Icons.Filled.Build
+    is ReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.MyBestLap -> Icons.Filled.Timer
     is ReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
 }
@@ -308,7 +312,11 @@ internal fun ReadoutListPane(
                                     trailingContent = {
                                         Switch(
                                             checked = uiState.readoutEnabledStates[item] != false,
-                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                                            onCheckedChange = if (item == ReadoutItemKey.TyreTemperature) {
+                                                null
+                                            } else {
+                                                { onReadoutEnabledChanged(item, it) }
+                                            },
                                         )
                                     },
                                 )
@@ -345,6 +353,7 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
         ),

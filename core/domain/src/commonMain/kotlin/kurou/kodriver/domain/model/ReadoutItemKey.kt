@@ -11,6 +11,7 @@ sealed interface ReadoutItemKey {
     data object RedFlag : ReadoutItemKey { override val value = "red_flag" }
     data object VehicleDamage : ReadoutItemKey { override val value = "vehicle_damage" }
     data object Overheat : ReadoutItemKey { override val value = "overheat" }
+    data object TyreTemperature : ReadoutItemKey { override val value = "tyre_temperature" }
     data object MyBestLap : ReadoutItemKey { override val value = "my_best_lap" }
     data object RemainingFuelLaps : ReadoutItemKey { override val value = "remaining_fuel_laps" }
 
@@ -25,6 +26,7 @@ sealed interface ReadoutItemKey {
                 RedFlag,
                 VehicleDamage,
                 Overheat,
+                TyreTemperature,
                 MyBestLap,
                 RemainingFuelLaps,
             )

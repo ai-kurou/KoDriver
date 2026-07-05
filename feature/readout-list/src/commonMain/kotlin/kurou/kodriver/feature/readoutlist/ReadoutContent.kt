@@ -169,6 +169,7 @@ private fun ReadoutContentPreview() {
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
         ),
