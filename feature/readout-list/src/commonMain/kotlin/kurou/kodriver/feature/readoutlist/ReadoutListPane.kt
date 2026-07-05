@@ -312,11 +312,7 @@ internal fun ReadoutListPane(
                                     trailingContent = {
                                         Switch(
                                             checked = uiState.readoutEnabledStates[item] != false,
-                                            onCheckedChange = if (item == ReadoutItemKey.TyreTemperature) {
-                                                null
-                                            } else {
-                                                { onReadoutEnabledChanged(item, it) }
-                                            },
+                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
                                         )
                                     },
                                 )

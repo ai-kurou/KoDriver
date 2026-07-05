@@ -131,7 +131,7 @@ class ReadoutContentTest {
     }
 
     @Test
-    fun `tyre_temperatureのSwitchは無効でその他の項目はON_OFF変更コールバックを呼ぶ`() {
+    fun `tyre_temperatureとその他の項目のSwitchはON_OFF変更コールバックを呼ぶ`() {
         val changedItems = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
         var tyreTemperatureText by mutableStateOf("")
 
@@ -158,11 +158,12 @@ class ReadoutContentTest {
             )
         }
 
-        rule.onNodeWithText(tyreTemperatureText).performClick()
-        rule.onAllNodes(hasSwitchRole()).assertCountEquals(1)
+        rule.onNodeWithText(tyreTemperatureText).assertExists()
+        rule.onAllNodes(hasSwitchRole()).assertCountEquals(2)
         rule.onAllNodes(hasSwitchRole()).get(0).assertIsEnabled().performClick()
+        rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
 
-        assertTrue(changedItems.none { it.first == ReadoutItemKey.TyreTemperature })
+        assertTrue(changedItems.contains(ReadoutItemKey.TyreTemperature to false))
         assertTrue(changedItems.contains(ReadoutItemKey.Flag to false))
     }
 
