@@ -15,9 +15,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -53,6 +55,8 @@ class ReadoutListViewModel(
     private val saveSelectedSimulator: SaveSelectedSimulatorUseCase,
     private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
+    private val observeLmuWindowsTyreTemperatureEnabled: ObserveLmuWindowsTyreTemperatureEnabledUseCase,
+    private val saveLmuWindowsTyreTemperatureEnabled: SaveLmuWindowsTyreTemperatureEnabledUseCase,
     private val observeReadoutOrder: ObserveReadoutOrderUseCase,
     private val saveReadoutOrder: SaveReadoutOrderUseCase,
 ) : ViewModel() {
@@ -74,12 +78,19 @@ class ReadoutListViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != null) {
-                observeReadoutEnabledStates(simulator.id).map { enabledStates ->
+            when (simulator) {
+                Simulator.LmuWindows -> combine(
+                    observeReadoutEnabledStates(simulator.id),
+                    observeLmuWindowsTyreTemperatureEnabled(),
+                ) { enabledStates, tyreTemperatureEnabled ->
+                    defaultEnabledStates[simulator].orEmpty() +
+                        enabledStates +
+                        (ReadoutItemKey.TyreTemperature to tyreTemperatureEnabled)
+                }
+                Simulator.Gt7Ps5 -> observeReadoutEnabledStates(simulator.id).map { enabledStates ->
                     defaultEnabledStates[simulator].orEmpty() + enabledStates
                 }
-            } else {
-                flowOf(emptyMap())
+                null -> flowOf(emptyMap())
             }
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
@@ -152,7 +163,11 @@ class ReadoutListViewModel(
     fun onReadoutEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
-            saveReadoutEnabledState(simulator.id, key, enabled)
+            if (simulator == Simulator.LmuWindows && key == ReadoutItemKey.TyreTemperature) {
+                saveLmuWindowsTyreTemperatureEnabled(enabled)
+            } else {
+                saveReadoutEnabledState(simulator.id, key, enabled)
+            }
         }
     }
 }
