@@ -6,6 +6,7 @@ digraph G {
   ":feature:lmu-windows-narrator" -> ":core:designsystem"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-my-bestlap-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:designsystem"
   ":feature:other-console-ip-detail" -> ":core:designsystem"
