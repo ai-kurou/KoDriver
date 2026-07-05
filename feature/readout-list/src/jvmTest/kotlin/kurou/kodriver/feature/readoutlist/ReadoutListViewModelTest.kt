@@ -9,11 +9,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -29,7 +27,6 @@ class ReadoutListViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var simulatorRepository: FakeSimulatorPreferencesRepository
     private lateinit var readoutRepository: FakeReadoutPreferencesRepository
-    private lateinit var tyreTemperatureEnabledRepository: FakeLmuWindowsTyreTemperatureEnabledRepository
     private lateinit var viewModel: ReadoutListViewModel
 
     @Before
@@ -37,19 +34,12 @@ class ReadoutListViewModelTest {
         Dispatchers.setMain(testDispatcher)
         simulatorRepository = FakeSimulatorPreferencesRepository()
         readoutRepository = FakeReadoutPreferencesRepository()
-        tyreTemperatureEnabledRepository = FakeLmuWindowsTyreTemperatureEnabledRepository()
         viewModel = ReadoutListViewModel(
             useCases = ReadoutListUseCases(
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
                 saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
                 saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-                observeLmuWindowsTyreTemperatureEnabled = ObserveLmuWindowsTyreTemperatureEnabledUseCase(
-                    tyreTemperatureEnabledRepository,
-                ),
-                saveLmuWindowsTyreTemperatureEnabled = SaveLmuWindowsTyreTemperatureEnabledUseCase(
-                    tyreTemperatureEnabledRepository,
-                ),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
                 saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
             ),
@@ -146,6 +136,33 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.MyBestLap,
             ),
             viewModel.uiState.first().items,
+        )
+    }
+
+    @Test
+    fun `シミュレータを選択するとRepositoryからタイヤ温度の保存済みON_OFF状態が読み込まれ共通Repositoryへ保存される`() =
+        runTest {
+        readoutRepository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.TyreTemperature, true)
+
+        viewModel.onSimulatorSelected(Simulator.LmuWindows)
+
+        assertEquals(
+            listOf(
+                ReadoutItemKey.TyreTemperature to true,
+                ReadoutItemKey.MyBestLap to false,
+            ),
+            listOf(
+                ReadoutItemKey.TyreTemperature to
+                    viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.TyreTemperature],
+                ReadoutItemKey.MyBestLap to viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.MyBestLap],
+            ),
+        )
+
+        viewModel.onReadoutEnabledChanged(ReadoutItemKey.TyreTemperature, false)
+
+        assertEquals(
+            false,
+            readoutRepository.observeReadoutEnabledStates("lmu_windows").first()[ReadoutItemKey.TyreTemperature],
         )
     }
 
@@ -258,22 +275,6 @@ class ReadoutListViewModelTest {
         assertEquals(
             true,
             readoutRepository.observeReadoutEnabledStates("lmu_windows").first()[ReadoutItemKey.MyBestLap],
-        )
-    }
-
-    @Test
-    fun `タイヤ温度のON_OFF状態は専用Repositoryから読み書きされる`() = runTest {
-        tyreTemperatureEnabledRepository.saveEnabled(true)
-        viewModel.onSimulatorSelected(Simulator.LmuWindows)
-
-        assertEquals(true, viewModel.uiState.first().readoutEnabledStates[ReadoutItemKey.TyreTemperature])
-
-        viewModel.onReadoutEnabledChanged(ReadoutItemKey.TyreTemperature, false)
-
-        assertEquals(false, tyreTemperatureEnabledRepository.observeEnabled().first())
-        assertEquals(
-            null,
-            readoutRepository.observeReadoutEnabledStates("lmu_windows").first()[ReadoutItemKey.TyreTemperature],
         )
     }
 }
