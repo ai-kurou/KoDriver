@@ -28,6 +28,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -58,6 +59,7 @@ fun androidDataModule(context: Context) = module {
     single<FlagRepository> { WebSocketFlagRepository(get()) }
     single<ProximityRepository> { WebSocketProximityRepository(get()) }
     single<VehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
+    single<TyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository() }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }

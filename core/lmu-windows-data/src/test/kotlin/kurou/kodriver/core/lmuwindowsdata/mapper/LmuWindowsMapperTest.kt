@@ -51,6 +51,7 @@ class LmuWindowsMapperTest {
         const val OFF_WHEEL_PRESSURE = 120
         const val OFF_WHEEL_TEMPERATURE_CENTER = 136 // +8 of OFF_WHEEL_TEMPERATURE(128)
         const val OFF_WHEEL_WEAR = 152
+        const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
 
         const val BUFFER_SIZE = 135_000
 
@@ -214,6 +215,7 @@ class LmuWindowsMapperTest {
         WheelIndex.entries.forEachIndexed { i, wheel ->
             val wb = vb + OFF_WHEELS + i * WHEEL_STRIDE
             buf.putDouble(wb + OFF_WHEEL_TEMPERATURE_CENTER, 350.0 + i * 10.0)
+            buf.putDouble(wb + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE, 345.0 + i * 10.0)
             buf.putDouble(wb + OFF_WHEEL_BRAKE_TEMP, 200.0 + i * 5.0)
             buf.putDouble(wb + OFF_WHEEL_PRESSURE, 220.0 + i.toDouble())
             buf.putDouble(wb + OFF_WHEEL_WEAR, 0.9 - i * 0.05)
@@ -225,6 +227,7 @@ class LmuWindowsMapperTest {
         WheelIndex.entries.forEachIndexed { i, wheel ->
             val tyre = result.tyres.wheels[wheel]!!
             assertEquals(350.0 + i * 10.0, tyre.surfaceTemperatureK, 1e-9)
+            assertEquals(345.0 + i * 10.0, tyre.carcassTemperatureK, 1e-9)
             assertEquals(200.0 + i * 5.0, tyre.brakeTemperatureC, 1e-9)
             assertEquals(220.0 + i.toDouble(), tyre.pressureKpa, 1e-9)
             assertEquals(0.9 - i * 0.05, tyre.wear, 1e-9)

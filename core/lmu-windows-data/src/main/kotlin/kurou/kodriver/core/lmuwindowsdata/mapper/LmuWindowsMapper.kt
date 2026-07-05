@@ -67,6 +67,7 @@ import kotlin.math.roundToLong
  *   mPressure            : +120
  *   mTemperature[3]      : +128 (Kelvin, 中央値=+136)
  *   mWear                : +152
+ *   mTireCarcassTemperature : +204 (Kelvin)
  */
 internal object LmuWindowsMapper {
 
@@ -115,6 +116,7 @@ internal object LmuWindowsMapper {
     private const val OFF_WHEEL_PRESSURE = 120
     private const val OFF_WHEEL_TEMPERATURE = 128
     private const val OFF_WHEEL_WEAR = 152
+    private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
 
     fun map(buffer: ByteBuffer): LmuWindowsTelemetryData {
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
@@ -196,6 +198,7 @@ internal object LmuWindowsMapper {
             val surfaceTempK = buffer.getDouble(offset + OFF_WHEEL_TEMPERATURE + 8)
             TyreWheelData(
                 surfaceTemperatureK = surfaceTempK,
+                carcassTemperatureK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE),
                 brakeTemperatureC = buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP),
                 pressureKpa = buffer.getDouble(offset + OFF_WHEEL_PRESSURE),
                 wear = buffer.getDouble(offset + OFF_WHEEL_WEAR),
