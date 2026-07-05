@@ -1,0 +1,4 @@
+<resources>
+    <string name="tyre_temperature_title">タイヤ温度</string>
+    <string name="tyre_temperature_description">タイヤの温度状況を音声でお知らせします。</string>
+</resources>

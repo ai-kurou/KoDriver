@@ -68,6 +68,7 @@ class ReadoutListViewModelTest {
             ),
             state.items,
         )
+        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.TyreTemperature])
         assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.MyBestLap])
     }
 
