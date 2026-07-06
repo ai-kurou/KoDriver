@@ -1,21 +1,38 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 
-internal class LmuWindowsReadoutTyreTemperatureDetailViewModel : ViewModel() {
+internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
+    observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
+    private val saveHighThreshold: SaveLmuWindowsTyreTemperatureHighThresholdUseCase,
+) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(LmuWindowsReadoutTyreTemperatureDetailUiState())
-    val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
+        observeHighThreshold()
+            .map { LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                LmuWindowsReadoutTyreTemperatureDetailUiState(),
+            )
 
     fun onHighThresholdChanged(celsius: Int) {
-        _uiState.update { it.copy(highThresholdCelsius = celsius) }
+        viewModelScope.launch { saveHighThreshold(celsius) }
     }
 
     fun onHighThresholdReset() {
-        _uiState.update { it.copy(highThresholdCelsius = 90) }
+        viewModelScope.launch { saveHighThreshold(DEFAULT_HIGH_THRESHOLD_CELSIUS) }
+    }
+
+    companion object {
+        const val DEFAULT_HIGH_THRESHOLD_CELSIUS = 90
     }
 }
