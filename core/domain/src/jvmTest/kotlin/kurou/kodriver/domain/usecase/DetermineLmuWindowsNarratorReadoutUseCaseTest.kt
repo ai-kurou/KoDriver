@@ -426,6 +426,27 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `無効中に過熱した状態で再有効化しても読み上げない`() {
+        val disabledState = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(
+                tyreTemperatureHighThresholdCelsius = 90,
+                enabledStates = mapOf(ReadoutItemKey.TyreTemperature to false),
+            ),
+        ).state
+
+        val reenabledDecision = useCase.determineTyreTemperature(
+            state = disabledState,
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), reenabledDecision.events)
     }
 
     @Test
