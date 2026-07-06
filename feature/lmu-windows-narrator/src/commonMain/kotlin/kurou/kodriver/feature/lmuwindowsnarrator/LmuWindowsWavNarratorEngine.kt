@@ -23,6 +23,7 @@ internal class LmuWindowsWavNarratorEngine(
     startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
     private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
     private val startSoundResourceLoader: suspend (String) -> ByteArray = ::readStartSoundBytes,
+    private val tyreOverheatSoundLoader: suspend () -> ByteArray? = ::loadTyreOverheatSound,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
 
@@ -36,6 +37,9 @@ internal class LmuWindowsWavNarratorEngine(
     private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
 
     private var startSounds: Map<ReadoutStartSoundType, ByteArray> = emptyMap()
+
+    @Volatile
+    private var tyreOverheatSound: ByteArray? = null
 
     private var playJob: Job? = null
 
@@ -93,10 +97,23 @@ internal class LmuWindowsWavNarratorEngine(
             }
             startSounds = loadedStartSounds
         }
+        scope.launch {
+            try {
+                tyreOverheatSound = tyreOverheatSoundLoader()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                captureNarratorError(e)
+            }
+        }
     }
 
     override fun speak(event: SpeechEvent, queue: Boolean) {
-        val mainSound = sounds[event] ?: return
+        val mainSound = if (event is SpeechEvent.TyreOverheat) {
+            tyreOverheatSound ?: return
+        } else {
+            sounds[event] ?: return
+        }
         if (queue) {
             val previousJob = playJob
             playJob = scope.launch {

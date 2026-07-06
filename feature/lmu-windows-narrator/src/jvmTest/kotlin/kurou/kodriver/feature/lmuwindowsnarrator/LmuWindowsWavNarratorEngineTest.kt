@@ -18,6 +18,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class LmuWindowsWavNarratorEngineTest {
 
     @Test
@@ -290,6 +291,38 @@ class LmuWindowsWavNarratorEngineTest {
         assertEquals(emptyList(), player.playedSounds)
     }
 
+    @Test
+    fun `TyreOverheat はファイルローダーから読み込んだ音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            tyreOverheatSoundLoader = { TYRE_OVERHEAT_SOUND },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.TyreOverheat)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(TYRE_OVERHEAT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `TyreOverheat のファイルが未ロードなら何も再生しない`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            tyreOverheatSoundLoader = { null },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.TyreOverheat)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
@@ -307,12 +340,14 @@ class LmuWindowsWavNarratorEngineTest {
                 else -> FORMULA_RADIO_SOUND
             }
         },
+        tyreOverheatSoundLoader: suspend () -> ByteArray? = { null },
     ): LmuWindowsWavNarratorEngine = LmuWindowsWavNarratorEngine(
         soundPlayer = player,
         volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,
         resourceLoader = resourceLoader,
         startSoundResourceLoader = startSoundResourceLoader,
+        tyreOverheatSoundLoader = tyreOverheatSoundLoader,
         scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
     )
 
@@ -327,6 +362,7 @@ class LmuWindowsWavNarratorEngineTest {
         val EVENT_SOUND = byteArrayOf(2)
         val FORMULA_RADIO_SOUND = byteArrayOf(3)
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
+        val TYRE_OVERHEAT_SOUND = byteArrayOf(8)
         val LEFT_APPROACH_SOUND = byteArrayOf(4)
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(6)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(7)

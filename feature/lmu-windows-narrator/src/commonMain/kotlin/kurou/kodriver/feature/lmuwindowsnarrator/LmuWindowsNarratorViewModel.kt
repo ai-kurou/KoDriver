@@ -27,6 +27,7 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
@@ -64,6 +66,11 @@ data class FlagUseCases(
     val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
 )
 
+data class TyreTemperatureUseCases(
+    val observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
+    val observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
+)
+
 data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
@@ -71,11 +78,13 @@ data class NarratorUseCases(
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("LongParameterList")
 class LmuWindowsNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
     vehicleDamageUseCases: VehicleDamageUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
+    tyreTemperatureUseCases: TyreTemperatureUseCases,
     private val ttsEngine: TextToSpeechEngine,
     private val narratorUseCases: NarratorUseCases,
     private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
@@ -120,6 +129,9 @@ class LmuWindowsNarratorViewModel(
 
     private val voiceType = narratorUseCases.observeMyBestLapVoiceType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
+
+    private val tyreHighThreshold = tyreTemperatureUseCases.observeHighThreshold()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -243,6 +255,26 @@ class LmuWindowsNarratorViewModel(
         }
         .launchIn(viewModelScope)
 
+    @Suppress("UnusedPrivateProperty")
+    private val tyreTemperatureJob = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+            tyreTemperatureUseCases.observeTyreCarcassTemperature()
+        }
+        .onEach { tyreCarcassTemperature ->
+            val observedAtMs = currentTimeMs()
+            val decision = narratorUseCases.determineReadout.determineTyreTemperature(
+                state = narratorState,
+                data = tyreCarcassTemperature,
+                settings = currentSettings,
+            )
+            narratorState = decision.state
+            decision.events.forEach { event ->
+                speakWithPriority(event)
+            }
+        }
+        .launchIn(viewModelScope)
+
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = enabledStates.value,
@@ -251,6 +283,7 @@ class LmuWindowsNarratorViewModel(
             skipFirstLap = skipFirstLap.value,
             vehicleApproachStartReadoutEnabled = startReadoutEnabled.value,
             vehicleApproachStartReadoutType = startReadoutType.value,
+            tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
         )
 
     /**
