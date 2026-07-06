@@ -216,6 +216,7 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             voiceType = MyBestLapVoiceType.CASUAL,
+            enabledOverrides = mapOf(ReadoutItemKey.MyBestLap to true),
             orderOverride = listOf(ReadoutItemKey.MyBestLap),
         )
 
@@ -250,6 +251,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.MyBestLap to true),
             orderOverride = listOf(ReadoutItemKey.MyBestLap),
             currentTimeMs = { 456L },
             telemetryLogRepository = telemetryLogRepository,
@@ -665,7 +667,12 @@ class LmuWindowsNarratorViewModelTest {
     fun `閾値以上のタイヤ温度が来ると TyreOverheat を読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, tyreTemperatureHighThreshold = 90)
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+        )
 
         channel.send(tyreTemperature(fl = 95.0))
 
@@ -676,7 +683,12 @@ class LmuWindowsNarratorViewModelTest {
     fun `高温状態が継続しても2回目は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, tyreTemperatureHighThreshold = 90)
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+        )
 
         channel.send(tyreTemperature(fl = 95.0))
         channel.send(tyreTemperature(fl = 95.0))
@@ -688,7 +700,12 @@ class LmuWindowsNarratorViewModelTest {
     fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() = runTest(testDispatcher) {
         val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, tyreTemperatureHighThreshold = 90)
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+        )
 
         channel.send(tyreTemperature(fl = 95.0))
         channel.send(tyreTemperature(fl = 20.0))
@@ -725,6 +742,21 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `タイヤ温度が未設定（デフォルト）の場合は読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+        )
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `タイヤ温度読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
         val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
@@ -733,6 +765,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
             currentTimeMs = { 123L },
             telemetryLogRepository = telemetryLogRepository,
         )
