@@ -31,4 +31,18 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
         }
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `ヘルプボトムシート`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 200.dp)) {
+                        TyreTemperatureThresholdHelpSheetContent()
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
 }
