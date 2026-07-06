@@ -19,6 +19,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -42,6 +43,13 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+
+private val defaultReadoutEnabledStates: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
+    Simulator.LmuWindows to mapOf(
+        ReadoutItemKey.TyreTemperature to false,
+        ReadoutItemKey.MyBestLap to false,
+    ),
+)
 
 data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
@@ -103,12 +111,16 @@ class LmuWindowsNarratorViewModel(
     private val enabledStates = combine(
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                if (simulator == null) emptyFlow<Map<ReadoutItemKey, Boolean>>()
+                else readoutListUseCases.observeReadoutEnabledStates(simulator.id).map { persisted ->
+                    defaultReadoutEnabledStates.getOrElse(simulator) { emptyMap<ReadoutItemKey, Boolean>() } + persisted
+                }
             },
         flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
-    ) { readoutStates, flagStates, vehicleDamageStates -> readoutStates + flagStates + vehicleDamageStates }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+    ) { readoutStates: Map<ReadoutItemKey, Boolean>, flagStates, vehicleDamageStates ->
+        readoutStates + flagStates + vehicleDamageStates
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
     private val readoutOrder = selectedSimulator

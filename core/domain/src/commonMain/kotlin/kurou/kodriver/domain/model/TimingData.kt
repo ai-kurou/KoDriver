@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class TimingData(
     val currentLapTimeMs: Long,
     val lastLapTimeMs: Long,

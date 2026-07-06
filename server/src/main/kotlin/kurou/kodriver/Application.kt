@@ -11,14 +11,20 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.Koin
 
@@ -27,6 +33,8 @@ fun main() {
         observeRaceFlags = ObserveRaceFlagsUseCase(EmptyFlagRepository),
         observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
         observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+        observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
+        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
     ).start(wait = true)
 }
 
@@ -34,6 +42,8 @@ class KoDriverServer(
     observeRaceFlags: ObserveRaceFlagsUseCase,
     observeProximity: ObserveProximityUseCase,
     observeVehicleDamage: ObserveVehicleDamageUseCase,
+    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
+    observeLmuWindows: ObserveLmuWindowsUseCase,
     port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
 ) {
@@ -42,7 +52,13 @@ class KoDriverServer(
         port = port,
         host = host,
         module = {
-            module(observeRaceFlags, observeProximity, observeVehicleDamage)
+            module(
+                observeRaceFlags,
+                observeProximity,
+                observeVehicleDamage,
+                observeTyreCarcassTemperature,
+                observeLmuWindows,
+            )
         },
     )
 
@@ -65,6 +81,10 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
         observeRaceFlags = ObserveRaceFlagsUseCase(koin.get<FlagRepository>()),
         observeProximity = ObserveProximityUseCase(koin.get<ProximityRepository>()),
         observeVehicleDamage = ObserveVehicleDamageUseCase(koin.get<VehicleDamageRepository>()),
+        observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+            koin.get<TyreCarcassTemperatureRepository>(),
+        ),
+        observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
     )
 }
 
@@ -72,6 +92,8 @@ fun Application.module(
     observeRaceFlags: ObserveRaceFlagsUseCase,
     observeProximity: ObserveProximityUseCase,
     observeVehicleDamage: ObserveVehicleDamageUseCase,
+    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
+    observeLmuWindows: ObserveLmuWindowsUseCase,
 ) {
     install(WebSockets)
     routing {
@@ -87,6 +109,8 @@ fun Application.module(
         flagWebSocket(observeRaceFlags)
         proximityWebSocket(observeProximity)
         vehicleDamageWebSocket(observeVehicleDamage)
+        tyreCarcassTemperatureWebSocket(observeTyreCarcassTemperature)
+        timingWebSocket(observeLmuWindows)
     }
 }
 
@@ -100,4 +124,14 @@ private object EmptyProximityRepository : ProximityRepository {
 
 private object EmptyVehicleDamageRepository : VehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+}
+
+private object EmptyTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+}
+
+private object EmptyLmuWindowsRepository : LmuWindowsRepository {
+    override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
+    override suspend fun isConnected(): Boolean = false
+    override suspend fun disconnect() = Unit
 }
