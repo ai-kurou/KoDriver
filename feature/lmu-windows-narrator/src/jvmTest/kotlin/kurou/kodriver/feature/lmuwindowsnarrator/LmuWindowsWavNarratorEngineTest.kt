@@ -18,6 +18,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class LmuWindowsWavNarratorEngineTest {
 
     @Test
@@ -290,6 +291,40 @@ class LmuWindowsWavNarratorEngineTest {
         assertEquals(emptyList(), player.playedSounds)
     }
 
+    @Test
+    fun `TyreOverheat はリソースから読み込んだ音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == TYRE_OVERHEAT_PATH) TYRE_OVERHEAT_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.TyreOverheat)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(TYRE_OVERHEAT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `TyreOverheat のリソースが未ロードなら何も再生しない`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { error("load failed") },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.TyreOverheat)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
@@ -323,10 +358,12 @@ class LmuWindowsWavNarratorEngineTest {
         const val MY_BEST_LAP_CASUAL_PATH = "files/my_best_lap_casual.wav"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
+        const val TYRE_OVERHEAT_PATH = "files/tyre_overheat.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)
         val EVENT_SOUND = byteArrayOf(2)
         val FORMULA_RADIO_SOUND = byteArrayOf(3)
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
+        val TYRE_OVERHEAT_SOUND = byteArrayOf(8)
         val LEFT_APPROACH_SOUND = byteArrayOf(4)
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(6)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(7)

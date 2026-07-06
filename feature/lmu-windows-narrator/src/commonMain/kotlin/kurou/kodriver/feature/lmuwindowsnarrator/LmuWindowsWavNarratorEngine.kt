@@ -59,6 +59,7 @@ internal class LmuWindowsWavNarratorEngine(
         SpeechEvent.Overheating to "files/gp2_gp2.wav",
         SpeechEvent.MyBestLapFormal to "files/my_best_lap_formal.wav",
         SpeechEvent.MyBestLapCasual to "files/my_best_lap_casual.wav",
+        SpeechEvent.TyreOverheat to "files/tyre_overheat.wav",
     )
 
     private val startSoundTypeToFile = mapOf(

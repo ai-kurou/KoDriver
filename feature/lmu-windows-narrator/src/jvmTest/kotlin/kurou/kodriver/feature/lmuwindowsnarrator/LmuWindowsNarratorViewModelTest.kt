@@ -32,24 +32,29 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.model.TimingData
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
@@ -60,6 +65,7 @@ import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
@@ -89,6 +95,7 @@ class LmuWindowsNarratorViewModelTest {
         flagChannel: Channel<RaceFlagsData> = Channel(Channel.UNLIMITED),
         damageChannel: Channel<VehicleDamageData> = Channel(Channel.UNLIMITED),
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
+        tyreTemperatureChannel: Channel<TyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -98,6 +105,7 @@ class LmuWindowsNarratorViewModelTest {
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+        tyreTemperatureHighThreshold: Int = 90,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
@@ -147,6 +155,14 @@ class LmuWindowsNarratorViewModelTest {
                 ),
                 observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(
                     FakeLmuWindowsFlagPreferencesRepository(flagEnabledOverrides),
+                ),
+            ),
+            tyreTemperatureUseCases = TyreTemperatureUseCases(
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                    FakeChannelTyreCarcassTemperatureRepository(tyreTemperatureChannel.receiveAsFlow()),
+                ),
+                observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(
+                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(tyreTemperatureHighThreshold),
                 ),
             ),
             ttsEngine = ttsEngine,
@@ -642,6 +658,93 @@ class LmuWindowsNarratorViewModelTest {
             telemetryLogRepository.logs.value,
         )
     }
+
+    // --- タイヤ温度 ---
+
+    @Test
+    fun `閾値以上のタイヤ温度が来ると TyreOverheat を読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, tyreTemperatureHighThreshold = 90)
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), tts.spokenTexts)
+    }
+
+    @Test
+    fun `高温状態が継続しても2回目は読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, tyreTemperatureHighThreshold = 90)
+
+        channel.send(tyreTemperature(fl = 95.0))
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), tts.spokenTexts)
+    }
+
+    @Test
+    fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, tyreTemperatureHighThreshold = 90)
+
+        channel.send(tyreTemperature(fl = 95.0))
+        channel.send(tyreTemperature(fl = 20.0))
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat, SpeechEvent.TyreOverheat), tts.spokenTexts)
+    }
+
+    @Test
+    fun `タイヤ温度項目が無効なら読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to false),
+        )
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `LMU非選択時はタイヤ温度アナウンスをしない`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, simulator = null)
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `タイヤ温度読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            currentTimeMs = { 123L },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(1, telemetryLogRepository.logs.value.size)
+        val log = telemetryLogRepository.logs.value.first()
+        assertEquals(123L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.TyreTemperature.value, log.readoutItemKey)
+    }
 }
 
 private fun noProximity() = ProximityData(
@@ -839,3 +942,30 @@ private fun fakeTelemetryData(
         positionZ = 0.0,
     ),
 )
+
+private fun tyreTemperature(
+    fl: Double = 20.0,
+    fr: Double = 20.0,
+    rl: Double = 20.0,
+    rr: Double = 20.0,
+) = TyreCarcassTemperatureData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to fl,
+        WheelIndex.FRONT_RIGHT to fr,
+        WheelIndex.REAR_LEFT to rl,
+        WheelIndex.REAR_RIGHT to rr,
+    ),
+)
+
+private class FakeChannelTyreCarcassTemperatureRepository(
+    private val stream: Flow<TyreCarcassTemperatureData>,
+) : TyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = stream
+}
+
+private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
+    private val threshold: Int,
+) : LmuWindowsTyreTemperaturePreferencesRepository {
+    override fun observeHighThresholdCelsius(): Flow<Int> = MutableStateFlow(threshold)
+    override suspend fun saveHighThresholdCelsius(celsius: Int) = Unit
+}
