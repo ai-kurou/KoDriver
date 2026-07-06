@@ -62,6 +62,7 @@ import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5Readou
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.LmuWindowsReadoutMyBestLapDetailPane
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.LmuWindowsReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindowsReadoutVehicleApproachDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
@@ -486,6 +487,7 @@ private fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
         ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
         ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
+        ReadoutListItemType.LmuWindows.TyreTemperature -> LmuWindowsReadoutTyreTemperatureDetailPane()
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()

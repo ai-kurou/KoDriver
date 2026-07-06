@@ -62,8 +62,11 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
-    fun `lmu_windows の tyre_temperature は詳細未実装のため null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.TyreTemperature))
+    fun `lmu_windows の tyre_temperature は TyreTemperature を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.TyreTemperature,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.TyreTemperature),
+        )
     }
 
     @Test

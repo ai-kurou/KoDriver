@@ -1,0 +1,6 @@
+digraph G {
+  rankdir=TB
+  ":app:shared" -> ":feature:lmu-windows-readout-tyre-temperature-detail"
+  ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:designsystem"
+}
