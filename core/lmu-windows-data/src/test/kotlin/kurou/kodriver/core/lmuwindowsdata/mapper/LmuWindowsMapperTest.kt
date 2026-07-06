@@ -25,6 +25,7 @@ class LmuWindowsMapperTest {
         const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
 
         const val TELEMETRY_BASE = 128464
+        const val OFF_ACTIVE_VEHICLES = 0
         const val OFF_PLAYER_VEHICLE_IDX = 1
         const val OFF_TELEM_INFO = 4
         const val VEHICLE_STRIDE = 1888
@@ -257,5 +258,47 @@ class LmuWindowsMapperTest {
         assertTrue(WheelIndex.FRONT_RIGHT in result.tyres.wheels)
         assertTrue(WheelIndex.REAR_LEFT in result.tyres.wheels)
         assertTrue(WheelIndex.REAR_RIGHT in result.tyres.wheels)
+    }
+
+    @Test
+    fun `findPlayerVehicleBaseはplayerIndexに応じたオフセットを返す`() {
+        val buf = emptyBuffer(playerIdx = 1)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 2)
+
+        val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buf)
+
+        assertEquals(vehicleBase(playerIdx = 1), vehicleBase)
+    }
+
+    @Test
+    fun `findPlayerVehicleBaseはactiveVehiclesが0のときnullを返す`() {
+        val buf = emptyBuffer(playerIdx = 0)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 0)
+
+        assertEquals(null, LmuWindowsMapper.findPlayerVehicleBase(buf))
+    }
+
+    @Test
+    fun `findPlayerVehicleBaseはplayerIdxがactiveVehicles以上のときnullを返す`() {
+        val buf = emptyBuffer(playerIdx = 1)
+        buf.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, 1)
+
+        assertEquals(null, LmuWindowsMapper.findPlayerVehicleBase(buf))
+    }
+
+    @Test
+    fun `readCarcassTemperaturesKは4輪ぶんのカーカス温度をKelvinで返す`() {
+        val vb = vehicleBase()
+        val buf = emptyBuffer()
+        WheelIndex.entries.forEachIndexed { i, _ ->
+            val wb = vb + OFF_WHEELS + i * WHEEL_STRIDE
+            buf.putDouble(wb + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE, 345.0 + i * 10.0)
+        }
+
+        val result = LmuWindowsMapper.readCarcassTemperaturesK(buf, vb)
+
+        WheelIndex.entries.forEachIndexed { i, wheel ->
+            assertEquals(345.0 + i * 10.0, result[wheel]!!, 1e-9)
+        }
     }
 }
