@@ -4,9 +4,10 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasProgressBarRangeInfo
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -46,7 +47,22 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         rule.onNodeWithContentDescription("閾値の説明を表示").performClick()
 
-        rule.onNode(hasText("カーカス温度", substring = true)).assertIsDisplayed()
+        rule.onAllNodesWithText("カーカス温度", substring = true)[0].assertIsDisplayed()
+    }
+
+    @Test
+    fun `読み上げ別設定のサブタイトルとカードが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
+                )
+            }
+        }
+
+        rule.onNodeWithText("読み上げ別設定").assertIsDisplayed()
+        rule.onNodeWithText("カーカス温度").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ過熱警告").assertIsDisplayed()
     }
 
     @Test
