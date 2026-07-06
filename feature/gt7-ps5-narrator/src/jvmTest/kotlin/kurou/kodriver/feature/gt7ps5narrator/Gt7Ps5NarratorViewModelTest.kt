@@ -314,7 +314,6 @@ class Gt7Ps5NarratorViewModelTest {
         assertEquals(false, tts.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
-
 }
 
 private fun gt7Telemetry(bestLapTimeMs: Int) = Gt7Ps5TelemetryData(
