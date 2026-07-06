@@ -71,3 +71,6 @@ compose.resources {
     packageOfResClass = "kodriver.feature.otherlist.generated.resources"
     publicResClass = true
 }
+
+dependencies {
+}

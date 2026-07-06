@@ -31,3 +31,6 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.otherlicensedetail.generated.resources"
 }
+
+dependencies {
+}

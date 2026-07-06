@@ -17,3 +17,6 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources"
 }
+
+dependencies {
+}

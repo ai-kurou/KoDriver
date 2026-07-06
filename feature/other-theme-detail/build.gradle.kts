@@ -32,3 +32,6 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.otherthemedetail.generated.resources"
 }
+
+dependencies {
+}

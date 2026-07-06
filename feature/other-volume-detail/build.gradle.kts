@@ -29,3 +29,6 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.othervolumedetail.generated.resources"
 }
+
+dependencies {
+}
