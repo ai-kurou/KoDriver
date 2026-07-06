@@ -77,6 +77,10 @@ GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub �
 ![Module Graph](docs/graphs/full-graph.svg)
 <!-- MODULE-GRAPH-END -->
 
+## Test Coverage Graph
+
+![Test Coverage Graph](https://codecov.io/gh/ai-kurou/KoDriver/graphs/icicle.svg?token=DSR32EAS87)
+
 ## アーキテクチャ
 
 Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。モジュール構成とモジュールグラフの詳細は [アーキテクチャドキュメント](docs/architecture.md) を参照してください。
