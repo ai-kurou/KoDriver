@@ -27,13 +27,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.Res
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_carcass_card_title
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_reset
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_subtitle
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_chip
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_readout_settings_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
+import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -110,6 +114,12 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             defaultValue = HIGH_THRESHOLD_DEFAULT,
             onResetToDefault = onHighThresholdReset,
             resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
+        )
+        DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_readout_settings_subtitle))
+        DetailPaneCard(
+            title = stringResource(Res.string.tyre_temperature_carcass_card_title),
+            chipLabels = listOf(stringResource(Res.string.tyre_temperature_overheat_warning_chip)),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }
 }

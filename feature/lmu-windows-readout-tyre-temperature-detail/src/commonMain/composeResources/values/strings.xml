@@ -6,5 +6,8 @@
     <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
     <string name="tyre_temperature_high_threshold_reset">デフォルトに戻す</string>
     <string name="tyre_temperature_threshold_help_icon_content_description">閾値の説明を表示</string>
-    <string name="tyre_temperature_threshold_help_description">LMU のタイヤ温度にはサーフェス温度・インナーライナー温度・カーカス温度など複数の種類があります。ここではカーカス温度をもとに閾値を判定しています。</string>
+    <string name="tyre_temperature_threshold_help_description">LMU のタイヤ温度にはサーフェス温度・インナーライナー温度・カーカス温度など複数の種類があります。ここではカーカス温度をもとに閾値を判定しています。そのため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。</string>
+    <string name="tyre_temperature_readout_settings_subtitle">読み上げ別設定</string>
+    <string name="tyre_temperature_carcass_card_title">カーカス温度</string>
+    <string name="tyre_temperature_overheat_warning_chip">タイヤ過熱警告</string>
 </resources>
