@@ -292,11 +292,13 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreOverheat はファイルローダーから読み込んだ音声を再生する`() = runTest {
+    fun `TyreOverheat はリソースから読み込んだ音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
-            tyreOverheatSoundLoader = { TYRE_OVERHEAT_SOUND },
+            resourceLoader = { path ->
+                if (path == TYRE_OVERHEAT_PATH) TYRE_OVERHEAT_SOUND else EVENT_SOUND
+            },
         )
         runCurrent()
 
@@ -309,11 +311,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreOverheat のファイルが未ロードなら何も再生しない`() = runTest {
+    fun `TyreOverheat のリソースが未ロードなら何も再生しない`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
-            tyreOverheatSoundLoader = { null },
+            resourceLoader = { error("load failed") },
         )
         runCurrent()
 
@@ -340,14 +342,12 @@ class LmuWindowsWavNarratorEngineTest {
                 else -> FORMULA_RADIO_SOUND
             }
         },
-        tyreOverheatSoundLoader: suspend () -> ByteArray? = { null },
     ): LmuWindowsWavNarratorEngine = LmuWindowsWavNarratorEngine(
         soundPlayer = player,
         volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,
         resourceLoader = resourceLoader,
         startSoundResourceLoader = startSoundResourceLoader,
-        tyreOverheatSoundLoader = tyreOverheatSoundLoader,
         scope = CoroutineScope(StandardTestDispatcher(testScheduler)),
     )
 
@@ -358,6 +358,7 @@ class LmuWindowsWavNarratorEngineTest {
         const val MY_BEST_LAP_CASUAL_PATH = "files/my_best_lap_casual.wav"
         const val FORMULA_RADIO_PATH = "files/formula_radio.wav"
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
+        const val TYRE_OVERHEAT_PATH = "files/tyre_overheat.wav"
         val CAR_LEFT_SOUND = byteArrayOf(1)
         val EVENT_SOUND = byteArrayOf(2)
         val FORMULA_RADIO_SOUND = byteArrayOf(3)
