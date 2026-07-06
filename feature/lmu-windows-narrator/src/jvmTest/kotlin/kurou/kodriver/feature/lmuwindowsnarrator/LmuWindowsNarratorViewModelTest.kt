@@ -770,13 +770,28 @@ class LmuWindowsNarratorViewModelTest {
             telemetryLogRepository = telemetryLogRepository,
         )
 
-        channel.send(tyreTemperature(fl = 95.0))
+        channel.send(
+            tyreTemperature(
+                fl = 95.0,
+                surface = mapOf(
+                    WheelIndex.FRONT_LEFT to 97.0,
+                    WheelIndex.FRONT_RIGHT to 20.0,
+                    WheelIndex.REAR_LEFT to 20.0,
+                    WheelIndex.REAR_RIGHT to 20.0,
+                ),
+            ),
+        )
 
         assertEquals(1, telemetryLogRepository.logs.value.size)
         val log = telemetryLogRepository.logs.value.first()
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.TyreTemperature.value, log.readoutItemKey)
+        assertEquals(
+            """{"wheels":{"FRONT_LEFT":95.0,"FRONT_RIGHT":20.0,"REAR_LEFT":20.0,"REAR_RIGHT":20.0},""" +
+                """"surfaceWheels":{"FRONT_LEFT":97.0,"FRONT_RIGHT":20.0,"REAR_LEFT":20.0,"REAR_RIGHT":20.0}}""",
+            log.telemetryJson,
+        )
     }
 }
 
@@ -981,6 +996,12 @@ private fun tyreTemperature(
     fr: Double = 20.0,
     rl: Double = 20.0,
     rr: Double = 20.0,
+    surface: Map<WheelIndex, Double> = mapOf(
+        WheelIndex.FRONT_LEFT to fl,
+        WheelIndex.FRONT_RIGHT to fr,
+        WheelIndex.REAR_LEFT to rl,
+        WheelIndex.REAR_RIGHT to rr,
+    ),
 ) = TyreCarcassTemperatureData(
     wheels = mapOf(
         WheelIndex.FRONT_LEFT to fl,
@@ -988,6 +1009,7 @@ private fun tyreTemperature(
         WheelIndex.REAR_LEFT to rl,
         WheelIndex.REAR_RIGHT to rr,
     ),
+    surfaceWheels = surface,
 )
 
 private class FakeChannelTyreCarcassTemperatureRepository(

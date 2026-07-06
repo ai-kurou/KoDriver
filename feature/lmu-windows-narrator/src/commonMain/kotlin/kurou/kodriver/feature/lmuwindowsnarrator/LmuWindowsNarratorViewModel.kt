@@ -394,4 +394,5 @@ private fun RaceFlagsData.toJson(): String =
         "}"
 
 private fun buildTelemetryLogJson(data: TyreCarcassTemperatureData): String =
-    """{"wheels":{${data.wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
+    """{"wheels":{${data.wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}},""" +
+        """"surfaceWheels":{${data.surfaceWheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""

@@ -25,7 +25,11 @@ internal class LmuWindowsTyreCarcassTemperatureRepository(
             val wheelBase = vehicleBase + OFF_WHEELS + wheel.ordinal * WHEEL_STRIDE
             buffer.getDouble(wheelBase + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE) - KELVIN_OFFSET
         }
-        return TyreCarcassTemperatureData(wheels)
+        val surfaceWheels = WheelIndex.entries.associateWith { wheel ->
+            val wheelBase = vehicleBase + OFF_WHEELS + wheel.ordinal * WHEEL_STRIDE
+            buffer.getDouble(wheelBase + OFF_WHEEL_TIRE_SURFACE_TEMPERATURE) - KELVIN_OFFSET
+        }
+        return TyreCarcassTemperatureData(wheels = wheels, surfaceWheels = surfaceWheels)
     }
 
     companion object {
@@ -39,6 +43,7 @@ internal class LmuWindowsTyreCarcassTemperatureRepository(
         private const val OFF_WHEELS = 848
         private const val WHEEL_STRIDE = 260
         private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
+        private const val OFF_WHEEL_TIRE_SURFACE_TEMPERATURE = 136
         private const val KELVIN_OFFSET = 273.15
     }
 }

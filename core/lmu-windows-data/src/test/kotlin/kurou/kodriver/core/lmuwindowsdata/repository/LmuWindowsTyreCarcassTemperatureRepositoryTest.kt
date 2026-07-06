@@ -56,6 +56,30 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
     }
 
     @Test
+    fun `共有メモリから4輪の表面温度を読み取る`() = runBlocking {
+        val reader = FakeTyreCarcassTemperatureMemoryReader(
+            buildTyreCarcassTemperatureBuffer(
+                TyreCarcassTemperatureBufferConfig(
+                    surfaceTemperatures = mapOf(
+                        WheelIndex.FRONT_LEFT to 360.0,
+                        WheelIndex.FRONT_RIGHT to 361.0,
+                        WheelIndex.REAR_LEFT to 362.0,
+                        WheelIndex.REAR_RIGHT to 363.0,
+                    ),
+                ),
+            ),
+        )
+        val repo = LmuWindowsTyreCarcassTemperatureRepository(source = makeSource(reader))
+
+        val result = repo.tyreCarcassTemperatureStream().first()
+
+        assertEquals(360.0 - 273.15, result.surfaceWheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+        assertEquals(361.0 - 273.15, result.surfaceWheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
+        assertEquals(362.0 - 273.15, result.surfaceWheels[WheelIndex.REAR_LEFT]!!, 1e-9)
+        assertEquals(363.0 - 273.15, result.surfaceWheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
+    }
+
+    @Test
     fun `playerIndexに応じた車両スロットからカーカス温度を読み取る`() = runBlocking {
         val reader = FakeTyreCarcassTemperatureMemoryReader(
             buildTyreCarcassTemperatureBuffer(
@@ -132,6 +156,10 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
         WheelIndex.entries.forEach { wheel ->
             val wheelBase = vehicleBase + OFF_WHEELS + wheel.ordinal * WHEEL_STRIDE
             buffer.putDouble(wheelBase + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE, config.temperatures[wheel] ?: 0.0)
+            buffer.putDouble(
+                wheelBase + OFF_WHEEL_TIRE_SURFACE_TEMPERATURE,
+                config.surfaceTemperatures[wheel] ?: 0.0,
+            )
         }
 
         return buffer
@@ -141,6 +169,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
         val activeVehicles: Int = 1,
         val playerIdx: Int = 0,
         val temperatures: Map<WheelIndex, Double> = emptyMap(),
+        val surfaceTemperatures: Map<WheelIndex, Double> = emptyMap(),
     )
 
     private companion object {
@@ -152,6 +181,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
         const val OFF_WHEELS = 848
         const val WHEEL_STRIDE = 260
         const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
+        const val OFF_WHEEL_TIRE_SURFACE_TEMPERATURE = 136
         const val BUFFER_SIZE = 135_000
     }
 }

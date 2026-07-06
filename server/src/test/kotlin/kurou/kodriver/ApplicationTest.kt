@@ -517,10 +517,10 @@ private val tyreCarcassTemperatureData2 = TyreCarcassTemperatureData(
 )
 
 private const val tyreCarcassTemperatureJson1 =
-    """{"wheels":{"FRONT_LEFT":80.0,"FRONT_RIGHT":82.0,"REAR_LEFT":85.0,"REAR_RIGHT":87.0}}"""
+    """{"wheels":{"FRONT_LEFT":80.0,"FRONT_RIGHT":82.0,"REAR_LEFT":85.0,"REAR_RIGHT":87.0},"surfaceWheels":{}}"""
 
 private const val tyreCarcassTemperatureJson2 =
-    """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
+    """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0},"surfaceWheels":{}}"""
 
 // --- Fake リポジトリ ---
 
