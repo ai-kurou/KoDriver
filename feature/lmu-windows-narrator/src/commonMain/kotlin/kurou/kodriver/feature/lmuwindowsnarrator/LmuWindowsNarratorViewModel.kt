@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
@@ -131,7 +132,7 @@ class LmuWindowsNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
 
     private val tyreHighThreshold = tyreTemperatureUseCases.observeHighThreshold()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 90)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -270,7 +271,14 @@ class LmuWindowsNarratorViewModel(
             )
             narratorState = decision.state
             decision.events.forEach { event ->
-                speakWithPriority(event)
+                if (speakWithPriority(event)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        simulatorId = Simulator.LmuWindows.id,
+                        readoutItemKey = event.readoutItemKey.value,
+                        telemetryJson = buildTelemetryLogJson(tyreCarcassTemperature),
+                    )
+                }
             }
         }
         .launchIn(viewModelScope)
@@ -372,3 +380,6 @@ private fun RaceFlagsData.toJson(): String =
         """"playerUnderYellow":$playerUnderYellow,""" +
         """"playerCountLapFlag":"$playerCountLapFlag"""" +
         "}"
+
+private fun buildTelemetryLogJson(data: TyreCarcassTemperatureData): String =
+    """{"wheels":{${data.wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""

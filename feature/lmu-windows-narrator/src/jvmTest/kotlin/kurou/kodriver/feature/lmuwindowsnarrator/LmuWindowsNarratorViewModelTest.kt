@@ -712,6 +712,39 @@ class LmuWindowsNarratorViewModelTest {
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
+
+    @Test
+    fun `LMU非選択時はタイヤ温度アナウンスをしない`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, simulator = null)
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `タイヤ温度読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
+        val channel = Channel<TyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            currentTimeMs = { 123L },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(1, telemetryLogRepository.logs.value.size)
+        val log = telemetryLogRepository.logs.value.first()
+        assertEquals(123L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.TyreTemperature.value, log.readoutItemKey)
+    }
 }
 
 private fun noProximity() = ProximityData(
