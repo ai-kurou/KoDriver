@@ -84,6 +84,9 @@ class AppTest {
         dismissBottomSheet()
         clickItem("車両故障")
         waitUntilDisplayed("オーバーヒート")
+        clickItem("タイヤ温度")
+        clickContentDescription("閾値の説明を表示")
+        dismissBottomSheet()
         clickItem("自己ベストラップ")
         waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
     }
