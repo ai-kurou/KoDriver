@@ -32,6 +32,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.otherreadoutstartsounddetail.generated.resources"
 }
-
-dependencies {
-}

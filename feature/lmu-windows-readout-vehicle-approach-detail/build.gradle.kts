@@ -18,6 +18,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources"
 }
-
-dependencies {
-}

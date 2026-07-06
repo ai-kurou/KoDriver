@@ -17,6 +17,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources"
 }
-
-dependencies {
-}

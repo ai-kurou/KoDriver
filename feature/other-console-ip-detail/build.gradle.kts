@@ -30,6 +30,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.otherconsoleipdetail.generated.resources"
 }
-
-dependencies {
-}

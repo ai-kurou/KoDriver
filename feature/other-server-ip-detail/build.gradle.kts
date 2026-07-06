@@ -24,6 +24,3 @@ kotlin {
 compose.resources {
     packageOfResClass = "kodriver.feature.otherserveripdetail.generated.resources"
 }
-
-dependencies {
-}
