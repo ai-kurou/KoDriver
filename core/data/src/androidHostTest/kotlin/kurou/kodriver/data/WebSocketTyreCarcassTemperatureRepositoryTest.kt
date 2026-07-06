@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.model.WheelIndex
@@ -36,7 +37,10 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
 
     @After
     fun tearDown() {
-        server.shutdown()
+        try {
+            server.shutdown()
+        } catch (_: IllegalStateException) {
+        }
     }
 
     private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketTyreCarcassTemperatureRepository(
@@ -98,6 +102,24 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
     }
 
     @Test
+    fun `接続に失敗した場合は例外を捕捉してリトライする`() = runTest {
+        val closedPort = server.port
+        server.shutdown()
+        fakeIpRepository.setIp("127.0.0.1")
+        val repository = WebSocketTyreCarcassTemperatureRepository(
+            serverIpRepository = fakeIpRepository,
+            port = closedPort,
+            retryDelayMs = 0L,
+        )
+
+        val result = withTimeoutOrNull(300) {
+            repository.tyreCarcassTemperatureStream().first()
+        }
+
+        assertNull(result)
+    }
+
+    @Test
     fun `接続切断後にリトライして再接続する`() = runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
@@ -128,9 +150,9 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
 
 private class FakeServerIpRepositoryForTyreCarcassTemperature(initialIp: String?) : ServerIpRepository {
     private val _ip = MutableStateFlow(initialIp)
-    fun setIp(ip: String?) { _ip.value = ip }
+    fun setIp(ip: String?) { _ip.update { ip } }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
-    override suspend fun saveServerIp(ip: String) { _ip.value = ip }
+    override suspend fun saveServerIp(ip: String) { _ip.update { ip } }
 }
 
 private val TYRE_CARCASS_TEMPERATURE_JSON = """
