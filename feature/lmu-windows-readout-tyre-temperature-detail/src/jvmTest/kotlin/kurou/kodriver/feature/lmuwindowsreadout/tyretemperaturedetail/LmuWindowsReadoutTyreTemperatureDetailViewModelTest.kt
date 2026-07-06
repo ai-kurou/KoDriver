@@ -10,7 +10,21 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     private val viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel()
 
     @Test
-    fun `初期状態はデフォルトの UiState を返す`() = runTest {
-        assertEquals(LmuWindowsReadoutTyreTemperatureDetailUiState(), viewModel.uiState.first())
+    fun `初期状態は高温閾値90°CのUiStateを返す`() = runTest {
+        val expected = LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90)
+        assertEquals(expected, viewModel.uiState.first())
+    }
+
+    @Test
+    fun `高温閾値を変更するとuiStateに反映される`() = runTest {
+        viewModel.onHighThresholdChanged(100)
+        assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
+    }
+
+    @Test
+    fun `高温閾値をリセットするとデフォルト値90°Cに戻る`() = runTest {
+        viewModel.onHighThresholdChanged(100)
+        viewModel.onHighThresholdReset()
+        assertEquals(90, viewModel.uiState.first().highThresholdCelsius)
     }
 }
