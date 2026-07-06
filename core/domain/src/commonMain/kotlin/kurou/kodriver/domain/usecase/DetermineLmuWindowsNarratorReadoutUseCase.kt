@@ -151,16 +151,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val threshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
         val anyOverheating = data.wheels.values.any { it >= threshold }
-        val allCool = data.wheels.values.all { it < threshold }
         val shouldAnnounce = !state.tyreOverheating && anyOverheating &&
             settings.enabledStates[ReadoutItemKey.TyreTemperature] != false
-        val newOverheating = when {
-            shouldAnnounce -> true
-            allCool -> false
-            else -> state.tyreOverheating
-        }
         return LmuWindowsNarratorReadoutDecision(
-            state = state.copy(tyreOverheating = newOverheating),
+            state = state.copy(tyreOverheating = anyOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreOverheat) else emptyList(),
         )
     }
