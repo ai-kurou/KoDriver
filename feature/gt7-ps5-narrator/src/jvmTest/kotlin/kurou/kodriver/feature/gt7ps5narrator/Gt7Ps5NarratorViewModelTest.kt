@@ -131,7 +131,11 @@ class Gt7Ps5NarratorViewModelTest {
     fun `自己ベストラップの声種別設定を反映して読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(telemetryChannel = channel, ttsEngine = tts, voiceType = MyBestLapVoiceType.CASUAL)
+        buildViewModel(
+            telemetryChannel = channel,
+            ttsEngine = tts,
+            voiceType = MyBestLapVoiceType.CASUAL,
+        )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
