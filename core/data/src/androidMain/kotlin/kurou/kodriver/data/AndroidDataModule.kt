@@ -60,7 +60,7 @@ fun androidDataModule(context: Context) = module {
     single<FlagRepository> { WebSocketFlagRepository(get()) }
     single<ProximityRepository> { WebSocketProximityRepository(get()) }
     single<VehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
-    single<TyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository() }
+    single<TyreCarcassTemperatureRepository> { WebSocketTyreCarcassTemperatureRepository(get()) }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }
