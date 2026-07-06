@@ -20,12 +20,16 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleDamageData
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -45,6 +49,7 @@ class ApplicationTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
                 observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
                 observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             )
         }
         val response = client.get("/version")
@@ -59,6 +64,7 @@ class ApplicationTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
                 observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
                 observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             )
         }
         val response = client.get("/")
@@ -74,6 +80,7 @@ class ApplicationTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(repository),
                 observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
                 observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             )
         }
 
@@ -102,6 +109,7 @@ class ApplicationTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(repository),
                 observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
                 observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             )
         }
 
@@ -128,6 +136,7 @@ class ApplicationTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
                 observeProximity = ObserveProximityUseCase(repository),
                 observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             )
         }
 
@@ -155,6 +164,7 @@ class ApplicationTest {
                 observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
                 observeProximity = ObserveProximityUseCase(repository),
                 observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             )
         }
 
@@ -226,12 +236,64 @@ class ApplicationTest {
     }
 
     @Test
+    fun `カーカス温度情報をJSONでWebSocketへ送信する`() = testApplication {
+        val repository = FakeTyreCarcassTemperatureRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(repository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/tyre_carcass_temperature") {
+            repository.emit(tyreCarcassTemperatureData1)
+
+            val message = withTimeout(1_000) {
+                (incoming.receive() as Frame.Text).readText()
+            }
+            assertEquals(tyreCarcassTemperatureJson1, message)
+        }
+    }
+
+    @Test
+    fun `カーカス温度情報の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeTyreCarcassTemperatureRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
+                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(repository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/tyre_carcass_temperature") {
+            repository.emit(tyreCarcassTemperatureData1)
+            repository.emit(tyreCarcassTemperatureData1)
+            repository.emit(tyreCarcassTemperatureData2)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(tyreCarcassTemperatureJson1, first)
+            assertEquals(tyreCarcassTemperatureJson2, second)
+        }
+    }
+
+    @Test
     fun `KoDriverServerはstartで起動しstopで停止する`() {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
             observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
             observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
             observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
             port = port,
             host = "127.0.0.1",
         )
@@ -252,6 +314,7 @@ class ApplicationTest {
                     single<FlagRepository> { FakeFlagRepository() }
                     single<ProximityRepository> { EmptyProximityRepository }
                     single<VehicleDamageRepository> { EmptyVehicleDamageRepository }
+                    single<TyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
                 },
             )
         }.koin
@@ -338,6 +401,30 @@ private const val overheatingDamageJson =
 private const val partDetachedDamageJson =
     """{"overheating":false,"partDetached":true,"lastImpactMagnitude":1.2}"""
 
+private val tyreCarcassTemperatureData1 = TyreCarcassTemperatureData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to 80.0,
+        WheelIndex.FRONT_RIGHT to 82.0,
+        WheelIndex.REAR_LEFT to 85.0,
+        WheelIndex.REAR_RIGHT to 87.0,
+    ),
+)
+
+private val tyreCarcassTemperatureData2 = TyreCarcassTemperatureData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to 90.0,
+        WheelIndex.FRONT_RIGHT to 91.0,
+        WheelIndex.REAR_LEFT to 92.0,
+        WheelIndex.REAR_RIGHT to 93.0,
+    ),
+)
+
+private const val tyreCarcassTemperatureJson1 =
+    """{"wheels":{"FRONT_LEFT":80.0,"FRONT_RIGHT":82.0,"REAR_LEFT":85.0,"REAR_RIGHT":87.0}}"""
+
+private const val tyreCarcassTemperatureJson2 =
+    """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
+
 // --- Fake リポジトリ ---
 
 private class FakeFlagRepository : FlagRepository {
@@ -374,6 +461,20 @@ private class FakeVehicleDamageRepository : VehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = channel.receiveAsFlow()
 
     fun emit(data: VehicleDamageData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private object EmptyTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+}
+
+private class FakeTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
+    private val channel = Channel<TyreCarcassTemperatureData>(capacity = Channel.UNLIMITED)
+
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = channel.receiveAsFlow()
+
+    fun emit(data: TyreCarcassTemperatureData) {
         channel.trySend(data).getOrThrow()
     }
 }

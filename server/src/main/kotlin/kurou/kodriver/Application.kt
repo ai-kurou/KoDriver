@@ -13,12 +13,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import kurou.kodriver.domain.usecase.ObserveProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import org.koin.core.Koin
 
@@ -27,6 +30,7 @@ fun main() {
         observeRaceFlags = ObserveRaceFlagsUseCase(EmptyFlagRepository),
         observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
         observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
+        observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
     ).start(wait = true)
 }
 
@@ -34,6 +38,7 @@ class KoDriverServer(
     observeRaceFlags: ObserveRaceFlagsUseCase,
     observeProximity: ObserveProximityUseCase,
     observeVehicleDamage: ObserveVehicleDamageUseCase,
+    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
     port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
 ) {
@@ -42,7 +47,7 @@ class KoDriverServer(
         port = port,
         host = host,
         module = {
-            module(observeRaceFlags, observeProximity, observeVehicleDamage)
+            module(observeRaceFlags, observeProximity, observeVehicleDamage, observeTyreCarcassTemperature)
         },
     )
 
@@ -65,6 +70,9 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
         observeRaceFlags = ObserveRaceFlagsUseCase(koin.get<FlagRepository>()),
         observeProximity = ObserveProximityUseCase(koin.get<ProximityRepository>()),
         observeVehicleDamage = ObserveVehicleDamageUseCase(koin.get<VehicleDamageRepository>()),
+        observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+            koin.get<TyreCarcassTemperatureRepository>(),
+        ),
     )
 }
 
@@ -72,6 +80,7 @@ fun Application.module(
     observeRaceFlags: ObserveRaceFlagsUseCase,
     observeProximity: ObserveProximityUseCase,
     observeVehicleDamage: ObserveVehicleDamageUseCase,
+    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
 ) {
     install(WebSockets)
     routing {
@@ -87,6 +96,7 @@ fun Application.module(
         flagWebSocket(observeRaceFlags)
         proximityWebSocket(observeProximity)
         vehicleDamageWebSocket(observeVehicleDamage)
+        tyreCarcassTemperatureWebSocket(observeTyreCarcassTemperature)
     }
 }
 
@@ -100,4 +110,8 @@ private object EmptyProximityRepository : ProximityRepository {
 
 private object EmptyVehicleDamageRepository : VehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+}
+
+private object EmptyTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
 }
