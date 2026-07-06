@@ -49,10 +49,10 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
 
         val result = repo.tyreCarcassTemperatureStream().first()
 
-        assertEquals(350.0, result.wheels[WheelIndex.FRONT_LEFT])
-        assertEquals(351.0, result.wheels[WheelIndex.FRONT_RIGHT])
-        assertEquals(352.0, result.wheels[WheelIndex.REAR_LEFT])
-        assertEquals(353.0, result.wheels[WheelIndex.REAR_RIGHT])
+        assertEquals(350.0 - 273.15, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+        assertEquals(351.0 - 273.15, result.wheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
+        assertEquals(352.0 - 273.15, result.wheels[WheelIndex.REAR_LEFT]!!, 1e-9)
+        assertEquals(353.0 - 273.15, result.wheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
     }
 
     @Test
@@ -70,7 +70,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
 
         val result = repo.tyreCarcassTemperatureStream().first()
 
-        assertEquals(365.0, result.wheels[WheelIndex.FRONT_LEFT])
+        assertEquals(365.0 - 273.15, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
     }
 
     @Test
