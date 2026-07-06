@@ -220,15 +220,6 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5を選択するとデフォルトでRemainingFuelLapsとMyBestLapがオフになる`() = runTest {
-        viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
-
-        val state = viewModel.uiState.first()
-        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.RemainingFuelLaps])
-        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.MyBestLap])
-    }
-
-    @Test
     fun `gt7_ps5を選択すると共通Repositoryから燃料残り周回数の保存済みON_OFF状態が表示される`() = runTest {
         readoutRepository.saveReadoutEnabledState("gt7_ps5", ReadoutItemKey.RemainingFuelLaps, false)
 

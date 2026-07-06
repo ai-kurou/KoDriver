@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -16,7 +15,6 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
@@ -27,13 +25,6 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
-
-private val defaultReadoutEnabledStates: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
-    Simulator.Gt7Ps5 to mapOf(
-        ReadoutItemKey.RemainingFuelLaps to false,
-        ReadoutItemKey.MyBestLap to false,
-    ),
-)
 
 data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
@@ -67,10 +58,7 @@ class Gt7Ps5NarratorViewModel(
 
     private val enabledStates = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow<Map<ReadoutItemKey, Boolean>>()
-            else readoutListUseCases.observeReadoutEnabledStates(simulator.id).map { persisted ->
-                defaultReadoutEnabledStates.getOrElse(simulator) { emptyMap<ReadoutItemKey, Boolean>() } + persisted
-            }
+            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 

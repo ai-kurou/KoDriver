@@ -39,10 +39,6 @@ private val simulators: List<Simulator> = simulatorItems.keys.toList()
 
 private val defaultEnabledStates: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
     Simulator.LmuWindows to mapOf(ReadoutItemKey.MyBestLap to false),
-    Simulator.Gt7Ps5 to mapOf(
-        ReadoutItemKey.RemainingFuelLaps to false,
-        ReadoutItemKey.MyBestLap to false,
-    ),
 )
 
 private data class LocalOrderState(
