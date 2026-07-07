@@ -12,15 +12,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7UdpPortUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.SaveGt7UdpPortUseCase
+import kurou.kodriver.domain.usecase.SaveGt7Ps5UdpPortUseCase
 
 internal class OtherConsoleIpDetailViewModel(
     observeConsoleAddress: ObserveConsoleAddressUseCase,
     private val saveConsoleAddress: SaveConsoleAddressUseCase,
-    observeGt7UdpPort: ObserveGt7UdpPortUseCase,
-    private val saveGt7UdpPort: SaveGt7UdpPortUseCase,
+    observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
+    private val saveGt7Ps5UdpPort: SaveGt7Ps5UdpPortUseCase,
 ) : ViewModel() {
 
     private data class MutableState(
@@ -34,7 +34,7 @@ internal class OtherConsoleIpDetailViewModel(
         .map { it ?: "" }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
-    private val savedPort: StateFlow<Int> = observeGt7UdpPort()
+    private val savedPort: StateFlow<Int> = observeGt7Ps5UdpPort()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 33740)
 
     private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
@@ -69,7 +69,7 @@ internal class OtherConsoleIpDetailViewModel(
         viewModelScope.launch {
             try {
                 saveConsoleAddress(address)
-                saveGt7UdpPort(port)
+                saveGt7Ps5UdpPort(port)
                 _mutable.update { it.copy(saveFailed = false, isSaved = true) }
             } catch (e: CancellationException) {
                 throw e

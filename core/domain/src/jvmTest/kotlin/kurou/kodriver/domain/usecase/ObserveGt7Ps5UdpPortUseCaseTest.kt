@@ -5,12 +5,12 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ObserveGt7UdpPortUseCaseTest {
+class ObserveGt7Ps5UdpPortUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() = runBlocking {
-        val repo = FakeGt7UdpPortPreferencesRepository(initial = 33740)
-        val useCase = ObserveGt7UdpPortUseCase(repo)
+        val repo = FakeGt7Ps5UdpPortPreferencesRepository(initial = 33740)
+        val useCase = ObserveGt7Ps5UdpPortUseCase(repo)
 
         assertEquals(33740, useCase().first())
 

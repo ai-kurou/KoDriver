@@ -6,6 +6,6 @@ import kotlinx.serialization.protobuf.ProtoNumber
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
-internal data class Gt7UdpPortPreferences(
+internal data class Gt7Ps5UdpPortPreferences(
     @ProtoNumber(1) val port: Int = 33740,
 )

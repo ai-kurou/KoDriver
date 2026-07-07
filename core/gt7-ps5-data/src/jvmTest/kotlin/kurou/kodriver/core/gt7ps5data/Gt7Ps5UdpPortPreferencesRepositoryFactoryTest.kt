@@ -11,7 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Gt7UdpPortPreferencesRepositoryFactoryTest {
+class Gt7Ps5UdpPortPreferencesRepositoryFactoryTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_gt7_udp_port_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +23,7 @@ class Gt7UdpPortPreferencesRepositoryFactoryTest {
 
     @Test
     fun `gt7_udp_port_preferences_pbに書き込まれる`() = testScope.runTest {
-        val repository = createGt7UdpPortPreferencesRepository(tempDir.absolutePath)
+        val repository = createGt7Ps5UdpPortPreferencesRepository(tempDir.absolutePath)
         repository.savePort(33741)
 
         assertEquals(33741, repository.port().first())

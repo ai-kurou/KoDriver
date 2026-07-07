@@ -13,11 +13,11 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
-import kurou.kodriver.domain.repository.Gt7UdpPortPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.ObserveGt7UdpPortUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
-import kurou.kodriver.domain.usecase.SaveGt7UdpPortUseCase
+import kurou.kodriver.domain.usecase.SaveGt7Ps5UdpPortUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -30,14 +30,14 @@ class OtherConsoleIpDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var addressRepository: FakeConsoleAddressRepository
-    private lateinit var portRepository: FakeGt7UdpPortPreferencesRepository
+    private lateinit var portRepository: FakeGt7Ps5UdpPortPreferencesRepository
     private lateinit var viewModel: OtherConsoleIpDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         addressRepository = FakeConsoleAddressRepository(initial = "192.168.1.1")
-        portRepository = FakeGt7UdpPortPreferencesRepository(initial = 33740)
+        portRepository = FakeGt7Ps5UdpPortPreferencesRepository(initial = 33740)
         viewModel = buildViewModel()
     }
 
@@ -48,12 +48,12 @@ class OtherConsoleIpDetailViewModelTest {
 
     private fun buildViewModel(
         addrRepo: FakeConsoleAddressRepository = addressRepository,
-        portRepo: FakeGt7UdpPortPreferencesRepository = portRepository,
+        portRepo: FakeGt7Ps5UdpPortPreferencesRepository = portRepository,
     ) = OtherConsoleIpDetailViewModel(
         observeConsoleAddress = ObserveConsoleAddressUseCase(addrRepo),
         saveConsoleAddress = SaveConsoleAddressUseCase(addrRepo),
-        observeGt7UdpPort = ObserveGt7UdpPortUseCase(portRepo),
-        saveGt7UdpPort = SaveGt7UdpPortUseCase(portRepo),
+        observeGt7Ps5UdpPort = ObserveGt7Ps5UdpPortUseCase(portRepo),
+        saveGt7Ps5UdpPort = SaveGt7Ps5UdpPortUseCase(portRepo),
     )
 
     @Test
@@ -66,7 +66,7 @@ class OtherConsoleIpDetailViewModelTest {
 
     @Test
     fun `保存済みポート33741が初期値として表示される`() = runTest {
-        portRepository = FakeGt7UdpPortPreferencesRepository(initial = 33741)
+        portRepository = FakeGt7Ps5UdpPortPreferencesRepository(initial = 33741)
         viewModel = buildViewModel()
 
         assertEquals(33741, viewModel.uiState.first().selectedPort)
@@ -140,7 +140,7 @@ private class FakeConsoleAddressRepository(initial: String? = null) : ConsoleAdd
     override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
 }
 
-private class FakeGt7UdpPortPreferencesRepository(initial: Int = 33740) : Gt7UdpPortPreferencesRepository {
+private class FakeGt7Ps5UdpPortPreferencesRepository(initial: Int = 33740) : Gt7Ps5UdpPortPreferencesRepository {
     private val flow = MutableStateFlow(initial)
     override fun port(): Flow<Int> = flow
     override suspend fun savePort(port: Int) { flow.update { port } }
