@@ -49,7 +49,7 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
     }
 }
 
-private class FakeLmuWindowsFlagPreferencesRepository : LmuWindowsFlagPreferencesRepository {
+internal class FakeLmuWindowsFlagPreferencesRepository : LmuWindowsFlagPreferencesRepository {
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
