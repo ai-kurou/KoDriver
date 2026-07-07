@@ -67,6 +67,7 @@ import kotlin.math.roundToLong
  *   mPressure            : +120
  *   mTemperature[3]      : +128 (Kelvin, 中央値=+136)
  *   mWear                : +152
+ *   mTireCarcassTemperature : +204 (Kelvin)
  */
 internal object LmuWindowsMapper {
 
@@ -88,6 +89,7 @@ internal object LmuWindowsMapper {
 
     private const val TELEMETRY_BASE = 128464
 
+    private const val OFF_ACTIVE_VEHICLES = 0
     private const val OFF_PLAYER_VEHICLE_IDX = 1
     private const val OFF_TELEM_INFO = 4
     private const val VEHICLE_STRIDE = 1888
@@ -115,6 +117,7 @@ internal object LmuWindowsMapper {
     private const val OFF_WHEEL_PRESSURE = 120
     private const val OFF_WHEEL_TEMPERATURE = 128
     private const val OFF_WHEEL_WEAR = 152
+    private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
 
     fun map(buffer: ByteBuffer): LmuWindowsTelemetryData {
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
@@ -159,6 +162,24 @@ internal object LmuWindowsMapper {
         )
     }
 
+    /**
+     * activeVehicles / playerVehicleIdx を検証したうえで、プレイヤー車両の telemInfo 先頭オフセットを返す。
+     * 車両が存在しない場合は null を返す。
+     */
+    internal fun findPlayerVehicleBase(buffer: ByteBuffer): Int? {
+        val activeVehicles = buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF
+        val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
+        if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
+        return TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+    }
+
+    /** プレイヤー車両の4輪ぶんのカーカス温度 (Kelvin) を返す。 */
+    internal fun readCarcassTemperaturesK(buffer: ByteBuffer, vehicleBase: Int): Map<WheelIndex, Double> =
+        WheelIndex.entries.associateWith { wheel ->
+            val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
+            buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE)
+        }
+
     private fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)
         for (index in 0 until vehicleCount) {
@@ -196,6 +217,7 @@ internal object LmuWindowsMapper {
             val surfaceTempK = buffer.getDouble(offset + OFF_WHEEL_TEMPERATURE + 8)
             TyreWheelData(
                 surfaceTemperatureK = surfaceTempK,
+                carcassTemperatureK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE),
                 brakeTemperatureC = buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP),
                 pressureKpa = buffer.getDouble(offset + OFF_WHEEL_PRESSURE),
                 wear = buffer.getDouble(offset + OFF_WHEEL_WEAR),

@@ -63,10 +63,12 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
             state.items,
         )
+        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.TyreTemperature])
         assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.MyBestLap])
     }
 
@@ -80,6 +82,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
             viewModel.uiState.first().items,
@@ -128,6 +131,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
             viewModel.uiState.first().items,
@@ -144,6 +148,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
             readoutRepository.observeReadoutOrder("lmu_windows").first(),
@@ -161,6 +166,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.Flag,
                 ReadoutItemKey.VehicleApproach,
                 ReadoutItemKey.VehicleDamage,
+                ReadoutItemKey.TyreTemperature,
                 ReadoutItemKey.MyBestLap,
             ),
             viewModel.uiState.first().items,

@@ -27,6 +27,7 @@ private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
         ReadoutItemKey.Flag,
         ReadoutItemKey.VehicleApproach,
         ReadoutItemKey.VehicleDamage,
+        ReadoutItemKey.TyreTemperature,
         ReadoutItemKey.MyBestLap,
     ),
     Simulator.Gt7Ps5 to listOf(
@@ -38,7 +39,10 @@ private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
 private val simulators: List<Simulator> = simulatorItems.keys.toList()
 
 private val defaultEnabledStates: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
-    Simulator.LmuWindows to mapOf(ReadoutItemKey.MyBestLap to false),
+    Simulator.LmuWindows to mapOf(
+        ReadoutItemKey.TyreTemperature to false,
+        ReadoutItemKey.MyBestLap to false,
+    ),
 )
 
 private data class LocalOrderState(

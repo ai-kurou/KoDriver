@@ -8,6 +8,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object VehicleApproach : LmuWindows(ReadoutItemKey.VehicleApproach)
         data object Flag : LmuWindows(ReadoutItemKey.Flag)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.VehicleDamage)
+        data object TyreTemperature : LmuWindows(ReadoutItemKey.TyreTemperature)
         data object MyBestLap : LmuWindows(ReadoutItemKey.MyBestLap)
     }
 
@@ -22,6 +23,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.VehicleApproach -> LmuWindows.VehicleApproach
                 ReadoutItemKey.Flag -> LmuWindows.Flag
                 ReadoutItemKey.VehicleDamage -> LmuWindows.VehicleDamage
+                ReadoutItemKey.TyreTemperature -> LmuWindows.TyreTemperature
                 ReadoutItemKey.MyBestLap -> LmuWindows.MyBestLap
                 else -> null
             }

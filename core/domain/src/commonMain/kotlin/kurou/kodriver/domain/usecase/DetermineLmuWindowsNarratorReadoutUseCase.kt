@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 
@@ -18,6 +19,7 @@ data class LmuWindowsNarratorState(
     val previousVehicleDamage: VehicleDamageData? = null,
     val personalBestMs: Long = Long.MAX_VALUE,
     val previousBestLapTimeMs: Long? = null,
+    val tyreOverheating: Boolean = false,
 )
 
 data class LmuWindowsVehicleApproachState(
@@ -37,6 +39,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val skipFirstLap: Boolean,
     val vehicleApproachStartReadoutEnabled: Boolean,
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
+    val tyreTemperatureHighThresholdCelsius: Int,
 )
 
 data class LmuWindowsNarratorReadoutDecision(
@@ -138,6 +141,21 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousVehicleDamage = vehicleDamage),
             events = listOfNotNull(event),
+        )
+    }
+
+    fun determineTyreTemperature(
+        state: LmuWindowsNarratorState,
+        data: TyreCarcassTemperatureData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val threshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
+        val anyOverheating = data.wheels.values.any { it >= threshold }
+        val shouldAnnounce = !state.tyreOverheating && anyOverheating &&
+            settings.enabledStates[ReadoutItemKey.TyreTemperature] != false
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(tyreOverheating = anyOverheating),
+            events = if (shouldAnnounce) listOf(SpeechEvent.TyreOverheat) else emptyList(),
         )
     }
 

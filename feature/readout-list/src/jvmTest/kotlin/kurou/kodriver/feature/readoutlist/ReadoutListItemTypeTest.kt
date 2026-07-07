@@ -62,6 +62,14 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
+    fun `lmu_windows の tyre_temperature は TyreTemperature を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.TyreTemperature,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.TyreTemperature),
+        )
+    }
+
+    @Test
     fun `gt7_ps5 でシミュレータに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.Flag))
     }

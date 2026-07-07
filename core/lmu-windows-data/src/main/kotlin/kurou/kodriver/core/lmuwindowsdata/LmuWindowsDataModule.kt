@@ -8,14 +8,17 @@ import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySourc
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepository
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsProximityRepository
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -40,6 +43,13 @@ val lmuWindowsDataModule = module {
     single<VehicleDamageRepository> {
         if (isWindows) LmuWindowsVehicleDamageRepository(source = get()) else NoOpVehicleDamageRepository()
     }
+    single<TyreCarcassTemperatureRepository> {
+        if (isWindows) {
+            LmuWindowsTyreCarcassTemperatureRepository(source = get())
+        } else {
+            NoOpTyreCarcassTemperatureRepository()
+        }
+    }
 }
 
 private class NoOpLmuWindowsRepository : LmuWindowsRepository {
@@ -58,4 +68,8 @@ private class NoOpFlagRepository : FlagRepository {
 
 private class NoOpVehicleDamageRepository : VehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+}
+
+private class NoOpTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
 }

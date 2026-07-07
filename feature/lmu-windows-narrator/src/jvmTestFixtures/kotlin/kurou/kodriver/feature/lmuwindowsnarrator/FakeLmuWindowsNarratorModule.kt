@@ -8,14 +8,17 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.ProximityData
 import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.ProximityRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -28,6 +31,8 @@ val fakeLmuWindowsNarratorModule = module {
     single<VehicleDamageRepository> { FakeVehicleDamageRepository() }
     single<SoundPlayer> { NoOpSoundPlayer() }
     single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
+    single<TyreCarcassTemperatureRepository> { FakeTyreCarcassTemperatureRepository() }
+    single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
 }
 
 class FakeProximityRepository : ProximityRepository {
@@ -76,4 +81,14 @@ class FakeSoundVolumePreferencesRepository : SoundVolumePreferencesRepository {
     private val flow = MutableStateFlow(100)
     override fun volume(): Flow<Int> = flow
     override suspend fun saveVolume(volume: Int) { flow.update { volume } }
+}
+
+class FakeTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+}
+
+class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
+    private val flow = MutableStateFlow(90)
+    override fun observeHighThresholdCelsius(): Flow<Int> = flow
+    override suspend fun saveHighThresholdCelsius(celsius: Int) { flow.update { celsius } }
 }

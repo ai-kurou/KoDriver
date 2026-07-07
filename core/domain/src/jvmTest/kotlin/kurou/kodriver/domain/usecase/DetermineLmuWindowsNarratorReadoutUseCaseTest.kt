@@ -15,10 +15,12 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.TimingData
+import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
+import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -362,6 +364,101 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
     }
+
+    @Test
+    fun `いずれかのタイヤが閾値以上になると TyreOverheat を返す`() {
+        val decision = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        )
+
+        assertEquals(listOf(SpeechEvent.TyreOverheat), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `高温状態が継続しても再度読み上げない`() {
+        val state = LmuWindowsNarratorState(tyreOverheating = true)
+        val decision = useCase.determineTyreTemperature(
+            state = state,
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() {
+        val overheatState = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        ).state
+
+        val cooledState = useCase.determineTyreTemperature(
+            state = overheatState,
+            data = tyreTemperature(fl = 85.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        ).state
+
+        val reovertState = useCase.determineTyreTemperature(
+            state = cooledState,
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        )
+
+        assertEquals(false, cooledState.tyreOverheating)
+        assertEquals(listOf(SpeechEvent.TyreOverheat), reovertState.events)
+    }
+
+    @Test
+    fun `タイヤ温度項目が無効なら読み上げない`() {
+        val decision = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(
+                tyreTemperatureHighThresholdCelsius = 90,
+                enabledStates = mapOf(ReadoutItemKey.TyreTemperature to false),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `無効中に過熱した状態で再有効化しても読み上げない`() {
+        val disabledState = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(
+                tyreTemperatureHighThresholdCelsius = 90,
+                enabledStates = mapOf(ReadoutItemKey.TyreTemperature to false),
+            ),
+        ).state
+
+        val reenabledDecision = useCase.determineTyreTemperature(
+            state = disabledState,
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), reenabledDecision.events)
+    }
+
+    @Test
+    fun `閾値ちょうどは高温扱い`() {
+        val decision = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 90.0),
+            settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+        )
+
+        assertEquals(listOf(SpeechEvent.TyreOverheat), decision.events)
+    }
 }
 
 private fun settings(
@@ -371,6 +468,7 @@ private fun settings(
     skipFirstLap: Boolean = false,
     startReadoutEnabled: Boolean = true,
     startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+    tyreTemperatureHighThresholdCelsius: Int = 90,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
@@ -378,6 +476,7 @@ private fun settings(
     skipFirstLap = skipFirstLap,
     vehicleApproachStartReadoutEnabled = startReadoutEnabled,
     vehicleApproachStartReadoutType = startReadoutType,
+    tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,
 )
 
 private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
@@ -445,4 +544,18 @@ private fun damage(overheating: Boolean) = VehicleDamageData(
     overheating = overheating,
     partDetached = false,
     lastImpactMagnitude = 0.0,
+)
+
+private fun tyreTemperature(
+    fl: Double = 20.0,
+    fr: Double = 20.0,
+    rl: Double = 20.0,
+    rr: Double = 20.0,
+) = TyreCarcassTemperatureData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to fl,
+        WheelIndex.FRONT_RIGHT to fr,
+        WheelIndex.REAR_LEFT to rl,
+        WheelIndex.REAR_RIGHT to rr,
+    ),
 )

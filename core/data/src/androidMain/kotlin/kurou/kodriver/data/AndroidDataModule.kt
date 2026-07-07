@@ -16,6 +16,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -28,6 +29,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
+import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
@@ -58,6 +60,7 @@ fun androidDataModule(context: Context) = module {
     single<FlagRepository> { WebSocketFlagRepository(get()) }
     single<ProximityRepository> { WebSocketProximityRepository(get()) }
     single<VehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
+    single<TyreCarcassTemperatureRepository> { WebSocketTyreCarcassTemperatureRepository(get()) }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }
@@ -98,6 +101,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<ExitConfirmationPreferencesRepository> {
         AndroidExitConfirmationPreferencesRepository(context.exitConfirmationDataStore)
+    }
+    single<LmuWindowsTyreTemperaturePreferencesRepository> {
+        createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
     }
     single<TelemetryLogRepository> {
         createTelemetryLogRepository(context = context)

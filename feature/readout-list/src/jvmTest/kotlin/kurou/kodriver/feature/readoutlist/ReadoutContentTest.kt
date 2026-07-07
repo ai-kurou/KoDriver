@@ -5,6 +5,11 @@ import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -14,6 +19,7 @@ import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
+import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -46,9 +52,11 @@ class ReadoutContentTest {
         var backEnabled = false
         var capturedOnBack: (() -> Unit)? = null
         var itemTexts by mutableStateOf(emptyList<String>())
+        var tyreTemperatureText by mutableStateOf("")
         var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
 
         rule.setContent {
+            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
             itemTexts = listOf(
                 stringResource(Res.string.item_vehicle_approach),
                 stringResource(Res.string.item_flag),
@@ -63,6 +71,7 @@ class ReadoutContentTest {
                         ReadoutItemKey.Flag,
                         ReadoutItemKey.VehicleApproach,
                         ReadoutItemKey.VehicleDamage,
+                        ReadoutItemKey.TyreTemperature,
                         ReadoutItemKey.MyBestLap,
                     ),
                     selectedItem = selectedItem,
@@ -81,6 +90,7 @@ class ReadoutContentTest {
             )
         }
 
+        rule.onNodeWithText(tyreTemperatureText).assertExists()
         assertAllItemsCanNavigateBack(itemTexts, { backEnabled }, { capturedOnBack?.invoke() })
     }
 
@@ -120,6 +130,43 @@ class ReadoutContentTest {
         assertAllItemsCanNavigateBack(itemTexts, { backEnabled }, { capturedOnBack?.invoke() })
     }
 
+    @Test
+    fun `tyre_temperatureとその他の項目のSwitchはON_OFF変更コールバックを呼ぶ`() {
+        val changedItems = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
+        var tyreTemperatureText by mutableStateOf("")
+
+        rule.setContent {
+            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.LmuWindows),
+                    selectedSimulator = Simulator.LmuWindows,
+                    items = listOf(ReadoutItemKey.TyreTemperature, ReadoutItemKey.Flag),
+                    readoutEnabledStates = mapOf(
+                        ReadoutItemKey.TyreTemperature to true,
+                        ReadoutItemKey.Flag to true,
+                    ),
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { item, enabled -> changedItems += item to enabled },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { _, _, _ -> },
+            )
+        }
+
+        rule.onNodeWithText(tyreTemperatureText).assertExists()
+        rule.onAllNodes(hasSwitchRole()).assertCountEquals(2)
+        rule.onAllNodes(hasSwitchRole()).get(0).assertIsEnabled().performClick()
+        rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
+
+        assertTrue(changedItems.contains(ReadoutItemKey.TyreTemperature to false))
+        assertTrue(changedItems.contains(ReadoutItemKey.Flag to false))
+    }
+
     private fun assertAllItemsCanNavigateBack(
         itemTexts: List<String>,
         backEnabled: () -> Boolean,
@@ -139,4 +186,6 @@ class ReadoutContentTest {
             assertFalse(backEnabled())
         }
     }
+
+    private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 }
