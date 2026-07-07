@@ -22,13 +22,13 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> = observeEnabledStates()
         .map { states ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
-                overheatEnabled = states.getValue(ReadoutItemKey.Overheat),
+                overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.Overheat),
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleDamageDetailUiState())
 
     fun onOverheatEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { saveEnabledState(ReadoutItemKey.Overheat, enabled) }
+        viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, enabled) }
     }
 
     fun onPreviewClicked() {

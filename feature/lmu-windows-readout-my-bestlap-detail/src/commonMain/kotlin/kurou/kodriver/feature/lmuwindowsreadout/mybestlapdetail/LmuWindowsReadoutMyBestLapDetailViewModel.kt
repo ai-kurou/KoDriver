@@ -36,8 +36,8 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
 
     fun onPreviewClicked(type: MyBestLapVoiceType) {
         val event = when (type) {
-            MyBestLapVoiceType.FORMAL -> SpeechEvent.MyBestLapFormal
-            MyBestLapVoiceType.CASUAL -> SpeechEvent.MyBestLapCasual
+            MyBestLapVoiceType.FORMAL -> SpeechEvent.LmuWindowsMyBestLapFormal
+            MyBestLapVoiceType.CASUAL -> SpeechEvent.LmuWindowsMyBestLapCasual
         }
         playSpeechEvent(event)
     }

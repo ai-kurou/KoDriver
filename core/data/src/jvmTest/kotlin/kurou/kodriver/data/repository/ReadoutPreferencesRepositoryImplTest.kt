@@ -35,51 +35,51 @@ class ReadoutPreferencesRepositoryImplTest {
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertTrue(repository.observeReadoutEnabledStates("lmu_windows").first().isEmpty())
 
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to true),
             repository.observeReadoutEnabledStates("lmu_windows").first(),
         )
 
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, false)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to false),
             repository.observeReadoutEnabledStates("lmu_windows").first(),
         )
     }
 
     @Test
     fun `他シミュレータにデータがあっても未保存のシミュレータはemptyMapを返す`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
 
         assertTrue(repository.observeReadoutEnabledStates("rFactor 2").first().isEmpty())
     }
 
     @Test
     fun `未保存のシミュレータへの初回保存はemptyMapから開始され既存データを引き継がない`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
-        repository.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.Flag, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
+        repository.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.Flag, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Flag to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag to false),
             repository.observeReadoutEnabledStates("rFactor 2").first(),
         )
     }
 
     @Test
     fun `複数アイテムを独立して保存・取得できる`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.Flag, false)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleDamage, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.TyreTemperature, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.TyreTemperature, false)
 
         val states = repository.observeReadoutEnabledStates("lmu_windows").first()
         assertEquals(
-            mapOf(
-                ReadoutItemKey.VehicleApproach to true,
-                ReadoutItemKey.Flag to false,
-                ReadoutItemKey.VehicleDamage to true,
-                ReadoutItemKey.TyreTemperature to false,
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                ReadoutItemKey.LmuWindows.Flag to false,
+                ReadoutItemKey.LmuWindows.VehicleDamage to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature to false,
             ),
             states,
         )
@@ -87,15 +87,15 @@ class ReadoutPreferencesRepositoryImplTest {
 
     @Test
     fun `シミュレーターごとに独立した状態を保存できる`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
-        repository.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.VehicleApproach, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
+        repository.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to true),
             repository.observeReadoutEnabledStates("lmu_windows").first(),
         )
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to false),
             repository.observeReadoutEnabledStates("rFactor 2").first(),
         )
     }
@@ -106,71 +106,104 @@ class ReadoutPreferencesRepositoryImplTest {
 
         repository.saveReadoutOrder(
             "lmu_windows",
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+            ),
         )
         assertEquals(
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+            ),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
 
         repository.saveReadoutOrder(
             "lmu_windows",
-            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage, ReadoutItemKey.VehicleApproach),
+            listOf(
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+            ),
         )
         assertEquals(
-            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage, ReadoutItemKey.VehicleApproach),
+            listOf(
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+            ),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
     }
 
     @Test
     fun `順序とenabledStatesは互いに独立して保存される`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleDamage, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage, false)
         repository.saveReadoutOrder(
             "lmu_windows",
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+            ),
         )
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.VehicleApproach to true,
-                ReadoutItemKey.VehicleDamage to false,
+                ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                ReadoutItemKey.LmuWindows.VehicleDamage to false,
             ),
             repository.observeReadoutEnabledStates("lmu_windows").first(),
         )
         assertEquals(
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+            ),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
     }
 
     @Test
     fun `他シミュレータに順序があっても未保存のシミュレータは空リストを返す`() = testScope.runTest {
-        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VehicleApproach))
+        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.LmuWindows.VehicleApproach))
 
         assertTrue(repository.observeReadoutOrder("rFactor 2").first().isEmpty())
     }
 
     @Test
     fun `未保存のシミュレータへの初回の順序保存はemptyListから開始され既存データを引き継がない`() = testScope.runTest {
-        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag))
-        repository.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.Flag))
+        repository.saveReadoutOrder(
+            "lmu_windows",
+            listOf(ReadoutItemKey.LmuWindows.VehicleApproach, ReadoutItemKey.LmuWindows.Flag),
+        )
+        repository.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.LmuWindows.Flag))
 
-        assertEquals(listOf(ReadoutItemKey.Flag), repository.observeReadoutOrder("rFactor 2").first())
+        assertEquals(listOf(ReadoutItemKey.LmuWindows.Flag), repository.observeReadoutOrder("rFactor 2").first())
     }
 
     @Test
     fun `シミュレーターごとに独立した順序を保存できる`() = testScope.runTest {
-        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag))
-        repository.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach))
+        repository.saveReadoutOrder(
+            "lmu_windows",
+            listOf(ReadoutItemKey.LmuWindows.VehicleApproach, ReadoutItemKey.LmuWindows.Flag),
+        )
+        repository.saveReadoutOrder(
+            "rFactor 2",
+            listOf(ReadoutItemKey.LmuWindows.Flag, ReadoutItemKey.LmuWindows.VehicleApproach),
+        )
 
         assertEquals(
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag),
+            listOf(ReadoutItemKey.LmuWindows.VehicleApproach, ReadoutItemKey.LmuWindows.Flag),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
         assertEquals(
-            listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach),
+            listOf(ReadoutItemKey.LmuWindows.Flag, ReadoutItemKey.LmuWindows.VehicleApproach),
             repository.observeReadoutOrder("rFactor 2").first(),
         )
     }
@@ -179,30 +212,41 @@ class ReadoutPreferencesRepositoryImplTest {
     fun `enabledState保存時に既存の順序が保持される`() = testScope.runTest {
         repository.saveReadoutOrder(
             "lmu_windows",
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+            ),
         )
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
 
         assertEquals(
-            listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag, ReadoutItemKey.VehicleDamage),
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+            ),
             repository.observeReadoutOrder("lmu_windows").first(),
         )
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to true),
             repository.observeReadoutEnabledStates("lmu_windows").first(),
         )
     }
 
     @Test
     fun `順序のみ保存済みのシミュレータはenabledStatesが空Mapを返す`() = testScope.runTest {
-        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.VehicleApproach, ReadoutItemKey.Flag))
+        repository.saveReadoutOrder(
+            "lmu_windows",
+            listOf(ReadoutItemKey.LmuWindows.VehicleApproach, ReadoutItemKey.LmuWindows.Flag),
+        )
 
         assertTrue(repository.observeReadoutEnabledStates("lmu_windows").first().isEmpty())
     }
 
     @Test
     fun `enabledStateのみ保存済みのシミュレータはitemOrderが空リストを返す`() = testScope.runTest {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
 
         assertTrue(repository.observeReadoutOrder("lmu_windows").first().isEmpty())
     }

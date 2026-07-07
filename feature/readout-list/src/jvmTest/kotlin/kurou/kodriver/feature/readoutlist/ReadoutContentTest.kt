@@ -68,18 +68,18 @@ class ReadoutContentTest {
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
                     items = listOf(
-                        ReadoutItemKey.Flag,
-                        ReadoutItemKey.VehicleApproach,
-                        ReadoutItemKey.VehicleDamage,
-                        ReadoutItemKey.TyreTemperature,
-                        ReadoutItemKey.MyBestLap,
+                        ReadoutItemKey.LmuWindows.Flag,
+                        ReadoutItemKey.LmuWindows.VehicleApproach,
+                        ReadoutItemKey.LmuWindows.VehicleDamage,
+                        ReadoutItemKey.LmuWindows.TyreTemperature,
+                        ReadoutItemKey.LmuWindows.MyBestLap,
                     ),
                     readoutEnabledStates = mapOf(
-                        ReadoutItemKey.Flag to true,
-                        ReadoutItemKey.VehicleApproach to true,
-                        ReadoutItemKey.VehicleDamage to true,
-                        ReadoutItemKey.TyreTemperature to true,
-                        ReadoutItemKey.MyBestLap to true,
+                        ReadoutItemKey.LmuWindows.Flag to true,
+                        ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                        ReadoutItemKey.LmuWindows.VehicleDamage to true,
+                        ReadoutItemKey.LmuWindows.TyreTemperature to true,
+                        ReadoutItemKey.LmuWindows.MyBestLap to true,
                     ),
                     selectedItem = selectedItem,
                 ),
@@ -117,10 +117,10 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.Gt7Ps5),
                     selectedSimulator = Simulator.Gt7Ps5,
-                    items = listOf(ReadoutItemKey.RemainingFuelLaps, ReadoutItemKey.MyBestLap),
+                    items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps, ReadoutItemKey.Gt7Ps5.MyBestLap),
                     readoutEnabledStates = mapOf(
-                        ReadoutItemKey.RemainingFuelLaps to true,
-                        ReadoutItemKey.MyBestLap to true,
+                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps to true,
+                        ReadoutItemKey.Gt7Ps5.MyBestLap to true,
                     ),
                     selectedItem = selectedItem,
                 ),
@@ -152,10 +152,10 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.TyreTemperature, ReadoutItemKey.Flag),
+                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature, ReadoutItemKey.LmuWindows.Flag),
                     readoutEnabledStates = mapOf(
-                        ReadoutItemKey.TyreTemperature to true,
-                        ReadoutItemKey.Flag to true,
+                        ReadoutItemKey.LmuWindows.TyreTemperature to true,
+                        ReadoutItemKey.LmuWindows.Flag to true,
                     ),
                 ),
                 onSimulatorSelected = {},
@@ -174,8 +174,8 @@ class ReadoutContentTest {
         rule.onAllNodes(hasSwitchRole()).get(0).assertIsEnabled().performClick()
         rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
 
-        assertTrue(changedItems.contains(ReadoutItemKey.TyreTemperature to false))
-        assertTrue(changedItems.contains(ReadoutItemKey.Flag to false))
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature to false))
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag to false))
     }
 
     private fun assertAllItemsCanNavigateBack(

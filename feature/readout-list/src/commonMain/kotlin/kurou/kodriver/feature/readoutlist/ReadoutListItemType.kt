@@ -5,31 +5,31 @@ import kurou.kodriver.domain.model.Simulator
 
 sealed class ReadoutListItemType(val id: ReadoutItemKey) {
     sealed class LmuWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
-        data object VehicleApproach : LmuWindows(ReadoutItemKey.VehicleApproach)
-        data object Flag : LmuWindows(ReadoutItemKey.Flag)
-        data object VehicleDamage : LmuWindows(ReadoutItemKey.VehicleDamage)
-        data object TyreTemperature : LmuWindows(ReadoutItemKey.TyreTemperature)
-        data object MyBestLap : LmuWindows(ReadoutItemKey.MyBestLap)
+        data object VehicleApproach : LmuWindows(ReadoutItemKey.LmuWindows.VehicleApproach)
+        data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag)
+        data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage)
+        data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature)
+        data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap)
     }
 
     sealed class Gt7Ps5(id: ReadoutItemKey) : ReadoutListItemType(id) {
-        data object MyBestLap : Gt7Ps5(ReadoutItemKey.MyBestLap)
-        data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.RemainingFuelLaps)
+        data object MyBestLap : Gt7Ps5(ReadoutItemKey.Gt7Ps5.MyBestLap)
+        data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps)
     }
 
     companion object {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
             is Simulator.LmuWindows -> when (id) {
-                ReadoutItemKey.VehicleApproach -> LmuWindows.VehicleApproach
-                ReadoutItemKey.Flag -> LmuWindows.Flag
-                ReadoutItemKey.VehicleDamage -> LmuWindows.VehicleDamage
-                ReadoutItemKey.TyreTemperature -> LmuWindows.TyreTemperature
-                ReadoutItemKey.MyBestLap -> LmuWindows.MyBestLap
+                ReadoutItemKey.LmuWindows.VehicleApproach -> LmuWindows.VehicleApproach
+                ReadoutItemKey.LmuWindows.Flag -> LmuWindows.Flag
+                ReadoutItemKey.LmuWindows.VehicleDamage -> LmuWindows.VehicleDamage
+                ReadoutItemKey.LmuWindows.TyreTemperature -> LmuWindows.TyreTemperature
+                ReadoutItemKey.LmuWindows.MyBestLap -> LmuWindows.MyBestLap
                 else -> null
             }
             is Simulator.Gt7Ps5 -> when (id) {
-                ReadoutItemKey.MyBestLap -> Gt7Ps5.MyBestLap
-                ReadoutItemKey.RemainingFuelLaps -> Gt7Ps5.RemainingFuelLaps
+                ReadoutItemKey.Gt7Ps5.MyBestLap -> Gt7Ps5.MyBestLap
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5.RemainingFuelLaps
                 else -> null
             }
         }

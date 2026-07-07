@@ -70,7 +70,7 @@ class Gt7Ps5NarratorViewModelTest {
         telemetryChannel: Channel<Gt7Ps5TelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         readoutSettings: ReadoutSettings = ReadoutSettings(),
-        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MyBestLap),
+        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         simulator: Simulator? = Simulator.Gt7Ps5,
         telemetryLogSettings: TelemetryLogSettings = TelemetryLogSettings(),
@@ -140,7 +140,7 @@ class Gt7Ps5NarratorViewModelTest {
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapCasual), tts.spokenTexts)
     }
 
     @Test
@@ -165,7 +165,7 @@ class Gt7Ps5NarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 123_456L,
                     simulatorId = Simulator.Gt7Ps5.id,
-                    readoutItemKey = ReadoutItemKey.MyBestLap.value,
+                    readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.value,
                     telemetryJson =
                         """{"previous":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
                             """"gasLevel":0.0,"gasCapacity":100.0},"current":{"lapCount":0,""" +
@@ -183,7 +183,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(enabledOverrides = mapOf(ReadoutItemKey.MyBestLap to false)),
+            readoutSettings = ReadoutSettings(enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap to false)),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -217,7 +217,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryChannel = channel,
             ttsEngine = tts,
             readoutSettings = ReadoutSettings(
-                enabledOverrides = mapOf(ReadoutItemKey.RemainingFuelLaps to false),
+                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps to false),
                 fuelThreshold = 3,
             ),
         )
@@ -232,11 +232,11 @@ class Gt7Ps5NarratorViewModelTest {
     @Test
     fun `優先度の高いアイテム読み上げ中にベストラップが来ても読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.LmuWindows.Flag)
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.Flag, ReadoutItemKey.MyBestLap),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag, ReadoutItemKey.Gt7Ps5.MyBestLap),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -250,11 +250,11 @@ class Gt7Ps5NarratorViewModelTest {
     fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.LmuWindows.Flag)
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.Flag, ReadoutItemKey.MyBestLap),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag, ReadoutItemKey.Gt7Ps5.MyBestLap),
             telemetryLogSettings = TelemetryLogSettings(repository = telemetryLogRepository),
         )
 
@@ -267,45 +267,45 @@ class Gt7Ps5NarratorViewModelTest {
     @Test
     fun `優先度の低いアイテム読み上げ中にベストラップが来ると割り込む`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.LmuWindows.Flag)
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.MyBestLap, ReadoutItemKey.Flag),
+            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap, ReadoutItemKey.LmuWindows.Flag),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
         assertEquals(true, tts.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), tts.spokenTexts)
     }
 
     @Test
     fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.LmuWindows.Flag)
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
         assertEquals(true, tts.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), tts.spokenTexts)
     }
 
     @Test
     fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.Flag)
+        val tts = PriorityAwareTextToSpeechEngine(initialKey = ReadoutItemKey.LmuWindows.Flag)
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.Flag),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -375,7 +375,7 @@ private class FakeSimulatorPreferencesRepo(
 
 private class FakeReadoutPreferencesRepo(
     private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.MyBestLap),
+    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap),
 ) : ReadoutPreferencesRepository {
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)

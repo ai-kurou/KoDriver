@@ -57,8 +57,8 @@ internal class LmuWindowsWavNarratorEngine(
         SpeechEvent.FullCourseYellow to "files/full_course_yellow.wav",
         SpeechEvent.SessionStop to "files/session_stopped.wav",
         SpeechEvent.Overheating to "files/gp2_gp2.wav",
-        SpeechEvent.MyBestLapFormal to "files/my_best_lap_formal.wav",
-        SpeechEvent.MyBestLapCasual to "files/my_best_lap_casual.wav",
+        SpeechEvent.LmuWindowsMyBestLapFormal to "files/my_best_lap_formal.wav",
+        SpeechEvent.LmuWindowsMyBestLapCasual to "files/my_best_lap_casual.wav",
         SpeechEvent.TyreOverheat to "files/tyre_overheat.wav",
     )
 

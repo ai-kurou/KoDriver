@@ -106,31 +106,33 @@ private fun simulatorIcon(simulator: Simulator) = when (simulator) {
 
 @Composable
 private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
-    is ReadoutItemKey.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
-    is ReadoutItemKey.Flag -> stringResource(Res.string.item_flag)
-    is ReadoutItemKey.BlueFlag -> stringResource(Res.string.item_blue_flag)
-    is ReadoutItemKey.SectorYellowFlag -> stringResource(Res.string.item_sector_yellow_flag)
-    is ReadoutItemKey.FullCourseYellow -> stringResource(Res.string.item_full_course_yellow)
-    is ReadoutItemKey.RedFlag -> stringResource(Res.string.item_red_flag)
-    is ReadoutItemKey.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
-    is ReadoutItemKey.Overheat -> stringResource(Res.string.item_overheat)
-    is ReadoutItemKey.TyreTemperature -> stringResource(Res.string.item_tyre_temperature)
-    is ReadoutItemKey.MyBestLap -> stringResource(Res.string.item_my_best_lap)
-    is ReadoutItemKey.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
+    is ReadoutItemKey.LmuWindows.VehicleApproach -> stringResource(Res.string.item_vehicle_approach)
+    is ReadoutItemKey.LmuWindows.Flag -> stringResource(Res.string.item_flag)
+    is ReadoutItemKey.LmuWindows.BlueFlag -> stringResource(Res.string.item_blue_flag)
+    is ReadoutItemKey.LmuWindows.SectorYellowFlag -> stringResource(Res.string.item_sector_yellow_flag)
+    is ReadoutItemKey.LmuWindows.FullCourseYellow -> stringResource(Res.string.item_full_course_yellow)
+    is ReadoutItemKey.LmuWindows.RedFlag -> stringResource(Res.string.item_red_flag)
+    is ReadoutItemKey.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
+    is ReadoutItemKey.LmuWindows.Overheat -> stringResource(Res.string.item_overheat)
+    is ReadoutItemKey.LmuWindows.TyreTemperature -> stringResource(Res.string.item_tyre_temperature)
+    is ReadoutItemKey.LmuWindows.MyBestLap -> stringResource(Res.string.item_my_best_lap)
+    is ReadoutItemKey.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
+    is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
 }
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
-    is ReadoutItemKey.VehicleApproach -> Icons.Filled.DirectionsCar
-    is ReadoutItemKey.Flag -> Icons.Filled.Flag
-    is ReadoutItemKey.BlueFlag -> Icons.Filled.Flag
-    is ReadoutItemKey.SectorYellowFlag -> Icons.Filled.Flag
-    is ReadoutItemKey.FullCourseYellow -> Icons.Filled.Flag
-    is ReadoutItemKey.RedFlag -> Icons.Filled.Flag
-    is ReadoutItemKey.VehicleDamage -> Icons.Filled.Build
-    is ReadoutItemKey.Overheat -> Icons.Filled.Build
-    is ReadoutItemKey.TyreTemperature -> Icons.Filled.DeviceThermostat
-    is ReadoutItemKey.MyBestLap -> Icons.Filled.Timer
-    is ReadoutItemKey.RemainingFuelLaps -> Icons.Filled.LocalGasStation
+    is ReadoutItemKey.LmuWindows.VehicleApproach -> Icons.Filled.DirectionsCar
+    is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
+    is ReadoutItemKey.LmuWindows.BlueFlag -> Icons.Filled.Flag
+    is ReadoutItemKey.LmuWindows.SectorYellowFlag -> Icons.Filled.Flag
+    is ReadoutItemKey.LmuWindows.FullCourseYellow -> Icons.Filled.Flag
+    is ReadoutItemKey.LmuWindows.RedFlag -> Icons.Filled.Flag
+    is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
+    is ReadoutItemKey.LmuWindows.Overheat -> Icons.Filled.Build
+    is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.MyBestLap -> Icons.Filled.Timer
+    is ReadoutItemKey.Gt7Ps5.MyBestLap -> Icons.Filled.Timer
+    is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> Icons.Filled.LocalGasStation
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -346,19 +348,19 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
             simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
             selectedSimulator = Simulator.LmuWindows,
             items = listOf(
-                ReadoutItemKey.VehicleApproach,
-                ReadoutItemKey.Flag,
-                ReadoutItemKey.VehicleDamage,
-                ReadoutItemKey.TyreTemperature,
-                ReadoutItemKey.MyBestLap,
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.MyBestLap,
             ),
         ),
         ReadoutListUiState(
             simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
             selectedSimulator = Simulator.Gt7Ps5,
             items = listOf(
-                ReadoutItemKey.RemainingFuelLaps,
-                ReadoutItemKey.MyBestLap,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps,
+                ReadoutItemKey.Gt7Ps5.MyBestLap,
             ),
         ),
     )

@@ -257,17 +257,18 @@ private fun simulatorIcon(simulatorId: String): Painter? = when (simulatorId) {
 @Composable
 internal fun readoutItemDisplayName(readoutItemKey: String): String {
     return when (ReadoutItemKey.fromValue(readoutItemKey)) {
-        is ReadoutItemKey.VehicleApproach -> stringResource(Res.string.readout_item_vehicle_approach)
-        is ReadoutItemKey.Flag -> stringResource(Res.string.readout_item_flag)
-        is ReadoutItemKey.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
-        is ReadoutItemKey.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
-        is ReadoutItemKey.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
-        is ReadoutItemKey.RedFlag -> stringResource(Res.string.readout_item_red_flag)
-        is ReadoutItemKey.VehicleDamage -> stringResource(Res.string.readout_item_vehicle_damage)
-        is ReadoutItemKey.Overheat -> stringResource(Res.string.readout_item_overheat)
-        is ReadoutItemKey.TyreTemperature -> stringResource(Res.string.readout_item_tyre_temperature)
-        is ReadoutItemKey.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
-        is ReadoutItemKey.RemainingFuelLaps -> stringResource(Res.string.readout_item_remaining_fuel_laps)
+        is ReadoutItemKey.LmuWindows.VehicleApproach -> stringResource(Res.string.readout_item_vehicle_approach)
+        is ReadoutItemKey.LmuWindows.Flag -> stringResource(Res.string.readout_item_flag)
+        is ReadoutItemKey.LmuWindows.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
+        is ReadoutItemKey.LmuWindows.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
+        is ReadoutItemKey.LmuWindows.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
+        is ReadoutItemKey.LmuWindows.RedFlag -> stringResource(Res.string.readout_item_red_flag)
+        is ReadoutItemKey.LmuWindows.VehicleDamage -> stringResource(Res.string.readout_item_vehicle_damage)
+        is ReadoutItemKey.LmuWindows.Overheat -> stringResource(Res.string.readout_item_overheat)
+        is ReadoutItemKey.LmuWindows.TyreTemperature -> stringResource(Res.string.readout_item_tyre_temperature)
+        is ReadoutItemKey.LmuWindows.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
+        is ReadoutItemKey.Gt7Ps5.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
+        is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.readout_item_remaining_fuel_laps)
         null -> readoutItemKey
     }
 }

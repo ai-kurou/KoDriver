@@ -86,14 +86,14 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
     fun `onPreviewClicked に FORMAL を渡すと MyBestLapFormal イベントが再生される`() {
         viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), playedEvents)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLapFormal), playedEvents)
     }
 
     @Test
     fun `onPreviewClicked に CASUAL を渡すと MyBestLapCasual イベントが再生される`() {
         viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), playedEvents)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLapCasual), playedEvents)
     }
 
     private fun createViewModel() = LmuWindowsReadoutMyBestLapDetailViewModel(

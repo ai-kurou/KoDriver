@@ -17,25 +17,25 @@ internal enum class FlagReadoutItem(
     val previewEvent: SpeechEvent,
 ) {
     BlueFlag(
-        key = ReadoutItemKey.BlueFlag,
+        key = ReadoutItemKey.LmuWindows.BlueFlag,
         labelRes = Res.string.flag_blue,
         chipLabelRes = Res.string.flag_blue,
         previewEvent = SpeechEvent.BlueFlag,
     ),
     SectorYellowFlag(
-        key = ReadoutItemKey.SectorYellowFlag,
+        key = ReadoutItemKey.LmuWindows.SectorYellowFlag,
         labelRes = Res.string.flag_yellow,
         chipLabelRes = Res.string.flag_yellow,
         previewEvent = SpeechEvent.YellowFlag,
     ),
     FullCourseYellow(
-        key = ReadoutItemKey.FullCourseYellow,
+        key = ReadoutItemKey.LmuWindows.FullCourseYellow,
         labelRes = Res.string.flag_full_course_yellow,
         chipLabelRes = Res.string.flag_full_course_yellow,
         previewEvent = SpeechEvent.FullCourseYellow,
     ),
     RedFlag(
-        key = ReadoutItemKey.RedFlag,
+        key = ReadoutItemKey.LmuWindows.RedFlag,
         labelRes = Res.string.flag_red,
         chipLabelRes = Res.string.flag_session_stop,
         previewEvent = SpeechEvent.SessionStop,

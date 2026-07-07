@@ -18,9 +18,9 @@ class LmuWindowsFlagPreferencesRepositoryFactoryTest {
 
             assertTrue(repo.observeFlagEnabledStates().first().isEmpty())
 
-            repo.saveFlagEnabledState(ReadoutItemKey.BlueFlag, true)
+            repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.BlueFlag, true)
             assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.BlueFlag to true),
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.BlueFlag to true),
                 repo.observeFlagEnabledStates().first(),
             )
         } finally {

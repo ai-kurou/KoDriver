@@ -109,7 +109,7 @@ class LmuWindowsWavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.LmuWindowsMyBestLapFormal)
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
@@ -128,7 +128,7 @@ class LmuWindowsWavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapCasual)
+        engine.speak(SpeechEvent.LmuWindowsMyBestLapCasual)
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)

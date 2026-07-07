@@ -27,7 +27,7 @@ class Gt7Ps5WavNarratorEngineTest {
         val engine = createEngine(player)
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(emptyList(), player.playedSounds)
@@ -42,7 +42,7 @@ class Gt7Ps5WavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(emptyList(), player.playedSounds)
@@ -54,7 +54,7 @@ class Gt7Ps5WavNarratorEngineTest {
         val engine = createEngine(player)
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
@@ -73,7 +73,7 @@ class Gt7Ps5WavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapCasual)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapCasual)
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
@@ -90,7 +90,7 @@ class Gt7Ps5WavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
@@ -107,7 +107,7 @@ class Gt7Ps5WavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(1, player.playedSounds.size)
@@ -121,13 +121,13 @@ class Gt7Ps5WavNarratorEngineTest {
         val engine = createEngine(player, startSoundTypeFlow = startSoundTypeFlow)
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         startSoundTypeFlow.update { ReadoutStartSoundType.ELECTRONIC_NOISE }
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(4, player.playedSounds.size)
@@ -191,7 +191,7 @@ class Gt7Ps5WavNarratorEngineTest {
         val engine = createEngine(player)
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         engine.stop()
         advanceUntilIdle()
 
@@ -205,7 +205,7 @@ class Gt7Ps5WavNarratorEngineTest {
         runCurrent()
 
         engine.stop()
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)
@@ -219,7 +219,7 @@ class Gt7Ps5WavNarratorEngineTest {
         val engine = createEngine(player, volumeFlow = flowOf(50))
         runCurrent()
 
-        engine.speak(SpeechEvent.MyBestLapFormal)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
         runCurrent()
 
         assertEquals(listOf(50, 50), player.playedVolumes)
