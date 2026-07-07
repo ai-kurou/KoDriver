@@ -130,6 +130,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             events = emptyList(),
         )
         val event = if (
+            settings.enabledStates[ReadoutItemKey.VehicleDamage] != false &&
             settings.enabledStates[ReadoutItemKey.Overheat] != false &&
             !previous.overheating &&
             vehicleDamage.overheating

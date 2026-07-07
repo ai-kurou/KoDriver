@@ -366,6 +366,17 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `車両故障項目が無効なら読み上げない`() {
+        val decision = useCase.determineVehicleDamage(
+            state = LmuWindowsNarratorState(previousVehicleDamage = damage(overheating = false)),
+            vehicleDamage = damage(overheating = true),
+            settings = settings(enabledStates = mapOf(ReadoutItemKey.VehicleDamage to false)),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
     fun `いずれかのタイヤが閾値以上になると TyreOverheat を返す`() {
         val decision = useCase.determineTyreTemperature(
             state = LmuWindowsNarratorState(),
