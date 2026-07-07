@@ -22,7 +22,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> = observeEnabledStates()
         .map { states ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
-                overheatEnabled = states[ReadoutItemKey.Overheat] ?: true,
+                overheatEnabled = states.getValue(ReadoutItemKey.Overheat),
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleDamageDetailUiState())

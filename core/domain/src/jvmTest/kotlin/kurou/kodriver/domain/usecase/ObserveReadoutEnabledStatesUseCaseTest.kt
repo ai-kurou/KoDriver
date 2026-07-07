@@ -10,17 +10,60 @@ import kotlin.test.assertTrue
 class ObserveReadoutEnabledStatesUseCaseTest {
 
     @Test
-    fun `初期値は空Map・保存済みの値を返す・シミュレーターごとに独立している`() = runBlocking {
+    fun `初期値はデフォルト定義のない未知のシミュレーターでは空Mapを返す`() = runBlocking {
         val repo = FakeReadoutPreferencesRepository()
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        assertTrue(useCase("lmu_windows").first().isEmpty())
+        assertTrue(useCase("rFactor 2").first().isEmpty())
+    }
 
-        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+    @Test
+    fun `lmu_windowsは保存済みの値がなくてもデフォルト値が反映される`() = runBlocking {
+        val repo = FakeReadoutPreferencesRepository()
+        val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+
+        assertEquals(
+            mapOf(
+                ReadoutItemKey.Flag to true,
+                ReadoutItemKey.VehicleApproach to true,
+                ReadoutItemKey.VehicleDamage to true,
+                ReadoutItemKey.TyreTemperature to false,
+                ReadoutItemKey.MyBestLap to false,
+            ),
+            useCase("lmu_windows").first(),
+        )
+    }
+
+    @Test
+    fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() = runBlocking {
+        val repo = FakeReadoutPreferencesRepository()
+        val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+
+        assertEquals(
+            mapOf(
+                ReadoutItemKey.RemainingFuelLaps to true,
+                ReadoutItemKey.MyBestLap to true,
+            ),
+            useCase("gt7_ps5").first(),
+        )
+    }
+
+    @Test
+    fun `保存済みの値はデフォルトより優先され・シミュレーターごとに独立している`() = runBlocking {
+        val repo = FakeReadoutPreferencesRepository()
+        val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+
+        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.MyBestLap, true)
         repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.VehicleApproach, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            mapOf(
+                ReadoutItemKey.Flag to true,
+                ReadoutItemKey.VehicleApproach to true,
+                ReadoutItemKey.VehicleDamage to true,
+                ReadoutItemKey.TyreTemperature to false,
+                ReadoutItemKey.MyBestLap to true,
+            ),
             useCase("lmu_windows").first(),
         )
         assertEquals(

@@ -14,15 +14,27 @@ class SaveReadoutEnabledStateUseCaseTest {
         val saveUseCase = SaveReadoutEnabledStateUseCase(repo)
         val observeUseCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        saveUseCase("lmu_windows", ReadoutItemKey.VehicleApproach, true)
+        saveUseCase("lmu_windows", ReadoutItemKey.MyBestLap, true)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            mapOf(
+                ReadoutItemKey.Flag to true,
+                ReadoutItemKey.VehicleApproach to true,
+                ReadoutItemKey.VehicleDamage to true,
+                ReadoutItemKey.TyreTemperature to false,
+                ReadoutItemKey.MyBestLap to true,
+            ),
             observeUseCase("lmu_windows").first(),
         )
 
-        saveUseCase("lmu_windows", ReadoutItemKey.VehicleApproach, false)
+        saveUseCase("lmu_windows", ReadoutItemKey.MyBestLap, false)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
+            mapOf(
+                ReadoutItemKey.Flag to true,
+                ReadoutItemKey.VehicleApproach to true,
+                ReadoutItemKey.VehicleDamage to true,
+                ReadoutItemKey.TyreTemperature to false,
+                ReadoutItemKey.MyBestLap to false,
+            ),
             observeUseCase("lmu_windows").first(),
         )
     }
