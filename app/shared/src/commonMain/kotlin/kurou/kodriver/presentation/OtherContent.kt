@@ -83,7 +83,13 @@ private fun handleOtherItemClick(
         OtherListItemType.Theme -> onOpenThemeDialog()
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
         OtherListItemType.ReleasePage -> onOpenReleasePage()
-        else -> onItemSelected(itemType)
+        OtherListItemType.ServerIp,
+        OtherListItemType.ConsoleIp,
+        OtherListItemType.Volume,
+        OtherListItemType.KeepScreenOn,
+        OtherListItemType.ExitConfirmation,
+        OtherListItemType.License,
+        -> onItemSelected(itemType)
     }
 }
 
