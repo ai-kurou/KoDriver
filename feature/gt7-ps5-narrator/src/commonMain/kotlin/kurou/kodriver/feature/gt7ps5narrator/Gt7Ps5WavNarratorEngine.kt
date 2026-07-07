@@ -43,8 +43,8 @@ internal class Gt7Ps5WavNarratorEngine(
         get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
     private val eventToFile: Map<SpeechEvent, String> = buildMap {
-        put(SpeechEvent.MyBestLapFormal, "files/my_best_lap_formal.wav")
-        put(SpeechEvent.MyBestLapCasual, "files/my_best_lap_casual.wav")
+        put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
         for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
             put(SpeechEvent.RemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
         }

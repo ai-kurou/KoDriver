@@ -100,7 +100,10 @@ class LmuWindowsNarratorViewModelTest {
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach),
+        orderOverride: List<ReadoutItemKey> = listOf(
+            ReadoutItemKey.LmuWindows.Flag,
+            ReadoutItemKey.LmuWindows.VehicleApproach,
+        ),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
@@ -216,14 +219,14 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             voiceType = MyBestLapVoiceType.CASUAL,
-            enabledOverrides = mapOf(ReadoutItemKey.MyBestLap to true),
-            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap to true),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.MyBestLap),
         )
 
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLapCasual), tts.spokenTexts)
     }
 
     @Test
@@ -233,8 +236,8 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
-            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.MyBestLap to false),
-            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.MyBestLap to false),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.MyBestLap),
         )
 
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
@@ -251,8 +254,8 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.MyBestLap to true),
-            orderOverride = listOf(ReadoutItemKey.MyBestLap),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap to true),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.MyBestLap),
             currentTimeMs = { 456L },
             telemetryLogRepository = telemetryLogRepository,
         )
@@ -265,7 +268,7 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 456L,
                     simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.MyBestLap.value,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.value,
                     telemetryJson =
                         """{"previous":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":60000,""" +
                             """"currentLap":1,"maxLaps":0},"current":{"currentLapTimeMs":0,""" +
@@ -306,7 +309,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
-            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
+            enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to false),
             currentTimeMs = { fakeTime },
         )
 
@@ -389,7 +392,7 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 123_456L,
                     simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.VehicleApproach.value,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.value,
                     telemetryJson =
                         """{"previous":{"sideBySideLeftVehicleIds":[1],""" +
                             """"sideBySideRightVehicleIds":[],"lateralDistanceLeftMeters":3.0,""" +
@@ -412,7 +415,7 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag,
         )
         buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
@@ -430,7 +433,7 @@ class LmuWindowsNarratorViewModelTest {
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag,
         )
         buildViewModel(
             proximityChannel = channel,
@@ -451,7 +454,7 @@ class LmuWindowsNarratorViewModelTest {
     fun `車両接近読み上げ中にフラグイベントが来ると読み上げを停止して割り込む`() = runTest(testDispatcher) {
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.VehicleApproach,
+            initialKey = ReadoutItemKey.LmuWindows.VehicleApproach,
         )
         buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
 
@@ -467,12 +470,12 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag,
         )
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.VehicleApproach),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.VehicleApproach),
             currentTimeMs = { fakeTime },
         )
 
@@ -490,12 +493,12 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag,
         )
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.Flag),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag),
             currentTimeMs = { fakeTime },
         )
 
@@ -517,7 +520,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             damageChannel = damageChannel,
             ttsEngine = tts,
-            vehicleDamageEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
+            vehicleDamageEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to false),
         )
 
         damageChannel.send(noDamage())
@@ -533,7 +536,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            flagEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.BlueFlag to false),
+            flagEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.BlueFlag to false),
         )
 
         flagChannel.send(clearFlags())
@@ -549,12 +552,12 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.Flag to false),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.Flag to false),
             flagEnabledOverrides = mapOf(
-                ReadoutItemKey.BlueFlag to true,
-                ReadoutItemKey.SectorYellowFlag to true,
-                ReadoutItemKey.FullCourseYellow to true,
-                ReadoutItemKey.RedFlag to true,
+                ReadoutItemKey.LmuWindows.BlueFlag to true,
+                ReadoutItemKey.LmuWindows.SectorYellowFlag to true,
+                ReadoutItemKey.LmuWindows.FullCourseYellow to true,
+                ReadoutItemKey.LmuWindows.RedFlag to true,
             ),
         )
 
@@ -592,7 +595,7 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 789L,
                     simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.Flag.value,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.value,
                     telemetryJson =
                         """{"previous":{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
                             """"sectorFlags":["CLEAR","CLEAR","CLEAR"],"startLight":0,"numRedLights":0,""" +
@@ -651,7 +654,7 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 987L,
                     simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.VehicleDamage.value,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.value,
                     telemetryJson =
                         """{"previous":{"overheating":false,"partDetached":false,"lastImpactMagnitude":0.0},""" +
                             """"current":{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.0}}""",
@@ -671,7 +674,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -687,7 +690,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -704,7 +707,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -722,7 +725,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to false),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to false),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -765,7 +768,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
             currentTimeMs = { 123L },
             telemetryLogRepository = telemetryLogRepository,
         )
@@ -776,7 +779,7 @@ class LmuWindowsNarratorViewModelTest {
         val log = telemetryLogRepository.logs.value.first()
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.TyreTemperature.value, log.readoutItemKey)
+        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.value, log.readoutItemKey)
     }
 }
 
@@ -857,7 +860,10 @@ private class FakeConstantSimulatorRepository(
 
 private class FakeAllEnabledReadoutPreferencesRepository(
     private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Flag, ReadoutItemKey.VehicleApproach),
+    private val orderOverride: List<ReadoutItemKey> = listOf(
+        ReadoutItemKey.LmuWindows.Flag,
+        ReadoutItemKey.LmuWindows.VehicleApproach,
+    ),
 ) : ReadoutPreferencesRepository {
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)

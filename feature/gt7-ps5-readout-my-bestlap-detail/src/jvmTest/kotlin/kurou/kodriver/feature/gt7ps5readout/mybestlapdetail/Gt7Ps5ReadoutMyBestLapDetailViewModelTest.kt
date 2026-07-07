@@ -77,12 +77,12 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
     @Test
     fun `onPreviewClicked に FORMAL を渡すと MyBestLapFormal イベントが再生される`() {
         viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapFormal), playedEvents)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), playedEvents)
     }
 
     @Test
     fun `onPreviewClicked に CASUAL を渡すと MyBestLapCasual イベントが再生される`() {
         viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.MyBestLapCasual), playedEvents)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapCasual), playedEvents)
     }
 }

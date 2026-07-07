@@ -20,11 +20,11 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
         assertEquals(
-            mapOf(
-                ReadoutItemKey.BlueFlag to true,
-                ReadoutItemKey.SectorYellowFlag to true,
-                ReadoutItemKey.FullCourseYellow to true,
-                ReadoutItemKey.RedFlag to true,
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.BlueFlag to true,
+                ReadoutItemKey.LmuWindows.SectorYellowFlag to true,
+                ReadoutItemKey.LmuWindows.FullCourseYellow to true,
+                ReadoutItemKey.LmuWindows.RedFlag to true,
             ),
             useCase().first(),
         )
@@ -35,14 +35,14 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
         val repo = FakeLmuWindowsFlagPreferencesRepository()
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
-        repo.saveFlagEnabledState(ReadoutItemKey.RedFlag, false)
+        repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.RedFlag, false)
 
         assertEquals(
-            mapOf(
-                ReadoutItemKey.BlueFlag to true,
-                ReadoutItemKey.SectorYellowFlag to true,
-                ReadoutItemKey.FullCourseYellow to true,
-                ReadoutItemKey.RedFlag to false,
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.BlueFlag to true,
+                ReadoutItemKey.LmuWindows.SectorYellowFlag to true,
+                ReadoutItemKey.LmuWindows.FullCourseYellow to true,
+                ReadoutItemKey.LmuWindows.RedFlag to false,
             ),
             useCase().first(),
         )

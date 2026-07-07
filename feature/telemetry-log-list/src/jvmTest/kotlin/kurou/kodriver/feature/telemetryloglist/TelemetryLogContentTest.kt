@@ -7,9 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -122,17 +124,18 @@ class TelemetryLogContentTest {
     @Test
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
         val expectedDisplayNames = listOf(
-            ReadoutItemKey.VehicleApproach.value to "車両接近",
-            ReadoutItemKey.Flag.value to "フラッグ",
-            ReadoutItemKey.BlueFlag.value to "ブルーフラッグ",
-            ReadoutItemKey.SectorYellowFlag.value to "イエローフラッグ",
-            ReadoutItemKey.FullCourseYellow.value to "フルコースイエロー",
-            ReadoutItemKey.RedFlag.value to "レッドフラッグ",
-            ReadoutItemKey.VehicleDamage.value to "車両故障",
-            ReadoutItemKey.Overheat.value to "オーバーヒート",
-            ReadoutItemKey.TyreTemperature.value to "タイヤ温度",
-            ReadoutItemKey.MyBestLap.value to "自己ベストラップ",
-            ReadoutItemKey.RemainingFuelLaps.value to "燃料残り周回数",
+            ReadoutItemKey.LmuWindows.VehicleApproach.value to "車両接近",
+            ReadoutItemKey.LmuWindows.Flag.value to "フラッグ",
+            ReadoutItemKey.LmuWindows.BlueFlag.value to "ブルーフラッグ",
+            ReadoutItemKey.LmuWindows.SectorYellowFlag.value to "イエローフラッグ",
+            ReadoutItemKey.LmuWindows.FullCourseYellow.value to "フルコースイエロー",
+            ReadoutItemKey.LmuWindows.RedFlag.value to "レッドフラッグ",
+            ReadoutItemKey.LmuWindows.VehicleDamage.value to "車両故障",
+            ReadoutItemKey.LmuWindows.Overheat.value to "オーバーヒート",
+            ReadoutItemKey.LmuWindows.TyreTemperature.value to "タイヤ温度",
+            ReadoutItemKey.LmuWindows.MyBestLap.value to "自己ベストラップ",
+            ReadoutItemKey.Gt7Ps5.MyBestLap.value to "自己ベストラップ",
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.value to "燃料残り周回数",
         )
 
         rule.setContent {
@@ -141,8 +144,8 @@ class TelemetryLogContentTest {
             }
         }
 
-        expectedDisplayNames.forEach { (_, displayName) ->
-            rule.onNodeWithText(displayName).assertExists()
+        expectedDisplayNames.groupingBy { it.second }.eachCount().forEach { (displayName, count) ->
+            rule.onAllNodesWithText(displayName).assertCountEquals(count)
         }
     }
 

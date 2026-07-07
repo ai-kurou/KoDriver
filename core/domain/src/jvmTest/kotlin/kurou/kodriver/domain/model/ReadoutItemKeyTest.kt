@@ -8,12 +8,22 @@ class ReadoutItemKeyTest {
 
     @Test
     fun `fromValue は一致するキーを返す`() {
-        assertEquals(ReadoutItemKey.VehicleApproach, ReadoutItemKey.fromValue("vehicle_approach"))
-        assertEquals(ReadoutItemKey.Flag, ReadoutItemKey.fromValue("flag"))
-        assertEquals(ReadoutItemKey.VehicleDamage, ReadoutItemKey.fromValue("vehicle_damage"))
-        assertEquals(ReadoutItemKey.TyreTemperature, ReadoutItemKey.fromValue("tyre_temperature"))
-        assertEquals(ReadoutItemKey.MyBestLap, ReadoutItemKey.fromValue("my_best_lap"))
-        assertEquals(ReadoutItemKey.RemainingFuelLaps, ReadoutItemKey.fromValue("remaining_fuel_laps"))
+        assertEquals(
+            ReadoutItemKey.LmuWindows.VehicleApproach,
+            ReadoutItemKey.fromValue("lmu_windows_vehicle_approach"),
+        )
+        assertEquals(ReadoutItemKey.LmuWindows.Flag, ReadoutItemKey.fromValue("lmu_windows_flag"))
+        assertEquals(
+            ReadoutItemKey.LmuWindows.VehicleDamage,
+            ReadoutItemKey.fromValue("lmu_windows_vehicle_damage"),
+        )
+        assertEquals(
+            ReadoutItemKey.LmuWindows.TyreTemperature,
+            ReadoutItemKey.fromValue("lmu_windows_tyre_temperature"),
+        )
+        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
+        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
+        assertEquals(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps, ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps"))
     }
 
     @Test

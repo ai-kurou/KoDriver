@@ -16,10 +16,16 @@ class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
         val saveUseCase = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repo)
         val observeUseCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-        saveUseCase(ReadoutItemKey.Overheat, true)
-        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true), observeUseCase().first())
+        saveUseCase(ReadoutItemKey.LmuWindows.Overheat, true)
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to true),
+            observeUseCase().first(),
+        )
 
-        saveUseCase(ReadoutItemKey.Overheat, false)
-        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false), observeUseCase().first())
+        saveUseCase(ReadoutItemKey.LmuWindows.Overheat, false)
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to false),
+            observeUseCase().first(),
+        )
     }
 }

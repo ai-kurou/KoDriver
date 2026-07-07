@@ -53,13 +53,13 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
         if (current >= state.personalBestMs) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
-        if (!settings.enabledStates.getValue(ReadoutItemKey.MyBestLap)) {
+        if (!settings.enabledStates.getValue(ReadoutItemKey.Gt7Ps5.MyBestLap)) {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
         val event = when (settings.myBestLapVoiceType) {
-            MyBestLapVoiceType.FORMAL -> SpeechEvent.MyBestLapFormal
-            MyBestLapVoiceType.CASUAL -> SpeechEvent.MyBestLapCasual
+            MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
+            MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
         }
         return Gt7Ps5NarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),

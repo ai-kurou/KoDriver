@@ -39,32 +39,35 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() = testScope.runTest {
-        repository.saveEnabledState(ReadoutItemKey.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to true),
             repository.observeEnabledStates().first(),
         )
     }
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
-        repository.saveEnabledState(ReadoutItemKey.Overheat, true)
-        repository.saveEnabledState(ReadoutItemKey.Overheat, false)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to false),
             repository.observeEnabledStates().first(),
         )
     }
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() = testScope.runTest {
-        repository.saveEnabledState(ReadoutItemKey.Overheat, true)
-        repository.saveEnabledState(ReadoutItemKey.VehicleDamage, false)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true, ReadoutItemKey.VehicleDamage to false),
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.Overheat to true,
+                ReadoutItemKey.LmuWindows.VehicleDamage to false,
+            ),
             repository.observeEnabledStates().first(),
         )
     }

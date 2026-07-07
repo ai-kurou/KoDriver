@@ -23,15 +23,15 @@ import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
 private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
     Simulator.LmuWindows to listOf(
-        ReadoutItemKey.Flag,
-        ReadoutItemKey.VehicleApproach,
-        ReadoutItemKey.VehicleDamage,
-        ReadoutItemKey.TyreTemperature,
-        ReadoutItemKey.MyBestLap,
+        ReadoutItemKey.LmuWindows.Flag,
+        ReadoutItemKey.LmuWindows.VehicleApproach,
+        ReadoutItemKey.LmuWindows.VehicleDamage,
+        ReadoutItemKey.LmuWindows.TyreTemperature,
+        ReadoutItemKey.LmuWindows.MyBestLap,
     ),
     Simulator.Gt7Ps5 to listOf(
-        ReadoutItemKey.RemainingFuelLaps,
-        ReadoutItemKey.MyBestLap,
+        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps,
+        ReadoutItemKey.Gt7Ps5.MyBestLap,
     ),
 )
 

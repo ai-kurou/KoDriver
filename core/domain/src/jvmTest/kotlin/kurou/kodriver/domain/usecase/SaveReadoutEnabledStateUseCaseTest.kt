@@ -14,26 +14,26 @@ class SaveReadoutEnabledStateUseCaseTest {
         val saveUseCase = SaveReadoutEnabledStateUseCase(repo)
         val observeUseCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        saveUseCase("lmu_windows", ReadoutItemKey.MyBestLap, true)
+        saveUseCase("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap, true)
         assertEquals(
-            mapOf(
-                ReadoutItemKey.Flag to true,
-                ReadoutItemKey.VehicleApproach to true,
-                ReadoutItemKey.VehicleDamage to true,
-                ReadoutItemKey.TyreTemperature to false,
-                ReadoutItemKey.MyBestLap to true,
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.Flag to true,
+                ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                ReadoutItemKey.LmuWindows.VehicleDamage to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature to false,
+                ReadoutItemKey.LmuWindows.MyBestLap to true,
             ),
             observeUseCase("lmu_windows").first(),
         )
 
-        saveUseCase("lmu_windows", ReadoutItemKey.MyBestLap, false)
+        saveUseCase("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap, false)
         assertEquals(
-            mapOf(
-                ReadoutItemKey.Flag to true,
-                ReadoutItemKey.VehicleApproach to true,
-                ReadoutItemKey.VehicleDamage to true,
-                ReadoutItemKey.TyreTemperature to false,
-                ReadoutItemKey.MyBestLap to false,
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.Flag to true,
+                ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                ReadoutItemKey.LmuWindows.VehicleDamage to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature to false,
+                ReadoutItemKey.LmuWindows.MyBestLap to false,
             ),
             observeUseCase("lmu_windows").first(),
         )
