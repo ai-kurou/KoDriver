@@ -9,6 +9,8 @@ sealed class Simulator(
 
     companion object {
         private val entries by lazy { listOf(LmuWindows, Gt7Ps5) }
+
+        // nullは「まだシミュレーターが選択されていない」という正当な初期状態を表すため、非null化してデフォルト値にフォールバックしてはならない。
         fun fromId(id: String): Simulator? = entries.find { it.id == id }
     }
 }
