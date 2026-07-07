@@ -39,21 +39,7 @@ data class Gt7Ps5NarratorReadoutDecision(
 )
 
 class DetermineGt7Ps5NarratorReadoutUseCase {
-    operator fun invoke(
-        state: Gt7Ps5NarratorState,
-        telemetry: Gt7Ps5TelemetryData,
-        settings: Gt7Ps5NarratorReadoutSettings,
-        observedAtMs: Long,
-    ): Gt7Ps5NarratorReadoutDecision {
-        val myBestLapResult = determineMyBestLap(state, telemetry, settings)
-        val fuelResult = determineRemainingFuelLaps(myBestLapResult.state, telemetry, settings, observedAtMs)
-        return Gt7Ps5NarratorReadoutDecision(
-            state = fuelResult.state,
-            events = myBestLapResult.events + fuelResult.events,
-        )
-    }
-
-    private fun determineMyBestLap(
+    fun determineMyBestLap(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,
         settings: Gt7Ps5NarratorReadoutSettings,
@@ -81,7 +67,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         )
     }
 
-    private fun determineRemainingFuelLaps(
+    fun determineRemainingFuelLaps(
         state: Gt7Ps5NarratorState,
         telemetry: Gt7Ps5TelemetryData,
         settings: Gt7Ps5NarratorReadoutSettings,

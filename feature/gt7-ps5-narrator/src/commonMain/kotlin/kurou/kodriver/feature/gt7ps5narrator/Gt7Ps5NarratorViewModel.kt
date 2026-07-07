@@ -77,7 +77,8 @@ class Gt7Ps5NarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
 
     private var narratorState = Gt7Ps5NarratorState()
-    private var previousTelemetry: Gt7Ps5TelemetryData? = null
+    private var previousTelemetryForMyBestLap: Gt7Ps5TelemetryData? = null
+    private var previousTelemetryForRemainingFuelLaps: Gt7Ps5TelemetryData? = null
 
     private val gt7TelemetryFlow = selectedSimulator
         .flatMapLatest { simulator ->
@@ -86,20 +87,48 @@ class Gt7Ps5NarratorViewModel(
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private val currentSettings: Gt7Ps5NarratorReadoutSettings
+        get() = Gt7Ps5NarratorReadoutSettings(
+            enabledStates = listEnabledStates.value,
+            myBestLapVoiceType = voiceType.value,
+            remainingFuelLapsThreshold = fuelThreshold.value,
+            remainingFuelLapsEnabled = listEnabledStates.value.getValue(ReadoutItemKey.RemainingFuelLaps),
+        )
+
     @Suppress("UnusedPrivateProperty")
-    private val narratorJob = gt7TelemetryFlow
+    private val myBestLapJob = gt7TelemetryFlow
         .onEach { telemetry ->
-            val previous = previousTelemetry
+            val previous = previousTelemetryForMyBestLap
             val observedAtMs = currentTimeMs()
-            val decision = determineGt7Ps5NarratorReadout(
+            val decision = determineGt7Ps5NarratorReadout.determineMyBestLap(
                 state = narratorState,
                 telemetry = telemetry,
-                settings = Gt7Ps5NarratorReadoutSettings(
-                    enabledStates = listEnabledStates.value,
-                    myBestLapVoiceType = voiceType.value,
-                    remainingFuelLapsThreshold = fuelThreshold.value,
-                    remainingFuelLapsEnabled = listEnabledStates.value.getValue(ReadoutItemKey.RemainingFuelLaps),
-                ),
+                settings = currentSettings,
+            )
+            narratorState = decision.state
+            decision.events.forEach { event ->
+                if (speakWithPriority(event)) {
+                    saveTelemetryLog(
+                        createdAt = observedAtMs,
+                        simulatorId = Simulator.Gt7Ps5.id,
+                        readoutItemKey = event.readoutItemKey.value,
+                        telemetryJson = buildTelemetryLogJson(previous = previous, current = telemetry),
+                    )
+                }
+            }
+            previousTelemetryForMyBestLap = telemetry
+        }
+        .launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val remainingFuelLapsJob = gt7TelemetryFlow
+        .onEach { telemetry ->
+            val previous = previousTelemetryForRemainingFuelLaps
+            val observedAtMs = currentTimeMs()
+            val decision = determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
+                state = narratorState,
+                telemetry = telemetry,
+                settings = currentSettings,
                 observedAtMs = observedAtMs,
             )
             narratorState = decision.state
@@ -113,7 +142,7 @@ class Gt7Ps5NarratorViewModel(
                     )
                 }
             }
-            previousTelemetry = telemetry
+            previousTelemetryForRemainingFuelLaps = telemetry
         }
         .launchIn(viewModelScope)
 
