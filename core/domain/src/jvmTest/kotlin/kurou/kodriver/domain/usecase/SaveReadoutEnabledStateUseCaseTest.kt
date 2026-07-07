@@ -16,13 +16,21 @@ class SaveReadoutEnabledStateUseCaseTest {
 
         saveUseCase("lmu_windows", ReadoutItemKey.VehicleApproach, true)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to true),
+            mapOf(
+                ReadoutItemKey.TyreTemperature to false,
+                ReadoutItemKey.MyBestLap to false,
+                ReadoutItemKey.VehicleApproach to true,
+            ),
             observeUseCase("lmu_windows").first(),
         )
 
         saveUseCase("lmu_windows", ReadoutItemKey.VehicleApproach, false)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.VehicleApproach to false),
+            mapOf(
+                ReadoutItemKey.TyreTemperature to false,
+                ReadoutItemKey.MyBestLap to false,
+                ReadoutItemKey.VehicleApproach to false,
+            ),
             observeUseCase("lmu_windows").first(),
         )
     }

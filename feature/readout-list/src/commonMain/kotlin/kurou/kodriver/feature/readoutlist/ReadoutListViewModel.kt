@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,13 +36,6 @@ private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
 )
 
 private val simulators: List<Simulator> = simulatorItems.keys.toList()
-
-private val defaultEnabledStates: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
-    Simulator.LmuWindows to mapOf(
-        ReadoutItemKey.TyreTemperature to false,
-        ReadoutItemKey.MyBestLap to false,
-    ),
-)
 
 private data class LocalOrderState(
     val simulator: Simulator?,
@@ -77,13 +69,7 @@ class ReadoutListViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != null) {
-                observeReadoutEnabledStates(simulator.id).map { persisted ->
-                    defaultEnabledStates[simulator].orEmpty() + persisted
-                }
-            } else {
-                flowOf(emptyMap())
-            }
+            if (simulator != null) observeReadoutEnabledStates(simulator.id) else flowOf(emptyMap())
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 

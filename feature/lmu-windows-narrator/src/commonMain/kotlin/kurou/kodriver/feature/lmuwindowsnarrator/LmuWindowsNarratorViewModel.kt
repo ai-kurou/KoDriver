@@ -44,13 +44,6 @@ import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
-private val defaultReadoutEnabledStates: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
-    Simulator.LmuWindows to mapOf(
-        ReadoutItemKey.TyreTemperature to false,
-        ReadoutItemKey.MyBestLap to false,
-    ),
-)
-
 data class VehicleApproachUseCases(
     val observeProximity: ObserveProximityUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
@@ -114,9 +107,7 @@ class LmuWindowsNarratorViewModel(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator == null) emptyFlow<Map<ReadoutItemKey, Boolean>>()
-                else readoutListUseCases.observeReadoutEnabledStates(simulator.id).map { persisted ->
-                    defaultReadoutEnabledStates.getOrElse(simulator) { emptyMap<ReadoutItemKey, Boolean>() } + persisted
-                }
+                else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
             },
         flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
