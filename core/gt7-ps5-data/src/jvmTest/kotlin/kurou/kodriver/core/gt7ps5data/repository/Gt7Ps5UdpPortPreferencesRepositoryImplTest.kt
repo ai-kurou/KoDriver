@@ -6,23 +6,23 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.core.gt7ps5data.datasource.Gt7UdpPortPreferencesSerializer
+import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpPortPreferencesSerializer
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Gt7UdpPortPreferencesRepositoryImplTest {
+class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_gt7_udp_port_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore = DataStoreFactory.create(
-        serializer = Gt7UdpPortPreferencesSerializer,
+        serializer = Gt7Ps5UdpPortPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
     )
-    private val repository = Gt7UdpPortPreferencesRepositoryImpl(dataStore)
+    private val repository = Gt7Ps5UdpPortPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
     fun tearDown() {

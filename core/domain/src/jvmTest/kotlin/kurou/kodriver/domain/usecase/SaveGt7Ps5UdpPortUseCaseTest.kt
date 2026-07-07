@@ -6,10 +6,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class SaveGt7UdpPortUseCaseTest {
+class SaveGt7Ps5UdpPortUseCaseTest {
 
-    private val repo = FakeGt7UdpPortPreferencesRepository()
-    private val useCase = SaveGt7UdpPortUseCase(repo)
+    private val repo = FakeGt7Ps5UdpPortPreferencesRepository()
+    private val useCase = SaveGt7Ps5UdpPortUseCase(repo)
 
     @Test
     fun `33740を保存できる`() = runBlocking {
