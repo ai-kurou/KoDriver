@@ -248,10 +248,10 @@ private fun TelemetryLogListItem(
 }
 
 @Composable
-private fun simulatorIcon(simulatorId: String): Painter? = when (simulatorId) {
-    Simulator.Gt7Ps5.id -> painterResource(DesignSystemRes.drawable.gt7)
-    Simulator.LmuWindows.id -> painterResource(DesignSystemRes.drawable.lmu)
-    else -> null
+private fun simulatorIcon(simulatorId: String): Painter? = when (Simulator.fromId(simulatorId)) {
+    Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
+    Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
+    null -> null
 }
 
 @Composable
