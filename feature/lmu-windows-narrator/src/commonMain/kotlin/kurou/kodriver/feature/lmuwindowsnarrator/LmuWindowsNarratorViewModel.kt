@@ -183,7 +183,7 @@ class LmuWindowsNarratorViewModel(
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val proximityJob = selectedSimulator
+    private val vehicleApproachJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
             vehicleApproachUseCases.observeProximity()
@@ -213,7 +213,7 @@ class LmuWindowsNarratorViewModel(
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val overheatingJob = selectedSimulator
+    private val vehicleDamageJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
             vehicleDamageUseCases.observeVehicleDamage()
