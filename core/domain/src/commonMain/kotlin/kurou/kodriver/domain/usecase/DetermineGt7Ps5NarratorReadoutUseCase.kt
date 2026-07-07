@@ -67,7 +67,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
         if (current >= state.personalBestMs) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
-        if (settings.enabledStates[ReadoutItemKey.MyBestLap] == false) {
+        if (!settings.enabledStates.getValue(ReadoutItemKey.MyBestLap)) {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 

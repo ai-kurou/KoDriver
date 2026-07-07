@@ -64,13 +64,13 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val first = useCase.determineMyBestLap(
             state = LmuWindowsNarratorState(),
             telemetry = telemetry(bestLapTimeMs = 60_000L),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.MyBestLap to false)),
+            settings = settings(enabledStates = allEnabledStates + mapOf(ReadoutItemKey.MyBestLap to false)),
         )
 
         val second = useCase.determineMyBestLap(
             state = first.state,
             telemetry = telemetry(bestLapTimeMs = 59_000L),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.MyBestLap to false)),
+            settings = settings(enabledStates = allEnabledStates + mapOf(ReadoutItemKey.MyBestLap to false)),
         )
 
         assertEquals(emptyList<SpeechEvent>(), second.events)
@@ -190,14 +190,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
             proximity = leftProximity(vehicleId = 1),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.VehicleApproach to false)),
+            settings = settings(enabledStates = allEnabledStates + mapOf(ReadoutItemKey.VehicleApproach to false)),
             observedAtMs = 0L,
         )
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
             proximity = leftProximity(vehicleId = 1),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.VehicleApproach to false)),
+            settings = settings(enabledStates = allEnabledStates + mapOf(ReadoutItemKey.VehicleApproach to false)),
             observedAtMs = 50L,
         )
 
@@ -273,7 +273,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
             ),
             settings = settings(
-                enabledStates = mapOf(
+                enabledStates = allEnabledStates + mapOf(
                     ReadoutItemKey.BlueFlag to false,
                     ReadoutItemKey.SectorYellowFlag to false,
                     ReadoutItemKey.RedFlag to false,
@@ -300,12 +300,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
             ),
             settings = settings(
-                enabledStates = mapOf(
+                enabledStates = allEnabledStates + mapOf(
                     ReadoutItemKey.Flag to false,
-                    ReadoutItemKey.BlueFlag to true,
-                    ReadoutItemKey.SectorYellowFlag to true,
-                    ReadoutItemKey.FullCourseYellow to true,
-                    ReadoutItemKey.RedFlag to true,
                 ),
             ),
         )
@@ -359,7 +355,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision = useCase.determineVehicleDamage(
             state = LmuWindowsNarratorState(previousVehicleDamage = damage(overheating = false)),
             vehicleDamage = damage(overheating = true),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.Overheat to false)),
+            settings = settings(enabledStates = allEnabledStates + mapOf(ReadoutItemKey.Overheat to false)),
         )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
@@ -370,7 +366,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision = useCase.determineVehicleDamage(
             state = LmuWindowsNarratorState(previousVehicleDamage = damage(overheating = false)),
             vehicleDamage = damage(overheating = true),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.VehicleDamage to false)),
+            settings = settings(enabledStates = allEnabledStates + mapOf(ReadoutItemKey.VehicleDamage to false)),
         )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
@@ -432,7 +428,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             data = tyreTemperature(fl = 95.0),
             settings = settings(
                 tyreTemperatureHighThresholdCelsius = 90,
-                enabledStates = mapOf(ReadoutItemKey.TyreTemperature to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.TyreTemperature to false),
             ),
         )
 
@@ -447,7 +443,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             data = tyreTemperature(fl = 95.0),
             settings = settings(
                 tyreTemperatureHighThresholdCelsius = 90,
-                enabledStates = mapOf(ReadoutItemKey.TyreTemperature to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.TyreTemperature to false),
             ),
         ).state
 
@@ -472,8 +468,21 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 }
 
+private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
+    ReadoutItemKey.MyBestLap to true,
+    ReadoutItemKey.VehicleApproach to true,
+    ReadoutItemKey.VehicleDamage to true,
+    ReadoutItemKey.Overheat to true,
+    ReadoutItemKey.TyreTemperature to true,
+    ReadoutItemKey.Flag to true,
+    ReadoutItemKey.BlueFlag to true,
+    ReadoutItemKey.SectorYellowFlag to true,
+    ReadoutItemKey.FullCourseYellow to true,
+    ReadoutItemKey.RedFlag to true,
+)
+
 private fun settings(
-    enabledStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
+    enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,

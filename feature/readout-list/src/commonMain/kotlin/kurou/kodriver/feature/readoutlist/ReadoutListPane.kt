@@ -311,7 +311,7 @@ internal fun ReadoutListPane(
                                     },
                                     trailingContent = {
                                         Switch(
-                                            checked = uiState.readoutEnabledStates[item] != false,
+                                            checked = uiState.readoutEnabledStates.getValue(item),
                                             onCheckedChange = { onReadoutEnabledChanged(item, it) },
                                         )
                                     },

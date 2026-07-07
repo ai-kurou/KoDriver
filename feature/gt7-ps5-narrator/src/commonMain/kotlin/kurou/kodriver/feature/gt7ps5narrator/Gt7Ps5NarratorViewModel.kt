@@ -98,7 +98,7 @@ class Gt7Ps5NarratorViewModel(
                     enabledStates = listEnabledStates.value,
                     myBestLapVoiceType = voiceType.value,
                     remainingFuelLapsThreshold = fuelThreshold.value,
-                    remainingFuelLapsEnabled = listEnabledStates.value[ReadoutItemKey.RemainingFuelLaps] != false,
+                    remainingFuelLapsEnabled = listEnabledStates.value.getValue(ReadoutItemKey.RemainingFuelLaps),
                 ),
                 observedAtMs = observedAtMs,
             )

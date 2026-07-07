@@ -212,7 +212,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     private fun settings(
-        enabledStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.MyBestLap to true),
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelLapsEnabled: Boolean = true,
