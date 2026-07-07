@@ -225,12 +225,6 @@ private fun TelemetryLogListItem(
                 overflow = TextOverflow.Ellipsis,
             )
         },
-        overlineContent = {
-            Text(
-                text = "${log.simulatorId} / ${log.createdAt}",
-                style = MaterialTheme.typography.labelMedium,
-            )
-        },
         leadingContent = simulatorIcon(log.simulatorId)?.let { painter ->
             {
                 Box(
@@ -284,7 +278,7 @@ internal fun formatTelemetryLogTime(
 ): String = "${formatTimeOfDay(createdAt)} / レース +${formatDuration(raceElapsedMs)}"
 
 private fun formatTimeOfDay(milliseconds: Long): String {
-    val millisInDay = milliseconds.floorMod(MILLISECONDS_PER_DAY)
+    val millisInDay = (milliseconds + JST_OFFSET_MILLIS).floorMod(MILLISECONDS_PER_DAY)
     return formatDuration(millisInDay)
 }
 
@@ -308,6 +302,7 @@ private const val MILLISECONDS_PER_SECOND = 1_000L
 private const val MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND
 private const val MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE
 private const val MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR
+private const val JST_OFFSET_MILLIS = 9 * MILLISECONDS_PER_HOUR
 
 @Preview(showBackground = true)
 @Composable
