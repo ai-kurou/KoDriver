@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -357,7 +359,12 @@ internal fun AppScreenContent(
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
         KeepScreenOnEffect(keepScreenOn)
-        Box(modifier = Modifier.navigationBarsPadding()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .navigationBarsPadding(),
+        ) {
             NavigationSuiteScaffold(
                 modifier = Modifier.padding(top = 4.dp),
                 layoutType = resolvedLayoutType,
