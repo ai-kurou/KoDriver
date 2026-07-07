@@ -33,5 +33,41 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 else -> null
             }
         }
+
+        fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = when (simulator) {
+            is Simulator.LmuWindows -> {
+                ReadoutItemKey.entries
+                    .filterIsInstance<ReadoutItemKey.LmuWindows>()
+                    .mapNotNull { key -> lmuWindowsOrderIndex(key)?.let { key to it } }
+                    .sortedBy { (_, orderIndex) -> orderIndex }
+                    .map { (key, _) -> key }
+            }
+            is Simulator.Gt7Ps5 -> {
+                ReadoutItemKey.entries
+                    .filterIsInstance<ReadoutItemKey.Gt7Ps5>()
+                    .sortedBy { key -> gt7Ps5OrderIndex(key) }
+            }
+        }
+
+        // listPane のトップレベル項目のみ並び順を持つ。detailPane のサブトグル専用キーは null を返す。
+        // 新しい ReadoutItemKey.LmuWindows を追加した際、ここで対応を判断しないとコンパイルが通らない。
+        private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows): Int? = when (key) {
+            ReadoutItemKey.LmuWindows.Flag -> 0
+            ReadoutItemKey.LmuWindows.VehicleApproach -> 1
+            ReadoutItemKey.LmuWindows.VehicleDamage -> 2
+            ReadoutItemKey.LmuWindows.TyreTemperature -> 3
+            ReadoutItemKey.LmuWindows.MyBestLap -> 4
+            ReadoutItemKey.LmuWindows.BlueFlag,
+            ReadoutItemKey.LmuWindows.SectorYellowFlag,
+            ReadoutItemKey.LmuWindows.FullCourseYellow,
+            ReadoutItemKey.LmuWindows.RedFlag,
+            ReadoutItemKey.LmuWindows.Overheat,
+            -> null
+        }
+
+        private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5): Int = when (key) {
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> 0
+            ReadoutItemKey.Gt7Ps5.MyBestLap -> 1
+        }
     }
 }

@@ -78,4 +78,29 @@ class ReadoutListItemTypeTest {
     fun `gt7_ps5 でシミュレータに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.LmuWindows.Flag))
     }
+
+    @Test
+    fun `lmu_windows のデフォルト並び順はlistPaneのトップレベル項目のみを含む`() {
+        assertEquals(
+            listOf(
+                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.MyBestLap,
+            ),
+            ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+        )
+    }
+
+    @Test
+    fun `gt7_ps5 のデフォルト並び順は燃料残り周回数を先頭に自己ベストラップが続く`() {
+        assertEquals(
+            listOf(
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps,
+                ReadoutItemKey.Gt7Ps5.MyBestLap,
+            ),
+            ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
+        )
+    }
 }
