@@ -7,18 +7,35 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private class FakeTextToSpeechEngine(
+    private val onSpeak: (SpeechEvent) -> Unit,
+) : TextToSpeechEngine {
+    override val currentReadoutItemKey: ReadoutItemKey? = null
+    override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
+    override fun stop() = Unit
+    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakeLmuWindowsTyreTemperaturePreferencesRepository
+    private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: LmuWindowsReadoutTyreTemperatureDetailViewModel
 
     @Before
@@ -28,6 +45,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel(
             observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
+            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
+            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
 
@@ -39,9 +59,25 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() = runTest {
         assertEquals(
-            LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90),
+            LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90, overheatWarningEnabled = true),
             viewModel.uiState.first(),
         )
+    }
+
+    @Test
+    fun `リポジトリに overheatWarning=false が保存済みのとき overheatWarningEnabled が false の UiState を返す`() = runTest {
+        val repo = FakeLmuWindowsTyreTemperaturePreferencesRepository(
+            initialStates = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.TyreTemperature to false),
+        )
+        val vm = LmuWindowsReadoutTyreTemperatureDetailViewModel(
+            observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repo),
+            saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repo),
+            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo),
+            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repo),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine {}),
+        )
+
+        assertEquals(false, vm.uiState.first().overheatWarningEnabled)
     }
 
     @Test
@@ -55,5 +91,20 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         viewModel.onHighThresholdChanged(100)
         viewModel.onHighThresholdReset()
         assertEquals(90, viewModel.uiState.first().highThresholdCelsius)
+    }
+
+    @Test
+    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() = runTest {
+        viewModel.onOverheatWarningEnabledChanged(false)
+        assertEquals(false, viewModel.uiState.first().overheatWarningEnabled)
+
+        viewModel.onOverheatWarningEnabledChanged(true)
+        assertEquals(true, viewModel.uiState.first().overheatWarningEnabled)
+    }
+
+    @Test
+    fun `onPreviewClickedを呼ぶとTyreOverheatイベントが再生される`() {
+        viewModel.onPreviewClicked()
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), playedEvents)
     }
 }

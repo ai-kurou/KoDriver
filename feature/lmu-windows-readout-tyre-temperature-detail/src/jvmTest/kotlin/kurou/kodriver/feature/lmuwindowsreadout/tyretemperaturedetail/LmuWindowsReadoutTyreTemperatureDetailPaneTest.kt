@@ -67,4 +67,38 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         assertEquals(95, changedValue)
     }
+
+    @Test
+    fun `タイヤ過熱警告チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(overheatWarningEnabled = true),
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("タイヤ過熱警告", substring = true)[0].performClick()
+
+        assertEquals(true, previewClicked)
+    }
+
+    @Test
+    fun `カーカス温度カードのヘッダーをタップするとonOverheatWarningEnabledChangedが呼ばれる`() {
+        var changedValue: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(overheatWarningEnabled = true),
+                    onOverheatWarningEnabledChanged = { changedValue = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("カーカス温度", substring = true)[0].performClick()
+
+        assertEquals(false, changedValue)
+    }
 }
