@@ -21,21 +21,7 @@ import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
-private val simulatorItems: Map<Simulator, List<ReadoutItemKey>> = mapOf(
-    Simulator.LmuWindows to listOf(
-        ReadoutItemKey.LmuWindows.Flag,
-        ReadoutItemKey.LmuWindows.VehicleApproach,
-        ReadoutItemKey.LmuWindows.VehicleDamage,
-        ReadoutItemKey.LmuWindows.TyreTemperature,
-        ReadoutItemKey.LmuWindows.MyBestLap,
-    ),
-    Simulator.Gt7Ps5 to listOf(
-        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps,
-        ReadoutItemKey.Gt7Ps5.MyBestLap,
-    ),
-)
-
-private val simulators: List<Simulator> = simulatorItems.keys.toList()
+private val simulators: List<Simulator> = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5)
 
 private data class LocalOrderState(
     val simulator: Simulator?,
@@ -80,7 +66,7 @@ class ReadoutListViewModel(
         _persistedOrder,
         _localOrder,
     ) { selected, persisted, local ->
-        val defaultItems = simulatorItems[selected].orEmpty()
+        val defaultItems = selected?.let { ReadoutListItemType.defaultOrder(it) }.orEmpty()
         when {
             // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
             local.simulator == selected -> local.items

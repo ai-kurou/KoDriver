@@ -22,7 +22,7 @@ sealed interface ReadoutItemKey {
     }
 
     companion object {
-        private val entries by lazy {
+        val entries by lazy {
             listOf(
                 LmuWindows.VehicleApproach,
                 LmuWindows.Flag,
