@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class LmuWindowsVehicleDamageRepositoryTest {
+class LmuWindowsVehicleDamageRepositoryImplTest {
 
     private fun makeSource(
         reader: SharedMemoryReader,
@@ -43,7 +43,7 @@ class LmuWindowsVehicleDamageRepositoryTest {
                 ),
             ),
         )
-        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
 
         val result = repo.vehicleDamageStream().first()
 
@@ -57,7 +57,7 @@ class LmuWindowsVehicleDamageRepositoryTest {
         val reader = FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(overheating = false, partDetached = false)),
         )
-        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
 
         val result = repo.vehicleDamageStream().first()
 
@@ -70,7 +70,7 @@ class LmuWindowsVehicleDamageRepositoryTest {
         val reader = FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(activeVehicles = 0)),
         )
-        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
@@ -85,7 +85,7 @@ class LmuWindowsVehicleDamageRepositoryTest {
         val reader = FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
         )
-        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
@@ -101,7 +101,7 @@ class LmuWindowsVehicleDamageRepositoryTest {
             buffer = buildDamageBuffer(),
             openResult = false,
         )
-        val repo = LmuWindowsVehicleDamageRepository(source = makeSource(reader))
+        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }

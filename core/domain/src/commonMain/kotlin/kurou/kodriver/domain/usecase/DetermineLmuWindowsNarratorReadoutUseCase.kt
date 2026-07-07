@@ -1,22 +1,22 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleDamageData
 
 data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
-    val previousRaceFlags: RaceFlagsData? = null,
-    val previousVehicleDamage: VehicleDamageData? = null,
+    val previousRaceFlags: LmuWindowsRaceFlagsData? = null,
+    val previousVehicleDamage: LmuWindowsVehicleDamageData? = null,
     val personalBestMs: Long = Long.MAX_VALUE,
     val previousBestLapTimeMs: Long? = null,
     val tyreOverheating: Boolean = false,
@@ -80,7 +80,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineVehicleApproach(
         state: LmuWindowsNarratorState,
-        proximity: ProximityData,
+        proximity: LmuWindowsProximityData,
         settings: LmuWindowsNarratorReadoutSettings,
         observedAtMs: Long,
     ): LmuWindowsNarratorReadoutDecision {
@@ -122,7 +122,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineVehicleDamage(
         state: LmuWindowsNarratorState,
-        vehicleDamage: VehicleDamageData,
+        vehicleDamage: LmuWindowsVehicleDamageData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val previous = state.previousVehicleDamage ?: return LmuWindowsNarratorReadoutDecision(
@@ -147,7 +147,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineTyreTemperature(
         state: LmuWindowsNarratorState,
-        data: TyreCarcassTemperatureData,
+        data: LmuWindowsTyreCarcassTemperatureData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val threshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
@@ -162,7 +162,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineRaceFlags(
         state: LmuWindowsNarratorState,
-        raceFlags: RaceFlagsData,
+        raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
         val previous = state.previousRaceFlags ?: return LmuWindowsNarratorReadoutDecision(
@@ -182,8 +182,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     }
 
     private fun determineRaceFlagEvents(
-        previous: RaceFlagsData,
-        raceFlags: RaceFlagsData,
+        previous: LmuWindowsRaceFlagsData,
+        raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): List<SpeechEvent> = listOfNotNull(
         determineBlueFlagEvent(previous, raceFlags, settings),
@@ -193,8 +193,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     )
 
     private fun determineBlueFlagEvent(
-        previous: RaceFlagsData,
-        raceFlags: RaceFlagsData,
+        previous: LmuWindowsRaceFlagsData,
+        raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
@@ -208,8 +208,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
 
     private fun determineYellowFlagEvent(
-        previous: RaceFlagsData,
-        raceFlags: RaceFlagsData,
+        previous: LmuWindowsRaceFlagsData,
+        raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
         if (!settings.enabledStates.getValue(ReadoutItemKey.SectorYellowFlag)) return null
@@ -221,8 +221,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     }
 
     private fun determineFullCourseYellowEvent(
-        previous: RaceFlagsData,
-        raceFlags: RaceFlagsData,
+        previous: LmuWindowsRaceFlagsData,
+        raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
@@ -236,8 +236,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
 
     private fun determineRedFlagEvent(
-        previous: RaceFlagsData,
-        raceFlags: RaceFlagsData,
+        previous: LmuWindowsRaceFlagsData,
+        raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (

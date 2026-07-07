@@ -33,7 +33,7 @@ import kotlin.test.assertTrue
  *   relX = opp.posX  (負=左, 正=右)
  *   relY = -opp.posZ (負=前, 正=後)
  */
-class LmuWindowsProximityRepositoryTest {
+class LmuWindowsProximityRepositoryImplTest {
 
     private fun makeSource(
         reader: SharedMemoryReader,
@@ -53,7 +53,7 @@ class LmuWindowsProximityRepositoryTest {
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
         val reader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 1, playerIdx = 0))
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(reader),
         )
@@ -72,7 +72,7 @@ class LmuWindowsProximityRepositoryTest {
             buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
             openResult = false,
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(reader),
         )
@@ -93,7 +93,7 @@ class LmuWindowsProximityRepositoryTest {
             buffer = buildBuffer(activeVehicles = 1, playerIdx = 0),
             returnNullBuffer = true,
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(reader),
         )
@@ -120,7 +120,7 @@ class LmuWindowsProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -139,7 +139,7 @@ class LmuWindowsProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = 3.0, posZ = 0.0)),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -160,7 +160,7 @@ class LmuWindowsProximityRepositoryTest {
                 VehiclePos(posX = 3.0, posZ = 0.0),
             ),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -183,7 +183,7 @@ class LmuWindowsProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = -10.0)),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -203,7 +203,7 @@ class LmuWindowsProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = -5.4)),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
                 longitudinal = vehicleLength,
             ),
@@ -224,7 +224,7 @@ class LmuWindowsProximityRepositoryTest {
         // activeVehicles=1, playerIdx=2 → 2 >= 1 → スキップ
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 2)
         val fakeReader = FakeProximityMemoryReader(buffer)
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(fakeReader),
         )
@@ -241,7 +241,7 @@ class LmuWindowsProximityRepositoryTest {
     @Test
     fun `activeVehicles が0の場合は emit しない`() = runBlocking {
         val fakeReader = FakeProximityMemoryReader(buildBuffer(activeVehicles = 0, playerIdx = 0))
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(fakeReader),
         )
@@ -259,7 +259,7 @@ class LmuWindowsProximityRepositoryTest {
         // バッファ135_000バイト → maxVehicleCount=3。activeVehicles=255はクランプされる
         // BufferUnderflowException が発生しないことを確認
         val buffer = buildBuffer(activeVehicles = 255, playerIdx = 0)
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -270,7 +270,7 @@ class LmuWindowsProximityRepositoryTest {
 
     @Test
     fun `ヘッダー未満のバッファでは最大車両数は0になる`() {
-        assertEquals(0, LmuWindowsProximityRepository.maxVehicleCount(ByteBuffer.allocate(1)))
+        assertEquals(0, LmuWindowsProximityRepositoryImpl.maxVehicleCount(ByteBuffer.allocate(1)))
     }
 
     // -------------------------------------------------------------------------
@@ -285,7 +285,7 @@ class LmuWindowsProximityRepositoryTest {
             playerIdx = 0,
             opponents = listOf(VehiclePos(posX = -3.0, posZ = 0.0)),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -307,7 +307,7 @@ class LmuWindowsProximityRepositoryTest {
                 VehiclePos(posX = -5.0, posZ = 0.0),
             ),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -327,7 +327,7 @@ class LmuWindowsProximityRepositoryTest {
                 VehiclePos(posX = 5.0, posZ = 0.0),
             ),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )
@@ -347,7 +347,7 @@ class LmuWindowsProximityRepositoryTest {
                 VehiclePos(posX = 6.0, posZ = 0.0),
             ),
         )
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
                 longitudinal = 4.5,
                 lateral = 5.0,
@@ -364,7 +364,7 @@ class LmuWindowsProximityRepositoryTest {
     @Test
     fun `横方向閾値が更新されると新しい閾値で判定する`() = runBlocking {
         val thresholds = MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(lateral = 2.0)
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = thresholds,
             source = makeSource(
                 FakeProximityMemoryReader(
@@ -400,7 +400,7 @@ class LmuWindowsProximityRepositoryTest {
     @Test
     fun `並走車がいない場合は横距離が MAX_VALUE になる`() = runBlocking {
         val buffer = buildBuffer(activeVehicles = 1, playerIdx = 0)
-        val repo = LmuWindowsProximityRepository(
+        val repo = LmuWindowsProximityRepositoryImpl(
             thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(),
             source = makeSource(FakeProximityMemoryReader(buffer)),
         )

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class LmuWindowsTyreCarcassTemperatureRepositoryTest {
+class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
 
     private fun makeSource(
         reader: SharedMemoryReader,
@@ -45,7 +45,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
                 ),
             ),
         )
-        val repo = LmuWindowsTyreCarcassTemperatureRepository(source = makeSource(reader))
+        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
 
         val result = repo.tyreCarcassTemperatureStream().first()
 
@@ -66,7 +66,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
                 ),
             ),
         )
-        val repo = LmuWindowsTyreCarcassTemperatureRepository(source = makeSource(reader))
+        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
 
         val result = repo.tyreCarcassTemperatureStream().first()
 
@@ -78,7 +78,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
         val reader = FakeTyreCarcassTemperatureMemoryReader(
             buildTyreCarcassTemperatureBuffer(TyreCarcassTemperatureBufferConfig(activeVehicles = 0)),
         )
-        val repo = LmuWindowsTyreCarcassTemperatureRepository(source = makeSource(reader))
+        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
@@ -95,7 +95,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
                 TyreCarcassTemperatureBufferConfig(activeVehicles = 1, playerIdx = 1),
             ),
         )
-        val repo = LmuWindowsTyreCarcassTemperatureRepository(source = makeSource(reader))
+        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
@@ -111,7 +111,7 @@ class LmuWindowsTyreCarcassTemperatureRepositoryTest {
             buffer = buildTyreCarcassTemperatureBuffer(),
             openResult = false,
         )
-        val repo = LmuWindowsTyreCarcassTemperatureRepository(source = makeSource(reader))
+        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
 
         val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }

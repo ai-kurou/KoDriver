@@ -3,24 +3,24 @@ package kurou.kodriver.core.lmuwindowsdata.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.domain.model.VehicleDamageData
-import kurou.kodriver.domain.repository.VehicleDamageRepository
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import java.nio.ByteBuffer
 
-internal class LmuWindowsVehicleDamageRepository(
+internal class LmuWindowsVehicleDamageRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
-) : VehicleDamageRepository {
+) : LmuWindowsVehicleDamageRepository {
 
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> =
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
         source.bufferFlow.mapNotNull { readDamage(it) }
 
-    private fun readDamage(buffer: ByteBuffer): VehicleDamageData? {
+    private fun readDamage(buffer: ByteBuffer): LmuWindowsVehicleDamageData? {
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
         val activeVehicles = buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF
         if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
 
         val vehicleBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
-        return VehicleDamageData(
+        return LmuWindowsVehicleDamageData(
             overheating = buffer.get(vehicleBase + OFF_OVERHEATING).toInt() != 0,
             partDetached = buffer.get(vehicleBase + OFF_PART_DETACHED).toInt() != 0,
             lastImpactMagnitude = buffer.getDouble(vehicleBase + OFF_LAST_IMPACT_MAGNITUDE),

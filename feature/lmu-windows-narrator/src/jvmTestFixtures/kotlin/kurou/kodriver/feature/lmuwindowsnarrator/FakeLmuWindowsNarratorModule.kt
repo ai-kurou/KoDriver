@@ -4,43 +4,43 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.model.RaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleDamageData
-import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
-import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
 val fakeLmuWindowsNarratorModule = module {
-    single<ProximityRepository> { FakeProximityRepository() }
-    single<FlagRepository> { FakeFlagRepository() }
+    single<LmuWindowsProximityRepository> { FakeLmuWindowsProximityRepository() }
+    single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
     single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
     single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
     single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
-    single<VehicleDamageRepository> { FakeVehicleDamageRepository() }
+    single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
     single<SoundPlayer> { NoOpSoundPlayer() }
     single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
-    single<TyreCarcassTemperatureRepository> { FakeTyreCarcassTemperatureRepository() }
+    single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
     single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
 }
 
-class FakeProximityRepository : ProximityRepository {
-    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+class FakeLmuWindowsProximityRepository : LmuWindowsProximityRepository {
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
 }
 
-class FakeFlagRepository : FlagRepository {
-    override fun flagStream(): Flow<RaceFlagsData> = emptyFlow()
+class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
 }
 
 class FakeLmuWindowsRepository : LmuWindowsRepository {
@@ -68,8 +68,8 @@ class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamage
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
 }
 
-class FakeVehicleDamageRepository : VehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = emptyFlow()
 }
 
 class NoOpSoundPlayer : SoundPlayer {
@@ -83,8 +83,8 @@ class FakeSoundVolumePreferencesRepository : SoundVolumePreferencesRepository {
     override suspend fun saveVolume(volume: Int) { flow.update { volume } }
 }
 
-class FakeTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
-    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {

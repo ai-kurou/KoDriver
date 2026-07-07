@@ -8,13 +8,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 
 private val flagsJson = Json {
     encodeDefaults = true
 }
 
-internal fun Route.flagWebSocket(observeRaceFlags: ObserveRaceFlagsUseCase) {
+internal fun Route.flagWebSocket(observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase) {
     webSocket(KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows)) {
         observeRaceFlags()
             .distinctUntilChanged()

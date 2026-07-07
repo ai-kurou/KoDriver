@@ -4,22 +4,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
-import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import java.nio.ByteBuffer
 
-internal class LmuWindowsTyreCarcassTemperatureRepository(
+internal class LmuWindowsTyreCarcassTemperatureRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
-) : TyreCarcassTemperatureRepository {
+) : LmuWindowsTyreCarcassTemperatureRepository {
 
-    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> =
+    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =
         source.bufferFlow.mapNotNull { readTyreCarcassTemperature(it) }
 
-    private fun readTyreCarcassTemperature(buffer: ByteBuffer): TyreCarcassTemperatureData? {
+    private fun readTyreCarcassTemperature(buffer: ByteBuffer): LmuWindowsTyreCarcassTemperatureData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
         val wheels = LmuWindowsMapper.readCarcassTemperaturesK(buffer, vehicleBase)
             .mapValues { (_, kelvin) -> kelvin - KELVIN_OFFSET }
-        return TyreCarcassTemperatureData(wheels)
+        return LmuWindowsTyreCarcassTemperatureData(wheels)
     }
 
     private companion object {

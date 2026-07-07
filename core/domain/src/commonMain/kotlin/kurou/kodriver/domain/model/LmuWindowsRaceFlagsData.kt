@@ -3,7 +3,7 @@ package kurou.kodriver.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RaceFlagsData(
+data class LmuWindowsRaceFlagsData(
     // セッション全体の進行状態。例: ガレージ、グリッド、走行中、終了後。
     val gamePhase: SessionPhase,
 

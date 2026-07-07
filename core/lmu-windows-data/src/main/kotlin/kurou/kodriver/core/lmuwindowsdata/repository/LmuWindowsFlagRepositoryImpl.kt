@@ -4,26 +4,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
-import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import java.nio.ByteBuffer
 
-internal class LmuWindowsFlagRepository(
+internal class LmuWindowsFlagRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
-) : FlagRepository {
+) : LmuWindowsFlagRepository {
 
-    override fun flagStream(): Flow<RaceFlagsData> =
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> =
         source.bufferFlow.mapNotNull { readFlags(it) }
 
-    private fun readFlags(buffer: ByteBuffer): RaceFlagsData? {
+    private fun readFlags(buffer: ByteBuffer): LmuWindowsRaceFlagsData? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_NUM_VEHICLES).coerceIn(0, MAX_VEHICLES)
         val playerVehicleBase = findPlayerVehicleBase(buffer, vehicleCount) ?: return null
 
-        return RaceFlagsData(
+        return LmuWindowsRaceFlagsData(
             gamePhase = SessionPhase.fromRaw(buffer.get(SCORING_BASE + OFF_GAME_PHASE).toInt() and 0xFF),
             yellowFlagState = SessionYellowFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_YELLOW_FLAG_STATE).toInt()),
             sectorFlags = listOf(

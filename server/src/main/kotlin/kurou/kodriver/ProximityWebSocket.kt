@@ -8,9 +8,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveProximityUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 
-internal fun Route.proximityWebSocket(observeProximity: ObserveProximityUseCase) {
+internal fun Route.proximityWebSocket(observeProximity: ObserveLmuWindowsProximityUseCase) {
     webSocket(KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LmuWindows)) {
         observeProximity()
             .distinctUntilChanged()

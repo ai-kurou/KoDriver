@@ -3,24 +3,24 @@ package kurou.kodriver.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
-import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 
-internal class FakeFlagRepository(
-    private val stream: Flow<RaceFlagsData> = flowOf(),
-) : FlagRepository {
-    override fun flagStream(): Flow<RaceFlagsData> = stream
+internal class FakeLmuWindowsFlagRepository(
+    private val stream: Flow<LmuWindowsRaceFlagsData> = flowOf(),
+) : LmuWindowsFlagRepository {
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = stream
 }
 
 internal fun fakeRaceFlagsData(
     gamePhase: SessionPhase = SessionPhase.GARAGE,
     yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
     playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
-) = RaceFlagsData(
+) = LmuWindowsRaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = yellowFlagState,
     sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),

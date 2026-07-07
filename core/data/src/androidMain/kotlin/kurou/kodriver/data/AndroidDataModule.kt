@@ -7,20 +7,22 @@ import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
 import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
-import kurou.kodriver.domain.repository.FlagRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
-import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
@@ -29,8 +31,6 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
-import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.VehicleDamageRepository
 import org.koin.dsl.module
 
 private val Context.simulatorDataStore by preferencesDataStore("simulator_preferences")
@@ -57,10 +57,10 @@ fun androidDataModule(context: Context) = module {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
     }
     single<LmuWindowsRepository> { EmptyLmuWindowsRepository() }
-    single<FlagRepository> { WebSocketFlagRepository(get()) }
-    single<ProximityRepository> { WebSocketProximityRepository(get()) }
-    single<VehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
-    single<TyreCarcassTemperatureRepository> { WebSocketTyreCarcassTemperatureRepository(get()) }
+    single<LmuWindowsFlagRepository> { WebSocketFlagRepository(get()) }
+    single<LmuWindowsProximityRepository> { WebSocketProximityRepository(get()) }
+    single<LmuWindowsVehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
+    single<LmuWindowsTyreCarcassTemperatureRepository> { WebSocketTyreCarcassTemperatureRepository(get()) }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }

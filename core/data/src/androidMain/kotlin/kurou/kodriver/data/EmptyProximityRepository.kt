@@ -2,9 +2,9 @@ package kurou.kodriver.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 
-internal class EmptyProximityRepository : ProximityRepository {
-    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+internal class EmptyProximityRepository : LmuWindowsProximityRepository {
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
 }

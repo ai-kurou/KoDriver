@@ -16,10 +16,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.VehicleDamageData
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
-import kurou.kodriver.domain.repository.VehicleDamageRepository
 
 private const val DEFAULT_PORT = 8080
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
@@ -28,7 +28,7 @@ internal class WebSocketVehicleDamageRepository(
     private val serverIpRepository: ServerIpRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
-) : VehicleDamageRepository {
+) : LmuWindowsVehicleDamageRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -37,14 +37,14 @@ internal class WebSocketVehicleDamageRepository(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> =
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
         serverIpRepository.serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) emptyFlow()
                 else connectWithRetry(ip)
             }
 
-    private fun connectWithRetry(ip: String): Flow<VehicleDamageData> = flow {
+    private fun connectWithRetry(ip: String): Flow<LmuWindowsVehicleDamageData> = flow {
         while (true) {
             try {
                 client.webSocket(
@@ -55,7 +55,7 @@ internal class WebSocketVehicleDamageRepository(
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {
-                                emit(json.decodeFromString<VehicleDamageData>(frame.readText()))
+                                emit(json.decodeFromString<LmuWindowsVehicleDamageData>(frame.readText()))
                             } catch (e: CancellationException) {
                                 throw e
                             } catch (_: SerializationException) {

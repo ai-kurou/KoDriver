@@ -4,19 +4,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ObserveProximityUseCaseTest {
+class ObserveLmuWindowsProximityUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのproximityStreamを返す`() = runBlocking {
         val expected = fakeProximityData(isSideBySideLeft = true)
-        val repo = FakeProximityRepository(stream = flowOf(expected))
-        val useCase = ObserveProximityUseCase(repo)
+        val repo = FakeLmuWindowsProximityRepository(stream = flowOf(expected))
+        val useCase = ObserveLmuWindowsProximityUseCase(repo)
 
         val result = useCase().first()
 
@@ -25,8 +25,8 @@ class ObserveProximityUseCaseTest {
 
     @Test
     fun `invokeは空のフローをそのまま返す`() = runBlocking {
-        val repo = FakeProximityRepository(stream = flowOf())
-        val useCase = ObserveProximityUseCase(repo)
+        val repo = FakeLmuWindowsProximityRepository(stream = flowOf())
+        val useCase = ObserveLmuWindowsProximityUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
 
@@ -38,8 +38,8 @@ class ObserveProximityUseCaseTest {
         val data1 = fakeProximityData(isSideBySideLeft = false, isSideBySideRight = false)
         val data2 = fakeProximityData(isSideBySideLeft = true, isSideBySideRight = false)
         val data3 = fakeProximityData(isSideBySideLeft = true, isSideBySideRight = true)
-        val repo = FakeProximityRepository(stream = flowOf(data1, data2, data3))
-        val useCase = ObserveProximityUseCase(repo)
+        val repo = FakeLmuWindowsProximityRepository(stream = flowOf(data1, data2, data3))
+        val useCase = ObserveLmuWindowsProximityUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
 
@@ -47,10 +47,10 @@ class ObserveProximityUseCaseTest {
     }
 }
 
-internal class FakeProximityRepository(
-    private val stream: Flow<ProximityData> = flowOf(),
-) : ProximityRepository {
-    override fun proximityStream(): Flow<ProximityData> = stream
+internal class FakeLmuWindowsProximityRepository(
+    private val stream: Flow<LmuWindowsProximityData> = flowOf(),
+) : LmuWindowsProximityRepository {
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = stream
 }
 
 internal fun fakeProximityData(
@@ -58,7 +58,7 @@ internal fun fakeProximityData(
     isSideBySideRight: Boolean = false,
     lateralDistanceLeftMeters: Double = Double.MAX_VALUE,
     lateralDistanceRightMeters: Double = Double.MAX_VALUE,
-) = ProximityData(
+) = LmuWindowsProximityData(
     sideBySideLeftVehicleIds = if (isSideBySideLeft) setOf(1) else emptySet(),
     sideBySideRightVehicleIds = if (isSideBySideRight) setOf(2) else emptySet(),
     lateralDistanceLeftMeters = lateralDistanceLeftMeters,

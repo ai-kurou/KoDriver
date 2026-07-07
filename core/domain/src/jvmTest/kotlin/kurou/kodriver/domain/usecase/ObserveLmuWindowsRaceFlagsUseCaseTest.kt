@@ -10,7 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ObserveRaceFlagsUseCaseTest {
+class ObserveLmuWindowsRaceFlagsUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのflagStreamを返す`() = runBlocking {
@@ -19,8 +19,8 @@ class ObserveRaceFlagsUseCaseTest {
             yellowFlagState = SessionYellowFlagState.PIT_CLOSED,
             playerFlag = PrimaryFlag.BLUE,
         )
-        val repo = FakeFlagRepository(stream = flowOf(expected))
-        val useCase = ObserveRaceFlagsUseCase(repo)
+        val repo = FakeLmuWindowsFlagRepository(stream = flowOf(expected))
+        val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
         val result = useCase().first()
 
@@ -29,8 +29,8 @@ class ObserveRaceFlagsUseCaseTest {
 
     @Test
     fun `invokeは空のフローをそのまま返す`() = runBlocking {
-        val repo = FakeFlagRepository(stream = flowOf())
-        val useCase = ObserveRaceFlagsUseCase(repo)
+        val repo = FakeLmuWindowsFlagRepository(stream = flowOf())
+        val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
 
@@ -42,8 +42,8 @@ class ObserveRaceFlagsUseCaseTest {
         val data1 = fakeRaceFlagsData(gamePhase = SessionPhase.WARM_UP)
         val data2 = fakeRaceFlagsData(gamePhase = SessionPhase.GRID_WALK)
         val data3 = fakeRaceFlagsData(gamePhase = SessionPhase.FORMATION)
-        val repo = FakeFlagRepository(stream = flowOf(data1, data2, data3))
-        val useCase = ObserveRaceFlagsUseCase(repo)
+        val repo = FakeLmuWindowsFlagRepository(stream = flowOf(data1, data2, data3))
+        val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
 

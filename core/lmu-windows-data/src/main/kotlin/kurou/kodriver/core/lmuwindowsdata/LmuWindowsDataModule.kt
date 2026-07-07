@@ -5,21 +5,21 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepository
-import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsProximityRepository
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsProximityRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
-import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepository
-import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepositoryImpl
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.model.RaceFlagsData
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
-import kurou.kodriver.domain.model.VehicleDamageData
-import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kurou.kodriver.domain.repository.ProximityRepository
-import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.VehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -30,22 +30,22 @@ val lmuWindowsDataModule = module {
     single<LmuWindowsRepository> {
         if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
     }
-    single<ProximityRepository> {
+    single<LmuWindowsProximityRepository> {
         if (isWindows) {
-            LmuWindowsProximityRepository(thresholdsRepository = get(), source = get())
+            LmuWindowsProximityRepositoryImpl(thresholdsRepository = get(), source = get())
         } else {
             NoOpProximityRepository()
         }
     }
-    single<FlagRepository> {
-        if (isWindows) LmuWindowsFlagRepository(source = get()) else NoOpFlagRepository()
+    single<LmuWindowsFlagRepository> {
+        if (isWindows) LmuWindowsFlagRepositoryImpl(source = get()) else NoOpFlagRepository()
     }
-    single<VehicleDamageRepository> {
-        if (isWindows) LmuWindowsVehicleDamageRepository(source = get()) else NoOpVehicleDamageRepository()
+    single<LmuWindowsVehicleDamageRepository> {
+        if (isWindows) LmuWindowsVehicleDamageRepositoryImpl(source = get()) else NoOpVehicleDamageRepository()
     }
-    single<TyreCarcassTemperatureRepository> {
+    single<LmuWindowsTyreCarcassTemperatureRepository> {
         if (isWindows) {
-            LmuWindowsTyreCarcassTemperatureRepository(source = get())
+            LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = get())
         } else {
             NoOpTyreCarcassTemperatureRepository()
         }
@@ -58,18 +58,18 @@ private class NoOpLmuWindowsRepository : LmuWindowsRepository {
     override suspend fun disconnect() = Unit
 }
 
-private class NoOpProximityRepository : ProximityRepository {
-    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+private class NoOpProximityRepository : LmuWindowsProximityRepository {
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
 }
 
-private class NoOpFlagRepository : FlagRepository {
-    override fun flagStream(): Flow<RaceFlagsData> = emptyFlow()
+private class NoOpFlagRepository : LmuWindowsFlagRepository {
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
 }
 
-private class NoOpVehicleDamageRepository : VehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+private class NoOpVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = emptyFlow()
 }
 
-private class NoOpTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
-    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+private class NoOpTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }

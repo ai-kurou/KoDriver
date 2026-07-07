@@ -8,10 +8,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 
 internal fun Route.tyreCarcassTemperatureWebSocket(
-    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
+    observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
 ) {
     webSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE.webSocketPath(Simulator.LmuWindows)) {
         observeTyreCarcassTemperature()

@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
-import kurou.kodriver.domain.model.ProximityData
+import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ProximityRepository
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 
 private const val DEFAULT_PORT = 8080
@@ -29,7 +29,7 @@ internal class WebSocketProximityRepository(
     private val serverIpRepository: ServerIpRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
-) : ProximityRepository {
+) : LmuWindowsProximityRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -38,14 +38,14 @@ internal class WebSocketProximityRepository(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun proximityStream(): Flow<ProximityData> =
+    override fun proximityStream(): Flow<LmuWindowsProximityData> =
         serverIpRepository.serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) emptyFlow()
                 else connectWithRetry(ip)
             }
 
-    private fun connectWithRetry(ip: String): Flow<ProximityData> = flow {
+    private fun connectWithRetry(ip: String): Flow<LmuWindowsProximityData> = flow {
         while (true) {
             try {
                 client.webSocket(
@@ -56,7 +56,7 @@ internal class WebSocketProximityRepository(
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {
-                                emit(json.decodeFromString<ProximityData>(frame.readText()))
+                                emit(json.decodeFromString<LmuWindowsProximityData>(frame.readText()))
                             } catch (e: CancellationException) {
                                 throw e
                             } catch (e: SerializationException) {
