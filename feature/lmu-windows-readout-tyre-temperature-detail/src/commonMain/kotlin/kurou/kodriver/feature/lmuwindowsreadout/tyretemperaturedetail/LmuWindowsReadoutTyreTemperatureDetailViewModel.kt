@@ -4,32 +4,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 
 internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
     private val saveHighThreshold: SaveLmuWindowsTyreTemperatureHighThresholdUseCase,
-    observeEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
-    private val saveEnabledState: SaveLmuWindowsTyreTemperatureEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
-        combine(observeHighThreshold(), observeEnabledStates()) { highThreshold, states ->
-            LmuWindowsReadoutTyreTemperatureDetailUiState(
-                highThresholdCelsius = highThreshold,
-                overheatWarningEnabled = states[ReadoutItemKey.TyreTemperature] ?: true,
-            )
-        }
+        observeHighThreshold()
+            .map { LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = it) }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5_000),
@@ -42,10 +33,6 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 
     fun onHighThresholdReset() {
         viewModelScope.launch { saveHighThreshold(DEFAULT_HIGH_THRESHOLD_CELSIUS) }
-    }
-
-    fun onOverheatWarningEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { saveEnabledState(ReadoutItemKey.TyreTemperature, enabled) }
     }
 
     fun onPreviewClicked() {

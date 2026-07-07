@@ -11,10 +11,8 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 import org.junit.After
 import org.junit.Before
@@ -45,8 +43,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel(
             observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
-            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
-            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
@@ -59,25 +55,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() = runTest {
         assertEquals(
-            LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90, overheatWarningEnabled = true),
+            LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90),
             viewModel.uiState.first(),
         )
-    }
-
-    @Test
-    fun `リポジトリに overheatWarning=false が保存済みのとき overheatWarningEnabled が false の UiState を返す`() = runTest {
-        val repo = FakeLmuWindowsTyreTemperaturePreferencesRepository(
-            initialStates = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.TyreTemperature to false),
-        )
-        val vm = LmuWindowsReadoutTyreTemperatureDetailViewModel(
-            observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repo),
-            saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repo),
-            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo),
-            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repo),
-            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine {}),
-        )
-
-        assertEquals(false, vm.uiState.first().overheatWarningEnabled)
     }
 
     @Test
@@ -91,15 +71,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         viewModel.onHighThresholdChanged(100)
         viewModel.onHighThresholdReset()
         assertEquals(90, viewModel.uiState.first().highThresholdCelsius)
-    }
-
-    @Test
-    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() = runTest {
-        viewModel.onOverheatWarningEnabledChanged(false)
-        assertEquals(false, viewModel.uiState.first().overheatWarningEnabled)
-
-        viewModel.onOverheatWarningEnabledChanged(true)
-        assertEquals(true, viewModel.uiState.first().overheatWarningEnabled)
     }
 
     @Test

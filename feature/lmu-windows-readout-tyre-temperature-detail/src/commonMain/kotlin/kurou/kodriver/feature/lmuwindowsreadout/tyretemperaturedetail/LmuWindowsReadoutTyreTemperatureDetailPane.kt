@@ -59,7 +59,6 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(
         uiState = uiState,
         onHighThresholdChanged = viewModel::onHighThresholdChanged,
         onHighThresholdReset = viewModel::onHighThresholdReset,
-        onOverheatWarningEnabledChanged = viewModel::onOverheatWarningEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
@@ -71,7 +70,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     uiState: LmuWindowsReadoutTyreTemperatureDetailUiState,
     onHighThresholdChanged: (Int) -> Unit = {},
     onHighThresholdReset: () -> Unit = {},
-    onOverheatWarningEnabledChanged: (Boolean) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
@@ -123,10 +121,8 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
-            checked = uiState.overheatWarningEnabled,
             chipLabels = listOf(overheatWarningChipLabel),
             selectedChipLabels = setOf(overheatWarningChipLabel),
-            onCheckedChange = onOverheatWarningEnabledChanged,
             onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
