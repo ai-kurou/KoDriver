@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.model
 
-data class EngineData(
+data class LmuWindowsEngineData(
     val rpm: Double,
     val maxRpm: Double,
     val gear: Int,

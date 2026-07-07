@@ -3,9 +3,9 @@ package kurou.kodriver.domain.model
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class VehicleDataTest {
+class LmuWindowsVehicleDataTest {
 
-    private fun vehicleData(vx: Double = 0.0, vy: Double = 0.0, vz: Double = 0.0) = VehicleData(
+    private fun vehicleData(vx: Double = 0.0, vy: Double = 0.0, vz: Double = 0.0) = LmuWindowsVehicleData(
         localVelocityX = vx,
         localVelocityY = vy,
         localVelocityZ = vz,

@@ -2,7 +2,7 @@ package kurou.kodriver.domain.model
 
 enum class WheelIndex { FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT }
 
-data class TyreWheelData(
+data class LmuWindowsTyreWheelData(
     val surfaceTemperatureK: Double,
     val carcassTemperatureK: Double,
     val brakeTemperatureC: Double,
@@ -10,6 +10,6 @@ data class TyreWheelData(
     val wear: Double,
 )
 
-data class TyreData(
-    val wheels: Map<WheelIndex, TyreWheelData>,
+data class LmuWindowsTyreData(
+    val wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
 )

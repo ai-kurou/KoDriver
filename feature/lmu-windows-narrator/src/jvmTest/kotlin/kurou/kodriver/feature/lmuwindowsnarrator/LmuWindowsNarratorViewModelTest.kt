@@ -15,14 +15,17 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.CountLapFlag
-import kurou.kodriver.domain.model.EngineData
-import kurou.kodriver.domain.model.FuelData
-import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuWindowsEngineData
+import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -33,10 +36,7 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.model.TimingData
-import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -959,11 +959,11 @@ private fun fakeTelemetryData(
     bestLapTimeMs: Long = 0L,
 ) = LmuWindowsTelemetryData(
     timestampMs = 0L,
-    engine = EngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
-    inputs = InputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-    tyres = TyreData(wheels = emptyMap()),
-    fuel = FuelData(currentLiters = 0.0, capacityLiters = 0.0),
-    timing = TimingData(
+    engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+    inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+    tyres = LmuWindowsTyreData(wheels = emptyMap()),
+    fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+    timing = LmuWindowsTimingData(
         currentLapTimeMs = 0L,
         lastLapTimeMs = 0L,
         bestLapTimeMs = bestLapTimeMs,
@@ -972,7 +972,7 @@ private fun fakeTelemetryData(
         currentLap = currentLap,
         maxLaps = 0,
     ),
-    vehicle = VehicleData(
+    vehicle = LmuWindowsVehicleData(
         localVelocityX = 0.0,
         localVelocityY = 0.0,
         localVelocityZ = 0.0,

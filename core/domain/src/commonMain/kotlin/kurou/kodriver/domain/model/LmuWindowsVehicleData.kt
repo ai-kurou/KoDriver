@@ -2,7 +2,7 @@ package kurou.kodriver.domain.model
 
 import kotlin.math.sqrt
 
-data class VehicleData(
+data class LmuWindowsVehicleData(
     val localVelocityX: Double,
     val localVelocityY: Double,
     val localVelocityZ: Double,
