@@ -227,7 +227,15 @@ private fun OtherListItem(
                         checked = uiState.exitConfirmationEnabled,
                         onCheckedChange = onExitConfirmationEnabledChange,
                     )
-                    else -> OtherListItemTrailingIcon(item)
+                    OtherListItemType.ServerIp,
+                    OtherListItemType.ConsoleIp,
+                    OtherListItemType.Volume,
+                    OtherListItemType.ReadoutStartSound,
+                    OtherListItemType.Theme,
+                    OtherListItemType.GitHubRepository,
+                    OtherListItemType.ReleasePage,
+                    OtherListItemType.License,
+                    -> OtherListItemTrailingIcon(item)
                 }
             },
             colors = if (item == uiState.selectedItem) {
@@ -252,7 +260,15 @@ private fun OtherListItem(
                         OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
                         OtherListItemType.ExitConfirmation ->
                             onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
-                        else -> onItemClick(item)
+                        OtherListItemType.ServerIp,
+                        OtherListItemType.ConsoleIp,
+                        OtherListItemType.Volume,
+                        OtherListItemType.ReadoutStartSound,
+                        OtherListItemType.Theme,
+                        OtherListItemType.GitHubRepository,
+                        OtherListItemType.ReleasePage,
+                        OtherListItemType.License,
+                        -> onItemClick(item)
                     }
                 },
         )

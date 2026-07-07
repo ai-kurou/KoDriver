@@ -182,7 +182,13 @@ private fun DefaultOtherContent(
                 OtherListItemType.ConsoleIp -> OtherConsoleIpDetailPane(canNavigateBack, onBack)
                 OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                 OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
-                else -> {}
+                OtherListItemType.KeepScreenOn,
+                OtherListItemType.ReadoutStartSound,
+                OtherListItemType.ExitConfirmation,
+                OtherListItemType.Theme,
+                OtherListItemType.GitHubRepository,
+                OtherListItemType.ReleasePage,
+                -> {}
             }
         },
     )
