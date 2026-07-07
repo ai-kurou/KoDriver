@@ -43,7 +43,7 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketTyreCarcassTemperatureRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsTyreCarcassTemperatureRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
@@ -106,7 +106,7 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
         val closedPort = server.port
         server.shutdown()
         fakeIpRepository.setIp("127.0.0.1")
-        val repository = WebSocketTyreCarcassTemperatureRepository(
+        val repository = WebSocketLmuWindowsTyreCarcassTemperatureRepository(
             serverIpRepository = fakeIpRepository,
             port = closedPort,
             retryDelayMs = 0L,

@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 
 class EmptyFlagRepositoryTest {
 
-    private val repository = EmptyFlagRepository()
+    private val repository = EmptyLmuWindowsFlagRepository()
 
     @Test
     fun `flagStream は要素を emit せずに完了する`() = runTest {

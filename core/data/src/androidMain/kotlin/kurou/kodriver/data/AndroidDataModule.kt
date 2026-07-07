@@ -57,10 +57,10 @@ fun androidDataModule(context: Context) = module {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
     }
     single<LmuWindowsRepository> { EmptyLmuWindowsRepository() }
-    single<LmuWindowsFlagRepository> { WebSocketFlagRepository(get()) }
-    single<LmuWindowsProximityRepository> { WebSocketProximityRepository(get()) }
-    single<LmuWindowsVehicleDamageRepository> { WebSocketVehicleDamageRepository(get()) }
-    single<LmuWindowsTyreCarcassTemperatureRepository> { WebSocketTyreCarcassTemperatureRepository(get()) }
+    single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(get()) }
+    single<LmuWindowsProximityRepository> { WebSocketLmuWindowsProximityRepository(get()) }
+    single<LmuWindowsVehicleDamageRepository> { WebSocketLmuWindowsVehicleDamageRepository(get()) }
+    single<LmuWindowsTyreCarcassTemperatureRepository> { WebSocketLmuWindowsTyreCarcassTemperatureRepository(get()) }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }

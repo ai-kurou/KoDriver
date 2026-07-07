@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 
 class EmptyProximityRepositoryTest {
 
-    private val repository = EmptyProximityRepository()
+    private val repository = EmptyLmuWindowsProximityRepository()
 
     @Test
     fun `proximityStream は要素を emit せずに完了する`() = runTest {

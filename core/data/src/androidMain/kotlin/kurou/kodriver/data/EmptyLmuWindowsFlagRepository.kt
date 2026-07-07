@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 
-internal class EmptyFlagRepository : LmuWindowsFlagRepository {
+internal class EmptyLmuWindowsFlagRepository : LmuWindowsFlagRepository {
     override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
 }

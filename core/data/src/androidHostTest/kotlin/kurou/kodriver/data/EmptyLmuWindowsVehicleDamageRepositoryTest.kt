@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
 
 class EmptyVehicleDamageRepositoryTest {
 
-    private val repository = EmptyVehicleDamageRepository()
+    private val repository = EmptyLmuWindowsVehicleDamageRepository()
 
     @Test
     fun `vehicleDamageStream は要素を emit せずに完了する`() = runTest {

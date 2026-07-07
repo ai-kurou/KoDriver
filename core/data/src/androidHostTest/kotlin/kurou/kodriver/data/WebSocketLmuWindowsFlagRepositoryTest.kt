@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.ServerIpRepository
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -18,19 +20,18 @@ import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketProximityRepositoryTest {
+class WebSocketFlagRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpRepositoryForProximity
+    private lateinit var fakeIpRepository: FakeServerIpRepository
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpRepositoryForProximity(null)
+        fakeIpRepository = FakeServerIpRepository(null)
     }
 
     @After
@@ -38,27 +39,27 @@ class WebSocketProximityRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketProximityRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsFlagRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときproximityStreamは何もemitしない`() = runTest {
+    fun `ipがnullのときflagStreamは何もemitしない`() = runTest {
         val result = withTimeoutOrNull(300) {
-            buildRepository().proximityStream().first()
+            buildRepository().flagStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときProximityDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときRaceFlagsDataをemitする`() = runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(PROXIMITY_JSON)
+                        webSocket.send(GREEN_FLAG_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -66,11 +67,11 @@ class WebSocketProximityRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().proximityStream().first()
+        val result = buildRepository().flagStream().first()
 
-        assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
-        assertEquals(emptySet(), result.sideBySideRightVehicleIds)
-        assertEquals("/ws/lmu_windows/proximity", server.takeRequest().path)
+        assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
+        assertEquals(SessionYellowFlagState.NONE, result.yellowFlagState)
+        assertEquals("/ws/lmu_windows/flags", server.takeRequest().path)
     }
 
     @Test
@@ -80,7 +81,7 @@ class WebSocketProximityRepositoryTest {
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
                         webSocket.send("invalid json")
-                        webSocket.send(PROXIMITY_JSON)
+                        webSocket.send(GREEN_FLAG_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -88,10 +89,9 @@ class WebSocketProximityRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().proximityStream().first()
+        val result = buildRepository().flagStream().first()
 
-        assertNotNull(result)
-        assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
+        assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
     }
 
     @Test
@@ -109,7 +109,7 @@ class WebSocketProximityRepositoryTest {
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(PROXIMITY_JSON)
+                        webSocket.send(GREEN_FLAG_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -117,24 +117,65 @@ class WebSocketProximityRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository(retryDelayMs = 0L).proximityStream().first()
+        val result = buildRepository(retryDelayMs = 0L).flagStream().first()
 
-        assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
+        assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
+    }
+
+    @Test
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() = runTest {
+        server.enqueue(
+            MockResponse().withWebSocketUpgrade(
+                object : WebSocketListener() {
+                    override fun onOpen(webSocket: WebSocket, response: Response) {
+                        webSocket.send(RED_FLAG_JSON)
+                        webSocket.close(1000, "done")
+                    }
+                },
+            ),
+        )
+
+        fakeIpRepository.setIp(null)
+        val repository = buildRepository()
+
+        val noEmit = withTimeoutOrNull(300) { repository.flagStream().first() }
+        assertNull(noEmit)
+
+        fakeIpRepository.setIp("127.0.0.1")
+        val result = repository.flagStream().first()
+        assertEquals(SessionPhase.RED_FLAG, result.gamePhase)
     }
 }
 
-private class FakeServerIpRepositoryForProximity(initialIp: String?) : ServerIpRepository {
+private class FakeServerIpRepository(initialIp: String?) : ServerIpRepository {
     private val _ip = MutableStateFlow(initialIp)
     fun setIp(ip: String?) { _ip.value = ip }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
     override suspend fun saveServerIp(ip: String) { _ip.value = ip }
 }
 
-private val PROXIMITY_JSON = """
+private val GREEN_FLAG_JSON = """
     {
-        "sideBySideLeftVehicleIds": [3],
-        "sideBySideRightVehicleIds": [],
-        "lateralDistanceLeftMeters": 1.5,
-        "lateralDistanceRightMeters": 1.7976931348623157E308
+        "gamePhase": "GREEN_FLAG",
+        "yellowFlagState": "NONE",
+        "sectorFlags": [],
+        "startLight": 0,
+        "numRedLights": 0,
+        "playerFlag": "GREEN",
+        "playerUnderYellow": false,
+        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
+    }
+""".trimIndent()
+
+private val RED_FLAG_JSON = """
+    {
+        "gamePhase": "RED_FLAG",
+        "yellowFlagState": "NONE",
+        "sectorFlags": [],
+        "startLight": 0,
+        "numRedLights": 0,
+        "playerFlag": "GREEN",
+        "playerUnderYellow": false,
+        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
     }
 """.trimIndent()

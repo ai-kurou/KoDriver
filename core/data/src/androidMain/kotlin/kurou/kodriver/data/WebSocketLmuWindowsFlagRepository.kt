@@ -6,6 +6,7 @@ import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
+import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -16,19 +17,19 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.ServerIpRepository
 
 private const val DEFAULT_PORT = 8080
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
-internal class WebSocketTyreCarcassTemperatureRepository(
+internal class WebSocketLmuWindowsFlagRepository(
     private val serverIpRepository: ServerIpRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
-) : LmuWindowsTyreCarcassTemperatureRepository {
+) : LmuWindowsFlagRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -37,28 +38,29 @@ internal class WebSocketTyreCarcassTemperatureRepository(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> =
         serverIpRepository.serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) emptyFlow()
                 else connectWithRetry(ip)
             }
 
-    private fun connectWithRetry(ip: String): Flow<LmuWindowsTyreCarcassTemperatureData> = flow {
+    private fun connectWithRetry(ip: String): Flow<LmuWindowsRaceFlagsData> = flow {
         while (true) {
             try {
                 client.webSocket(
                     host = ip,
                     port = port,
-                    path = KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE.webSocketPath(Simulator.LmuWindows),
+                    path = KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows),
                 ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {
-                                emit(json.decodeFromString<LmuWindowsTyreCarcassTemperatureData>(frame.readText()))
+                                emit(json.decodeFromString<LmuWindowsRaceFlagsData>(frame.readText()))
                             } catch (e: CancellationException) {
                                 throw e
-                            } catch (_: SerializationException) {
+                            } catch (e: SerializationException) {
+                                Sentry.captureException(e)
                             }
                         }
                     }

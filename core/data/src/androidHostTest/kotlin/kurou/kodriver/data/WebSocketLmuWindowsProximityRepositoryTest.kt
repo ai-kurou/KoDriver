@@ -21,16 +21,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketVehicleDamageRepositoryTest {
+class WebSocketProximityRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpRepositoryForDamage
+    private lateinit var fakeIpRepository: FakeServerIpRepositoryForProximity
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpRepositoryForDamage(null)
+        fakeIpRepository = FakeServerIpRepositoryForProximity(null)
     }
 
     @After
@@ -38,27 +38,27 @@ class WebSocketVehicleDamageRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketVehicleDamageRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsProximityRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときvehicleDamageStreamは何もemitしない`() = runTest {
+    fun `ipがnullのときproximityStreamは何もemitしない`() = runTest {
         val result = withTimeoutOrNull(300) {
-            buildRepository().vehicleDamageStream().first()
+            buildRepository().proximityStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときVehicleDamageDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときProximityDataをemitする`() = runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(DAMAGE_JSON)
+                        webSocket.send(PROXIMITY_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -66,12 +66,11 @@ class WebSocketVehicleDamageRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().vehicleDamageStream().first()
+        val result = buildRepository().proximityStream().first()
 
-        assertEquals(true, result.overheating)
-        assertEquals(false, result.partDetached)
-        assertEquals(0.5, result.lastImpactMagnitude)
-        assertEquals("/ws/lmu_windows/damage", server.takeRequest().path)
+        assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
+        assertEquals(emptySet(), result.sideBySideRightVehicleIds)
+        assertEquals("/ws/lmu_windows/proximity", server.takeRequest().path)
     }
 
     @Test
@@ -81,7 +80,7 @@ class WebSocketVehicleDamageRepositoryTest {
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
                         webSocket.send("invalid json")
-                        webSocket.send(DAMAGE_JSON)
+                        webSocket.send(PROXIMITY_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -89,10 +88,10 @@ class WebSocketVehicleDamageRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().vehicleDamageStream().first()
+        val result = buildRepository().proximityStream().first()
 
         assertNotNull(result)
-        assertEquals(true, result.overheating)
+        assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
     }
 
     @Test
@@ -110,7 +109,7 @@ class WebSocketVehicleDamageRepositoryTest {
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(DAMAGE_JSON)
+                        webSocket.send(PROXIMITY_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -118,23 +117,24 @@ class WebSocketVehicleDamageRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository(retryDelayMs = 0L).vehicleDamageStream().first()
+        val result = buildRepository(retryDelayMs = 0L).proximityStream().first()
 
-        assertEquals(true, result.overheating)
+        assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
     }
 }
 
-private class FakeServerIpRepositoryForDamage(initialIp: String?) : ServerIpRepository {
+private class FakeServerIpRepositoryForProximity(initialIp: String?) : ServerIpRepository {
     private val _ip = MutableStateFlow(initialIp)
     fun setIp(ip: String?) { _ip.value = ip }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
     override suspend fun saveServerIp(ip: String) { _ip.value = ip }
 }
 
-private val DAMAGE_JSON = """
+private val PROXIMITY_JSON = """
     {
-        "overheating": true,
-        "partDetached": false,
-        "lastImpactMagnitude": 0.5
+        "sideBySideLeftVehicleIds": [3],
+        "sideBySideRightVehicleIds": [],
+        "lateralDistanceLeftMeters": 1.5,
+        "lateralDistanceRightMeters": 1.7976931348623157E308
     }
 """.trimIndent()
