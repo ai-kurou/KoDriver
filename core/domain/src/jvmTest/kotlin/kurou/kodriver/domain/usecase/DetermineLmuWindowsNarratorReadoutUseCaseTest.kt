@@ -282,9 +282,9 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             ),
             settings = settings(
                 enabledStates = allEnabledStates + mapOf(
-                    ReadoutItemKey.LmuWindows.BlueFlag to false,
-                    ReadoutItemKey.LmuWindows.SectorYellowFlag to false,
-                    ReadoutItemKey.LmuWindows.RedFlag to false,
+                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to false,
+                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
+                    ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
                 ),
             ),
         )
@@ -309,7 +309,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             ),
             settings = settings(
                 enabledStates = allEnabledStates + mapOf(
-                    ReadoutItemKey.LmuWindows.Flag to false,
+                    ReadoutItemKey.LmuWindows.Flag.Root to false,
                 ),
             ),
         )
@@ -364,7 +364,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = LmuWindowsNarratorState(previousVehicleDamage = damage(overheating = false)),
             vehicleDamage = damage(overheating = true),
             settings = settings(
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.Overheat to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false),
             ),
         )
 
@@ -377,7 +377,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = LmuWindowsNarratorState(previousVehicleDamage = damage(overheating = false)),
             vehicleDamage = damage(overheating = true),
             settings = settings(
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to false),
             ),
         )
 
@@ -483,14 +483,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.MyBestLap to true,
     ReadoutItemKey.LmuWindows.VehicleApproach to true,
-    ReadoutItemKey.LmuWindows.VehicleDamage to true,
-    ReadoutItemKey.LmuWindows.Overheat to true,
+    ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
+    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
     ReadoutItemKey.LmuWindows.TyreTemperature to true,
-    ReadoutItemKey.LmuWindows.Flag to true,
-    ReadoutItemKey.LmuWindows.BlueFlag to true,
-    ReadoutItemKey.LmuWindows.SectorYellowFlag to true,
-    ReadoutItemKey.LmuWindows.FullCourseYellow to true,
-    ReadoutItemKey.LmuWindows.RedFlag to true,
+    ReadoutItemKey.LmuWindows.Flag.Root to true,
+    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+    ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
 )
 
 private fun settings(

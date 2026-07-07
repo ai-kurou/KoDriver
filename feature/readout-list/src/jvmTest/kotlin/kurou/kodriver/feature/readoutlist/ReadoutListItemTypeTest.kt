@@ -20,7 +20,7 @@ class ReadoutListItemTypeTest {
     fun `lmu_windows の flag は LmuWindows_Flag を返す`() {
         assertEquals(
             ReadoutListItemType.LmuWindows.Flag,
-            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.Flag),
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.Flag.Root),
         )
     }
 
@@ -28,7 +28,7 @@ class ReadoutListItemTypeTest {
     fun `lmu_windows の vehicle_damage は LmuWindows_VehicleDamage を返す`() {
         assertEquals(
             ReadoutListItemType.LmuWindows.VehicleDamage,
-            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.VehicleDamage),
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.VehicleDamage.Root),
         )
     }
 
@@ -76,16 +76,16 @@ class ReadoutListItemTypeTest {
 
     @Test
     fun `gt7_ps5 でシミュレータに属さないキーは null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.LmuWindows.Flag))
+        assertNull(ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.LmuWindows.Flag.Root))
     }
 
     @Test
     fun `lmu_windows のデフォルト並び順はlistPaneのトップレベル項目のみを含む`() {
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
-                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),

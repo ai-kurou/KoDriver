@@ -4,16 +4,24 @@ sealed interface ReadoutItemKey {
     val value: String
 
     sealed interface LmuWindows : ReadoutItemKey {
-        data object VehicleApproach : LmuWindows { override val value = "lmu_windows_vehicle_approach" }
-        data object Flag : LmuWindows { override val value = "lmu_windows_flag" }
-        data object BlueFlag : LmuWindows { override val value = "lmu_windows_blue_flag" }
-        data object SectorYellowFlag : LmuWindows { override val value = "lmu_windows_sector_yellow_flag" }
-        data object FullCourseYellow : LmuWindows { override val value = "lmu_windows_full_course_yellow" }
-        data object RedFlag : LmuWindows { override val value = "lmu_windows_red_flag" }
-        data object VehicleDamage : LmuWindows { override val value = "lmu_windows_vehicle_damage" }
-        data object Overheat : LmuWindows { override val value = "lmu_windows_overheat" }
-        data object TyreTemperature : LmuWindows { override val value = "lmu_windows_tyre_temperature" }
-        data object MyBestLap : LmuWindows { override val value = "lmu_windows_my_best_lap" }
+        sealed interface TopLevel : LmuWindows
+
+        data object VehicleApproach : TopLevel { override val value = "lmu_windows_vehicle_approach" }
+        data object TyreTemperature : TopLevel { override val value = "lmu_windows_tyre_temperature" }
+        data object MyBestLap : TopLevel { override val value = "lmu_windows_my_best_lap" }
+
+        sealed interface Flag : LmuWindows {
+            data object Root : Flag, TopLevel { override val value = "lmu_windows_flag" }
+            data object BlueFlag : Flag { override val value = "lmu_windows_blue_flag" }
+            data object SectorYellowFlag : Flag { override val value = "lmu_windows_sector_yellow_flag" }
+            data object FullCourseYellow : Flag { override val value = "lmu_windows_full_course_yellow" }
+            data object RedFlag : Flag { override val value = "lmu_windows_red_flag" }
+        }
+
+        sealed interface VehicleDamage : LmuWindows {
+            data object Root : VehicleDamage, TopLevel { override val value = "lmu_windows_vehicle_damage" }
+            data object Overheat : VehicleDamage { override val value = "lmu_windows_overheat" }
+        }
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
@@ -25,13 +33,13 @@ sealed interface ReadoutItemKey {
         val entries by lazy {
             listOf(
                 LmuWindows.VehicleApproach,
-                LmuWindows.Flag,
-                LmuWindows.BlueFlag,
-                LmuWindows.SectorYellowFlag,
-                LmuWindows.FullCourseYellow,
-                LmuWindows.RedFlag,
-                LmuWindows.VehicleDamage,
-                LmuWindows.Overheat,
+                LmuWindows.Flag.Root,
+                LmuWindows.Flag.BlueFlag,
+                LmuWindows.Flag.SectorYellowFlag,
+                LmuWindows.Flag.FullCourseYellow,
+                LmuWindows.Flag.RedFlag,
+                LmuWindows.VehicleDamage.Root,
+                LmuWindows.VehicleDamage.Overheat,
                 LmuWindows.TyreTemperature,
                 LmuWindows.MyBestLap,
                 Gt7Ps5.MyBestLap,

@@ -43,13 +43,13 @@ class AndroidReadoutPreferencesRepositoryTest {
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
 
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag, false)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage, true)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag.Root, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage.Root, true)
 
         val states = repository.observeReadoutEnabledStates("lmu_windows").first()
         assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleApproach])
-        assertEquals(false, states[ReadoutItemKey.LmuWindows.Flag])
-        assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleDamage])
+        assertEquals(false, states[ReadoutItemKey.LmuWindows.Flag.Root])
+        assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
     }
 
     @Test
@@ -59,17 +59,17 @@ class AndroidReadoutPreferencesRepositoryTest {
         repository.saveReadoutOrder(
             "lmu_windows",
             listOf(
-                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
-                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ),
         )
 
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.Flag,
+                ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
-                ReadoutItemKey.LmuWindows.VehicleDamage,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ),
             repository.observeReadoutOrder("lmu_windows").first(),
         )

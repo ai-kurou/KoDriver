@@ -13,10 +13,10 @@ class SaveLmuWindowsFlagEnabledStateUseCaseTest {
         val repository = FakeLmuWindowsFlagPreferencesRepository()
         val useCase = SaveLmuWindowsFlagEnabledStateUseCase(repository)
 
-        useCase(ReadoutItemKey.LmuWindows.RedFlag, false)
+        useCase(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.RedFlag to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.RedFlag to false),
             repository.observeFlagEnabledStates().first(),
         )
     }
