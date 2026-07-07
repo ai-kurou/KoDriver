@@ -18,12 +18,7 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuWindowsReadoutFlagDetailUiState> = observeFlagEnabledStates()
-        .map { storedStates ->
-            val enabledStates = FlagReadoutItem.entries.associate { item ->
-                item.key to (storedStates[item.key] ?: true)
-            }
-            LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates)
-        }
+        .map { enabledStates -> LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
 
     fun onFlagEnabledChanged(item: FlagReadoutItem, enabled: Boolean) {

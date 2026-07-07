@@ -18,12 +18,15 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `lmu_windowsは保存済みの値がなくてもデフォルトのfalseが反映される`() = runBlocking {
+    fun `lmu_windowsは保存済みの値がなくてもデフォルト値が反映される`() = runBlocking {
         val repo = FakeReadoutPreferencesRepository()
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
         assertEquals(
             mapOf(
+                ReadoutItemKey.Flag to true,
+                ReadoutItemKey.VehicleApproach to true,
+                ReadoutItemKey.VehicleDamage to true,
                 ReadoutItemKey.TyreTemperature to false,
                 ReadoutItemKey.MyBestLap to false,
             ),
@@ -32,19 +35,34 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
+    fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() = runBlocking {
+        val repo = FakeReadoutPreferencesRepository()
+        val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+
+        assertEquals(
+            mapOf(
+                ReadoutItemKey.RemainingFuelLaps to true,
+                ReadoutItemKey.MyBestLap to true,
+            ),
+            useCase("gt7_ps5").first(),
+        )
+    }
+
+    @Test
     fun `保存済みの値はデフォルトより優先され・シミュレーターごとに独立している`() = runBlocking {
         val repo = FakeReadoutPreferencesRepository()
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.VehicleApproach, true)
         repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.MyBestLap, true)
         repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.VehicleApproach, false)
 
         assertEquals(
             mapOf(
+                ReadoutItemKey.Flag to true,
+                ReadoutItemKey.VehicleApproach to true,
+                ReadoutItemKey.VehicleDamage to true,
                 ReadoutItemKey.TyreTemperature to false,
                 ReadoutItemKey.MyBestLap to true,
-                ReadoutItemKey.VehicleApproach to true,
             ),
             useCase("lmu_windows").first(),
         )

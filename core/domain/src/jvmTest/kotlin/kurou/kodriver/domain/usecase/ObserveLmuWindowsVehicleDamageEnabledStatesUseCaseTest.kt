@@ -11,34 +11,32 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
-    fun `初期値は空Mapを返す`() = runBlocking {
+    fun `初期値はOverheatのデフォルトtrueを返す`() = runBlocking {
         val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
-
-        assertTrue(useCase().first().isEmpty())
-    }
-
-    @Test
-    fun `保存済みの値を返す`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
-        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
-
-        repo.saveEnabledState(ReadoutItemKey.Overheat, true)
 
         assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to true), useCase().first())
     }
 
     @Test
-    fun `複数キーを保存した場合すべてのエントリを返す`() = runBlocking {
+    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
         val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.Overheat, true)
+        repo.saveEnabledState(ReadoutItemKey.Overheat, false)
+
+        assertEquals(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Overheat to false), useCase().first())
+    }
+
+    @Test
+    fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
+        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
+        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
+
         repo.saveEnabledState(ReadoutItemKey.VehicleDamage, false)
 
         assertEquals(

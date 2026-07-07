@@ -8,10 +8,18 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 
 // listPane（ReadoutListViewModel）・Narrator（LmuWindowsNarratorViewModel / Gt7Ps5NarratorViewModel）が
 // 同じデフォルト値を参照できるよう、シミュレーターごとのデフォルト有効状態をこの一箇所にのみ定義する。
+// listPaneに表示される ReadoutItemKey は必ずここに列挙すること（省略＝デフォルトtrue、ではない）。
 private val readoutEnabledStateDefaults: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
     Simulator.LmuWindows to mapOf(
+        ReadoutItemKey.Flag to true,
+        ReadoutItemKey.VehicleApproach to true,
+        ReadoutItemKey.VehicleDamage to true,
         ReadoutItemKey.TyreTemperature to false,
         ReadoutItemKey.MyBestLap to false,
+    ),
+    Simulator.Gt7Ps5 to mapOf(
+        ReadoutItemKey.RemainingFuelLaps to true,
+        ReadoutItemKey.MyBestLap to true,
     ),
 )
 
