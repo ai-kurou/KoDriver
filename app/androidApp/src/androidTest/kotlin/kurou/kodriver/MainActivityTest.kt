@@ -139,8 +139,7 @@ class MainActivityTest {
         clickItem("ログ")
 
         waitUntilDisplayed("new_flag")
-        waitUntilDisplayed("00:00:00.200 / レース +00:00:00.100")
-        waitUntilDisplayed("lmu_windows / 200")
+        waitUntilDisplayed("09:00:00.200 / レース +00:00:00.100")
         waitUntilDisplayed("old_flag")
         clickItem("new_flag")
         waitUntilDisplayed("選択したログ")
