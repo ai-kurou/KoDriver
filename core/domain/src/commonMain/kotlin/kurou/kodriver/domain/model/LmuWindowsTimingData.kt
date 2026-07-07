@@ -3,7 +3,7 @@ package kurou.kodriver.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TimingData(
+data class LmuWindowsTimingData(
     val currentLapTimeMs: Long,
     val lastLapTimeMs: Long,
     val bestLapTimeMs: Long,

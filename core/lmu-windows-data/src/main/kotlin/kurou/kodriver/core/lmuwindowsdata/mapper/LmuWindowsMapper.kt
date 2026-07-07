@@ -1,13 +1,13 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
-import kurou.kodriver.domain.model.EngineData
-import kurou.kodriver.domain.model.FuelData
-import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuWindowsEngineData
+import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.TimingData
-import kurou.kodriver.domain.model.TyreData
-import kurou.kodriver.domain.model.TyreWheelData
-import kurou.kodriver.domain.model.VehicleData
+import kurou.kodriver.domain.model.LmuWindowsTimingData
+import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
+import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import kotlin.math.roundToLong
@@ -126,23 +126,23 @@ internal object LmuWindowsMapper {
 
         return LmuWindowsTelemetryData(
             timestampMs = System.currentTimeMillis(),
-            engine = EngineData(
+            engine = LmuWindowsEngineData(
                 rpm = buffer.getDouble(vehicleBase + OFF_ENGINE_RPM),
                 maxRpm = buffer.getDouble(vehicleBase + OFF_ENGINE_MAX_RPM),
                 gear = buffer.getInt(vehicleBase + OFF_GEAR),
             ),
-            inputs = InputsData(
+            inputs = LmuWindowsInputsData(
                 throttle = buffer.getDouble(vehicleBase + OFF_UNFILTERED_THROTTLE),
                 brake = buffer.getDouble(vehicleBase + OFF_UNFILTERED_BRAKE),
                 clutch = buffer.getDouble(vehicleBase + OFF_UNFILTERED_CLUTCH),
                 steering = buffer.getDouble(vehicleBase + OFF_UNFILTERED_STEERING),
             ),
             tyres = mapTyres(buffer, vehicleBase),
-            fuel = FuelData(
+            fuel = LmuWindowsFuelData(
                 currentLiters = buffer.getDouble(vehicleBase + OFF_FUEL),
                 capacityLiters = buffer.getDouble(vehicleBase + OFF_FUEL_CAPACITY),
             ),
-            timing = TimingData(
+            timing = LmuWindowsTimingData(
                 currentLapTimeMs = currentLapTimeMs(buffer, vehicleScoringBase),
                 lastLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_LAST_LAP_TIME),
                 bestLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_TIME),
@@ -151,7 +151,7 @@ internal object LmuWindowsMapper {
                 currentLap = buffer.getInt(vehicleBase + OFF_LAP_NUMBER),
                 maxLaps = buffer.getInt(SCORING_BASE + OFF_SCORING_MAX_LAPS),
             ),
-            vehicle = VehicleData(
+            vehicle = LmuWindowsVehicleData(
                 localVelocityX = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_X),
                 localVelocityY = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_Y),
                 localVelocityZ = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_Z),
@@ -211,11 +211,11 @@ internal object LmuWindowsMapper {
             0L
         }
 
-    private fun mapTyres(buffer: ByteBuffer, vehicleBase: Int): TyreData {
+    private fun mapTyres(buffer: ByteBuffer, vehicleBase: Int): LmuWindowsTyreData {
         val wheels = WheelIndex.entries.associateWith { wheel ->
             val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
             val surfaceTempK = buffer.getDouble(offset + OFF_WHEEL_TEMPERATURE + 8)
-            TyreWheelData(
+            LmuWindowsTyreWheelData(
                 surfaceTemperatureK = surfaceTempK,
                 carcassTemperatureK = buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE),
                 brakeTemperatureC = buffer.getDouble(offset + OFF_WHEEL_BRAKE_TEMP),
@@ -223,7 +223,7 @@ internal object LmuWindowsMapper {
                 wear = buffer.getDouble(offset + OFF_WHEEL_WEAR),
             )
         }
-        return TyreData(wheels)
+        return LmuWindowsTyreData(wheels)
     }
 
     private const val MILLIS_PER_SECOND = 1_000
