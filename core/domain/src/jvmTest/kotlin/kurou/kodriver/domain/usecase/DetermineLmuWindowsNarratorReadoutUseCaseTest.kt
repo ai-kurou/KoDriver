@@ -5,20 +5,20 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.EngineData
 import kurou.kodriver.domain.model.FuelData
 import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.TimingData
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
@@ -524,21 +524,21 @@ private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
     ),
 )
 
-private fun leftProximity(vehicleId: Int) = ProximityData(
+private fun leftProximity(vehicleId: Int) = LmuWindowsProximityData(
     sideBySideLeftVehicleIds = setOf(vehicleId),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 3.0,
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private fun rightProximity(vehicleId: Int) = ProximityData(
+private fun rightProximity(vehicleId: Int) = LmuWindowsProximityData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = setOf(vehicleId),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
     lateralDistanceRightMeters = 3.0,
 )
 
-private fun leftAndRightProximity() = ProximityData(
+private fun leftAndRightProximity() = LmuWindowsProximityData(
     sideBySideLeftVehicleIds = setOf(1),
     sideBySideRightVehicleIds = setOf(2),
     lateralDistanceLeftMeters = 3.0,
@@ -549,7 +549,7 @@ private fun clearFlags(
     gamePhase: SessionPhase = SessionPhase.GREEN_FLAG,
     playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
     sectorFlags: List<SectorFlagState> = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-) = RaceFlagsData(
+) = LmuWindowsRaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = SessionYellowFlagState.NONE,
     sectorFlags = sectorFlags,
@@ -560,7 +560,7 @@ private fun clearFlags(
     playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
-private fun damage(overheating: Boolean) = VehicleDamageData(
+private fun damage(overheating: Boolean) = LmuWindowsVehicleDamageData(
     overheating = overheating,
     partDetached = false,
     lastImpactMagnitude = 0.0,
@@ -571,7 +571,7 @@ private fun tyreTemperature(
     fr: Double = 20.0,
     rl: Double = 20.0,
     rr: Double = 20.0,
-) = TyreCarcassTemperatureData(
+) = LmuWindowsTyreCarcassTemperatureData(
     wheels = mapOf(
         WheelIndex.FRONT_LEFT to fl,
         WheelIndex.FRONT_RIGHT to fr,

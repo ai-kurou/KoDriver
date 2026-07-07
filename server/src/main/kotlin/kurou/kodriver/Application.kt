@@ -11,38 +11,40 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.model.RaceFlagsData
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
-import kurou.kodriver.domain.model.VehicleDamageData
-import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kurou.kodriver.domain.repository.ProximityRepository
-import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.VehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.usecase.ObserveProximityUseCase
-import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import org.koin.core.Koin
 
 fun main() {
     KoDriverServer(
-        observeRaceFlags = ObserveRaceFlagsUseCase(EmptyFlagRepository),
-        observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-        observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-        observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
+        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyFlagRepository),
+        observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+        observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+        observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+            EmptyTyreCarcassTemperatureRepository,
+        ),
         observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
     ).start(wait = true)
 }
 
 class KoDriverServer(
-    observeRaceFlags: ObserveRaceFlagsUseCase,
-    observeProximity: ObserveProximityUseCase,
-    observeVehicleDamage: ObserveVehicleDamageUseCase,
-    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
+    observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
+    observeProximity: ObserveLmuWindowsProximityUseCase,
+    observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
+    observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     observeLmuWindows: ObserveLmuWindowsUseCase,
     port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
@@ -78,21 +80,21 @@ class KoDriverServer(
 
 fun createKoDriverServer(koin: Koin): KoDriverServer {
     return KoDriverServer(
-        observeRaceFlags = ObserveRaceFlagsUseCase(koin.get<FlagRepository>()),
-        observeProximity = ObserveProximityUseCase(koin.get<ProximityRepository>()),
-        observeVehicleDamage = ObserveVehicleDamageUseCase(koin.get<VehicleDamageRepository>()),
-        observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
-            koin.get<TyreCarcassTemperatureRepository>(),
+        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
+        observeProximity = ObserveLmuWindowsProximityUseCase(koin.get<LmuWindowsProximityRepository>()),
+        observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(koin.get<LmuWindowsVehicleDamageRepository>()),
+        observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+            koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
         ),
         observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
     )
 }
 
 fun Application.module(
-    observeRaceFlags: ObserveRaceFlagsUseCase,
-    observeProximity: ObserveProximityUseCase,
-    observeVehicleDamage: ObserveVehicleDamageUseCase,
-    observeTyreCarcassTemperature: ObserveTyreCarcassTemperatureUseCase,
+    observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
+    observeProximity: ObserveLmuWindowsProximityUseCase,
+    observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
+    observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     observeLmuWindows: ObserveLmuWindowsUseCase,
 ) {
     install(WebSockets)
@@ -114,20 +116,20 @@ fun Application.module(
     }
 }
 
-private object EmptyFlagRepository : FlagRepository {
-    override fun flagStream(): Flow<RaceFlagsData> = emptyFlow()
+private object EmptyFlagRepository : LmuWindowsFlagRepository {
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
 }
 
-private object EmptyProximityRepository : ProximityRepository {
-    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+private object EmptyProximityRepository : LmuWindowsProximityRepository {
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
 }
 
-private object EmptyVehicleDamageRepository : VehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+private object EmptyVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = emptyFlow()
 }
 
-private object EmptyTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
-    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+private object EmptyTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsRepository : LmuWindowsRepository {

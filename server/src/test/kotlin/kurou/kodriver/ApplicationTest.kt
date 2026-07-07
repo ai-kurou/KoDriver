@@ -17,30 +17,30 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.EngineData
 import kurou.kodriver.domain.model.FuelData
 import kurou.kodriver.domain.model.InputsData
+import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.ProximityData
-import kurou.kodriver.domain.model.RaceFlagsData
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.TimingData
-import kurou.kodriver.domain.model.TyreCarcassTemperatureData
 import kurou.kodriver.domain.model.TyreData
 import kurou.kodriver.domain.model.TyreWheelData
-import kurou.kodriver.domain.model.VehicleDamageData
 import kurou.kodriver.domain.model.VehicleData
 import kurou.kodriver.domain.model.WheelIndex
-import kurou.kodriver.domain.repository.FlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kurou.kodriver.domain.repository.ProximityRepository
-import kurou.kodriver.domain.repository.TyreCarcassTemperatureRepository
-import kurou.kodriver.domain.repository.VehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
-import kurou.kodriver.domain.usecase.ObserveProximityUseCase
-import kurou.kodriver.domain.usecase.ObserveRaceFlagsUseCase
-import kurou.kodriver.domain.usecase.ObserveTyreCarcassTemperatureUseCase
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -56,10 +56,10 @@ class ApplicationTest {
     fun `バージョンエンドポイントはアプリバージョンをJSONで返す`() = testApplication {
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -74,10 +74,10 @@ class ApplicationTest {
     fun `ルートはサーバーの応答を返す`() = testApplication {
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -90,13 +90,13 @@ class ApplicationTest {
 
     @Test
     fun `フラッグ情報をJSONでWebSocketへ送信する`() = testApplication {
-        val repository = FakeFlagRepository()
+        val repository = FakeLmuWindowsFlagRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(repository),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -122,13 +122,13 @@ class ApplicationTest {
 
     @Test
     fun `フラッグ情報の同一値は重複して送信されない`() = testApplication {
-        val repository = FakeFlagRepository()
+        val repository = FakeLmuWindowsFlagRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(repository),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -152,13 +152,13 @@ class ApplicationTest {
 
     @Test
     fun `近接情報をJSONでWebSocketへ送信する`() = testApplication {
-        val repository = FakeProximityRepository()
+        val repository = FakeLmuWindowsProximityRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(repository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(repository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -183,13 +183,13 @@ class ApplicationTest {
 
     @Test
     fun `近接情報の同一値は重複して送信されない`() = testApplication {
-        val repository = FakeProximityRepository()
+        val repository = FakeLmuWindowsProximityRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(repository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(repository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -213,13 +213,13 @@ class ApplicationTest {
 
     @Test
     fun `車両故障情報をJSONでWebSocketへ送信する`() = testApplication {
-        val repository = FakeVehicleDamageRepository()
+        val repository = FakeLmuWindowsVehicleDamageRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(repository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -243,13 +243,13 @@ class ApplicationTest {
 
     @Test
     fun `車両故障情報の同一値は重複して送信されない`() = testApplication {
-        val repository = FakeVehicleDamageRepository()
+        val repository = FakeLmuWindowsVehicleDamageRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(repository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -273,13 +273,13 @@ class ApplicationTest {
 
     @Test
     fun `カーカス温度情報をJSONでWebSocketへ送信する`() = testApplication {
-        val repository = FakeTyreCarcassTemperatureRepository()
+        val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(repository),
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
@@ -298,13 +298,13 @@ class ApplicationTest {
 
     @Test
     fun `カーカス温度情報の同一値は重複して送信されない`() = testApplication {
-        val repository = FakeTyreCarcassTemperatureRepository()
+        val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(repository),
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
@@ -328,10 +328,12 @@ class ApplicationTest {
     fun `KoDriverServerはstartで起動しstopで停止する`() {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
-            observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-            observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-            observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-            observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(EmptyTyreCarcassTemperatureRepository),
+            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+            observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+            observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                EmptyTyreCarcassTemperatureRepository,
+            ),
             observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             port = port,
             host = "127.0.0.1",
@@ -350,10 +352,10 @@ class ApplicationTest {
         val repository = FakeLmuWindowsRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(repository),
@@ -377,10 +379,10 @@ class ApplicationTest {
         val repository = FakeLmuWindowsRepository()
         application {
             module(
-                observeRaceFlags = ObserveRaceFlagsUseCase(FakeFlagRepository()),
-                observeProximity = ObserveProximityUseCase(EmptyProximityRepository),
-                observeVehicleDamage = ObserveVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveTyreCarcassTemperatureUseCase(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(repository),
@@ -407,10 +409,10 @@ class ApplicationTest {
         val koin = startKoin {
             modules(
                 module {
-                    single<FlagRepository> { FakeFlagRepository() }
-                    single<ProximityRepository> { EmptyProximityRepository }
-                    single<VehicleDamageRepository> { EmptyVehicleDamageRepository }
-                    single<TyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
+                    single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
+                    single<LmuWindowsProximityRepository> { EmptyProximityRepository }
+                    single<LmuWindowsVehicleDamageRepository> { EmptyVehicleDamageRepository }
+                    single<LmuWindowsTyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
                 },
             )
@@ -426,7 +428,7 @@ class ApplicationTest {
 
 // --- テストデータ ---
 
-private val greenFlagData = RaceFlagsData(
+private val greenFlagData = LmuWindowsRaceFlagsData(
     gamePhase = SessionPhase.GREEN_FLAG,
     yellowFlagState = SessionYellowFlagState.NONE,
     sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
@@ -437,7 +439,7 @@ private val greenFlagData = RaceFlagsData(
     playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
 )
 
-private val yellowFlagData = RaceFlagsData(
+private val yellowFlagData = LmuWindowsRaceFlagsData(
     gamePhase = SessionPhase.FULL_COURSE_YELLOW,
     yellowFlagState = SessionYellowFlagState.PENDING,
     sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.YELLOW, SectorFlagState.YELLOW),
@@ -458,14 +460,14 @@ private const val yellowFlagJson =
         """"startLight":0,"numRedLights":0,"playerFlag":"UNKNOWN","playerUnderYellow":true,""" +
         """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}"""
 
-private val proximityDataLeft = ProximityData(
+private val proximityDataLeft = LmuWindowsProximityData(
     sideBySideLeftVehicleIds = setOf(3),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 1.5,
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private val proximityDataRight = ProximityData(
+private val proximityDataRight = LmuWindowsProximityData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = setOf(5),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
@@ -480,13 +482,13 @@ private const val proximityRightJson =
     """{"sideBySideLeftVehicleIds":[],"sideBySideRightVehicleIds":[5],""" +
         """"lateralDistanceLeftMeters":1.7976931348623157E308,"lateralDistanceRightMeters":2.0}"""
 
-private val overheatingDamage = VehicleDamageData(
+private val overheatingDamage = LmuWindowsVehicleDamageData(
     overheating = true,
     partDetached = false,
     lastImpactMagnitude = 0.5,
 )
 
-private val partDetachedDamage = VehicleDamageData(
+private val partDetachedDamage = LmuWindowsVehicleDamageData(
     overheating = false,
     partDetached = true,
     lastImpactMagnitude = 1.2,
@@ -498,7 +500,7 @@ private const val overheatingDamageJson =
 private const val partDetachedDamageJson =
     """{"overheating":false,"partDetached":true,"lastImpactMagnitude":1.2}"""
 
-private val tyreCarcassTemperatureData1 = TyreCarcassTemperatureData(
+private val tyreCarcassTemperatureData1 = LmuWindowsTyreCarcassTemperatureData(
     wheels = mapOf(
         WheelIndex.FRONT_LEFT to 80.0,
         WheelIndex.FRONT_RIGHT to 82.0,
@@ -507,7 +509,7 @@ private val tyreCarcassTemperatureData1 = TyreCarcassTemperatureData(
     ),
 )
 
-private val tyreCarcassTemperatureData2 = TyreCarcassTemperatureData(
+private val tyreCarcassTemperatureData2 = LmuWindowsTyreCarcassTemperatureData(
     wheels = mapOf(
         WheelIndex.FRONT_LEFT to 90.0,
         WheelIndex.FRONT_RIGHT to 91.0,
@@ -524,54 +526,54 @@ private const val tyreCarcassTemperatureJson2 =
 
 // --- Fake リポジトリ ---
 
-private class FakeFlagRepository : FlagRepository {
-    private val channel = Channel<RaceFlagsData>(capacity = Channel.UNLIMITED)
+private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
+    private val channel = Channel<LmuWindowsRaceFlagsData>(capacity = Channel.UNLIMITED)
 
-    override fun flagStream(): Flow<RaceFlagsData> = channel.receiveAsFlow()
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = channel.receiveAsFlow()
 
-    fun emit(data: RaceFlagsData) {
+    fun emit(data: LmuWindowsRaceFlagsData) {
         channel.trySend(data).getOrThrow()
     }
 }
 
-private class FakeProximityRepository : ProximityRepository {
-    private val channel = Channel<ProximityData>(capacity = Channel.UNLIMITED)
+private class FakeLmuWindowsProximityRepository : LmuWindowsProximityRepository {
+    private val channel = Channel<LmuWindowsProximityData>(capacity = Channel.UNLIMITED)
 
-    override fun proximityStream(): Flow<ProximityData> = channel.receiveAsFlow()
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = channel.receiveAsFlow()
 
-    fun emit(data: ProximityData) {
+    fun emit(data: LmuWindowsProximityData) {
         channel.trySend(data).getOrThrow()
     }
 }
 
-private object EmptyProximityRepository : ProximityRepository {
-    override fun proximityStream(): Flow<ProximityData> = emptyFlow()
+private object EmptyProximityRepository : LmuWindowsProximityRepository {
+    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
 }
 
-private object EmptyVehicleDamageRepository : VehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> = emptyFlow()
+private object EmptyVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = emptyFlow()
 }
 
-private class FakeVehicleDamageRepository : VehicleDamageRepository {
-    private val channel = Channel<VehicleDamageData>(capacity = Channel.UNLIMITED)
+private class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
+    private val channel = Channel<LmuWindowsVehicleDamageData>(capacity = Channel.UNLIMITED)
 
-    override fun vehicleDamageStream(): Flow<VehicleDamageData> = channel.receiveAsFlow()
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = channel.receiveAsFlow()
 
-    fun emit(data: VehicleDamageData) {
+    fun emit(data: LmuWindowsVehicleDamageData) {
         channel.trySend(data).getOrThrow()
     }
 }
 
-private object EmptyTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
-    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = emptyFlow()
+private object EmptyTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
+    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
 
-private class FakeTyreCarcassTemperatureRepository : TyreCarcassTemperatureRepository {
-    private val channel = Channel<TyreCarcassTemperatureData>(capacity = Channel.UNLIMITED)
+private class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
+    private val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(capacity = Channel.UNLIMITED)
 
-    override fun tyreCarcassTemperatureStream(): Flow<TyreCarcassTemperatureData> = channel.receiveAsFlow()
+    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = channel.receiveAsFlow()
 
-    fun emit(data: TyreCarcassTemperatureData) {
+    fun emit(data: LmuWindowsTyreCarcassTemperatureData) {
         channel.trySend(data).getOrThrow()
     }
 }

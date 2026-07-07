@@ -8,9 +8,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 
-internal fun Route.vehicleDamageWebSocket(observeVehicleDamage: ObserveVehicleDamageUseCase) {
+internal fun Route.vehicleDamageWebSocket(observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase) {
     webSocket(KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows)) {
         observeVehicleDamage()
             .distinctUntilChanged()
