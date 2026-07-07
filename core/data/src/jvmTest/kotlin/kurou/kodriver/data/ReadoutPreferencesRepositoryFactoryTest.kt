@@ -12,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ReadoutPreferencesRepositoryTest {
+class ReadoutPreferencesRepositoryFactoryTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_readout_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
