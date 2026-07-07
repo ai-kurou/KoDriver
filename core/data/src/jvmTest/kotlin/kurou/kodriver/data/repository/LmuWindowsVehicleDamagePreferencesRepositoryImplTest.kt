@@ -39,34 +39,34 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
     @Test
     fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() = testScope.runTest {
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true),
             repository.observeEnabledStates().first(),
         )
     }
 
     @Test
     fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, false)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false),
             repository.observeEnabledStates().first(),
         )
     }
 
     @Test
     fun `異なるキーで保存した値がすべて保持される`() = testScope.runTest {
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage, false)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.Overheat to true,
-                ReadoutItemKey.LmuWindows.VehicleDamage to false,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
             ),
             repository.observeEnabledStates().first(),
         )

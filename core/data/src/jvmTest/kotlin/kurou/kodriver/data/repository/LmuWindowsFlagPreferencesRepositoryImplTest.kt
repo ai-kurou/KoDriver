@@ -35,30 +35,30 @@ class LmuWindowsFlagPreferencesRepositoryImplTest {
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
 
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.BlueFlag, true)
+        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.BlueFlag to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to true),
             repository.observeFlagEnabledStates().first(),
         )
 
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.BlueFlag, false)
+        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.BlueFlag to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to false),
             repository.observeFlagEnabledStates().first(),
         )
     }
 
     @Test
     fun `複数フラグを独立して保存・取得できる`() = testScope.runTest {
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.BlueFlag, true)
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.SectorYellowFlag, false)
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.RedFlag, true)
+        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
+        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag, false)
+        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, true)
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.SectorYellowFlag to false,
-                ReadoutItemKey.LmuWindows.RedFlag to true,
+                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
+                ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
             ),
             repository.observeFlagEnabledStates().first(),
         )

@@ -68,16 +68,16 @@ class ReadoutContentTest {
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
                     items = listOf(
-                        ReadoutItemKey.LmuWindows.Flag,
+                        ReadoutItemKey.LmuWindows.Flag.Root,
                         ReadoutItemKey.LmuWindows.VehicleApproach,
-                        ReadoutItemKey.LmuWindows.VehicleDamage,
+                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                         ReadoutItemKey.LmuWindows.TyreTemperature,
                         ReadoutItemKey.LmuWindows.MyBestLap,
                     ),
                     readoutEnabledStates = mapOf(
-                        ReadoutItemKey.LmuWindows.Flag to true,
+                        ReadoutItemKey.LmuWindows.Flag.Root to true,
                         ReadoutItemKey.LmuWindows.VehicleApproach to true,
-                        ReadoutItemKey.LmuWindows.VehicleDamage to true,
+                        ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
                         ReadoutItemKey.LmuWindows.TyreTemperature to true,
                         ReadoutItemKey.LmuWindows.MyBestLap to true,
                     ),
@@ -152,10 +152,10 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature, ReadoutItemKey.LmuWindows.Flag),
+                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature, ReadoutItemKey.LmuWindows.Flag.Root),
                     readoutEnabledStates = mapOf(
                         ReadoutItemKey.LmuWindows.TyreTemperature to true,
-                        ReadoutItemKey.LmuWindows.Flag to true,
+                        ReadoutItemKey.LmuWindows.Flag.Root to true,
                     ),
                 ),
                 onSimulatorSelected = {},
@@ -175,7 +175,7 @@ class ReadoutContentTest {
         rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature to false))
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag to false))
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
     }
 
     private fun assertAllItemsCanNavigateBack(

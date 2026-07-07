@@ -11,9 +11,9 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 // listPaneに表示される ReadoutItemKey は必ずここに列挙すること（省略＝デフォルトtrue、ではない）。
 private val readoutEnabledStateDefaults: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
     Simulator.LmuWindows to mapOf(
-        ReadoutItemKey.LmuWindows.Flag to true,
+        ReadoutItemKey.LmuWindows.Flag.Root to true,
         ReadoutItemKey.LmuWindows.VehicleApproach to true,
-        ReadoutItemKey.LmuWindows.VehicleDamage to true,
+        ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
         ReadoutItemKey.LmuWindows.TyreTemperature to false,
         ReadoutItemKey.LmuWindows.MyBestLap to false,
     ),

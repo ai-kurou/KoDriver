@@ -38,10 +38,10 @@ class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
     fun `保存した enabledStates を読み出せる`() = testScope.runTest {
         val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.Overheat, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to true),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true),
             repository.observeEnabledStates().first(),
         )
     }

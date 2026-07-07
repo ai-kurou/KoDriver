@@ -130,8 +130,8 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             events = emptyList(),
         )
         val event = if (
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage) &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Overheat) &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat) &&
             !previous.overheating &&
             vehicleDamage.overheating
         ) {
@@ -169,7 +169,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             state = state.copy(previousRaceFlags = raceFlags),
             events = emptyList(),
         )
-        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag)) {
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.Root)) {
             return LmuWindowsNarratorReadoutDecision(
                 state = state.copy(previousRaceFlags = raceFlags),
                 events = emptyList(),
@@ -198,7 +198,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.BlueFlag) &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.BlueFlag) &&
             previous.playerFlag != PrimaryFlag.BLUE &&
             raceFlags.playerFlag == PrimaryFlag.BLUE
         ) {
@@ -212,7 +212,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         raceFlags: LmuWindowsRaceFlagsData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
-        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.SectorYellowFlag)) return null
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)) return null
         val newYellowSector = raceFlags.sectorFlags.indices.any { i ->
             raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
                 previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
@@ -226,7 +226,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.FullCourseYellow) &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.FullCourseYellow) &&
             previous.gamePhase != SessionPhase.FULL_COURSE_YELLOW &&
             raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW
         ) {
@@ -241,7 +241,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? =
         if (
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.RedFlag) &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.RedFlag) &&
             previous.gamePhase != SessionPhase.RED_FLAG &&
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {

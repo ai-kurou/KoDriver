@@ -101,7 +101,7 @@ class LmuWindowsNarratorViewModelTest {
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(
-            ReadoutItemKey.LmuWindows.Flag,
+            ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach,
         ),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
@@ -415,7 +415,7 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.LmuWindows.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
@@ -433,7 +433,7 @@ class LmuWindowsNarratorViewModelTest {
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.LmuWindows.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(
             proximityChannel = channel,
@@ -470,7 +470,7 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.LmuWindows.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(
             proximityChannel = channel,
@@ -493,12 +493,12 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
-            initialKey = ReadoutItemKey.LmuWindows.Flag,
+            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(
             proximityChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
             currentTimeMs = { fakeTime },
         )
 
@@ -520,7 +520,9 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             damageChannel = damageChannel,
             ttsEngine = tts,
-            vehicleDamageEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Overheat to false),
+            vehicleDamageEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false,
+            ),
         )
 
         damageChannel.send(noDamage())
@@ -536,7 +538,7 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            flagEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.BlueFlag to false),
+            flagEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to false),
         )
 
         flagChannel.send(clearFlags())
@@ -552,12 +554,12 @@ class LmuWindowsNarratorViewModelTest {
         buildViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.Flag to false),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
             flagEnabledOverrides = mapOf(
-                ReadoutItemKey.LmuWindows.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.SectorYellowFlag to true,
-                ReadoutItemKey.LmuWindows.FullCourseYellow to true,
-                ReadoutItemKey.LmuWindows.RedFlag to true,
+                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
             ),
         )
 
@@ -595,7 +597,7 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 789L,
                     simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.value,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
                     telemetryJson =
                         """{"previous":{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
                             """"sectorFlags":["CLEAR","CLEAR","CLEAR"],"startLight":0,"numRedLights":0,""" +
@@ -654,7 +656,7 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 987L,
                     simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.value,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root.value,
                     telemetryJson =
                         """{"previous":{"overheating":false,"partDetached":false,"lastImpactMagnitude":0.0},""" +
                             """"current":{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.0}}""",
@@ -861,7 +863,7 @@ private class FakeConstantSimulatorRepository(
 private class FakeAllEnabledReadoutPreferencesRepository(
     private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     private val orderOverride: List<ReadoutItemKey> = listOf(
-        ReadoutItemKey.LmuWindows.Flag,
+        ReadoutItemKey.LmuWindows.Flag.Root,
         ReadoutItemKey.LmuWindows.VehicleApproach,
     ),
 ) : ReadoutPreferencesRepository {
