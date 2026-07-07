@@ -21,10 +21,10 @@ class Gt7Ps5MyBestLapPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `my_best_lap_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `gt7_ps5_my_best_lap_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
         val dataStore = createGt7Ps5MyBestLapPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(voiceType = "casual") }
 
-        assertTrue(tempDir.resolve("my_best_lap_preferences.pb").exists())
+        assertTrue(tempDir.resolve("gt7_ps5_my_best_lap_preferences.pb").exists())
     }
 }
