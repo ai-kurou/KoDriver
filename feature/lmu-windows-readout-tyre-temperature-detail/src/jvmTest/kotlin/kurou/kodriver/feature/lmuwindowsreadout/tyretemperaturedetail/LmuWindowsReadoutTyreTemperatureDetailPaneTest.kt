@@ -67,4 +67,21 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         assertEquals(95, changedValue)
     }
+
+    @Test
+    fun `タイヤ過熱警告チップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("タイヤ過熱警告", substring = true)[0].performClick()
+
+        assertEquals(true, previewClicked)
+    }
 }

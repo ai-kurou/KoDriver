@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 
 internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
     private val saveHighThreshold: SaveLmuWindowsTyreTemperatureHighThresholdUseCase,
+    private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
@@ -30,6 +33,10 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 
     fun onHighThresholdReset() {
         viewModelScope.launch { saveHighThreshold(DEFAULT_HIGH_THRESHOLD_CELSIUS) }
+    }
+
+    fun onPreviewClicked() {
+        playSpeechEvent(SpeechEvent.TyreOverheat)
     }
 
     companion object {
