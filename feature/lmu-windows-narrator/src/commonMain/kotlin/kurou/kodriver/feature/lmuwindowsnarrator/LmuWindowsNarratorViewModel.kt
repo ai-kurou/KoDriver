@@ -108,7 +108,9 @@ class LmuWindowsNarratorViewModel(
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val enabledStates = combine(
+    // listPane（readoutStates）とdetailPane（flagStates・vehicleDamageStates）を統合した、
+    // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
+    private val mergedEnabledStates = combine(
         selectedSimulator
             .flatMapLatest { simulator ->
                 if (simulator == null) emptyFlow<Map<ReadoutItemKey, Boolean>>()
@@ -297,7 +299,7 @@ class LmuWindowsNarratorViewModel(
 
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
-            enabledStates = enabledStates.value,
+            enabledStates = mergedEnabledStates.value,
             myBestLapVoiceType = voiceType.value,
             currentLap = currentLap.value,
             skipFirstLap = skipFirstLap.value,

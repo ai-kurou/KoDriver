@@ -78,8 +78,8 @@ class ReadoutListViewModel(
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != null) {
-                observeReadoutEnabledStates(simulator.id).map { enabledStates ->
-                    defaultEnabledStates[simulator].orEmpty() + enabledStates
+                observeReadoutEnabledStates(simulator.id).map { persisted ->
+                    defaultEnabledStates[simulator].orEmpty() + persisted
                 }
             } else {
                 flowOf(emptyMap())

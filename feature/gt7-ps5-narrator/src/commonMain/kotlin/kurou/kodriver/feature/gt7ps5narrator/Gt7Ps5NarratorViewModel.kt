@@ -57,7 +57,8 @@ class Gt7Ps5NarratorViewModel(
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val enabledStates = selectedSimulator
+    // GT7にはdetailPaneのサブトグルが存在しないため、listPaneの状態のみで完結する。
+    private val listEnabledStates = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
         }
@@ -94,10 +95,10 @@ class Gt7Ps5NarratorViewModel(
                 state = narratorState,
                 telemetry = telemetry,
                 settings = Gt7Ps5NarratorReadoutSettings(
-                    enabledStates = enabledStates.value,
+                    enabledStates = listEnabledStates.value,
                     myBestLapVoiceType = voiceType.value,
                     remainingFuelLapsThreshold = fuelThreshold.value,
-                    remainingFuelLapsEnabled = enabledStates.value[ReadoutItemKey.RemainingFuelLaps] != false,
+                    remainingFuelLapsEnabled = listEnabledStates.value[ReadoutItemKey.RemainingFuelLaps] != false,
                 ),
                 observedAtMs = observedAtMs,
             )
