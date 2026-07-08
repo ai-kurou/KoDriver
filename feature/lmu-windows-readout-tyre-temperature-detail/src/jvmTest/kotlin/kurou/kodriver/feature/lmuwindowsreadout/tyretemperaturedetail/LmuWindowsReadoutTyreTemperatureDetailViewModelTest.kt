@@ -11,6 +11,8 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -33,6 +35,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var repository: FakeLmuWindowsTyreTemperaturePreferencesRepository
+    private lateinit var flagRepository: FakeLmuWindowsFlagRepository
     private val playedEvents = mutableListOf<SpeechEvent>()
     private lateinit var viewModel: LmuWindowsReadoutTyreTemperatureDetailViewModel
 
@@ -40,8 +43,10 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeLmuWindowsTyreTemperaturePreferencesRepository()
+        flagRepository = FakeLmuWindowsFlagRepository()
         viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel(
             observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
+            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
             saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
@@ -77,5 +82,11 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     fun `onPreviewClickedを呼ぶとTyreOverheatイベントが再生される`() {
         viewModel.onPreviewClicked()
         assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), playedEvents)
+    }
+
+    @Test
+    fun `RaceFlagsのgamePhaseが変化するとuiStateのgamePhaseが更新される`() = runTest {
+        flagRepository.updateGamePhase(SessionPhase.GREEN_FLAG)
+        assertEquals(SessionPhase.GREEN_FLAG, viewModel.uiState.first().gamePhase)
     }
 }
