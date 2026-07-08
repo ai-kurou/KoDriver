@@ -2,12 +2,8 @@ package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -33,10 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.telemetryloglist.generated.resources.Res
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_cancel_button
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_body
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_button
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_title
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_failure
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_success
 import kotlinx.coroutines.launch
@@ -172,31 +164,6 @@ internal fun TelemetryLogContentScaffold(
             modifier = Modifier.align(Alignment.BottomCenter),
         )
     }
-}
-
-@Composable
-private fun TelemetryLogResetConfirmDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(Res.string.telemetry_log_reset_confirm_title)) },
-        text = { Text(stringResource(Res.string.telemetry_log_reset_confirm_body)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = stringResource(Res.string.telemetry_log_reset_confirm_button),
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.telemetry_log_reset_cancel_button))
-            }
-        },
-    )
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)

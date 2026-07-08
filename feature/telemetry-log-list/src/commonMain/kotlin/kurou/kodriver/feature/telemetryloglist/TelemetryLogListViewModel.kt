@@ -23,33 +23,32 @@ class TelemetryLogListViewModel(
     private val resetState = MutableStateFlow(ResetState())
     private val showResetConfirmDialog = MutableStateFlow(false)
 
-    val uiState: StateFlow<TelemetryLogListUiState> = observeTelemetryLogs()
+    private val sortedLogs = observeTelemetryLogs()
         .map { logs ->
             logs.sortedWith(
                 compareByDescending<TelemetryLog> { it.createdAt }
                     .thenByDescending { it.id },
             )
         }
-        .combine(selectedLogId) { logs, selectedLogId ->
-            logs to selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } }
-        }
-        .combine(resetState) { (logs, selectedLogId), resetState ->
-            Triple(logs, selectedLogId, resetState)
-        }
-        .combine(showResetConfirmDialog) { (logs, selectedLogId, resetState), showResetConfirmDialog ->
-            TelemetryLogListUiState(
-                logs = logs,
-                selectedLogId = selectedLogId,
-                isResetting = resetState.isResetting,
-                resetSucceeded = resetState.resetSucceeded,
-                showResetConfirmDialog = showResetConfirmDialog,
-            )
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            TelemetryLogListUiState(),
+
+    val uiState: StateFlow<TelemetryLogListUiState> = combine(
+        sortedLogs,
+        selectedLogId,
+        resetState,
+        showResetConfirmDialog,
+    ) { logs, selectedLogId, resetState, showResetConfirmDialog ->
+        TelemetryLogListUiState(
+            logs = logs,
+            selectedLogId = selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } },
+            isResetting = resetState.isResetting,
+            resetSucceeded = resetState.resetSucceeded,
+            showResetConfirmDialog = showResetConfirmDialog,
         )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        TelemetryLogListUiState(),
+    )
 
     fun selectLog(id: Long) {
         selectedLogId.update { current -> if (current == id) null else id }
