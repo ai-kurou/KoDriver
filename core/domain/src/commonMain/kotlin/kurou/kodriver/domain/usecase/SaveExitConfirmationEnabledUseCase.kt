@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
+import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 
-class SaveExitConfirmationEnabledUseCase(private val repository: ExitConfirmationPreferencesRepository) {
+class SaveExitConfirmationEnabledUseCase(private val repository: ExitConfirmationEnabledRepository) {
     suspend operator fun invoke(enabled: Boolean) = repository.saveExitConfirmationEnabled(enabled)
 }

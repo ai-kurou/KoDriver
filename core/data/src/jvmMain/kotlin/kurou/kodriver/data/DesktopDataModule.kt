@@ -4,11 +4,11 @@ import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryIm
 import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
-import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
+import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
+import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -72,9 +72,9 @@ val desktopDataModule = module {
         createConsoleAddressRepository(directory = kodriverDirectory)
     }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-    single<KeepScreenOnPreferencesRepository> { JvmKeepScreenOnPreferencesRepository() }
-    single<ExitConfirmationPreferencesRepository> {
-        createExitConfirmationPreferencesRepository(directory = kodriverDirectory)
+    single<KeepScreenOnEnabledRepository> { JvmKeepScreenOnEnabledRepository() }
+    single<ExitConfirmationEnabledRepository> {
+        createExitConfirmationEnabledRepository(directory = kodriverDirectory)
     }
     single<LmuWindowsTyreTemperaturePreferencesRepository> {
         createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)

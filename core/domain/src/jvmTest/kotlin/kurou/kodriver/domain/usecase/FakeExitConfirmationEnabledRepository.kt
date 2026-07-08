@@ -2,11 +2,11 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
+import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 
-internal class FakeExitConfirmationPreferencesRepository(
+internal class FakeExitConfirmationEnabledRepository(
     initial: Boolean = true,
-) : ExitConfirmationPreferencesRepository {
+) : ExitConfirmationEnabledRepository {
     private val flow = MutableStateFlow(initial)
 
     override fun exitConfirmationEnabled(): Flow<Boolean> = flow

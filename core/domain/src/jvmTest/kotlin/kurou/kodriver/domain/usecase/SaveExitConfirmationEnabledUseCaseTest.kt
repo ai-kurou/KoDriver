@@ -9,7 +9,7 @@ class SaveExitConfirmationEnabledUseCaseTest {
 
     @Test
     fun `終了確認の有効状態を保存できる`() = runBlocking {
-        val repository = FakeExitConfirmationPreferencesRepository(initial = true)
+        val repository = FakeExitConfirmationEnabledRepository(initial = true)
         val useCase = SaveExitConfirmationEnabledUseCase(repository)
 
         useCase(false)

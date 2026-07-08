@@ -5,9 +5,9 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
-class JvmKeepScreenOnPreferencesRepositoryTest {
+class JvmKeepScreenOnEnabledRepositoryTest {
 
-    private val repository = JvmKeepScreenOnPreferencesRepository()
+    private val repository = JvmKeepScreenOnEnabledRepository()
 
     @Test
     fun `keepScreenOnはfalseを返す`() = runTest {
