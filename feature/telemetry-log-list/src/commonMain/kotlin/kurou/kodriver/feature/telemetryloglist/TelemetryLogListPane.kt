@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -191,32 +192,32 @@ private fun TelemetryLogResetListItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = stringResource(Res.string.telemetry_log_reset_item),
-                color = MaterialTheme.colorScheme.error,
-            )
-        },
-        leadingContent = {
-            if (isResetting) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.DeleteForever,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.error,
-                )
-            }
-        },
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clickable(enabled = !isResetting, onClick = onClick),
-    )
+            .clickable(enabled = !isResetting, onClick = onClick)
+            .padding(vertical = 12.dp),
+    ) {
+        if (isResetting) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.error,
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.DeleteForever,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+            )
+        }
+        Text(
+            text = stringResource(Res.string.telemetry_log_reset_item),
+            color = MaterialTheme.colorScheme.error,
+        )
+    }
 }
 
 @Composable
