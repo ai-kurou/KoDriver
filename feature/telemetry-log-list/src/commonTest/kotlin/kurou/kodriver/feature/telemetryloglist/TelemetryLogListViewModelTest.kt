@@ -14,10 +14,12 @@ import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
+import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +42,7 @@ class TelemetryLogListViewModelTest {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
         repository.emit(
@@ -61,6 +64,7 @@ class TelemetryLogListViewModelTest {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
         repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
@@ -80,6 +84,7 @@ class TelemetryLogListViewModelTest {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
         repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
@@ -93,6 +98,7 @@ class TelemetryLogListViewModelTest {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
         repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
@@ -108,6 +114,7 @@ class TelemetryLogListViewModelTest {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
         repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
@@ -123,6 +130,7 @@ class TelemetryLogListViewModelTest {
         val repository = FakeTelemetryLogRepository()
         val viewModel = TelemetryLogListViewModel(
             observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
         repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
@@ -131,6 +139,39 @@ class TelemetryLogListViewModelTest {
         repository.emit(emptyList())
 
         assertNull(viewModel.uiState.first { it.logs.isEmpty() }.selectedLogId)
+    }
+
+    @Test
+    fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+        )
+
+        repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
+        viewModel.uiState.first { it.logs.isNotEmpty() }
+
+        viewModel.resetDatabase()
+
+        val state = viewModel.uiState.first { it.resetSucceeded != null && it.logs.isEmpty() }
+        assertEquals(true, state.resetSucceeded)
+        assertFalse(state.isResetting)
+    }
+
+    @Test
+    fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository(shouldFailOnDelete = true)
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+        )
+
+        viewModel.resetDatabase()
+
+        val state = viewModel.uiState.first { it.resetSucceeded != null }
+        assertEquals(false, state.resetSucceeded)
+        assertFalse(state.isResetting)
     }
 }
 
@@ -145,7 +186,9 @@ private fun telemetryLog(
     telemetryJson = "{}",
 )
 
-private class FakeTelemetryLogRepository : TelemetryLogRepository {
+private class FakeTelemetryLogRepository(
+    private val shouldFailOnDelete: Boolean = false,
+) : TelemetryLogRepository {
     private val logs = MutableStateFlow(emptyList<TelemetryLog>())
 
     override fun observeTelemetryLogs() = logs
@@ -160,6 +203,7 @@ private class FakeTelemetryLogRepository : TelemetryLogRepository {
     }
 
     override suspend fun deleteAllTelemetryLogs() {
+        if (shouldFailOnDelete) throw IllegalStateException("削除に失敗しました")
         emit(emptyList())
     }
 
