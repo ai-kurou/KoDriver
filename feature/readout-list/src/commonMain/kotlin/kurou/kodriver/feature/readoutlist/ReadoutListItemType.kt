@@ -8,7 +8,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object VehicleApproach : LmuWindows(ReadoutItemKey.LmuWindows.VehicleApproach)
         data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage.Root)
-        data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature)
+        data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap)
     }
 
@@ -23,7 +23,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.LmuWindows.VehicleApproach -> LmuWindows.VehicleApproach
                 ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
-                ReadoutItemKey.LmuWindows.TyreTemperature -> LmuWindows.TyreTemperature
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
                 ReadoutItemKey.LmuWindows.MyBestLap -> LmuWindows.MyBestLap
                 else -> null
             }
@@ -53,7 +53,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
             ReadoutItemKey.LmuWindows.VehicleApproach -> 1
             ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 2
-            ReadoutItemKey.LmuWindows.TyreTemperature -> 3
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 3
             ReadoutItemKey.LmuWindows.MyBestLap -> 4
         }
 

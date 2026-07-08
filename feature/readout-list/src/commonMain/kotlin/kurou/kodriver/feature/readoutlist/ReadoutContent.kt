@@ -171,7 +171,7 @@ private fun ReadoutContentPreview() {
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
         ),

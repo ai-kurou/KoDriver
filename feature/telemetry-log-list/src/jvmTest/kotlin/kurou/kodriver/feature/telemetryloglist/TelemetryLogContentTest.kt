@@ -132,7 +132,7 @@ class TelemetryLogContentTest {
             ReadoutItemKey.LmuWindows.Flag.RedFlag.value to "レッドフラッグ",
             ReadoutItemKey.LmuWindows.VehicleDamage.Root.value to "車両故障",
             ReadoutItemKey.LmuWindows.VehicleDamage.Overheat.value to "オーバーヒート",
-            ReadoutItemKey.LmuWindows.TyreTemperature.value to "タイヤ温度",
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root.value to "タイヤ温度",
             ReadoutItemKey.LmuWindows.MyBestLap.value to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.MyBestLap.value to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.value to "燃料残り周回数",

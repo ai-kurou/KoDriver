@@ -7,6 +7,7 @@ import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -66,6 +67,23 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         ).performSemanticsAction(SemanticsActions.SetProgress) { it(95f) }
 
         assertEquals(95, changedValue)
+    }
+
+    @Test
+    fun `過熱警告カードのヘッダーをタップするとonOverheatWarningEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(overheatWarningEnabled = true),
+                    onOverheatWarningEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("過熱警告").performClick()
+
+        assertEquals(false, changedEnabled)
     }
 
     @Test

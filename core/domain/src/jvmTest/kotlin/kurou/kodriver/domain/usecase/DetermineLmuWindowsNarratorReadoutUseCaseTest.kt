@@ -440,7 +440,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             data = tyreTemperature(fl = 95.0),
             settings = settings(
                 tyreTemperatureHighThresholdCelsius = 90,
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
             ),
         )
 
@@ -455,7 +455,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             data = tyreTemperature(fl = 95.0),
             settings = settings(
                 tyreTemperatureHighThresholdCelsius = 90,
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
             ),
         ).state
 
@@ -466,6 +466,41 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         assertEquals(emptyList<SpeechEvent>(), reenabledDecision.events)
+    }
+
+    @Test
+    fun `過熱警告スイッチがOFFの場合は読み上げられない`() {
+        val decision = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(
+                tyreTemperatureHighThresholdCelsius = 90,
+                enabledStates = allEnabledStates + mapOf(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
+                ),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `タイヤ温度項目が無効なら過熱警告スイッチがONでも読み上げない`() {
+        val decision = useCase.determineTyreTemperature(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 95.0),
+            settings = settings(
+                tyreTemperatureHighThresholdCelsius = 90,
+                enabledStates = allEnabledStates + mapOf(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                ),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
     }
 
     @Test
@@ -485,7 +520,8 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.VehicleApproach to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-    ReadoutItemKey.LmuWindows.TyreTemperature to true,
+    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
+    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
     ReadoutItemKey.LmuWindows.Flag.Root to true,
     ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,

@@ -32,6 +32,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
@@ -71,6 +72,7 @@ data class FlagUseCases(
 data class TyreTemperatureUseCases(
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
+    val observeTyreTemperatureEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
 )
 
 data class NarratorUseCases(
@@ -111,8 +113,9 @@ class LmuWindowsNarratorViewModel(
             },
         flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
-    ) { readoutStates: Map<ReadoutItemKey, Boolean>, flagStates, vehicleDamageStates ->
-        readoutStates + flagStates + vehicleDamageStates
+        tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
+    ) { readoutStates: Map<ReadoutItemKey, Boolean>, flagStates, vehicleDamageStates, tyreTemperatureStates ->
+        readoutStates + flagStates + vehicleDamageStates + tyreTemperatureStates
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）

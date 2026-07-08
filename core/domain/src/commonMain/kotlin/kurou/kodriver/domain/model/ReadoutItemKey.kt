@@ -7,7 +7,6 @@ sealed interface ReadoutItemKey {
         sealed interface TopLevel : LmuWindows
 
         data object VehicleApproach : TopLevel { override val value = "lmu_windows_vehicle_approach" }
-        data object TyreTemperature : TopLevel { override val value = "lmu_windows_tyre_temperature" }
         data object MyBestLap : TopLevel { override val value = "lmu_windows_my_best_lap" }
 
         sealed interface Flag : LmuWindows {
@@ -21,6 +20,13 @@ sealed interface ReadoutItemKey {
         sealed interface VehicleDamage : LmuWindows {
             data object Root : VehicleDamage, TopLevel { override val value = "lmu_windows_vehicle_damage" }
             data object Overheat : VehicleDamage { override val value = "lmu_windows_overheat" }
+        }
+
+        sealed interface TyreTemperature : LmuWindows {
+            data object Root : TyreTemperature, TopLevel { override val value = "lmu_windows_tyre_temperature" }
+            data object OverheatWarning : TyreTemperature {
+                override val value = "lmu_windows_tyre_temperature_overheat_warning"
+            }
         }
     }
 
@@ -40,7 +46,8 @@ sealed interface ReadoutItemKey {
                 LmuWindows.Flag.RedFlag,
                 LmuWindows.VehicleDamage.Root,
                 LmuWindows.VehicleDamage.Overheat,
-                LmuWindows.TyreTemperature,
+                LmuWindows.TyreTemperature.Root,
+                LmuWindows.TyreTemperature.OverheatWarning,
                 LmuWindows.MyBestLap,
                 Gt7Ps5.MyBestLap,
                 Gt7Ps5.RemainingFuelLaps,

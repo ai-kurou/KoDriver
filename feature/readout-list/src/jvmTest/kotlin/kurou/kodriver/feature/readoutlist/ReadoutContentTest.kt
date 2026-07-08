@@ -71,14 +71,14 @@ class ReadoutContentTest {
                         ReadoutItemKey.LmuWindows.Flag.Root,
                         ReadoutItemKey.LmuWindows.VehicleApproach,
                         ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                        ReadoutItemKey.LmuWindows.TyreTemperature,
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                         ReadoutItemKey.LmuWindows.MyBestLap,
                     ),
                     readoutEnabledStates = mapOf(
                         ReadoutItemKey.LmuWindows.Flag.Root to true,
                         ReadoutItemKey.LmuWindows.VehicleApproach to true,
                         ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                        ReadoutItemKey.LmuWindows.TyreTemperature to true,
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
                         ReadoutItemKey.LmuWindows.MyBestLap to true,
                     ),
                     selectedItem = selectedItem,
@@ -152,9 +152,9 @@ class ReadoutContentTest {
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.LmuWindows),
                     selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature, ReadoutItemKey.LmuWindows.Flag.Root),
+                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
                     readoutEnabledStates = mapOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature to true,
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
                         ReadoutItemKey.LmuWindows.Flag.Root to true,
                     ),
                 ),
@@ -174,7 +174,7 @@ class ReadoutContentTest {
         rule.onAllNodes(hasSwitchRole()).get(0).assertIsEnabled().performClick()
         rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
 
-        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature to false))
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
     }
 

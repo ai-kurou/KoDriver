@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.CorruptionException
@@ -12,16 +14,19 @@ import kotlin.test.assertFailsWith
 class LmuWindowsTyreTemperaturePreferencesSerializerTest {
 
     @Test
-    fun `デフォルト値は highThresholdCelsius が 90`() {
+    fun `デフォルト値は highThresholdCelsius が 90、enabledStates が空Map`() {
         assertEquals(
-            LmuWindowsTyreTemperaturePreferences(highThresholdCelsius = 90),
+            LmuWindowsTyreTemperaturePreferences(highThresholdCelsius = 90, enabledStates = emptyMap()),
             LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue,
         )
     }
 
     @Test
     fun `書き込んだ値を読み出せる`() = runTest {
-        val original = LmuWindowsTyreTemperaturePreferences(highThresholdCelsius = 110)
+        val original = LmuWindowsTyreTemperaturePreferences(
+            highThresholdCelsius = 110,
+            enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
+        )
         val output = ByteArrayOutputStream()
         LmuWindowsTyreTemperaturePreferencesSerializer.writeTo(original, output)
 

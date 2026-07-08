@@ -71,7 +71,7 @@ class ReadoutPreferencesRepositoryImplTest {
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach, true)
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag.Root, false)
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage.Root, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.TyreTemperature, false)
+        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
 
         val states = repository.observeReadoutEnabledStates("lmu_windows").first()
         assertEquals(
@@ -79,7 +79,7 @@ class ReadoutPreferencesRepositoryImplTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach to true,
                 ReadoutItemKey.LmuWindows.Flag.Root to false,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature to false,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
             ),
             states,
         )
