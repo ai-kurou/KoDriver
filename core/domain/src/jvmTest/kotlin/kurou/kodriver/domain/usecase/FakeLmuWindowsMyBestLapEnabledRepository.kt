@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 
 internal class FakeLmuWindowsMyBestLapEnabledRepository(
-    initialEnabled: Boolean = false,
+    initialEnabled: Boolean? = null,
 ) : LmuWindowsMyBestLapEnabledRepository {
     private val enabled = MutableStateFlow(initialEnabled)
 
-    override fun observeEnabled(): Flow<Boolean> = enabled
+    override fun observeEnabled(): Flow<Boolean?> = enabled
 
     override suspend fun saveEnabled(enabled: Boolean) {
         this.enabled.update { enabled }

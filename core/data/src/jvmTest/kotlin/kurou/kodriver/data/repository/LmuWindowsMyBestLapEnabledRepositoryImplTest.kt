@@ -10,8 +10,8 @@ import kurou.kodriver.data.datasource.ReadoutPreferencesSerializer
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsMyBestLapEnabledRepositoryImplTest {
@@ -33,15 +33,15 @@ class LmuWindowsMyBestLapEnabledRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は false`() = testScope.runTest {
-        assertFalse(repository.observeEnabled().first())
+    fun `初期値は未設定(null)`() = testScope.runTest {
+        assertNull(repository.observeEnabled().first())
     }
 
     @Test
     fun `保存した有効状態を取得できる`() = testScope.runTest {
         repository.saveEnabled(true)
 
-        assertTrue(repository.observeEnabled().first())
+        assertEquals(true, repository.observeEnabled().first())
     }
 
     @Test
@@ -49,6 +49,6 @@ class LmuWindowsMyBestLapEnabledRepositoryImplTest {
         repository.saveEnabled(true)
         repository.saveEnabled(false)
 
-        assertFalse(repository.observeEnabled().first())
+        assertEquals(false, repository.observeEnabled().first())
     }
 }
