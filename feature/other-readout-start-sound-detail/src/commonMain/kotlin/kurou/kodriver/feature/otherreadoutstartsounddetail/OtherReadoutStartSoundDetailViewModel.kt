@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -28,17 +29,17 @@ class OtherReadoutStartSoundDetailViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherReadoutStartSoundDetailUiState())
 
     fun onPendingTypeSelected(type: ReadoutStartSoundType) {
-        pendingType.value = type
+        pendingType.update { type }
         previewStartSound(type)
     }
 
     fun onConfirm() {
         val type = pendingType.value ?: return
         viewModelScope.launch { saveReadoutStartSoundType(type) }
-        pendingType.value = null
+        pendingType.update { null }
     }
 
     fun onDismiss() {
-        pendingType.value = null
+        pendingType.update { null }
     }
 }
