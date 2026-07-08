@@ -7,6 +7,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
@@ -50,7 +51,8 @@ val lmuNarratorModule: Module = module {
     factory { ReadoutListUseCases(get(), get(), get()) }
     factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
-    factory { TyreTemperatureUseCases(get(), get()) }
+    factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
+    factory { TyreTemperatureUseCases(get(), get(), get()) }
     factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
     includes(platformSoundModule)
     single<TextToSpeechEngine>(named("lmu_windows")) {
