@@ -17,20 +17,20 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AndroidKeepScreenOnPreferencesRepositoryTest {
+class AndroidExitConfirmationEnabledRepositoryTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var tempFile: File
-    private lateinit var repository: AndroidKeepScreenOnPreferencesRepository
+    private lateinit var repository: AndroidExitConfirmationEnabledRepository
 
     @Before
     fun setUp() {
-        tempFile = File.createTempFile("keep_screen_on_test", ".preferences_pb")
+        tempFile = File.createTempFile("exit_confirmation_test", ".preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
-        repository = AndroidKeepScreenOnPreferencesRepository(dataStore)
+        repository = AndroidExitConfirmationEnabledRepository(dataStore)
     }
 
     @After
@@ -40,21 +40,21 @@ class AndroidKeepScreenOnPreferencesRepositoryTest {
 
     @Test
     fun `初期状態はtrueを返す`() = runTest(testDispatcher) {
-        assertTrue(repository.keepScreenOn().first())
+        assertTrue(repository.exitConfirmationEnabled().first())
     }
 
     @Test
-    fun `saveKeepScreenOn falseの後にfalseを返す`() = runTest(testDispatcher) {
-        repository.saveKeepScreenOn(false)
+    fun `saveExitConfirmationEnabled falseの後にfalseを返す`() = runTest(testDispatcher) {
+        repository.saveExitConfirmationEnabled(false)
 
-        assertFalse(repository.keepScreenOn().first())
+        assertFalse(repository.exitConfirmationEnabled().first())
     }
 
     @Test
-    fun `saveKeepScreenOn trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
-        repository.saveKeepScreenOn(false)
-        repository.saveKeepScreenOn(true)
+    fun `saveExitConfirmationEnabled trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
+        repository.saveExitConfirmationEnabled(false)
+        repository.saveExitConfirmationEnabled(true)
 
-        assertTrue(repository.keepScreenOn().first())
+        assertTrue(repository.exitConfirmationEnabled().first())
     }
 }

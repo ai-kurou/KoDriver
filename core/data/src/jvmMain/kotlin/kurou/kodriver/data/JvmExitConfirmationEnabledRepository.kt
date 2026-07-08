@@ -7,12 +7,12 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
+import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import java.io.File
 
-internal class JvmExitConfirmationPreferencesRepository(
+internal class JvmExitConfirmationEnabledRepository(
     private val dataStore: DataStore<Preferences>,
-) : ExitConfirmationPreferencesRepository {
+) : ExitConfirmationEnabledRepository {
 
     private val exitConfirmationEnabledKey = booleanPreferencesKey("exit_confirmation_enabled")
 
@@ -31,5 +31,5 @@ internal fun createExitConfirmationPreferencesDataStore(directory: String): Data
     )
 }
 
-fun createExitConfirmationPreferencesRepository(directory: String): ExitConfirmationPreferencesRepository =
-    JvmExitConfirmationPreferencesRepository(createExitConfirmationPreferencesDataStore(directory))
+fun createExitConfirmationEnabledRepository(directory: String): ExitConfirmationEnabledRepository =
+    JvmExitConfirmationEnabledRepository(createExitConfirmationPreferencesDataStore(directory))

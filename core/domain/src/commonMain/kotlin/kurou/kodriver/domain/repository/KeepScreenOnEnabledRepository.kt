@@ -2,7 +2,7 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface KeepScreenOnPreferencesRepository {
+interface KeepScreenOnEnabledRepository {
     fun keepScreenOn(): Flow<Boolean>
     suspend fun saveKeepScreenOn(enabled: Boolean)
 }

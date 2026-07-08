@@ -6,11 +6,11 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
+import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 
-internal class AndroidKeepScreenOnPreferencesRepository(
+internal class AndroidKeepScreenOnEnabledRepository(
     private val dataStore: DataStore<Preferences>,
-) : KeepScreenOnPreferencesRepository {
+) : KeepScreenOnEnabledRepository {
 
     private val keepScreenOnKey = booleanPreferencesKey("keep_screen_on")
 

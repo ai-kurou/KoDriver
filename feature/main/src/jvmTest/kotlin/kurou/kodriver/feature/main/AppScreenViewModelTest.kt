@@ -13,8 +13,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
-import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
-import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
+import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
+import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
@@ -44,8 +44,8 @@ class AppScreenViewModelTest {
         tagName: String? = null,
         version: String = "1.0.0",
         exitConfirmationEnabled: Boolean = true,
-    ): Pair<AppScreenViewModel, FakeExitConfirmationPreferencesRepository> {
-        val fakeRepo = FakeExitConfirmationPreferencesRepository(exitConfirmationEnabled)
+    ): Pair<AppScreenViewModel, FakeExitConfirmationEnabledRepository> {
+        val fakeRepo = FakeExitConfirmationEnabledRepository(exitConfirmationEnabled)
         val viewModel = AppScreenViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(tagName)),
             currentVersion = version,
@@ -140,14 +140,14 @@ private class FakeAppUpdateRepository(private val tagName: String?) : AppUpdateR
     override suspend fun getLatestRelease(): AppUpdate? = tagName?.let { AppUpdate(it) }
 }
 
-private class FakeKeepScreenOnRepository : KeepScreenOnPreferencesRepository {
+private class FakeKeepScreenOnRepository : KeepScreenOnEnabledRepository {
     override fun keepScreenOn(): Flow<Boolean> = flowOf(false)
     override suspend fun saveKeepScreenOn(enabled: Boolean) = Unit
 }
 
-private class FakeExitConfirmationPreferencesRepository(
+private class FakeExitConfirmationEnabledRepository(
     enabled: Boolean,
-) : ExitConfirmationPreferencesRepository {
+) : ExitConfirmationEnabledRepository {
     private val _enabled = MutableStateFlow(enabled)
     var savedValue: Boolean? = null
     override fun exitConfirmationEnabled(): Flow<Boolean> = _enabled

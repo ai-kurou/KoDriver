@@ -6,11 +6,11 @@ import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryIm
 import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressRepository
-import kurou.kodriver.domain.repository.ExitConfirmationPreferencesRepository
+import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
-import kurou.kodriver.domain.repository.KeepScreenOnPreferencesRepository
+import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
@@ -96,11 +96,11 @@ fun androidDataModule(context: Context) = module {
     }
     single<ServerVersionRepository> { HttpServerVersionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-    single<KeepScreenOnPreferencesRepository> {
-        AndroidKeepScreenOnPreferencesRepository(context.keepScreenOnDataStore)
+    single<KeepScreenOnEnabledRepository> {
+        AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
     }
-    single<ExitConfirmationPreferencesRepository> {
-        AndroidExitConfirmationPreferencesRepository(context.exitConfirmationDataStore)
+    single<ExitConfirmationEnabledRepository> {
+        AndroidExitConfirmationEnabledRepository(context.exitConfirmationDataStore)
     }
     single<LmuWindowsTyreTemperaturePreferencesRepository> {
         createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)

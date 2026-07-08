@@ -110,8 +110,8 @@ class OtherListViewModelCheckUpdateTest {
         checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
         currentVersion: String,
     ): OtherListViewModel {
-        val exitConfirmationPreferencesRepository = FakeExitConfirmationPreferencesRepository()
-        val keepScreenOnPreferencesRepository = FakeKeepScreenOnPreferencesRepository()
+        val exitConfirmationPreferencesRepository = FakeExitConfirmationEnabledRepository()
+        val keepScreenOnPreferencesRepository = FakeKeepScreenOnEnabledRepository()
         val observeExitConfirmationEnabled =
             ObserveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository)
         return OtherListViewModel(
