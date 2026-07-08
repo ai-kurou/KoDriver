@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -76,7 +77,7 @@ class ServerConnectionViewModel(
     )
 
     fun dismissVersionMismatchBottomSheet() {
-        _showVersionMismatchBottomSheet.value = false
+        _showVersionMismatchBottomSheet.update { false }
     }
 
     private fun connectionCheckFlow(ip: String, simulator: Simulator?, requiresServer: Boolean) = flow {
@@ -93,7 +94,7 @@ class ServerConnectionViewModel(
             val isMismatch = serverVer != null && appVersion.isNotEmpty() && serverVer != appVersion
             if (isMismatch && !versionMismatchWarningShown) {
                 versionMismatchWarningShown = true
-                _showVersionMismatchBottomSheet.value = true
+                _showVersionMismatchBottomSheet.update { true }
             }
             emit(
                 ServerConnectionUiState(

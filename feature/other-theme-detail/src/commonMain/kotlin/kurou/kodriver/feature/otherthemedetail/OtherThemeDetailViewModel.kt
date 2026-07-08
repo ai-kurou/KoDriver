@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.usecase.ObserveThemeModeUseCase
@@ -26,16 +27,16 @@ class OtherThemeDetailViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherThemeDetailUiState())
 
     fun onPendingThemeModeSelected(themeMode: ThemeMode) {
-        pendingThemeMode.value = themeMode
+        pendingThemeMode.update { themeMode }
     }
 
     fun onConfirm() {
         val themeMode = pendingThemeMode.value ?: return
         viewModelScope.launch { saveThemeMode(themeMode) }
-        pendingThemeMode.value = null
+        pendingThemeMode.update { null }
     }
 
     fun onDismiss() {
-        pendingThemeMode.value = null
+        pendingThemeMode.update { null }
     }
 }
