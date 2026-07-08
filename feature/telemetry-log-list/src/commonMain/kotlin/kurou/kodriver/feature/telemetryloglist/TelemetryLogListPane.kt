@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,8 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,6 +60,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicl
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_damage
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
+import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
@@ -70,6 +76,7 @@ internal fun TelemetryLogListPane(
     uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
     modifier: Modifier = Modifier,
     onLogClick: (Long) -> Unit = {},
+    onResetClick: () -> Unit = {},
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
@@ -124,6 +131,13 @@ internal fun TelemetryLogListPane(
                     .fillMaxSize()
                     .padding(vertical = 8.dp),
             ) {
+                item(key = RESET_ITEM_KEY) {
+                    TelemetryLogResetListItem(
+                        isResetting = uiState.isResetting,
+                        onClick = onResetClick,
+                    )
+                    HorizontalDivider()
+                }
                 items(
                     items = uiState.logs,
                     key = { it.id },
@@ -169,6 +183,40 @@ private fun NewTelemetryLogsButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
     ) {
         Text(stringResource(Res.string.new_telemetry_logs))
+    }
+}
+
+@Composable
+private fun TelemetryLogResetListItem(
+    isResetting: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = !isResetting, onClick = onClick)
+            .padding(vertical = 12.dp),
+    ) {
+        if (isResetting) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp,
+                color = MaterialTheme.colorScheme.error,
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.DeleteForever,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+            )
+        }
+        Text(
+            text = stringResource(Res.string.telemetry_log_reset_item),
+            color = MaterialTheme.colorScheme.error,
+        )
     }
 }
 
@@ -299,6 +347,7 @@ private fun Long.pad2(): String = toString().padStart(2, '0')
 private fun Long.pad3(): String = toString().padStart(3, '0')
 
 private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
+private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
 private const val MILLISECONDS_PER_SECOND = 1_000L
 private const val MILLISECONDS_PER_MINUTE = 60 * MILLISECONDS_PER_SECOND
 private const val MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE

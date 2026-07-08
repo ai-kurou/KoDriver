@@ -173,6 +173,70 @@ class TelemetryLogListViewModelTest {
         assertEquals(false, state.resetSucceeded)
         assertFalse(state.isResetting)
     }
+
+    @Test
+    fun `onResetClickで確認ダイアログを表示する`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+        )
+
+        viewModel.onResetClick()
+
+        assertEquals(true, viewModel.uiState.first { it.showResetConfirmDialog }.showResetConfirmDialog)
+    }
+
+    @Test
+    fun `onResetDismissで確認ダイアログを閉じる`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+        )
+
+        viewModel.onResetClick()
+        viewModel.uiState.first { it.showResetConfirmDialog }
+        viewModel.onResetDismiss()
+
+        assertFalse(viewModel.uiState.first { !it.showResetConfirmDialog }.showResetConfirmDialog)
+    }
+
+    @Test
+    fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+        )
+
+        repository.emit(listOf(telemetryLog(id = 1, createdAt = 100)))
+        viewModel.uiState.first { it.logs.isNotEmpty() }
+        viewModel.onResetClick()
+        viewModel.uiState.first { it.showResetConfirmDialog }
+
+        viewModel.onResetConfirm()
+
+        val state = viewModel.uiState.first { it.resetSucceeded != null }
+        assertFalse(state.showResetConfirmDialog)
+        assertEquals(true, state.resetSucceeded)
+    }
+
+    @Test
+    fun `consumeResetResultでresetSucceededをnullに戻す`() = runTest(dispatcher) {
+        val repository = FakeTelemetryLogRepository()
+        val viewModel = TelemetryLogListViewModel(
+            observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+        )
+
+        viewModel.resetDatabase()
+        viewModel.uiState.first { it.resetSucceeded != null }
+
+        viewModel.consumeResetResult()
+
+        assertNull(viewModel.uiState.first { it.resetSucceeded == null && !it.isResetting }.resetSucceeded)
+    }
 }
 
 private fun telemetryLog(

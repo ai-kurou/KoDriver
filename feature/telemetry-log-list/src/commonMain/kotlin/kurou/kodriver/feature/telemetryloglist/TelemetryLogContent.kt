@@ -1,6 +1,9 @@
 package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -19,15 +22,20 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
+import kodriver.feature.telemetryloglist.generated.resources.Res
+import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_failure
+import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_success
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.domain.model.TelemetryLog
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -44,6 +52,10 @@ fun TelemetryLogContent(
         uiState = uiState,
         onLogSelected = viewModel::selectLog,
         onClearSelectedLog = viewModel::clearSelectedLog,
+        onResetClick = viewModel::onResetClick,
+        onResetConfirm = viewModel::onResetConfirm,
+        onResetDismiss = viewModel::onResetDismiss,
+        onResetResultConsumed = viewModel::consumeResetResult,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
@@ -57,6 +69,10 @@ internal fun TelemetryLogContentScaffold(
     uiState: TelemetryLogListUiState = TelemetryLogListUiState(),
     onLogSelected: (Long) -> Unit = {},
     onClearSelectedLog: () -> Unit = {},
+    onResetClick: () -> Unit = {},
+    onResetConfirm: () -> Unit = {},
+    onResetDismiss: () -> Unit = {},
+    onResetResultConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
@@ -104,26 +120,50 @@ internal fun TelemetryLogContentScaffold(
 
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
-    ListDetailPaneScaffold(
-        directive = navigator.scaffoldDirective,
-        scaffoldState = navigator.scaffoldState,
-        paneExpansionState = paneExpansionState,
-        paneExpansionDragHandle = { VerticalDivider() },
-        modifier = modifier,
-        listPane = {
-            TelemetryLogListPane(
-                uiState = uiState,
-                onLogClick = onLogSelected,
-            )
-        },
-        detailPane = {
-            uiState.selectedLogId?.let { selectedLogId ->
-                Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                    detailContent(selectedLogId)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val successMessage = stringResource(Res.string.telemetry_log_reset_success)
+    val failureMessage = stringResource(Res.string.telemetry_log_reset_failure)
+
+    LaunchedEffect(uiState.resetSucceeded) {
+        val resetSucceeded = uiState.resetSucceeded ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(if (resetSucceeded) successMessage else failureMessage)
+        onResetResultConsumed()
+    }
+
+    if (uiState.showResetConfirmDialog) {
+        TelemetryLogResetConfirmDialog(
+            onConfirm = onResetConfirm,
+            onDismiss = onResetDismiss,
+        )
+    }
+
+    Box(modifier = modifier) {
+        ListDetailPaneScaffold(
+            directive = navigator.scaffoldDirective,
+            scaffoldState = navigator.scaffoldState,
+            paneExpansionState = paneExpansionState,
+            paneExpansionDragHandle = { VerticalDivider() },
+            modifier = Modifier.fillMaxSize(),
+            listPane = {
+                TelemetryLogListPane(
+                    uiState = uiState,
+                    onLogClick = onLogSelected,
+                    onResetClick = onResetClick,
+                )
+            },
+            detailPane = {
+                uiState.selectedLogId?.let { selectedLogId ->
+                    Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
+                        detailContent(selectedLogId)
+                    }
                 }
-            }
-        },
-    )
+            },
+        )
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
