@@ -19,9 +19,9 @@ class TelemetryLogListViewModel(
     observeTelemetryLogs: ObserveTelemetryLogsUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
 ) : ViewModel() {
-    private val selectedLogId = MutableStateFlow<Long?>(null)
-    private val resetState = MutableStateFlow(ResetState())
-    private val showResetConfirmDialog = MutableStateFlow(false)
+    private val _selectedLogId = MutableStateFlow<Long?>(null)
+    private val _resetState = MutableStateFlow(ResetState())
+    private val _showResetConfirmDialog = MutableStateFlow(false)
 
     private val sortedLogs = observeTelemetryLogs()
         .map { logs ->
@@ -33,9 +33,9 @@ class TelemetryLogListViewModel(
 
     val uiState: StateFlow<TelemetryLogListUiState> = combine(
         sortedLogs,
-        selectedLogId,
-        resetState,
-        showResetConfirmDialog,
+        _selectedLogId,
+        _resetState,
+        _showResetConfirmDialog,
     ) { logs, selectedLogId, resetState, showResetConfirmDialog ->
         TelemetryLogListUiState(
             logs = logs,
@@ -51,16 +51,16 @@ class TelemetryLogListViewModel(
     )
 
     fun selectLog(id: Long) {
-        selectedLogId.update { current -> if (current == id) null else id }
+        _selectedLogId.update { current -> if (current == id) null else id }
     }
 
     fun clearSelectedLog() {
-        selectedLogId.update { null }
+        _selectedLogId.update { null }
     }
 
     fun resetDatabase() {
         viewModelScope.launch {
-            resetState.update { it.copy(isResetting = true, resetSucceeded = null) }
+            _resetState.update { it.copy(isResetting = true, resetSucceeded = null) }
             val succeeded = try {
                 resetTelemetryLogDatabase()
                 true
@@ -69,25 +69,25 @@ class TelemetryLogListViewModel(
             } catch (e: Exception) {
                 false
             }
-            resetState.update { it.copy(isResetting = false, resetSucceeded = succeeded) }
+            _resetState.update { it.copy(isResetting = false, resetSucceeded = succeeded) }
         }
     }
 
     fun onResetClick() {
-        showResetConfirmDialog.update { true }
+        _showResetConfirmDialog.update { true }
     }
 
     fun onResetDismiss() {
-        showResetConfirmDialog.update { false }
+        _showResetConfirmDialog.update { false }
     }
 
     fun onResetConfirm() {
-        showResetConfirmDialog.update { false }
+        _showResetConfirmDialog.update { false }
         resetDatabase()
     }
 
     fun consumeResetResult() {
-        resetState.update { it.copy(resetSucceeded = null) }
+        _resetState.update { it.copy(resetSucceeded = null) }
     }
 
     private data class ResetState(
