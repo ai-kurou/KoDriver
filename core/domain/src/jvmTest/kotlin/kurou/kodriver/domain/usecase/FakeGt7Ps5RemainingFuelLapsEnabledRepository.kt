@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 
 internal class FakeGt7Ps5RemainingFuelLapsEnabledRepository(
-    initialEnabled: Boolean = true,
+    initialEnabled: Boolean? = null,
 ) : Gt7Ps5RemainingFuelLapsEnabledRepository {
     private val enabled = MutableStateFlow(initialEnabled)
 
-    override fun observeEnabled(): Flow<Boolean> = enabled
+    override fun observeEnabled(): Flow<Boolean?> = enabled
 
     override suspend fun saveEnabled(enabled: Boolean) {
         this.enabled.update { enabled }
