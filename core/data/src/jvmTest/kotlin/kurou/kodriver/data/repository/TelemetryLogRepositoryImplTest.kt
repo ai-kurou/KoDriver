@@ -43,6 +43,18 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
+    fun `deleteAllTelemetryLogsは全てのログを削除する`() = runTest {
+        val dao = FakeTelemetryLogDao(
+            initialLogs = listOf(telemetryLogEntity(id = 1L, createdAt = 1000L)),
+        )
+        val repository = TelemetryLogRepositoryImpl(dao)
+
+        repository.deleteAllTelemetryLogs()
+
+        assertEquals(emptyList(), dao.logs.first())
+    }
+
+    @Test
     fun `observeTelemetryLogsはDomainへ変換して観測する`() = runTest {
         val dao = FakeTelemetryLogDao(
             initialLogs = listOf(
@@ -159,6 +171,10 @@ private class FakeTelemetryLogDao(
 
     override suspend fun insert(log: TelemetryLogEntity) {
         logs.update { it + log }
+    }
+
+    override suspend fun deleteAll() {
+        logs.update { emptyList() }
     }
 }
 

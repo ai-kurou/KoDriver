@@ -39,4 +39,8 @@ internal class TelemetryLogRepositoryImpl(
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
         dao.insert(log.toEntity())
     }
+
+    override suspend fun deleteAllTelemetryLogs() {
+        dao.deleteAll()
+    }
 }

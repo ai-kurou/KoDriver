@@ -10,4 +10,6 @@ interface TelemetryLogRepository {
     fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
 
     suspend fun saveTelemetryLog(log: TelemetryLog)
+
+    suspend fun deleteAllTelemetryLogs()
 }

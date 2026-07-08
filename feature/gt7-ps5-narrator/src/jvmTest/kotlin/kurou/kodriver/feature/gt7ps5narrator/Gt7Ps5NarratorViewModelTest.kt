@@ -414,4 +414,8 @@ private class FakeTelemetryLogRepository : TelemetryLogRepository {
     override suspend fun saveTelemetryLog(log: TelemetryLog) {
         logs.update { it + log }
     }
+
+    override suspend fun deleteAllTelemetryLogs() {
+        logs.update { emptyList() }
+    }
 }

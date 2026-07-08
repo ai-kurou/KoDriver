@@ -26,4 +26,7 @@ internal interface TelemetryLogDao {
 
     @Insert
     suspend fun insert(log: TelemetryLogEntity)
+
+    @Query("DELETE FROM telemetry_logs")
+    suspend fun deleteAll()
 }
