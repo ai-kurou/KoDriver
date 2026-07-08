@@ -159,6 +159,100 @@ class TelemetryLogContentTest {
     }
 
     @Test
+    fun `データベースをリセット項目をタップすると確認ダイアログを表示する`() {
+        var clicked = false
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState,
+                onResetClick = { clicked = true },
+            )
+        }
+
+        rule.onNodeWithText("データベースをリセット").performClick()
+
+        assertTrue(clicked)
+    }
+
+    @Test
+    fun `リセット実行中はデータベースをリセット項目のタップを無効化する`() {
+        var clicked = false
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(isResetting = true),
+                onResetClick = { clicked = true },
+            )
+        }
+
+        rule.onNodeWithText("データベースをリセット").performClick()
+
+        assertFalse(clicked)
+    }
+
+    @Test
+    fun `ログが0件の場合はデータベースをリセット項目を表示しない`() {
+        rule.setContent {
+            TelemetryLogContentScaffold()
+        }
+
+        rule.onNodeWithText("データベースをリセット").assertDoesNotExist()
+    }
+
+    @Test
+    fun `確認ダイアログの実行ボタンをタップするとonResetConfirmを呼ぶ`() {
+        var confirmed = false
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(showResetConfirmDialog = true),
+                onResetConfirm = { confirmed = true },
+            )
+        }
+
+        rule.onNodeWithText("削除する").performClick()
+
+        assertTrue(confirmed)
+    }
+
+    @Test
+    fun `確認ダイアログのキャンセルボタンをタップするとonResetDismissを呼ぶ`() {
+        var dismissed = false
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(showResetConfirmDialog = true),
+                onResetDismiss = { dismissed = true },
+            )
+        }
+
+        rule.onNodeWithText("キャンセル").performClick()
+
+        assertTrue(dismissed)
+    }
+
+    @Test
+    fun `resetSucceededがtrueになるとスナックバーで成功を通知しconsumeする`() {
+        var consumed = false
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(resetSucceeded = true),
+                onResetResultConsumed = { consumed = true },
+            )
+        }
+
+        rule.onNodeWithText("データベースをリセットしました").assertExists()
+        rule.waitUntil { consumed }
+    }
+
+    @Test
+    fun `resetSucceededがfalseになるとスナックバーで失敗を通知する`() {
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = previewTelemetryLogListUiState.copy(resetSucceeded = false),
+            )
+        }
+
+        rule.onNodeWithText("データベースのリセットに失敗しました").assertExists()
+    }
+
+    @Test
     fun `先頭から離れているときに新しいログが追加されると先頭へ戻るボタンを表示する`() {
         val logs = mutableStateOf(createTelemetryLogs())
 

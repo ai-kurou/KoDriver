@@ -21,6 +21,7 @@ class TelemetryLogListViewModel(
 ) : ViewModel() {
     private val selectedLogId = MutableStateFlow<Long?>(null)
     private val resetState = MutableStateFlow(ResetState())
+    private val showResetConfirmDialog = MutableStateFlow(false)
 
     val uiState: StateFlow<TelemetryLogListUiState> = observeTelemetryLogs()
         .map { logs ->
@@ -33,11 +34,15 @@ class TelemetryLogListViewModel(
             logs to selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } }
         }
         .combine(resetState) { (logs, selectedLogId), resetState ->
+            Triple(logs, selectedLogId, resetState)
+        }
+        .combine(showResetConfirmDialog) { (logs, selectedLogId, resetState), showResetConfirmDialog ->
             TelemetryLogListUiState(
                 logs = logs,
                 selectedLogId = selectedLogId,
                 isResetting = resetState.isResetting,
                 resetSucceeded = resetState.resetSucceeded,
+                showResetConfirmDialog = showResetConfirmDialog,
             )
         }
         .stateIn(
@@ -67,6 +72,23 @@ class TelemetryLogListViewModel(
             }
             resetState.update { it.copy(isResetting = false, resetSucceeded = succeeded) }
         }
+    }
+
+    fun onResetClick() {
+        showResetConfirmDialog.update { true }
+    }
+
+    fun onResetDismiss() {
+        showResetConfirmDialog.update { false }
+    }
+
+    fun onResetConfirm() {
+        showResetConfirmDialog.update { false }
+        resetDatabase()
+    }
+
+    fun consumeResetResult() {
+        resetState.update { it.copy(resetSucceeded = null) }
     }
 
     private data class ResetState(

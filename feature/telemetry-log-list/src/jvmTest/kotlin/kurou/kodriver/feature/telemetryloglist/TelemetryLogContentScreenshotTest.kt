@@ -50,4 +50,22 @@ class TelemetryLogContentScreenshotTest {
 
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `リセット確認ダイアログ表示中`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                        TelemetryLogContentScaffold(
+                            uiState = previewTelemetryLogListUiState.copy(showResetConfirmDialog = true),
+                            scaffoldDirective = twoPaneDirective,
+                        )
+                    }
+                }
+            }
+        }
+
+        rule.onRoot().captureRoboImage()
+    }
 }

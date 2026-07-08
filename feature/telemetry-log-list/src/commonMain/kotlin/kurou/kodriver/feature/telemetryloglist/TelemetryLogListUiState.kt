@@ -7,4 +7,5 @@ data class TelemetryLogListUiState(
     val selectedLogId: Long? = null,
     val isResetting: Boolean = false,
     val resetSucceeded: Boolean? = null,
+    val showResetConfirmDialog: Boolean = false,
 )
