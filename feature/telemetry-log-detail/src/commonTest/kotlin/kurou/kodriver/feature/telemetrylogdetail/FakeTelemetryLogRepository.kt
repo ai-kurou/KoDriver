@@ -31,6 +31,10 @@ internal class FakeTelemetryLogRepository : TelemetryLogRepository {
         emit(logs.value + log)
     }
 
+    override suspend fun deleteAllTelemetryLogs() {
+        emit(emptyList())
+    }
+
     fun emit(value: List<TelemetryLog>) {
         logs.update { value }
     }

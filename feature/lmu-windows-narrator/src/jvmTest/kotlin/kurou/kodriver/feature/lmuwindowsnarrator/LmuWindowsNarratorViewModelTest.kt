@@ -948,6 +948,10 @@ private class FakeTelemetryLogRepository(
         if (throwOnSave) error("Failed to save telemetry log")
         logs.update { it + log }
     }
+
+    override suspend fun deleteAllTelemetryLogs() {
+        logs.update { emptyList() }
+    }
 }
 
 private fun noDamage(overheating: Boolean = false) = LmuWindowsVehicleDamageData(
