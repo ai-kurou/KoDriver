@@ -2,4 +2,10 @@
 <resources>
     <style name="Theme.KoDriver" parent="Theme.AppCompat.Light.NoActionBar">
     </style>
+
+    <style name="Theme.KoDriver.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.KoDriver</item>
+    </style>
 </resources>
