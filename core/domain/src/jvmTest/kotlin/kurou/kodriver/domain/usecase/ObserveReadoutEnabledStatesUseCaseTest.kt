@@ -25,10 +25,10 @@ class ObserveReadoutEnabledStatesUseCaseTest {
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
                 ReadoutItemKey.LmuWindows.Flag.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                ReadoutItemKey.LmuWindows.MyBestLap to false,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
             ),
             useCase("lmu_windows").first(),
         )
@@ -41,8 +41,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps to true,
-                ReadoutItemKey.Gt7Ps5.MyBestLap to true,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
             ),
             useCase("gt7_ps5").first(),
         )
@@ -53,21 +53,21 @@ class ObserveReadoutEnabledStatesUseCaseTest {
         val repo = FakeReadoutPreferencesRepository()
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
-        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap, true)
-        repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach, false)
+        repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
+        repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
                 ReadoutItemKey.LmuWindows.Flag.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleApproach to true,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                ReadoutItemKey.LmuWindows.MyBestLap to true,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
             ),
             useCase("lmu_windows").first(),
         )
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach to false),
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             useCase("rFactor 2").first(),
         )
     }

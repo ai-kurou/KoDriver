@@ -9,7 +9,7 @@ class ReadoutItemKeyTest {
     @Test
     fun `fromValue は一致するキーを返す`() {
         assertEquals(
-            ReadoutItemKey.LmuWindows.VehicleApproach,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.fromValue("lmu_windows_vehicle_approach"),
         )
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.fromValue("lmu_windows_flag"))
@@ -25,9 +25,12 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
             ReadoutItemKey.fromValue("lmu_windows_tyre_temperature_overheat_warning"),
         )
-        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
-        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
-        assertEquals(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps, ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps"))
+        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
+        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
+        assertEquals(
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+            ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel_laps"),
+        )
     }
 
     @Test

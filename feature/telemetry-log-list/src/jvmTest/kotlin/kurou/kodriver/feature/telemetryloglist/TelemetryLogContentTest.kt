@@ -124,7 +124,7 @@ class TelemetryLogContentTest {
     @Test
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
         val expectedDisplayNames = listOf(
-            ReadoutItemKey.LmuWindows.VehicleApproach.value to "車両接近",
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root.value to "車両接近",
             ReadoutItemKey.LmuWindows.Flag.Root.value to "フラッグ",
             ReadoutItemKey.LmuWindows.Flag.BlueFlag.value to "ブルーフラッグ",
             ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag.value to "イエローフラッグ",
@@ -133,9 +133,9 @@ class TelemetryLogContentTest {
             ReadoutItemKey.LmuWindows.VehicleDamage.Root.value to "車両故障",
             ReadoutItemKey.LmuWindows.VehicleDamage.Overheat.value to "オーバーヒート",
             ReadoutItemKey.LmuWindows.TyreTemperature.Root.value to "タイヤ温度",
-            ReadoutItemKey.LmuWindows.MyBestLap.value to "自己ベストラップ",
-            ReadoutItemKey.Gt7Ps5.MyBestLap.value to "自己ベストラップ",
-            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.value to "燃料残り周回数",
+            ReadoutItemKey.LmuWindows.MyBestLap.Root.value to "自己ベストラップ",
+            ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value to "自己ベストラップ",
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value to "燃料残り周回数",
         )
 
         rule.setContent {

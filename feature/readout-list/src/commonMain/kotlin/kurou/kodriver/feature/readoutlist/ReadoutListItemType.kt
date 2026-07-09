@@ -5,31 +5,31 @@ import kurou.kodriver.domain.model.Simulator
 
 sealed class ReadoutListItemType(val id: ReadoutItemKey) {
     sealed class LmuWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
-        data object VehicleApproach : LmuWindows(ReadoutItemKey.LmuWindows.VehicleApproach)
+        data object VehicleApproach : LmuWindows(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
         data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage.Root)
         data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
-        data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap)
+        data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
     sealed class Gt7Ps5(id: ReadoutItemKey) : ReadoutListItemType(id) {
-        data object MyBestLap : Gt7Ps5(ReadoutItemKey.Gt7Ps5.MyBestLap)
-        data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps)
+        data object MyBestLap : Gt7Ps5(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
+        data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
     }
 
     companion object {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
             is Simulator.LmuWindows -> when (id) {
-                ReadoutItemKey.LmuWindows.VehicleApproach -> LmuWindows.VehicleApproach
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
                 ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
-                ReadoutItemKey.LmuWindows.MyBestLap -> LmuWindows.MyBestLap
+                ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }
             is Simulator.Gt7Ps5 -> when (id) {
-                ReadoutItemKey.Gt7Ps5.MyBestLap -> Gt7Ps5.MyBestLap
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5.RemainingFuelLaps
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
                 else -> null
             }
         }
@@ -51,15 +51,15 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         // 新しい ReadoutItemKey.LmuWindows.TopLevel を追加した際、ここで対応を判断しないとコンパイルが通らない。
         private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int = when (key) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
-            ReadoutItemKey.LmuWindows.VehicleApproach -> 1
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 1
             ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 2
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 3
-            ReadoutItemKey.LmuWindows.MyBestLap -> 4
+            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 4
         }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5): Int = when (key) {
-            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> 0
-            ReadoutItemKey.Gt7Ps5.MyBestLap -> 1
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
+            ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 1
         }
     }
 }
