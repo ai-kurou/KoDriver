@@ -55,6 +55,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_overhe
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_low_warning
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_overheat_warning
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_temperature
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach
@@ -322,6 +323,8 @@ internal fun readoutItemDisplayName(readoutItemKey: String): String {
         is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> stringResource(Res.string.readout_item_tyre_temperature)
         is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning ->
             stringResource(Res.string.readout_item_tyre_overheat_warning)
+        is ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning ->
+            stringResource(Res.string.readout_item_tyre_low_warning)
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)

@@ -32,6 +32,9 @@ sealed interface ReadoutItemKey {
             data object OverheatWarning : TyreTemperature {
                 override val value = "lmu_windows_tyre_temperature_overheat_warning"
             }
+            data object LowWarning : TyreTemperature {
+                override val value = "lmu_windows_tyre_temperature_low_warning"
+            }
         }
     }
 
@@ -58,6 +61,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.VehicleDamage.Overheat,
                 LmuWindows.TyreTemperature.Root,
                 LmuWindows.TyreTemperature.OverheatWarning,
+                LmuWindows.TyreTemperature.LowWarning,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,

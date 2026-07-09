@@ -1045,4 +1045,6 @@ private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to overheatWarningEnabled))
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
+    override fun observeLowWarningPhases(): Flow<Set<SessionPhase>> = MutableStateFlow(emptySet())
+    override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) = Unit
 }

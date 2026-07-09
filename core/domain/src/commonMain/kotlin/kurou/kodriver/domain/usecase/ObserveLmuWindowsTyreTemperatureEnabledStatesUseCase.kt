@@ -9,6 +9,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val tyreTemperatureEnabledStateDefaults: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
 )
 
 class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(

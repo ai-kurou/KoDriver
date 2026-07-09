@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsTyreTemperaturePreferences
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
 internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
@@ -27,5 +28,17 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
 
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
+    }
+
+    override fun observeLowWarningPhases(): Flow<Set<SessionPhase>> =
+        dataStore.data.map { prefs ->
+            prefs.lowWarningPhases
+                .map { SessionPhase.fromRaw(it) }
+                .filter { it != SessionPhase.UNKNOWN }
+                .toSet()
+        }
+
+    override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
+        dataStore.updateData { it.copy(lowWarningPhases = phases.map { phase -> phase.rawValue }.toSet()) }
     }
 }

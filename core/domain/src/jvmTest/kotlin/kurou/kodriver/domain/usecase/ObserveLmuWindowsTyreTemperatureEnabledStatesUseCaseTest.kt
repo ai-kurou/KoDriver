@@ -11,12 +11,13 @@ import kotlin.test.assertEquals
 class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
     @Test
-    fun `初期値はOverheatWarningのデフォルトtrueを返す`() = runBlocking {
+    fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() = runBlocking {
         val repo = FakeLmuWindowsTyreTemperaturePreferencesRepository()
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
         val expected = mapOf<ReadoutItemKey, Boolean>(
             ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         )
         assertEquals(expected, useCase().first())
     }
@@ -30,6 +31,7 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
         val expected = mapOf<ReadoutItemKey, Boolean>(
             ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
+            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         )
         assertEquals(expected, useCase().first())
     }
@@ -44,6 +46,7 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
                 ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
             ),
             useCase().first(),
