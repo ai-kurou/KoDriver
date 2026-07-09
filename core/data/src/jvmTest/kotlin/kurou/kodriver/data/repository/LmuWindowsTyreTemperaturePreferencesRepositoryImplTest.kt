@@ -121,4 +121,18 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
         repository.saveLowWarningPhases(emptySet())
         assertEquals(emptySet(), repository.observeLowWarningPhases().first())
     }
+
+    @Test
+    fun `saveLowWarningPhases後にsaveHighThresholdCelsiusを呼んでもphasesは保持される`() = testScope.runTest {
+        repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
+        repository.saveHighThresholdCelsius(100)
+        assertEquals(setOf(SessionPhase.FORMATION), repository.observeLowWarningPhases().first())
+    }
+
+    @Test
+    fun `空集合を保存後にsaveHighThresholdCelsiusを呼んでもphasesは空集合のまま保持される`() = testScope.runTest {
+        repository.saveLowWarningPhases(emptySet())
+        repository.saveHighThresholdCelsius(100)
+        assertEquals(emptySet(), repository.observeLowWarningPhases().first())
+    }
 }
