@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.repository.ServerIpRepository
@@ -157,9 +158,9 @@ class WebSocketLmuWindowsRepositoryTest {
 
 private class FakeServerIpRepositoryForMyBestLap(initialIp: String?) : ServerIpRepository {
     private val _ip = MutableStateFlow(initialIp)
-    fun setIp(ip: String?) { _ip.value = ip }
+    fun setIp(ip: String?) { _ip.update { ip } }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
-    override suspend fun saveServerIp(ip: String) { _ip.value = ip }
+    override suspend fun saveServerIp(ip: String) { _ip.update { ip } }
 }
 
 private val TIMING_JSON = """
