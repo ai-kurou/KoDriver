@@ -55,8 +55,9 @@ class MainActivityTest {
         scrollToItem("タイヤ温度")
         clickItem("タイヤ温度")
         clickContentDescription("閾値の説明を表示")
-        navigateBack()
+        dismissBottomSheet()
         clickContentDescription("対象フェーズの説明を表示")
+        dismissBottomSheet()
         navigateBack()
         scrollToItem("自己ベストラップ")
         clickItem("自己ベストラップ")
@@ -206,6 +207,13 @@ class MainActivityTest {
 
     private fun clickContentDescription(contentDescription: String) {
         composeTestRule.onNode(hasContentDescription(contentDescription)).performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    private fun dismissBottomSheet() {
+        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+            .get(0)
+            .performSemanticsAction(SemanticsActions.Dismiss)
         composeTestRule.waitForIdle()
     }
 
