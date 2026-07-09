@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.kover)
-    `java-test-fixtures`
 }
 
 kotlin {
@@ -46,10 +45,4 @@ kotlin {
             implementation(libs.androidx.datastore.core)
         }
     }
-}
-
-dependencies {
-    testFixturesImplementation(projects.core.domain)
-    testFixturesImplementation(libs.kotlinx.coroutinesCore)
-    testFixturesImplementation(libs.koin.core)
 }

@@ -1,4 +1,4 @@
-package kurou.kodriver.core.gt7ps5data
+package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
