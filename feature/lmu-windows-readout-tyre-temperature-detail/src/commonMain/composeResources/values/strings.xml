@@ -13,9 +13,9 @@
     <string name="tyre_temperature_low_warning_card_title">低温警告</string>
     <string name="tyre_temperature_low_warning_chip">タイヤ低温警告</string>
     <string name="tyre_temperature_low_warning_phases_subtitle">低温警告の対象フェーズ</string>
-    <string name="tyre_temperature_low_warning_phases_description">選択したフェーズ中にタイヤが冷えている場合に読み上げます。</string>
+    <string name="tyre_temperature_low_warning_phases_description">選択したフェーズに切り替わった瞬間、1輪でも60°C以下なら読み上げます。</string>
     <string name="tyre_temperature_low_warning_phases_help_icon_content_description">対象フェーズの説明を表示</string>
-    <string name="tyre_temperature_low_warning_phases_help_description">タイヤ温度の判定にはカーカス温度を使用しています。ガレージ・ウォームアップ・グリッド確認・フォーメーションのうち、選択したフェーズでのみタイヤの低温警告を読み上げます。</string>
+    <string name="tyre_temperature_low_warning_phases_help_description">タイヤ温度の判定にはカーカス温度を使用しています。ガレージ・ウォームアップ・グリッド確認・フォーメーションのうち、選択したフェーズに切り替わった瞬間に、4輪のうち1輪でも60°C以下であれば低温警告を読み上げます。フェーズが変わらない間や、切り替わった時点で全輪が60°Cを超えている場合は読み上げません。</string>
     <string name="tyre_temperature_low_warning_phase_garage">ガレージ</string>
     <string name="tyre_temperature_low_warning_phase_warm_up">ウォームアップ</string>
     <string name="tyre_temperature_low_warning_phase_grid_walk">グリッド確認</string>
