@@ -11,11 +11,14 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -45,8 +48,10 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel(
             observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
+            observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
             saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
+            saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
             playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
         )
     }
@@ -87,5 +92,38 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     fun `onPreviewClickedを呼ぶとTyreOverheatイベントが再生される`() {
         viewModel.onPreviewClicked()
         assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), playedEvents)
+    }
+
+    @Test
+    fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() = runTest {
+        viewModel.onLowWarningEnabledChanged(false)
+        assertEquals(false, viewModel.uiState.first().lowWarningEnabled)
+    }
+
+    @Test
+    fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() = runTest {
+        repository = FakeLmuWindowsTyreTemperaturePreferencesRepository(initialLowWarningPhases = emptySet())
+        viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel(
+            observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
+            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
+            observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
+            saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
+            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
+            saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
+        )
+        viewModel.uiState.first()
+        viewModel.onLowWarningPhaseToggled(SessionPhase.GARAGE)
+        assertEquals(setOf(SessionPhase.GARAGE), viewModel.uiState.first().lowWarningPhases)
+    }
+
+    @Test
+    fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() = runTest {
+        viewModel.uiState.first()
+        viewModel.onLowWarningPhaseToggled(SessionPhase.GARAGE)
+        assertEquals(
+            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
+            viewModel.uiState.first().lowWarningPhases,
+        )
     }
 }
