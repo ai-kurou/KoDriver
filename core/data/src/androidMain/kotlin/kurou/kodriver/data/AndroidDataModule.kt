@@ -56,7 +56,7 @@ fun androidDataModule(context: Context) = module {
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
     }
-    single<LmuWindowsRepository> { EmptyLmuWindowsRepository() }
+    single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(get()) }
     single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(get()) }
     single<LmuWindowsProximityRepository> { WebSocketLmuWindowsProximityRepository(get()) }
     single<LmuWindowsVehicleDamageRepository> { WebSocketLmuWindowsVehicleDamageRepository(get()) }
