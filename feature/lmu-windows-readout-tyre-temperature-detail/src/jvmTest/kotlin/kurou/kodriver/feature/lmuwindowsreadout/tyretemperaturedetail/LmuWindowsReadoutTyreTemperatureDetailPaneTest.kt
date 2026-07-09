@@ -104,6 +104,23 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
+    fun `タイヤ低温警告チップをタップするとonLowWarningPreviewClickedが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
+                    onLowWarningPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("タイヤ低温警告", substring = true)[0].performClick()
+
+        assertEquals(true, previewClicked)
+    }
+
+    @Test
     fun `タイヤ低温警告チップが表示される`() {
         rule.setContent {
             KoDriverTheme {

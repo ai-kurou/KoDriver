@@ -95,6 +95,12 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
+    fun `onLowWarningPreviewClickedを呼ぶとTyreColdイベントが再生される`() {
+        viewModel.onLowWarningPreviewClicked()
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold), playedEvents)
+    }
+
+    @Test
     fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() = runTest {
         viewModel.onLowWarningEnabledChanged(false)
         assertEquals(false, viewModel.uiState.first().lowWarningEnabled)

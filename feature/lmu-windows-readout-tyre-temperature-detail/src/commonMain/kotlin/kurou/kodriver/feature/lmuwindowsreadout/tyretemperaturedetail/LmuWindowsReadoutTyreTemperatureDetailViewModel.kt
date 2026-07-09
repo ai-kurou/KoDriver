@@ -69,6 +69,10 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         }
     }
 
+    fun onLowWarningPreviewClicked() {
+        playSpeechEvent(SpeechEvent.TyreCold)
+    }
+
     fun onLowWarningPhaseToggled(phase: SessionPhase) {
         val currentPhases = uiState.value.lowWarningPhases
         val updatedPhases = if (phase in currentPhases) currentPhases - phase else currentPhases + phase

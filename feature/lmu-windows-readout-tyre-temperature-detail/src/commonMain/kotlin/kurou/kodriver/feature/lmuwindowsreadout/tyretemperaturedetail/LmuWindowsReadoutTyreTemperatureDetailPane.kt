@@ -78,6 +78,7 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(
         onPreviewClicked = viewModel::onPreviewClicked,
         onLowWarningEnabledChanged = viewModel::onLowWarningEnabledChanged,
         onLowWarningPhaseToggled = viewModel::onLowWarningPhaseToggled,
+        onLowWarningPreviewClicked = viewModel::onLowWarningPreviewClicked,
         modifier = modifier,
     )
 }
@@ -92,6 +93,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     onPreviewClicked: () -> Unit = {},
     onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
+    onLowWarningPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var showHelpSheet by remember { mutableStateOf(false) }
@@ -212,6 +214,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             chipLabels = listOf(lowWarningChipLabel),
             selectedChipLabels = setOf(lowWarningChipLabel),
             onCheckedChange = onLowWarningEnabledChanged,
+            onChipClick = { onLowWarningPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }
