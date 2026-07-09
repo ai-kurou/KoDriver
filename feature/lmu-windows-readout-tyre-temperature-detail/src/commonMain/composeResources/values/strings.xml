@@ -11,6 +11,7 @@
     <string name="tyre_temperature_carcass_card_title">過熱警告</string>
     <string name="tyre_temperature_overheat_warning_chip">タイヤ過熱警告</string>
     <string name="tyre_temperature_low_warning_card_title">低温警告</string>
+    <string name="tyre_temperature_low_warning_chip">タイヤ低温警告</string>
     <string name="tyre_temperature_low_warning_phases_subtitle">低温警告の対象フェーズ</string>
     <string name="tyre_temperature_low_warning_phases_description">選択したフェーズ中にタイヤが冷えている場合に読み上げます。</string>
     <string name="tyre_temperature_low_warning_phases_help_icon_content_description">対象フェーズの説明を表示</string>

@@ -38,6 +38,7 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_reset
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_card_title
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_chip
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_formation
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_garage
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_grid_walk
@@ -204,10 +205,12 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
+        val lowWarningChipLabel = stringResource(Res.string.tyre_temperature_low_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
-            chipLabels = emptyList(),
+            chipLabels = listOf(lowWarningChipLabel),
+            selectedChipLabels = setOf(lowWarningChipLabel),
             onCheckedChange = onLowWarningEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )

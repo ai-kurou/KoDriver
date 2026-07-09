@@ -102,4 +102,17 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         assertEquals(true, previewClicked)
     }
+
+    @Test
+    fun `タイヤ低温警告チップが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(lowWarningEnabled = true),
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("タイヤ低温警告", substring = true)[0].assertIsDisplayed()
+    }
 }
