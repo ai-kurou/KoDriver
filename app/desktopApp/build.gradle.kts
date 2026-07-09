@@ -29,6 +29,7 @@ dependencies {
     testImplementation(libs.compose.uiTestJunit4)
     testImplementation(compose.desktop.currentOs)
     testImplementation(testFixtures(projects.app.shared))
+    testImplementation(testFixtures(projects.core.gt7Ps5Data))
 
     implementation(libs.compose.runtime)
     implementation(libs.compose.foundation)

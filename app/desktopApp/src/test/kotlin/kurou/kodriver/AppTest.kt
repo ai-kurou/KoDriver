@@ -16,7 +16,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
+import kurou.kodriver.core.gt7ps5data.fakeGt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.TelemetryLog
@@ -47,7 +47,7 @@ class AppTest {
                     listOf(
                         desktopDataModule,
                         lmuWindowsDataModule,
-                        gt7Ps5DataModule,
+                        fakeGt7Ps5DataModule,
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
                         fakeTelemetryLogListModule,
