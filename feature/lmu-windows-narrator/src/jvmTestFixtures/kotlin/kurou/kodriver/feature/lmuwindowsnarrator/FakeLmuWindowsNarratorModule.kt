@@ -89,6 +89,11 @@ class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemp
 
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
     private val flow = MutableStateFlow(90)
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     override fun observeHighThresholdCelsius(): Flow<Int> = flow
     override suspend fun saveHighThresholdCelsius(celsius: Int) { flow.update { celsius } }
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
+    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+        enabledStatesFlow.update { it + (key to enabled) }
+    }
 }

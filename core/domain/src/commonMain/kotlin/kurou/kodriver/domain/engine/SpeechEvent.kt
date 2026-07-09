@@ -14,7 +14,9 @@ sealed interface SpeechEvent {
     data object FullCourseYellow : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
     data object SessionStop : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
     data object Overheating : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root }
-    data object TyreOverheat : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature }
+    data object TyreOverheat : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
+    }
     data object LmuWindowsMyBestLapFormal : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap
     }

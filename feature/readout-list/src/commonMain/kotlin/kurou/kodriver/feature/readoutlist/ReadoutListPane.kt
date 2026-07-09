@@ -73,6 +73,7 @@ import kodriver.feature.readoutlist.generated.resources.item_overheat
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
+import kodriver.feature.readoutlist.generated.resources.item_tyre_overheat_warning
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
@@ -114,7 +115,9 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag.RedFlag -> stringResource(Res.string.item_red_flag)
     is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.item_vehicle_damage)
     is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.item_overheat)
-    is ReadoutItemKey.LmuWindows.TyreTemperature -> stringResource(Res.string.item_tyre_temperature)
+    is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> stringResource(Res.string.item_tyre_temperature)
+    is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning ->
+        stringResource(Res.string.item_tyre_overheat_warning)
     is ReadoutItemKey.LmuWindows.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
@@ -129,7 +132,8 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag.RedFlag -> Icons.Filled.Flag
     is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> Icons.Filled.Build
     is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> Icons.Filled.Build
-    is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.MyBestLap -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.MyBestLap -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> Icons.Filled.LocalGasStation
@@ -351,7 +355,7 @@ private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
         ),

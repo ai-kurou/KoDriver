@@ -70,7 +70,7 @@ class ReadoutListItemTypeTest {
     fun `lmu_windows の tyre_temperature は TyreTemperature を返す`() {
         assertEquals(
             ReadoutListItemType.LmuWindows.TyreTemperature,
-            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreTemperature),
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreTemperature.Root),
         )
     }
 
@@ -86,7 +86,7 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),

@@ -57,6 +57,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
@@ -109,6 +110,7 @@ class LmuWindowsNarratorViewModelTest {
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         tyreTemperatureHighThreshold: Int = 90,
+        tyreTemperatureOverheatWarningEnabled: Boolean = true,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
@@ -165,7 +167,16 @@ class LmuWindowsNarratorViewModelTest {
                     FakeChannelTyreCarcassTemperatureRepository(tyreTemperatureChannel.receiveAsFlow()),
                 ),
                 observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(
-                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(tyreTemperatureHighThreshold),
+                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
+                        threshold = tyreTemperatureHighThreshold,
+                        overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
+                    ),
+                ),
+                observeTyreTemperatureEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(
+                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
+                        threshold = tyreTemperatureHighThreshold,
+                        overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
+                    ),
                 ),
             ),
             ttsEngine = ttsEngine,
@@ -676,7 +687,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -692,7 +703,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -709,7 +720,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -727,7 +738,24 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to false),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+        )
+
+        channel.send(tyreTemperature(fl = 95.0))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `過熱警告スイッチがOFFのときは読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            ttsEngine = tts,
+            tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            tyreTemperatureOverheatWarningEnabled = false,
         )
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -770,7 +798,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureChannel = channel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature to true),
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             currentTimeMs = { 123L },
             telemetryLogRepository = telemetryLogRepository,
         )
@@ -781,7 +809,7 @@ class LmuWindowsNarratorViewModelTest {
         val log = telemetryLogRepository.logs.value.first()
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.value, log.readoutItemKey)
+        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
     }
 }
 
@@ -1010,7 +1038,11 @@ private class FakeChannelTyreCarcassTemperatureRepository(
 
 private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
     private val threshold: Int,
+    private val overheatWarningEnabled: Boolean = true,
 ) : LmuWindowsTyreTemperaturePreferencesRepository {
     override fun observeHighThresholdCelsius(): Flow<Int> = MutableStateFlow(threshold)
     override suspend fun saveHighThresholdCelsius(celsius: Int) = Unit
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
+        MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to overheatWarningEnabled))
+    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
 }

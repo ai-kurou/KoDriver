@@ -63,12 +63,12 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
             state.items,
         )
-        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.TyreTemperature])
+        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.TyreTemperature.Root])
         assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.MyBestLap])
     }
 
@@ -82,7 +82,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
             viewModel.uiState.first().items,
@@ -134,7 +134,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
             viewModel.uiState.first().items,
@@ -151,7 +151,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
             readoutRepository.observeReadoutOrder("lmu_windows").first(),
@@ -169,7 +169,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap,
             ),
             viewModel.uiState.first().items,

@@ -55,6 +55,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_overhe
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_overheat_warning
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_temperature
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_damage
@@ -303,17 +304,24 @@ private fun simulatorIcon(simulatorId: String): Painter? = when (Simulator.fromI
 }
 
 @Composable
+private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when (flag) {
+    is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
+    is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
+    is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
+    is ReadoutItemKey.LmuWindows.Flag.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
+    is ReadoutItemKey.LmuWindows.Flag.RedFlag -> stringResource(Res.string.readout_item_red_flag)
+}
+
+@Composable
 internal fun readoutItemDisplayName(readoutItemKey: String): String {
-    return when (ReadoutItemKey.fromValue(readoutItemKey)) {
+    return when (val key = ReadoutItemKey.fromValue(readoutItemKey)) {
         is ReadoutItemKey.LmuWindows.VehicleApproach -> stringResource(Res.string.readout_item_vehicle_approach)
-        is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
-        is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
-        is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
-        is ReadoutItemKey.LmuWindows.Flag.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
-        is ReadoutItemKey.LmuWindows.Flag.RedFlag -> stringResource(Res.string.readout_item_red_flag)
+        is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(key)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
-        is ReadoutItemKey.LmuWindows.TyreTemperature -> stringResource(Res.string.readout_item_tyre_temperature)
+        is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> stringResource(Res.string.readout_item_tyre_temperature)
+        is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning ->
+            stringResource(Res.string.readout_item_tyre_overheat_warning)
         is ReadoutItemKey.LmuWindows.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.readout_item_remaining_fuel_laps)
