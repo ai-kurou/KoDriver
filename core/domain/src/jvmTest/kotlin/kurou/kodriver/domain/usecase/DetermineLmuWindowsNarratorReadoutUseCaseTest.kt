@@ -65,7 +65,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = LmuWindowsNarratorState(),
             telemetry = telemetry(bestLapTimeMs = 60_000L),
             settings = settings(
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to false),
             ),
         )
 
@@ -73,7 +73,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = first.state,
             telemetry = telemetry(bestLapTimeMs = 59_000L),
             settings = settings(
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to false),
             ),
         )
 
@@ -195,7 +195,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = LmuWindowsNarratorState(),
             proximity = leftProximity(vehicleId = 1),
             settings = settings(
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             ),
             observedAtMs = 0L,
         )
@@ -204,7 +204,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             state = first.state,
             proximity = leftProximity(vehicleId = 1),
             settings = settings(
-                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach to false),
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             ),
             observedAtMs = 50L,
         )
@@ -516,8 +516,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 }
 
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
-    ReadoutItemKey.LmuWindows.MyBestLap to true,
-    ReadoutItemKey.LmuWindows.VehicleApproach to true,
+    ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,

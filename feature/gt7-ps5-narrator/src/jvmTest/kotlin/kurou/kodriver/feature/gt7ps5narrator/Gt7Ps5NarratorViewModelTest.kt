@@ -70,7 +70,7 @@ class Gt7Ps5NarratorViewModelTest {
         telemetryChannel: Channel<Gt7Ps5TelemetryData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         readoutSettings: ReadoutSettings = ReadoutSettings(),
-        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap),
+        orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         simulator: Simulator? = Simulator.Gt7Ps5,
         telemetryLogSettings: TelemetryLogSettings = TelemetryLogSettings(),
@@ -165,7 +165,7 @@ class Gt7Ps5NarratorViewModelTest {
                 TelemetryLog(
                     createdAt = 123_456L,
                     simulatorId = Simulator.Gt7Ps5.id,
-                    readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.value,
+                    readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
                     telemetryJson =
                         """{"previous":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
                             """"gasLevel":0.0,"gasCapacity":100.0},"current":{"lapCount":0,""" +
@@ -183,7 +183,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            readoutSettings = ReadoutSettings(enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap to false)),
+            readoutSettings = ReadoutSettings(enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -217,7 +217,7 @@ class Gt7Ps5NarratorViewModelTest {
             telemetryChannel = channel,
             ttsEngine = tts,
             readoutSettings = ReadoutSettings(
-                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps to false),
+                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false),
                 fuelThreshold = 3,
             ),
         )
@@ -236,7 +236,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -254,7 +254,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap),
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
             telemetryLogSettings = TelemetryLogSettings(repository = telemetryLogRepository),
         )
 
@@ -271,7 +271,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap, ReadoutItemKey.LmuWindows.Flag.Root),
+            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.LmuWindows.Flag.Root),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -288,7 +288,7 @@ class Gt7Ps5NarratorViewModelTest {
         buildViewModel(
             telemetryChannel = channel,
             ttsEngine = tts,
-            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap),
+            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         )
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -375,7 +375,7 @@ private class FakeSimulatorPreferencesRepo(
 
 private class FakeReadoutPreferencesRepo(
     private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap),
+    private val orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
 ) : ReadoutPreferencesRepository {
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         MutableStateFlow(enabledOverrides)

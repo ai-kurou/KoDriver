@@ -45,12 +45,12 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         val initialDecision = useCase.determineMyBestLap(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(bestLapTimeMs = 90_000),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap to false)),
+            settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
         )
         val decision = useCase.determineMyBestLap(
             state = initialDecision.state,
             telemetry = telemetry(bestLapTimeMs = 89_000),
-            settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap to false)),
+            settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
         )
 
         assertTrue(decision.events.isEmpty())
@@ -207,7 +207,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     }
 
     private fun settings(
-        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap to true),
+        enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelLapsEnabled: Boolean = true,

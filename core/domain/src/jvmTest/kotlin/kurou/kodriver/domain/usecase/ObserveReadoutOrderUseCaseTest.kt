@@ -19,7 +19,7 @@ class ObserveReadoutOrderUseCaseTest {
         repo.saveReadoutOrder(
             "lmu_windows",
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ),
@@ -28,7 +28,7 @@ class ObserveReadoutOrderUseCaseTest {
 
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ),

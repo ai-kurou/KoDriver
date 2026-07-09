@@ -92,7 +92,7 @@ class Gt7Ps5NarratorViewModel(
             enabledStates = listEnabledStates.value,
             myBestLapVoiceType = voiceType.value,
             remainingFuelLapsThreshold = fuelThreshold.value,
-            remainingFuelLapsEnabled = listEnabledStates.value.getValue(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps),
+            remainingFuelLapsEnabled = listEnabledStates.value.getValue(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root),
         )
 
     @Suppress("UnusedPrivateProperty")

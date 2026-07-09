@@ -14,12 +14,12 @@ internal class LmuWindowsMyBestLapEnabledRepositoryImpl(
     override fun observeEnabled(): Flow<Boolean?> =
         readoutPreferencesRepository
             .observeReadoutEnabledStates(Simulator.LmuWindows.id)
-            .map { it[ReadoutItemKey.LmuWindows.MyBestLap] }
+            .map { it[ReadoutItemKey.LmuWindows.MyBestLap.Root] }
 
     override suspend fun saveEnabled(enabled: Boolean) {
         readoutPreferencesRepository.saveReadoutEnabledState(
             simulator = Simulator.LmuWindows.id,
-            key = ReadoutItemKey.LmuWindows.MyBestLap,
+            key = ReadoutItemKey.LmuWindows.MyBestLap.Root,
             enabled = enabled,
         )
     }

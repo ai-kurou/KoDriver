@@ -17,14 +17,14 @@ class SaveReadoutOrderUseCaseTest {
         saveUseCase(
             "lmu_windows",
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ),
         )
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ),
@@ -36,14 +36,14 @@ class SaveReadoutOrderUseCaseTest {
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ),
         )
         assertEquals(
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ),
             observeUseCase("lmu_windows").first(),
         )

@@ -315,16 +315,16 @@ private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when
 @Composable
 internal fun readoutItemDisplayName(readoutItemKey: String): String {
     return when (val key = ReadoutItemKey.fromValue(readoutItemKey)) {
-        is ReadoutItemKey.LmuWindows.VehicleApproach -> stringResource(Res.string.readout_item_vehicle_approach)
+        is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> stringResource(Res.string.readout_item_vehicle_approach)
         is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(key)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
         is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> stringResource(Res.string.readout_item_tyre_temperature)
         is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning ->
             stringResource(Res.string.readout_item_tyre_overheat_warning)
-        is ReadoutItemKey.LmuWindows.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
-        is ReadoutItemKey.Gt7Ps5.MyBestLap -> stringResource(Res.string.readout_item_my_best_lap)
-        is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.readout_item_remaining_fuel_laps)
+        is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
+        is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
+        is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)
         null -> readoutItemKey
     }
 }

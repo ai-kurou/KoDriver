@@ -64,7 +64,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (current >= state.personalBestMs) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
-        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.MyBestLap)) {
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.MyBestLap.Root)) {
             return LmuWindowsNarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
@@ -256,7 +256,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         rightAnnounce: Boolean,
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
-        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach)) return null
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Root)) return null
         if (!settings.vehicleApproachStartReadoutEnabled) return null
         // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
         if (settings.skipFirstLap && settings.currentLap <= 0) return null

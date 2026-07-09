@@ -168,11 +168,11 @@ private fun ReadoutContentPreview() {
             simulators = listOf(Simulator.LmuWindows),
             selectedSimulator = Simulator.LmuWindows,
             items = listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                ReadoutItemKey.LmuWindows.MyBestLap,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
         ),
         onSimulatorSelected = {},

@@ -12,14 +12,14 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 private val readoutEnabledStateDefaults: Map<Simulator, Map<ReadoutItemKey, Boolean>> = mapOf(
     Simulator.LmuWindows to mapOf(
         ReadoutItemKey.LmuWindows.Flag.Root to true,
-        ReadoutItemKey.LmuWindows.VehicleApproach to true,
+        ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
         ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-        ReadoutItemKey.LmuWindows.MyBestLap to false,
+        ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
     ),
     Simulator.Gt7Ps5 to mapOf(
-        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps to true,
-        ReadoutItemKey.Gt7Ps5.MyBestLap to true,
+        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+        ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
     ),
 )
 

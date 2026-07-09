@@ -14,12 +14,12 @@ internal class Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl(
     override fun observeEnabled(): Flow<Boolean?> =
         readoutPreferencesRepository
             .observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
-            .map { it[ReadoutItemKey.Gt7Ps5.RemainingFuelLaps] }
+            .map { it[ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root] }
 
     override suspend fun saveEnabled(enabled: Boolean) {
         readoutPreferencesRepository.saveReadoutEnabledState(
             simulator = Simulator.Gt7Ps5.id,
-            key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps,
+            key = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             enabled = enabled,
         )
     }
