@@ -43,6 +43,5 @@ compose.resources {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
-    testFixturesImplementation(libs.kotlinx.coroutinesCore)
     testFixturesImplementation(libs.koin.core)
 }
