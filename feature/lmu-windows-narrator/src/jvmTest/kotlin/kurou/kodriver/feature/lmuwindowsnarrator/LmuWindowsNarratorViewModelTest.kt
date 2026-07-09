@@ -59,6 +59,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
@@ -112,6 +113,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureHighThreshold: Int = 90,
         tyreTemperatureOverheatWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningEnabled: Boolean = true,
+        tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
@@ -179,6 +181,14 @@ class LmuWindowsNarratorViewModelTest {
                         threshold = tyreTemperatureHighThreshold,
                         overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
                         lowWarningEnabled = tyreTemperatureLowWarningEnabled,
+                    ),
+                ),
+                observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(
+                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
+                        threshold = tyreTemperatureHighThreshold,
+                        overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
+                        lowWarningEnabled = tyreTemperatureLowWarningEnabled,
+                        lowWarningPhases = tyreTemperatureLowWarningPhasesOverride,
                     ),
                 ),
             ),
@@ -895,6 +905,26 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `detailPaneで選択解除したgamePhaseに遷移しても読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to false),
+        )
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
+        channel.send(tyreTemperature(fl = 55.0))
+
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
     fun `低温警告読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
@@ -1148,6 +1178,7 @@ private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
     private val threshold: Int,
     private val overheatWarningEnabled: Boolean = true,
     private val lowWarningEnabled: Boolean = true,
+    private val lowWarningPhases: Map<SessionPhase, Boolean> = emptyMap(),
 ) : LmuWindowsTyreTemperaturePreferencesRepository {
     override fun observeHighThresholdCelsius(): Flow<Int> = MutableStateFlow(threshold)
     override suspend fun saveHighThresholdCelsius(celsius: Int) = Unit
@@ -1159,6 +1190,6 @@ private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
             ),
         )
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
-    override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = MutableStateFlow(emptyMap())
+    override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = MutableStateFlow(lowWarningPhases)
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) = Unit
 }

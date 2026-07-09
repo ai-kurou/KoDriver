@@ -41,6 +41,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val vehicleApproachStartReadoutEnabled: Boolean,
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
     val tyreTemperatureHighThresholdCelsius: Int,
+    val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
 )
 
 data class LmuWindowsNarratorReadoutDecision(
@@ -171,7 +172,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val previousGamePhase = state.previousGamePhaseForTyreLowWarning
         val enteringTargetPhase = previousGamePhase != null &&
             raceFlags.gamePhase != previousGamePhase &&
-            raceFlags.gamePhase in TYRE_LOW_WARNING_GAME_PHASES
+            raceFlags.gamePhase in settings.tyreTemperatureLowWarningPhases
         val anyCold = data.wheels.values.any { it <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
         val shouldAnnounce = enteringTargetPhase && anyCold &&
             settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
@@ -291,12 +292,6 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     private companion object {
         const val APPROACH_DEBOUNCE_MS = 50L
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
-        val TYRE_LOW_WARNING_GAME_PHASES = setOf(
-            SessionPhase.GARAGE,
-            SessionPhase.WARM_UP,
-            SessionPhase.GRID_WALK,
-            SessionPhase.FORMATION,
-        )
     }
 }
 

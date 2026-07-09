@@ -34,6 +34,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
@@ -73,6 +74,7 @@ data class TyreTemperatureUseCases(
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
     val observeTyreTemperatureEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
+    val observeLowWarningPhases: ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
 )
 
 data class NarratorUseCases(
@@ -148,6 +150,9 @@ class LmuWindowsNarratorViewModel(
 
     private val tyreHighThreshold = tyreTemperatureUseCases.observeHighThreshold()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 90)
+
+    private val tyreLowWarningPhases = tyreTemperatureUseCases.observeLowWarningPhases()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -313,6 +318,7 @@ class LmuWindowsNarratorViewModel(
             vehicleApproachStartReadoutEnabled = startReadoutEnabled.value,
             vehicleApproachStartReadoutType = startReadoutType.value,
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
+            tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
         )
 
     /**

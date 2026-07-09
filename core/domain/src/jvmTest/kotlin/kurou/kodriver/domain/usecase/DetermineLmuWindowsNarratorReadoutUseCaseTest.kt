@@ -588,6 +588,24 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `選択解除されたgamePhaseに遷移しても読み上げない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            settings = settings().copy(
+                tyreTemperatureLowWarningPhases = setOf(
+                    SessionPhase.WARM_UP,
+                    SessionPhase.GRID_WALK,
+                    SessionPhase.FORMATION,
+                ),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
     fun `低温警告スイッチがOFFの場合は読み上げられない`() {
         val decision = useCase.determineTyreTemperatureLow(
             state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
@@ -652,6 +670,12 @@ private fun settings(
     vehicleApproachStartReadoutEnabled = startReadoutEnabled,
     vehicleApproachStartReadoutType = startReadoutType,
     tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,
+    tyreTemperatureLowWarningPhases = setOf(
+        SessionPhase.GARAGE,
+        SessionPhase.WARM_UP,
+        SessionPhase.GRID_WALK,
+        SessionPhase.FORMATION,
+    ),
 )
 
 private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
