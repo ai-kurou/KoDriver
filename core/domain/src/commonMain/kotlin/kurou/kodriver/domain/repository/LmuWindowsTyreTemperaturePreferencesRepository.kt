@@ -9,6 +9,6 @@ interface LmuWindowsTyreTemperaturePreferencesRepository {
     suspend fun saveHighThresholdCelsius(celsius: Int)
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
     suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean)
-    fun observeLowWarningPhases(): Flow<Set<SessionPhase>>
+    fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>>
     suspend fun saveLowWarningPhases(phases: Set<SessionPhase>)
 }

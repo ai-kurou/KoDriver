@@ -21,4 +21,17 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
         repo.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
         assertEquals(setOf(SessionPhase.FORMATION), useCase().first())
     }
+
+    @Test
+    fun `一部のフェーズだけ保存されている場合は保存済みの値がデフォルトより優先される`() = runBlocking {
+        val repo = FakeLmuWindowsTyreTemperaturePreferencesRepository(
+            initialLowWarningPhases = mapOf(SessionPhase.GARAGE to false),
+        )
+        val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
+
+        assertEquals(
+            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
+            useCase().first(),
+        )
+    }
 }

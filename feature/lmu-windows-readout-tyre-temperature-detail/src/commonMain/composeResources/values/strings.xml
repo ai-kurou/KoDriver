@@ -1,7 +1,7 @@
 <resources>
     <string name="tyre_temperature_title">タイヤ温度</string>
     <string name="tyre_temperature_description">タイヤの温度状況を音声でお知らせします。</string>
-    <string name="tyre_temperature_high_threshold_subtitle">閾値設定</string>
+    <string name="tyre_temperature_high_threshold_subtitle">高温閾値設定</string>
     <string name="tyre_temperature_high_threshold_description">この温度以上になると読み上げます。</string>
     <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
     <string name="tyre_temperature_high_threshold_reset">デフォルトに戻す</string>
@@ -10,4 +10,14 @@
     <string name="tyre_temperature_readout_settings_subtitle">読み上げ別設定</string>
     <string name="tyre_temperature_carcass_card_title">過熱警告</string>
     <string name="tyre_temperature_overheat_warning_chip">タイヤ過熱警告</string>
+    <string name="tyre_temperature_low_warning_card_title">低温警告</string>
+    <string name="tyre_temperature_low_warning_chip">タイヤ低温警告</string>
+    <string name="tyre_temperature_low_warning_phases_subtitle">低温警告の対象フェーズ</string>
+    <string name="tyre_temperature_low_warning_phases_description">選択したフェーズ中にタイヤが冷えている場合に読み上げます。</string>
+    <string name="tyre_temperature_low_warning_phases_help_icon_content_description">対象フェーズの説明を表示</string>
+    <string name="tyre_temperature_low_warning_phases_help_description">タイヤ温度の判定にはカーカス温度を使用しています。ガレージ・ウォームアップ・グリッド確認・フォーメーションのうち、選択したフェーズでのみタイヤの低温警告を読み上げます。</string>
+    <string name="tyre_temperature_low_warning_phase_garage">ガレージ</string>
+    <string name="tyre_temperature_low_warning_phase_warm_up">ウォームアップ</string>
+    <string name="tyre_temperature_low_warning_phase_grid_walk">グリッド確認</string>
+    <string name="tyre_temperature_low_warning_phase_formation">フォーメーション</string>
 </resources>
