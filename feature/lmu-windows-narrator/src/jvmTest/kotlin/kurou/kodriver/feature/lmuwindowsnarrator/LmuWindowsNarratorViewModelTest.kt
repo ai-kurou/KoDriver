@@ -917,7 +917,7 @@ class LmuWindowsNarratorViewModelTest {
         val log = telemetryLogRepository.logs.value.first()
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning.value, log.readoutItemKey)
+        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
     }
 }
 
