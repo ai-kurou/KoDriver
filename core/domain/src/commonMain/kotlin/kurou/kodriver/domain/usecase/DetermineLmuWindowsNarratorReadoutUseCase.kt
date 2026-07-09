@@ -20,6 +20,7 @@ data class LmuWindowsNarratorState(
     val personalBestMs: Long = Long.MAX_VALUE,
     val previousBestLapTimeMs: Long? = null,
     val tyreOverheating: Boolean = false,
+    val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
 )
 
 data class LmuWindowsVehicleApproachState(
@@ -145,7 +146,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         )
     }
 
-    fun determineTyreTemperature(
+    fun determineTyreTemperatureOverheat(
         state: LmuWindowsNarratorState,
         data: LmuWindowsTyreCarcassTemperatureData,
         settings: LmuWindowsNarratorReadoutSettings,
@@ -158,6 +159,26 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = anyOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreOverheat) else emptyList(),
+        )
+    }
+
+    fun determineTyreTemperatureLow(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsTyreCarcassTemperatureData,
+        raceFlags: LmuWindowsRaceFlagsData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val previousGamePhase = state.previousGamePhaseForTyreLowWarning
+        val enteringTargetPhase = previousGamePhase != null &&
+            raceFlags.gamePhase != previousGamePhase &&
+            raceFlags.gamePhase in TYRE_LOW_WARNING_GAME_PHASES
+        val anyCold = data.wheels.values.any { it <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
+        val shouldAnnounce = enteringTargetPhase && anyCold &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning)
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(previousGamePhaseForTyreLowWarning = raceFlags.gamePhase),
+            events = if (shouldAnnounce) listOf(SpeechEvent.TyreCold) else emptyList(),
         )
     }
 
@@ -269,6 +290,13 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     private companion object {
         const val APPROACH_DEBOUNCE_MS = 50L
+        const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
+        val TYRE_LOW_WARNING_GAME_PHASES = setOf(
+            SessionPhase.GARAGE,
+            SessionPhase.WARM_UP,
+            SessionPhase.GRID_WALK,
+            SessionPhase.FORMATION,
+        )
     }
 }
 

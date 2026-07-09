@@ -386,7 +386,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `いずれかのタイヤが閾値以上になると TyreOverheat を返す`() {
-        val decision = useCase.determineTyreTemperature(
+        val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
@@ -399,7 +399,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     @Test
     fun `高温状態が継続しても再度読み上げない`() {
         val state = LmuWindowsNarratorState(tyreOverheating = true)
-        val decision = useCase.determineTyreTemperature(
+        val decision = useCase.determineTyreTemperatureOverheat(
             state = state,
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
@@ -411,19 +411,19 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() {
-        val overheatState = useCase.determineTyreTemperature(
+        val overheatState = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
         ).state
 
-        val cooledState = useCase.determineTyreTemperature(
+        val cooledState = useCase.determineTyreTemperatureOverheat(
             state = overheatState,
             data = tyreTemperature(fl = 85.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
         ).state
 
-        val reovertState = useCase.determineTyreTemperature(
+        val reovertState = useCase.determineTyreTemperatureOverheat(
             state = cooledState,
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
@@ -435,7 +435,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `タイヤ温度項目が無効なら読み上げない`() {
-        val decision = useCase.determineTyreTemperature(
+        val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(
@@ -450,7 +450,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `無効中に過熱した状態で再有効化しても読み上げない`() {
-        val disabledState = useCase.determineTyreTemperature(
+        val disabledState = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(
@@ -459,7 +459,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             ),
         ).state
 
-        val reenabledDecision = useCase.determineTyreTemperature(
+        val reenabledDecision = useCase.determineTyreTemperatureOverheat(
             state = disabledState,
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
@@ -470,7 +470,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `過熱警告スイッチがOFFの場合は読み上げられない`() {
-        val decision = useCase.determineTyreTemperature(
+        val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(
@@ -487,7 +487,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `タイヤ温度項目が無効なら過熱警告スイッチがONでも読み上げない`() {
-        val decision = useCase.determineTyreTemperature(
+        val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(
@@ -505,13 +505,119 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `閾値ちょうどは高温扱い`() {
-        val decision = useCase.determineTyreTemperature(
+        val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 90.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
         )
 
         assertEquals(listOf(SpeechEvent.TyreOverheat), decision.events)
+    }
+
+    @Test
+    fun `初回のgamePhase観測では低温でも読み上げない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            settings = settings(),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(SessionPhase.GARAGE, decision.state.previousGamePhaseForTyreLowWarning)
+    }
+
+    @Test
+    fun `ガレージに遷移した瞬間に低温タイヤがあるとTyreColdを返す`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            settings = settings(),
+        )
+
+        assertEquals(listOf(SpeechEvent.TyreCold), decision.events)
+    }
+
+    @Test
+    fun `対象外のgamePhaseに遷移しても読み上げない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.COUNTDOWN),
+            settings = settings(),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `gamePhaseが変化しなければ低温でも読み上げない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GARAGE),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            settings = settings(),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `1輪でも60度以下なら読み上げる`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 60.0, fr = 80.0, rl = 80.0, rr = 80.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.WARM_UP),
+            settings = settings(),
+        )
+
+        assertEquals(listOf(SpeechEvent.TyreCold), decision.events)
+    }
+
+    @Test
+    fun `全タイヤが60度超なら読み上げない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 61.0, fr = 80.0, rl = 80.0, rr = 80.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.WARM_UP),
+            settings = settings(),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `低温警告スイッチがOFFの場合は読み上げられない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            settings = settings(
+                enabledStates = allEnabledStates + mapOf(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to false,
+                ),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+    }
+
+    @Test
+    fun `タイヤ温度項目が無効なら低温警告スイッチがONでも読み上げない`() {
+        val decision = useCase.determineTyreTemperatureLow(
+            state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+            data = tyreTemperature(fl = 55.0),
+            raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+            settings = settings(
+                enabledStates = allEnabledStates + mapOf(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+                ),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
     }
 }
 
@@ -522,6 +628,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
     ReadoutItemKey.LmuWindows.Flag.Root to true,
     ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,

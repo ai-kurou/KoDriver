@@ -111,6 +111,7 @@ class LmuWindowsNarratorViewModelTest {
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         tyreTemperatureHighThreshold: Int = 90,
         tyreTemperatureOverheatWarningEnabled: Boolean = true,
+        tyreTemperatureLowWarningEnabled: Boolean = true,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
@@ -170,12 +171,14 @@ class LmuWindowsNarratorViewModelTest {
                     FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
                         threshold = tyreTemperatureHighThreshold,
                         overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
+                        lowWarningEnabled = tyreTemperatureLowWarningEnabled,
                     ),
                 ),
                 observeTyreTemperatureEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(
                     FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
                         threshold = tyreTemperatureHighThreshold,
                         overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
+                        lowWarningEnabled = tyreTemperatureLowWarningEnabled,
                     ),
                 ),
             ),
@@ -682,13 +685,16 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `閾値以上のタイヤ温度が来ると TyreOverheat を読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
 
@@ -698,13 +704,16 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `高温状態が継続しても2回目は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
         channel.send(tyreTemperature(fl = 95.0))
@@ -715,13 +724,16 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
         channel.send(tyreTemperature(fl = 20.0))
@@ -733,13 +745,16 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `タイヤ温度項目が無効なら読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
 
@@ -749,14 +764,17 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `過熱警告スイッチがOFFのときは読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             tyreTemperatureOverheatWarningEnabled = false,
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
 
@@ -777,12 +795,15 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `タイヤ温度が未設定（デフォルト）の場合は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
 
@@ -792,16 +813,19 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `タイヤ温度読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
             tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             currentTimeMs = { 123L },
             telemetryLogRepository = telemetryLogRepository,
         )
+        flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
 
@@ -810,6 +834,90 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
+    }
+
+    // --- タイヤ低温警告 ---
+
+    @Test
+    fun `ガレージに遷移した瞬間に低温タイヤがあるとTyreColdを読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+        )
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
+        channel.send(tyreTemperature(fl = 55.0))
+
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold), tts.spokenTexts)
+    }
+
+    @Test
+    fun `gamePhaseが変化しなければ低温でも読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+        )
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
+        channel.send(tyreTemperature(fl = 55.0))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `低温警告スイッチがOFFのときは読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            tyreTemperatureLowWarningEnabled = false,
+        )
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
+        channel.send(tyreTemperature(fl = 55.0))
+
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
+
+        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+    }
+
+    @Test
+    fun `低温警告読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+        val telemetryLogRepository = FakeTelemetryLogRepository()
+        val tts = RecordingTextToSpeechEngine()
+        buildViewModel(
+            tyreTemperatureChannel = channel,
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            currentTimeMs = { 123L },
+            telemetryLogRepository = telemetryLogRepository,
+        )
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
+        channel.send(tyreTemperature(fl = 55.0))
+
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
+
+        assertEquals(1, telemetryLogRepository.logs.value.size)
+        val log = telemetryLogRepository.logs.value.first()
+        assertEquals(123L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning.value, log.readoutItemKey)
     }
 }
 
@@ -1039,11 +1147,17 @@ private class FakeChannelTyreCarcassTemperatureRepository(
 private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
     private val threshold: Int,
     private val overheatWarningEnabled: Boolean = true,
+    private val lowWarningEnabled: Boolean = true,
 ) : LmuWindowsTyreTemperaturePreferencesRepository {
     override fun observeHighThresholdCelsius(): Flow<Int> = MutableStateFlow(threshold)
     override suspend fun saveHighThresholdCelsius(celsius: Int) = Unit
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
-        MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to overheatWarningEnabled))
+        MutableStateFlow(
+            mapOf(
+                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to overheatWarningEnabled,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to lowWarningEnabled,
+            ),
+        )
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
     override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = MutableStateFlow(emptyMap())
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) = Unit

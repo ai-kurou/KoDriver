@@ -132,6 +132,13 @@ class LmuWindowsNarratorViewModel(
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private val raceFlagsFlow = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+            flagUseCases.observeRaceFlags()
+        }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
+
     private val currentLap = lmuTelemetryFlow
         .map { it.timing.currentLap }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
@@ -236,11 +243,7 @@ class LmuWindowsNarratorViewModel(
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val flagJob = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            flagUseCases.observeRaceFlags()
-        }
+    private val flagJob = raceFlagsFlow
         .onEach { raceFlags ->
             val previous = previousRaceFlags
             val observedAtMs = currentTimeMs()
@@ -268,17 +271,27 @@ class LmuWindowsNarratorViewModel(
     private val tyreTemperatureJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            tyreTemperatureUseCases.observeTyreCarcassTemperature()
+            combine(
+                tyreTemperatureUseCases.observeTyreCarcassTemperature(),
+                raceFlagsFlow,
+            ) { tyreCarcassTemperature, raceFlags -> tyreCarcassTemperature to raceFlags }
         }
-        .onEach { tyreCarcassTemperature ->
+        .onEach { (tyreCarcassTemperature, raceFlags) ->
             val observedAtMs = currentTimeMs()
-            val decision = narratorUseCases.determineReadout.determineTyreTemperature(
+            val overheatDecision = narratorUseCases.determineReadout.determineTyreTemperatureOverheat(
                 state = narratorState,
                 data = tyreCarcassTemperature,
                 settings = currentSettings,
             )
-            narratorState = decision.state
-            decision.events.forEach { event ->
+            narratorState = overheatDecision.state
+            val lowDecision = narratorUseCases.determineReadout.determineTyreTemperatureLow(
+                state = narratorState,
+                data = tyreCarcassTemperature,
+                raceFlags = raceFlags,
+                settings = currentSettings,
+            )
+            narratorState = lowDecision.state
+            (overheatDecision.events + lowDecision.events).forEach { event ->
                 if (speakWithPriority(event)) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
