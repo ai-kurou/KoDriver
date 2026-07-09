@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsTyreTemperaturePreferencesSerializer
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -89,5 +90,35 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
             ),
             repository.observeEnabledStates().first(),
         )
+    }
+
+    @Test
+    fun `lowWarningPhases の初期値はガレージ・ウォームアップ・グリッド確認・フォーメーション`() = testScope.runTest {
+        assertEquals(
+            setOf(SessionPhase.GARAGE, SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
+            repository.observeLowWarningPhases().first(),
+        )
+    }
+
+    @Test
+    fun `saveLowWarningPhases で保存した値を observeLowWarningPhases で取得できる`() = testScope.runTest {
+        repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
+        assertEquals(setOf(SessionPhase.FORMATION), repository.observeLowWarningPhases().first())
+    }
+
+    @Test
+    fun `saveLowWarningPhases を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+        repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE))
+        repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
+        assertEquals(
+            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK),
+            repository.observeLowWarningPhases().first(),
+        )
+    }
+
+    @Test
+    fun `saveLowWarningPhases で空集合を保存できる`() = testScope.runTest {
+        repository.saveLowWarningPhases(emptySet())
+        assertEquals(emptySet(), repository.observeLowWarningPhases().first())
     }
 }

@@ -18,13 +18,19 @@ class SaveLmuWindowsTyreTemperatureEnabledStateUseCaseTest {
 
         saveUseCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false),
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+            ),
             observeUseCase().first(),
         )
 
         saveUseCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true),
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+            ),
             observeUseCase().first(),
         )
     }

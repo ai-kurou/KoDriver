@@ -25,6 +25,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
             ReadoutItemKey.fromValue("lmu_windows_tyre_temperature_overheat_warning"),
         )
+        assertEquals(
+            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
+            ReadoutItemKey.fromValue("lmu_windows_tyre_temperature_low_warning"),
+        )
         assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
