@@ -14,9 +14,25 @@ class SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
     @Test
     fun `任意のフェーズ集合を保存できる`() = runBlocking {
         useCase(setOf(SessionPhase.WARM_UP, SessionPhase.FORMATION))
-        assertEquals(setOf(SessionPhase.WARM_UP, SessionPhase.FORMATION), repo.observeLowWarningPhases().first())
+        assertEquals(
+            mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to true,
+                SessionPhase.GRID_WALK to false,
+                SessionPhase.FORMATION to true,
+            ),
+            repo.observeLowWarningPhases().first(),
+        )
 
         useCase(emptySet())
-        assertEquals(emptySet(), repo.observeLowWarningPhases().first())
+        assertEquals(
+            mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to false,
+                SessionPhase.GRID_WALK to false,
+                SessionPhase.FORMATION to false,
+            ),
+            repo.observeLowWarningPhases().first(),
+        )
     }
 }

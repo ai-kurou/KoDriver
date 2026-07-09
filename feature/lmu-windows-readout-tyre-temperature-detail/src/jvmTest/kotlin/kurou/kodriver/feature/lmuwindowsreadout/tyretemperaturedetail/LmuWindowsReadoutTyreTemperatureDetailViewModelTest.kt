@@ -102,7 +102,14 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     @Test
     fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() = runTest {
-        repository = FakeLmuWindowsTyreTemperaturePreferencesRepository(initialLowWarningPhases = emptySet())
+        repository = FakeLmuWindowsTyreTemperaturePreferencesRepository(
+            initialLowWarningPhases = mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to false,
+                SessionPhase.GRID_WALK to false,
+                SessionPhase.FORMATION to false,
+            ),
+        )
         viewModel = LmuWindowsReadoutTyreTemperatureDetailViewModel(
             observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),

@@ -93,17 +93,22 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `lowWarningPhases の初期値はガレージ・ウォームアップ・グリッド確認・フォーメーション`() = testScope.runTest {
-        assertEquals(
-            setOf(SessionPhase.GARAGE, SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
-            repository.observeLowWarningPhases().first(),
-        )
+    fun `lowWarningPhases の初期値は空Map`() = testScope.runTest {
+        assertEquals(emptyMap(), repository.observeLowWarningPhases().first())
     }
 
     @Test
     fun `saveLowWarningPhases で保存した値を observeLowWarningPhases で取得できる`() = testScope.runTest {
         repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
-        assertEquals(setOf(SessionPhase.FORMATION), repository.observeLowWarningPhases().first())
+        assertEquals(
+            mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to false,
+                SessionPhase.GRID_WALK to false,
+                SessionPhase.FORMATION to true,
+            ),
+            repository.observeLowWarningPhases().first(),
+        )
     }
 
     @Test
@@ -111,7 +116,12 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
         repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE))
         repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
         assertEquals(
-            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK),
+            mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to true,
+                SessionPhase.GRID_WALK to true,
+                SessionPhase.FORMATION to false,
+            ),
             repository.observeLowWarningPhases().first(),
         )
     }
@@ -119,20 +129,29 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     @Test
     fun `saveLowWarningPhases で空集合を保存できる`() = testScope.runTest {
         repository.saveLowWarningPhases(emptySet())
-        assertEquals(emptySet(), repository.observeLowWarningPhases().first())
+        assertEquals(
+            mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to false,
+                SessionPhase.GRID_WALK to false,
+                SessionPhase.FORMATION to false,
+            ),
+            repository.observeLowWarningPhases().first(),
+        )
     }
 
     @Test
     fun `saveLowWarningPhases後にsaveHighThresholdCelsiusを呼んでもphasesは保持される`() = testScope.runTest {
         repository.saveLowWarningPhases(setOf(SessionPhase.FORMATION))
         repository.saveHighThresholdCelsius(100)
-        assertEquals(setOf(SessionPhase.FORMATION), repository.observeLowWarningPhases().first())
-    }
-
-    @Test
-    fun `空集合を保存後にsaveHighThresholdCelsiusを呼んでもphasesは空集合のまま保持される`() = testScope.runTest {
-        repository.saveLowWarningPhases(emptySet())
-        repository.saveHighThresholdCelsius(100)
-        assertEquals(emptySet(), repository.observeLowWarningPhases().first())
+        assertEquals(
+            mapOf(
+                SessionPhase.GARAGE to false,
+                SessionPhase.WARM_UP to false,
+                SessionPhase.GRID_WALK to false,
+                SessionPhase.FORMATION to true,
+            ),
+            repository.observeLowWarningPhases().first(),
+        )
     }
 }

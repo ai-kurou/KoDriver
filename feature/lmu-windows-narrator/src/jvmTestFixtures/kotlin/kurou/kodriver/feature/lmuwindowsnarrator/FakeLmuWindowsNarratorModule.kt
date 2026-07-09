@@ -91,17 +91,15 @@ class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemp
 class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTemperaturePreferencesRepository {
     private val flow = MutableStateFlow(90)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-    private val lowWarningPhasesFlow = MutableStateFlow<Set<SessionPhase>>(
-        setOf(SessionPhase.GARAGE, SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
-    )
+    private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
     override fun observeHighThresholdCelsius(): Flow<Int> = flow
     override suspend fun saveHighThresholdCelsius(celsius: Int) { flow.update { celsius } }
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         enabledStatesFlow.update { it + (key to enabled) }
     }
-    override fun observeLowWarningPhases(): Flow<Set<SessionPhase>> = lowWarningPhasesFlow
+    override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = lowWarningPhasesFlow
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
-        lowWarningPhasesFlow.update { phases }
+        lowWarningPhasesFlow.update { phases.associateWith { true } }
     }
 }

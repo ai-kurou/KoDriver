@@ -8,7 +8,10 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
-private val defaultLowWarningPhases: Set<SessionPhase> = setOf(
+// saveLowWarningPhases が明示的な true/false を書き込む対象フェーズの全体集合。
+// デフォルト有効状態は ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase に一元化しているため、
+// ここでは永続化対象のキー空間の定義にとどめる。
+private val allLowWarningPhases: Set<SessionPhase> = setOf(
     SessionPhase.GARAGE,
     SessionPhase.WARM_UP,
     SessionPhase.GRID_WALK,
@@ -37,22 +40,17 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 
-    override fun observeLowWarningPhases(): Flow<Set<SessionPhase>> =
+    override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> =
         dataStore.data.map { prefs ->
-            if (prefs.lowWarningPhases.isEmpty()) {
-                defaultLowWarningPhases
-            } else {
-                prefs.lowWarningPhases
-                    .filterValues { enabled -> enabled }
-                    .keys
-                    .map { SessionPhase.fromRaw(it) }
-                    .filter { it != SessionPhase.UNKNOWN }
-                    .toSet()
-            }
+            prefs.lowWarningPhases
+                .mapNotNull { (raw, enabled) ->
+                    SessionPhase.fromRaw(raw).takeIf { it != SessionPhase.UNKNOWN }?.let { it to enabled }
+                }
+                .toMap()
         }
 
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
-        val explicitPhases = defaultLowWarningPhases.associate { phase -> phase.rawValue to (phase in phases) }
+        val explicitPhases = allLowWarningPhases.associate { phase -> phase.rawValue to (phase in phases) }
         dataStore.updateData { it.copy(lowWarningPhases = explicitPhases) }
     }
 }
