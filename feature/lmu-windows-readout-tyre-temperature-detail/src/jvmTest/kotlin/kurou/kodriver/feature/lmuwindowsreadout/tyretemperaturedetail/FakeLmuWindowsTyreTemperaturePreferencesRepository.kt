@@ -6,14 +6,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
-
-private val allLowWarningPhases: Set<SessionPhase> = setOf(
-    SessionPhase.GARAGE,
-    SessionPhase.WARM_UP,
-    SessionPhase.GRID_WALK,
-    SessionPhase.FORMATION,
-)
 
 internal class FakeLmuWindowsTyreTemperaturePreferencesRepository(
     initialHighThreshold: Int = 90,
@@ -38,6 +32,8 @@ internal class FakeLmuWindowsTyreTemperaturePreferencesRepository(
     override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = _lowWarningPhases.asStateFlow()
 
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
-        _lowWarningPhases.update { allLowWarningPhases.associateWith { phase -> phase in phases } }
+        _lowWarningPhases.update {
+            lmuWindowsTyreTemperatureLowWarningSelectablePhases.associateWith { phase -> phase in phases }
+        }
     }
 }

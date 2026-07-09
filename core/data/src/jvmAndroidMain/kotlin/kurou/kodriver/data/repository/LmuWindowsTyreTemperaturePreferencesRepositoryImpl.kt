@@ -6,17 +6,8 @@ import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsTyreTemperaturePreferences
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
-
-// saveLowWarningPhases が明示的な true/false を書き込む対象フェーズの全体集合。
-// デフォルト有効状態は ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase に一元化しているため、
-// ここでは永続化対象のキー空間の定義にとどめる。
-private val allLowWarningPhases: Set<SessionPhase> = setOf(
-    SessionPhase.GARAGE,
-    SessionPhase.WARM_UP,
-    SessionPhase.GRID_WALK,
-    SessionPhase.FORMATION,
-)
 
 internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,
@@ -50,7 +41,8 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
         }
 
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
-        val explicitPhases = allLowWarningPhases.associate { phase -> phase.rawValue to (phase in phases) }
+        val explicitPhases = lmuWindowsTyreTemperatureLowWarningSelectablePhases
+            .associate { phase -> phase.rawValue to (phase in phases) }
         dataStore.updateData { it.copy(lowWarningPhases = explicitPhases) }
     }
 }
