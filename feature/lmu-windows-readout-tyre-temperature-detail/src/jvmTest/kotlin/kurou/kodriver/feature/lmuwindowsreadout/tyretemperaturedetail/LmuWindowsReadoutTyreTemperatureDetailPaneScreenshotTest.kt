@@ -45,4 +45,18 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
         }
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `低温警告対象フェーズのヘルプボトムシート`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 200.dp)) {
+                        TyreTemperatureLowWarningPhasesHelpSheetContent()
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
 }
