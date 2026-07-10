@@ -14,7 +14,7 @@ Le Mans Ultimate（LMU）および GranTurismo 7（GT7 PS5）の走行情報に�
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
-<img width="1445" height="715" alt="スクリーンショット 2026-06-21 16 47 49" src="https://github.com/user-attachments/assets/20278c9f-eeda-424b-a693-17163d7ef0ff" />
+<img width="1456" height="916" alt="スクリーンショット 2026-07-10 22 55 47" src="https://github.com/user-attachments/assets/5912d901-706a-4446-8600-ace2cfe47335" />
 
 ## 機能
 
