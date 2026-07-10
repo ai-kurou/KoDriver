@@ -115,9 +115,11 @@ kotlin {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
     add("jvmTestImplementation", testFixtures(projects.feature.lmuWindowsNarrator))
+    add("jvmTestImplementation", testFixtures(projects.feature.gt7Ps5Narrator))
     add("jvmTestImplementation", testFixtures(projects.feature.readoutList))
     add("jvmTestImplementation", testFixtures(projects.feature.telemetryLogList))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
+    testFixturesApi(testFixtures(projects.feature.gt7Ps5Narrator))
     testFixturesApi(testFixtures(projects.feature.readoutList))
     testFixturesApi(testFixtures(projects.feature.telemetryLogList))
 }
