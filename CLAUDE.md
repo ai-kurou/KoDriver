@@ -30,13 +30,13 @@ KoDriver/
 │   ├── other-volume-detail/      その他画面の音量設定詳細
 │   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
 │   ├── lmu-windows-readout-flag-detail/          フラグアナウンスの詳細設定
-│   ├── lmu-windows-readout-my-bestlap-detail/    LMU自己ベストラップアナウンスの詳細設定
+│   ├── lmu-windows-readout-my-best-lap-detail/   LMU自己ベストラップアナウンスの詳細設定
 │   ├── lmu-windows-readout-vehicle-approach-detail/ 車両接近アナウンスの詳細設定
 │   ├── lmu-windows-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
 │   ├── lmu-windows-readout-tyre-temperature-detail/ タイヤ温度アナウンスの詳細設定
 │   ├── gt7-ps5-connection/              GT7 PS5 接続状態の監視
 │   ├── gt7-ps5-narrator/                GT7 PS5 WAV 音声再生とアナウンス制御
-│   ├── gt7-ps5-readout-my-bestlap-detail/       GT7自己ベストラップアナウンスの詳細設定
+│   ├── gt7-ps5-readout-my-best-lap-detail/      GT7自己ベストラップアナウンスの詳細設定
 │   ├── gt7-ps5-readout-remaining-fuel-laps-detail/ GT7燃料残り周回数アナウンスの詳細設定
 │   ├── telemetry-log-list/              テレメトリログの一覧表示
 │   └── telemetry-log-detail/            テレメトリログの詳細表示
