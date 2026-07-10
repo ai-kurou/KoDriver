@@ -4,7 +4,7 @@ import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.dsl.module
 
-val lmuConnectionModule = module {
+val lmuWindowsConnectionModule = module {
     factory { CheckLmuWindowsConnectionUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
 }
