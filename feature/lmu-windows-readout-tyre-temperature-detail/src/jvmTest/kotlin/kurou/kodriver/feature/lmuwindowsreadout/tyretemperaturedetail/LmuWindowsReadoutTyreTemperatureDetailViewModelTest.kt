@@ -133,9 +133,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() = runTest {
         viewModel.uiState.first()
-        viewModel.onLowWarningPhaseToggled(SessionPhase.GARAGE)
+        viewModel.onLowWarningPhaseToggled(SessionPhase.FORMATION)
         assertEquals(
-            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
+            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK),
             viewModel.uiState.first().lowWarningPhases,
         )
     }

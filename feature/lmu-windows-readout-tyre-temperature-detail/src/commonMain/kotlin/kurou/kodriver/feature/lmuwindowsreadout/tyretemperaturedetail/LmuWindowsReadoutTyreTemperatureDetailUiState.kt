@@ -7,7 +7,6 @@ data class LmuWindowsReadoutTyreTemperatureDetailUiState(
     val overheatWarningEnabled: Boolean = true,
     val lowWarningEnabled: Boolean = true,
     val lowWarningPhases: Set<SessionPhase> = setOf(
-        SessionPhase.GARAGE,
         SessionPhase.WARM_UP,
         SessionPhase.GRID_WALK,
         SessionPhase.FORMATION,

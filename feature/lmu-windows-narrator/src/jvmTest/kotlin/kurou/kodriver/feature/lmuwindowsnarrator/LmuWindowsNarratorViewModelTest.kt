@@ -858,6 +858,7 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel = flagChannel,
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
         )
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
         channel.send(tyreTemperature(fl = 55.0))
@@ -877,6 +878,7 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel = flagChannel,
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
         )
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
         channel.send(tyreTemperature(fl = 55.0))
@@ -895,6 +897,7 @@ class LmuWindowsNarratorViewModelTest {
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             tyreTemperatureLowWarningEnabled = false,
+            tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
         )
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
         channel.send(tyreTemperature(fl = 55.0))
@@ -937,6 +940,7 @@ class LmuWindowsNarratorViewModelTest {
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             currentTimeMs = { 123L },
             telemetryLogRepository = telemetryLogRepository,
+            tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
         )
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
         channel.send(tyreTemperature(fl = 55.0))

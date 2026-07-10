@@ -6,10 +6,10 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
-// 選択可能な全フェーズをデフォルトで有効(true)とする。選択可能なフェーズ自体の定義は
+// 選択可能なフェーズのうちGARAGEのみデフォルトで無効(false)とする。選択可能なフェーズ自体の定義は
 // lmuWindowsTyreTemperatureLowWarningSelectablePhases に一元化している。
 private val lowWarningPhaseDefaults: Map<SessionPhase, Boolean> =
-    lmuWindowsTyreTemperatureLowWarningSelectablePhases.associateWith { true }
+    lmuWindowsTyreTemperatureLowWarningSelectablePhases.associateWith { phase -> phase != SessionPhase.GARAGE }
 
 class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository,
