@@ -51,9 +51,9 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         // 新しい ReadoutItemKey.LmuWindows.TopLevel を追加した際、ここで対応を判断しないとコンパイルが通らない。
         private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int = when (key) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 1
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 2
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 3
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 3
             ReadoutItemKey.LmuWindows.MyBestLap.Root -> 4
         }
 

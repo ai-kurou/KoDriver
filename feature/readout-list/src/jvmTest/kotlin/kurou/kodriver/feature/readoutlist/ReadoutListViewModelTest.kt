@@ -61,14 +61,14 @@ class ReadoutListViewModelTest {
         assertEquals(
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             state.items,
         )
-        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.TyreTemperature.Root])
+        assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
         assertEquals(false, state.readoutEnabledStates[ReadoutItemKey.LmuWindows.MyBestLap.Root])
     }
 
@@ -79,10 +79,10 @@ class ReadoutListViewModelTest {
 
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             viewModel.uiState.first().items,
@@ -136,8 +136,8 @@ class ReadoutListViewModelTest {
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             viewModel.uiState.first().items,
@@ -151,10 +151,10 @@ class ReadoutListViewModelTest {
 
         assertEquals(
             listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             readoutRepository.observeReadoutOrder("lmu_windows").first(),
@@ -164,15 +164,15 @@ class ReadoutListViewModelTest {
     @Test
     fun `連続moveItemではRepository更新より最後のmoveItem結果を優先して表示する`() = runTest {
         viewModel.onSimulatorSelected(Simulator.LmuWindows)
-        viewModel.moveItem(0, 1) // [vehicle_approach, flag, vehicle_damage]
-        viewModel.moveItem(0, 1) // [flag, vehicle_approach, vehicle_damage]（初期順序に戻る）
+        viewModel.moveItem(0, 1) // [tyre_temperature, flag, vehicle_approach, vehicle_damage, my_best_lap]
+        viewModel.moveItem(0, 1) // [flag, tyre_temperature, vehicle_approach, vehicle_damage, my_best_lap]（初期順序に戻る）
 
         assertEquals(
             listOf(
                 ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             viewModel.uiState.first().items,

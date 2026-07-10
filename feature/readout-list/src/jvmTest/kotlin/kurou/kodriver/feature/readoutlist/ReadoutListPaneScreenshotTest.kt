@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import org.junit.Rule
 import org.junit.Test
 
@@ -42,6 +44,9 @@ class ReadoutListPaneScreenshotTest {
 
     @Test
     fun `lmu_windows選択`() {
+        val observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(FakeReadoutPreferencesRepository())
+        val enabledStates = runBlocking { observeReadoutEnabledStates("lmu_windows").first() }
+
         rule.setContent {
             KoDriverTheme {
                 Surface {
@@ -50,20 +55,8 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                                 selectedSimulator = Simulator.LmuWindows,
-                                items = listOf(
-                                    ReadoutItemKey.LmuWindows.Flag.Root,
-                                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                                    ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                                ),
-                                readoutEnabledStates = mapOf(
-                                    ReadoutItemKey.LmuWindows.Flag.Root to true,
-                                    ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                                    ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
-                                ),
+                                items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                readoutEnabledStates = enabledStates,
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
@@ -79,6 +72,9 @@ class ReadoutListPaneScreenshotTest {
 
     @Test
     fun `gt7_ps5選択`() {
+        val observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(FakeReadoutPreferencesRepository())
+        val enabledStates = runBlocking { observeReadoutEnabledStates("gt7_ps5").first() }
+
         rule.setContent {
             KoDriverTheme {
                 Surface {
@@ -87,14 +83,8 @@ class ReadoutListPaneScreenshotTest {
                             uiState = ReadoutListUiState(
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                                 selectedSimulator = Simulator.Gt7Ps5,
-                                items = listOf(
-                                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                                ),
-                                readoutEnabledStates = mapOf(
-                                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
-                                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                                ),
+                                items = ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
+                                readoutEnabledStates = enabledStates,
                             ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
