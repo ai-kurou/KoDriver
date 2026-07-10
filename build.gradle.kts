@@ -317,6 +317,7 @@ dependencies {
     kover(project(":core:lmu-windows-data"))
     kover(project(":core:gt7-ps5-data"))
     kover(project(":core:designsystem"))
+    kover(project(":feature:desktop-splash"))
     kover(project(":feature:lmu-windows-connection"))
     kover(project(":feature:main"))
     kover(project(":feature:server-connection"))
