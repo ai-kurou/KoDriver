@@ -1,5 +1,6 @@
 plugins {
     id("feature-compose")
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -38,4 +39,9 @@ kotlin {
 
 compose.resources {
     packageOfResClass = "kurou.kodriver.feature.gt7ps5narrator.generated.resources"
+}
+
+dependencies {
+    testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(libs.koin.core)
 }
