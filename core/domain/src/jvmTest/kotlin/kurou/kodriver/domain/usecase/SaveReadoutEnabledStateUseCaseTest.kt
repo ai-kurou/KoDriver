@@ -18,9 +18,9 @@ class SaveReadoutEnabledStateUseCaseTest {
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
                 ReadoutItemKey.LmuWindows.Flag.Root to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
             ),
             observeUseCase("lmu_windows").first(),
@@ -30,9 +30,9 @@ class SaveReadoutEnabledStateUseCaseTest {
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
                 ReadoutItemKey.LmuWindows.Flag.Root to true,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
             ),
             observeUseCase("lmu_windows").first(),

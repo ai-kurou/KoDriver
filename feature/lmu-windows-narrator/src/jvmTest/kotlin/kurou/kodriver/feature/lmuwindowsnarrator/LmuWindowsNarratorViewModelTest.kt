@@ -669,6 +669,7 @@ class LmuWindowsNarratorViewModelTest {
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
             telemetryLogRepository = telemetryLogRepository,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
         )
 
         damageChannel.send(noDamage())
@@ -803,7 +804,7 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `タイヤ温度が未設定（デフォルト）の場合は読み上げない`() = runTest(testDispatcher) {
+    fun `タイヤ温度がOFFの場合は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
@@ -812,6 +813,7 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
         )
         flagChannel.send(clearFlags())
 
