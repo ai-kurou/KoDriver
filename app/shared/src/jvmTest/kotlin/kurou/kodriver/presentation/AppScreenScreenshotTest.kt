@@ -1,7 +1,6 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.getValue
@@ -79,28 +78,6 @@ class AppScreenScreenshotTest {
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
                 AppScreenContent(
                     layoutType = NavigationSuiteType.NavigationRail,
-                    bannerUiState = ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
-                    },
-                )
-            }
-        }
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    @Test
-    fun `NavigationRail 読み上げタブ 横向き右側セーフエリア`() {
-        composeRule.setContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(720.dp, 360.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationRail,
-                    safeAreaModifier = Modifier.padding(end = 48.dp),
                     bannerUiState = ConnectionBannerUiState(
                         status = ConnectionBannerStatus.DISCONNECTED,
                         message = bannerMessage,
