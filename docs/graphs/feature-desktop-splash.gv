@@ -1,4 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":feature:desktop-splash"
   ":feature:desktop-splash" -> ":core:domain"
+  ":feature:desktop-splash" -> ":core:designsystem"
 }
