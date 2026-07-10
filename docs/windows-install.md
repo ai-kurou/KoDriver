@@ -60,7 +60,7 @@ KoDriver サーバーは認証・暗号化を実装していないため、信�
 
 ## GT7 (PS5) と接続する場合
 
-Windows 版 KoDriver のみを GT7 (PS5) に接続する場合は、Windows ファイアウォールで UDP `33740` の受信を許可する必要があります。SimHub と併用する場合は [gt7-connection-setup.md](gt7-connection-setup.md) を参照してください。
+Windows 版 KoDriver のみを GT7 (PS5) に接続する場合は、Windows ファイアウォールで UDP `33740` の受信を許可する必要があります。SimHub と併用する場合は [gt7-ps5-connection-setup.md](gt7-ps5-connection-setup.md) を参照してください。
 
 ### Windows ファイアウォールで UDP 33740 の受信を許可する
 

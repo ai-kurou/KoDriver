@@ -46,7 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val GT7_CONNECTION_SETUP_URL =
-    "https://github.com/ai-kurou/KoDriver/blob/main/docs/gt7-connection-setup.md"
+    "https://github.com/ai-kurou/KoDriver/blob/main/docs/gt7-ps5-connection-setup.md"
 
 @Composable
 fun OtherConsoleIpDetailPane(
