@@ -12,12 +12,12 @@ internal class AndroidServerIpRepository(
     private val dataStore: DataStore<Preferences>,
 ) : ServerIpRepository {
 
-    private val keyServerIp = stringPreferencesKey("server_ip")
+    private val serverIpKey = stringPreferencesKey("server_ip")
 
     override fun serverIp(): Flow<String?> =
-        dataStore.data.map { it[keyServerIp] }
+        dataStore.data.map { it[serverIpKey] }
 
     override suspend fun saveServerIp(ip: String) {
-        dataStore.edit { it[keyServerIp] = ip }
+        dataStore.edit { it[serverIpKey] = ip }
     }
 }
