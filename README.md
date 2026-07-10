@@ -52,7 +52,7 @@ Windows 版 KoDriver をあらかじめ起動しておいてください。LMU �
 ## GT7 (PS5) 接続設定
 
 GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub の UDP フォワーディングを利用する構成があります。
-設定手順は [GT7 (PS5) 接続設定ガイド](docs/gt7-connection-setup.md) を参照してください。
+設定手順は [GT7 (PS5) 接続設定ガイド](docs/gt7-ps5-connection-setup.md) を参照してください。
 
 ## Contributing
 
