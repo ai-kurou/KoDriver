@@ -34,6 +34,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
@@ -73,6 +74,7 @@ data class TyreTemperatureUseCases(
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
     val observeTyreTemperatureEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
+    val observeLowWarningPhases: ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
 )
 
 data class NarratorUseCases(
@@ -132,6 +134,13 @@ class LmuWindowsNarratorViewModel(
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    private val raceFlagsFlow = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+            flagUseCases.observeRaceFlags()
+        }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
+
     private val currentLap = lmuTelemetryFlow
         .map { it.timing.currentLap }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
@@ -141,6 +150,9 @@ class LmuWindowsNarratorViewModel(
 
     private val tyreHighThreshold = tyreTemperatureUseCases.observeHighThreshold()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 90)
+
+    private val tyreLowWarningPhases = tyreTemperatureUseCases.observeLowWarningPhases()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -236,11 +248,7 @@ class LmuWindowsNarratorViewModel(
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val flagJob = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            flagUseCases.observeRaceFlags()
-        }
+    private val flagJob = raceFlagsFlow
         .onEach { raceFlags ->
             val previous = previousRaceFlags
             val observedAtMs = currentTimeMs()
@@ -268,17 +276,27 @@ class LmuWindowsNarratorViewModel(
     private val tyreTemperatureJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            tyreTemperatureUseCases.observeTyreCarcassTemperature()
+            combine(
+                tyreTemperatureUseCases.observeTyreCarcassTemperature(),
+                raceFlagsFlow,
+            ) { tyreCarcassTemperature, raceFlags -> tyreCarcassTemperature to raceFlags }
         }
-        .onEach { tyreCarcassTemperature ->
+        .onEach { (tyreCarcassTemperature, raceFlags) ->
             val observedAtMs = currentTimeMs()
-            val decision = narratorUseCases.determineReadout.determineTyreTemperature(
+            val overheatDecision = narratorUseCases.determineReadout.determineTyreTemperatureOverheat(
                 state = narratorState,
                 data = tyreCarcassTemperature,
                 settings = currentSettings,
             )
-            narratorState = decision.state
-            decision.events.forEach { event ->
+            narratorState = overheatDecision.state
+            val lowDecision = narratorUseCases.determineReadout.determineTyreTemperatureLow(
+                state = narratorState,
+                data = tyreCarcassTemperature,
+                raceFlags = raceFlags,
+                settings = currentSettings,
+            )
+            narratorState = lowDecision.state
+            (overheatDecision.events + lowDecision.events).forEach { event ->
                 if (speakWithPriority(event)) {
                     saveTelemetryLogSafely(
                         createdAt = observedAtMs,
@@ -300,6 +318,7 @@ class LmuWindowsNarratorViewModel(
             vehicleApproachStartReadoutEnabled = startReadoutEnabled.value,
             vehicleApproachStartReadoutType = startReadoutType.value,
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
+            tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
         )
 
     /**

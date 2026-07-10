@@ -52,7 +52,7 @@ val lmuNarratorModule: Module = module {
     factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
-    factory { TyreTemperatureUseCases(get(), get(), get()) }
+    factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
     factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
     includes(platformSoundModule)
     single<TextToSpeechEngine>(named("lmu_windows")) {

@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +12,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +37,16 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_reset
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_subtitle
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_card_title
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_chip
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_formation
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_garage
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_grid_walk
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phase_warm_up
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_description
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_help_description
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_help_icon_content_description
+import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_chip
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_readout_settings_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
@@ -41,6 +55,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.SessionPhase
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -61,6 +76,9 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(
         onHighThresholdReset = viewModel::onHighThresholdReset,
         onOverheatWarningEnabledChanged = viewModel::onOverheatWarningEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onLowWarningEnabledChanged = viewModel::onLowWarningEnabledChanged,
+        onLowWarningPhaseToggled = viewModel::onLowWarningPhaseToggled,
+        onLowWarningPreviewClicked = viewModel::onLowWarningPreviewClicked,
         modifier = modifier,
     )
 }
@@ -73,10 +91,15 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     onHighThresholdReset: () -> Unit = {},
     onOverheatWarningEnabledChanged: (Boolean) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
+    onLowWarningEnabledChanged: (Boolean) -> Unit = {},
+    onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
+    onLowWarningPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var showHelpSheet by remember { mutableStateOf(false) }
+    var showLowWarningPhasesHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    val lowWarningPhasesSheetState = rememberModalBottomSheetState()
 
     if (showHelpSheet) {
         ModalBottomSheet(
@@ -84,6 +107,15 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             sheetState = sheetState,
         ) {
             TyreTemperatureThresholdHelpSheetContent()
+        }
+    }
+
+    if (showLowWarningPhasesHelpSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showLowWarningPhasesHelpSheet = false },
+            sheetState = lowWarningPhasesSheetState,
+        ) {
+            TyreTemperatureLowWarningPhasesHelpSheetContent()
         }
     }
 
@@ -119,6 +151,51 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             onResetToDefault = onHighThresholdReset,
             resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
         )
+        val lowWarningPhasesHelpIconContentDescription =
+            stringResource(Res.string.tyre_temperature_low_warning_phases_help_icon_content_description)
+        DetailPaneSubtitle(
+            text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
+            trailingContent = {
+                IconButton(onClick = { showLowWarningPhasesHelpSheet = true }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
+                        contentDescription = lowWarningPhasesHelpIconContentDescription,
+                        tint = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            },
+        )
+        DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_low_warning_phases_description))
+        val phaseLabels = mapOf(
+            SessionPhase.GARAGE to stringResource(Res.string.tyre_temperature_low_warning_phase_garage),
+            SessionPhase.WARM_UP to stringResource(Res.string.tyre_temperature_low_warning_phase_warm_up),
+            SessionPhase.GRID_WALK to stringResource(Res.string.tyre_temperature_low_warning_phase_grid_walk),
+            SessionPhase.FORMATION to stringResource(Res.string.tyre_temperature_low_warning_phase_formation),
+        )
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+        ) {
+            phaseLabels.forEach { (phase, label) ->
+                val selected = phase in uiState.lowWarningPhases
+                FilterChip(
+                    selected = selected,
+                    onClick = { onLowWarningPhaseToggled(phase) },
+                    label = { Text(text = label) },
+                    leadingIcon = if (selected) {
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                )
+            }
+        }
         DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_readout_settings_subtitle))
         val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
         DetailPaneCard(
@@ -130,6 +207,16 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
+        val lowWarningChipLabel = stringResource(Res.string.tyre_temperature_low_warning_chip)
+        DetailPaneCard(
+            title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
+            checked = uiState.lowWarningEnabled,
+            chipLabels = listOf(lowWarningChipLabel),
+            selectedChipLabels = setOf(lowWarningChipLabel),
+            onCheckedChange = onLowWarningEnabledChanged,
+            onChipClick = { onLowWarningPreviewClicked() },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
     }
 }
 
@@ -137,6 +224,17 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
 internal fun TyreTemperatureThresholdHelpSheetContent(modifier: Modifier = Modifier) {
     Text(
         text = stringResource(Res.string.tyre_temperature_threshold_help_description),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    )
+    Spacer(modifier = Modifier.height(24.dp))
+}
+
+@Composable
+internal fun TyreTemperatureLowWarningPhasesHelpSheetContent(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(Res.string.tyre_temperature_low_warning_phases_help_description),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
