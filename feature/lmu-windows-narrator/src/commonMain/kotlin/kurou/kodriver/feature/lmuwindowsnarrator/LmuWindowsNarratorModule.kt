@@ -27,7 +27,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val lmuNarratorModule: Module = module {
+val lmuWindowsNarratorModule: Module = module {
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(named("lmu_windows")), get()) }
     factory { DetermineLmuWindowsNarratorReadoutUseCase() }
     factory { SaveTelemetryLogUseCase(get()) }

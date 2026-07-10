@@ -4,12 +4,12 @@ import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.gt7Ps5ReadoutRemainingFuelLapsDetailModule
-import kurou.kodriver.feature.lmuwindowsconnection.lmuConnectionModule
-import kurou.kodriver.feature.lmuwindowsnarrator.lmuNarratorModule
+import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
+import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.lmuWindowsReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.lmuWindowsReadoutTyreTemperatureDetailModule
-import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuReadoutVehicleApproachDetailModule
+import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
 import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.main.mainPlatformModule
@@ -28,10 +28,10 @@ import org.koin.core.module.Module
 val appModules: List<Module> = listOf(
     mainModule,
     mainPlatformModule,
-    lmuConnectionModule,
+    lmuWindowsConnectionModule,
     gt7Ps5ConnectionModule,
     serverConnectionModule,
-    lmuNarratorModule,
+    lmuWindowsNarratorModule,
     gt7Ps5NarratorModule,
     otherListModule,
     otherReadoutStartSoundDetailModule,
@@ -42,7 +42,7 @@ val appModules: List<Module> = listOf(
     readoutListModule,
     telemetryLogListModule,
     telemetryLogDetailModule,
-    lmuReadoutVehicleApproachDetailModule,
+    lmuWindowsReadoutVehicleApproachDetailModule,
     lmuWindowsReadoutFlagDetailModule,
     lmuWindowsReadoutMyBestLapDetailModule,
     lmuWindowsReadoutVehicleDamageDetailModule,
