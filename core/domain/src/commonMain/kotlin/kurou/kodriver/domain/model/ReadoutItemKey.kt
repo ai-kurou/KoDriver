@@ -39,12 +39,14 @@ sealed interface ReadoutItemKey {
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
+        sealed interface TopLevel : Gt7Ps5
+
         sealed interface MyBestLap : Gt7Ps5 {
-            data object Root : MyBestLap { override val value = "gt7_ps5_my_best_lap" }
+            data object Root : MyBestLap, TopLevel { override val value = "gt7_ps5_my_best_lap" }
         }
 
         sealed interface RemainingFuelLaps : Gt7Ps5 {
-            data object Root : RemainingFuelLaps { override val value = "gt7_ps5_remaining_fuel_laps" }
+            data object Root : RemainingFuelLaps, TopLevel { override val value = "gt7_ps5_remaining_fuel_laps" }
         }
     }
 

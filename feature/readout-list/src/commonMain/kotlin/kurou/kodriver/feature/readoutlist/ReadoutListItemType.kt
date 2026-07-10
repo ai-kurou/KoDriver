@@ -42,13 +42,13 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             }
             is Simulator.Gt7Ps5 -> {
                 ReadoutItemKey.entries
-                    .filterIsInstance<ReadoutItemKey.Gt7Ps5>()
+                    .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
                     .sortedBy { key -> gt7Ps5OrderIndex(key) }
             }
         }
 
         // listPane のトップレベル項目のみ並び順を持つ。
-        // 新しい ReadoutItemKey.LmuWindows.TopLevel を追加した際、ここで対応を判断しないとコンパイルが通らない。
+        // 新しい TopLevel を追加した際、ここで対応を判断しないとコンパイルが通らない。
         private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int = when (key) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
@@ -57,7 +57,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.LmuWindows.MyBestLap.Root -> 4
         }
 
-        private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5): Int = when (key) {
+        private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int = when (key) {
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 1
         }
