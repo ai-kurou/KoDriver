@@ -23,6 +23,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 - WAV 音声ファイルによるリアルタイムアナウンス
 - LMU 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
 - GT7 PS5 のテレメトリを UDP で直接受信（Android / Windows 対応、SimHub 経由も可）
+- テレメトリログの記録・一覧表示・詳細確認
 - クラッシュが発生した場合、改善のためにクラッシュレポートを Sentry に自動送信
 
 ## 動作要件

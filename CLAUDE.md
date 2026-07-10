@@ -44,7 +44,7 @@ KoDriver/
 │   ├── androidApp/ Android アプリのエントリーポイント
 │   ├── desktopApp/ JVM デスクトップアプリのエントリーポイント
 │   ├── shared/     Compose Multiplatform 共通 UI・ナビゲーション
-│   └── webApp/     Web アプリ（未実装）
+│   └── webApp/     Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装）
 └── server/         デスクトップアプリ内で起動する Ktor WebSocket サーバー
 ```
 
@@ -134,9 +134,15 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 ./gradlew :<module-path>:jvmTest
 ```
 
-`:app:webApp` は未実装のため、現在はテスト・ビルド確認の対象外。
+`:app:webApp` は Gradle ビルド設定のみで独自機能が未実装のため、現在はテスト・ビルド確認の対象外。
 
-GitHub Actions ワークフロー `build-windows.yml` は `workflow_dispatch` でのみ起動し、MSI を Artifact として 30 日間保存する。
+GitHub Actions ワークフロー:
+
+- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行
+- `on-main-merge.yml`: main へのマージ時に実行
+- `build-android.yml`: Android アプリのビルド
+- `build-windows.yml`: `workflow_dispatch` でのみ起動し、Windows MSI を Artifact として 30 日間保存する
+- `on-release.yml`: リリース時に実行
 
 ---
 
