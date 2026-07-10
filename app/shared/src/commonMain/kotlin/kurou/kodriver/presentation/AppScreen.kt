@@ -344,6 +344,7 @@ internal suspend fun saveExitConfirmationPreferenceForExit(
 internal fun AppScreenContent(
     darkTheme: Boolean = false,
     layoutType: NavigationSuiteType? = null,
+    safeAreaModifier: Modifier = Modifier.safeDrawingPadding(),
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     hasAppUpdate: Boolean = false,
@@ -369,7 +370,7 @@ internal fun AppScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .safeDrawingPadding(),
+                .then(safeAreaModifier),
         ) {
             NavigationSuiteScaffold(
                 modifier = Modifier.padding(top = 4.dp),
