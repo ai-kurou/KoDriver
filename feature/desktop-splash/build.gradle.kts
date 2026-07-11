@@ -15,10 +15,8 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(libs.kotlinx.coroutinesCore)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlinx.coroutinesTest)
-        }
         jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.testJunit)
         }
     }

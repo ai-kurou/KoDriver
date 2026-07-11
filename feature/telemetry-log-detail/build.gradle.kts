@@ -17,10 +17,8 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlinx.coroutinesTest)
-        }
         jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.compose.uiTest)
             implementation(libs.compose.uiTestJunit4)
             implementation(libs.kotlin.testJunit)

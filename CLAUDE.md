@@ -97,6 +97,10 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 - 単純な Preview・サンプルデータ・定数定義
 - プラットフォーム固有の外部 API（JNA, UDP ソケット等）を直接呼び出すためモックが現実的でない箇所
 
+### テストの配置先（commonTest / jvmTest）
+
+`expect` / `actual` を使わない ViewModel・UiState・純粋ロジックのテストは、原則 `jvmTest` に置くこと。`commonTest` は js / wasmJs / android を含む全ターゲットでコンパイル・実行されるため、モック等の JVM/Android 専用ライブラリを使えない。このプロジェクトの配布対象は実質 JVM（デスクトップ）と Android のみで、js / wasmJs（`:app:webApp`）はビルド設定のみのため、`commonTest` に置く意味があるのは実際にマルチプラットフォームで分岐する実装（`expect` / `actual` を持つコードなど）をテストする場合に限る。
+
 ---
 
 ## ライブラリバージョン管理
