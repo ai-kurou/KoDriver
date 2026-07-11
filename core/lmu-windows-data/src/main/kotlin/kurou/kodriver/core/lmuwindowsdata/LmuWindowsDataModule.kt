@@ -24,9 +24,19 @@ import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
 
+/**
+ * LMU 共有メモリの Repository バインドを行う Koin モジュール（:core:lmu-windows-data。JVM 専用）。
+ *
+ * デスクトップ版 app エントリーポイントで束ねられ、lmu-windows-connection / lmu-windows-narrator の
+ * UseCase が get() で解決する各 LmuWindows*Repository を提供する。共有メモリ読み取りは Windows 専用のため、
+ * 非 Windows では空 Flow を返す No-Op 実装（下部の private class 群）にフォールバックする。
+ */
 val lmuWindowsDataModule = module {
+    // 共有メモリのポーリングを回すスコープとデータソース
     single { CoroutineScope(SupervisorJob()) }
     single { LmuWindowsSharedMemorySource(scope = get()) }
+
+    // 各 Repository（Windows は共有メモリ実装、非 Windows は No-Op。get() でスコープ/ソース/閾値設定を解決）
     single<LmuWindowsRepository> {
         if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
     }

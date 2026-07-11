@@ -13,11 +13,23 @@ import org.koin.dsl.module
 
 private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
 
+/**
+ * GT7 PS5 テレメトリの Repository バインドを行う Koin モジュール（:core:gt7-ps5-data / jvmMain）。
+ *
+ * app エントリーポイントで束ねられ、gt7-ps5-connection / gt7-ps5-narrator の UseCase が
+ * get() で解決する Gt7Ps5Repository を提供する。UDP 受信は専用の CoroutineScope 上で行う。
+ * Android 版は androidMain の同名モジュールを参照。
+ */
 val gt7Ps5DataModule = module {
+    // UDP 受信を回す専用スコープ（named で他スコープと分離）
     single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
+
+    // 設定永続化（DataStore）
     single<Gt7Ps5UdpPortPreferencesRepository> {
         createGt7Ps5UdpPortPreferencesRepository("${System.getProperty("user.home")}/.kodriver")
     }
+
+    // データソース・Repository（UDP パケット受信。get() で接続先アドレス・待受ポート設定を解決）
     single<Gt7Ps5PacketSource> {
         Gt7Ps5UdpSource(
             consoleAddressFlow = get<ConsoleAddressPreferencesRepository>().consoleAddress(),

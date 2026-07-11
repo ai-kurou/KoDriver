@@ -25,7 +25,17 @@ import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import org.koin.dsl.module
 
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
+
+/**
+ * デスクトップ（JVM）版の Repository バインドを行う Koin モジュール（:core:data / jvmMain）。
+ *
+ * app エントリーポイント（desktopApp）で composition root として束ねられる。ここで束ねた
+ * Repository 実装が、各 feature モジュールの UseCase から get() で解決される。
+ * 大半は `~/.kodriver` 配下の DataStore バインド。例外は AppUpdate（GitHub ネットワーク）・
+ * KeepScreenOn（プラットフォーム実装）・TelemetryLog（Room DB）。Android 版は AndroidDataModule を参照。
+ */
 val desktopDataModule = module {
+    // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
     single<SimulatorPreferencesRepository> {
         createSimulatorPreferencesRepository(directory = kodriverDirectory)
     }
@@ -71,14 +81,18 @@ val desktopDataModule = module {
     single<ConsoleAddressPreferencesRepository> {
         createConsoleAddressPreferencesRepository(directory = kodriverDirectory)
     }
+    // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+    // 画面スリープ抑止（プラットフォーム固有実装。Desktop は no-op 相当）
     single<KeepScreenOnEnabledRepository> { JvmKeepScreenOnEnabledRepository() }
+    // 設定永続化（DataStore）
     single<ExitConfirmationEnabledRepository> {
         createExitConfirmationEnabledRepository(directory = kodriverDirectory)
     }
     single<LmuWindowsTyreTemperaturePreferencesRepository> {
         createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
     }
+    // テレメトリログ（Room データベース）
     single<TelemetryLogRepository> {
         createTelemetryLogRepository(directory = kodriverDirectory)
     }

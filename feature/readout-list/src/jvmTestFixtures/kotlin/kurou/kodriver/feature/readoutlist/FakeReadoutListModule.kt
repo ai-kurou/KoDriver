@@ -12,6 +12,10 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import org.koin.dsl.module
 
+/**
+ * テスト用の Fake Koin モジュール（testFixtures）。readout-list が使う :core:data の
+ * Preferences Repository をインメモリの Fake 実装に差し替える。
+ */
 val fakeReadoutListModule = module {
     single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
     single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }

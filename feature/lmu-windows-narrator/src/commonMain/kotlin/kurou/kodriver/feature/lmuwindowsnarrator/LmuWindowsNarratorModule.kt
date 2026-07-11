@@ -27,17 +27,37 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
+/**
+ * LMU アナウンス制御（lmu-windows-narrator feature）の Koin モジュール。
+ *
+ * 提供: LmuWindowsNarratorViewModel、この feature 内で定義した UseCase 集約 data class
+ *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
+ *   ReadoutListUseCases / TyreTemperatureUseCases）、それらが束ねる各ドメイン UseCase、
+ *   および named("lmu_windows") の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
+ * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
+ *   SoundPlayer（[platformSoundModule]）。
+ * 音声系は GT7 と区別するため named("lmu_windows") で登録している。
+ */
 val lmuWindowsNarratorModule: Module = module {
+    // ViewModel（get(named "lmu_windows") は下記の TextToSpeechEngine を解決）
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(named("lmu_windows")), get()) }
+
+    // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+    factory { NarratorUseCases(get(), get(), get()) }
+    factory { FlagUseCases(get(), get()) }
+    factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
+    factory { VehicleDamageUseCases(get(), get()) }
+    factory { ReadoutListUseCases(get(), get(), get()) }
+    factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
+
+    // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
     factory { DetermineLmuWindowsNarratorReadoutUseCase() }
     factory { SaveTelemetryLogUseCase(get()) }
-    factory { NarratorUseCases(get(), get(), get()) }
     factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
     factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
-    factory { FlagUseCases(get(), get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
@@ -46,13 +66,11 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(get()) }
     factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
-    factory { VehicleApproachUseCases(get(), get(), get(), get(), get()) }
-    factory { VehicleDamageUseCases(get(), get()) }
-    factory { ReadoutListUseCases(get(), get(), get()) }
     factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
-    factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
+
+    // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）
     factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
     includes(platformSoundModule)
     single<TextToSpeechEngine>(named("lmu_windows")) {

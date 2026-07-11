@@ -39,8 +39,18 @@ private val Context.serverIpDataStore by preferencesDataStore("server_ip_prefere
 private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
 private val Context.exitConfirmationDataStore by preferencesDataStore("exit_confirmation_preferences")
 
+/**
+ * Android 版の Repository バインドを行う Koin モジュール（:core:data / androidMain）。
+ *
+ * app エントリーポイント（androidApp）で composition root として束ねられ、各 feature モジュールの
+ * UseCase が get() で解決する Repository 実装を提供する。デスクトップ版（DesktopDataModule）との違いは、
+ * LMU の走行データを Windows 共有メモリではなく **KoDriver サーバーへの WebSocket** から取得する点。
+ * 大半は DataStore バインドで、ServerVersion/AppUpdate はネットワーク、TelemetryLog は Room DB。
+ */
 fun androidDataModule(context: Context) = module {
     single<Context> { context }
+
+    // 設定永続化（DataStore。ファイルは context.filesDir 配下）
     single<SimulatorPreferencesRepository> {
         AndroidSimulatorPreferencesRepository(context.simulatorDataStore)
     }
@@ -56,6 +66,7 @@ fun androidDataModule(context: Context) = module {
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
     }
+    // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）
     single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(get()) }
     single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(get()) }
     single<LmuWindowsVehicleApproachRepository> { WebSocketLmuWindowsVehicleApproachRepository(get()) }
@@ -94,8 +105,10 @@ fun androidDataModule(context: Context) = module {
     single<ConsoleAddressPreferencesRepository> {
         createConsoleAddressPreferencesRepository(context.filesDir.absolutePath)
     }
+    // ネットワーク（KoDriver サーバーのバージョン取得 / GitHub リリース確認）
     single<ServerVersionRepository> { HttpServerVersionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+    // 画面スリープ抑止（Android は端末画面を実際に点灯維持）
     single<KeepScreenOnEnabledRepository> {
         AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
     }
@@ -105,6 +118,7 @@ fun androidDataModule(context: Context) = module {
     single<LmuWindowsTyreTemperaturePreferencesRepository> {
         createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
     }
+    // テレメトリログ（Room データベース）
     single<TelemetryLogRepository> {
         createTelemetryLogRepository(context = context)
     }

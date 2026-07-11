@@ -29,6 +29,8 @@ class KoDriverApplication : Application() {
             },
         )
         startKoin {
+            // composition root: データ層モジュール（:core:*data）＋ 全 feature の appModules ＋
+            // アプリバージョン定数（named("appVersion")。server-connection 等が get で解決）を束ねる。
             modules(
                 listOf(
                     androidDataModule(this@KoDriverApplication),
