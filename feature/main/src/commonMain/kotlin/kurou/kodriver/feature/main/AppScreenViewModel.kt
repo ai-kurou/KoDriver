@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
-    observeKeepScreenOn: ObserveKeepScreenOnUseCase,
+    observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
     private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
 ) : ViewModel() {

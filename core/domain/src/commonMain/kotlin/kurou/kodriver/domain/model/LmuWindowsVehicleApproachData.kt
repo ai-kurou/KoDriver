@@ -3,7 +3,7 @@ package kurou.kodriver.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LmuWindowsProximityData(
+data class LmuWindowsVehicleApproachData(
     val sideBySideLeftVehicleIds: Set<Int>,
     val sideBySideRightVehicleIds: Set<Int>,
     // 並走していない場合は Double.MAX_VALUE

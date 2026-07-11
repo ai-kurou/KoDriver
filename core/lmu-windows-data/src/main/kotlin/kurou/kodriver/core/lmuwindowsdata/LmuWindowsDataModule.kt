@@ -6,19 +6,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepositoryImpl
-import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsProximityRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleApproachRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepositoryImpl
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import org.koin.dsl.module
 
@@ -30,11 +30,11 @@ val lmuWindowsDataModule = module {
     single<LmuWindowsRepository> {
         if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
     }
-    single<LmuWindowsProximityRepository> {
+    single<LmuWindowsVehicleApproachRepository> {
         if (isWindows) {
-            LmuWindowsProximityRepositoryImpl(thresholdsRepository = get(), source = get())
+            LmuWindowsVehicleApproachRepositoryImpl(thresholdsRepository = get(), source = get())
         } else {
-            NoOpProximityRepository()
+            NoOpVehicleApproachRepository()
         }
     }
     single<LmuWindowsFlagRepository> {
@@ -58,8 +58,8 @@ private class NoOpLmuWindowsRepository : LmuWindowsRepository {
     override suspend fun disconnect() = Unit
 }
 
-private class NoOpProximityRepository : LmuWindowsProximityRepository {
-    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
+private class NoOpVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
 }
 
 private class NoOpFlagRepository : LmuWindowsFlagRepository {

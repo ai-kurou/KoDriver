@@ -17,13 +17,13 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -32,14 +32,14 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -57,7 +57,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -75,7 +75,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -94,7 +94,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -126,7 +126,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -152,11 +152,11 @@ class ApplicationTest {
 
     @Test
     fun `近接情報をJSONでWebSocketへ送信する`() = testApplication {
-        val repository = FakeLmuWindowsProximityRepository()
+        val repository = FakeLmuWindowsVehicleApproachRepository()
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(repository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -167,8 +167,8 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/lmu_windows/proximity") {
-            repository.emit(proximityDataLeft)
+        }.webSocket("/ws/lmu_windows/vehicle_approach") {
+            repository.emit(vehicleApproachDataLeft)
 
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
@@ -183,11 +183,11 @@ class ApplicationTest {
 
     @Test
     fun `近接情報の同一値は重複して送信されない`() = testApplication {
-        val repository = FakeLmuWindowsProximityRepository()
+        val repository = FakeLmuWindowsVehicleApproachRepository()
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(repository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -198,16 +198,16 @@ class ApplicationTest {
 
         client.config {
             install(WebSockets)
-        }.webSocket("/ws/lmu_windows/proximity") {
-            repository.emit(proximityDataLeft)
-            repository.emit(proximityDataLeft)
-            repository.emit(proximityDataRight)
+        }.webSocket("/ws/lmu_windows/vehicle_approach") {
+            repository.emit(vehicleApproachDataLeft)
+            repository.emit(vehicleApproachDataLeft)
+            repository.emit(vehicleApproachDataRight)
 
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(proximityLeftJson, first)
-            assertEquals(proximityRightJson, second)
+            assertEquals(vehicleApproachLeftJson, first)
+            assertEquals(vehicleApproachRightJson, second)
         }
     }
 
@@ -217,7 +217,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -247,7 +247,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -277,7 +277,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -302,7 +302,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -329,7 +329,7 @@ class ApplicationTest {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
             observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-            observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+            observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
             observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
             observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                 EmptyTyreCarcassTemperatureRepository,
@@ -353,7 +353,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -380,7 +380,7 @@ class ApplicationTest {
         application {
             module(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeProximity = ObserveLmuWindowsProximityUseCase(EmptyProximityRepository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
@@ -410,7 +410,7 @@ class ApplicationTest {
             modules(
                 module {
                     single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
-                    single<LmuWindowsProximityRepository> { EmptyProximityRepository }
+                    single<LmuWindowsVehicleApproachRepository> { EmptyVehicleApproachRepository }
                     single<LmuWindowsVehicleDamageRepository> { EmptyVehicleDamageRepository }
                     single<LmuWindowsTyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
@@ -460,25 +460,25 @@ private const val yellowFlagJson =
         """"startLight":0,"numRedLights":0,"playerFlag":"UNKNOWN","playerUnderYellow":true,""" +
         """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}"""
 
-private val proximityDataLeft = LmuWindowsProximityData(
+private val vehicleApproachDataLeft = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(3),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 1.5,
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private val proximityDataRight = LmuWindowsProximityData(
+private val vehicleApproachDataRight = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = setOf(5),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
     lateralDistanceRightMeters = 2.0,
 )
 
-private const val proximityLeftJson =
+private const val vehicleApproachLeftJson =
     """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
         """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}"""
 
-private const val proximityRightJson =
+private const val vehicleApproachRightJson =
     """{"sideBySideLeftVehicleIds":[],"sideBySideRightVehicleIds":[5],""" +
         """"lateralDistanceLeftMeters":1.7976931348623157E308,"lateralDistanceRightMeters":2.0}"""
 
@@ -536,18 +536,18 @@ private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
     }
 }
 
-private class FakeLmuWindowsProximityRepository : LmuWindowsProximityRepository {
-    private val channel = Channel<LmuWindowsProximityData>(capacity = Channel.UNLIMITED)
+private class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
+    private val channel = Channel<LmuWindowsVehicleApproachData>(capacity = Channel.UNLIMITED)
 
-    override fun proximityStream(): Flow<LmuWindowsProximityData> = channel.receiveAsFlow()
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = channel.receiveAsFlow()
 
-    fun emit(data: LmuWindowsProximityData) {
+    fun emit(data: LmuWindowsVehicleApproachData) {
         channel.trySend(data).getOrThrow()
     }
 }
 
-private object EmptyProximityRepository : LmuWindowsProximityRepository {
-    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
+private object EmptyVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
 }
 
 private object EmptyVehicleDamageRepository : LmuWindowsVehicleDamageRepository {

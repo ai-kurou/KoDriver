@@ -16,9 +16,9 @@ import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
-import kurou.kodriver.domain.usecase.SaveKeepScreenOnUseCase
+import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -78,8 +78,8 @@ class OtherListViewModelTest {
         exitConfirmationPreferencesRepository = FakeExitConfirmationEnabledRepository()
         viewModel = OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
-            observeKeepScreenOn = ObserveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
-            saveKeepScreenOn = SaveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
+            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
+            saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
             observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(
                 exitConfirmationPreferencesRepository,
             ),
@@ -168,8 +168,8 @@ class OtherListViewModelTest {
         val repository = FakeExitConfirmationEnabledRepository()
         val viewModel = OtherListViewModel(
             checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
-            observeKeepScreenOn = ObserveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
-            saveKeepScreenOn = SaveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
+            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
+            saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
             observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(repository),
             saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(repository),
             currentVersion = "0.5.0",

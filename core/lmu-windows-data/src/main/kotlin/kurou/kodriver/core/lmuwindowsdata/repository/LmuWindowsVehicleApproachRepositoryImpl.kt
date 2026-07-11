@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.domain.model.LmuWindowsProximityData
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import java.nio.ByteBuffer
 import kotlin.math.PI
@@ -17,43 +17,43 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class LmuWindowsProximityRepositoryImpl(
+internal class LmuWindowsVehicleApproachRepositoryImpl(
     private val thresholdsRepository: LmuWindowsVehicleApproachThresholdsPreferencesRepository,
     private val lateralMinimumMeters: Double = 1.0,
     private val source: LmuWindowsSharedMemorySource,
-) : LmuWindowsProximityRepository {
+) : LmuWindowsVehicleApproachRepository {
 
-    override fun proximityStream(): Flow<LmuWindowsProximityData> =
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> =
         combine(
             thresholdsRepository.observeLongitudinalThresholdMeters(),
             thresholdsRepository.observeLateralThresholdMeters(),
         ) { longitudinal, lateral -> longitudinal to lateral }
             .flatMapLatest { (longitudinalThreshold, lateralMaximum) ->
-                rawProximityFlow(longitudinalThreshold, lateralMaximum)
+                rawVehicleApproachFlow(longitudinalThreshold, lateralMaximum)
             }
 
-    private fun rawProximityFlow(
+    private fun rawVehicleApproachFlow(
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
-    ): Flow<LmuWindowsProximityData> = source.bufferFlow.mapNotNull { buffer ->
+    ): Flow<LmuWindowsVehicleApproachData> = source.bufferFlow.mapNotNull { buffer ->
         val maxCount = maxVehicleCount(buffer)
         val activeVehicles = (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
             .coerceAtMost(maxCount)
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
         if (activeVehicles > 0 && playerIdx < activeVehicles) {
-            computeProximity(buffer, activeVehicles, playerIdx, longitudinalThresholdMeters, lateralMaximumMeters)
+            computeVehicleApproach(buffer, activeVehicles, playerIdx, longitudinalThresholdMeters, lateralMaximumMeters)
         } else {
             null
         }
     }
 
-    private fun computeProximity(
+    private fun computeVehicleApproach(
         buffer: ByteBuffer,
         activeVehicles: Int,
         playerIdx: Int,
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
-    ): LmuWindowsProximityData {
+    ): LmuWindowsVehicleApproachData {
         val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
         val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
         val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
@@ -98,7 +98,7 @@ internal class LmuWindowsProximityRepositoryImpl(
             }
         }
 
-        return LmuWindowsProximityData(
+        return LmuWindowsVehicleApproachData(
             sideBySideLeftVehicleIds = leftVehicleIds,
             sideBySideRightVehicleIds = rightVehicleIds,
             lateralDistanceLeftMeters = nearestLeftMeters,

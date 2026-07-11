@@ -10,9 +10,9 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveKeepScreenOnUseCase
+import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
-import kurou.kodriver.domain.usecase.SaveKeepScreenOnUseCase
+import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -116,8 +116,8 @@ class OtherListViewModelCheckUpdateTest {
             ObserveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository)
         return OtherListViewModel(
             checkAppUpdateAvailable = checkAppUpdateAvailable,
-            observeKeepScreenOn = ObserveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
-            saveKeepScreenOn = SaveKeepScreenOnUseCase(keepScreenOnPreferencesRepository),
+            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
+            saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
             observeExitConfirmationEnabled = observeExitConfirmationEnabled,
             saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
             currentVersion = currentVersion,
