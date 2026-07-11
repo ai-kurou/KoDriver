@@ -17,7 +17,7 @@ KoDriver/
 │   ├── gt7-ps5-data/  GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
-│   ├── desktop-splash/           デスクトップ起動中スプラッシュの初期化進捗状態管理
+│   ├── desktop-splash/           デスクトップ起動中スプラッシュの初期化進捗管理・画面表示
 │   ├── lmu-windows-connection/   LMU 接続状態の監視
 │   ├── main/                     アプリ全体のメイン画面状態管理
 │   ├── server-connection/        KoDriver サーバーへの接続状態確認

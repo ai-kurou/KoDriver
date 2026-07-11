@@ -1,16 +1,18 @@
 plugins {
-    id("feature-kmp")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
     android {
         namespace = "kurou.kodriver.feature.desktopsplash"
-        withHostTest {}
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.koin.core)
+            implementation(projects.core.designsystem)
             implementation(libs.kotlinx.coroutinesCore)
         }
         commonTest.dependencies {
@@ -20,4 +22,8 @@ kotlin {
             implementation(libs.kotlin.testJunit)
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "kodriver.feature.desktopsplash.generated.resources"
 }
