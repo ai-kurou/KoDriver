@@ -19,7 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
@@ -164,7 +164,7 @@ class ConnectionBannerViewModelTest {
         val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
         val viewModel = createViewModel(
             simulatorRepository = simulatorRepository,
-            consoleAddressRepository = FakeConsoleAddressRepository(initial = null),
+            consoleAddressRepository = FakeConsoleAddressPreferencesRepository(initial = null),
         )
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
@@ -177,7 +177,7 @@ class ConnectionBannerViewModelTest {
     fun `GT7選択時にコンソールIPが設定されると接続確認を開始する`() = runTest {
         val gt7Repository = FakeGt7Ps5Repository(isConnected = true)
         val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.Gt7Ps5)
-        val consoleAddressRepository = FakeConsoleAddressRepository(initial = null)
+        val consoleAddressRepository = FakeConsoleAddressPreferencesRepository(initial = null)
         val viewModel = createViewModel(
             gt7Repository = gt7Repository,
             simulatorRepository = simulatorRepository,
@@ -198,7 +198,8 @@ class ConnectionBannerViewModelTest {
         lmuChecker: LmuBannerConnectionChecker = FakeLmuBannerConnectionChecker(isConnected = false),
         gt7Repository: Gt7Ps5Repository = FakeGt7Ps5Repository(isConnected = false),
         simulatorRepository: SimulatorPreferencesRepository = FakeSimulatorPreferencesRepository(),
-        consoleAddressRepository: ConsoleAddressRepository = FakeConsoleAddressRepository(initial = "192.168.1.1"),
+        consoleAddressRepository: ConsoleAddressPreferencesRepository =
+            FakeConsoleAddressPreferencesRepository(initial = "192.168.1.1"),
     ) = ConnectionBannerViewModel(
         checkLmuConnection = lmuChecker,
         checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(gt7Repository),
@@ -227,7 +228,7 @@ private class FakeLmuBannerConnectionChecker(
     }
 }
 
-private class FakeConsoleAddressRepository(initial: String?) : ConsoleAddressRepository {
+private class FakeConsoleAddressPreferencesRepository(initial: String?) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
     override fun consoleAddress(): Flow<String?> = flow
     override suspend fun saveConsoleAddress(address: String) { flow.update { address } }

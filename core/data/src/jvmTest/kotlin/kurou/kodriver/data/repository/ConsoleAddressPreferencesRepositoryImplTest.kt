@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ConsoleAddressRepositoryImplTest {
+class ConsoleAddressPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_console_address_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +23,7 @@ class ConsoleAddressRepositoryImplTest {
         tempDir.deleteRecursively()
     }
 
-    private fun createRepository() = ConsoleAddressRepositoryImpl(
+    private fun createRepository() = ConsoleAddressPreferencesRepositoryImpl(
         dataStore = createConsoleAddressDataStore(tempDir.absolutePath),
     )
 

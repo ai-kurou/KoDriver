@@ -10,7 +10,7 @@ import kotlin.test.assertNull
 
 class ObserveServerIpUseCaseTest {
 
-    private val repo = FakeServerIpRepository()
+    private val repo = FakeServerIpPreferencesRepository()
     private val useCase = ObserveServerIpUseCase(repo)
 
     @Test

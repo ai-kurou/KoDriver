@@ -9,7 +9,7 @@ class SaveConsoleAddressUseCaseTest {
 
     @Test
     fun `アドレスを保存する`() = runBlocking {
-        val repo = FakeConsoleAddressRepository()
+        val repo = FakeConsoleAddressPreferencesRepository()
         SaveConsoleAddressUseCase(repo)("192.168.1.50")
         assertEquals("192.168.1.50", repo.consoleAddress().first())
     }

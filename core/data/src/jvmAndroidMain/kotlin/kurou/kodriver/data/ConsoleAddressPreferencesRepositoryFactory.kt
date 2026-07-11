@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createConsoleAddressDataStore
+import kurou.kodriver.data.repository.ConsoleAddressPreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+
+fun createConsoleAddressPreferencesRepository(directory: String): ConsoleAddressPreferencesRepository =
+    ConsoleAddressPreferencesRepositoryImpl(createConsoleAddressDataStore(directory))

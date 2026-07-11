@@ -4,11 +4,11 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.ConsoleAddressPreferences
-import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 
-internal class ConsoleAddressRepositoryImpl(
+internal class ConsoleAddressPreferencesRepositoryImpl(
     private val dataStore: DataStore<ConsoleAddressPreferences>,
-) : ConsoleAddressRepository {
+) : ConsoleAddressPreferencesRepository {
     override fun consoleAddress(): Flow<String?> =
         dataStore.data.map { it.address.ifEmpty { null } }
 

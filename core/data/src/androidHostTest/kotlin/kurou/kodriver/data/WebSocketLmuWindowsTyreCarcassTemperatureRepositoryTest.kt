@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.model.WheelIndex
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -26,13 +26,13 @@ import kotlin.test.assertNull
 class WebSocketTyreCarcassTemperatureRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpRepositoryForTyreCarcassTemperature
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForTyreCarcassTemperature
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpRepositoryForTyreCarcassTemperature(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForTyreCarcassTemperature(null)
     }
 
     @After
@@ -148,7 +148,9 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
     }
 }
 
-private class FakeServerIpRepositoryForTyreCarcassTemperature(initialIp: String?) : ServerIpRepository {
+private class FakeServerIpPreferencesRepositoryForTyreCarcassTemperature(
+    initialIp: String?,
+) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
     fun setIp(ip: String?) { _ip.update { ip } }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()

@@ -10,7 +10,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -25,13 +25,13 @@ import kotlin.test.assertNull
 class WebSocketFlagRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpRepository
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepository
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpRepository(null)
+        fakeIpRepository = FakeServerIpPreferencesRepository(null)
     }
 
     @After
@@ -147,7 +147,7 @@ class WebSocketFlagRepositoryTest {
     }
 }
 
-private class FakeServerIpRepository(initialIp: String?) : ServerIpRepository {
+private class FakeServerIpPreferencesRepository(initialIp: String?) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
     fun setIp(ip: String?) { _ip.value = ip }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()

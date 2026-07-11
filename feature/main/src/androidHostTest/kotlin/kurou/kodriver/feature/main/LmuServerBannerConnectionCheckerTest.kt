@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
@@ -55,7 +55,7 @@ class LmuServerBannerConnectionCheckerTest {
     @Test
     fun `IPアドレスがnullからIPが設定されるとIP_NOT_CONFIGUREDからCONNECTEDへ遷移する`() =
         runTest(UnconfinedTestDispatcher()) {
-            val ipRepository = FakeServerIpRepository(initial = null)
+            val ipRepository = FakeServerIpPreferencesRepository(initial = null)
             val checker = createChecker(ipRepository = ipRepository, versionResult = Result.success("1.0.0"))
             val emitted = mutableListOf<ConnectionBannerVmStatus>()
             val job = launch { checker.statusFlow().collect { emitted.add(it) } }
@@ -71,14 +71,14 @@ class LmuServerBannerConnectionCheckerTest {
     private fun createChecker(
         ip: String? = null,
         versionResult: Result<String> = Result.success("1.0.0"),
-        ipRepository: FakeServerIpRepository = FakeServerIpRepository(ip),
+        ipRepository: FakeServerIpPreferencesRepository = FakeServerIpPreferencesRepository(ip),
     ) = LmuServerBannerConnectionChecker(
         fetchServerVersion = FetchServerVersionUseCase(FakeServerVersionRepository(versionResult)),
         observeServerIp = ObserveServerIpUseCase(ipRepository),
     )
 }
 
-private class FakeServerIpRepository(initial: String?) : ServerIpRepository {
+private class FakeServerIpPreferencesRepository(initial: String?) : ServerIpPreferencesRepository {
     private val flow = MutableStateFlow(initial)
     override fun serverIp(): Flow<String?> = flow
     override suspend fun saveServerIp(ip: String) { flow.update { ip } }

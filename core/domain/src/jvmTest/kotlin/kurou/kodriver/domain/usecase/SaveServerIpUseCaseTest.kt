@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 
 class SaveServerIpUseCaseTest {
 
-    private val repo = FakeServerIpRepository()
+    private val repo = FakeServerIpPreferencesRepository()
     private val useCase = SaveServerIpUseCase(repo)
 
     @Test

@@ -27,7 +27,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsRepository
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 
 private const val DEFAULT_PORT = 8080
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
@@ -48,7 +48,7 @@ private val emptyVehicle = LmuWindowsVehicleData(
 )
 
 internal class WebSocketLmuWindowsRepository(
-    private val serverIpRepository: ServerIpRepository,
+    private val serverIpRepository: ServerIpPreferencesRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
 ) : LmuWindowsRepository {

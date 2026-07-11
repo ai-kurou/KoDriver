@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -24,13 +24,13 @@ import kotlin.test.assertNull
 class WebSocketProximityRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpRepositoryForProximity
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForProximity
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpRepositoryForProximity(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForProximity(null)
     }
 
     @After
@@ -123,7 +123,7 @@ class WebSocketProximityRepositoryTest {
     }
 }
 
-private class FakeServerIpRepositoryForProximity(initialIp: String?) : ServerIpRepository {
+private class FakeServerIpPreferencesRepositoryForProximity(initialIp: String?) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
     fun setIp(ip: String?) { _ip.value = ip }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
