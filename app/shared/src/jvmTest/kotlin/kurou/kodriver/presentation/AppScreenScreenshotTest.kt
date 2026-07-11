@@ -21,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.feature.main.sharedUseCaseModule
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
@@ -50,6 +51,7 @@ class AppScreenScreenshotTest {
             startKoin {
                 modules(
                     listOf(
+                        sharedUseCaseModule,
                         fakeReadoutListModule,
                         fakeTelemetryLogListModule,
                         readoutListModule,

@@ -283,6 +283,12 @@ detekt の主な閾値（`config/detekt/detekt.yml`）:
 - **データ取得用**（テレメトリ・走行データなど外部ソースからの読み取り、Flow 配信、バージョン取得など）は接尾辞なしの素の `XxxRepository`（例: `LmuWindowsRepository`, `LmuWindowsFlagRepository`, `Gt7Ps5Repository`, `ServerVersionRepository`）。
 - **設定保存用**（DataStore による永続化）は必ず `XxxPreferencesRepository`（複数値・任意型の設定）または `XxxEnabledRepository`（単一の有効/無効フラグ）の接尾辞を付ける（例: `ThemePreferencesRepository`, `ConsoleAddressPreferencesRepository`, `ServerIpPreferencesRepository`, `KeepScreenOnEnabledRepository`）。設定保存用を素の `XxxRepository` にしてはならない。
 
+### Koin DI の登録方針
+
+- **ドメインの UseCase は `:feature:main` の `sharedUseCaseModule`（`SharedUseCaseModule.kt`）に 1 度だけ登録すること。** 各 feature モジュールで同じ UseCase を重複登録してはならない（過去、同一 UseCase が複数モジュールで登録され Koin の後勝ち上書きに依存する、あるモジュールが別モジュールの登録に暗黙依存するなどの問題があった）。
+- 各 feature モジュールの Koin モジュールには、**その feature 固有のもの**だけを置く。具体的には ViewModel（`viewModel { }` / `viewModelOf(::X)`）、feature 内で定義した UseCase 集約 data class（`NarratorUseCases` 等）、`named` 修飾が必要な登録（`PlaySpeechEventUseCase` や `TextToSpeechEngine` など TTS に紐づくもの）。
+- 新しいドメイン UseCase を追加したら、登録は `sharedUseCaseModule` に 1 行追加する。`:app:shared` は `:core:*` へ直接依存できない（`moduleGraphAssert` の `:app:shared -X> :core:.*` 制約）ため、集約モジュールは `:core` ではなく `:feature:main` に置いている。
+
 ### ViewModel の設計規則
 
 - **`uiState: StateFlow<XxxUiState>` を唯一の公開状態にすること。** 個別の `StateFlow`（例: `selectedSimulator`）を `public` で追加してはならない。UI は `uiState` だけを参照すれば済む設計にする。
