@@ -1,8 +1,9 @@
 package kurou.kodriver.feature.gt7ps5connection
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,8 +34,23 @@ class Gt7Ps5ConnectionViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
 
+    @MockK
+    private lateinit var connectionRepository: Gt7Ps5Repository
+
+    @MockK
+    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+
+    private val defaultTelemetry = Gt7Ps5TelemetryData(
+        lapCount = 0,
+        lapsInRace = 0,
+        bestLapTimeMs = 0,
+        gasLevel = 0f,
+        gasCapacity = 0f,
+    )
+
     @BeforeTest
     fun setUp() {
+        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 
@@ -43,47 +59,18 @@ class Gt7Ps5ConnectionViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createConnectionRepository(
-        initialTelemetry: Gt7Ps5TelemetryData = Gt7Ps5TelemetryData(
-            lapCount = 0,
-            lapsInRace = 0,
-            bestLapTimeMs = 0,
-            gasLevel = 0f,
-            gasCapacity = 0f,
-        ),
-        isConnected: Boolean = false,
-        failureCount: Int = 0,
-    ): Triple<Gt7Ps5Repository, MutableStateFlow<Gt7Ps5TelemetryData>, MutableStateFlow<Boolean>> {
-        val telemetryFlow = MutableStateFlow(initialTelemetry)
-        val connectedFlow = MutableStateFlow(isConnected)
-        var remainingFailures = failureCount
-        val repository = mockk<Gt7Ps5Repository>()
-        every { repository.telemetryStream() } returns telemetryFlow
-        coEvery { repository.isConnected() } answers {
-            if (remainingFailures > 0) {
-                remainingFailures--
-                error("connection check failed")
-            }
-            connectedFlow.value
-        }
-        return Triple(repository, telemetryFlow, connectedFlow)
-    }
-
-    private fun createSimulatorRepository(
-        initial: Simulator? = null,
-    ): Pair<SimulatorPreferencesRepository, MutableStateFlow<Simulator?>> {
-        val simulatorFlow = MutableStateFlow(initial)
-        val repository = mockk<SimulatorPreferencesRepository>()
-        every { repository.selectedSimulator() } returns simulatorFlow
-        coEvery { repository.saveSelectedSimulator(any()) } answers { simulatorFlow.value = firstArg() }
-        return repository to simulatorFlow
-    }
+    private fun createViewModel() = Gt7Ps5ConnectionViewModel(
+        checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(connectionRepository),
+        observeGt7Ps5 = ObserveGt7Ps5UseCase(connectionRepository),
+        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+    )
 
     @Test
     fun `GT7選択時に接続確認結果を反映する`() = runTest {
-        val (connectionRepository, _, _) = createConnectionRepository(isConnected = true)
-        val (simulatorRepository, _) = createSimulatorRepository(initial = Simulator.Gt7Ps5)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } returns true
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -94,9 +81,8 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @Test
     fun `GT7選択時に燃料と周回数を保持する`() = runTest {
-        val (connectionRepository, telemetryFlow, _) = createConnectionRepository(
-            isConnected = true,
-            initialTelemetry = Gt7Ps5TelemetryData(
+        val telemetryFlow = MutableStateFlow(
+            Gt7Ps5TelemetryData(
                 lapCount = 4,
                 lapsInRace = 12,
                 bestLapTimeMs = 0,
@@ -104,8 +90,10 @@ class Gt7Ps5ConnectionViewModelTest {
                 gasCapacity = 50f,
             ),
         )
-        val (simulatorRepository, _) = createSimulatorRepository(initial = Simulator.Gt7Ps5)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        every { connectionRepository.telemetryStream() } returns telemetryFlow
+        coEvery { connectionRepository.isConnected() } returns true
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -131,9 +119,10 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @Test
     fun `GT7非選択時は未確認状態を返す`() = runTest {
-        val (connectionRepository, _, _) = createConnectionRepository(isConnected = true)
-        val (simulatorRepository, _) = createSimulatorRepository(initial = Simulator.LmuWindows)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } returns true
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
         dispatcher.scheduler.runCurrent()
@@ -148,18 +137,22 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @Test
     fun `GT7選択前は未確認状態とする`() = runTest {
-        val (connectionRepository, _, _) = createConnectionRepository(isConnected = false)
-        val (simulatorRepository, _) = createSimulatorRepository(initial = null)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } returns false
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+        val viewModel = createViewModel()
 
         assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
     }
 
     @Test
     fun `GT7選択に切り替えると接続確認を開始する`() = runTest {
-        val (connectionRepository, _, _) = createConnectionRepository(isConnected = true)
-        val (simulatorRepository, _) = createSimulatorRepository(initial = Simulator.LmuWindows)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } returns true
+        every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+        coEvery { simulatorRepository.saveSelectedSimulator(any()) } answers { simulatorFlow.value = firstArg() }
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
@@ -173,9 +166,11 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @Test
     fun `GT7から別シミュレータへ切り替えると未確認にリセットされる`() = runTest {
-        val (connectionRepository, _, _) = createConnectionRepository(isConnected = true)
-        val (simulatorRepository, simulatorFlow) = createSimulatorRepository(initial = Simulator.Gt7Ps5)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.Gt7Ps5)
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } returns true
+        every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
@@ -193,9 +188,11 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @Test
     fun `GT7選択時に一定間隔で接続状態を更新する`() = runTest {
-        val (connectionRepository, _, connectedFlow) = createConnectionRepository(isConnected = false)
-        val (simulatorRepository, _) = createSimulatorRepository(initial = Simulator.Gt7Ps5)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val connectedFlow = MutableStateFlow(false)
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } answers { connectedFlow.value }
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
@@ -210,9 +207,18 @@ class Gt7Ps5ConnectionViewModelTest {
 
     @Test
     fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
-        val (connectionRepository, _, connectedFlow) = createConnectionRepository(isConnected = false, failureCount = 1)
-        val (simulatorRepository, _) = createSimulatorRepository(initial = Simulator.Gt7Ps5)
-        val viewModel = createViewModel(connectionRepository, simulatorRepository)
+        val connectedFlow = MutableStateFlow(false)
+        var remainingFailures = 1
+        every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
+        coEvery { connectionRepository.isConnected() } answers {
+            if (remainingFailures > 0) {
+                remainingFailures--
+                error("connection check failed")
+            }
+            connectedFlow.value
+        }
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+        val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
@@ -224,13 +230,4 @@ class Gt7Ps5ConnectionViewModelTest {
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
         collectionJob.cancelAndJoin()
     }
-
-    private fun createViewModel(
-        connectionRepository: Gt7Ps5Repository,
-        simulatorRepository: SimulatorPreferencesRepository,
-    ) = Gt7Ps5ConnectionViewModel(
-        checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(connectionRepository),
-        observeGt7Ps5 = ObserveGt7Ps5UseCase(connectionRepository),
-        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-    )
 }
