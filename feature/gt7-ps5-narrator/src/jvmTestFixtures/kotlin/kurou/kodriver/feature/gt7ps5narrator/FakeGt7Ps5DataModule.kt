@@ -9,6 +9,10 @@ import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import org.koin.dsl.module
 
+/**
+ * テスト用の Fake Koin モジュール（testFixtures）。:core:data の代わりに GT7 系 Repository の
+ * Fake 実装をバインドし、narrator の ViewModel/UseCase を Koin 経由で解決するテストで使う。
+ */
 val fakeGt7Ps5DataModule = module {
     single<Gt7Ps5Repository> { FakeGt7Ps5Repository() }
     single<Gt7Ps5UdpPortPreferencesRepository> { FakeGt7Ps5UdpPortPreferencesRepository() }

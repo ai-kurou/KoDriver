@@ -8,6 +8,10 @@ import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import org.koin.dsl.module
 
+/**
+ * テスト用の Fake Koin モジュール（testFixtures）。:core:data の TelemetryLogRepository を
+ * インメモリの Fake 実装に差し替える。
+ */
 val fakeTelemetryLogListModule = module {
     single<TelemetryLogRepository> { fakeTelemetryLogRepository }
 }
