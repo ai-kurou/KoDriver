@@ -13,12 +13,16 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import io.sentry.Sentry
 import io.sentry.protocol.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.AnonymousUserId
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.presentation.AppScreen
+import kurou.kodriver.presentation.DesktopSplashHost
 import kurou.kodriver.presentation.appModules
+import org.koin.core.Koin
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -36,35 +40,55 @@ fun main() {
     Sentry.setUser(
         User().apply { id = AnonymousUserId.getOrCreate(kodriverDirectory) },
     )
-    val koinApplication = startKoin {
-        modules(
-            listOf(desktopDataModule, lmuWindowsDataModule, gt7Ps5DataModule) +
-                appModules +
-                listOf(module { single(named("appVersion")) { APP_VERSION } }),
-        )
-    }
-    val server = createKoDriverServer(koinApplication.koin)
-    server.start()
-    Runtime.getRuntime().addShutdownHook(Thread { server.stop() })
+
+    var koin: Koin? = null
+    var server: KoDriverServer? = null
     try {
         application {
             var exitRequested by remember { mutableStateOf(false) }
+            var ready by remember { mutableStateOf(false) }
             val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
             Window(
-                onCloseRequest = { exitRequested = true },
+                onCloseRequest = { if (ready) exitRequested = true else exitApplication() },
                 title = "KoDriver",
                 state = windowState,
                 icon = painterResource("launcher.png"),
             ) {
                 SideEffect { window.minimumSize = Dimension(600, 500) }
-                AppScreen(
-                    exitRequested = exitRequested,
-                    onExitRequestConsumed = { exitRequested = false },
-                    onExit = ::exitApplication,
-                )
+                DesktopSplashHost(
+                    initializeModules = {
+                        withContext(Dispatchers.Default) {
+                            koin = startKoin {
+                                modules(
+                                    listOf(desktopDataModule, lmuWindowsDataModule, gt7Ps5DataModule) +
+                                        appModules +
+                                        listOf(module { single(named("appVersion")) { APP_VERSION } }),
+                                )
+                            }.koin
+                        }
+                    },
+                    startServer = {
+                        withContext(Dispatchers.IO) {
+                            val startedServer = createKoDriverServer(requireNotNull(koin)).also { it.start() }
+                            server = startedServer
+                            Runtime.getRuntime().addShutdownHook(Thread { startedServer.stop() })
+                        }
+                    },
+                    onReady = { ready = true },
+                    onError = { throwable ->
+                        Sentry.captureException(throwable)
+                        exitApplication()
+                    },
+                ) {
+                    AppScreen(
+                        exitRequested = exitRequested,
+                        onExitRequestConsumed = { exitRequested = false },
+                        onExit = ::exitApplication,
+                    )
+                }
             }
         }
     } finally {
-        server.stop()
+        server?.stop()
     }
 }
