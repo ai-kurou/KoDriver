@@ -2,8 +2,11 @@ package kurou.kodriver.feature.gt7ps5connection
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,6 +79,10 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 1) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 
@@ -98,10 +105,11 @@ class Gt7Ps5ConnectionViewModelTest {
 
         dispatcher.scheduler.runCurrent()
 
-        assertEquals(32.5f, viewModel.uiState.value.fuelLevel)
-        assertEquals(50f, viewModel.uiState.value.fuelCapacity)
-        assertEquals(4, viewModel.uiState.value.currentLap)
-        assertEquals(12, viewModel.uiState.value.totalLaps)
+        val firstState = viewModel.uiState.first()
+        assertEquals(32.5f, firstState.fuelLevel)
+        assertEquals(50f, firstState.fuelCapacity)
+        assertEquals(4, firstState.currentLap)
+        assertEquals(12, firstState.totalLaps)
 
         telemetryFlow.value = Gt7Ps5TelemetryData(
             lapCount = 5,
@@ -112,8 +120,13 @@ class Gt7Ps5ConnectionViewModelTest {
         )
         dispatcher.scheduler.runCurrent()
 
-        assertEquals(28f, viewModel.uiState.value.fuelLevel)
-        assertEquals(5, viewModel.uiState.value.currentLap)
+        val secondState = viewModel.uiState.first()
+        assertEquals(28f, secondState.fuelLevel)
+        assertEquals(5, secondState.currentLap)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 1) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 
@@ -127,11 +140,16 @@ class Gt7Ps5ConnectionViewModelTest {
 
         dispatcher.scheduler.runCurrent()
 
-        assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-        assertNull(viewModel.uiState.value.fuelLevel)
-        assertNull(viewModel.uiState.value.fuelCapacity)
-        assertNull(viewModel.uiState.value.currentLap)
-        assertNull(viewModel.uiState.value.totalLaps)
+        val state = viewModel.uiState.first()
+        assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, state.connectionStatus)
+        assertNull(state.fuelLevel)
+        assertNull(state.fuelCapacity)
+        assertNull(state.currentLap)
+        assertNull(state.totalLaps)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 0) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 0) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 
@@ -143,6 +161,10 @@ class Gt7Ps5ConnectionViewModelTest {
         val viewModel = createViewModel()
 
         assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 0) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 0) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
     }
 
     @Test
@@ -161,6 +183,11 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 1) { connectionRepository.isConnected() }
+        coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 
@@ -178,11 +205,16 @@ class Gt7Ps5ConnectionViewModelTest {
         simulatorFlow.value = Simulator.LmuWindows
         dispatcher.scheduler.runCurrent()
 
-        assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-        assertNull(viewModel.uiState.value.fuelLevel)
-        assertNull(viewModel.uiState.value.fuelCapacity)
-        assertNull(viewModel.uiState.value.currentLap)
-        assertNull(viewModel.uiState.value.totalLaps)
+        val state = viewModel.uiState.first()
+        assertEquals(Gt7Ps5ConnectionStatus.UNCHECKED, state.connectionStatus)
+        assertNull(state.fuelLevel)
+        assertNull(state.fuelCapacity)
+        assertNull(state.currentLap)
+        assertNull(state.totalLaps)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 1) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 
@@ -202,6 +234,10 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 2) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 
@@ -228,6 +264,10 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
 
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { connectionRepository.telemetryStream() }
+        coVerify(exactly = 2) { connectionRepository.isConnected() }
+        confirmVerified(connectionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
 }
