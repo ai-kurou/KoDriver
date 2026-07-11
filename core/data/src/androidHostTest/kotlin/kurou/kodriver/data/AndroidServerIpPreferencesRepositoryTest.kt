@@ -17,11 +17,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AndroidServerIpRepositoryTest {
+class AndroidServerIpPreferencesRepositoryTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var tempFile: File
-    private lateinit var repository: AndroidServerIpRepository
+    private lateinit var repository: AndroidServerIpPreferencesRepository
 
     @Before
     fun setUp() {
@@ -30,7 +30,7 @@ class AndroidServerIpRepositoryTest {
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
-        repository = AndroidServerIpRepository(dataStore)
+        repository = AndroidServerIpPreferencesRepository(dataStore)
     }
 
     @After

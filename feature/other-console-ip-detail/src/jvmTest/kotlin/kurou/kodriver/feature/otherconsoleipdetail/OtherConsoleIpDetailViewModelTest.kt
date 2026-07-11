@@ -12,7 +12,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
@@ -29,14 +29,14 @@ import kotlin.test.assertTrue
 class OtherConsoleIpDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var addressRepository: FakeConsoleAddressRepository
+    private lateinit var addressRepository: FakeConsoleAddressPreferencesRepository
     private lateinit var portRepository: FakeGt7Ps5UdpPortPreferencesRepository
     private lateinit var viewModel: OtherConsoleIpDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        addressRepository = FakeConsoleAddressRepository(initial = "192.168.1.1")
+        addressRepository = FakeConsoleAddressPreferencesRepository(initial = "192.168.1.1")
         portRepository = FakeGt7Ps5UdpPortPreferencesRepository(initial = 33740)
         viewModel = buildViewModel()
     }
@@ -47,7 +47,7 @@ class OtherConsoleIpDetailViewModelTest {
     }
 
     private fun buildViewModel(
-        addrRepo: FakeConsoleAddressRepository = addressRepository,
+        addrRepo: FakeConsoleAddressPreferencesRepository = addressRepository,
         portRepo: FakeGt7Ps5UdpPortPreferencesRepository = portRepository,
     ) = OtherConsoleIpDetailViewModel(
         observeConsoleAddress = ObserveConsoleAddressUseCase(addrRepo),
@@ -134,7 +134,7 @@ class OtherConsoleIpDetailViewModelTest {
     }
 }
 
-private class FakeConsoleAddressRepository(initial: String? = null) : ConsoleAddressRepository {
+private class FakeConsoleAddressPreferencesRepository(initial: String? = null) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
     override fun consoleAddress(): Flow<String?> = flow
     override suspend fun saveConsoleAddress(address: String) { flow.update { address } }

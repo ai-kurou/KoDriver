@@ -2,7 +2,7 @@ package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 
-interface ServerIpRepository {
+interface ServerIpPreferencesRepository {
     fun serverIp(): Flow<String?>
     suspend fun saveServerIp(ip: String)
 }

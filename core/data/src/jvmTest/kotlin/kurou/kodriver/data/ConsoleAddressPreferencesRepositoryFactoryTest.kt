@@ -2,7 +2,7 @@ package kurou.kodriver.data
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 
-class ConsoleAddressRepositoryFactoryTest {
+class ConsoleAddressPreferencesRepositoryFactoryTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_console_address_factory_test").toFile()
 
@@ -20,22 +20,22 @@ class ConsoleAddressRepositoryFactoryTest {
     }
 
     @Test
-    fun `ConsoleAddressRepositoryを返す`() {
-        val repository = createConsoleAddressRepository(tempDir.absolutePath)
+    fun `ConsoleAddressPreferencesRepositoryを返す`() {
+        val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
-        assertIs<ConsoleAddressRepository>(repository)
+        assertIs<ConsoleAddressPreferencesRepository>(repository)
     }
 
     @Test
     fun `初期状態はnullを返す`() = runTest {
-        val repository = createConsoleAddressRepository(tempDir.absolutePath)
+        val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
         assertNull(repository.consoleAddress().first())
     }
 
     @Test
     fun `保存したアドレスを取得できる`() = runTest {
-        val repository = createConsoleAddressRepository(tempDir.absolutePath)
+        val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
         repository.saveConsoleAddress("10.0.0.1")
 

@@ -2,11 +2,11 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 
-internal class FakeServerIpRepository(
+internal class FakeServerIpPreferencesRepository(
     initial: String? = null,
-) : ServerIpRepository {
+) : ServerIpPreferencesRepository {
     private val flow = MutableStateFlow(initial)
 
     override fun serverIp(): Flow<String?> = flow

@@ -3,13 +3,13 @@ package kurou.kodriver.feature.otherserveripdetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import java.io.IOException
 
-internal class FakeServerIpRepository(
+internal class FakeServerIpPreferencesRepository(
     initialIp: String? = null,
     var shouldThrow: Boolean = false,
-) : ServerIpRepository {
+) : ServerIpPreferencesRepository {
     private val ip = MutableStateFlow(initialIp)
 
     override fun serverIp(): Flow<String?> = ip

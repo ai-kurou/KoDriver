@@ -6,7 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5PacketSource
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpSource
 import kurou.kodriver.core.gt7ps5data.repository.Gt7Ps5RepositoryImpl
-import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import org.koin.core.qualifier.named
@@ -21,7 +21,7 @@ val gt7Ps5DataModule = module {
     }
     single<Gt7Ps5PacketSource> {
         Gt7Ps5UdpSource(
-            consoleAddressFlow = get<ConsoleAddressRepository>().consoleAddress(),
+            consoleAddressFlow = get<ConsoleAddressPreferencesRepository>().consoleAddress(),
             listenPortFlow = get<Gt7Ps5UdpPortPreferencesRepository>().port(),
             scope = get(named(GT7_PS5_SCOPE_QUALIFIER)),
         )

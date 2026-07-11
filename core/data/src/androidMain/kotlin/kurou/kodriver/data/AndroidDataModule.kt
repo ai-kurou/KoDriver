@@ -5,7 +5,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl
 import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
-import kurou.kodriver.domain.repository.ConsoleAddressRepository
+import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
@@ -25,7 +25,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
-import kurou.kodriver.domain.repository.ServerIpRepository
+import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
@@ -88,11 +88,11 @@ fun androidDataModule(context: Context) = module {
     single<LmuWindowsMyBestLapPreferencesRepository> {
         createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
     }
-    single<ServerIpRepository> {
-        AndroidServerIpRepository(context.serverIpDataStore)
+    single<ServerIpPreferencesRepository> {
+        AndroidServerIpPreferencesRepository(context.serverIpDataStore)
     }
-    single<ConsoleAddressRepository> {
-        createConsoleAddressRepository(context.filesDir.absolutePath)
+    single<ConsoleAddressPreferencesRepository> {
+        createConsoleAddressPreferencesRepository(context.filesDir.absolutePath)
     }
     single<ServerVersionRepository> { HttpServerVersionRepository() }
     single<AppUpdateRepository> { GitHubAppReleaseRepository() }

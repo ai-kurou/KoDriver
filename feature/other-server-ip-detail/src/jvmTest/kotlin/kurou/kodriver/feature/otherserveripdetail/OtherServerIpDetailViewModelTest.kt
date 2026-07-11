@@ -22,13 +22,13 @@ import kotlin.test.assertTrue
 class OtherServerIpDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeServerIpRepository
+    private lateinit var repository: FakeServerIpPreferencesRepository
     private lateinit var viewModel: OtherServerIpDetailViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        repository = FakeServerIpRepository(initialIp = "192.168.1.1")
+        repository = FakeServerIpPreferencesRepository(initialIp = "192.168.1.1")
         viewModel = buildViewModel(reachable = true)
     }
 
@@ -39,7 +39,7 @@ class OtherServerIpDetailViewModelTest {
 
     private fun buildViewModel(
         reachable: Boolean = true,
-        repo: FakeServerIpRepository = repository,
+        repo: FakeServerIpPreferencesRepository = repository,
     ) = OtherServerIpDetailViewModel(
         observeServerIp = ObserveServerIpUseCase(repo),
         saveServerIp = SaveServerIpUseCase(repo),
@@ -119,7 +119,7 @@ class OtherServerIpDetailViewModelTest {
 
     @Test
     fun `保存済みIPがない場合は空文字を返す`() = runTest {
-        val fakeRepo = FakeServerIpRepository(initialIp = null)
+        val fakeRepo = FakeServerIpPreferencesRepository(initialIp = null)
         val vm = buildViewModel(repo = fakeRepo)
 
         assertEquals(OtherServerIpDetailUiState(inputIp = "", isInputValid = true), vm.uiState.first())
@@ -141,7 +141,7 @@ class OtherServerIpDetailViewModelTest {
 
     @Test
     fun `保存に失敗するとsaveFailedがtrueになる`() = runTest {
-        val fakeRepo = FakeServerIpRepository(initialIp = "192.168.1.1", shouldThrow = true)
+        val fakeRepo = FakeServerIpPreferencesRepository(initialIp = "192.168.1.1", shouldThrow = true)
         val vm = buildViewModel(repo = fakeRepo)
         vm.onIpChanged("10.0.0.1")
         vm.onSave()
@@ -151,7 +151,7 @@ class OtherServerIpDetailViewModelTest {
 
     @Test
     fun `保存失敗後に再度保存が成功するとsaveFailedがfalseにリセットされる`() = runTest {
-        val fakeRepo = FakeServerIpRepository(initialIp = "192.168.1.1", shouldThrow = true)
+        val fakeRepo = FakeServerIpPreferencesRepository(initialIp = "192.168.1.1", shouldThrow = true)
         val vm = buildViewModel(repo = fakeRepo)
         vm.onIpChanged("10.0.0.1")
         vm.onSave()
