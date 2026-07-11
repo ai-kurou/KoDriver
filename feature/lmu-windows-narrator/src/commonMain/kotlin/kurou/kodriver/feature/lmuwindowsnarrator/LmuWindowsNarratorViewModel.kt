@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -29,7 +29,6 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
@@ -39,6 +38,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -47,7 +47,7 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 data class VehicleApproachUseCases(
-    val observeProximity: ObserveLmuWindowsProximityUseCase,
+    val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
     val observeStartReadoutEnabled: ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase,
@@ -97,7 +97,7 @@ class LmuWindowsNarratorViewModel(
 ) : ViewModel() {
 
     private var narratorState = LmuWindowsNarratorState()
-    private var previousProximity: LmuWindowsProximityData? = null
+    private var previousVehicleApproach: LmuWindowsVehicleApproachData? = null
     private var previousLmuWindowsTelemetry: LmuWindowsTelemetryData? = null
     private var previousVehicleDamage: LmuWindowsVehicleDamageData? = null
     private var previousRaceFlags: LmuWindowsRaceFlagsData? = null
@@ -192,14 +192,14 @@ class LmuWindowsNarratorViewModel(
     private val vehicleApproachJob = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            vehicleApproachUseCases.observeProximity()
+            vehicleApproachUseCases.observeVehicleApproach()
         }
-        .onEach { proximity ->
-            val previous = previousProximity
+        .onEach { vehicleApproach ->
+            val previous = previousVehicleApproach
             val observedAtMs = currentTimeMs()
             val decision = narratorUseCases.determineReadout.determineVehicleApproach(
                 state = narratorState,
-                proximity = proximity,
+                vehicleApproach = vehicleApproach,
                 settings = currentSettings,
                 observedAtMs = observedAtMs,
             )
@@ -210,11 +210,11 @@ class LmuWindowsNarratorViewModel(
                         createdAt = observedAtMs,
                         simulatorId = Simulator.LmuWindows.id,
                         readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(previous = previous, current = proximity),
+                        telemetryJson = buildTelemetryLogJson(previous = previous, current = vehicleApproach),
                     )
                 }
             }
-            previousProximity = proximity
+            previousVehicleApproach = vehicleApproach
         }
         .launchIn(viewModelScope)
 
@@ -360,7 +360,10 @@ class LmuWindowsNarratorViewModel(
     }
 }
 
-private fun buildTelemetryLogJson(previous: LmuWindowsProximityData?, current: LmuWindowsProximityData): String =
+private fun buildTelemetryLogJson(
+    previous: LmuWindowsVehicleApproachData?,
+    current: LmuWindowsVehicleApproachData,
+): String =
     """{"previous":${previous?.toJson() ?: "null"},"current":${current.toJson()}}"""
 
 private fun buildTelemetryLogJson(previous: LmuWindowsTelemetryData?, current: LmuWindowsTelemetryData): String =
@@ -375,7 +378,7 @@ private fun LmuWindowsTelemetryData.toJson(): String =
         """"maxLaps":${timing.maxLaps}""" +
         "}"
 
-private fun LmuWindowsProximityData.toJson(): String =
+private fun LmuWindowsVehicleApproachData.toJson(): String =
     "{" +
         """"sideBySideLeftVehicleIds":${sideBySideLeftVehicleIds.sorted()},""" +
         """"sideBySideRightVehicleIds":${sideBySideRightVehicleIds.sorted()},""" +

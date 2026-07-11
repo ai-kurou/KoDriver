@@ -15,11 +15,11 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
@@ -58,7 +58,7 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(get()) }
     single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(get()) }
-    single<LmuWindowsProximityRepository> { WebSocketLmuWindowsProximityRepository(get()) }
+    single<LmuWindowsVehicleApproachRepository> { WebSocketLmuWindowsVehicleApproachRepository(get()) }
     single<LmuWindowsVehicleDamageRepository> { WebSocketLmuWindowsVehicleDamageRepository(get()) }
     single<LmuWindowsTyreCarcassTemperatureRepository> { WebSocketLmuWindowsTyreCarcassTemperatureRepository(get()) }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {

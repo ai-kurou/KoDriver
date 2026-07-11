@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ProximityThresholdsUseCaseTest {
+class VehicleApproachThresholdsUseCaseTest {
 
     @Test
     fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {

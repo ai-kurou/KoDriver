@@ -4,7 +4,6 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
@@ -13,6 +12,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -35,7 +35,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
-    factory { ObserveLmuWindowsProximityUseCase(get()) }
+    factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
     factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
     factory { FlagUseCases(get(), get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }

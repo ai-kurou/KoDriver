@@ -4,7 +4,7 @@ enum class KoDriverServerFeature(
     private val pathSegment: String,
 ) {
     FLAGS(pathSegment = "flags"),
-    PROXIMITY(pathSegment = "proximity"),
+    VEHICLE_APPROACH(pathSegment = "vehicle_approach"),
     DAMAGE(pathSegment = "damage"),
     TYRE_CARCASS_TEMPERATURE(pathSegment = "tyre_carcass_temperature"),
     MY_BEST_LAP(pathSegment = "my_best_lap"),

@@ -18,12 +18,12 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -41,11 +41,11 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -54,7 +54,6 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsProximityUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
@@ -64,6 +63,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -93,7 +93,7 @@ class LmuWindowsNarratorViewModelTest {
 
     @Suppress("LongParameterList")
     private fun buildViewModel(
-        proximityChannel: Channel<LmuWindowsProximityData> = Channel(Channel.UNLIMITED),
+        vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
         flagChannel: Channel<LmuWindowsRaceFlagsData> = Channel(Channel.UNLIMITED),
         damageChannel: Channel<LmuWindowsVehicleDamageData> = Channel(Channel.UNLIMITED),
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
@@ -126,8 +126,8 @@ class LmuWindowsNarratorViewModelTest {
         )
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases = VehicleApproachUseCases(
-                observeProximity = ObserveLmuWindowsProximityUseCase(
-                    FakeChannelProximityRepository(proximityChannel.receiveAsFlow()),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    FakeChannelVehicleApproachRepository(vehicleApproachChannel.receiveAsFlow()),
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(
                     FakeChannelLmuWindowsRepository(telemetryChannel.receiveAsFlow()),
@@ -209,14 +209,19 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `LMU非選択時は接近アナウンスをしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, simulator = null, currentTimeMs = { fakeTime })
+        buildViewModel(
+            vehicleApproachChannel = channel,
+            ttsEngine = tts,
+            simulator = null,
+            currentTimeMs = { fakeTime },
+        )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
@@ -308,19 +313,19 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `接近開始時の読み上げが無効のときは接近アナウンスをしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
-            proximityChannel = channel,
+            vehicleApproachChannel = channel,
             ttsEngine = tts,
             startReadoutEnabled = false,
             currentTimeMs = { fakeTime },
         )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
@@ -328,19 +333,19 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `VEHICLE_APPROACHが無効のときはアナウンスしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
-            proximityChannel = channel,
+            vehicleApproachChannel = channel,
             ttsEngine = tts,
             enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             currentTimeMs = { fakeTime },
         )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
@@ -348,11 +353,11 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `1周目スキップONかつ現在ラップが0のときはアナウンスしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val proximityChannel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val vehicleApproachChannel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
-            proximityChannel = proximityChannel,
+            vehicleApproachChannel = vehicleApproachChannel,
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             skipFirstLap = true,
@@ -361,10 +366,10 @@ class LmuWindowsNarratorViewModelTest {
 
         // mLapNumber は 0 スタートのため、1周目（最初の計測周）は 0
         telemetryChannel.send(fakeTelemetryData(currentLap = 0))
-        proximityChannel.send(noProximity())
-        proximityChannel.send(leftProximity(vehicleId = 1))
+        vehicleApproachChannel.send(noVehicleApproach())
+        vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        proximityChannel.send(leftProximity(vehicleId = 1))
+        vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
@@ -372,11 +377,11 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `1周目スキップONでも2周目以降はアナウンスする`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val proximityChannel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val vehicleApproachChannel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
-            proximityChannel = proximityChannel,
+            vehicleApproachChannel = vehicleApproachChannel,
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             skipFirstLap = true,
@@ -385,10 +390,10 @@ class LmuWindowsNarratorViewModelTest {
 
         // mLapNumber は 0 スタートのため、2周目は 1
         telemetryChannel.send(fakeTelemetryData(currentLap = 1))
-        proximityChannel.send(noProximity())
-        proximityChannel.send(leftProximity(vehicleId = 1))
+        vehicleApproachChannel.send(noVehicleApproach())
+        vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        proximityChannel.send(leftProximity(vehicleId = 1))
+        vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
     }
@@ -396,20 +401,20 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `接近読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
         val tts = RecordingTextToSpeechEngine()
         buildViewModel(
-            proximityChannel = channel,
+            vehicleApproachChannel = channel,
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
             telemetryLogRepository = telemetryLogRepository,
         )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 123_456L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(
             listOf(
@@ -437,16 +442,16 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `フラグ読み上げ中に車両接近イベントが来ても読み上げない`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
-        buildViewModel(proximityChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
+        buildViewModel(vehicleApproachChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
     }
@@ -454,22 +459,22 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val telemetryLogRepository = FakeTelemetryLogRepository()
         val tts = PriorityAwareTextToSpeechEngine(
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(
-            proximityChannel = channel,
+            vehicleApproachChannel = channel,
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
             telemetryLogRepository = telemetryLogRepository,
         )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(emptyList<TelemetryLog>(), telemetryLogRepository.logs.value)
     }
@@ -492,21 +497,21 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(
-            proximityChannel = channel,
+            vehicleApproachChannel = channel,
             ttsEngine = tts,
             orderOverride = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
             currentTimeMs = { fakeTime },
         )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(true, tts.stopCalled)
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
@@ -515,21 +520,21 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
         var fakeTime = 0L
-        val channel = Channel<LmuWindowsProximityData>(Channel.UNLIMITED)
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val tts = PriorityAwareTextToSpeechEngine(
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
         buildViewModel(
-            proximityChannel = channel,
+            vehicleApproachChannel = channel,
             ttsEngine = tts,
             orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
             currentTimeMs = { fakeTime },
         )
 
-        channel.send(noProximity())
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
-        channel.send(leftProximity(vehicleId = 1))
+        channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(false, tts.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
@@ -957,14 +962,14 @@ class LmuWindowsNarratorViewModelTest {
     }
 }
 
-private fun noProximity() = LmuWindowsProximityData(
+private fun noVehicleApproach() = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private fun leftProximity(vehicleId: Int) = LmuWindowsProximityData(
+private fun leftVehicleApproach(vehicleId: Int) = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(vehicleId),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 3.0,
@@ -1013,10 +1018,10 @@ private class PriorityAwareTextToSpeechEngine(
     override fun previewStartSound(type: ReadoutStartSoundType) = Unit
 }
 
-private class FakeChannelProximityRepository(
-    private val stream: Flow<LmuWindowsProximityData>,
-) : LmuWindowsProximityRepository {
-    override fun proximityStream(): Flow<LmuWindowsProximityData> = stream
+private class FakeChannelVehicleApproachRepository(
+    private val stream: Flow<LmuWindowsVehicleApproachData>,
+) : LmuWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = stream
 }
 
 private class FakeChannelFlagRepository(

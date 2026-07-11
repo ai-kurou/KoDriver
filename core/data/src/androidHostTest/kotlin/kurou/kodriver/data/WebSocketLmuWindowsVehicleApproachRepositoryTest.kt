@@ -21,16 +21,16 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketProximityRepositoryTest {
+class WebSocketVehicleApproachRepositoryTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForProximity
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVehicleApproach
 
     @Before
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpPreferencesRepositoryForProximity(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForVehicleApproach(null)
     }
 
     @After
@@ -38,27 +38,27 @@ class WebSocketProximityRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsProximityRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsVehicleApproachRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときproximityStreamは何もemitしない`() = runTest {
+    fun `ipがnullのときvehicleApproachStreamは何もemitしない`() = runTest {
         val result = withTimeoutOrNull(300) {
-            buildRepository().proximityStream().first()
+            buildRepository().vehicleApproachStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときProximityDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときVehicleApproachDataをemitする`() = runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(PROXIMITY_JSON)
+                        webSocket.send(VEHICLE_APPROACH_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -66,11 +66,11 @@ class WebSocketProximityRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().proximityStream().first()
+        val result = buildRepository().vehicleApproachStream().first()
 
         assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
         assertEquals(emptySet(), result.sideBySideRightVehicleIds)
-        assertEquals("/ws/lmu_windows/proximity", server.takeRequest().path)
+        assertEquals("/ws/lmu_windows/vehicle_approach", server.takeRequest().path)
     }
 
     @Test
@@ -80,7 +80,7 @@ class WebSocketProximityRepositoryTest {
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
                         webSocket.send("invalid json")
-                        webSocket.send(PROXIMITY_JSON)
+                        webSocket.send(VEHICLE_APPROACH_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -88,7 +88,7 @@ class WebSocketProximityRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().proximityStream().first()
+        val result = buildRepository().vehicleApproachStream().first()
 
         assertNotNull(result)
         assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
@@ -109,7 +109,7 @@ class WebSocketProximityRepositoryTest {
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
                     override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(PROXIMITY_JSON)
+                        webSocket.send(VEHICLE_APPROACH_JSON)
                         webSocket.close(1000, "done")
                     }
                 },
@@ -117,20 +117,20 @@ class WebSocketProximityRepositoryTest {
         )
         fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository(retryDelayMs = 0L).proximityStream().first()
+        val result = buildRepository(retryDelayMs = 0L).vehicleApproachStream().first()
 
         assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
     }
 }
 
-private class FakeServerIpPreferencesRepositoryForProximity(initialIp: String?) : ServerIpPreferencesRepository {
+private class FakeServerIpPreferencesRepositoryForVehicleApproach(initialIp: String?) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
     fun setIp(ip: String?) { _ip.value = ip }
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
     override suspend fun saveServerIp(ip: String) { _ip.value = ip }
 }
 
-private val PROXIMITY_JSON = """
+private val VEHICLE_APPROACH_JSON = """
     {
         "sideBySideLeftVehicleIds": [3],
         "sideBySideRightVehicleIds": [],

@@ -1,10 +1,10 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -82,14 +82,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineVehicleApproach(
         state: LmuWindowsNarratorState,
-        proximity: LmuWindowsProximityData,
+        vehicleApproach: LmuWindowsVehicleApproachData,
         settings: LmuWindowsNarratorReadoutSettings,
         observedAtMs: Long,
     ): LmuWindowsNarratorReadoutDecision {
         var leftAnnounce = false
         var rightAnnounce = false
         val previousApproachState = state.vehicleApproachState
-        val newLeft = proximity.sideBySideLeftVehicleIds.associateWith { id ->
+        val newLeft = vehicleApproach.sideBySideLeftVehicleIds.associateWith { id ->
             val prev = previousApproachState.left[id]
             if (prev == null) {
                 LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)
@@ -99,7 +99,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 prev.copy(announced = prev.announced || shouldAnnounce)
             }
         }
-        val newRight = proximity.sideBySideRightVehicleIds.associateWith { id ->
+        val newRight = vehicleApproach.sideBySideRightVehicleIds.associateWith { id ->
             val prev = previousApproachState.right[id]
             if (prev == null) {
                 LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)

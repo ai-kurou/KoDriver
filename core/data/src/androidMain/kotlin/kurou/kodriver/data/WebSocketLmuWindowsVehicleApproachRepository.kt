@@ -17,19 +17,19 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
-import kurou.kodriver.domain.model.LmuWindowsProximityData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 
 private const val DEFAULT_PORT = 8080
 private const val DEFAULT_RETRY_DELAY_MS = 3000L
 
-internal class WebSocketLmuWindowsProximityRepository(
+internal class WebSocketLmuWindowsVehicleApproachRepository(
     private val serverIpRepository: ServerIpPreferencesRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
-) : LmuWindowsProximityRepository {
+) : LmuWindowsVehicleApproachRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -38,25 +38,25 @@ internal class WebSocketLmuWindowsProximityRepository(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun proximityStream(): Flow<LmuWindowsProximityData> =
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> =
         serverIpRepository.serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) emptyFlow()
                 else connectWithRetry(ip)
             }
 
-    private fun connectWithRetry(ip: String): Flow<LmuWindowsProximityData> = flow {
+    private fun connectWithRetry(ip: String): Flow<LmuWindowsVehicleApproachData> = flow {
         while (true) {
             try {
                 client.webSocket(
                     host = ip,
                     port = port,
-                    path = KoDriverServerFeature.PROXIMITY.webSocketPath(Simulator.LmuWindows),
+                    path = KoDriverServerFeature.VEHICLE_APPROACH.webSocketPath(Simulator.LmuWindows),
                 ) {
                     for (frame in incoming) {
                         if (frame is Frame.Text) {
                             try {
-                                emit(json.decodeFromString<LmuWindowsProximityData>(frame.readText()))
+                                emit(json.decodeFromString<LmuWindowsVehicleApproachData>(frame.readText()))
                             } catch (e: CancellationException) {
                                 throw e
                             } catch (e: SerializationException) {

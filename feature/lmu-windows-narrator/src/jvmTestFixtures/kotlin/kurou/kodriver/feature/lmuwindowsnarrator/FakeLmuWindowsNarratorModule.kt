@@ -4,27 +4,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsProximityRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import org.koin.dsl.module
 
 val fakeLmuWindowsNarratorModule = module {
-    single<LmuWindowsProximityRepository> { FakeLmuWindowsProximityRepository() }
+    single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
     single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
     single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
     single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
@@ -36,8 +36,8 @@ val fakeLmuWindowsNarratorModule = module {
     single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
 }
 
-class FakeLmuWindowsProximityRepository : LmuWindowsProximityRepository {
-    override fun proximityStream(): Flow<LmuWindowsProximityData> = emptyFlow()
+class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
+    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
 }
 
 class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {

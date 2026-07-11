@@ -5,12 +5,12 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsProximityData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -84,14 +84,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `左接近が50ms継続するとCarLeftを返す`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(),
             observedAtMs = 0L,
         )
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(),
             observedAtMs = 50L,
         )
@@ -104,14 +104,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `右接近の読み上げ種別を変更するとRightApproachを返す`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = rightProximity(vehicleId = 1),
+            vehicleApproach = rightVehicleApproach(vehicleId = 1),
             settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
             observedAtMs = 0L,
         )
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
-            proximity = rightProximity(vehicleId = 1),
+            vehicleApproach = rightVehicleApproach(vehicleId = 1),
             settings = settings(startReadoutType = VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH),
             observedAtMs = 50L,
         )
@@ -123,14 +123,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `50ms未満の接近では読み上げない`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(),
             observedAtMs = 0L,
         )
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(),
             observedAtMs = 49L,
         )
@@ -142,14 +142,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `左右同時接近は読み上げない`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = leftAndRightProximity(),
+            vehicleApproach = leftAndRightVehicleApproach(),
             settings = settings(),
             observedAtMs = 0L,
         )
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
-            proximity = leftAndRightProximity(),
+            vehicleApproach = leftAndRightVehicleApproach(),
             settings = settings(),
             observedAtMs = 50L,
         )
@@ -161,7 +161,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `接近読み上げ無効時は状態だけ更新する`() {
         val decision = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(startReadoutEnabled = false),
             observedAtMs = 0L,
         )
@@ -174,14 +174,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `1周目スキップ中の0周目は接近を読み上げない`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(skipFirstLap = true, currentLap = 0),
             observedAtMs = 0L,
         )
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(skipFirstLap = true, currentLap = 0),
             observedAtMs = 50L,
         )
@@ -193,7 +193,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     fun `車両接近項目が無効なら接近を読み上げない`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(
                 enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             ),
@@ -202,7 +202,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         val second = useCase.determineVehicleApproach(
             state = first.state,
-            proximity = leftProximity(vehicleId = 1),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
             settings = settings(
                 enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             ),
@@ -703,21 +703,21 @@ private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
     ),
 )
 
-private fun leftProximity(vehicleId: Int) = LmuWindowsProximityData(
+private fun leftVehicleApproach(vehicleId: Int) = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(vehicleId),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 3.0,
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private fun rightProximity(vehicleId: Int) = LmuWindowsProximityData(
+private fun rightVehicleApproach(vehicleId: Int) = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = setOf(vehicleId),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
     lateralDistanceRightMeters = 3.0,
 )
 
-private fun leftAndRightProximity() = LmuWindowsProximityData(
+private fun leftAndRightVehicleApproach() = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(1),
     sideBySideRightVehicleIds = setOf(2),
     lateralDistanceLeftMeters = 3.0,
