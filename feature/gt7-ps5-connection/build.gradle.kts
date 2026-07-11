@@ -12,10 +12,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutinesCore)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlinx.coroutinesTest)
-        }
         jvmTest.dependencies {
+            implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.testJunit)
         }
     }

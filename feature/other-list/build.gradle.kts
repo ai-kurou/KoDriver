@@ -46,7 +46,7 @@ kotlin {
             implementation(libs.compose.material.icons.extended)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
-        commonTest.dependencies {
+        jvmTest.dependencies {
             implementation(libs.kotlinx.coroutinesTest)
         }
         named("androidHostTest") {
