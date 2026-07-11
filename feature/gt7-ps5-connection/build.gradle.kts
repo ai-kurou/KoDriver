@@ -15,6 +15,7 @@ kotlin {
         jvmTest.dependencies {
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.kotlin.testJunit)
+            implementation(libs.mockk)
         }
     }
 }
