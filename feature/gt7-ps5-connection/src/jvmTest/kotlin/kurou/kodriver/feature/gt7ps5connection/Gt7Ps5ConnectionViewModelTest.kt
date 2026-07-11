@@ -14,6 +14,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -111,13 +112,15 @@ class Gt7Ps5ConnectionViewModelTest {
         assertEquals(4, firstState.currentLap)
         assertEquals(12, firstState.totalLaps)
 
-        telemetryFlow.value = Gt7Ps5TelemetryData(
-            lapCount = 5,
-            lapsInRace = 12,
-            bestLapTimeMs = 0,
-            gasLevel = 28f,
-            gasCapacity = 50f,
-        )
+        telemetryFlow.update {
+            Gt7Ps5TelemetryData(
+                lapCount = 5,
+                lapsInRace = 12,
+                bestLapTimeMs = 0,
+                gasLevel = 28f,
+                gasCapacity = 50f,
+            )
+        }
         dispatcher.scheduler.runCurrent()
 
         val secondState = viewModel.uiState.first()
@@ -173,7 +176,7 @@ class Gt7Ps5ConnectionViewModelTest {
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        coEvery { simulatorRepository.saveSelectedSimulator(any()) } answers { simulatorFlow.value = firstArg() }
+        coEvery { simulatorRepository.saveSelectedSimulator(any()) } answers { simulatorFlow.update { firstArg() } }
         val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
@@ -202,7 +205,7 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
 
-        simulatorFlow.value = Simulator.LmuWindows
+        simulatorFlow.update { Simulator.LmuWindows }
         dispatcher.scheduler.runCurrent()
 
         val state = viewModel.uiState.first()
@@ -229,7 +232,7 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
-        connectedFlow.value = true
+        connectedFlow.update { true }
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
@@ -259,7 +262,7 @@ class Gt7Ps5ConnectionViewModelTest {
         dispatcher.scheduler.runCurrent()
         assertEquals(Gt7Ps5ConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
-        connectedFlow.value = true
+        connectedFlow.update { true }
         dispatcher.scheduler.advanceTimeBy(1_000L)
         dispatcher.scheduler.runCurrent()
 
