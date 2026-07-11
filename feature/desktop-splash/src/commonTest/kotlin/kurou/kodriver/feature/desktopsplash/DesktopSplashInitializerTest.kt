@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class DesktopSplashInitializerTest {
 
@@ -22,5 +23,33 @@ class DesktopSplashInitializerTest {
             observedSteps,
         )
         assertEquals(DesktopSplashStep.READY, progress.uiState.first().step)
+    }
+
+    @Test
+    fun `initializeModules が失敗した場合は例外を伝播しREADYへ遷移しない`() = runTest {
+        val progress = DesktopSplashProgress()
+
+        assertFailsWith<IllegalStateException> {
+            progress.runInitialization(
+                initializeModules = { error("init failed") },
+                startServer = {},
+            )
+        }
+
+        assertEquals(DesktopSplashStep.INITIALIZING_MODULES, progress.uiState.first().step)
+    }
+
+    @Test
+    fun `startServer が失敗した場合は例外を伝播しSTARTING_SERVERで停止する`() = runTest {
+        val progress = DesktopSplashProgress()
+
+        assertFailsWith<IllegalStateException> {
+            progress.runInitialization(
+                initializeModules = {},
+                startServer = { error("server failed") },
+            )
+        }
+
+        assertEquals(DesktopSplashStep.STARTING_SERVER, progress.uiState.first().step)
     }
 }
