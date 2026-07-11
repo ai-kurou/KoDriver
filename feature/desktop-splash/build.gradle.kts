@@ -23,3 +23,7 @@ kotlin {
         }
     }
 }
+
+compose.resources {
+    packageOfResClass = "kodriver.feature.desktopsplash.generated.resources"
+}
