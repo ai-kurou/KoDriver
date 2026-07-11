@@ -9,8 +9,11 @@ JVM の起動から Compose 初期化・Koin モジュール構築・Ktor サー
 - `DesktopSplashProgress` … 起動処理から駆動される進捗状態ホルダー。
 - `runInitialization` … 進捗を更新しながら初期化処理を順に実行する `DesktopSplashProgress` 拡張関数。
 - `DesktopSplashScreen` … アプリ名・進捗バー・フェーズ名を表示する Composable。
+- `DesktopSplashErrorDialog` … 初期化に失敗したことを通知するダイアログ。
 
 進捗ホルダーは Koin 起動前に生成する必要があるため、DI モジュールは提供せず、`:app:shared` の `DesktopSplashHost` から `DesktopSplashProgress` を直接生成して駆動する。`:app:desktopApp` の `main.kt` は `DesktopSplashHost` に Koin 構築・サーバー起動処理を渡して配線する。
+
+初期化処理が例外をスローした場合、スプラッシュ画面が完了しないまま停止するのを避けるため、`DesktopSplashHost` は `DesktopSplashErrorDialog` を表示する。ダイアログを閉じると `onError` が通知され、`main.kt` は Sentry へ送信のうえアプリを終了する。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies

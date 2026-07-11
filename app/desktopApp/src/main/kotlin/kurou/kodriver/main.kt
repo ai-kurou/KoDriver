@@ -75,6 +75,10 @@ fun main() {
                         }
                     },
                     onReady = { ready = true },
+                    onError = { throwable ->
+                        Sentry.captureException(throwable)
+                        exitApplication()
+                    },
                 ) {
                     AppScreen(
                         exitRequested = exitRequested,

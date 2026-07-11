@@ -11,9 +11,11 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.CompletableDeferred
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopSplashHostTest {
@@ -73,5 +75,33 @@ class DesktopSplashHostTest {
         rule.waitForIdle()
 
         rule.onNodeWithText("メイン画面").assertIsDisplayed()
+    }
+
+    @Test
+    fun `初期化が失敗するとエラーダイアログを表示しコンテンツへ切り替えない`() {
+        var errored: Throwable? = null
+
+        rule.setContent {
+            MaterialTheme {
+                DesktopSplashHost(
+                    initializeModules = { error("初期化に失敗しました") },
+                    startServer = {},
+                    onError = { errored = it },
+                ) {
+                    Text("メイン画面")
+                }
+            }
+        }
+
+        rule.waitForIdle()
+
+        rule.onNodeWithText("起動に失敗しました").assertIsDisplayed()
+        rule.onNodeWithText("初期化に失敗しました").assertIsDisplayed()
+        rule.onAllNodesWithText("メイン画面").assertCountEquals(0)
+
+        rule.onNodeWithText("閉じる").performClick()
+        rule.waitForIdle()
+
+        assertEquals("初期化に失敗しました", errored?.message)
     }
 }
