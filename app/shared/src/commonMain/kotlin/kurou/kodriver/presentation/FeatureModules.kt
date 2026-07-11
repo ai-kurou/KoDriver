@@ -25,7 +25,15 @@ import kurou.kodriver.feature.telemetrylogdetail.telemetryLogDetailModule
 import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
 import org.koin.core.module.Module
 
-val appModules: List<Module> = listOf(
+/**
+ * `:feature:*` 各モジュールの Koin モジュールを束ねたリスト。
+ *
+ * ここに含まれるのは feature 層のモジュールのみ。データ層（`:core:*data`）とアプリバージョン定数は
+ * app エントリーポイント（main.kt / KoDriverApplication.kt）の composition root で別途束ねられる。
+ * `:app:shared` は `:core:*` へ依存できない（moduleGraphAssert の `:app:shared -X> :core:.*`）ため、
+ * このリストは feature only になる。
+ */
+val featureModules: List<Module> = listOf(
     mainModule,
     mainPlatformModule,
     lmuWindowsConnectionModule,

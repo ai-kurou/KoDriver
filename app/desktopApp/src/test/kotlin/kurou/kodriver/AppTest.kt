@@ -25,7 +25,7 @@ import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
-import kurou.kodriver.presentation.appModules
+import kurou.kodriver.presentation.featureModules
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -51,7 +51,7 @@ class AppTest {
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
                         fakeTelemetryLogListModule,
-                    ) + appModules,
+                    ) + featureModules,
                 )
             }
         }
