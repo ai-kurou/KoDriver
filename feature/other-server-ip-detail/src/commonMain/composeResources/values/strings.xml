@@ -9,7 +9,7 @@
     <string name="server_ip_save_anyway">このまま保存</string>
     <string name="server_ip_discovery_show_button">検出したサーバーから選ぶ</string>
     <string name="server_ip_discovery_dialog_title">Windows版KoDriverを選択</string>
-    <string name="server_ip_discovery_dialog_confirm">了承する</string>
+    <string name="server_ip_discovery_dialog_confirm">選択する</string>
     <string name="server_ip_discovery_dialog_cancel">キャンセル</string>
     <string name="navigate_back">戻る</string>
 </resources>

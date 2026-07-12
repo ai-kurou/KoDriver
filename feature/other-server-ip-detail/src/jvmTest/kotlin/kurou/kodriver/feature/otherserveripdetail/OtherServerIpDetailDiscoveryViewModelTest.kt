@@ -71,7 +71,7 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     }
 
     @Test
-    fun `検出ダイアログで了承するとIP入力欄へ自動入力されダイアログが閉じる`() = runTest {
+    fun `検出ダイアログで選択するとIP入力欄へ自動入力されダイアログが閉じる`() = runTest {
         every { repository.serverIp() } returns ipFlow
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         val viewModel = createViewModel(discoveredServers = listOf(server))

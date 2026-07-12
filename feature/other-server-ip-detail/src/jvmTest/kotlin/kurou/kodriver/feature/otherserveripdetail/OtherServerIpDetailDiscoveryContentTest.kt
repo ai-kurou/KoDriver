@@ -34,7 +34,7 @@ class OtherServerIpDetailDiscoveryContentTest {
     }
 
     @Test
-    fun `検出ダイアログで了承ボタンをクリックするとonDiscoveryDialogConfirmが呼ばれる`() {
+    fun `検出ダイアログで選択ボタンをクリックするとonDiscoveryDialogConfirmが呼ばれる`() {
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         var confirmCount = 0
         rule.setContent {
@@ -49,7 +49,7 @@ class OtherServerIpDetailDiscoveryContentTest {
             )
         }
 
-        rule.onNodeWithText("了承する").performClick()
+        rule.onNodeWithText("選択する").performClick()
 
         assertEquals(1, confirmCount)
     }
