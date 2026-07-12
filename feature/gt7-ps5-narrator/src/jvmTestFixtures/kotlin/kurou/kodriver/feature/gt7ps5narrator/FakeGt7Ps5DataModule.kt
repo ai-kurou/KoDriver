@@ -21,6 +21,7 @@ val fakeGt7Ps5DataModule = module {
     single<Gt7Ps5UdpPortPreferencesRepository> { FakeGt7Ps5UdpPortPreferencesRepository() }
     single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
+    single<SoundPlayer> { NoOpSoundPlayer() }
 }
 
 private class FakeGt7Ps5Repository : Gt7Ps5Repository {
@@ -45,4 +46,9 @@ private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5Remaining
     private val flow = MutableStateFlow(3)
     override fun observeRemainingFuelLaps(): Flow<Int> = flow
     override suspend fun saveRemainingFuelLaps(laps: Int) { flow.update { laps } }
+}
+
+private class NoOpSoundPlayer : SoundPlayer {
+    override val isPlaying: Boolean = false
+    override suspend fun play(bytes: ByteArray, volume: Int) = Unit
 }
