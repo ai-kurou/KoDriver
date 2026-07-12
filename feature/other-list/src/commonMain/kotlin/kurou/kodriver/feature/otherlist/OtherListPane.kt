@@ -214,7 +214,7 @@ private fun OtherListItem(
         targetValue = if (isSelected) {
             MaterialTheme.colorScheme.secondaryContainer
         } else {
-            MaterialTheme.colorScheme.surfaceContainerLow
+            MaterialTheme.colorScheme.surface
         },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemContainerColor",
@@ -309,7 +309,7 @@ private fun OtherAppVersionListItem(
             )
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = MaterialTheme.colorScheme.surface,
             headlineColor = MaterialTheme.colorScheme.onSurface,
             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
