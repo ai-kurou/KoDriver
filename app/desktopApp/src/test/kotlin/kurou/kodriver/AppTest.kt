@@ -43,15 +43,17 @@ class AppTest {
         @BeforeClass @JvmStatic
         fun setUpKoin() {
             startKoin {
+                // Koinは同一型のsingleが複数登録された場合、後から登録した方で上書きする。
+                // featureModules（lmuWindowsNarratorModule/gt7Ps5NarratorModuleのincludes(platformSoundModule)
+                // で本物のSoundPlayerを再バインドする）をFake群より後ろに置くと、Fakeが上書きされてしまう。
+                // 必ずfeatureModulesを先に、Fake群を最後に登録すること。
                 modules(
-                    listOf(
-                        desktopDataModule,
-                        lmuWindowsDataModule,
+                    listOf(desktopDataModule, lmuWindowsDataModule) + featureModules + listOf(
                         fakeGt7Ps5DataModule,
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
                         fakeTelemetryLogListModule,
-                    ) + featureModules,
+                    ),
                 )
             }
         }
