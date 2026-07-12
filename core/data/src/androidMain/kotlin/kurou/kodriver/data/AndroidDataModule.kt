@@ -2,7 +2,6 @@ package kurou.kodriver.data
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
-import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
@@ -11,7 +10,6 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesReposi
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsMyBestLapEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -54,9 +52,6 @@ fun androidDataModule(context: Context) = module {
     }
     single<ReadoutPreferencesRepository> {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
-    }
-    single<LmuWindowsMyBestLapEnabledRepository> {
-        LmuWindowsMyBestLapEnabledRepositoryImpl(get())
     }
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)

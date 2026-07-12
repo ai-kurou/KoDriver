@@ -18,17 +18,4 @@
 
 ---
 
-## ドメイン・配線
-
-- **対象**: `LmuWindowsMyBestLapEnabledRepository`（`core/domain`）と
-  `lmu-windows-readout-my-best-lap-detail` feature
-  **課題**: Repository・対応する `ObserveLmuWindowsMyBestLapEnabledUseCase` /
-  `SaveLmuWindowsMyBestLapEnabledUseCase` は `core/domain` に定義され `desktopDataModule` にも
-  バインドされているが、feature 側のどの Koin モジュールからも `get()` されていない（実装・UI側で
-  一切参照されていないことをgrepで確認済み）。`Gt7Ps5RemainingFuelLapsEnabledRepository` も同様の
-  未配線状態だったが、調査の結果「実は`ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root`
-  （readout-listの共通スイッチ）経由で別途正しく実現されており、この専用Repositoryは
-  同じ`ReadoutPreferencesRepository`への薄いラッパーに過ぎない完全な重複だった」と判明し、
-  削除した（PR #557）。`LmuWindowsMyBestLapEnabledRepository`も同一パターンの可能性が高いが未確認。
-  **改善案**: `ReadoutItemKey.LmuWindows.MyBestLap.Root`経由で同等のON/OFFが既に実現されていないか
-  `LmuWindowsNarratorViewModel`を確認し、重複であれば同様に削除する。
+（ここに改善案を追記していく）
