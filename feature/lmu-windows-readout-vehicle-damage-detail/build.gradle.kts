@@ -11,6 +11,10 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
         }
+
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+        }
     }
 }
 
