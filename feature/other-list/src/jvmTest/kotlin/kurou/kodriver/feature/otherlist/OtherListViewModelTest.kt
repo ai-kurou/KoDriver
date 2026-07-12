@@ -1,8 +1,14 @@
 package kurou.kodriver.feature.otherlist
 
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -10,7 +16,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
@@ -25,68 +30,33 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-internal class FakeAppUpdateRepository(
-    private val latestRelease: AppUpdate? = null,
-) : AppUpdateRepository {
-    override suspend fun getLatestRelease(): AppUpdate? = latestRelease
-}
-
-internal class FakeExitConfirmationEnabledRepository(
-    initial: Boolean = true,
-) : ExitConfirmationEnabledRepository {
-    private val flow = MutableStateFlow(initial)
-
-    override fun exitConfirmationEnabled(): Flow<Boolean> = flow
-
-    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
-        flow.update { enabled }
-    }
-
-    fun updateExitConfirmationEnabled(enabled: Boolean) {
-        flow.update { enabled }
-    }
-}
-
-internal class FakeKeepScreenOnEnabledRepository(
-    initial: Boolean = true,
-) : KeepScreenOnEnabledRepository {
-    private val flow = MutableStateFlow(initial)
-
-    override fun keepScreenOn(): Flow<Boolean> = flow
-
-    override suspend fun saveKeepScreenOn(enabled: Boolean) {
-        flow.update { enabled }
-    }
-
-    fun updateKeepScreenOn(enabled: Boolean) {
-        flow.update { enabled }
-    }
-}
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtherListViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
-    private lateinit var keepScreenOnPreferencesRepository: FakeKeepScreenOnEnabledRepository
-    private lateinit var exitConfirmationPreferencesRepository: FakeExitConfirmationEnabledRepository
-    private lateinit var viewModel: OtherListViewModel
+
+    @MockK
+    private lateinit var appUpdateRepository: AppUpdateRepository
+
+    @MockK
+    private lateinit var keepScreenOnRepository: KeepScreenOnEnabledRepository
+
+    @MockK
+    private lateinit var exitConfirmationRepository: ExitConfirmationEnabledRepository
+
+    private val keepScreenOnFlow = MutableStateFlow(true)
+    private val exitConfirmationFlow = MutableStateFlow(true)
 
     @BeforeTest
     fun setUp() {
+        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
-        keepScreenOnPreferencesRepository = FakeKeepScreenOnEnabledRepository()
-        exitConfirmationPreferencesRepository = FakeExitConfirmationEnabledRepository()
-        viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
-            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
-            saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
-            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(
-                exitConfirmationPreferencesRepository,
-            ),
-            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationPreferencesRepository),
-            currentVersion = "0.5.0",
-            appVersionLabel = "Windows版KoDriverバージョン",
-        )
+        every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+        coEvery { keepScreenOnRepository.saveKeepScreenOn(any()) } answers { keepScreenOnFlow.update { firstArg() } }
+        every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
+        coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
+            exitConfirmationFlow.update { firstArg() }
+        }
     }
 
     @AfterTest
@@ -94,122 +64,180 @@ class OtherListViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun createViewModel(currentVersion: String = "0.5.0") = OtherListViewModel(
+        checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
+        observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+        saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+        observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(exitConfirmationRepository),
+        saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationRepository),
+        currentVersion = currentVersion,
+        appVersionLabel = "Windows版KoDriverバージョン",
+    )
+
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
+
         assertEquals(buildOtherListItems(), viewModel.uiState.first().items)
         assertEquals("Windows版KoDriverバージョン", viewModel.uiState.first().appVersionLabel)
         assertEquals("0.5.0", viewModel.uiState.first().appVersion)
         assertNull(viewModel.uiState.first().selectedItem)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `音量を選択すると選択状態になる`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
+
         viewModel.onItemSelected(OtherListItemType.Volume)
-        advanceMainUntilIdle()
+        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `GitHubレポジトリを選択しても状態は変わらない`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
         val initialState = viewModel.uiState.first()
 
         viewModel.onItemSelected(OtherListItemType.GitHubRepository)
 
         assertEquals(initialState, viewModel.uiState.first())
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `リリースページを選択しても状態は変わらない`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
         val initialState = viewModel.uiState.first()
 
         viewModel.onItemSelected(OtherListItemType.ReleasePage)
 
         assertEquals(initialState, viewModel.uiState.first())
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
-        viewModel.onItemSelected(OtherListItemType.License)
-        advanceMainUntilIdle()
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
 
+        viewModel.onItemSelected(OtherListItemType.License)
+        dispatcher.scheduler.advanceUntilIdle()
         assertEquals(OtherListItemType.License, viewModel.uiState.first().selectedItem)
 
         viewModel.onItemSelected(OtherListItemType.License)
-        advanceMainUntilIdle()
-
+        dispatcher.scheduler.advanceUntilIdle()
         assertNull(viewModel.uiState.first().selectedItem)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
+
         viewModel.selectItem(OtherListItemType.ConsoleIp)
-        advanceMainUntilIdle()
+        dispatcher.scheduler.advanceUntilIdle()
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
 
         viewModel.selectItem(OtherListItemType.ConsoleIp)
-        advanceMainUntilIdle()
+        dispatcher.scheduler.advanceUntilIdle()
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
+
         viewModel.onItemSelected(OtherListItemType.License)
-        advanceMainUntilIdle()
+        dispatcher.scheduler.advanceUntilIdle()
 
         viewModel.clearSelectedItem()
-        advanceMainUntilIdle()
+        dispatcher.scheduler.advanceUntilIdle()
 
         assertNull(viewModel.uiState.first().selectedItem)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `終了確認の有効状態を監視できる`() = runTest {
-        val repository = FakeExitConfirmationEnabledRepository()
-        val viewModel = OtherListViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository()),
-            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
-            saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnPreferencesRepository),
-            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(repository),
-            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(repository),
-            currentVersion = "0.5.0",
-            appVersionLabel = "Windows版KoDriverバージョン",
-        )
-        advanceMainUntilIdle()
+        val viewModel = createViewModel()
+        dispatcher.scheduler.advanceUntilIdle()
 
-        repository.updateExitConfirmationEnabled(false)
-        advanceMainUntilIdle()
+        exitConfirmationFlow.update { false }
+        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `onExitConfirmationEnabledChangeで終了確認の有効状態を保存できる`() = runTest {
-        viewModel.onExitConfirmationEnabledChange(false)
-        advanceMainUntilIdle()
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
 
-        assertEquals(false, exitConfirmationPreferencesRepository.exitConfirmationEnabled().first())
+        viewModel.onExitConfirmationEnabledChange(false)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(false, exitConfirmationFlow.first())
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        coVerify(exactly = 1) { exitConfirmationRepository.saveExitConfirmationEnabled(false) }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `画面スリープ無効の状態を監視できる`() = runTest {
-        keepScreenOnPreferencesRepository.updateKeepScreenOn(false)
-        advanceMainUntilIdle()
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
+
+        keepScreenOnFlow.update { false }
+        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(false, viewModel.uiState.first().keepScreenOn)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 
     @Test
     fun `onKeepScreenOnChangeで画面スリープ無効の状態を保存できる`() = runTest {
+        val viewModel = createViewModel()
+        dispatcher.scheduler.runCurrent()
+
         viewModel.onKeepScreenOnChange(false)
-        advanceMainUntilIdle()
-
-        assertEquals(false, keepScreenOnPreferencesRepository.keepScreenOn().first())
-        assertEquals(false, viewModel.uiState.first().keepScreenOn)
-    }
-
-    private fun advanceMainUntilIdle() {
         dispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(false, keepScreenOnFlow.first())
+        assertEquals(false, viewModel.uiState.first().keepScreenOn)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 }
