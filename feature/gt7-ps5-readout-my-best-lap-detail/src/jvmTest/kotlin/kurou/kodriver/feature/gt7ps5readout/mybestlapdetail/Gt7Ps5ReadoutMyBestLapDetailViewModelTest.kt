@@ -2,9 +2,18 @@
 
 package kurou.kodriver.feature.gt7ps5readout.mybestlapdetail
 
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -12,8 +21,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5MyBestLapVoiceTypeUseCase
@@ -22,32 +30,23 @@ import org.junit.Before
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private class FakeTextToSpeechEngine(
-    private val onSpeak: (SpeechEvent) -> Unit,
-) : TextToSpeechEngine {
-    override val currentReadoutItemKey: ReadoutItemKey? = null
-    override fun speak(event: SpeechEvent, queue: Boolean) = onSpeak(event)
-    override fun stop() = Unit
-    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
-}
-
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
-    private lateinit var repository: FakeGt7Ps5MyBestLapPreferencesRepository
-    private val playedEvents = mutableListOf<SpeechEvent>()
-    private lateinit var viewModel: Gt7Ps5ReadoutMyBestLapDetailViewModel
+
+    @MockK
+    private lateinit var repository: Gt7Ps5MyBestLapPreferencesRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
+
+    private val voiceTypeFlow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
 
     @Before
     fun setUp() {
+        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        repository = FakeGt7Ps5MyBestLapPreferencesRepository()
-        viewModel = Gt7Ps5ReadoutMyBestLapDetailViewModel(
-            observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
-            saveMyBestLapVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
-            playSpeechEvent = PlaySpeechEventUseCase(FakeTextToSpeechEngine { playedEvents.add(it) }),
-        )
     }
 
     @After
@@ -55,34 +54,61 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun createViewModel() = Gt7Ps5ReadoutMyBestLapDetailViewModel(
+        observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
+        saveMyBestLapVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
+        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+    )
+
     @Test
     fun `初期状態は voiceType=FORMAL の UiState を返す`() = runTest {
-        val state = viewModel.uiState.first()
-        assertEquals(MyBestLapVoiceType.FORMAL, state.voiceType)
+        every { repository.observeVoiceType() } returns voiceTypeFlow
+        val viewModel = createViewModel()
+
+        assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
+        verify(exactly = 1) { repository.observeVoiceType() }
+        confirmVerified(repository)
     }
 
     @Test
     fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() = runTest {
-        viewModel.onVoiceTypeChanged(MyBestLapVoiceType.CASUAL)
-        assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
-    }
+        every { repository.observeVoiceType() } returns voiceTypeFlow
+        coEvery { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) } answers {
+            voiceTypeFlow.update { MyBestLapVoiceType.CASUAL }
+        }
+        val viewModel = createViewModel()
 
-    @Test
-    fun `onVoiceTypeChanged に FORMAL を渡すと voiceType=FORMAL になる`() = runTest {
-        repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
-        viewModel.onVoiceTypeChanged(MyBestLapVoiceType.FORMAL)
-        assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
+        viewModel.onVoiceTypeChanged(MyBestLapVoiceType.CASUAL)
+
+        assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
+        verify(exactly = 1) { repository.observeVoiceType() }
+        coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
+        confirmVerified(repository)
     }
 
     @Test
     fun `onPreviewClicked に FORMAL を渡すと MyBestLapFormal イベントが再生される`() {
+        every { repository.observeVoiceType() } returns voiceTypeFlow
+        every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } returns Unit
+        val viewModel = createViewModel()
+
         viewModel.onPreviewClicked(MyBestLapVoiceType.FORMAL)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), playedEvents)
+
+        verify(exactly = 1) { repository.observeVoiceType() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+        confirmVerified(repository, ttsEngine)
     }
 
     @Test
     fun `onPreviewClicked に CASUAL を渡すと MyBestLapCasual イベントが再生される`() {
+        every { repository.observeVoiceType() } returns voiceTypeFlow
+        every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapCasual, false) } returns Unit
+        val viewModel = createViewModel()
+
         viewModel.onPreviewClicked(MyBestLapVoiceType.CASUAL)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapCasual), playedEvents)
+
+        verify(exactly = 1) { repository.observeVoiceType() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapCasual, false) }
+        confirmVerified(repository, ttsEngine)
     }
 }
