@@ -16,7 +16,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.gt7ps5narrator.fakeGt7Ps5DataModule
@@ -47,8 +46,10 @@ class AppTest {
                 // featureModules（lmuWindowsNarratorModule/gt7Ps5NarratorModuleのincludes(platformSoundModule)
                 // で本物のSoundPlayerを再バインドする）をFake群より後ろに置くと、Fakeが上書きされてしまう。
                 // 必ずfeatureModulesを先に、Fake群を最後に登録すること。
+                // :core:lmu-windows-data の lmuWindowsDataModule は含めない。LMU/GT7の各Repositoryは
+                // fakeLmuWindowsNarratorModule / fakeGt7Ps5DataModule が最後に上書きするため実質未使用になる。
                 modules(
-                    listOf(desktopDataModule, lmuWindowsDataModule) + featureModules + listOf(
+                    listOf(desktopDataModule) + featureModules + listOf(
                         fakeGt7Ps5DataModule,
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
