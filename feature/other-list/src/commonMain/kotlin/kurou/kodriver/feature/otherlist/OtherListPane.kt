@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +33,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -207,12 +210,37 @@ private fun OtherListItem(
     onExitConfirmationEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
-    Surface(
-        color = if (item == uiState.selectedItem) {
+    val isSelected = item == uiState.selectedItem
+    val containerColor by animateColorAsState(
+        targetValue = if (isSelected) {
             MaterialTheme.colorScheme.secondaryContainer
         } else {
             MaterialTheme.colorScheme.surface
         },
+        animationSpec = tween(durationMillis = 500),
+        label = "otherListItemContainerColor",
+    )
+    val headlineColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        animationSpec = tween(durationMillis = 500),
+        label = "otherListItemHeadlineColor",
+    )
+    val iconColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(durationMillis = 500),
+        label = "otherListItemIconColor",
+    )
+
+    Surface(
+        color = containerColor,
     ) {
         ListItem(
             headlineContent = { Text(otherItemDisplayName(item)) },
@@ -238,21 +266,12 @@ private fun OtherListItem(
                     -> OtherListItemTrailingIcon(item)
                 }
             },
-            colors = if (item == uiState.selectedItem) {
-                ListItemDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    leadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    trailingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            } else {
-                ListItemDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    headlineColor = MaterialTheme.colorScheme.onSurface,
-                    leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            },
+            colors = ListItemDefaults.colors(
+                containerColor = containerColor,
+                headlineColor = headlineColor,
+                leadingIconColor = iconColor,
+                trailingIconColor = iconColor,
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
