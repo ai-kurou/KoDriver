@@ -101,4 +101,26 @@ class OtherServerIpDetailPaneScreenshotTest {
         }
         rule.onAllNodes(isRoot()).get(0).captureRoboImage()
     }
+
+    @Test
+    fun `検出したサーバーから選ぶボタン表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherServerIpDetailPaneContent(
+                            uiState = OtherServerIpDetailUiState(
+                                inputIp = "192.168.1.100",
+                                discoveredServers = listOf(
+                                    DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+                                ),
+                                isDiscoveryDialogVisible = false,
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
+    }
 }
