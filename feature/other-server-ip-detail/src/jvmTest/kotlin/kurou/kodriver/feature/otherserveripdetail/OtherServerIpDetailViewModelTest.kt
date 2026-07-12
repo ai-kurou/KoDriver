@@ -50,7 +50,7 @@ class OtherServerIpDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun buildViewModel(
+    private fun createViewModel(
         reachable: Boolean = true,
     ) = OtherServerIpDetailViewModel(
         observeServerIp = ObserveServerIpUseCase(repository),
@@ -61,7 +61,7 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `保存済みのIPアドレスをUiStateで返す`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val viewModel = buildViewModel()
+        val viewModel = createViewModel()
 
         val expected = OtherServerIpDetailUiState(inputIp = "192.168.1.1", isInputValid = true)
         assertEquals(expected, viewModel.uiState.first())
@@ -72,7 +72,7 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `IPアドレスを変更するとUiStateが更新される`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val viewModel = buildViewModel()
+        val viewModel = createViewModel()
 
         viewModel.onIpChanged("10.0.0.1")
 
@@ -84,7 +84,7 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `不正なIPアドレスを入力するとisInputValidがfalseになる`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val viewModel = buildViewModel()
+        val viewModel = createViewModel()
 
         viewModel.onIpChanged("invalid")
 
@@ -97,7 +97,7 @@ class OtherServerIpDetailViewModelTest {
     fun `サーバーに到達可能な場合は保存されisSavedがtrueになる`() = runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp(any()) } answers { ipFlow.update { firstArg() } }
-        val viewModel = buildViewModel(reachable = true)
+        val viewModel = createViewModel(reachable = true)
 
         viewModel.onIpChanged("10.0.0.2")
         viewModel.onSave()
@@ -112,7 +112,7 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `不正なIPアドレスは保存されない`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val viewModel = buildViewModel(reachable = true)
+        val viewModel = createViewModel(reachable = true)
 
         viewModel.onIpChanged("bad")
         viewModel.onSave()
@@ -125,13 +125,13 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `サーバーに到達不可能な場合は警告が表示されisSavedはfalseのまま`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val vm = buildViewModel(reachable = false)
+        val viewModel = createViewModel(reachable = false)
 
-        vm.onIpChanged("10.0.0.1")
-        vm.onSave()
+        viewModel.onIpChanged("10.0.0.1")
+        viewModel.onSave()
 
-        assertTrue(vm.uiState.first().connectivityWarning)
-        assertFalse(vm.uiState.first().isSaved)
+        assertTrue(viewModel.uiState.first().connectivityWarning)
+        assertFalse(viewModel.uiState.first().isSaved)
         verify(exactly = 1) { repository.serverIp() }
         confirmVerified(repository)
     }
@@ -140,14 +140,14 @@ class OtherServerIpDetailViewModelTest {
     fun `到達不可能でもonSaveAnywayで保存できる`() = runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp(any()) } answers { ipFlow.update { firstArg() } }
-        val vm = buildViewModel(reachable = false)
+        val viewModel = createViewModel(reachable = false)
 
-        vm.onIpChanged("10.0.0.1")
-        vm.onSave()
-        vm.onSaveAnyway()
+        viewModel.onIpChanged("10.0.0.1")
+        viewModel.onSave()
+        viewModel.onSaveAnyway()
 
         assertEquals("10.0.0.1", ipFlow.first())
-        assertTrue(vm.uiState.first().isSaved)
+        assertTrue(viewModel.uiState.first().isSaved)
         verify(exactly = 1) { repository.serverIp() }
         coVerify(exactly = 1) { repository.saveServerIp("10.0.0.1") }
         confirmVerified(repository)
@@ -156,13 +156,13 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `onDismissで入力内容と警告がリセットされる`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val vm = buildViewModel(reachable = false)
+        val viewModel = createViewModel(reachable = false)
 
-        vm.onIpChanged("10.0.0.99")
-        vm.onSave()
-        vm.onDismiss()
+        viewModel.onIpChanged("10.0.0.99")
+        viewModel.onSave()
+        viewModel.onDismiss()
 
-        val state = vm.uiState.first()
+        val state = viewModel.uiState.first()
         assertEquals("192.168.1.1", state.inputIp)
         assertFalse(state.connectivityWarning)
         assertFalse(state.isSaved)
@@ -173,9 +173,9 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `保存済みIPがない場合は空文字を返す`() = runTest {
         every { repository.serverIp() } returns MutableStateFlow(null)
-        val vm = buildViewModel()
+        val viewModel = createViewModel()
 
-        assertEquals(OtherServerIpDetailUiState(inputIp = "", isInputValid = true), vm.uiState.first())
+        assertEquals(OtherServerIpDetailUiState(inputIp = "", isInputValid = true), viewModel.uiState.first())
         verify(exactly = 1) { repository.serverIp() }
         confirmVerified(repository)
     }
@@ -183,7 +183,7 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `255を超える値を持つIPアドレスは不正と判定される`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val viewModel = buildViewModel()
+        val viewModel = createViewModel()
 
         viewModel.onIpChanged("256.0.0.1")
 
@@ -195,7 +195,7 @@ class OtherServerIpDetailViewModelTest {
     @Test
     fun `境界値の255は有効と判定される`() = runTest {
         every { repository.serverIp() } returns ipFlow
-        val viewModel = buildViewModel()
+        val viewModel = createViewModel()
 
         viewModel.onIpChanged("255.255.255.255")
 
@@ -208,12 +208,12 @@ class OtherServerIpDetailViewModelTest {
     fun `保存に失敗するとsaveFailedがtrueになる`() = runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp(any()) } throws IOException("保存失敗")
-        val vm = buildViewModel(reachable = true)
+        val viewModel = createViewModel(reachable = true)
 
-        vm.onIpChanged("10.0.0.1")
-        vm.onSave()
+        viewModel.onIpChanged("10.0.0.1")
+        viewModel.onSave()
 
-        assertTrue(vm.uiState.first().saveFailed)
+        assertTrue(viewModel.uiState.first().saveFailed)
         verify(exactly = 1) { repository.serverIp() }
         coVerify(exactly = 1) { repository.saveServerIp("10.0.0.1") }
         confirmVerified(repository)
@@ -225,13 +225,13 @@ class OtherServerIpDetailViewModelTest {
         coEvery { repository.saveServerIp(any()) } throws IOException("保存失敗") andThenAnswer {
             ipFlow.update { firstArg() }
         }
-        val vm = buildViewModel(reachable = true)
+        val viewModel = createViewModel(reachable = true)
 
-        vm.onIpChanged("10.0.0.1")
-        vm.onSave()
-        vm.onSave()
+        viewModel.onIpChanged("10.0.0.1")
+        viewModel.onSave()
+        viewModel.onSave()
 
-        assertFalse(vm.uiState.first().saveFailed)
+        assertFalse(viewModel.uiState.first().saveFailed)
         verify(exactly = 1) { repository.serverIp() }
         coVerify(exactly = 2) { repository.saveServerIp("10.0.0.1") }
         confirmVerified(repository)
