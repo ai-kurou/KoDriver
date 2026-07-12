@@ -25,6 +25,7 @@ val generateAppVersionSource = tasks.register("generateAppVersionSource") {
 
 plugins {
     id("feature-kmp")
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -59,4 +60,10 @@ kotlin {
 
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
     dependsOn(generateAppVersionSource)
+}
+
+dependencies {
+    testFixturesApi(projects.core.domain)
+    testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

@@ -1,5 +1,6 @@
 plugins {
     id("feature-compose-screenshot")
+    `java-test-fixtures`
 }
 
 kotlin {
@@ -32,4 +33,10 @@ kotlin {
 
 compose.resources {
     packageOfResClass = "kodriver.feature.otherthemedetail.generated.resources"
+}
+
+dependencies {
+    testFixturesApi(projects.core.domain)
+    testFixturesImplementation(libs.koin.core)
+    testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }
