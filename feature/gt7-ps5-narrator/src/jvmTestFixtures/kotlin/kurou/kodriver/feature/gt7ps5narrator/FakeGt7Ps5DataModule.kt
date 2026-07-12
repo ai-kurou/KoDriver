@@ -5,6 +5,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import org.koin.dsl.module
@@ -16,6 +19,8 @@ import org.koin.dsl.module
 val fakeGt7Ps5DataModule = module {
     single<Gt7Ps5Repository> { FakeGt7Ps5Repository() }
     single<Gt7Ps5UdpPortPreferencesRepository> { FakeGt7Ps5UdpPortPreferencesRepository() }
+    single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
+    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
 }
 
 private class FakeGt7Ps5Repository : Gt7Ps5Repository {
@@ -28,4 +33,16 @@ private class FakeGt7Ps5UdpPortPreferencesRepository : Gt7Ps5UdpPortPreferencesR
 
     override fun port(): Flow<Int> = flow
     override suspend fun savePort(port: Int) { flow.update { port } }
+}
+
+private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferencesRepository {
+    private val flow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
+    override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
+    override suspend fun saveVoiceType(type: MyBestLapVoiceType) { flow.update { type } }
+}
+
+private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5RemainingFuelLapsPreferencesRepository {
+    private val flow = MutableStateFlow(3)
+    override fun observeRemainingFuelLaps(): Flow<Int> = flow
+    override suspend fun saveRemainingFuelLaps(laps: Int) { flow.update { laps } }
 }

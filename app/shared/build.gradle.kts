@@ -119,10 +119,18 @@ dependencies {
     add("jvmTestImplementation", testFixtures(projects.feature.gt7Ps5Narrator))
     add("jvmTestImplementation", testFixtures(projects.feature.readoutList))
     add("jvmTestImplementation", testFixtures(projects.feature.telemetryLogList))
+    add("jvmTestImplementation", testFixtures(projects.feature.main))
+    add("jvmTestImplementation", testFixtures(projects.feature.otherThemeDetail))
+    add("jvmTestImplementation", testFixtures(projects.feature.otherReadoutStartSoundDetail))
+    add("jvmTestImplementation", testFixtures(projects.feature.otherConsoleIpDetail))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.gt7Ps5Narrator))
     testFixturesApi(testFixtures(projects.feature.readoutList))
     testFixturesApi(testFixtures(projects.feature.telemetryLogList))
+    testFixturesApi(testFixtures(projects.feature.main))
+    testFixturesApi(testFixtures(projects.feature.otherThemeDetail))
+    testFixturesApi(testFixtures(projects.feature.otherReadoutStartSoundDetail))
+    testFixturesApi(testFixtures(projects.feature.otherConsoleIpDetail))
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
