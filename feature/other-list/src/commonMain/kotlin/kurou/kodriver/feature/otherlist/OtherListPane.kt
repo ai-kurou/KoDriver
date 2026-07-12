@@ -29,7 +29,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -215,7 +214,7 @@ private fun OtherListItem(
         targetValue = if (isSelected) {
             MaterialTheme.colorScheme.secondaryContainer
         } else {
-            MaterialTheme.colorScheme.surface
+            MaterialTheme.colorScheme.surfaceContainerLow
         },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemContainerColor",
@@ -239,59 +238,53 @@ private fun OtherListItem(
         label = "otherListItemIconColor",
     )
 
-    Surface(
-        color = containerColor,
-    ) {
-        ListItem(
-            headlineContent = { Text(otherItemDisplayName(item)) },
-            leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
-            trailingContent = {
-                when (item) {
-                    OtherListItemType.KeepScreenOn -> Switch(
-                        checked = uiState.keepScreenOn,
-                        onCheckedChange = onKeepScreenOnChange,
-                    )
-                    OtherListItemType.ExitConfirmation -> Switch(
-                        checked = uiState.exitConfirmationEnabled,
-                        onCheckedChange = onExitConfirmationEnabledChange,
-                    )
-                    OtherListItemType.ServerIp,
-                    OtherListItemType.ConsoleIp,
-                    OtherListItemType.Volume,
-                    OtherListItemType.ReadoutStartSound,
-                    OtherListItemType.Theme,
-                    OtherListItemType.GitHubRepository,
-                    OtherListItemType.ReleasePage,
-                    OtherListItemType.License,
-                    -> OtherListItemTrailingIcon(item)
-                }
-            },
-            colors = ListItemDefaults.colors(
-                containerColor = containerColor,
-                headlineColor = headlineColor,
-                leadingIconColor = iconColor,
-                trailingIconColor = iconColor,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    when (item) {
-                        OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
-                        OtherListItemType.ExitConfirmation ->
-                            onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
-                        OtherListItemType.ServerIp,
-                        OtherListItemType.ConsoleIp,
-                        OtherListItemType.Volume,
-                        OtherListItemType.ReadoutStartSound,
-                        OtherListItemType.Theme,
-                        OtherListItemType.GitHubRepository,
-                        OtherListItemType.ReleasePage,
-                        OtherListItemType.License,
-                        -> onItemClick(item)
-                    }
-                },
-        )
-    }
+    ListItem(
+        headlineContent = { Text(otherItemDisplayName(item)) },
+        leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
+        trailingContent = {
+            when (item) {
+                OtherListItemType.KeepScreenOn -> Switch(
+                    checked = uiState.keepScreenOn,
+                    onCheckedChange = onKeepScreenOnChange,
+                )
+                OtherListItemType.ExitConfirmation -> Switch(
+                    checked = uiState.exitConfirmationEnabled,
+                    onCheckedChange = onExitConfirmationEnabledChange,
+                )
+                OtherListItemType.ServerIp,
+                OtherListItemType.ConsoleIp,
+                OtherListItemType.Volume,
+                OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Theme,
+                OtherListItemType.GitHubRepository,
+                OtherListItemType.ReleasePage,
+                OtherListItemType.License,
+                -> OtherListItemTrailingIcon(item)
+            }
+        },
+        colors = ListItemDefaults.colors(
+            containerColor = containerColor,
+            headlineColor = headlineColor,
+            leadingIconColor = iconColor,
+            trailingIconColor = iconColor,
+        ),
+        modifier = Modifier.fillMaxWidth().clickable {
+            when (item) {
+                OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
+                OtherListItemType.ExitConfirmation ->
+                    onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
+                OtherListItemType.ServerIp,
+                OtherListItemType.ConsoleIp,
+                OtherListItemType.Volume,
+                OtherListItemType.ReadoutStartSound,
+                OtherListItemType.Theme,
+                OtherListItemType.GitHubRepository,
+                OtherListItemType.ReleasePage,
+                OtherListItemType.License,
+                -> onItemClick(item)
+            }
+        },
+    )
 }
 
 @Composable
@@ -316,7 +309,7 @@ private fun OtherAppVersionListItem(
             )
         },
         colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             headlineColor = MaterialTheme.colorScheme.onSurface,
             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
