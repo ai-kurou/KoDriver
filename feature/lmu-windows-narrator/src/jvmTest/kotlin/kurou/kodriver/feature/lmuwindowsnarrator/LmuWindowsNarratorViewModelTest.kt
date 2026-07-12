@@ -1,13 +1,19 @@
+@file:Suppress("FunctionNaming", "TooManyFunctions", "LargeClass")
+
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import io.mockk.MockKAnnotations
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -29,13 +35,11 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -76,13 +80,52 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@Suppress("TooManyFunctions")
 class LmuWindowsNarratorViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    @MockK
+    private lateinit var vehicleApproachRepository: LmuWindowsVehicleApproachRepository
+
+    @MockK
+    private lateinit var lmuWindowsRepository: LmuWindowsRepository
+
+    @MockK
+    private lateinit var vehicleApproachPreferencesRepository: LmuWindowsVehicleApproachPreferencesRepository
+
+    @MockK
+    private lateinit var vehicleDamageRepository: LmuWindowsVehicleDamageRepository
+
+    @MockK
+    private lateinit var vehicleDamagePreferencesRepository: LmuWindowsVehicleDamagePreferencesRepository
+
+    @MockK
+    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
+
+    @MockK
+    private lateinit var readoutPreferencesRepository: ReadoutPreferencesRepository
+
+    @MockK
+    private lateinit var flagRepository: LmuWindowsFlagRepository
+
+    @MockK
+    private lateinit var flagPreferencesRepository: LmuWindowsFlagPreferencesRepository
+
+    @MockK
+    private lateinit var tyreCarcassTemperatureRepository: LmuWindowsTyreCarcassTemperatureRepository
+
+    @MockK
+    private lateinit var tyreTemperaturePreferencesRepository: LmuWindowsTyreTemperaturePreferencesRepository
+
+    @MockK
+    private lateinit var myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository
+
+    @MockK
+    private lateinit var telemetryLogRepository: TelemetryLogRepository
+
     @Before
     fun setUp() {
+        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
@@ -92,7 +135,7 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Suppress("LongParameterList")
-    private fun buildViewModel(
+    private fun createViewModel(
         vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
         flagChannel: Channel<LmuWindowsRaceFlagsData> = Channel(Channel.UNLIMITED),
         damageChannel: Channel<LmuWindowsVehicleDamageData> = Channel(Channel.UNLIMITED),
@@ -116,22 +159,42 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
-        telemetryLogRepository: FakeTelemetryLogRepository = FakeTelemetryLogRepository(),
     ): LmuWindowsNarratorViewModel {
-        val readoutRepo = FakeAllEnabledReadoutPreferencesRepository(enabledOverrides, orderOverride)
-        val vehicleApproachPreferencesRepository = FakeConstantLmuWindowsVehicleApproachPreferencesRepository(
-            skipFirstLap = skipFirstLap,
-            startReadoutEnabled = startReadoutEnabled,
-            startReadoutType = startReadoutType,
+        every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
+        every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
+        every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(skipFirstLap)
+        every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns
+            MutableStateFlow(startReadoutEnabled)
+        every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
+            MutableStateFlow(startReadoutType)
+        every { vehicleDamageRepository.vehicleDamageStream() } returns damageChannel.receiveAsFlow()
+        every { vehicleDamagePreferencesRepository.observeEnabledStates() } returns
+            MutableStateFlow(vehicleDamageEnabledOverrides)
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
+        every { readoutPreferencesRepository.observeReadoutEnabledStates(any()) } returns
+            MutableStateFlow(enabledOverrides)
+        every { readoutPreferencesRepository.observeReadoutOrder(any()) } returns MutableStateFlow(orderOverride)
+        every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
+        every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
+        every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+            tyreTemperatureChannel.receiveAsFlow()
+        every { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns
+            MutableStateFlow(tyreTemperatureHighThreshold)
+        every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns MutableStateFlow(
+            mapOf(
+                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to tyreTemperatureOverheatWarningEnabled,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to tyreTemperatureLowWarningEnabled,
+            ),
         )
+        every { tyreTemperaturePreferencesRepository.observeLowWarningPhases() } returns
+            MutableStateFlow(tyreTemperatureLowWarningPhasesOverride)
+        every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } just Runs
+
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases = VehicleApproachUseCases(
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
-                    FakeChannelVehicleApproachRepository(vehicleApproachChannel.receiveAsFlow()),
-                ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(
-                    FakeChannelLmuWindowsRepository(telemetryChannel.receiveAsFlow()),
-                ),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+                observeLmuWindows = ObserveLmuWindowsUseCase(lmuWindowsRepository),
                 observeSkipFirstLap = ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
@@ -143,65 +206,72 @@ class LmuWindowsNarratorViewModelTest {
                 ),
             ),
             vehicleDamageUseCases = VehicleDamageUseCases(
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
-                    FakeChannelVehicleDamageRepository(damageChannel.receiveAsFlow()),
-                ),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(vehicleDamageRepository),
                 observeVehicleDamageEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
-                    FakeLmuWindowsVehicleDamagePreferencesRepository(vehicleDamageEnabledOverrides),
+                    vehicleDamagePreferencesRepository,
                 ),
             ),
             readoutListUseCases = ReadoutListUseCases(
-                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(
-                    FakeConstantSimulatorRepository(simulator),
-                ),
-                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepo),
-                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepo),
+                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
+                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
             ),
             flagUseCases = FlagUseCases(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(
-                    FakeChannelFlagRepository(flagChannel.receiveAsFlow()),
-                ),
-                observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(
-                    FakeLmuWindowsFlagPreferencesRepository(flagEnabledOverrides),
-                ),
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+                observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
             ),
             tyreTemperatureUseCases = TyreTemperatureUseCases(
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    FakeChannelTyreCarcassTemperatureRepository(tyreTemperatureChannel.receiveAsFlow()),
+                    tyreCarcassTemperatureRepository,
                 ),
                 observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(
-                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
-                        threshold = tyreTemperatureHighThreshold,
-                        overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
-                        lowWarningEnabled = tyreTemperatureLowWarningEnabled,
-                    ),
+                    tyreTemperaturePreferencesRepository,
                 ),
                 observeTyreTemperatureEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(
-                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
-                        threshold = tyreTemperatureHighThreshold,
-                        overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
-                        lowWarningEnabled = tyreTemperatureLowWarningEnabled,
-                    ),
+                    tyreTemperaturePreferencesRepository,
                 ),
                 observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(
-                    FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
-                        threshold = tyreTemperatureHighThreshold,
-                        overheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
-                        lowWarningEnabled = tyreTemperatureLowWarningEnabled,
-                        lowWarningPhases = tyreTemperatureLowWarningPhasesOverride,
-                    ),
+                    tyreTemperaturePreferencesRepository,
                 ),
             ),
             ttsEngine = ttsEngine,
             narratorUseCases = NarratorUseCases(
                 determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
-                observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(
-                    FakeLmuWindowsMyBestLapPreferencesRepository(voiceType),
-                ),
+                observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
             ),
             currentTimeMs = currentTimeMs,
         )
+    }
+
+    private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
+        val tts: TextToSpeechEngine = mockk()
+        every { tts.currentReadoutItemKey } returns null
+        every { tts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { tts.stop() } just Runs
+        every { tts.previewStartSound(any()) } just Runs
+        return tts
+    }
+
+    private interface PriorityAwareTts : TextToSpeechEngine {
+        val stopCalled: Boolean
+    }
+
+    private fun mockPriorityAwareTts(
+        spokenTexts: MutableList<SpeechEvent>,
+        initialKey: ReadoutItemKey?,
+    ): PriorityAwareTts {
+        val tts: PriorityAwareTts = mockk()
+        var currentKey = initialKey
+        var stopCalled = false
+        every { tts.currentReadoutItemKey } answers { currentKey }
+        every { tts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { tts.stop() } answers {
+            stopCalled = true
+            currentKey = null
+        }
+        every { tts.stopCalled } answers { stopCalled }
+        return tts
     }
 
     // --- シミュレータ選択 ---
@@ -210,8 +280,9 @@ class LmuWindowsNarratorViewModelTest {
     fun `LMU非選択時は接近アナウンスをしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             simulator = null,
@@ -223,19 +294,20 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 50L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `LMU非選択時は旗アナウンスをしない`() = runTest(testDispatcher) {
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = null)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(flagChannel = flagChannel, ttsEngine = tts, simulator = null)
 
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     // --- 自己ベストラップ ---
@@ -243,8 +315,9 @@ class LmuWindowsNarratorViewModelTest {
     @Test
     fun `自己ベストラップの声種別設定を反映して読み上げる`() = runTest(testDispatcher) {
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             voiceType = MyBestLapVoiceType.CASUAL,
@@ -255,14 +328,15 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLapCasual), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.LmuWindowsMyBestLapCasual), spokenTexts)
     }
 
     @Test
     fun `自己ベストラップが無効のときは読み上げない`() = runTest(testDispatcher) {
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.MyBestLap.Root to false),
@@ -272,22 +346,23 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L))
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `自己ベストラップ読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val logs = mutableListOf<TelemetryLog>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.MyBestLap.Root to true),
             orderOverride = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
             currentTimeMs = { 456L },
-            telemetryLogRepository = telemetryLogRepository,
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
 
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L, currentLap = 1))
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L, currentLap = 2))
@@ -304,7 +379,7 @@ class LmuWindowsNarratorViewModelTest {
                             """"lastLapTimeMs":0,"bestLapTimeMs":59000,"currentLap":2,"maxLaps":0}}""",
                 ),
             ),
-            telemetryLogRepository.logs.value,
+            logs,
         )
     }
 
@@ -314,8 +389,9 @@ class LmuWindowsNarratorViewModelTest {
     fun `接近開始時の読み上げが無効のときは接近アナウンスをしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             startReadoutEnabled = false,
@@ -327,15 +403,16 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 50L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `VEHICLE_APPROACHが無効のときはアナウンスしない`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
@@ -347,7 +424,7 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 50L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
@@ -355,8 +432,9 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val vehicleApproachChannel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             vehicleApproachChannel = vehicleApproachChannel,
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
@@ -371,7 +449,7 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 50L
         vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
@@ -379,8 +457,9 @@ class LmuWindowsNarratorViewModelTest {
         var fakeTime = 0L
         val vehicleApproachChannel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             vehicleApproachChannel = vehicleApproachChannel,
             telemetryChannel = telemetryChannel,
             ttsEngine = tts,
@@ -395,21 +474,22 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 50L
         vehicleApproachChannel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), spokenTexts)
     }
 
     @Test
     fun `接近読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
-            telemetryLogRepository = telemetryLogRepository,
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
 
         channel.send(noVehicleApproach())
         channel.send(leftVehicleApproach(vehicleId = 1))
@@ -431,11 +511,9 @@ class LmuWindowsNarratorViewModelTest {
                             """"lateralDistanceRightMeters":${Double.MAX_VALUE}}}""",
                 ),
             ),
-            telemetryLogRepository.logs.value,
+            logs,
         )
     }
-
-    // --- 旗アナウンス ---
 
     // --- 優先度 ---
 
@@ -443,65 +521,73 @@ class LmuWindowsNarratorViewModelTest {
     fun `フラグ読み上げ中に車両接近イベントが来ても読み上げない`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
-        buildViewModel(vehicleApproachChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
+        createViewModel(vehicleApproachChannel = channel, ttsEngine = tts, currentTimeMs = { fakeTime })
 
         channel.send(noVehicleApproach())
         channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = PriorityAwareTextToSpeechEngine(
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
-        buildViewModel(
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
-            telemetryLogRepository = telemetryLogRepository,
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
 
         channel.send(noVehicleApproach())
         channel.send(leftVehicleApproach(vehicleId = 1))
         fakeTime = 50L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(emptyList<TelemetryLog>(), telemetryLogRepository.logs.value)
+        assertEquals(emptyList<TelemetryLog>(), logs)
     }
 
     @Test
     fun `車両接近読み上げ中にフラグイベントが来ると読み上げを停止して割り込む`() = runTest(testDispatcher) {
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
         )
-        buildViewModel(flagChannel = flagChannel, ttsEngine = tts)
+        createViewModel(flagChannel = flagChannel, ttsEngine = tts)
 
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
         assertEquals(true, tts.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), spokenTexts)
     }
 
     @Test
     fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
-        buildViewModel(
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             orderOverride = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
@@ -514,17 +600,19 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(true, tts.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), spokenTexts)
     }
 
     @Test
     fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
-        val tts = PriorityAwareTextToSpeechEngine(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
-        buildViewModel(
+        createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
@@ -537,16 +625,17 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(leftVehicleApproach(vehicleId = 1))
 
         assertEquals(false, tts.stopCalled)
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
-    // --- オーバーヒート ---
+    // --- オーバーヒート / 旗 ---
 
     @Test
     fun `OVERHEATが無効のときはオーバーヒートを読み上げない`() = runTest(testDispatcher) {
         val damageChannel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             damageChannel = damageChannel,
             ttsEngine = tts,
             vehicleDamageEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(
@@ -557,14 +646,15 @@ class LmuWindowsNarratorViewModelTest {
         damageChannel.send(noDamage())
         damageChannel.send(noDamage(overheating = true))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `BLUE_FLAGが無効のときは青旗を読み上げない`() = runTest(testDispatcher) {
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
             flagEnabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to false),
@@ -573,14 +663,15 @@ class LmuWindowsNarratorViewModelTest {
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `フラッグが無効のときは詳細フラッグ設定が有効でも読み上げない`() = runTest(testDispatcher) {
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
@@ -601,21 +692,22 @@ class LmuWindowsNarratorViewModelTest {
             ),
         )
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `青旗読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
-            telemetryLogRepository = telemetryLogRepository,
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
 
         flagChannel.send(clearFlags())
         fakeTime = 789L
@@ -638,19 +730,20 @@ class LmuWindowsNarratorViewModelTest {
                             """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}}""",
                 ),
             ),
-            telemetryLogRepository.logs.value,
+            logs,
         )
     }
 
     @Test
     fun `ログ保存に失敗しても以後の読み上げは継続する`() = runTest(testDispatcher) {
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             flagChannel = flagChannel,
             ttsEngine = tts,
-            telemetryLogRepository = FakeTelemetryLogRepository(throwOnSave = true),
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } throws IllegalStateException("Failed to save")
 
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
@@ -659,7 +752,7 @@ class LmuWindowsNarratorViewModelTest {
 
         assertEquals(
             listOf<SpeechEvent>(SpeechEvent.BlueFlag, SpeechEvent.SessionStop),
-            tts.spokenTexts,
+            spokenTexts,
         )
     }
 
@@ -667,15 +760,16 @@ class LmuWindowsNarratorViewModelTest {
     fun `オーバーヒート読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val damageChannel = Channel<LmuWindowsVehicleDamageData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             damageChannel = damageChannel,
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
-            telemetryLogRepository = telemetryLogRepository,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
 
         damageChannel.send(noDamage())
         fakeTime = 987L
@@ -692,7 +786,7 @@ class LmuWindowsNarratorViewModelTest {
                             """"current":{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.0}}""",
                 ),
             ),
-            telemetryLogRepository.logs.value,
+            logs,
         )
     }
 
@@ -702,8 +796,9 @@ class LmuWindowsNarratorViewModelTest {
     fun `閾値以上のタイヤ温度が来ると TyreOverheat を読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -714,15 +809,16 @@ class LmuWindowsNarratorViewModelTest {
 
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), spokenTexts)
     }
 
     @Test
     fun `高温状態が継続しても2回目は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -734,15 +830,16 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(tyreTemperature(fl = 95.0))
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), spokenTexts)
     }
 
     @Test
     fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -755,15 +852,16 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(tyreTemperature(fl = 20.0))
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat, SpeechEvent.TyreOverheat), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat, SpeechEvent.TyreOverheat), spokenTexts)
     }
 
     @Test
     fun `タイヤ温度項目が無効なら読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -774,15 +872,16 @@ class LmuWindowsNarratorViewModelTest {
 
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `過熱警告スイッチがOFFのときは読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -794,26 +893,28 @@ class LmuWindowsNarratorViewModelTest {
 
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `LMU非選択時はタイヤ温度アナウンスをしない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, simulator = null)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(tyreTemperatureChannel = channel, ttsEngine = tts, simulator = null)
 
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `タイヤ温度がOFFの場合は読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -824,30 +925,31 @@ class LmuWindowsNarratorViewModelTest {
 
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `タイヤ温度読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
             tyreTemperatureHighThreshold = 90,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             currentTimeMs = { 123L },
-            telemetryLogRepository = telemetryLogRepository,
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
         flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
 
-        assertEquals(1, telemetryLogRepository.logs.value.size)
-        val log = telemetryLogRepository.logs.value.first()
+        assertEquals(1, logs.size)
+        val log = logs.first()
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
@@ -859,8 +961,9 @@ class LmuWindowsNarratorViewModelTest {
     fun `ガレージに遷移した瞬間に低温タイヤがあるとTyreColdを読み上げる`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -872,15 +975,16 @@ class LmuWindowsNarratorViewModelTest {
 
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold), tts.spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreCold), spokenTexts)
     }
 
     @Test
     fun `gamePhaseが変化しなければ低温でも読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -890,15 +994,16 @@ class LmuWindowsNarratorViewModelTest {
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
         channel.send(tyreTemperature(fl = 55.0))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `低温警告スイッチがOFFのときは読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -911,15 +1016,16 @@ class LmuWindowsNarratorViewModelTest {
 
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `detailPaneで選択解除したgamePhaseに遷移しても読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
@@ -931,31 +1037,32 @@ class LmuWindowsNarratorViewModelTest {
 
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
 
-        assertEquals(emptyList<SpeechEvent>(), tts.spokenTexts)
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 
     @Test
     fun `低温警告読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
         val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
-        val telemetryLogRepository = FakeTelemetryLogRepository()
-        val tts = RecordingTextToSpeechEngine()
-        buildViewModel(
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
             tyreTemperatureChannel = channel,
             flagChannel = flagChannel,
             ttsEngine = tts,
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             currentTimeMs = { 123L },
-            telemetryLogRepository = telemetryLogRepository,
             tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
         )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
         channel.send(tyreTemperature(fl = 55.0))
 
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GARAGE))
 
-        assertEquals(1, telemetryLogRepository.logs.value.size)
-        val log = telemetryLogRepository.logs.value.first()
+        assertEquals(1, logs.size)
+        val log = logs.first()
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
@@ -994,142 +1101,6 @@ private fun clearFlags(
     playerUnderYellow = false,
     playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
-
-private class RecordingTextToSpeechEngine : TextToSpeechEngine {
-    val spokenTexts = mutableListOf<SpeechEvent>()
-    override val currentReadoutItemKey: ReadoutItemKey? = null
-    override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
-    override fun stop() = Unit
-    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
-}
-
-/** 優先度テスト用: 再生中キーを手動で制御できる TTS エンジン */
-private class PriorityAwareTextToSpeechEngine(
-    initialKey: ReadoutItemKey? = null,
-) : TextToSpeechEngine {
-    val spokenTexts = mutableListOf<SpeechEvent>()
-    var stopCalled = false
-    override var currentReadoutItemKey: ReadoutItemKey? = initialKey
-    override fun speak(event: SpeechEvent, queue: Boolean) { spokenTexts.add(event) }
-    override fun stop() {
-        stopCalled = true
-        currentReadoutItemKey = null
-    }
-    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
-}
-
-private class FakeChannelVehicleApproachRepository(
-    private val stream: Flow<LmuWindowsVehicleApproachData>,
-) : LmuWindowsVehicleApproachRepository {
-    override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = stream
-}
-
-private class FakeChannelFlagRepository(
-    private val stream: Flow<LmuWindowsRaceFlagsData>,
-) : LmuWindowsFlagRepository {
-    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = stream
-}
-
-private class FakeConstantSimulatorRepository(
-    private val simulator: Simulator?,
-) : SimulatorPreferencesRepository {
-    override fun selectedSimulator(): Flow<Simulator?> = MutableStateFlow(simulator)
-    override suspend fun saveSelectedSimulator(simulator: Simulator) = Unit
-}
-
-private class FakeAllEnabledReadoutPreferencesRepository(
-    private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    private val orderOverride: List<ReadoutItemKey> = listOf(
-        ReadoutItemKey.LmuWindows.Flag.Root,
-        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-    ),
-) : ReadoutPreferencesRepository {
-    override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
-        MutableStateFlow(enabledOverrides)
-
-    override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) = Unit
-    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> = MutableStateFlow(orderOverride)
-    override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) = Unit
-}
-
-private class FakeLmuWindowsFlagPreferencesRepository(
-    private val enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-) : LmuWindowsFlagPreferencesRepository {
-    override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
-        MutableStateFlow(enabledOverrides)
-
-    override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
-}
-
-private class FakeChannelLmuWindowsRepository(
-    private val stream: Flow<LmuWindowsTelemetryData>,
-) : LmuWindowsRepository {
-    override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = stream
-    override suspend fun isConnected(): Boolean = true
-    override suspend fun disconnect() = Unit
-}
-
-private class FakeLmuWindowsMyBestLapPreferencesRepository(
-    initialVoiceType: MyBestLapVoiceType,
-) : LmuWindowsMyBestLapPreferencesRepository {
-    private val voiceType = MutableStateFlow(initialVoiceType)
-    override fun observeVoiceType(): Flow<MyBestLapVoiceType> = voiceType
-    override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
-        voiceType.value = type
-    }
-}
-
-private class FakeConstantLmuWindowsVehicleApproachPreferencesRepository(
-    private val skipFirstLap: Boolean,
-    private val startReadoutEnabled: Boolean,
-    private val startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-) : LmuWindowsVehicleApproachPreferencesRepository {
-    override fun observeSkipFirstLap(): Flow<Boolean> = MutableStateFlow(skipFirstLap)
-    override suspend fun saveSkipFirstLap(skip: Boolean) = Unit
-    override fun observeStartReadoutEnabled(): Flow<Boolean> = MutableStateFlow(startReadoutEnabled)
-    override suspend fun saveStartReadoutEnabled(enabled: Boolean) = Unit
-    override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> =
-        MutableStateFlow(startReadoutType)
-
-    override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) = Unit
-}
-
-private class FakeLmuWindowsVehicleDamagePreferencesRepository(
-    initialStates: Map<ReadoutItemKey, Boolean> = emptyMap(),
-) : LmuWindowsVehicleDamagePreferencesRepository {
-    private val states = MutableStateFlow(initialStates)
-    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
-        states.update { it + (key to enabled) }
-    }
-}
-
-private class FakeChannelVehicleDamageRepository(
-    private val stream: Flow<LmuWindowsVehicleDamageData>,
-) : LmuWindowsVehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = stream
-}
-
-private class FakeTelemetryLogRepository(
-    private val throwOnSave: Boolean = false,
-) : TelemetryLogRepository {
-    val logs = MutableStateFlow(emptyList<TelemetryLog>())
-    override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = logs
-    override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> =
-        logs.map { logs ->
-            val current = logs.firstOrNull { it.id == id } ?: return@map null
-            TelemetryLogDetail(current = current, previous = null)
-        }
-
-    override suspend fun saveTelemetryLog(log: TelemetryLog) {
-        if (throwOnSave) error("Failed to save telemetry log")
-        logs.update { it + log }
-    }
-
-    override suspend fun deleteAllTelemetryLogs() {
-        logs.update { emptyList() }
-    }
-}
 
 private fun noDamage(overheating: Boolean = false) = LmuWindowsVehicleDamageData(
     overheating = overheating,
@@ -1178,29 +1149,3 @@ private fun tyreTemperature(
         WheelIndex.REAR_RIGHT to rr,
     ),
 )
-
-private class FakeChannelTyreCarcassTemperatureRepository(
-    private val stream: Flow<LmuWindowsTyreCarcassTemperatureData>,
-) : LmuWindowsTyreCarcassTemperatureRepository {
-    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = stream
-}
-
-private class FakeConstantLmuWindowsTyreTemperaturePreferencesRepository(
-    private val threshold: Int,
-    private val overheatWarningEnabled: Boolean = true,
-    private val lowWarningEnabled: Boolean = true,
-    private val lowWarningPhases: Map<SessionPhase, Boolean> = emptyMap(),
-) : LmuWindowsTyreTemperaturePreferencesRepository {
-    override fun observeHighThresholdCelsius(): Flow<Int> = MutableStateFlow(threshold)
-    override suspend fun saveHighThresholdCelsius(celsius: Int) = Unit
-    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
-        MutableStateFlow(
-            mapOf(
-                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to overheatWarningEnabled,
-                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to lowWarningEnabled,
-            ),
-        )
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
-    override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = MutableStateFlow(lowWarningPhases)
-    override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) = Unit
-}
