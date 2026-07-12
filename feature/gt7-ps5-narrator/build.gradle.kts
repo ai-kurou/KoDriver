@@ -23,6 +23,7 @@ kotlin {
             implementation(libs.kotlin.testJunit)
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutinesTest)
+            implementation(libs.mockk)
         }
         androidUnitTest.dependencies {
             implementation(libs.kotlin.testJunit)
