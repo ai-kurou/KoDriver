@@ -1,15 +1,35 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
+
+private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+    initialLongitudinal: Double = 10.0,
+    initialLateral: Double = 5.0,
+): LmuWindowsVehicleApproachThresholdsPreferencesRepository {
+    val repository = mockk<LmuWindowsVehicleApproachThresholdsPreferencesRepository>()
+    val longitudinal = MutableStateFlow(initialLongitudinal)
+    val lateral = MutableStateFlow(initialLateral)
+    every { repository.observeLongitudinalThresholdMeters() } returns longitudinal
+    every { repository.observeLateralThresholdMeters() } returns lateral
+    coEvery { repository.saveLongitudinalThresholdMeters(any()) } answers { longitudinal.update { firstArg() } }
+    coEvery { repository.saveLateralThresholdMeters(any()) } answers { lateral.update { firstArg() } }
+    return repository
+}
 
 class VehicleApproachThresholdsUseCaseTest {
 
     @Test
     fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
+        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository()
         val save = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
         val observe = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
@@ -22,7 +42,7 @@ class VehicleApproachThresholdsUseCaseTest {
 
     @Test
     fun `横方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
+        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository()
         val save = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
         val observe = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
 
@@ -35,7 +55,7 @@ class VehicleApproachThresholdsUseCaseTest {
 
     @Test
     fun `縦横の閾値は独立して保持される`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository()
+        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository()
         val saveLongitudinal = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
         val saveLateral = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
         val observeLongitudinal = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)

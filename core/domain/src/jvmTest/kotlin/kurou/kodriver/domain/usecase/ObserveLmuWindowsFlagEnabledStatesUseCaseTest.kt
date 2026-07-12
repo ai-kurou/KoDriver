@@ -2,7 +2,9 @@
 
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -12,11 +14,21 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private fun createLmuWindowsFlagPreferencesRepository(): LmuWindowsFlagPreferencesRepository {
+    val repository = mockk<LmuWindowsFlagPreferencesRepository>()
+    val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+    every { repository.observeFlagEnabledStates() } returns states
+    coEvery { repository.saveFlagEnabledState(any(), any()) } answers {
+        states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
+    }
+    return repository
+}
+
 class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はフラグ4種のデフォルトtrueを返す`() = runBlocking {
-        val repo = FakeLmuWindowsFlagPreferencesRepository()
+        val repo = createLmuWindowsFlagPreferencesRepository()
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
         assertEquals(
@@ -32,7 +44,7 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = FakeLmuWindowsFlagPreferencesRepository()
+        val repo = createLmuWindowsFlagPreferencesRepository()
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
         repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
@@ -46,15 +58,5 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
-    }
-}
-
-internal class FakeLmuWindowsFlagPreferencesRepository : LmuWindowsFlagPreferencesRepository {
-    private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-
-    override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
-
-    override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {
-        states.update { it + (key to enabled) }
     }
 }

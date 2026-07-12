@@ -2,7 +2,9 @@
 
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -12,11 +14,21 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+private fun createLmuWindowsVehicleDamagePreferencesRepository(): LmuWindowsVehicleDamagePreferencesRepository {
+    val repository = mockk<LmuWindowsVehicleDamagePreferencesRepository>()
+    val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+    every { repository.observeEnabledStates() } returns states
+    coEvery { repository.saveEnabledState(any(), any()) } answers {
+        states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
+    }
+    return repository
+}
+
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はOverheatのデフォルトtrueを返す`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
+        val repo = createLmuWindowsVehicleDamagePreferencesRepository()
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true)
@@ -25,7 +37,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
+        val repo = createLmuWindowsVehicleDamagePreferencesRepository()
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
@@ -36,7 +48,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleDamagePreferencesRepository()
+        val repo = createLmuWindowsVehicleDamagePreferencesRepository()
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
@@ -48,15 +60,5 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
-    }
-}
-
-internal class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamagePreferencesRepository {
-    private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-
-    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
-
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
-        states.update { it + (key to enabled) }
     }
 }

@@ -1,56 +1,46 @@
-@file:Suppress("FunctionNaming")
-
 package kurou.kodriver.domain.usecase
 
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kotlin.test.Test
-import kotlin.test.assertEquals
-
-private class FakeTextToSpeechEngine : TextToSpeechEngine {
-    val spokenEvents = mutableListOf<SpeechEvent>()
-    val queued = mutableListOf<Boolean>()
-    override val currentReadoutItemKey: ReadoutItemKey? = null
-    override fun speak(event: SpeechEvent, queue: Boolean) {
-        spokenEvents.add(event)
-        queued.add(queue)
-    }
-    override fun stop() = Unit
-    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
-}
 
 class PlaySpeechEventUseCaseTest {
 
     @Test
     fun `invoke を呼ぶと TextToSpeechEngine の speak が呼ばれる`() {
-        val engine = FakeTextToSpeechEngine()
+        val engine = mockk<TextToSpeechEngine>()
+        every { engine.speak(any(), any()) } returns Unit
         val useCase = PlaySpeechEventUseCase(engine)
 
         useCase(SpeechEvent.BlueFlag)
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.BlueFlag), engine.spokenEvents)
+        verify(exactly = 1) { engine.speak(SpeechEvent.BlueFlag, false) }
     }
 
     @Test
     fun `複数回 invoke を呼ぶと呼んだ順に speak が呼ばれる`() {
-        val engine = FakeTextToSpeechEngine()
+        val engine = mockk<TextToSpeechEngine>()
+        every { engine.speak(any(), any()) } returns Unit
         val useCase = PlaySpeechEventUseCase(engine)
 
         useCase(SpeechEvent.YellowFlag)
         useCase(SpeechEvent.SessionStop)
 
-        assertEquals(listOf(SpeechEvent.YellowFlag, SpeechEvent.SessionStop), engine.spokenEvents)
+        verify(exactly = 1) { engine.speak(SpeechEvent.YellowFlag, false) }
+        verify(exactly = 1) { engine.speak(SpeechEvent.SessionStop, false) }
     }
 
     @Test
     fun `queue true を指定すると TextToSpeechEngine の speak に渡される`() {
-        val engine = FakeTextToSpeechEngine()
+        val engine = mockk<TextToSpeechEngine>()
+        every { engine.speak(any(), any()) } returns Unit
         val useCase = PlaySpeechEventUseCase(engine)
 
         useCase(SpeechEvent.CarRight, queue = true)
 
-        assertEquals(listOf(true), engine.queued)
+        verify(exactly = 1) { engine.speak(SpeechEvent.CarRight, true) }
     }
 }
