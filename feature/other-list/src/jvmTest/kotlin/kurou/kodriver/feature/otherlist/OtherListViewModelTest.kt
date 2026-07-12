@@ -12,10 +12,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
@@ -28,12 +29,14 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtherListViewModelTest {
 
-    private val dispatcher = StandardTestDispatcher()
+    private val dispatcher = UnconfinedTestDispatcher()
 
     @MockK
     private lateinit var appUpdateRepository: AppUpdateRepository
@@ -77,7 +80,6 @@ class OtherListViewModelTest {
     @Test
     fun `初期状態では全項目が表示され選択項目はない`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         assertEquals(buildOtherListItems(), viewModel.uiState.first().items)
         assertEquals("Windows版KoDriverバージョン", viewModel.uiState.first().appVersionLabel)
@@ -91,10 +93,8 @@ class OtherListViewModelTest {
     @Test
     fun `音量を選択すると選択状態になる`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         viewModel.onItemSelected(OtherListItemType.Volume)
-        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
@@ -105,7 +105,6 @@ class OtherListViewModelTest {
     @Test
     fun `GitHubレポジトリを選択しても状態は変わらない`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
         val initialState = viewModel.uiState.first()
 
         viewModel.onItemSelected(OtherListItemType.GitHubRepository)
@@ -119,7 +118,6 @@ class OtherListViewModelTest {
     @Test
     fun `リリースページを選択しても状態は変わらない`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
         val initialState = viewModel.uiState.first()
 
         viewModel.onItemSelected(OtherListItemType.ReleasePage)
@@ -133,14 +131,11 @@ class OtherListViewModelTest {
     @Test
     fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         viewModel.onItemSelected(OtherListItemType.License)
-        dispatcher.scheduler.advanceUntilIdle()
         assertEquals(OtherListItemType.License, viewModel.uiState.first().selectedItem)
 
         viewModel.onItemSelected(OtherListItemType.License)
-        dispatcher.scheduler.advanceUntilIdle()
         assertNull(viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
@@ -150,14 +145,11 @@ class OtherListViewModelTest {
     @Test
     fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         viewModel.selectItem(OtherListItemType.ConsoleIp)
-        dispatcher.scheduler.advanceUntilIdle()
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
 
         viewModel.selectItem(OtherListItemType.ConsoleIp)
-        dispatcher.scheduler.advanceUntilIdle()
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
@@ -167,13 +159,9 @@ class OtherListViewModelTest {
     @Test
     fun `clearSelectedItemで選択状態が解除される`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         viewModel.onItemSelected(OtherListItemType.License)
-        dispatcher.scheduler.advanceUntilIdle()
-
         viewModel.clearSelectedItem()
-        dispatcher.scheduler.advanceUntilIdle()
 
         assertNull(viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
@@ -184,10 +172,8 @@ class OtherListViewModelTest {
     @Test
     fun `終了確認の有効状態を監視できる`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.advanceUntilIdle()
 
         exitConfirmationFlow.update { false }
-        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
@@ -198,10 +184,8 @@ class OtherListViewModelTest {
     @Test
     fun `onExitConfirmationEnabledChangeで終了確認の有効状態を保存できる`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         viewModel.onExitConfirmationEnabledChange(false)
-        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(false, exitConfirmationFlow.first())
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
@@ -214,10 +198,8 @@ class OtherListViewModelTest {
     @Test
     fun `画面スリープ無効の状態を監視できる`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         keepScreenOnFlow.update { false }
-        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(false, viewModel.uiState.first().keepScreenOn)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
@@ -228,16 +210,78 @@ class OtherListViewModelTest {
     @Test
     fun `onKeepScreenOnChangeで画面スリープ無効の状態を保存できる`() = runTest {
         val viewModel = createViewModel()
-        dispatcher.scheduler.runCurrent()
 
         viewModel.onKeepScreenOnChange(false)
-        dispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(false, keepScreenOnFlow.first())
         assertEquals(false, viewModel.uiState.first().keepScreenOn)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
         coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+    }
+
+    @Test
+    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
+        coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v9.9.9")
+        val viewModel = createViewModel(currentVersion = "1.0.0")
+
+        viewModel.checkUpdate()
+
+        assertTrue(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+    }
+
+    @Test
+    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
+        coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v1.0.0")
+        val viewModel = createViewModel(currentVersion = "1.0.0")
+
+        viewModel.checkUpdate()
+
+        assertFalse(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+    }
+
+    @Test
+    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalseのまま`() = runTest {
+        val viewModel = createViewModel(currentVersion = "1.0.0")
+
+        assertFalse(viewModel.uiState.first().hasAppUpdate)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+    }
+
+    @Test
+    fun `currentVersionが空の場合checkUpdateは何もしない`() = runTest {
+        val viewModel = createViewModel(currentVersion = "")
+
+        viewModel.checkUpdate()
+
+        assertFalse(viewModel.uiState.first().hasAppUpdate)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+    }
+
+    @Test
+    fun `リリース情報がnullの場合hasAppUpdateがfalseになる`() = runTest {
+        coEvery { appUpdateRepository.getLatestRelease() } returns null
+        val viewModel = createViewModel(currentVersion = "1.0.0")
+
+        viewModel.checkUpdate()
+
+        assertFalse(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
         confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
     }
 }
