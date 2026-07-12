@@ -16,6 +16,7 @@ kotlin {
         }
         jvmTest.dependencies {
             implementation(libs.kotlinx.coroutinesTest)
+            implementation(libs.mockk)
         }
         named("androidHostTest") {
             dependencies {
