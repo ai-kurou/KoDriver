@@ -1,12 +1,10 @@
 package kurou.kodriver.data
 
-import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl
 import kurou.kodriver.data.repository.LmuWindowsMyBestLapEnabledRepositoryImpl
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
-import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
@@ -41,9 +39,6 @@ val desktopDataModule = module {
     }
     single<ReadoutPreferencesRepository> {
         createReadoutPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<Gt7Ps5RemainingFuelLapsEnabledRepository> {
-        Gt7Ps5RemainingFuelLapsEnabledRepositoryImpl(get())
     }
     single<LmuWindowsMyBestLapEnabledRepository> {
         LmuWindowsMyBestLapEnabledRepositoryImpl(get())
