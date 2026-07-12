@@ -2,7 +2,8 @@
 
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -17,7 +18,8 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
     @Test
     fun `invoke はリポジトリの vehicleDamageStream を返す`() = runBlocking {
         val expected = LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 12.3)
-        val repo = FakeLmuWindowsVehicleDamageRepository(stream = flowOf(expected))
+        val repo = mockk<LmuWindowsVehicleDamageRepository>()
+        every { repo.vehicleDamageStream() } returns flowOf(expected)
         val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
 
         val result = useCase().first()
@@ -27,7 +29,8 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() = runBlocking {
-        val repo = FakeLmuWindowsVehicleDamageRepository(stream = flowOf())
+        val repo = mockk<LmuWindowsVehicleDamageRepository>()
+        every { repo.vehicleDamageStream() } returns flowOf()
         val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
@@ -40,17 +43,12 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
         val data1 = LmuWindowsVehicleDamageData(overheating = false, partDetached = false, lastImpactMagnitude = 0.0)
         val data2 = LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 5.0)
         val data3 = LmuWindowsVehicleDamageData(overheating = true, partDetached = true, lastImpactMagnitude = 20.0)
-        val repo = FakeLmuWindowsVehicleDamageRepository(stream = flowOf(data1, data2, data3))
+        val repo = mockk<LmuWindowsVehicleDamageRepository>()
+        every { repo.vehicleDamageStream() } returns flowOf(data1, data2, data3)
         val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
 
         assertEquals(listOf(data1, data2, data3), results)
     }
-}
-
-private class FakeLmuWindowsVehicleDamageRepository(
-    private val stream: Flow<LmuWindowsVehicleDamageData> = flowOf(),
-) : LmuWindowsVehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = stream
 }

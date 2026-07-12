@@ -1,11 +1,14 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -19,7 +22,8 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
             yellowFlagState = SessionYellowFlagState.PIT_CLOSED,
             playerFlag = PrimaryFlag.BLUE,
         )
-        val repo = FakeLmuWindowsFlagRepository(stream = flowOf(expected))
+        val repo = mockk<LmuWindowsFlagRepository>()
+        every { repo.flagStream() } returns flowOf(expected)
         val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
         val result = useCase().first()
@@ -29,7 +33,8 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
 
     @Test
     fun `invokeは空のフローをそのまま返す`() = runBlocking {
-        val repo = FakeLmuWindowsFlagRepository(stream = flowOf())
+        val repo = mockk<LmuWindowsFlagRepository>()
+        every { repo.flagStream() } returns flowOf()
         val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
@@ -42,7 +47,8 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
         val data1 = fakeRaceFlagsData(gamePhase = SessionPhase.WARM_UP)
         val data2 = fakeRaceFlagsData(gamePhase = SessionPhase.GRID_WALK)
         val data3 = fakeRaceFlagsData(gamePhase = SessionPhase.FORMATION)
-        val repo = FakeLmuWindowsFlagRepository(stream = flowOf(data1, data2, data3))
+        val repo = mockk<LmuWindowsFlagRepository>()
+        every { repo.flagStream() } returns flowOf(data1, data2, data3)
         val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }

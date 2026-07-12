@@ -2,7 +2,8 @@
 
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -20,7 +21,8 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
         val expected = LmuWindowsTyreCarcassTemperatureData(
             wheels = mapOf(WheelIndex.FRONT_LEFT to 350.0),
         )
-        val repo = FakeLmuWindowsTyreCarcassTemperatureRepository(stream = flowOf(expected))
+        val repo = mockk<LmuWindowsTyreCarcassTemperatureRepository>()
+        every { repo.tyreCarcassTemperatureStream() } returns flowOf(expected)
         val useCase = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repo)
 
         val result = useCase().first()
@@ -30,7 +32,8 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() = runBlocking {
-        val repo = FakeLmuWindowsTyreCarcassTemperatureRepository(stream = flowOf())
+        val repo = mockk<LmuWindowsTyreCarcassTemperatureRepository>()
+        every { repo.tyreCarcassTemperatureStream() } returns flowOf()
         val useCase = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
@@ -43,17 +46,12 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
         val data1 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 330.0))
         val data2 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 340.0))
         val data3 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 350.0))
-        val repo = FakeLmuWindowsTyreCarcassTemperatureRepository(stream = flowOf(data1, data2, data3))
+        val repo = mockk<LmuWindowsTyreCarcassTemperatureRepository>()
+        every { repo.tyreCarcassTemperatureStream() } returns flowOf(data1, data2, data3)
         val useCase = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repo)
 
         val results = buildList { useCase().collect { add(it) } }
 
         assertEquals(listOf(data1, data2, data3), results)
     }
-}
-
-private class FakeLmuWindowsTyreCarcassTemperatureRepository(
-    private val stream: Flow<LmuWindowsTyreCarcassTemperatureData> = flowOf(),
-) : LmuWindowsTyreCarcassTemperatureRepository {
-    override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = stream
 }

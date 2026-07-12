@@ -1,7 +1,13 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -9,7 +15,10 @@ class ObserveGt7Ps5UdpPortUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() = runBlocking {
-        val repo = FakeGt7Ps5UdpPortPreferencesRepository(initial = 33740)
+        val repo = mockk<Gt7Ps5UdpPortPreferencesRepository>()
+        val state = MutableStateFlow(33740)
+        every { repo.port() } returns state
+        coEvery { repo.savePort(any()) } answers { state.update { firstArg() } }
         val useCase = ObserveGt7Ps5UdpPortUseCase(repo)
 
         assertEquals(33740, useCase().first())

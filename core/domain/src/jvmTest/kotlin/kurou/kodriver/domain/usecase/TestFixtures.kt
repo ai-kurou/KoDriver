@@ -1,26 +1,42 @@
 package kurou.kodriver.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.repository.LmuWindowsRepository
+import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.SectorFlagState
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 
-internal class FakeLmuWindowsRepository(
-    private val connected: Boolean = true,
-    private val stream: Flow<LmuWindowsTelemetryData> = flowOf(),
-) : LmuWindowsRepository {
-    var disconnectCalled = false
+internal fun fakeGt7Ps5TelemetryData(lapCount: Int = 0) = Gt7Ps5TelemetryData(
+    lapCount = lapCount,
+    lapsInRace = 0,
+    bestLapTimeMs = -1,
+    gasLevel = 0f,
+    gasCapacity = 100f,
+)
 
-    override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = stream
-    override suspend fun isConnected(): Boolean = connected
-    override suspend fun disconnect() { disconnectCalled = true }
-}
+internal fun fakeRaceFlagsData(
+    gamePhase: SessionPhase = SessionPhase.GARAGE,
+    yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
+    playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
+) = LmuWindowsRaceFlagsData(
+    gamePhase = gamePhase,
+    yellowFlagState = yellowFlagState,
+    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+    startLight = 0,
+    numRedLights = 0,
+    playerFlag = playerFlag,
+    playerUnderYellow = false,
+    playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
+)
 
 internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) = LmuWindowsTelemetryData(
     timestampMs = 0L,
