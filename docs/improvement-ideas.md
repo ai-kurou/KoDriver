@@ -20,13 +20,15 @@
 
 ## ドメイン・配線
 
-- **対象**: `Gt7Ps5RemainingFuelLapsEnabledRepository`（`core/domain`）と
-  `gt7-ps5-readout-remaining-fuel-laps-detail` feature、`LmuWindowsMyBestLapEnabledRepository`
-  （`core/domain`）と `lmu-windows-readout-my-best-lap-detail` feature
-  **課題**: 両Repository・対応する `Observe*EnabledUseCase` / `Save*EnabledUseCase` は
-  `core/domain` に定義され `desktopDataModule` にもバインドされているが、feature 側のどの Koin
-  モジュールからも `get()` されていない（実装・UI側で一切参照されていないことをgrepで確認済み）。
-  CLAUDE.md が警告する「ReadoutItemKeyの配線漏れ」と類似した、死んだ実装の可能性がある。
-  **改善案**: 本来「燃料残り周回数」「自己ベストラップ」アナウンスのON/OFFスイッチとして
-  UIに表示・配線される意図だったのか仕様を確認し、必要なら detail 画面のUseCase呼び出しに
-  正しく組み込むか、不要であれば削除する。
+- **対象**: `LmuWindowsMyBestLapEnabledRepository`（`core/domain`）と
+  `lmu-windows-readout-my-best-lap-detail` feature
+  **課題**: Repository・対応する `ObserveLmuWindowsMyBestLapEnabledUseCase` /
+  `SaveLmuWindowsMyBestLapEnabledUseCase` は `core/domain` に定義され `desktopDataModule` にも
+  バインドされているが、feature 側のどの Koin モジュールからも `get()` されていない（実装・UI側で
+  一切参照されていないことをgrepで確認済み）。`Gt7Ps5RemainingFuelLapsEnabledRepository` も同様の
+  未配線状態だったが、調査の結果「実は`ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root`
+  （readout-listの共通スイッチ）経由で別途正しく実現されており、この専用Repositoryは
+  同じ`ReadoutPreferencesRepository`への薄いラッパーに過ぎない完全な重複だった」と判明し、
+  削除した（PR #557）。`LmuWindowsMyBestLapEnabledRepository`も同一パターンの可能性が高いが未確認。
+  **改善案**: `ReadoutItemKey.LmuWindows.MyBestLap.Root`経由で同等のON/OFFが既に実現されていないか
+  `LmuWindowsNarratorViewModel`を確認し、重複であれば同様に削除する。
