@@ -43,8 +43,10 @@ dependencies {
     implementation(libs.ktor.serverCore)
     implementation(libs.ktor.serverNetty)
     implementation(libs.ktor.serverWebsockets)
+    implementation(libs.jmdns)
     testImplementation(libs.ktor.clientWebsockets)
     testImplementation(libs.ktor.serverTestHost)
     testImplementation(libs.kotlinx.coroutinesTest)
     testImplementation(libs.kotlin.testJunit)
+    testImplementation(libs.mockk)
 }

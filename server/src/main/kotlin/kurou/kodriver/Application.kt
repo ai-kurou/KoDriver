@@ -46,9 +46,10 @@ class KoDriverServer(
     observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     observeLmuWindows: ObserveLmuWindowsUseCase,
-    port: Int = DEFAULT_PORT,
+    private val port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
 ) {
+    internal var serviceAdvertiser: KoDriverServiceAdvertiser = KoDriverServiceAdvertiser()
     private val server = embeddedServer(
         factory = Netty,
         port = port,
@@ -66,9 +67,11 @@ class KoDriverServer(
 
     fun start(wait: Boolean = false) {
         server.start(wait = wait)
+        serviceAdvertiser.start(port)
     }
 
     fun stop() {
+        serviceAdvertiser.stop()
         server.stop(gracePeriodMillis = 0, timeoutMillis = 0)
     }
 
