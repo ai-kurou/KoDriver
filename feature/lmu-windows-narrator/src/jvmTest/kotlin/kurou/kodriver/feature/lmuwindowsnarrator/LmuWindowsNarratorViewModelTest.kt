@@ -189,7 +189,7 @@ class LmuWindowsNarratorViewModelTest {
         every { tyreTemperaturePreferencesRepository.observeLowWarningPhases() } returns
             MutableStateFlow(tyreTemperatureLowWarningPhasesOverride)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } just Runs
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
 
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases = VehicleApproachUseCases(
@@ -362,7 +362,17 @@ class LmuWindowsNarratorViewModelTest {
             orderOverride = listOf(ReadoutItemKey.LmuWindows.MyBestLap.Root),
             currentTimeMs = { 456L },
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
 
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L, currentLap = 1))
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L, currentLap = 2))
@@ -370,6 +380,7 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(
             listOf(
                 TelemetryLog(
+                    id = 0,
                     createdAt = 456L,
                     simulatorId = Simulator.LmuWindows.id,
                     readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root.value,
@@ -489,7 +500,17 @@ class LmuWindowsNarratorViewModelTest {
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
 
         channel.send(noVehicleApproach())
         channel.send(leftVehicleApproach(vehicleId = 1))
@@ -499,6 +520,7 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(
             listOf(
                 TelemetryLog(
+                    id = 0,
                     createdAt = 123_456L,
                     simulatorId = Simulator.LmuWindows.id,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
@@ -551,7 +573,17 @@ class LmuWindowsNarratorViewModelTest {
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
 
         channel.send(noVehicleApproach())
         channel.send(leftVehicleApproach(vehicleId = 1))
@@ -707,7 +739,17 @@ class LmuWindowsNarratorViewModelTest {
             ttsEngine = tts,
             currentTimeMs = { fakeTime },
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
 
         flagChannel.send(clearFlags())
         fakeTime = 789L
@@ -716,6 +758,7 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(
             listOf(
                 TelemetryLog(
+                    id = 0,
                     createdAt = 789L,
                     simulatorId = Simulator.LmuWindows.id,
                     readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
@@ -743,7 +786,9 @@ class LmuWindowsNarratorViewModelTest {
             flagChannel = flagChannel,
             ttsEngine = tts,
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } throws IllegalStateException("Failed to save")
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any())
+        } throws IllegalStateException("Failed to save")
 
         flagChannel.send(clearFlags())
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
@@ -769,7 +814,17 @@ class LmuWindowsNarratorViewModelTest {
             currentTimeMs = { fakeTime },
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Root to true),
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
 
         damageChannel.send(noDamage())
         fakeTime = 987L
@@ -778,6 +833,7 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(
             listOf(
                 TelemetryLog(
+                    id = 0,
                     createdAt = 987L,
                     simulatorId = Simulator.LmuWindows.id,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root.value,
@@ -943,7 +999,17 @@ class LmuWindowsNarratorViewModelTest {
             enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
             currentTimeMs = { 123L },
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
         flagChannel.send(clearFlags())
 
         channel.send(tyreTemperature(fl = 95.0))
@@ -1055,7 +1121,17 @@ class LmuWindowsNarratorViewModelTest {
             currentTimeMs = { 123L },
             tyreTemperatureLowWarningPhasesOverride = mapOf(SessionPhase.GARAGE to true),
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
         flagChannel.send(clearFlags(gamePhase = SessionPhase.GREEN_FLAG))
         channel.send(tyreTemperature(fl = 55.0))
 

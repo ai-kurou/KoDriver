@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.datasource.TelemetryLogDao
+import kurou.kodriver.data.model.TelemetryLogEntity
 import kurou.kodriver.data.model.toDomain
-import kurou.kodriver.data.model.toEntity
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -36,8 +36,20 @@ internal class TelemetryLogRepositoryImpl(
             }
         }
 
-    override suspend fun saveTelemetryLog(log: TelemetryLog) {
-        dao.insert(log.toEntity())
+    override suspend fun saveTelemetryLog(
+        createdAt: Long,
+        simulatorId: String,
+        readoutItemKey: String,
+        telemetryJson: String,
+    ) {
+        dao.insert(
+            TelemetryLogEntity(
+                createdAt = createdAt,
+                simulatorId = simulatorId,
+                readoutItemKey = readoutItemKey,
+                telemetryJson = telemetryJson,
+            ),
+        )
     }
 
     override suspend fun deleteAllTelemetryLogs() {

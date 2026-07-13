@@ -158,7 +158,17 @@ class Gt7Ps5NarratorViewModelTest {
         val logs = mutableListOf<TelemetryLog>()
         val ttsEngine = mockTts(spokenTexts)
         stubReadoutDefaults()
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
         createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -167,6 +177,7 @@ class Gt7Ps5NarratorViewModelTest {
         assertEquals(
             listOf(
                 TelemetryLog(
+                    id = 0,
                     createdAt = 123_456L,
                     simulatorId = Simulator.Gt7Ps5.id,
                     readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
@@ -260,7 +271,17 @@ class Gt7Ps5NarratorViewModelTest {
         stubReadoutDefaults(
             orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } answers { logs.add(firstArg()) }
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
         createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -345,7 +366,7 @@ class Gt7Ps5NarratorViewModelTest {
         every {
             remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps()
         } returns MutableStateFlow(fuelThreshold)
-        coEvery { telemetryLogRepository.saveTelemetryLog(any()) } just Runs
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
     }
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {

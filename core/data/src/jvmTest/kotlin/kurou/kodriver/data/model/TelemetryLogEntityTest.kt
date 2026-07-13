@@ -26,26 +26,4 @@ class TelemetryLogEntityTest {
             entity.toDomain(),
         )
     }
-
-    @Test
-    fun `toEntityはDomainをEntityに変換する`() {
-        val log = TelemetryLog(
-            id = 2L,
-            createdAt = 2000L,
-            simulatorId = "lmu_windows",
-            readoutItemKey = "flag",
-            telemetryJson = """{"currentLap":2}""",
-        )
-
-        assertEquals(
-            TelemetryLogEntity(
-                id = 2L,
-                createdAt = 2000L,
-                simulatorId = "lmu_windows",
-                readoutItemKey = "flag",
-                telemetryJson = """{"currentLap":2}""",
-            ),
-            log.toEntity(),
-        )
-    }
 }

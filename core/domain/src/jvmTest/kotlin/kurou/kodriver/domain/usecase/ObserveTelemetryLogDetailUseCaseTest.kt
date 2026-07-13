@@ -36,8 +36,17 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
             }
         }
     }
-    coEvery { repository.saveTelemetryLog(any()) } answers {
-        logs.update { it + firstArg<TelemetryLog>() }
+    coEvery { repository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
+        logs.update {
+            it + TelemetryLog(
+                id = nextId,
+                createdAt = firstArg(),
+                simulatorId = secondArg(),
+                readoutItemKey = thirdArg(),
+                telemetryJson = arg(3),
+            )
+        }
     }
     coEvery { repository.deleteAllTelemetryLogs() } answers {
         logs.update { emptyList() }

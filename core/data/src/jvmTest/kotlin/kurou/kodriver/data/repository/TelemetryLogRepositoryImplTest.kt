@@ -21,12 +21,10 @@ class TelemetryLogRepositoryImplTest {
         val repository = TelemetryLogRepositoryImpl(dao)
 
         repository.saveTelemetryLog(
-            TelemetryLog(
-                createdAt = 1000L,
-                simulatorId = "gt7_ps5",
-                readoutItemKey = "remaining_fuel_laps",
-                telemetryJson = """{"lapCount":1}""",
-            ),
+            createdAt = 1000L,
+            simulatorId = "gt7_ps5",
+            readoutItemKey = "remaining_fuel_laps",
+            telemetryJson = """{"lapCount":1}""",
         )
 
         assertEquals(

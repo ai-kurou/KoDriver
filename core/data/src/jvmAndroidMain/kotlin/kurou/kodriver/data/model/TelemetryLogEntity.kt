@@ -22,12 +22,3 @@ internal fun TelemetryLogEntity.toDomain(): TelemetryLog =
         readoutItemKey = readoutItemKey,
         telemetryJson = telemetryJson,
     )
-
-internal fun TelemetryLog.toEntity(): TelemetryLogEntity =
-    TelemetryLogEntity(
-        id = id,
-        createdAt = createdAt,
-        simulatorId = simulatorId,
-        readoutItemKey = readoutItemKey,
-        telemetryJson = telemetryJson,
-    )

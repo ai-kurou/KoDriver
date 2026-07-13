@@ -9,7 +9,12 @@ interface TelemetryLogRepository {
 
     fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?>
 
-    suspend fun saveTelemetryLog(log: TelemetryLog)
+    suspend fun saveTelemetryLog(
+        createdAt: Long,
+        simulatorId: String,
+        readoutItemKey: String,
+        telemetryJson: String,
+    )
 
     suspend fun deleteAllTelemetryLogs()
 }

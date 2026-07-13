@@ -16,8 +16,17 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
     val repository = mockk<TelemetryLogRepository>()
     val logs = MutableStateFlow(initialLogs)
     every { repository.observeTelemetryLogs() } returns logs
-    coEvery { repository.saveTelemetryLog(any()) } answers {
-        logs.update { it + firstArg<TelemetryLog>() }
+    coEvery { repository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
+        logs.update {
+            it + TelemetryLog(
+                id = nextId,
+                createdAt = firstArg(),
+                simulatorId = secondArg(),
+                readoutItemKey = thirdArg(),
+                telemetryJson = arg(3),
+            )
+        }
     }
     coEvery { repository.deleteAllTelemetryLogs() } answers {
         logs.update { emptyList() }
@@ -42,6 +51,7 @@ class SaveTelemetryLogUseCaseTest {
         assertEquals(
             listOf(
                 TelemetryLog(
+                    id = 1L,
                     createdAt = 1000L,
                     simulatorId = "gt7_ps5",
                     readoutItemKey = "remaining_fuel_laps",

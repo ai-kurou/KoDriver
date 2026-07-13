@@ -31,8 +31,22 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
         TelemetryLogDetail(current = current, previous = previous)
     }
 
-    override suspend fun saveTelemetryLog(log: TelemetryLog) {
-        emit(logs.value + log)
+    override suspend fun saveTelemetryLog(
+        createdAt: Long,
+        simulatorId: String,
+        readoutItemKey: String,
+        telemetryJson: String,
+    ) {
+        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
+        emit(
+            logs.value + TelemetryLog(
+                id = nextId,
+                createdAt = createdAt,
+                simulatorId = simulatorId,
+                readoutItemKey = readoutItemKey,
+                telemetryJson = telemetryJson,
+            ),
+        )
     }
 
     override suspend fun deleteAllTelemetryLogs() {
