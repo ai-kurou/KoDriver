@@ -51,3 +51,21 @@
 - **対象**: `feature/other-server-ip-detail/src/androidMain/kotlin/kurou/kodriver/feature/otherserveripdetail/PlatformWindowsServerDiscovery.android.kt`
   **課題**: `NsdManager` ベースの検出実装で、実機のDoze/Wi-Fiスリープ設定次第では検出が不安定になる可能性がある既知の事例がある。また、プラットフォーム固有の外部APIを直接呼ぶためユニットテストの対象外（`CLAUDE.md`のテスト方針に基づく除外）となっており、実機確認でしか動作を担保できない。
   **改善案**: Doze/Wi-Fiスリープ中の実機動作確認を行う。必要であれば結合テスト（instrumented test）の追加を検討する。
+
+## ViewModel / UseCase 責務分離
+
+- **対象**: `feature/readout-list/.../ReadoutListViewModel.kt`
+  **課題**: 保存済み読み上げ順序と現在のデフォルト順序を突き合わせ、削除済み項目を除外し、新規項目を末尾に補完するロジックが ViewModel 内にある。これは UI 表示都合だけでなく、読み上げ項目順序の整合性を保つドメインルールに近い。
+  **改善案**: `ResolveReadoutOrderUseCase` などへ切り出し、`ObserveReadoutOrderUseCase` の結果と `ReadoutListItemType.defaultOrder(simulator)` から有効な順序を生成する責務を domain 側へ寄せる。
+
+- **対象**: `feature/telemetry-log-list/.../TelemetryLogListViewModel.kt`
+  **課題**: テレメトリログの新しい順ソートと、削除後などに存在しなくなった選択IDを無効化する処理が ViewModel 内にある。現状は小さいが、ログ検索・フィルタ・ページングを追加すると ViewModel の表示整形責務が膨らみやすい。
+  **改善案**: 必要になった段階で `ObserveSortedTelemetryLogsUseCase` やログ一覧用の query UseCase へ切り出し、ViewModel は選択状態とダイアログ状態だけを扱う。
+
+- **対象**: `feature/other-server-ip-detail/.../OtherServerIpDetailViewModel.kt`
+  **課題**: IPv4 形式チェック、接続確認付き保存、接続警告後の強制保存が ViewModel 内にある。画面専用の入力処理としては許容範囲だが、接続先設定の保存ルールとして再利用される場合は責務が重くなる。
+  **改善案**: 他画面や自動設定で再利用する段階で `ValidateIpAddressUseCase` や `SaveServerIpWithConnectivityCheckUseCase` へ切り出す。
+
+- **対象**: `feature/gt7-ps5-narrator/.../Gt7Ps5NarratorViewModel.kt`
+  **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
+  **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。

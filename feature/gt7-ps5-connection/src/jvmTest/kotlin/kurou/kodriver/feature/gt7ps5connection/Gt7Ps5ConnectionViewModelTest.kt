@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
@@ -64,8 +65,10 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     private fun createViewModel() = Gt7Ps5ConnectionViewModel(
-        checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(connectionRepository),
-        observeGt7Ps5 = ObserveGt7Ps5UseCase(connectionRepository),
+        observeGt7Ps5Connection = ObserveGt7Ps5ConnectionUseCase(
+            checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(connectionRepository),
+            observeGt7Ps5 = ObserveGt7Ps5UseCase(connectionRepository),
+        ),
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     )
 

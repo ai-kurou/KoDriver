@@ -25,6 +25,7 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
+import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kotlin.test.AfterTest
@@ -61,9 +62,11 @@ class ServerConnectionViewModelTest {
     }
 
     private fun createViewModel(appVersion: String = "1.0.0") = ServerConnectionViewModel(
-        fetchServerVersion = FetchServerVersionUseCase(versionRepository),
-        observeServerIp = ObserveServerIpUseCase(serverIpRepository),
-        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+        observeKoDriverServerConnection = ObserveKoDriverServerConnectionUseCase(
+            fetchServerVersion = FetchServerVersionUseCase(versionRepository),
+            observeServerIp = ObserveServerIpUseCase(serverIpRepository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+        ),
         appVersion = appVersion,
     )
 
