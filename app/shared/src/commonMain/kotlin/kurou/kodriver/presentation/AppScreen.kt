@@ -262,19 +262,21 @@ fun AppScreen(
     }
 
     if (showExitConfirmationDialog) {
-        ExitConfirmationDialog(
-            onDismiss = { showExitConfirmationDialog = false },
-            onConfirm = { doNotShowAgain ->
-                coroutineScope.launch {
-                    saveExitConfirmationPreferenceForExit(
-                        doNotShowAgain = doNotShowAgain,
-                        saveExitConfirmationEnabled = viewModel::saveExitConfirmationEnabled,
-                    )
-                    showExitConfirmationDialog = false
-                    onExit()
-                }
-            },
-        )
+        AppTheme(darkTheme = darkTheme) {
+            ExitConfirmationDialog(
+                onDismiss = { showExitConfirmationDialog = false },
+                onConfirm = { doNotShowAgain ->
+                    coroutineScope.launch {
+                        saveExitConfirmationPreferenceForExit(
+                            doNotShowAgain = doNotShowAgain,
+                            saveExitConfirmationEnabled = viewModel::saveExitConfirmationEnabled,
+                        )
+                        showExitConfirmationDialog = false
+                        onExit()
+                    }
+                },
+            )
+        }
     }
 
     ConnectionSnackbarEffect(
