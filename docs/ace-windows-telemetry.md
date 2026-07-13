@@ -105,9 +105,9 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | オフセット | 型 | フィールド | 単位・備考 |
 |---|---|---|---|
 | 416 | int32 | `isAIControlled` | 0/1 |
-| 420 | float[4][3] | `tyreContactPoint` | ワールド XYZ（m、各輪接地点） |
-| 468 | float[4][3] | `tyreContactNormal` | 単位ベクトル（接地点の路面法線） |
-| 516 | float[4][3] | `tyreContactHeading` | 単位ベクトル（接地点のタイヤ進行方向） |
+| 420 | `float[4][3]` | `tyreContactPoint` | ワールド XYZ（m、各輪接地点） |
+| 468 | `float[4][3]` | `tyreContactNormal` | 単位ベクトル（接地点の路面法線） |
+| 516 | `float[4][3]` | `tyreContactHeading` | 単位ベクトル（接地点のタイヤ進行方向） |
 | 564 | float | `brakeBias` | 0–1（フロント側割合。0.56=56%） |
 | 568 | float[3] | `localVelocity` | m/s（車体座標系） |
 | 580 | int32 | `P2PActivations` | Push-to-Pass 残り回数 |
@@ -355,7 +355,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 
 | 型 | フィールド | 単位 |
 |---|---|---|
-| float[60][3] | `car_coordinates` | ワールド XYZ（最大60台、720 B。`active_cars` 超は0埋め） |
+| `float[60][3]` | `car_coordinates` | ワールド XYZ（最大60台、720 B。`active_cars` 超は0埋め） |
 | float | `gap_ahead` | s（前車とのギャップ、符号付き） |
 | float | `gap_behind` | s（後車とのギャップ） |
 | uint8 | `active_cars` | `car_coordinates` の有効エントリ数 |
@@ -370,7 +370,7 @@ ACE は `Local\` 名前空間に3つの名前付きファイルマッピング�
 | float | `max_fuel` | L（最大容量。AC1 の静的 `maxFuel` の後継） |
 | float | `max_turbo_boost` | bar（NA 車は 0。AC1 の静的 `maxTurboBoost` の後継） |
 | bool | `use_single_compound` | 単一コンパウンドルール適用中 |
-| uint64[60][2] | `car_ids` | `car_coordinates` に対応する車両 128bit GUID テーブル（960 B） |
+| `uint64[60][2]` | `car_ids` | `car_coordinates` に対応する車両 128bit GUID テーブル（960 B） |
 
 ---
 
