@@ -3,7 +3,9 @@ package kurou.kodriver.feature.telemetryloglist
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -153,7 +155,20 @@ internal fun TelemetryLogListPane(
                 }
             }
 
-            if (showNewLogsButton) {
+            AnimatedVisibility(
+                visible = showNewLogsButton,
+                enter = slideInVertically(
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 300),
+                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                exit = slideOutVertically(
+                    targetOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 200),
+                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 16.dp),
+            ) {
                 NewTelemetryLogsButton(
                     onClick = {
                         coroutineScope.launch {
@@ -161,9 +176,6 @@ internal fun TelemetryLogListPane(
                             showNewLogsButton = false
                         }
                     },
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 16.dp),
                 )
             }
         }
