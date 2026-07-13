@@ -3,6 +3,7 @@
 package kurou.kodriver.feature.otherserveripdetail
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -14,6 +15,34 @@ class OtherServerIpDetailDiscoveryContentTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun `検出中かつ検出結果がない場合は検出中の表示がされる`() {
+        rule.setContent {
+            OtherServerIpDetailPaneContent(
+                uiState = OtherServerIpDetailUiState(
+                    inputIp = "192.168.1.1",
+                    discoveredServers = emptyList(),
+                ),
+            )
+        }
+
+        rule.onNodeWithText("Windows版KoDriverを検出中…").assertIsDisplayed()
+    }
+
+    @Test
+    fun `検出中は検出ボタンが無効になっている`() {
+        rule.setContent {
+            OtherServerIpDetailPaneContent(
+                uiState = OtherServerIpDetailUiState(
+                    inputIp = "192.168.1.1",
+                    discoveredServers = emptyList(),
+                ),
+            )
+        }
+
+        rule.onNodeWithText("Windows版KoDriverを検出中…").assertIsNotEnabled()
+    }
 
     @Test
     fun `検出したサーバーがある場合検出ダイアログが表示される`() {

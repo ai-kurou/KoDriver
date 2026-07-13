@@ -29,6 +29,7 @@ import kodriver.feature.otherserveripdetail.generated.resources.Res
 import kodriver.feature.otherserveripdetail.generated.resources.navigate_back
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovering
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_show_button
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_invalid
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_label
@@ -134,10 +135,23 @@ fun OtherServerIpDetailPaneContent(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
-            if (uiState.discoveredServers.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedButton(onClick = onShowDiscoveredServers, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.server_ip_discovery_show_button))
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onShowDiscoveredServers,
+                enabled = uiState.discoveredServers.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (uiState.discoveredServers.isEmpty()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(Res.string.server_ip_discovering))
+                    } else {
+                        Text(stringResource(Res.string.server_ip_discovery_show_button))
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -196,6 +210,14 @@ private fun OtherServerIpDetailPaneConnectivityWarningPreview() {
 private fun OtherServerIpDetailPaneCheckingConnectivityPreview() {
     OtherServerIpDetailPaneContent(
         uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", isCheckingConnectivity = true),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherServerIpDetailPaneDiscoveringPreview() {
+    OtherServerIpDetailPaneContent(
+        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", discoveredServers = emptyList()),
     )
 }
 

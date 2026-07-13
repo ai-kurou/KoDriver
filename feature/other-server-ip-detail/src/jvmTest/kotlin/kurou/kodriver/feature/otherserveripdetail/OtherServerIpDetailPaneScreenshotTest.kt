@@ -103,6 +103,25 @@ class OtherServerIpDetailPaneScreenshotTest {
     }
 
     @Test
+    fun `検出中表示`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        OtherServerIpDetailPaneContent(
+                            uiState = OtherServerIpDetailUiState(
+                                inputIp = "192.168.1.100",
+                                discoveredServers = emptyList(),
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
+    }
+
+    @Test
     fun `見つかったWindows版KoDriverを選択ボタン表示`() {
         rule.setContent {
             KoDriverTheme {
