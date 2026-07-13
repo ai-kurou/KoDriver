@@ -22,7 +22,7 @@
 
 - **対象**: `.github/workflows/on-pull-request.yml` / `on-main-merge.yml` の `desktop-screenshot-test` / `android-screenshot-test` ジョブ
   **課題**: `recordRoborazziXxxTests` と `verifyRoborazziXxxTests` を同一ジョブ内で連続実行しており、両者とも各モジュールの `testJvmTest` / `testAndroidHostTest`（スクリーンショット以外も含む単体テスト全体）に依存するため、`unit-test` ジョブ（`koverXmlReport` 経由）と合わせて実質同じテストスイートがCI全体で3回実行されている。さらに、CIが自動生成する `chore: update golden images` コミット（スナップショットPNGの一括更新）が同一ジョブ内の `verify` ステップ実行前に発生すると、多くのモジュールでGradleの `UP-TO-DATE` 判定が広範囲に無効化され、本来スキップできるテストが軒並み再実行されて実行時間が数分〜15分超まで跳ね上がることがある（PR #561で timeout-minutes を 10→15→25 に順次引き上げる事態が発生）。
-  **改善案（一部対応済み）**: record用ジョブとverify用ジョブを分離した（`xxx-screenshot-test-record` → `needs:` で依存する `xxx-screenshot-test-verify`）。verify側は golden image コミット後のHEADをcheckoutしてから実行するため、goldenイメージ更新コミット自体によるキャッシュ無効化の影響を受けにくくなった。ただし `unit-test` ジョブとの重複実行（同じテストスイートがCI全体で複数回走る点）は未解消であり、Roborazziタスクの入力宣言を見直してスナップショット全体ではなく変更されたファイル単位で正しく `UP-TO-DATE` 判定できるようにするなど、引き続き重複実行の削減を検討する。
+  **改善案（一部対応済み）**: record用ジョブとverify用ジョブを分離した（`xxx-screenshot-test-record` → `needs:` で依存する `xxx-screenshot-test-verify`）。verify側は golden image コミット後のHEADをcheckoutしてから実行するため、goldenイメージ更新コミット自体によるキャッシュ無効化の影響を受けにくくなった。ただし `unit-test` ジョブとの重複実行（同じテストスイートがCI全体で複数回走る点）は未解消であり、Roborazziタスクの入力宣言を見直してスナップショット全体ではなく変更されたファイル単位で正しく `UP-TO-DATE` 判定できるようにするなど、引き続き重複実行の削減を検討する。なお、本改善（PR #566）はYAML分離のみの変更で導入したため、実際にgolden imageが更新されるPRでの実行時間短縮効果はまだ未検証。次にスクリーンショット対象UIを変更するPRで実行時間を確認し、効果が確認でき次第この項目を整理する。
 
 ## core:lmu-windows-data
 
