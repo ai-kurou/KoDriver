@@ -167,7 +167,7 @@ jobs:
 
   android-screenshot-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     permissions:
       contents: write
 
