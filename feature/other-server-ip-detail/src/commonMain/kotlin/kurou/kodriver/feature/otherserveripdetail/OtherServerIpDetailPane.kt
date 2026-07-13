@@ -191,6 +191,14 @@ private fun OtherServerIpDetailPanePreview() {
 
 @Preview(showBackground = true)
 @Composable
+private fun OtherServerIpDetailPaneEmptyInputPreview() {
+    OtherServerIpDetailPaneContent(
+        uiState = OtherServerIpDetailUiState(inputIp = ""),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
 private fun OtherServerIpDetailPaneInvalidPreview() {
     OtherServerIpDetailPaneContent(
         uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
