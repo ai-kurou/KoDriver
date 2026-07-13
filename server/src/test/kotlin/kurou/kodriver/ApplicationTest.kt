@@ -44,6 +44,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import java.io.IOException
 import java.net.ServerSocket
 import java.net.URI
 import kotlin.test.Test
@@ -338,6 +339,7 @@ class ApplicationTest {
             port = port,
             host = "127.0.0.1",
         )
+        server.serviceAdvertiser = KoDriverServiceAdvertiser(jmdnsFactory = { throw IOException("test") })
         server.start()
         try {
             val response = URI("http://127.0.0.1:$port/").toURL().readText()

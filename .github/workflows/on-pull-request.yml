@@ -89,7 +89,7 @@ jobs:
 
   detekt:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -107,7 +107,7 @@ jobs:
 
   unit-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -130,7 +130,7 @@ jobs:
 
   desktop-screenshot-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: write
 
@@ -167,7 +167,7 @@ jobs:
 
   android-screenshot-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 35
     permissions:
       contents: write
 

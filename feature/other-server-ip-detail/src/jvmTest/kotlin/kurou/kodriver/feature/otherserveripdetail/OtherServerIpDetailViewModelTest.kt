@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -52,10 +53,12 @@ class OtherServerIpDetailViewModelTest {
 
     private fun createViewModel(
         reachable: Boolean = true,
+        discoveredServers: List<DiscoveredServer> = emptyList(),
     ) = OtherServerIpDetailViewModel(
         observeServerIp = ObserveServerIpUseCase(repository),
         saveServerIp = SaveServerIpUseCase(repository),
         connectivityChecker = ServerConnectivityChecker { reachable },
+        windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
     )
 
     @Test
