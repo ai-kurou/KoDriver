@@ -103,7 +103,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     }
 
     @Test
-    fun `検出したサーバーから選ぶボタン表示`() {
+    fun `見つかったWindows版KoDriverを選択ボタン表示`() {
         rule.setContent {
             KoDriverTheme {
                 Surface {

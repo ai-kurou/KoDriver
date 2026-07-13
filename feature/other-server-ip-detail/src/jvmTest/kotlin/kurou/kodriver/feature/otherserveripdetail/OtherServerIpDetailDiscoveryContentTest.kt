@@ -49,7 +49,7 @@ class OtherServerIpDetailDiscoveryContentTest {
             )
         }
 
-        rule.onNodeWithText("選択する").performClick()
+        rule.onNodeWithText("OK").performClick()
 
         assertEquals(1, confirmCount)
     }
@@ -76,7 +76,7 @@ class OtherServerIpDetailDiscoveryContentTest {
     }
 
     @Test
-    fun `検出したサーバーから選ぶボタンをクリックするとonShowDiscoveredServersが呼ばれる`() {
+    fun `見つかったWindows版KoDriverを選択ボタンをクリックするとonShowDiscoveredServersが呼ばれる`() {
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         var showCount = 0
         rule.setContent {
@@ -90,7 +90,7 @@ class OtherServerIpDetailDiscoveryContentTest {
             )
         }
 
-        rule.onNodeWithText("検出したサーバーから選ぶ").performClick()
+        rule.onNodeWithText("見つかったWindows版KoDriverを選択").performClick()
 
         assertEquals(1, showCount)
     }
