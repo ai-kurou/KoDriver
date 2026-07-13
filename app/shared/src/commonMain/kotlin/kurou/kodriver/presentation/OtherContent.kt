@@ -133,8 +133,11 @@ internal fun OtherContent(
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
-        scope.launch { navigator.navigateBack() }
-        onClearSelectedItem()
+        scope.launch {
+            navigator.navigateBack()
+            onClearSelectedItem()
+        }
+        Unit
     }
     val paneExpansionState = rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
