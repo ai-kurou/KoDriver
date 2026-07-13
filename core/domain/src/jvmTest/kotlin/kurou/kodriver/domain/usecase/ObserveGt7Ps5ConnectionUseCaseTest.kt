@@ -1,7 +1,10 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -27,25 +30,23 @@ class ObserveGt7Ps5ConnectionUseCaseTest {
             gasLevel = 20f,
             gasCapacity = 50f,
         )
-        val repository = FakeGt7Ps5Repository(
-            isConnectedResults = listOf(true),
-            telemetryFlow = MutableStateFlow(telemetry),
-        )
+        val repository = mockk<Gt7Ps5Repository>()
+        every { repository.telemetryStream() } returns MutableStateFlow(telemetry)
+        coEvery { repository.isConnected() } returns true
         val useCase = createUseCase(repository)
 
         val state = withTimeout(1_000L) { useCase().first { it.telemetry == telemetry } }
 
         assertTrue(state.isConnected)
         assertEquals(telemetry, state.telemetry)
-        assertEquals(1, repository.connectionCheckCount)
+        coVerify(exactly = 1) { repository.isConnected() }
     }
 
     @Test
     fun `接続確認で例外が発生した場合は未接続として監視を継続する`() = runBlocking {
-        val repository = FakeGt7Ps5Repository(
-            isConnectedResults = listOf(null, true),
-            telemetryFlow = emptyFlow(),
-        )
+        val repository = mockk<Gt7Ps5Repository>()
+        every { repository.telemetryStream() } returns emptyFlow()
+        coEvery { repository.isConnected() } throws RuntimeException("connection check failed") andThen true
         val useCase = createUseCase(repository)
 
         val states = mutableListOf<Gt7Ps5ConnectionState>()
@@ -57,7 +58,7 @@ class ObserveGt7Ps5ConnectionUseCaseTest {
         delay(1_050L)
 
         assertTrue(states.last().isConnected)
-        assertEquals(2, repository.connectionCheckCount)
+        coVerify(exactly = 2) { repository.isConnected() }
         job.cancel()
     }
 
@@ -65,20 +66,4 @@ class ObserveGt7Ps5ConnectionUseCaseTest {
         checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(repository),
         observeGt7Ps5 = ObserveGt7Ps5UseCase(repository),
     )
-
-    private class FakeGt7Ps5Repository(
-        private val isConnectedResults: List<Boolean?>,
-        private val telemetryFlow: Flow<Gt7Ps5TelemetryData>,
-    ) : Gt7Ps5Repository {
-        var connectionCheckCount = 0
-            private set
-
-        override fun telemetryStream() = telemetryFlow
-
-        override suspend fun isConnected(): Boolean {
-            val result = isConnectedResults[connectionCheckCount.coerceAtMost(isConnectedResults.lastIndex)]
-            connectionCheckCount++
-            return result ?: error("connection check failed")
-        }
-    }
 }
