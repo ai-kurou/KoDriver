@@ -1,18 +1,12 @@
 package kurou.kodriver.feature.readoutlist
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -144,9 +138,17 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
 }
 
+private fun readoutItemIndex(
+    lazyListIndex: Int,
+    readoutItemStartIndex: Int,
+    itemCount: Int,
+): Int = (lazyListIndex - readoutItemStartIndex).coerceIn(0, itemCount - 1)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PriorityHintRow() {
+private fun PriorityHintRow(
+    modifier: Modifier = Modifier,
+) {
     var showHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -167,7 +169,7 @@ private fun PriorityHintRow() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(bottom = 12.dp),
+        modifier = modifier.padding(bottom = 12.dp),
     ) {
         Text(
             text = stringResource(Res.string.priority_hint_label),
@@ -199,136 +201,131 @@ internal fun ReadoutListPane(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+    val readoutItemStartIndex = 2
     val reorderableState = rememberReorderableLazyListState(listState) { from, to ->
-        onMove(from.index, to.index)
+        onMove(
+            readoutItemIndex(from.index, readoutItemStartIndex, uiState.items.size),
+            readoutItemIndex(to.index, readoutItemStartIndex, uiState.items.size),
+        )
     }
 
-    Column(
+    LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-        ) {
-            OutlinedTextField(
-                value = uiState.selectedSimulator
-                    ?.let { simulatorDisplayName(it) }
-                    ?: stringResource(Res.string.select_simulator_hint),
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(Res.string.simulator_label)) },
-                leadingIcon = if (uiState.selectedSimulator != null) {
-                    {
-                        Image(
-                            painter = simulatorIcon(uiState.selectedSimulator),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
-                        )
-                    }
-                } else {
-                    null
-                },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                modifier = run {
-                    val hint = stringResource(Res.string.select_simulator_hint)
-                    Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .semantics { contentDescription = hint }
-                },
-            )
-            ExposedDropdownMenu(
+        item(key = "simulatorSelector") {
+            ExposedDropdownMenuBox(
                 expanded = expanded,
-                onDismissRequest = { expanded = false },
+                onExpandedChange = { expanded = it },
             ) {
-                uiState.simulators.forEach { simulator ->
-                    DropdownMenuItem(
-                        text = { Text(simulatorDisplayName(simulator)) },
-                        onClick = {
-                            onSimulatorSelected(simulator)
-                            expanded = false
-                        },
-                        leadingIcon = {
+                OutlinedTextField(
+                    value = uiState.selectedSimulator
+                        ?.let { simulatorDisplayName(it) }
+                        ?: stringResource(Res.string.select_simulator_hint),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(Res.string.simulator_label)) },
+                    leadingIcon = if (uiState.selectedSimulator != null) {
+                        {
                             Image(
-                                painter = simulatorIcon(simulator),
+                                painter = simulatorIcon(uiState.selectedSimulator),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
                             )
-                        },
-                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                    )
+                        }
+                    } else {
+                        null
+                    },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                    modifier = run {
+                        val hint = stringResource(Res.string.select_simulator_hint)
+                        Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            .semantics { contentDescription = hint }
+                    },
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                ) {
+                    uiState.simulators.forEach { simulator ->
+                        DropdownMenuItem(
+                            text = { Text(simulatorDisplayName(simulator)) },
+                            onClick = {
+                                onSimulatorSelected(simulator)
+                                expanded = false
+                            },
+                            leadingIcon = {
+                                Image(
+                                    painter = simulatorIcon(simulator),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
+                                )
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        )
+                    }
                 }
             }
         }
-        AnimatedVisibility(
-            visible = uiState.selectedSimulator != null,
-            enter = slideInVertically(
-                initialOffsetY = { it },
-                animationSpec = tween(durationMillis = 400),
-            ) + fadeIn(animationSpec = tween(durationMillis = 400)),
-        ) {
-            Column {
-                Spacer(modifier = Modifier.height(16.dp))
-                PriorityHintRow()
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
-                        ReorderableItem(reorderableState, key = item.value) {
-                            val isSelected = uiState.selectedSimulator?.let {
-                                ReadoutListItemType.fromId(it, item)
-                            } == uiState.selectedItem
-                            val cardContainerColor by animateColorAsState(
-                                targetValue = if (isSelected) {
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.surfaceContainerLow
-                                },
-                                animationSpec = tween(durationMillis = 500),
-                                label = "cardContainerColor",
-                            )
-                            ElevatedCard(
-                                onClick = { onItemClick(item) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
-                            ) {
-                                ListItem(
-                                    headlineContent = { Text(itemDisplayName(item)) },
-                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                    leadingContent = {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Filled.DragIndicator,
-                                                contentDescription = stringResource(Res.string.drag_handle),
-                                                modifier = Modifier.draggableHandle(),
-                                            )
-                                            Text(
-                                                text = "${index + 1}",
-                                                style = MaterialTheme.typography.labelLarge,
-                                                textAlign = TextAlign.Center,
-                                                modifier = Modifier.widthIn(min = 20.dp),
-                                            )
-                                            Icon(
-                                                imageVector = itemIcon(item),
-                                                contentDescription = null,
-                                            )
-                                        }
-                                    },
-                                    trailingContent = {
-                                        Switch(
-                                            checked = uiState.readoutEnabledStates[item] ?: false,
-                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                                        )
-                                    },
+        if (uiState.selectedSimulator != null) {
+            item(key = "priorityHint") {
+                PriorityHintRow(modifier = Modifier.padding(top = 16.dp))
+            }
+            itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
+                ReorderableItem(reorderableState, key = item.value) {
+                    val isSelected = uiState.selectedSimulator.let {
+                        ReadoutListItemType.fromId(it, item)
+                    } == uiState.selectedItem
+                    val cardContainerColor by animateColorAsState(
+                        targetValue = if (isSelected) {
+                            MaterialTheme.colorScheme.secondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerLow
+                        },
+                        animationSpec = tween(durationMillis = 500),
+                        label = "cardContainerColor",
+                    )
+                    ElevatedCard(
+                        onClick = { onItemClick(item) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
+                    ) {
+                        ListItem(
+                            headlineContent = { Text(itemDisplayName(item)) },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            leadingContent = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.DragIndicator,
+                                        contentDescription = stringResource(Res.string.drag_handle),
+                                        modifier = Modifier.draggableHandle(),
+                                    )
+                                    Text(
+                                        text = "${index + 1}",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.widthIn(min = 20.dp),
+                                    )
+                                    Icon(
+                                        imageVector = itemIcon(item),
+                                        contentDescription = null,
+                                    )
+                                }
+                            },
+                            trailingContent = {
+                                Switch(
+                                    checked = uiState.readoutEnabledStates[item] ?: false,
+                                    onCheckedChange = { onReadoutEnabledChanged(item, it) },
                                 )
-                            }
-                        }
+                            },
+                        )
                     }
                 }
             }

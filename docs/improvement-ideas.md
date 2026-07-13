@@ -23,3 +23,13 @@
 - **対象**: `.github/workflows/on-pull-request.yml` の `android-screenshot-test` ジョブ
   **課題**: `recordRoborazziAndroidHostTests` と `verifyRoborazziAndroidHostTests` を同一ジョブ内で連続実行しており、両者とも各モジュールの `testAndroidHostTest`（Androidホスト単体テスト全体、スクリーンショット以外も含む）に依存するため、`unit-test` ジョブ（`koverXmlReport` 経由）と合わせて実質同じテストスイートがCI全体で3回実行されている。さらに、CIが自動生成する `chore: update golden images` コミット（スナップショットPNGの一括更新）が入ると、多くのモジュールでGradleの `UP-TO-DATE` 判定が広範囲に無効化され、本来スキップできるテストが軒並み再実行されて実行時間が数分〜15分超まで跳ね上がることがある（PR #561で timeout-minutes を 10→15→25 に順次引き上げる事態が発生）。
   **改善案**: record用ジョブとverify用ジョブを分離する、あるいは差分のあるモジュールだけを対象に絞る、Roborazziタスクの入力宣言を見直してスナップショット全体ではなく変更されたファイル単位で正しく `UP-TO-DATE` 判定できるようにするなど、重複実行とキャッシュ無効化範囲の削減を検討する。
+
+## core:lmu-windows-data
+
+- **対象**: `core/lmu-windows-data/.../mapper/LmuWindowsMapper.kt`、`core/domain/.../model/LmuWindowsTimingData.kt`
+  **課題**: `LmuWindowsTimingData.sector2Ms` には共有メモリの `mBestLapSector2` を格納しているが、このフィールドは S1+S2 の累積値であり、セクター2単体のタイムではない。フィールド名からは S2 単体に見えるため、将来これを表示・読み上げに使うと誤ったタイムを扱うバグになる（現時点で `sector1Ms` / `sector2Ms` を消費する実装はなく実害は未発生）。また `mBestLapSector1/2` は「ベストセクタータイム」ではなく「ベストラップ中のセクタータイム」である点も要注意。
+  **改善案**: 消費側を実装するときに `sector2Ms - sector1Ms` で S2 単体を算出するか、フィールド名を `sector1And2Ms` などの累積値であることが分かる名前に変更する。詳細は `docs/lmu-windows-telemetry.md` の注意事項を参照。
+
+- **対象**: `core/lmu-windows-data/.../mapper/LmuWindowsMapper.kt`
+  **課題**: `MAX_SCORING_VEHICLES = 128` は rF2 プラグイン由来の値で、LMU の `vehScoringInfo` 配列は 104 要素（`MAX_MAPPED_VEHICLES`）。`mNumVehicles` が万一 104 を超える値だった場合、105 台目以降の探索は配列末尾を越えて `scoringStream` 領域を車両データとして読むことになる（実際に LMU が 104 超を返す可能性は低く、実害はほぼない）。
+  **改善案**: `MAX_SCORING_VEHICLES` を 104 に修正する。
