@@ -1,6 +1,5 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 
 class SaveTelemetryLogUseCase(
@@ -13,12 +12,10 @@ class SaveTelemetryLogUseCase(
         telemetryJson: String,
     ) {
         repository.saveTelemetryLog(
-            TelemetryLog(
-                createdAt = createdAt,
-                simulatorId = simulatorId,
-                readoutItemKey = readoutItemKey,
-                telemetryJson = telemetryJson,
-            ),
+            createdAt = createdAt,
+            simulatorId = simulatorId,
+            readoutItemKey = readoutItemKey,
+            telemetryJson = telemetryJson,
         )
     }
 }

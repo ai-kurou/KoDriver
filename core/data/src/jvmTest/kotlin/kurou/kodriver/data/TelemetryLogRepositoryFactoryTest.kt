@@ -13,17 +13,24 @@ class TelemetryLogRepositoryFactoryTest {
     fun `Roomに保存したテレメトリログを観測できる`() = runTest {
         val directory = Files.createTempDirectory("kodriver_telemetry_log_test").toFile()
         val repository = createTelemetryLogRepository(directory.absolutePath)
-        val log = TelemetryLog(
+
+        repository.saveTelemetryLog(
             createdAt = 123L,
             simulatorId = "gt7_ps5",
             readoutItemKey = "my_best_lap",
             telemetryJson = """{"current":{}}""",
         )
 
-        repository.saveTelemetryLog(log)
-
         assertEquals(
-            listOf(log.copy(id = 1L)),
+            listOf(
+                TelemetryLog(
+                    id = 1L,
+                    createdAt = 123L,
+                    simulatorId = "gt7_ps5",
+                    readoutItemKey = "my_best_lap",
+                    telemetryJson = """{"current":{}}""",
+                ),
+            ),
             repository.observeTelemetryLogs().first(),
         )
         assertTrue(directory.resolve("telemetry_logs.db").exists())
