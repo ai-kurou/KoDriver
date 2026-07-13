@@ -67,7 +67,7 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 `LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
 
 ### オフセット情報
-`LmuMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。
+`LmuWindowsMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。
 
 ### ReadoutItemKey の配線（listPane / detailPane とNarratorの読み上げ判定の一致）
 `ReadoutItemKey` は、読み上げ一覧画面（listPane）のトップレベルの項目スイッチと、各機能の詳細画面（detailPane）内のサブトグルの両方で使われる共通のキー空間である。listPane のスイッチは「その項目をNarratorで読み上げるかどうか」に一致する仕様であり、detailPane のサブトグルは「その項目内のどのイベントを読み上げるか」を絞り込む仕様である。
