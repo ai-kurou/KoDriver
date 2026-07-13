@@ -7,4 +7,7 @@ data class OtherServerIpDetailUiState(
     val isCheckingConnectivity: Boolean = false,
     val connectivityWarning: Boolean = false,
     val isSaved: Boolean = false,
+    val discoveredServers: List<DiscoveredServer> = emptyList(),
+    val isDiscoveryDialogVisible: Boolean = false,
+    val selectedDiscoveredServer: DiscoveredServer? = null,
 )

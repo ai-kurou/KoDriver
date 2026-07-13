@@ -18,6 +18,7 @@ internal class OtherServerIpDetailViewModel(
     observeServerIp: ObserveServerIpUseCase,
     private val saveServerIp: SaveServerIpUseCase,
     private val connectivityChecker: ServerConnectivityChecker,
+    private val windowsServerDiscovery: WindowsServerDiscovery,
 ) : ViewModel() {
 
     private data class MutableState(
@@ -26,18 +27,26 @@ internal class OtherServerIpDetailViewModel(
         val isCheckingConnectivity: Boolean = false,
         val connectivityWarning: Boolean = false,
         val isSaved: Boolean = false,
+        val isDiscoveryDialogDismissed: Boolean = false,
+        val selectedDiscoveredServer: DiscoveredServer? = null,
     )
 
     private val savedIp: StateFlow<String> = observeServerIp()
         .map { it ?: "" }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
+    // pane が画面に表示されている間だけ購読され、mDNS 検出が開始・停止する
+    // （アプリ起動時ではなく WhileSubscribed により uiState の収集タイミングに連動する）
+    private val discoveredServers: StateFlow<List<DiscoveredServer>> = windowsServerDiscovery.discover()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
 
     val uiState: StateFlow<OtherServerIpDetailUiState> = combine(
         savedIp,
         _mutable,
-    ) { saved, m ->
+        discoveredServers,
+    ) { saved, m, discovered ->
         val current = m.userInput ?: saved
         OtherServerIpDetailUiState(
             inputIp = current,
@@ -46,11 +55,33 @@ internal class OtherServerIpDetailViewModel(
             isCheckingConnectivity = m.isCheckingConnectivity,
             connectivityWarning = m.connectivityWarning,
             isSaved = m.isSaved,
+            discoveredServers = discovered,
+            isDiscoveryDialogVisible = discovered.isNotEmpty() && !m.isDiscoveryDialogDismissed,
+            selectedDiscoveredServer = m.selectedDiscoveredServer ?: discovered.firstOrNull(),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherServerIpDetailUiState())
 
     fun onIpChanged(ip: String) {
         _mutable.update { it.copy(userInput = ip, connectivityWarning = false) }
+    }
+
+    fun onDiscoveredServerSelected(server: DiscoveredServer) {
+        _mutable.update { it.copy(selectedDiscoveredServer = server) }
+    }
+
+    fun onDiscoveryDialogConfirm() {
+        val server = _mutable.value.selectedDiscoveredServer ?: discoveredServers.value.firstOrNull() ?: return
+        _mutable.update {
+            it.copy(userInput = server.ipAddress, isDiscoveryDialogDismissed = true, connectivityWarning = false)
+        }
+    }
+
+    fun onDiscoveryDialogDismiss() {
+        _mutable.update { it.copy(isDiscoveryDialogDismissed = true) }
+    }
+
+    fun onShowDiscoveredServers() {
+        _mutable.update { it.copy(isDiscoveryDialogDismissed = false) }
     }
 
     fun onSave() {

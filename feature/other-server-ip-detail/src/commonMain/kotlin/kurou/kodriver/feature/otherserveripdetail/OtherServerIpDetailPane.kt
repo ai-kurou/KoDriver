@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -28,6 +29,8 @@ import kodriver.feature.otherserveripdetail.generated.resources.Res
 import kodriver.feature.otherserveripdetail.generated.resources.navigate_back
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_connectivity_warning
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovering
+import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_show_button
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_invalid
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_label
 import kodriver.feature.otherserveripdetail.generated.resources.server_ip_placeholder
@@ -52,6 +55,10 @@ fun OtherServerIpDetailPane(
         onSave = viewModel::onSave,
         onSaveAnyway = viewModel::onSaveAnyway,
         onDismiss = viewModel::onDismiss,
+        onShowDiscoveredServers = viewModel::onShowDiscoveredServers,
+        onDiscoveredServerSelected = viewModel::onDiscoveredServerSelected,
+        onDiscoveryDialogConfirm = viewModel::onDiscoveryDialogConfirm,
+        onDiscoveryDialogDismiss = viewModel::onDiscoveryDialogDismiss,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -65,6 +72,10 @@ fun OtherServerIpDetailPaneContent(
     onSave: () -> Unit = {},
     onSaveAnyway: () -> Unit = {},
     onDismiss: () -> Unit = {},
+    onShowDiscoveredServers: () -> Unit = {},
+    onDiscoveredServerSelected: (DiscoveredServer) -> Unit = {},
+    onDiscoveryDialogConfirm: () -> Unit = {},
+    onDiscoveryDialogDismiss: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -74,6 +85,15 @@ fun OtherServerIpDetailPaneContent(
             onDismiss()
             onBack()
         }
+    }
+    if (uiState.isDiscoveryDialogVisible) {
+        OtherServerIpDiscoveryDialog(
+            discoveredServers = uiState.discoveredServers,
+            selectedDiscoveredServer = uiState.selectedDiscoveredServer,
+            onServerSelected = onDiscoveredServerSelected,
+            onConfirm = onDiscoveryDialogConfirm,
+            onDismiss = onDiscoveryDialogDismiss,
+        )
     }
     DetailPaneScaffold(
         title = stringResource(Res.string.server_ip_title),
@@ -115,6 +135,25 @@ fun OtherServerIpDetailPaneContent(
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onShowDiscoveredServers,
+                enabled = uiState.discoveredServers.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (uiState.discoveredServers.isEmpty()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp,
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(Res.string.server_ip_discovering))
+                    } else {
+                        Text(stringResource(Res.string.server_ip_discovery_show_button))
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(16.dp))
             if (uiState.connectivityWarning) {
                 Button(onClick = onSaveAnyway, modifier = Modifier.fillMaxWidth()) {
@@ -152,6 +191,14 @@ private fun OtherServerIpDetailPanePreview() {
 
 @Preview(showBackground = true)
 @Composable
+private fun OtherServerIpDetailPaneEmptyInputPreview() {
+    OtherServerIpDetailPaneContent(
+        uiState = OtherServerIpDetailUiState(inputIp = ""),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
 private fun OtherServerIpDetailPaneInvalidPreview() {
     OtherServerIpDetailPaneContent(
         uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
@@ -171,5 +218,28 @@ private fun OtherServerIpDetailPaneConnectivityWarningPreview() {
 private fun OtherServerIpDetailPaneCheckingConnectivityPreview() {
     OtherServerIpDetailPaneContent(
         uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", isCheckingConnectivity = true),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherServerIpDetailPaneDiscoveringPreview() {
+    OtherServerIpDetailPaneContent(
+        uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100", discoveredServers = emptyList()),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherServerIpDetailPaneDiscoveredServersPreview() {
+    OtherServerIpDetailPaneContent(
+        uiState = OtherServerIpDetailUiState(
+            inputIp = "192.168.1.100",
+            discoveredServers = listOf(
+                DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+                DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
+            ),
+            isDiscoveryDialogVisible = false,
+        ),
     )
 }
