@@ -2,21 +2,16 @@ package kurou.kodriver.feature.serverconnection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
+import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
+import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 
 enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONNECTED }
 
@@ -35,34 +30,26 @@ data class ServerConnectionUiState(
     val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ServerConnectionViewModel(
-    private val fetchServerVersion: FetchServerVersionUseCase,
-    private val observeServerIp: ObserveServerIpUseCase,
-    private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
+    observeKoDriverServerConnection: ObserveKoDriverServerConnectionUseCase,
     private val appVersion: String,
 ) : ViewModel() {
 
     private val _showVersionMismatchBottomSheet = MutableStateFlow(false)
     private var versionMismatchWarningShown = false
 
-    private val baseUiStateFlow = combine(
-        observeServerIp(),
-        observeSelectedSimulator(),
-    ) { ip, simulator -> ip to simulator }
-        .flatMapLatest { (ip, simulator) ->
-            val requiresServer = simulator?.requiresKoDriverServer == true
-            if (ip != null) {
-                connectionCheckFlow(ip, simulator, requiresServer)
-            } else {
-                flowOf(
-                    ServerConnectionUiState(
-                        connectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
-                        requiresKoDriverServer = requiresServer,
-                        selectedSimulator = simulator,
-                    ),
-                )
+    private val baseUiStateFlow = observeKoDriverServerConnection(appVersion)
+        .map { state ->
+            if (state.isVersionMismatch && !versionMismatchWarningShown) {
+                versionMismatchWarningShown = true
+                _showVersionMismatchBottomSheet.update { true }
             }
+            ServerConnectionUiState(
+                connectionStatus = state.connectionStatus.toUiStatus(),
+                requiresKoDriverServer = state.requiresKoDriverServer,
+                selectedSimulator = state.selectedSimulator,
+                serverVersion = state.serverVersion,
+            )
         }
 
     val uiState: StateFlow<ServerConnectionUiState> = combine(
@@ -79,40 +66,11 @@ class ServerConnectionViewModel(
     fun dismissVersionMismatchBottomSheet() {
         _showVersionMismatchBottomSheet.update { false }
     }
+}
 
-    private fun connectionCheckFlow(ip: String, simulator: Simulator?, requiresServer: Boolean) = flow {
-        emit(
-            ServerConnectionUiState(
-                connectionStatus = ServerConnectionStatus.CHECKING,
-                requiresKoDriverServer = requiresServer,
-                selectedSimulator = simulator,
-            ),
-        )
-        while (true) {
-            val versionResult = fetchServerVersion(ip)
-            val serverVer = versionResult.getOrNull()
-            val isMismatch = serverVer != null && appVersion.isNotEmpty() && serverVer != appVersion
-            if (isMismatch && !versionMismatchWarningShown) {
-                versionMismatchWarningShown = true
-                _showVersionMismatchBottomSheet.update { true }
-            }
-            emit(
-                ServerConnectionUiState(
-                    connectionStatus = if (versionResult.isSuccess) {
-                        ServerConnectionStatus.CONNECTED
-                    } else {
-                        ServerConnectionStatus.DISCONNECTED
-                    },
-                    requiresKoDriverServer = requiresServer,
-                    selectedSimulator = simulator,
-                    serverVersion = serverVer,
-                ),
-            )
-            delay(CONNECTION_CHECK_INTERVAL_MS)
-        }
-    }
-
-    private companion object {
-        const val CONNECTION_CHECK_INTERVAL_MS = 1_000L
-    }
+private fun KoDriverServerConnectionStatus.toUiStatus(): ServerConnectionStatus = when (this) {
+    KoDriverServerConnectionStatus.NOT_CONFIGURED -> ServerConnectionStatus.NOT_CONFIGURED
+    KoDriverServerConnectionStatus.CHECKING -> ServerConnectionStatus.CHECKING
+    KoDriverServerConnectionStatus.CONNECTED -> ServerConnectionStatus.CONNECTED
+    KoDriverServerConnectionStatus.DISCONNECTED -> ServerConnectionStatus.DISCONNECTED
 }

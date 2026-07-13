@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.gt7ps5connection
 
 import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.koin.core.module.dsl.viewModelOf
@@ -20,4 +21,5 @@ val gt7Ps5ConnectionModule = module {
     factory { CheckGt7Ps5ConnectionUseCase(get()) }
     factory { ObserveGt7Ps5UseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
+    factory { ObserveGt7Ps5ConnectionUseCase(get(), get()) }
 }
