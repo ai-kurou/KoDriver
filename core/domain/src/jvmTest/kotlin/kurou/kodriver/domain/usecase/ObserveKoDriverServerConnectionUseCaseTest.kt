@@ -4,11 +4,15 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
@@ -74,7 +78,8 @@ class ObserveKoDriverServerConnectionUseCaseTest {
     }
 
     @Test
-    fun `一定間隔で接続状態を更新する`() = runBlocking {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun `一定間隔で接続状態を更新する`() = runTest {
         val versionRepository = mockk<ServerVersionRepository>()
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany listOf(
             Result.failure(RuntimeException("down")),
@@ -84,10 +89,11 @@ class ObserveKoDriverServerConnectionUseCaseTest {
 
         val states = mutableListOf<KoDriverServerConnectionState>()
         val job = launch { useCase(appVersion = "1.0.0").collect { states += it } }
-        delay(50L)
+        runCurrent()
         assertEquals(KoDriverServerConnectionStatus.DISCONNECTED, states[1].connectionStatus)
 
-        delay(1_050L)
+        advanceTimeBy(1_000L)
+        runCurrent()
 
         assertEquals(KoDriverServerConnectionStatus.CONNECTED, states[2].connectionStatus)
         coVerify(exactly = 2) { versionRepository.fetchVersion("192.168.1.1") }

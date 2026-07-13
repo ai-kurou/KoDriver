@@ -51,6 +51,7 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 implementation(libs.kotlin.testJunit)
+                implementation(libs.kotlinx.coroutinesTest)
                 implementation(libs.mockk)
             }
         }
