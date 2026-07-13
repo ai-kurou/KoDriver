@@ -1,18 +1,24 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
@@ -22,6 +28,8 @@ import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
+import kodriver.feature.readoutlist.generated.resources.scroll_to_top
+import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
@@ -176,6 +184,54 @@ class ReadoutContentTest {
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
+    }
+
+    @Test
+    fun `リストを下にスクロールすると先頭へ戻るボタンを表示して先頭へ戻れる`() {
+        var scrollToTopText by mutableStateOf("")
+        var simulatorLabelText by mutableStateOf("")
+        var lastItemText by mutableStateOf("")
+        val items = listOf(
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.Flag.BlueFlag,
+            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
+            ReadoutItemKey.LmuWindows.Flag.RedFlag,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+            ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
+            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
+            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+        )
+
+        rule.setContent {
+            scrollToTopText = stringResource(Res.string.scroll_to_top)
+            simulatorLabelText = stringResource(Res.string.simulator_label)
+            lastItemText = stringResource(Res.string.item_my_best_lap)
+            Box(modifier = Modifier.height(240.dp)) {
+                ReadoutListPane(
+                    uiState = ReadoutListUiState(
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = items,
+                        readoutEnabledStates = items.associateWith { true },
+                    ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText(lastItemText))
+        rule.onNodeWithText(scrollToTopText).assertExists().performClick()
+
+        rule.waitUntil {
+            rule.onAllNodes(hasText(simulatorLabelText)).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     private fun assertAllItemsCanNavigateBack(
