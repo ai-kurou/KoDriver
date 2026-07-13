@@ -1,9 +1,15 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +29,7 @@ import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
@@ -39,11 +46,14 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,10 +84,12 @@ import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
+import kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
+import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -201,7 +213,13 @@ internal fun ReadoutListPane(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     val readoutItemStartIndex = 2
+    val isAtTop by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+        }
+    }
     val reorderableState = rememberReorderableLazyListState(listState) { from, to ->
         onMove(
             readoutItemIndex(from.index, readoutItemStartIndex, uiState.items.size),
@@ -209,127 +227,170 @@ internal fun ReadoutListPane(
         )
     }
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-    ) {
-        item(key = "simulatorSelector") {
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it },
-            ) {
-                OutlinedTextField(
-                    value = uiState.selectedSimulator
-                        ?.let { simulatorDisplayName(it) }
-                        ?: stringResource(Res.string.select_simulator_hint),
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(Res.string.simulator_label)) },
-                    leadingIcon = if (uiState.selectedSimulator != null) {
-                        {
-                            Image(
-                                painter = simulatorIcon(uiState.selectedSimulator),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                    modifier = run {
-                        val hint = stringResource(Res.string.select_simulator_hint)
-                        Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                            .semantics { contentDescription = hint }
-                    },
-                )
-                ExposedDropdownMenu(
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        ) {
+            item(key = "simulatorSelector") {
+                ExposedDropdownMenuBox(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false },
+                    onExpandedChange = { expanded = it },
                 ) {
-                    uiState.simulators.forEach { simulator ->
-                        DropdownMenuItem(
-                            text = { Text(simulatorDisplayName(simulator)) },
-                            onClick = {
-                                onSimulatorSelected(simulator)
-                                expanded = false
-                            },
-                            leadingIcon = {
+                    OutlinedTextField(
+                        value = uiState.selectedSimulator
+                            ?.let { simulatorDisplayName(it) }
+                            ?: stringResource(Res.string.select_simulator_hint),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(Res.string.simulator_label)) },
+                        leadingIcon = if (uiState.selectedSimulator != null) {
+                            {
                                 Image(
-                                    painter = simulatorIcon(simulator),
+                                    painter = simulatorIcon(uiState.selectedSimulator),
                                     contentDescription = null,
                                     modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
                                 )
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        )
-                    }
-                }
-            }
-        }
-        if (uiState.selectedSimulator != null) {
-            item(key = "priorityHint") {
-                PriorityHintRow(modifier = Modifier.padding(top = 16.dp))
-            }
-            itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
-                ReorderableItem(reorderableState, key = item.value) {
-                    val isSelected = uiState.selectedSimulator.let {
-                        ReadoutListItemType.fromId(it, item)
-                    } == uiState.selectedItem
-                    val cardContainerColor by animateColorAsState(
-                        targetValue = if (isSelected) {
-                            MaterialTheme.colorScheme.secondaryContainer
+                            }
                         } else {
-                            MaterialTheme.colorScheme.surfaceContainerLow
+                            null
                         },
-                        animationSpec = tween(durationMillis = 500),
-                        label = "cardContainerColor",
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                        modifier = run {
+                            val hint = stringResource(Res.string.select_simulator_hint)
+                            Modifier.fillMaxWidth().menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                                .semantics { contentDescription = hint }
+                        },
                     )
-                    ElevatedCard(
-                        onClick = { onItemClick(item) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
                     ) {
-                        ListItem(
-                            headlineContent = { Text(itemDisplayName(item)) },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                            leadingContent = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.DragIndicator,
-                                        contentDescription = stringResource(Res.string.drag_handle),
-                                        modifier = Modifier.draggableHandle(),
-                                    )
-                                    Text(
-                                        text = "${index + 1}",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.widthIn(min = 20.dp),
-                                    )
-                                    Icon(
-                                        imageVector = itemIcon(item),
+                        uiState.simulators.forEach { simulator ->
+                            DropdownMenuItem(
+                                text = { Text(simulatorDisplayName(simulator)) },
+                                onClick = {
+                                    onSimulatorSelected(simulator)
+                                    expanded = false
+                                },
+                                leadingIcon = {
+                                    Image(
+                                        painter = simulatorIcon(simulator),
                                         contentDescription = null,
+                                        modifier = Modifier.size(24.dp).clip(RoundedCornerShape(4.dp)),
                                     )
-                                }
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
+                }
+            }
+            if (uiState.selectedSimulator != null) {
+                item(key = "priorityHint") {
+                    PriorityHintRow(modifier = Modifier.padding(top = 16.dp))
+                }
+                itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
+                    ReorderableItem(reorderableState, key = item.value) {
+                        val isSelected = uiState.selectedSimulator.let {
+                            ReadoutListItemType.fromId(it, item)
+                        } == uiState.selectedItem
+                        val cardContainerColor by animateColorAsState(
+                            targetValue = if (isSelected) {
+                                MaterialTheme.colorScheme.secondaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surfaceContainerLow
                             },
-                            trailingContent = {
-                                Switch(
-                                    checked = uiState.readoutEnabledStates[item] ?: false,
-                                    onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                                )
-                            },
+                            animationSpec = tween(durationMillis = 500),
+                            label = "cardContainerColor",
                         )
+                        ElevatedCard(
+                            onClick = { onItemClick(item) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
+                        ) {
+                            ListItem(
+                                headlineContent = { Text(itemDisplayName(item)) },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                                leadingContent = {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.DragIndicator,
+                                            contentDescription = stringResource(Res.string.drag_handle),
+                                            modifier = Modifier.draggableHandle(),
+                                        )
+                                        Text(
+                                            text = "${index + 1}",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.widthIn(min = 20.dp),
+                                        )
+                                        Icon(
+                                            imageVector = itemIcon(item),
+                                            contentDescription = null,
+                                        )
+                                    }
+                                },
+                                trailingContent = {
+                                    Switch(
+                                        checked = uiState.readoutEnabledStates[item] ?: false,
+                                        onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }
         }
+
+        AnimatedVisibility(
+            visible = !isAtTop,
+            enter = slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(durationMillis = 300),
+            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit = slideOutVertically(
+                targetOffsetY = { -it },
+                animationSpec = tween(durationMillis = 200),
+            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp),
+        ) {
+            ScrollToTopButton(
+                onClick = {
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(0)
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScrollToTopButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.textButtonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+    ) {
+        Text(stringResource(Res.string.scroll_to_top))
     }
 }
 
