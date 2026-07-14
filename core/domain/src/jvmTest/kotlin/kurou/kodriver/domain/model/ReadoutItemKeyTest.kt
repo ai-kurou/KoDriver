@@ -12,6 +12,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.fromValue("lmu_windows_vehicle_approach"),
         )
+        assertEquals(
+            ReadoutItemKey.LmuWindows.VehicleApproach.Sustained,
+            ReadoutItemKey.fromValue("lmu_windows_vehicle_approach_sustained"),
+        )
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.fromValue("lmu_windows_flag"))
         assertEquals(
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,

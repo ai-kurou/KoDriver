@@ -81,6 +81,7 @@ import kodriver.feature.readoutlist.generated.resources.item_tyre_low_warning
 import kodriver.feature.readoutlist.generated.resources.item_tyre_overheat_warning
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
+import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach_sustained
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
@@ -124,6 +125,8 @@ private fun flagItemDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = 
 @Composable
 private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> stringResource(Res.string.item_vehicle_approach)
+    is ReadoutItemKey.LmuWindows.VehicleApproach.Sustained ->
+        stringResource(Res.string.item_vehicle_approach_sustained)
     is ReadoutItemKey.LmuWindows.Flag -> flagItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.item_vehicle_damage)
     is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.item_overheat)
@@ -139,6 +142,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> Icons.Filled.DirectionsCar
+    is ReadoutItemKey.LmuWindows.VehicleApproach.Sustained -> Icons.Filled.DirectionsCar
     is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
     is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> Icons.Filled.Build
     is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> Icons.Filled.Build

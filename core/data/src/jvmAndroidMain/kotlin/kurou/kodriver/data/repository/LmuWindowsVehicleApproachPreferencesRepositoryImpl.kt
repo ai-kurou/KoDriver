@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsVehicleApproachPreferences
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
@@ -30,5 +31,16 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
 
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         dataStore.updateData { it.copy(startReadoutType = type.id) }
+    }
+
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
+        dataStore.data.map { prefs ->
+            prefs.enabledStates
+                .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
+                .toMap()
+        }
+
+    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+        dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 }
