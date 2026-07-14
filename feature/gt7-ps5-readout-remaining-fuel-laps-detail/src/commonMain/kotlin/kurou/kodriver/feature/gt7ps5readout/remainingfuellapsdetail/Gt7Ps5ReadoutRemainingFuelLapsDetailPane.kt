@@ -20,6 +20,7 @@ import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resource
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_subtitle
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_voice_type
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -81,10 +82,16 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
         DetailPaneSubtitle(text = stringResource(Res.string.remaining_fuel_laps_readout_subtitle))
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
-            chipLabels = listOf(voiceTypeLabel),
-            selectedChipLabels = setOf(voiceTypeLabel),
-            onChipClick = { onPreviewClicked() },
+            chipLabels = emptyList(),
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(voiceTypeLabel),
+                    selectedChipLabels = setOf(voiceTypeLabel),
+                    chipEnabled = true,
+                    onChipClick = { onPreviewClicked() },
+                )
+            },
         )
     }
 }
