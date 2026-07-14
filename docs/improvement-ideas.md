@@ -69,3 +69,107 @@
 - **対象**: `feature/gt7-ps5-narrator/.../Gt7Ps5NarratorViewModel.kt`
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
+
+## core:gt7-ps5-data
+
+- **対象**: `core/gt7-ps5-data/src/jvmAndroidMain/kotlin/kurou/kodriver/core/gt7ps5data/datasource/Gt7Ps5UdpSource.kt`
+  **課題（バグ候補・優先度高）**: `udpPacketFlow` の受信ループで `DatagramPacket` の length をループごとにリセットしていない。`DatagramSocket.receive` は受信したバイト数に `length` を縮めるため、一度でも `PACKET_MIN_SIZE`（0x170）より短いパケット（LAN 内の迷子パケットや将来のパケットフォーマット差異など）を受信すると、以降のすべての受信がその短い length に切り詰められる。切り詰められたパケットは `decrypt` のサイズチェックで捨てられ続けるため、ソケットを開き直すまで GT7 テレメトリが恒久的に止まる。
+  **改善案**: `socket.receive(dgram)` の直前に `dgram.setLength(buf.size)` を入れてループごとに受信バッファ長をリセットする。短いパケット受信後も正常パケットを受信できることを `FakeUdpSocket` で再現するテストを追加する。
+
+- **対象**: `core/gt7-ps5-data/src/jvmAndroidMain/kotlin/kurou/kodriver/core/gt7ps5data/datasource/Gt7Ps5UdpSource.kt`
+  **課題**: `retryWhen` がリトライ対象とするのは `BindException` のみで、それ以外の `IOException`（Wi-Fi 切替・スリープ復帰時の `send` 失敗、`SocketException: Network is unreachable` 等）が発生すると flow が例外終了する。この flow は `shareIn(scope, WhileSubscribed)` の上流なので、例外は共有コルーチン側で発生し、購読者にエラーとして伝わらないまま受信が復帰不能になる（アプリ再起動か consoleAddress 変更まで回復しない）。また初回の `socket.send(HEARTBEAT_PAYLOAD, ...)` は try-catch の外にあり、宛先不達で即例外になる経路がある。
+  **改善案**: `retryWhen` を `IOException` 全般（またはリトライ可能な例外の集合）に広げ、遅延付きで再接続する。初回 heartbeat 送信も受信ループと同じ例外処理の中へ移す。
+
+## server（WebSocket 配信）
+
+- **対象**: `server/src/main/kotlin/kurou/kodriver/FlagWebSocket.kt` ほか各 `*WebSocket.kt`
+  **課題**: WebSocket ハンドラが `incoming` を一切読まず、Flow の `collect` → `send` だけで構成されている。クライアントが正常に Close フレームを送って切断しても、サーバー側は次に `send` が失敗するまで切断を検知できない。`distinctUntilChanged` によって送信頻度が低い（フラッグが変わらない・LMU 未起動で flow が emit しない）状況では、切断済みクライアントのセッションとコルーチンが長時間残留する。
+  **改善案**: ハンドラ内で `incoming` を読み捨てるコルーチンを併走させる（`launch { for (frame in incoming) { } }` など）か、`closeReason` の完了で `collect` をキャンセルする構成にする。
+
+- **対象**: `server/src/main/kotlin/kurou/kodriver/FlagWebSocket.kt` / `TimingWebSocket.kt` ほか
+  **課題**: `Json { encodeDefaults = true }` のインスタンスが WebSocket ルートのファイルごとに private 定義されており、設定が分散している。将来 `ignoreUnknownKeys` 等の設定を足すときに漏れが生じやすい。
+  **改善案**: server モジュール内の共通 `Json` インスタンスに集約する。
+
+## core:data（WebSocket クライアント）
+
+- **対象**: `core/data/src/androidMain/kotlin/kurou/kodriver/data/WebSocketLmuWindows*Repository.kt`（5 ファイル）
+  **課題**: 「serverIp を `flatMapLatest` → `client.webSocket` 接続 → Text フレームを JSON デコードして emit → 失敗時 `delay` 後リトライ」という構造が 5 リポジトリでほぼ同一のまま重複している。また接続失敗の `catch (_: Exception) {}` が完全に握りつぶしで、接続できない原因（ポート違い・ファイアウォール等）の調査手段がない。各リポジトリが `HttpClient` を個別生成しており、`close()` も呼ばれない。
+  **改善案**: 「path とデシリアライザを渡すと再接続付き Flow を返す」共通ヘルパー（例: `WebSocketFlowFactory`）に集約する。接続失敗時は少なくともデバッグログを残す。`HttpClient` は DI で単一インスタンスを共有する。
+
+## core:lmu-windows-data
+
+- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/WindowsSharedMemoryReader.kt`
+  **課題**: `open()` は既に open 済みの状態で呼ばれると、前の `handle` / `mappedPointer` を閉じずに上書きし、ハンドルとマップビューがリークする。現状の呼び出し元（`LmuWindowsSharedMemorySource`）は `isOpen()` チェックや `close()` 先行で守っているため実害はないが、Reader 単体としては誤用に弱い。
+  **改善案**: `open()` 冒頭で `isOpen()` なら `close()` を呼ぶ（または true を即返す）防御を入れる。
+
+- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/LmuWindowsSharedMemorySource.kt`
+  **課題**: `bufferFlow` は 16ms ごとに共有メモリ全体（約 324KB）を heap の `ByteBuffer` へコピーしており、購読中は約 20MB/s のアロケーションが発生する。ネイティブバッファを下流に渡さない設計自体は安全のため妥当だが、GC 負荷としては大きい。
+  **改善案**: 実測で GC 負荷が問題になった場合に、ダブルバッファの再利用や、下流が必要とするセグメント（Scoring / Telemetry の一部）だけを構造体に読み出してから emit する方式を検討する。現状は「計測してから」の課題として記録に留める。
+
+## feature:server-connection
+
+- **対象**: `feature/server-connection/src/commonMain/kotlin/kurou/kodriver/feature/serverconnection/ServerConnectionViewModel.kt`
+  **課題**: バージョン不一致警告の表示判定が `map { }` 内の副作用（`versionMismatchWarningShown` フラグ更新と `_showVersionMismatchBottomSheet.update`）で行われており、CLAUDE.md の「宣言的に状態を組み立てる」規則から外れている。`WhileSubscribed` のため画面の再購読で upstream が再実行される点は `versionMismatchWarningShown` で守られているが、collect 中の副作用は挙動が追いにくい。
+  **改善案**: 「初回の不一致検知で一度だけ表示する」ロジックを `distinctUntilChanged` + `runningFold` 等の演算子、または UseCase 側の状態として宣言的に表現する。
+
+## デザイン（UI/UX・designsystem）
+
+- **対象**: `core/designsystem/.../Theme.kt`
+  **課題**: `MaterialTheme` に `colorScheme` のみ渡しており、`typography` / `shapes` が Material3 デフォルトのまま。画面ごとに `fontSize` や `FontWeight` を直接指定し始めるとスタイルが分散し、後からアプリ全体の文字スケールを調整できなくなる。
+  **改善案**: designsystem に `KoDriverTypography`（必要なら `Shapes` も）を定義して `MaterialTheme` へ渡し、feature 側は `MaterialTheme.typography.*` だけを参照する運用にする。
+
+- **対象**: `core/designsystem/.../Color.kt` / `Theme.kt`（ライトテーマ）
+  **課題**: ライトテーマの `primary = Yellow40` に対して `onPrimary = Neutral99`（ほぼ白）を組み合わせている。黄色系 primary × 白文字は WCAG のコントラスト比 4.5:1 を満たさないことが多く、ボタンラベル等の可読性が低い恐れがある。secondary（Lime）・tertiary（Neon）も同様の懸念がある。
+  **改善案**: 主要な色ペア（primary/onPrimary など）のコントラスト比を実測し、不足していれば `onPrimary` を暗色（Yellow10 等）へ変更する。スクリーンショットテストとは別に、色定義だけのコントラスト検証ユニットテストを designsystem に置くことも検討する。
+
+- **対象**: Android アプリ全体のテーマ
+  **課題**: Android 12+ の Dynamic Color（Material You）に対応しておらず、常に固定のブランドカラーで表示される。レース用アプリとしてブランド色固定は妥当な判断でもあるため、対応しない場合でも「意図的に非対応」であることがどこにも記録されていない。
+  **改善案**: Dynamic Color を採用するか検討し、採用しない場合はその方針を designsystem の README に明記する。
+
+## 作業改善（開発体験）
+
+- **対象**: CLAUDE.md「コード変更時の必須確認」と日常の検証コマンド
+  **課題**: 完了報告前に必要なコマンドが 6 種類以上（ユニットテスト・detekt・assertModuleGraph・Android ビルド・desktop jar・desktop 統合テスト）あり、人も AI エージェントも打ち漏らしやすい。実際に CLAUDE.md には「常に実行すること」の注意書きが繰り返し追記されており、手順の多さ自体が抜け漏れの温床になっている。
+  **改善案**: ルート `build.gradle.kts` に集約タスク（例: `./gradlew preMergeCheck`）を定義し、必須チェック一式を 1 コマンドに束ねる。CLAUDE.md のチェックリストも「`preMergeCheck` を実行する」に簡素化できる。
+
+- **対象**: `.github/`（PR テンプレート）
+  **課題**: `PULL_REQUEST_TEMPLATE.md` がなく、PR 説明の構成（概要・変更点・確認事項）が作成者ごとにばらつく。CLAUDE.md の完了前チェックリストとも連動していない。
+  **改善案**: 日本語の PR テンプレートを追加し、「実行した検証コマンド」「スクリーンショットテスト要否」「ドキュメント更新要否」のチェックボックスを設ける。
+
+- **対象**: `docs/improvement-ideas.md` の運用
+  **課題**: 記録は蓄積される一方で、着手判断・優先度付けの仕組みがない。項目が増えるほど「書いたが誰も読まない」状態になりやすい。
+  **改善案**: 定期的（リリース前など）に棚卸しし、着手するものは GitHub Issue 化して本ファイルからは Issue 番号を添えて削除する運用を README に明記する。
+
+## CI（GitHub Actions）
+
+- **対象**: `.github/workflows/on-pull-request.yml` の `update-module-graph` ジョブ
+  **課題**: PR のたびに `GH_PAT` で PR ブランチへ `chore: update module graph images` をコミット・プッシュする構成のため、モジュール構成に変更がない PR でも毎回ジョブが走り、変更があった場合は push が新たな workflow run を誘発して CI が二重に実行される。また fork からの PR では secrets が使えず失敗する。
+  **改善案**: モジュール構成ファイル（`settings.gradle.kts` / 各 `build.gradle.kts`）に変更がある場合のみ実行する paths フィルタ（`dorny/paths-filter` 等）を入れる。あるいは main マージ時のみ画像を更新し、PR 中は `assertModuleGraph` の検証だけにする。
+
+- **対象**: `.github/workflows/on-pull-request.yml` 全ジョブ
+  **課題**: checkout / setup-java / setup-gradle の 3 ステップが 9 ジョブすべてに重複しており、actions のバージョン更新時に 9 箇所（on-main-merge 等も含めるとさらに多く）を書き換える必要がある。
+  **改善案**: `.github/actions/setup`（composite action）に共通セットアップを切り出し、各ジョブは 1 ステップで呼び出す。
+
+- **対象**: `.github/workflows/on-pull-request.yml` の `concurrency`
+  **課題**: `cancel-in-progress: false` のため、同一 PR に連続プッシュすると古いコミットの run が完走するまで新しい run が待たされる。PR の CI は最新コミットの結果だけが意味を持つため、古い run の完走は Actions 時間の浪費になる。
+  **改善案**: PR トリガーでは `cancel-in-progress: true` にする（`update-module-graph` の push と干渉しないよう、ジョブ分割や group 名の工夫と合わせて検討する）。
+
+- **対象**: `.github/workflows/on-pull-request.yml` の `android-test` ジョブ
+  **課題**: ドキュメントのみの変更でも Android エミュレータを起動して `connectedDebugAndroidTest` を実行しており、PR あたり数分〜十数分の Actions 時間を消費する。
+  **改善案**: `docs/**`・`*.md` のみの変更ではエミュレータテスト等の重いジョブをスキップする paths フィルタを導入する（branch protection の必須チェックと両立させるため、スキップ時に成功を返すゲートジョブ方式にする）。
+
+- **対象**: `.github/`（依存自動更新）
+  **課題**: GitHub Actions は SHA ピン留めされているが `dependabot.yml` / Renovate 設定がなく、actions・Gradle ライブラリの更新が手動任せになっている。CLAUDE.md は「ライブラリは最新安定版を使う」方針だが、それを支える自動化がない。
+  **改善案**: Dependabot（`github-actions` + `gradle` エコシステム）または Renovate を導入し、更新 PR を自動作成させる。
+
+## バグ疑い: LMU プレイ中に Android の読み上げが停止する（接続バナーは緑のまま）
+
+2026-07 に実際に報告された症状（LMU プレイ約 10 分で Android 版の読み上げが停止、画面上部の接続バナーは緑のまま）の調査結果。バナーは HTTP `/version` のポーリング（毎回新規接続）で判定しているため、WebSocket や音声再生が死んでいても緑のままになる点に注意。
+
+- **対象**: `core/data/src/androidMain/kotlin/kurou/kodriver/data/WebSocketLmuWindows*Repository.kt`（5 ファイル）と `server/src/main/kotlin/kurou/kodriver/Application.kt` の `install(WebSockets)`
+  **課題**: クライアント（`pingInterval` 未設定）・サーバー（`pingPeriod` / `timeout` 未設定）とも WebSocket の ping/pong を構成していない。Wi-Fi の瞬断・AP ローミング・省電力などで TCP がサイレントに死ぬ（half-open になる）と、クライアントの `for (frame in incoming)` は例外もクローズも受け取れず永久に待機し、`connectWithRetry` の再接続ループに到達できない。5 つのデータ系 WS が同時に沈黙し「読み上げだけ止まりバナーは緑」の症状と一致する（最有力候補）。
+  **改善案**: クライアント側で `install(WebSockets) { pingIntervalMillis = ... }` を設定して受信タイムアウトを検知可能にし、サーバー側でも `pingPeriod` / `timeout` を設定する。
+
+- **対象**: `feature/lmu-windows-narrator/src/androidMain/kotlin/kurou/kodriver/feature/lmuwindowsnarrator/AndroidSoundPlayer.kt` の `loadSound`
+  **課題**: `soundPool.load(path, 1)` で非同期ロードを開始した「後」に `setOnLoadCompleteListener` を登録しているため、小さい WAV ではリスナー登録前に onLoadComplete が発火してイベントが捨てられるレースがある。踏むと `suspendCancellableCoroutine` が永久に resume されず `playJob` が生きたまま止まり、`LmuWindowsWavNarratorEngine.currentReadoutItemKey` が「再生中」を返し続け、`LmuWindowsNarratorViewModel.speakWithPriority` が同順位以下の全イベントを永久に棄却する。スタックしたのが readoutOrder 先頭（最高優先）の項目だと割り込める項目が存在せず、クラッシュ・エラーなしで読み上げが完全停止する。1 回の再生ごとに開始音＋本体音の 2 回ロードするため、長時間プレイで確率的に発生しうる（次点候補）。
+  **改善案**: `load()` 呼び出し前にリスナーを登録する構成へ修正する。あわせて `loadSound` にタイムアウト（`withTimeoutOrNull`）を設け、万一 resume されない場合も playJob が解放されるようにする。
