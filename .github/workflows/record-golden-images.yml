@@ -1,0 +1,52 @@
+name: Record Golden Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to update"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.branch }}
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.branch }}
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Install Japanese fonts
+        run: sudo apt-get install -y fonts-noto-cjk
+
+      - name: Record JVM golden images
+        run: ./gradlew recordRoborazziJvmTests
+
+      - name: Record Android golden images
+        run: ./gradlew recordRoborazziAndroidHostTests
+
+      - name: Commit updated golden images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          find . \( -path "*/jvmTest/snapshots/*.png" -o -path "*/androidHostTest/snapshots/*.png" \) \
+            -not -path "*/build/*" -print0 | xargs -0 -r git add
+          git diff --staged --quiet || git commit -m "chore: update golden images"
+          git pull --rebase origin ${{ inputs.branch }}
+          git push origin HEAD:${{ inputs.branch }}
