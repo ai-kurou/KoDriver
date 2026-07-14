@@ -15,11 +15,13 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     initialLongitudinal: Double = 10.0,
     initialLateral: Double = 5.0,
     initialSustainedDuration: Int = 4,
+    initialSustainedEnabled: Boolean = true,
 ): LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     val repository = mockk<LmuWindowsVehicleApproachThresholdsPreferencesRepository>()
     val longitudinal = MutableStateFlow(initialLongitudinal)
     val lateral = MutableStateFlow(initialLateral)
     val sustainedDuration = MutableStateFlow(initialSustainedDuration)
+    val sustainedEnabled = MutableStateFlow(initialSustainedEnabled)
     every { repository.observeLongitudinalThresholdMeters() } returns longitudinal
     coEvery { repository.saveLongitudinalThresholdMeters(any()) } answers { longitudinal.update { firstArg() } }
     every { repository.observeLateralThresholdMeters() } returns lateral
@@ -28,6 +30,10 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     coEvery {
         repository.saveSustainedApproachDurationSeconds(any())
     } answers { sustainedDuration.update { firstArg() } }
+    every { repository.observeSustainedApproachEnabled() } returns sustainedEnabled
+    coEvery {
+        repository.saveSustainedApproachEnabled(any())
+    } answers { sustainedEnabled.update { firstArg() } }
     return repository
 }
 
@@ -85,5 +91,23 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         useCases.saveSustainedApproachDurationSeconds(8)
 
         assertEquals(8, useCases.observeSustainedApproachDurationSeconds().first())
+    }
+
+    @Test
+    fun `observeSustainedApproachEnabled はリポジトリの設定を返す`() = runBlocking {
+        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(initialSustainedEnabled = true)
+        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+
+        assertEquals(true, useCases.observeSustainedApproachEnabled().first())
+    }
+
+    @Test
+    fun `saveSustainedApproachEnabled は継続読み上げ有効フラグを保存する`() = runBlocking {
+        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository()
+        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+
+        useCases.saveSustainedApproachEnabled(false)
+
+        assertEquals(false, useCases.observeSustainedApproachEnabled().first())
     }
 }

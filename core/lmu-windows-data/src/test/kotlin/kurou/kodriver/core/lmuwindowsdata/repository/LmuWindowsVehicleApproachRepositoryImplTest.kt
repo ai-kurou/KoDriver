@@ -422,27 +422,33 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     private val longitudinal: Double = 1.0,
     private val lateral: Double = 5.0,
     private val sustainedApproachDurationSeconds: Int = 4,
+    private val sustainedApproachEnabled: Boolean = true,
 ) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = flowOf(longitudinal)
     override fun observeLateralThresholdMeters(): Flow<Double> = flowOf(lateral)
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = flowOf(sustainedApproachDurationSeconds)
+    override fun observeSustainedApproachEnabled(): Flow<Boolean> = flowOf(sustainedApproachEnabled)
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) = Unit
     override suspend fun saveLateralThresholdMeters(meters: Double) = Unit
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) = Unit
+    override suspend fun saveSustainedApproachEnabled(enabled: Boolean) = Unit
 }
 
 private class MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     longitudinal: Double = 1.0,
     lateral: Double = 5.0,
     sustainedApproachDurationSeconds: Int = 4,
+    sustainedApproachEnabled: Boolean = true,
 ) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     private val longitudinalFlow = MutableStateFlow(longitudinal)
     private val lateralFlow = MutableStateFlow(lateral)
     private val sustainedApproachDurationSecondsFlow = MutableStateFlow(sustainedApproachDurationSeconds)
+    private val sustainedApproachEnabledFlow = MutableStateFlow(sustainedApproachEnabled)
 
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinalFlow
     override fun observeLateralThresholdMeters(): Flow<Double> = lateralFlow
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = sustainedApproachDurationSecondsFlow
+    override fun observeSustainedApproachEnabled(): Flow<Boolean> = sustainedApproachEnabledFlow
 
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
         longitudinalFlow.value = meters
@@ -454,6 +460,10 @@ private class MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(
 
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
         sustainedApproachDurationSecondsFlow.value = seconds
+    }
+
+    override suspend fun saveSustainedApproachEnabled(enabled: Boolean) {
+        sustainedApproachEnabledFlow.value = enabled
     }
 }
 
