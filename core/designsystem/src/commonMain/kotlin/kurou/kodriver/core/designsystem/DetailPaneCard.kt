@@ -34,17 +34,21 @@ fun DetailPaneCard(
     modifier: Modifier = Modifier,
     selectedChipLabels: Set<String> = emptySet(),
     onChipClick: (String) -> Unit = {},
+    bottomContent: @Composable () -> Unit = {
+        DetailPaneCardChips(
+            chipLabels = chipLabels,
+            selectedChipLabels = selectedChipLabels,
+            chipEnabled = checked,
+            onChipClick = onChipClick,
+        )
+    },
 ) {
     DetailPaneCardLayout(
         title = title,
-        chipLabels = chipLabels,
-        selectedChipLabels = selectedChipLabels,
-        chipEnabled = checked,
-        onChipClick = onChipClick,
         modifier = modifier,
         titleAlpha = if (checked) 1f else DisabledContentAlpha,
         dividerAlpha = if (checked) 1f else DisabledContentAlpha,
-        chipRowAlpha = if (checked) 1f else DisabledContentAlpha,
+        bottomContentAlpha = if (checked) 1f else DisabledContentAlpha,
         headerContent = {
             Switch(
                 checked = checked,
@@ -52,6 +56,7 @@ fun DetailPaneCard(
             )
         },
         onHeaderClick = { onCheckedChange(!checked) },
+        bottomContent = bottomContent,
     )
 }
 
@@ -62,34 +67,36 @@ fun DetailPaneCard(
     modifier: Modifier = Modifier,
     selectedChipLabels: Set<String> = emptySet(),
     onChipClick: (String) -> Unit = {},
+    bottomContent: @Composable () -> Unit = {
+        DetailPaneCardChips(
+            chipLabels = chipLabels,
+            selectedChipLabels = selectedChipLabels,
+            chipEnabled = true,
+            onChipClick = onChipClick,
+        )
+    },
 ) {
     DetailPaneCardLayout(
         title = title,
-        chipLabels = chipLabels,
-        selectedChipLabels = selectedChipLabels,
-        chipEnabled = true,
-        onChipClick = onChipClick,
         modifier = modifier,
         titleAlpha = 1f,
         dividerAlpha = 1f,
-        chipRowAlpha = 1f,
+        bottomContentAlpha = 1f,
         headerContent = {},
         onHeaderClick = null,
+        bottomContent = bottomContent,
     )
 }
 
 @Composable
 private fun DetailPaneCardLayout(
     title: String,
-    chipLabels: List<String>,
-    selectedChipLabels: Set<String>,
-    chipEnabled: Boolean,
-    onChipClick: (String) -> Unit,
     titleAlpha: Float,
     dividerAlpha: Float,
-    chipRowAlpha: Float,
+    bottomContentAlpha: Float,
     headerContent: @Composable () -> Unit,
     onHeaderClick: (() -> Unit)?,
+    bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
@@ -118,30 +125,40 @@ private fun DetailPaneCardLayout(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .alpha(chipRowAlpha)
+                    .alpha(bottomContentAlpha)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
-                chipLabels.forEach { label ->
-                    val selected = label in selectedChipLabels
-                    FilterChip(
-                        selected = selected,
-                        enabled = chipEnabled,
-                        onClick = { onChipClick(label) },
-                        label = { Text(text = label) },
-                        leadingIcon = if (selected) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = null,
-                                )
-                            }
-                        } else {
-                            null
-                        },
-                    )
-                }
+                bottomContent()
             }
         }
+    }
+}
+
+@Composable
+private fun DetailPaneCardChips(
+    chipLabels: List<String>,
+    selectedChipLabels: Set<String>,
+    chipEnabled: Boolean,
+    onChipClick: (String) -> Unit,
+) {
+    chipLabels.forEach { label ->
+        val selected = label in selectedChipLabels
+        FilterChip(
+            selected = selected,
+            enabled = chipEnabled,
+            onClick = { onChipClick(label) },
+            label = { Text(text = label) },
+            leadingIcon = if (selected) {
+                {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                    )
+                }
+            } else {
+                null
+            },
+        )
     }
 }
 
