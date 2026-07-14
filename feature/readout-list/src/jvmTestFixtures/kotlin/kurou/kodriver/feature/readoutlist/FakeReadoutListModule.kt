@@ -36,18 +36,13 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
     private val lateral = MutableStateFlow(5.0)
     private val longitudinal = MutableStateFlow(1.0)
     private val sustainedApproachDurationSeconds = MutableStateFlow(4)
-    private val sustainedApproachEnabled = MutableStateFlow(true)
     override fun observeLateralThresholdMeters(): Flow<Double> = lateral
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinal
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = sustainedApproachDurationSeconds
-    override fun observeSustainedApproachEnabled(): Flow<Boolean> = sustainedApproachEnabled
     override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.update { meters } }
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.update { meters } }
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
         sustainedApproachDurationSeconds.update { seconds }
-    }
-    override suspend fun saveSustainedApproachEnabled(enabled: Boolean) {
-        sustainedApproachEnabled.update { enabled }
     }
 }
 

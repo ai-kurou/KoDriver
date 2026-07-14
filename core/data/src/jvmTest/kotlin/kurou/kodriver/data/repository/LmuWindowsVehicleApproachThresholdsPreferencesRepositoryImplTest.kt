@@ -72,15 +72,4 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
         repository.saveSustainedApproachDurationSeconds(6)
         assertEquals(6, repository.observeSustainedApproachDurationSeconds().first())
     }
-
-    @Test
-    fun `継続読み上げ有効フラグの初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(true, repository.observeSustainedApproachEnabled().first())
-
-        repository.saveSustainedApproachEnabled(false)
-        assertEquals(false, repository.observeSustainedApproachEnabled().first())
-
-        repository.saveSustainedApproachEnabled(true)
-        assertEquals(true, repository.observeSustainedApproachEnabled().first())
-    }
 }

@@ -61,6 +61,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_l
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_overheat_warning
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_temperature
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach_sustained
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_damage
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
@@ -329,6 +330,8 @@ private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when
 internal fun readoutItemDisplayName(readoutItemKey: String): String {
     return when (val key = ReadoutItemKey.fromValue(readoutItemKey)) {
         is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> stringResource(Res.string.readout_item_vehicle_approach)
+        is ReadoutItemKey.LmuWindows.VehicleApproach.Sustained ->
+            stringResource(Res.string.readout_item_vehicle_approach_sustained)
         is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(key)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)

@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsVehicleApproachPreferencesSerializer
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -89,5 +90,31 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         dataStore.updateData { it.copy(startReadoutType = "unknown") }
 
         assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
+    }
+
+    @Test
+    fun `enabledStates の初期値は空Map`() = testScope.runTest {
+        assertEquals(emptyMap(), repository.observeEnabledStates().first())
+    }
+
+    @Test
+    fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() = testScope.runTest {
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
+
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+            repository.observeEnabledStates().first(),
+        )
+    }
+
+    @Test
+    fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
+
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+            repository.observeEnabledStates().first(),
+        )
     }
 }

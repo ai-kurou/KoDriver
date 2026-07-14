@@ -19,9 +19,6 @@ internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> =
         dataStore.data.map { it.sustainedApproachDurationSeconds }
 
-    override fun observeSustainedApproachEnabled(): Flow<Boolean> =
-        dataStore.data.map { it.sustainedApproachEnabled }
-
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
         dataStore.updateData { it.copy(longitudinalThresholdMeters = meters) }
     }
@@ -32,9 +29,5 @@ internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
 
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
         dataStore.updateData { it.copy(sustainedApproachDurationSeconds = seconds) }
-    }
-
-    override suspend fun saveSustainedApproachEnabled(enabled: Boolean) {
-        dataStore.updateData { it.copy(sustainedApproachEnabled = enabled) }
     }
 }
