@@ -293,7 +293,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     @Test
-    fun `onSustainedReadoutTypeChanged を呼ぶと UiState の sustainedReadoutType が更新される`() = runTest {
+    fun `onSustainedReadoutTypeChanged を呼ぶと UiState の sustainedReadoutType が更新されプレビュー再生される`() = runTest {
         val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
@@ -311,6 +311,8 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         } answers {
             sustainedReadoutTypeFlow.update { newType }
         }
+        every { ttsEngine.speak(SpeechEvent.LeftSustained, false) } returns Unit
+        every { ttsEngine.speak(SpeechEvent.RightSustained, true) } returns Unit
         val viewModel = createViewModel()
 
         viewModel.onSustainedReadoutTypeChanged(newType)
@@ -319,6 +321,37 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         coVerify(exactly = 1) {
             vehicleApproachPreferencesRepository.saveSustainedReadoutType(newType)
         }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LeftSustained, false) }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RightSustained, true) }
+    }
+
+    @Test
+    fun `onSustainedReadoutTypeChanged に KEEP_LEFT_RIGHT を渡すと KeepLeft の後に KeepRight がキュー再生される`() = runTest {
+        val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
+        every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+        every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
+        every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns MutableStateFlow(
+            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+        )
+        every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
+            MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+        every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns sustainedReadoutTypeFlow
+        val newType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT
+        coEvery {
+            vehicleApproachPreferencesRepository.saveSustainedReadoutType(newType)
+        } answers {
+            sustainedReadoutTypeFlow.update { newType }
+        }
+        every { ttsEngine.speak(SpeechEvent.KeepLeft, false) } returns Unit
+        every { ttsEngine.speak(SpeechEvent.KeepRight, true) } returns Unit
+        val viewModel = createViewModel()
+
+        viewModel.onSustainedReadoutTypeChanged(newType)
+
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.KeepLeft, false) }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.KeepRight, true) }
     }
 
     @Test

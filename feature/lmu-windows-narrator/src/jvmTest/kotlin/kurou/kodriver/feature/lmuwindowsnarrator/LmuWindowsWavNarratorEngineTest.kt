@@ -359,6 +359,44 @@ class LmuWindowsWavNarratorEngineTest {
         assertEquals(emptyList(), player.playedSounds)
     }
 
+    @Test
+    fun `KeepLeft はキープレフト音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == KEEP_LEFT_PATH) KEEP_LEFT_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.KeepLeft)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(KEEP_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `LeftSustained は左側維持音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == LEFT_SUSTAINED_PATH) LEFT_SUSTAINED_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.LeftSustained)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(LEFT_SUSTAINED_SOUND, player.playedSounds[1])
+    }
+
     private fun TestScope.createEngine(
         player: FakeSoundPlayer,
         volumeFlow: Flow<Int> = flowOf(100),
@@ -394,6 +432,10 @@ class LmuWindowsWavNarratorEngineTest {
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         const val TYRE_OVERHEAT_PATH = "files/tyre_overheat.wav"
         const val TYRE_COLD_PATH = "files/tyre_cold.wav"
+        const val KEEP_LEFT_PATH = "files/keep_left.wav"
+        const val LEFT_SUSTAINED_PATH = "files/left_sustained.wav"
+        val KEEP_LEFT_SOUND = byteArrayOf(10)
+        val LEFT_SUSTAINED_SOUND = byteArrayOf(11)
         val CAR_LEFT_SOUND = byteArrayOf(1)
         val EVENT_SOUND = byteArrayOf(2)
         val FORMULA_RADIO_SOUND = byteArrayOf(3)
