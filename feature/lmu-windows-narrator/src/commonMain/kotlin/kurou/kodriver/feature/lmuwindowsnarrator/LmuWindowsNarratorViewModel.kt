@@ -35,8 +35,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -50,7 +50,7 @@ data class VehicleApproachUseCases(
     val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
-    val observeStartReadoutEnabled: ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase,
+    val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
     val observeStartReadoutType: ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase,
 )
 
@@ -116,8 +116,15 @@ class LmuWindowsNarratorViewModel(
         flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
         tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
-    ) { readoutStates: Map<ReadoutItemKey, Boolean>, flagStates, vehicleDamageStates, tyreTemperatureStates ->
-        readoutStates + flagStates + vehicleDamageStates + tyreTemperatureStates
+        vehicleApproachUseCases.observeEnabledStates(),
+    ) {
+            readoutStates: Map<ReadoutItemKey, Boolean>,
+            flagStates,
+            vehicleDamageStates,
+            tyreTemperatureStates,
+            vehicleApproachStates,
+        ->
+        readoutStates + flagStates + vehicleDamageStates + tyreTemperatureStates + vehicleApproachStates
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
@@ -156,9 +163,6 @@ class LmuWindowsNarratorViewModel(
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val startReadoutEnabled = vehicleApproachUseCases.observeStartReadoutEnabled()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     private val startReadoutType = vehicleApproachUseCases.observeStartReadoutType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
@@ -315,7 +319,6 @@ class LmuWindowsNarratorViewModel(
             myBestLapVoiceType = voiceType.value,
             currentLap = currentLap.value,
             skipFirstLap = skipFirstLap.value,
-            vehicleApproachStartReadoutEnabled = startReadoutEnabled.value,
             vehicleApproachStartReadoutType = startReadoutType.value,
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,

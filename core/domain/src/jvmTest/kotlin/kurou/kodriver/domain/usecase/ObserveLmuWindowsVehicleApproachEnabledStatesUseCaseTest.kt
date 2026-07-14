@@ -27,11 +27,12 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(): LmuWindowsVe
 class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
 
     @Test
-    fun `初期値はSustainedのデフォルトtrueを返す`() = runBlocking {
+    fun `初期値はSustainedとStartReadoutのデフォルトtrueを返す`() = runBlocking {
         val repo = createLmuWindowsVehicleApproachPreferencesRepository()
         val useCase = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(repo)
 
         val expected = mapOf<ReadoutItemKey, Boolean>(
+            ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
             ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
         )
         assertEquals(expected, useCase().first())
@@ -45,6 +46,7 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
 
         val expected = mapOf<ReadoutItemKey, Boolean>(
+            ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
             ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
         )
         assertEquals(expected, useCase().first())

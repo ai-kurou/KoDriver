@@ -59,13 +59,10 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 
 class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
-    private val startReadoutEnabledFlow = MutableStateFlow(true)
     private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
-    override fun observeStartReadoutEnabled(): Flow<Boolean> = startReadoutEnabledFlow
-    override suspend fun saveStartReadoutEnabled(enabled: Boolean) { startReadoutEnabledFlow.update { enabled } }
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         startReadoutTypeFlow.update { type }

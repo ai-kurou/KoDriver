@@ -38,7 +38,6 @@ data class LmuWindowsNarratorReadoutSettings(
     val myBestLapVoiceType: MyBestLapVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
-    val vehicleApproachStartReadoutEnabled: Boolean,
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
     val tyreTemperatureHighThresholdCelsius: Int,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
@@ -279,7 +278,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): SpeechEvent? {
         if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Root)) return null
-        if (!settings.vehicleApproachStartReadoutEnabled) return null
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout)) return null
         // mLapNumber は 0 スタート（最初の計測周 = 0、フォーメーションラップは負値の可能性あり）
         if (settings.skipFirstLap && settings.currentLap <= 0) return null
         return when {
