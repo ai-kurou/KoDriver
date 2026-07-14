@@ -69,3 +69,45 @@
 - **対象**: `feature/gt7-ps5-narrator/.../Gt7Ps5NarratorViewModel.kt`
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
+
+## core:gt7-ps5-data
+
+- **対象**: `core/gt7-ps5-data/src/jvmAndroidMain/kotlin/kurou/kodriver/core/gt7ps5data/datasource/Gt7Ps5UdpSource.kt`
+  **課題（バグ候補・優先度高）**: `udpPacketFlow` の受信ループで `DatagramPacket` の length をループごとにリセットしていない。`DatagramSocket.receive` は受信したバイト数に `length` を縮めるため、一度でも `PACKET_MIN_SIZE`（0x170）より短いパケット（LAN 内の迷子パケットや将来のパケットフォーマット差異など）を受信すると、以降のすべての受信がその短い length に切り詰められる。切り詰められたパケットは `decrypt` のサイズチェックで捨てられ続けるため、ソケットを開き直すまで GT7 テレメトリが恒久的に止まる。
+  **改善案**: `socket.receive(dgram)` の直前に `dgram.setLength(buf.size)` を入れてループごとに受信バッファ長をリセットする。短いパケット受信後も正常パケットを受信できることを `FakeUdpSocket` で再現するテストを追加する。
+
+- **対象**: `core/gt7-ps5-data/src/jvmAndroidMain/kotlin/kurou/kodriver/core/gt7ps5data/datasource/Gt7Ps5UdpSource.kt`
+  **課題**: `retryWhen` がリトライ対象とするのは `BindException` のみで、それ以外の `IOException`（Wi-Fi 切替・スリープ復帰時の `send` 失敗、`SocketException: Network is unreachable` 等）が発生すると flow が例外終了する。この flow は `shareIn(scope, WhileSubscribed)` の上流なので、例外は共有コルーチン側で発生し、購読者にエラーとして伝わらないまま受信が復帰不能になる（アプリ再起動か consoleAddress 変更まで回復しない）。また初回の `socket.send(HEARTBEAT_PAYLOAD, ...)` は try-catch の外にあり、宛先不達で即例外になる経路がある。
+  **改善案**: `retryWhen` を `IOException` 全般（またはリトライ可能な例外の集合）に広げ、遅延付きで再接続する。初回 heartbeat 送信も受信ループと同じ例外処理の中へ移す。
+
+## server（WebSocket 配信）
+
+- **対象**: `server/src/main/kotlin/kurou/kodriver/FlagWebSocket.kt` ほか各 `*WebSocket.kt`
+  **課題**: WebSocket ハンドラが `incoming` を一切読まず、Flow の `collect` → `send` だけで構成されている。クライアントが正常に Close フレームを送って切断しても、サーバー側は次に `send` が失敗するまで切断を検知できない。`distinctUntilChanged` によって送信頻度が低い（フラッグが変わらない・LMU 未起動で flow が emit しない）状況では、切断済みクライアントのセッションとコルーチンが長時間残留する。
+  **改善案**: ハンドラ内で `incoming` を読み捨てるコルーチンを併走させる（`launch { for (frame in incoming) { } }` など）か、`closeReason` の完了で `collect` をキャンセルする構成にする。
+
+- **対象**: `server/src/main/kotlin/kurou/kodriver/FlagWebSocket.kt` / `TimingWebSocket.kt` ほか
+  **課題**: `Json { encodeDefaults = true }` のインスタンスが WebSocket ルートのファイルごとに private 定義されており、設定が分散している。将来 `ignoreUnknownKeys` 等の設定を足すときに漏れが生じやすい。
+  **改善案**: server モジュール内の共通 `Json` インスタンスに集約する。
+
+## core:data（WebSocket クライアント）
+
+- **対象**: `core/data/src/androidMain/kotlin/kurou/kodriver/data/WebSocketLmuWindows*Repository.kt`（5 ファイル）
+  **課題**: 「serverIp を `flatMapLatest` → `client.webSocket` 接続 → Text フレームを JSON デコードして emit → 失敗時 `delay` 後リトライ」という構造が 5 リポジトリでほぼ同一のまま重複している。また接続失敗の `catch (_: Exception) {}` が完全に握りつぶしで、接続できない原因（ポート違い・ファイアウォール等）の調査手段がない。各リポジトリが `HttpClient` を個別生成しており、`close()` も呼ばれない。
+  **改善案**: 「path とデシリアライザを渡すと再接続付き Flow を返す」共通ヘルパー（例: `WebSocketFlowFactory`）に集約する。接続失敗時は少なくともデバッグログを残す。`HttpClient` は DI で単一インスタンスを共有する。
+
+## core:lmu-windows-data
+
+- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/WindowsSharedMemoryReader.kt`
+  **課題**: `open()` は既に open 済みの状態で呼ばれると、前の `handle` / `mappedPointer` を閉じずに上書きし、ハンドルとマップビューがリークする。現状の呼び出し元（`LmuWindowsSharedMemorySource`）は `isOpen()` チェックや `close()` 先行で守っているため実害はないが、Reader 単体としては誤用に弱い。
+  **改善案**: `open()` 冒頭で `isOpen()` なら `close()` を呼ぶ（または true を即返す）防御を入れる。
+
+- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/LmuWindowsSharedMemorySource.kt`
+  **課題**: `bufferFlow` は 16ms ごとに共有メモリ全体（約 324KB）を heap の `ByteBuffer` へコピーしており、購読中は約 20MB/s のアロケーションが発生する。ネイティブバッファを下流に渡さない設計自体は安全のため妥当だが、GC 負荷としては大きい。
+  **改善案**: 実測で GC 負荷が問題になった場合に、ダブルバッファの再利用や、下流が必要とするセグメント（Scoring / Telemetry の一部）だけを構造体に読み出してから emit する方式を検討する。現状は「計測してから」の課題として記録に留める。
+
+## feature:server-connection
+
+- **対象**: `feature/server-connection/src/commonMain/kotlin/kurou/kodriver/feature/serverconnection/ServerConnectionViewModel.kt`
+  **課題**: バージョン不一致警告の表示判定が `map { }` 内の副作用（`versionMismatchWarningShown` フラグ更新と `_showVersionMismatchBottomSheet.update`）で行われており、CLAUDE.md の「宣言的に状態を組み立てる」規則から外れている。`WhileSubscribed` のため画面の再購読で upstream が再実行される点は `versionMismatchWarningShown` で守られているが、collect 中の副作用は挙動が追いにくい。
+  **改善案**: 「初回の不一致検知で一度だけ表示する」ロジックを `distinctUntilChanged` + `runningFold` 等の演算子、または UseCase 側の状態として宣言的に表現する。
