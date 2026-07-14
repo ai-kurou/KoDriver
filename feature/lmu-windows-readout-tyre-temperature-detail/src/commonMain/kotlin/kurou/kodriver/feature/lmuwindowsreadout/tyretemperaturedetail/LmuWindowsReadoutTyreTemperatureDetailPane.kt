@@ -52,6 +52,7 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -201,21 +202,31 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
             checked = uiState.overheatWarningEnabled,
-            chipLabels = listOf(overheatWarningChipLabel),
-            selectedChipLabels = setOf(overheatWarningChipLabel),
             onCheckedChange = onOverheatWarningEnabledChanged,
-            onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(overheatWarningChipLabel),
+                    selectedChipLabels = setOf(overheatWarningChipLabel),
+                    chipEnabled = uiState.overheatWarningEnabled,
+                    onChipClick = { onPreviewClicked() },
+                )
+            },
         )
         val lowWarningChipLabel = stringResource(Res.string.tyre_temperature_low_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
-            chipLabels = listOf(lowWarningChipLabel),
-            selectedChipLabels = setOf(lowWarningChipLabel),
             onCheckedChange = onLowWarningEnabledChanged,
-            onChipClick = { onLowWarningPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(lowWarningChipLabel),
+                    selectedChipLabels = setOf(lowWarningChipLabel),
+                    chipEnabled = uiState.lowWarningEnabled,
+                    onChipClick = { onLowWarningPreviewClicked() },
+                )
+            },
         )
     }
 }

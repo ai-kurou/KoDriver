@@ -95,6 +95,9 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
     )
 }
 
+private const val WEB_SOCKET_PING_PERIOD_MS = 15_000L
+private const val WEB_SOCKET_TIMEOUT_MS = 15_000L
+
 fun Application.module(
     observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
     observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
@@ -102,7 +105,12 @@ fun Application.module(
     observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     observeLmuWindows: ObserveLmuWindowsUseCase,
 ) {
-    install(WebSockets)
+    install(WebSockets) {
+        // クライアントがサイレントに消えた（half-open になった）接続を検知して
+        // セッションを解放するため、ping/pong を有効にする。
+        pingPeriodMillis = WEB_SOCKET_PING_PERIOD_MS
+        timeoutMillis = WEB_SOCKET_TIMEOUT_MS
+    }
     routing {
         get("/") {
             call.respondText("Hello, Ktor!")

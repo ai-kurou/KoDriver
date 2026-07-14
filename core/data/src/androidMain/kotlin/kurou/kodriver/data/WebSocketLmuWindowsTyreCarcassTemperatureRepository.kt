@@ -1,8 +1,5 @@
 package kurou.kodriver.data
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
@@ -32,9 +29,7 @@ internal class WebSocketLmuWindowsTyreCarcassTemperatureRepository(
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    private val client = HttpClient(OkHttp) {
-        install(WebSockets)
-    }
+    private val client = createWebSocketHttpClient()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =

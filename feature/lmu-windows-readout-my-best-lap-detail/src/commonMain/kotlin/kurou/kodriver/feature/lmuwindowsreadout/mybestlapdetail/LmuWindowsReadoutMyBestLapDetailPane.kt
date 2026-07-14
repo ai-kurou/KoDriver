@@ -18,6 +18,7 @@ import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my
 import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
 import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -61,17 +62,22 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
         DetailPaneSubtitle(text = stringResource(Res.string.my_best_lap_subtitle))
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
-            chipLabels = chipLabels,
-            selectedChipLabels = setOf(selectedLabel),
-            onChipClick = { label ->
-                val type = when (label) {
-                    casualLabel -> MyBestLapVoiceType.CASUAL
-                    else -> MyBestLapVoiceType.FORMAL
-                }
-                onVoiceTypeChanged(type)
-                onPreviewClicked(type)
-            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = chipLabels,
+                    selectedChipLabels = setOf(selectedLabel),
+                    chipEnabled = true,
+                    onChipClick = { label ->
+                        val type = when (label) {
+                            casualLabel -> MyBestLapVoiceType.CASUAL
+                            else -> MyBestLapVoiceType.FORMAL
+                        }
+                        onVoiceTypeChanged(type)
+                        onPreviewClicked(type)
+                    },
+                )
+            },
         )
     }
 }

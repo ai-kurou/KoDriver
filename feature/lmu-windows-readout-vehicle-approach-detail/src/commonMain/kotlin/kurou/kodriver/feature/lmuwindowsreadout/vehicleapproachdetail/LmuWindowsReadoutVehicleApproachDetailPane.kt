@@ -200,8 +200,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
             checked = uiState.startReadoutEnabled,
-            chipLabels = startReadoutTypeLabels.values.toList(),
-            selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
             onCheckedChange = onStartReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
@@ -227,8 +225,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_sustained_readout_switch_label),
             checked = uiState.sustainedReadoutEnabled,
-            chipLabels = sustainedReadoutTypeLabels.values.toList(),
-            selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
             onCheckedChange = onSustainedReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
