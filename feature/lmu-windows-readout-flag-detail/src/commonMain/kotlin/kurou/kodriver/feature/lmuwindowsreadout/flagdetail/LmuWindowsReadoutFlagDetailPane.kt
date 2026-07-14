@@ -15,6 +15,7 @@ import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_switch_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -51,14 +52,21 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
         DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
+            val checked = uiState.enabledStates[item.key] ?: true
             DetailPaneCard(
                 title = stringResource(item.labelRes),
-                checked = uiState.enabledStates[item.key] ?: true,
-                chipLabels = listOf(chipLabel),
-                selectedChipLabels = setOf(chipLabel),
+                checked = checked,
+                chipLabels = emptyList(),
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
-                onChipClick = { onPreviewClicked(item) },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf(chipLabel),
+                        selectedChipLabels = setOf(chipLabel),
+                        chipEnabled = checked,
+                        onChipClick = { onPreviewClicked(item) },
+                    )
+                },
             )
         }
     }

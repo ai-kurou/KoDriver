@@ -135,7 +135,7 @@ private fun DetailPaneCardLayout(
 }
 
 @Composable
-private fun DetailPaneCardChips(
+fun DetailPaneCardChips(
     chipLabels: List<String>,
     selectedChipLabels: Set<String>,
     chipEnabled: Boolean,
