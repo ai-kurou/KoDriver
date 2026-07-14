@@ -161,3 +161,15 @@
 - **対象**: `.github/`（依存自動更新）
   **課題**: GitHub Actions は SHA ピン留めされているが `dependabot.yml` / Renovate 設定がなく、actions・Gradle ライブラリの更新が手動任せになっている。CLAUDE.md は「ライブラリは最新安定版を使う」方針だが、それを支える自動化がない。
   **改善案**: Dependabot（`github-actions` + `gradle` エコシステム）または Renovate を導入し、更新 PR を自動作成させる。
+
+## バグ疑い: LMU プレイ中に Android の読み上げが停止する（接続バナーは緑のまま）
+
+2026-07 に実際に報告された症状（LMU プレイ約 10 分で Android 版の読み上げが停止、画面上部の接続バナーは緑のまま）の調査結果。バナーは HTTP `/version` のポーリング（毎回新規接続）で判定しているため、WebSocket や音声再生が死んでいても緑のままになる点に注意。
+
+- **対象**: `core/data/src/androidMain/kotlin/kurou/kodriver/data/WebSocketLmuWindows*Repository.kt`（5 ファイル）と `server/src/main/kotlin/kurou/kodriver/Application.kt` の `install(WebSockets)`
+  **課題**: クライアント（`pingInterval` 未設定）・サーバー（`pingPeriod` / `timeout` 未設定）とも WebSocket の ping/pong を構成していない。Wi-Fi の瞬断・AP ローミング・省電力などで TCP がサイレントに死ぬ（half-open になる）と、クライアントの `for (frame in incoming)` は例外もクローズも受け取れず永久に待機し、`connectWithRetry` の再接続ループに到達できない。5 つのデータ系 WS が同時に沈黙し「読み上げだけ止まりバナーは緑」の症状と一致する（最有力候補）。
+  **改善案**: クライアント側で `install(WebSockets) { pingIntervalMillis = ... }` を設定して受信タイムアウトを検知可能にし、サーバー側でも `pingPeriod` / `timeout` を設定する。
+
+- **対象**: `feature/lmu-windows-narrator/src/androidMain/kotlin/kurou/kodriver/feature/lmuwindowsnarrator/AndroidSoundPlayer.kt` の `loadSound`
+  **課題**: `soundPool.load(path, 1)` で非同期ロードを開始した「後」に `setOnLoadCompleteListener` を登録しているため、小さい WAV ではリスナー登録前に onLoadComplete が発火してイベントが捨てられるレースがある。踏むと `suspendCancellableCoroutine` が永久に resume されず `playJob` が生きたまま止まり、`LmuWindowsWavNarratorEngine.currentReadoutItemKey` が「再生中」を返し続け、`LmuWindowsNarratorViewModel.speakWithPriority` が同順位以下の全イベントを永久に棄却する。スタックしたのが readoutOrder 先頭（最高優先）の項目だと割り込める項目が存在せず、クラッシュ・エラーなしで読み上げが完全停止する。1 回の再生ごとに開始音＋本体音の 2 回ロードするため、長時間プレイで確率的に発生しうる（次点候補）。
+  **改善案**: `load()` 呼び出し前にリスナーを登録する構成へ修正する。あわせて `loadSound` にタイムアウト（`withTimeoutOrNull`）を設け、万一 resume されない場合も playJob が解放されるようにする。
