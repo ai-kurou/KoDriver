@@ -2,16 +2,12 @@ name: Record Golden Images
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: "Branch to update"
-        required: true
 
 permissions:
   contents: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.branch }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -22,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          ref: ${{ inputs.branch }}
+          ref: ${{ github.ref_name }}
           token: ${{ secrets.GH_PAT }}
 
       - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
@@ -48,5 +44,5 @@ jobs:
           find . \( -path "*/jvmTest/snapshots/*.png" -o -path "*/androidHostTest/snapshots/*.png" \) \
             -not -path "*/build/*" -print0 | xargs -0 -r git add
           git diff --staged --quiet || git commit -m "chore: update golden images"
-          git pull --rebase origin ${{ inputs.branch }}
-          git push origin HEAD:${{ inputs.branch }}
+          git pull --rebase origin ${{ github.ref_name }}
+          git push origin HEAD:${{ github.ref_name }}
