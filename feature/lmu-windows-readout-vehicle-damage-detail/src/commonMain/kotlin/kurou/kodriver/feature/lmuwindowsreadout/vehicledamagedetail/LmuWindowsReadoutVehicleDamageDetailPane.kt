@@ -17,6 +17,7 @@ import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resource
 import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import org.jetbrains.compose.resources.stringResource
@@ -54,11 +55,17 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_damage_overheat_switch_label),
             checked = uiState.overheatEnabled,
-            chipLabels = listOf(chipLabel),
-            selectedChipLabels = setOf(chipLabel),
+            chipLabels = emptyList(),
             onCheckedChange = onOverheatEnabledChanged,
-            onChipClick = { onPreviewClicked() },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(chipLabel),
+                    selectedChipLabels = setOf(chipLabel),
+                    chipEnabled = uiState.overheatEnabled,
+                    onChipClick = { onPreviewClicked() },
+                )
+            },
         )
     }
 }
