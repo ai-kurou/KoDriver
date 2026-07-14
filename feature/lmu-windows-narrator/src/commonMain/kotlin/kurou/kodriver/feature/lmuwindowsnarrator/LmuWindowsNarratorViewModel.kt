@@ -22,8 +22,10 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
@@ -82,6 +84,9 @@ data class NarratorUseCases(
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val saveTelemetryLog: SaveTelemetryLogUseCase,
 )
+
+private val defaultTyreLowWarningPhases =
+    lmuWindowsTyreTemperatureLowWarningSelectablePhases - SessionPhase.GARAGE
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LongParameterList")
@@ -152,10 +157,10 @@ class LmuWindowsNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 90)
 
     private val tyreLowWarningPhases = tyreTemperatureUseCases.observeLowWarningPhases()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptySet())
+        .stateIn(viewModelScope, SharingStarted.Eagerly, defaultTyreLowWarningPhases)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     private val startReadoutEnabled = vehicleApproachUseCases.observeStartReadoutEnabled()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)

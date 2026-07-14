@@ -75,7 +75,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映した UiState を返す`() = runTest {
         val lateralFlow = MutableStateFlow(5.0)
-        val longitudinalFlow = MutableStateFlow(1.0)
+        val longitudinalFlow = MutableStateFlow(5.0)
         val skipFirstLapFlow = MutableStateFlow(true)
         val startReadoutEnabledFlow = MutableStateFlow(true)
         val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
@@ -89,7 +89,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         assertEquals(
             LmuWindowsReadoutVehicleApproachDetailUiState(
                 lateralThresholdMeters = 5.0,
-                longitudinalThresholdMeters = 1.0,
+                longitudinalThresholdMeters = 5.0,
                 skipFirstLap = true,
                 startReadoutEnabled = true,
                 startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
