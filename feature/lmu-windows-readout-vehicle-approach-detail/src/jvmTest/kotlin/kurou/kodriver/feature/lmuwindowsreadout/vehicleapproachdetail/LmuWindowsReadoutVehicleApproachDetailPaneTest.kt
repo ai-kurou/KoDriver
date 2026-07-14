@@ -93,4 +93,23 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
 
         assertEquals(4.0, changedValue)
     }
+
+    @Test
+    fun `継続接近時間スライダーの値を確定するとonSustainedApproachDurationSecondsChangedが呼ばれる`() {
+        var changedValue: Int? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(sustainedApproachDurationSeconds = 4),
+                    onSustainedApproachDurationSecondsChanged = { changedValue = it },
+                )
+            }
+        }
+
+        rule.onNode(
+            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 4.0f, range = 4f..10f, steps = 5)),
+        ).performSemanticsAction(SemanticsActions.SetProgress) { it(8f) }
+
+        assertEquals(8, changedValue)
+    }
 }

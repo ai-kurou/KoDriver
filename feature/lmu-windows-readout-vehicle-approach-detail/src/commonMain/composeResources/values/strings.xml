@@ -4,6 +4,7 @@
     <string name="vehicle_approach_threshold_subtitle">閾値設定</string>
     <string name="vehicle_approach_longitudinal_label">前後: %1$.1f m</string>
     <string name="vehicle_approach_lateral_label">左右: %1$.1f m</string>
+    <string name="vehicle_approach_sustained_duration_label">継続接近: %1$.0f 秒</string>
     <string name="vehicle_approach_help_description">閾値は自車中心から相手車両中心までの距離です。この範囲内に入ると車両接近と判定され読み上げられます。\n\n※車両は一般的に全長 5 m 以下、全幅 2 m 以下となっています。</string>
     <string name="vehicle_approach_first_lap_subtitle">フォーメーションラップ・1周目はスキップ</string>
     <string name="vehicle_approach_skip_first_lap_subtitle">フォーメーションラップおよびスタート直後の1周目はスキップします。スタートグリッドで密集している状況での誤報を防ぎます。</string>
