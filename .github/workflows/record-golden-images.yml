@@ -6,15 +6,6 @@ on:
       branch:
         description: "Branch to update"
         required: true
-      target:
-        description: "Golden image target"
-        required: true
-        default: all
-        type: choice
-        options:
-          - all
-          - jvm
-          - android
 
 permissions:
   contents: write
@@ -45,11 +36,9 @@ jobs:
         run: sudo apt-get install -y fonts-noto-cjk
 
       - name: Record JVM golden images
-        if: ${{ inputs.target == 'all' || inputs.target == 'jvm' }}
         run: ./gradlew recordRoborazziJvmTests
 
       - name: Record Android golden images
-        if: ${{ inputs.target == 'all' || inputs.target == 'android' }}
         run: ./gradlew recordRoborazziAndroidHostTests
 
       - name: Commit updated golden images
