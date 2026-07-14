@@ -24,11 +24,8 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -60,15 +57,10 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     private fun createViewModel() = LmuWindowsReadoutVehicleApproachDetailViewModel(
-        observeLateralThreshold = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(thresholdsRepository),
-        observeLongitudinalThreshold = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(
-            thresholdsRepository,
-        ),
+        thresholds = LmuWindowsVehicleApproachThresholdsUseCases(thresholdsRepository),
         vehicleApproachPreferences = LmuWindowsVehicleApproachPreferencesUseCases(
             vehicleApproachPreferencesRepository,
         ),
-        saveLateralThreshold = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(thresholdsRepository),
-        saveLongitudinalThreshold = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(thresholdsRepository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
@@ -81,6 +73,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns lateralFlow
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns longitudinalFlow
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns skipFirstLapFlow
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns startReadoutEnabledFlow
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns startReadoutTypeFlow
@@ -90,6 +83,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             LmuWindowsReadoutVehicleApproachDetailUiState(
                 lateralThresholdMeters = 5.0,
                 longitudinalThresholdMeters = 1.0,
+                sustainedApproachDurationSeconds = 4,
                 skipFirstLap = true,
                 startReadoutEnabled = true,
                 startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -98,6 +92,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         )
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
         verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() }
         verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
@@ -109,6 +104,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val lateralFlow = MutableStateFlow(5.0)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns lateralFlow
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
@@ -129,6 +125,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val longitudinalFlow = MutableStateFlow(1.0)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns longitudinalFlow
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
@@ -149,6 +146,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val skipFirstLapFlow = MutableStateFlow(false)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns skipFirstLapFlow
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
@@ -169,6 +167,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val startReadoutEnabledFlow = MutableStateFlow(true)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns startReadoutEnabledFlow
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
@@ -189,6 +188,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns startReadoutTypeFlow
@@ -217,6 +217,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val longitudinalFlow = MutableStateFlow(1.0)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns longitudinalFlow
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
@@ -250,6 +251,7 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         val lateralFlow = MutableStateFlow(5.0)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns lateralFlow
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
@@ -279,9 +281,65 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     @Test
+    fun `onSustainedApproachDurationSecondsChanged を呼ぶと UiState の sustainedApproachDurationSeconds が更新される`() = runTest {
+        val sustainedDurationFlow = MutableStateFlow(4)
+        every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+        every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns sustainedDurationFlow
+        every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
+            MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+        coEvery { thresholdsRepository.saveSustainedApproachDurationSeconds(8) } answers {
+            sustainedDurationFlow.update { 8 }
+        }
+        val viewModel = createViewModel()
+
+        viewModel.onSustainedApproachDurationSecondsChanged(8)
+
+        assertEquals(8, viewModel.uiState.first().sustainedApproachDurationSeconds)
+        coVerify(exactly = 1) { thresholdsRepository.saveSustainedApproachDurationSeconds(8) }
+    }
+
+    @Test
+    fun `onResetSustainedApproachDurationSeconds を呼ぶと sustainedApproachDurationSeconds がデフォルト値に戻る`() = runTest {
+        val sustainedDurationFlow = MutableStateFlow(8)
+        every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+        every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns sustainedDurationFlow
+        every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
+            MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+        coEvery {
+            thresholdsRepository.saveSustainedApproachDurationSeconds(
+                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+            )
+        } answers {
+            sustainedDurationFlow.update {
+                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS
+            }
+        }
+        val viewModel = createViewModel()
+
+        viewModel.onResetSustainedApproachDurationSeconds()
+
+        assertEquals(
+            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+            viewModel.uiState.first().sustainedApproachDurationSeconds,
+        )
+        coVerify(exactly = 1) {
+            thresholdsRepository.saveSustainedApproachDurationSeconds(
+                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+            )
+        }
+    }
+
+    @Test
     fun `onStartReadoutPreviewClicked を呼ぶと CarLeft の後に CarRight がキュー再生される`() {
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
         every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns MutableStateFlow(true)
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns

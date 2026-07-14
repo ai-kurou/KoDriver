@@ -48,6 +48,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_switch_content_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_readout_switch_label
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_duration_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
@@ -58,6 +59,7 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun LmuWindowsReadoutVehicleApproachDetailPane(
@@ -71,6 +73,8 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(
         onLateralThresholdChanged = viewModel::onLateralThresholdChanged,
         onResetLongitudinalThreshold = viewModel::onResetLongitudinalThreshold,
         onResetLateralThreshold = viewModel::onResetLateralThreshold,
+        onSustainedApproachDurationSecondsChanged = viewModel::onSustainedApproachDurationSecondsChanged,
+        onResetSustainedApproachDurationSeconds = viewModel::onResetSustainedApproachDurationSeconds,
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onStartReadoutTypeChanged = viewModel::onStartReadoutTypeChanged,
@@ -86,6 +90,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onLateralThresholdChanged: (Double) -> Unit = {},
     onResetLongitudinalThreshold: () -> Unit = {},
     onResetLateralThreshold: () -> Unit = {},
+    onSustainedApproachDurationSecondsChanged: (Int) -> Unit = {},
+    onResetSustainedApproachDurationSeconds: () -> Unit = {},
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onStartReadoutTypeChanged: (VehicleApproachStartReadoutType) -> Unit = {},
@@ -93,6 +99,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
     val lateralLabel = stringResource(Res.string.vehicle_approach_lateral_label)
+    val sustainedDurationLabel = stringResource(Res.string.vehicle_approach_sustained_duration_label)
     var showHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -123,6 +130,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS.toFloat()
         val defaultLateral =
             LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS.toFloat()
+        val defaultSustainedDuration =
+            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS.toFloat()
         val resetToDefaultLabel = stringResource(Res.string.vehicle_approach_threshold_reset_to_default)
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
@@ -140,6 +149,16 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
             defaultValue = defaultLateral,
             onResetToDefault = onResetLateralThreshold,
+            resetContentDescription = resetToDefaultLabel,
+        )
+        ThresholdSlider(
+            value = uiState.sustainedApproachDurationSeconds.toFloat(),
+            valueRange = 4f..10f,
+            steps = 5,
+            labelFormatter = { sustainedDurationLabel.format(it) },
+            onValueChangeFinished = { onSustainedApproachDurationSecondsChanged(it.roundToInt()) },
+            defaultValue = defaultSustainedDuration,
+            onResetToDefault = onResetSustainedApproachDurationSeconds,
             resetContentDescription = resetToDefaultLabel,
         )
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
