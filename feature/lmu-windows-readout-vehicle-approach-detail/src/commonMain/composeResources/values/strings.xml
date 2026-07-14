@@ -12,6 +12,9 @@
     <string name="vehicle_approach_start_readout_switch_label">接近開始時の読み上げ</string>
     <string name="vehicle_approach_car_left_right_chip_label">カーレフト・カーライト</string>
     <string name="vehicle_approach_left_right_approach_chip_label">左接近・右接近</string>
+    <string name="vehicle_approach_sustained_readout_switch_label">接近継続時の読み上げ</string>
+    <string name="vehicle_approach_keep_left_right_chip_label">キープレフト・キープライト</string>
+    <string name="vehicle_approach_left_right_sustained_chip_label">左側維持・右側維持</string>
     <string name="vehicle_approach_threshold_reset_to_default">デフォルト値にリセット</string>
     <string name="vehicle_approach_help_icon_content_description">閾値の説明を表示</string>
     <string name="vehicle_approach_skip_first_lap_switch_content_description">フォーメーションラップ・1周目スキップ</string>

@@ -112,4 +112,21 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
 
         assertEquals(8, changedValue)
     }
+
+    @Test
+    fun `接近継続時の読み上げスイッチをタップするとonSustainedReadoutEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(sustainedReadoutEnabled = false),
+                    onSustainedReadoutEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNode(hasText("接近継続時の読み上げ")).performClick()
+
+        assertEquals(true, changedEnabled)
+    }
 }

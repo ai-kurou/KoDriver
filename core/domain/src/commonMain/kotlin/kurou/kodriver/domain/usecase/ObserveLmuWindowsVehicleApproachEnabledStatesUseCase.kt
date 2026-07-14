@@ -9,7 +9,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val vehicleApproachEnabledStateDefaults: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
-    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
+    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
 )
 
 class ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(

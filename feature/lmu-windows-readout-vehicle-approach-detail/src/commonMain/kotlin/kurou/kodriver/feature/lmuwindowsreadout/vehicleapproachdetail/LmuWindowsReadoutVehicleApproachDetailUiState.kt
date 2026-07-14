@@ -9,4 +9,5 @@ internal data class LmuWindowsReadoutVehicleApproachDetailUiState(
     val skipFirstLap: Boolean = true,
     val startReadoutEnabled: Boolean = true,
     val startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+    val sustainedReadoutEnabled: Boolean = false,
 )

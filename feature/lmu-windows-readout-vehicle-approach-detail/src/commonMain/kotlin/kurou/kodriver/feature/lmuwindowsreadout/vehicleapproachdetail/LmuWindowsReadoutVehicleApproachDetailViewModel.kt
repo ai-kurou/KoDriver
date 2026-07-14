@@ -42,6 +42,7 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
             skipFirstLap = skipFirstLap,
             startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
             startReadoutType = startReadoutType,
+            sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
 
@@ -78,6 +79,12 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
             saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout, enabled)
+        }
+    }
+
+    fun onSustainedReadoutEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, enabled)
         }
     }
 

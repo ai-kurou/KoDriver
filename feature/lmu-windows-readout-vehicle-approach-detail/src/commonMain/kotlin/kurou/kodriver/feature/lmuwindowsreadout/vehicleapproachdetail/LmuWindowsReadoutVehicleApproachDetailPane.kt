@@ -41,14 +41,17 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_help_icon_content_description
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_keep_left_right_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_lateral_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_approach_chip_label
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_sustained_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_readout_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_switch_content_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_readout_switch_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_duration_label
+import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_sustained_readout_switch_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
@@ -78,6 +81,7 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(
         onSkipFirstLapChanged = viewModel::onSkipFirstLapChanged,
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onStartReadoutTypeChanged = viewModel::onStartReadoutTypeChanged,
+        onSustainedReadoutEnabledChanged = viewModel::onSustainedReadoutEnabledChanged,
         modifier = modifier,
     )
 }
@@ -95,6 +99,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onSkipFirstLapChanged: (Boolean) -> Unit = {},
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onStartReadoutTypeChanged: (VehicleApproachStartReadoutType) -> Unit = {},
+    onSustainedReadoutEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
@@ -200,6 +205,16 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                     .firstOrNull { it.value == label }
                     ?.let { onStartReadoutTypeChanged(it.key) }
             },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+        val keepLeftRightChipLabel = stringResource(Res.string.vehicle_approach_keep_left_right_chip_label)
+        val leftRightSustainedChipLabel = stringResource(Res.string.vehicle_approach_left_right_sustained_chip_label)
+        DetailPaneCard(
+            title = stringResource(Res.string.vehicle_approach_sustained_readout_switch_label),
+            checked = uiState.sustainedReadoutEnabled,
+            chipLabels = listOf(keepLeftRightChipLabel, leftRightSustainedChipLabel),
+            selectedChipLabels = setOf(keepLeftRightChipLabel),
+            onCheckedChange = onSustainedReadoutEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }

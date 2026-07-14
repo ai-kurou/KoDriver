@@ -212,6 +212,39 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     }
 
     @Test
+    fun `onSustainedReadoutEnabledChanged を呼ぶと UiState の sustainedReadoutEnabled が更新される`() = runTest {
+        val sustainedReadoutEnabledFlow = MutableStateFlow(false)
+        every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
+        every { thresholdsRepository.observeLongitudinalThresholdMeters() } returns MutableStateFlow(1.0)
+        every { thresholdsRepository.observeSustainedApproachDurationSeconds() } returns MutableStateFlow(4)
+        every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(true)
+        every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns sustainedReadoutEnabledFlow.map {
+            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to it)
+        }
+        every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
+            MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+        coEvery {
+            vehicleApproachPreferencesRepository.saveEnabledState(
+                ReadoutItemKey.LmuWindows.VehicleApproach.Sustained,
+                true,
+            )
+        } answers {
+            sustainedReadoutEnabledFlow.update { true }
+        }
+        val viewModel = createViewModel()
+
+        viewModel.onSustainedReadoutEnabledChanged(true)
+
+        assertEquals(true, viewModel.uiState.first().sustainedReadoutEnabled)
+        coVerify(exactly = 1) {
+            vehicleApproachPreferencesRepository.saveEnabledState(
+                ReadoutItemKey.LmuWindows.VehicleApproach.Sustained,
+                true,
+            )
+        }
+    }
+
+    @Test
     fun `onStartReadoutTypeChanged を呼ぶと UiState の startReadoutType が更新されプレビュー再生される`() = runTest {
         val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
         every { thresholdsRepository.observeLateralThresholdMeters() } returns MutableStateFlow(5.0)
