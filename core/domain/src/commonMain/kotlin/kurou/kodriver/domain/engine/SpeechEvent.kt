@@ -17,6 +17,18 @@ sealed interface SpeechEvent {
     data object RightApproach : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
     }
+    data object KeepLeft : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+    }
+    data object KeepRight : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+    }
+    data object LeftSustained : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+    }
+    data object RightSustained : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
+    }
     data object BlueFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
     data object YellowFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
     data object FullCourseYellow : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
