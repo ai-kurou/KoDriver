@@ -35,6 +35,7 @@ class SaveLmuWindowsVehicleApproachEnabledStateUseCaseTest {
         saveUseCase(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
             ),
             observeUseCase().first(),
@@ -43,6 +44,7 @@ class SaveLmuWindowsVehicleApproachEnabledStateUseCaseTest {
         saveUseCase(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
             ),
             observeUseCase().first(),

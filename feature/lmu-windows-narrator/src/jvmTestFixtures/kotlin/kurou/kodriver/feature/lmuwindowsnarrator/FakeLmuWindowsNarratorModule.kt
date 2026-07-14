@@ -2,7 +2,6 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -60,29 +59,17 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 
 class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
-    private val startReadoutEnabledFlow = MutableStateFlow(true)
     private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
-    override fun observeStartReadoutEnabled(): Flow<Boolean> = startReadoutEnabledFlow
-    override suspend fun saveStartReadoutEnabled(enabled: Boolean) { startReadoutEnabledFlow.update { enabled } }
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         startReadoutTypeFlow.update { type }
     }
-    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = combine(
-        enabledStatesFlow,
-        startReadoutEnabledFlow,
-    ) { persisted, startReadoutEnabled ->
-        persisted + (ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to startReadoutEnabled)
-    }
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
-        if (key == ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout) {
-            startReadoutEnabledFlow.update { enabled }
-        } else {
-            enabledStatesFlow.update { it + (key to enabled) }
-        }
+        enabledStatesFlow.update { it + (key to enabled) }
     }
 }
 

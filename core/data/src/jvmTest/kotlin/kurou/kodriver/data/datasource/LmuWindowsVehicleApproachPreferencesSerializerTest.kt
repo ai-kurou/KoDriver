@@ -16,7 +16,6 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
         assertEquals(
             LmuWindowsVehicleApproachPreferences(
                 skipFirstLap = true,
-                startReadoutEnabled = true,
                 startReadoutType = "car_left_right",
             ),
             LmuWindowsVehicleApproachPreferencesSerializer.defaultValue,
@@ -27,7 +26,6 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
     fun `書き込んだ値を読み出せる`() = runTest {
         val original = LmuWindowsVehicleApproachPreferences(
             skipFirstLap = true,
-            startReadoutEnabled = false,
             startReadoutType = "left_right_approach",
             enabledStates = mapOf("lmu_windows_vehicle_approach_sustained" to false),
         )

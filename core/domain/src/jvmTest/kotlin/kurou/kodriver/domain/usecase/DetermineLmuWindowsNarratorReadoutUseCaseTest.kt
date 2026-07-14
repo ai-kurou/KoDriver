@@ -162,7 +162,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
             vehicleApproach = leftVehicleApproach(vehicleId = 1),
-            settings = settings(startReadoutEnabled = false),
+            settings = settings(
+                enabledStates = allEnabledStates + mapOf(
+                    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to false,
+                ),
+            ),
             observedAtMs = 0L,
         )
 
@@ -642,6 +646,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
     ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+    ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
@@ -659,7 +664,6 @@ private fun settings(
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
-    startReadoutEnabled: Boolean = true,
     startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
 ) = LmuWindowsNarratorReadoutSettings(
@@ -667,7 +671,6 @@ private fun settings(
     myBestLapVoiceType = myBestLapVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
-    vehicleApproachStartReadoutEnabled = startReadoutEnabled,
     vehicleApproachStartReadoutType = startReadoutType,
     tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,
     tyreTemperatureLowWarningPhases = setOf(

@@ -319,8 +319,6 @@ class LmuWindowsNarratorViewModel(
             myBestLapVoiceType = voiceType.value,
             currentLap = currentLap.value,
             skipFirstLap = skipFirstLap.value,
-            vehicleApproachStartReadoutEnabled =
-                mergedEnabledStates.value[ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout] ?: true,
             vehicleApproachStartReadoutType = startReadoutType.value,
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,

@@ -14,17 +14,13 @@ import kotlin.test.assertEquals
 
 private fun createLmuWindowsVehicleApproachPreferencesRepository(
     initialSkipFirstLap: Boolean = true,
-    initialStartReadoutEnabled: Boolean = true,
     initialStartReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
 ): LmuWindowsVehicleApproachPreferencesRepository {
     val repository = mockk<LmuWindowsVehicleApproachPreferencesRepository>()
     val skipFirstLap = MutableStateFlow(initialSkipFirstLap)
-    val startReadoutEnabled = MutableStateFlow(initialStartReadoutEnabled)
     val startReadoutType = MutableStateFlow(initialStartReadoutType)
     every { repository.observeSkipFirstLap() } returns skipFirstLap
     coEvery { repository.saveSkipFirstLap(any()) } answers { skipFirstLap.update { firstArg() } }
-    every { repository.observeStartReadoutEnabled() } returns startReadoutEnabled
-    coEvery { repository.saveStartReadoutEnabled(any()) } answers { startReadoutEnabled.update { firstArg() } }
     every { repository.observeStartReadoutType() } returns startReadoutType
     coEvery { repository.saveStartReadoutType(any()) } answers { startReadoutType.update { firstArg() } }
     return repository
@@ -48,24 +44,6 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
         useCases.saveSkipFirstLap(false)
 
         assertEquals(false, useCases.observeSkipFirstLap().first())
-    }
-
-    @Test
-    fun `observeStartReadoutEnabled はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachPreferencesRepository(initialStartReadoutEnabled = false)
-        val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
-
-        assertEquals(false, useCases.observeStartReadoutEnabled().first())
-    }
-
-    @Test
-    fun `saveStartReadoutEnabled は接近開始時読み上げ設定を保存する`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachPreferencesRepository()
-        val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
-
-        useCases.saveStartReadoutEnabled(false)
-
-        assertEquals(false, useCases.observeStartReadoutEnabled().first())
     }
 
     @Test
