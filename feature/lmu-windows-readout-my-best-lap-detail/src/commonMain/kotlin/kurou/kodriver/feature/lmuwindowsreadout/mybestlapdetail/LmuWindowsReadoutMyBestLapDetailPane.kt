@@ -62,7 +62,6 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
         DetailPaneSubtitle(text = stringResource(Res.string.my_best_lap_subtitle))
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
-            chipLabels = emptyList(),
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
                 DetailPaneCardChips(
