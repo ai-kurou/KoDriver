@@ -25,6 +25,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
@@ -40,6 +41,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
@@ -54,6 +57,8 @@ data class VehicleApproachUseCases(
     val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
     val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
     val observeStartReadoutType: ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase,
+    val observeSustainedApproachDuration: ObserveLmuWindowsVehicleApproachSustainedDurationUseCase,
+    val observeSustainedReadoutType: ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase,
 )
 
 data class VehicleDamageUseCases(
@@ -171,6 +176,12 @@ class LmuWindowsNarratorViewModel(
 
     private val startReadoutType = vehicleApproachUseCases.observeStartReadoutType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+
+    private val sustainedApproachDurationSeconds = vehicleApproachUseCases.observeSustainedApproachDuration()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS)
+
+    private val sustainedReadoutType = vehicleApproachUseCases.observeSustainedReadoutType()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob = lmuTelemetryFlow
@@ -325,6 +336,8 @@ class LmuWindowsNarratorViewModel(
             currentLap = currentLap.value,
             skipFirstLap = skipFirstLap.value,
             vehicleApproachStartReadoutType = startReadoutType.value,
+            vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds.value,
+            vehicleApproachSustainedReadoutType = sustainedReadoutType.value,
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
         )
@@ -365,6 +378,10 @@ class LmuWindowsNarratorViewModel(
         } catch (_: Exception) {
             // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。
         }
+    }
+
+    private companion object {
+        const val DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS = 7
     }
 }
 
