@@ -514,7 +514,7 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `左接近が閾値秒数継続するとKeepLeftを読み上げる`() = runTest(testDispatcher) {
+    fun `左接近が閾値秒数継続するとKeepRightを読み上げる`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -531,7 +531,7 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 7_000L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepLeft), spokenTexts)
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepRight), spokenTexts)
     }
 
     @Test
