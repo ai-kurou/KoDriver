@@ -28,6 +28,7 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
             skipFirstLap = true,
             startReadoutType = "left_right_approach",
             enabledStates = mapOf("lmu_windows_vehicle_approach_sustained" to false),
+            sustainedReadoutType = "left_right_sustained",
         )
         val output = ByteArrayOutputStream()
         LmuWindowsVehicleApproachPreferencesSerializer.writeTo(original, output)

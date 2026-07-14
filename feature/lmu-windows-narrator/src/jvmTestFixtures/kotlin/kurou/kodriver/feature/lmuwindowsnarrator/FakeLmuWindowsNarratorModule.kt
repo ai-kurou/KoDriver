@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -60,12 +61,17 @@ class FakeLmuWindowsRepository : LmuWindowsRepository {
 class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleApproachPreferencesRepository {
     private val skipFirstLapFlow = MutableStateFlow(true)
     private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+    private val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         startReadoutTypeFlow.update { type }
+    }
+    override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> = sustainedReadoutTypeFlow
+    override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
+        sustainedReadoutTypeFlow.update { type }
     }
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {

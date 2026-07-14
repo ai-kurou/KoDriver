@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsVehicleApproachPreferences
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
@@ -24,6 +25,13 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
 
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         dataStore.updateData { it.copy(startReadoutType = type.id) }
+    }
+
+    override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> =
+        dataStore.data.map { VehicleApproachSustainedReadoutType.fromId(it.sustainedReadoutType) }
+
+    override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
+        dataStore.updateData { it.copy(sustainedReadoutType = type.id) }
     }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
