@@ -64,8 +64,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -163,8 +163,9 @@ class LmuWindowsNarratorViewModelTest {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
         every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(skipFirstLap)
-        every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns
-            MutableStateFlow(startReadoutEnabled)
+        every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns MutableStateFlow(
+            mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to startReadoutEnabled),
+        )
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
             MutableStateFlow(startReadoutType)
         every { vehicleDamageRepository.vehicleDamageStream() } returns damageChannel.receiveAsFlow()
@@ -198,7 +199,7 @@ class LmuWindowsNarratorViewModelTest {
                 observeSkipFirstLap = ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
-                observeStartReadoutEnabled = ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(
+                observeEnabledStates = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
                 observeStartReadoutType = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(

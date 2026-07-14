@@ -93,8 +93,11 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `enabledStates の初期値は空Map`() = testScope.runTest {
-        assertEquals(emptyMap(), repository.observeEnabledStates().first())
+    fun `enabledStates の初期値はStartReadoutのみtrueで返す`() = testScope.runTest {
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true),
+            repository.observeEnabledStates().first(),
+        )
     }
 
     @Test
@@ -102,7 +105,10 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
+                ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
+            ),
             repository.observeEnabledStates().first(),
         )
     }
@@ -113,7 +119,31 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)
 
         assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false),
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
+                ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
+            ),
+            repository.observeEnabledStates().first(),
+        )
+    }
+
+    @Test
+    fun `saveEnabledState でStartReadoutキーを保存するとstartReadoutEnabledフィールドが更新される`() = testScope.runTest {
+        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout, false)
+
+        assertEquals(false, repository.observeStartReadoutEnabled().first())
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to false),
+            repository.observeEnabledStates().first(),
+        )
+    }
+
+    @Test
+    fun `saveStartReadoutEnabled で保存した値が observeEnabledStates のStartReadoutにも反映される`() = testScope.runTest {
+        repository.saveStartReadoutEnabled(false)
+
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to false),
             repository.observeEnabledStates().first(),
         )
     }

@@ -9,8 +9,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseC
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
@@ -62,7 +62,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(get()) }
+    factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(get()) }
     factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }

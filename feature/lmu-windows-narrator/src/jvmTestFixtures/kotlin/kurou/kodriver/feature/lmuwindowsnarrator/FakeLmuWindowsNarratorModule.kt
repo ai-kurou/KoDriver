@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -70,9 +71,18 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         startReadoutTypeFlow.update { type }
     }
-    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = combine(
+        enabledStatesFlow,
+        startReadoutEnabledFlow,
+    ) { persisted, startReadoutEnabled ->
+        persisted + (ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to startReadoutEnabled)
+    }
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
-        enabledStatesFlow.update { it + (key to enabled) }
+        if (key == ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout) {
+            startReadoutEnabledFlow.update { enabled }
+        } else {
+            enabledStatesFlow.update { it + (key to enabled) }
+        }
     }
 }
 

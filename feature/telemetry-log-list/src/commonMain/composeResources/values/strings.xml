@@ -4,6 +4,7 @@
     <string name="telemetry_log_empty_description">テレメトリを受信すると、ここに新しい順で表示されます。</string>
     <string name="readout_item_vehicle_approach">車両接近</string>
     <string name="readout_item_vehicle_approach_sustained">継続接近</string>
+    <string name="readout_item_vehicle_approach_start_readout">接近開始時の読み上げ</string>
     <string name="readout_item_flag">フラッグ</string>
     <string name="readout_item_blue_flag">ブルーフラッグ</string>
     <string name="readout_item_sector_yellow_flag">イエローフラッグ</string>

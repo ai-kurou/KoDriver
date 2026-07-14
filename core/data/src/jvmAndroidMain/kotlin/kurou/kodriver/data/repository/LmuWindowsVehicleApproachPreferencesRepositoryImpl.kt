@@ -35,12 +35,19 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.map { prefs ->
-            prefs.enabledStates
+            val persisted = prefs.enabledStates
                 .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
                 .toMap()
+            // StartReadoutは既存のstartReadoutEnabledフィールドをそのまま真実の源とすることで、
+            // 既存ユーザーの保存済み設定をデータ移行なしに引き継ぐ。
+            persisted + (ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to prefs.startReadoutEnabled)
         }
 
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
-        dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
+        if (key == ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout) {
+            dataStore.updateData { it.copy(startReadoutEnabled = enabled) }
+        } else {
+            dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
+        }
     }
 }
