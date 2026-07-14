@@ -218,7 +218,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `左接近が閾値秒数継続するとKeepLeftを返す`() {
+    fun `左接近が閾値秒数継続するとKeepRightを返す`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
             vehicleApproach = leftVehicleApproach(vehicleId = 1),
@@ -233,11 +233,11 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             observedAtMs = 7_000L,
         )
 
-        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepLeft), second.events)
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepRight), second.events)
     }
 
     @Test
-    fun `右接近の継続読み上げ種別を変更するとRightSustainedを返す`() {
+    fun `右接近の継続読み上げ種別を変更するとLeftSustainedを返す`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
             vehicleApproach = rightVehicleApproach(vehicleId = 1),
@@ -258,7 +258,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             observedAtMs = 7_000L,
         )
 
-        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.RightSustained), second.events)
+        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.LeftSustained), second.events)
     }
 
     @Test

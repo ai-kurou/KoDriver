@@ -365,12 +365,12 @@ private enum class ApproachSide {
     fun toSustainedSpeechEvent(readoutType: VehicleApproachSustainedReadoutType): SpeechEvent =
         when (this) {
             LEFT -> when (readoutType) {
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.LeftSustained
-            }
-            RIGHT -> when (readoutType) {
                 VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepRight
                 VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.RightSustained
+            }
+            RIGHT -> when (readoutType) {
+                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft
+                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.LeftSustained
             }
         }
 }
