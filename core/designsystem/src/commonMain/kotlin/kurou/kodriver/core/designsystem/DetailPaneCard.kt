@@ -29,19 +29,9 @@ private const val DisabledContentAlpha = 0.38f
 fun DetailPaneCard(
     title: String,
     checked: Boolean,
-    chipLabels: List<String>,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    selectedChipLabels: Set<String> = emptySet(),
-    onChipClick: (String) -> Unit = {},
-    bottomContent: @Composable () -> Unit = {
-        DetailPaneCardChips(
-            chipLabels = chipLabels,
-            selectedChipLabels = selectedChipLabels,
-            chipEnabled = checked,
-            onChipClick = onChipClick,
-        )
-    },
+    bottomContent: @Composable () -> Unit = {},
 ) {
     DetailPaneCardLayout(
         title = title,
@@ -63,18 +53,8 @@ fun DetailPaneCard(
 @Composable
 fun DetailPaneCard(
     title: String,
-    chipLabels: List<String>,
     modifier: Modifier = Modifier,
-    selectedChipLabels: Set<String> = emptySet(),
-    onChipClick: (String) -> Unit = {},
-    bottomContent: @Composable () -> Unit = {
-        DetailPaneCardChips(
-            chipLabels = chipLabels,
-            selectedChipLabels = selectedChipLabels,
-            chipEnabled = true,
-            onChipClick = onChipClick,
-        )
-    },
+    bottomContent: @Composable () -> Unit = {},
 ) {
     DetailPaneCardLayout(
         title = title,
@@ -170,22 +150,33 @@ private fun DetailPaneCardPreview() {
             DetailPaneCard(
                 title = "車両接近",
                 checked = true,
-                chipLabels = listOf("カーレフト", "カーライト"),
-                selectedChipLabels = setOf("カーレフト"),
                 onCheckedChange = {},
                 modifier = Modifier.padding(16.dp),
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf("カーレフト", "カーライト"),
+                        selectedChipLabels = setOf("カーレフト"),
+                        chipEnabled = true,
+                        onChipClick = {},
+                    )
+                },
             )
             DetailPaneCard(
                 title = "車両接近",
                 checked = false,
-                chipLabels = listOf("カーレフト", "カーライト"),
-                selectedChipLabels = setOf("カーレフト"),
                 onCheckedChange = {},
                 modifier = Modifier.padding(16.dp),
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf("カーレフト", "カーライト"),
+                        selectedChipLabels = setOf("カーレフト"),
+                        chipEnabled = false,
+                        onChipClick = {},
+                    )
+                },
             )
             DetailPaneCard(
                 title = "自己ベストラップ更新",
-                chipLabels = emptyList(),
                 modifier = Modifier.padding(16.dp),
             )
         }

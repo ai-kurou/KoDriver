@@ -51,6 +51,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -172,16 +173,21 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
             checked = uiState.startReadoutEnabled,
-            chipLabels = startReadoutTypeLabels.values.toList(),
-            selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
             onCheckedChange = onStartReadoutEnabledChanged,
-            onChipClick = { label ->
-                startReadoutTypeLabels
-                    .entries
-                    .firstOrNull { it.value == label }
-                    ?.let { onStartReadoutTypeChanged(it.key) }
-            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = startReadoutTypeLabels.values.toList(),
+                    selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
+                    chipEnabled = uiState.startReadoutEnabled,
+                    onChipClick = { label ->
+                        startReadoutTypeLabels
+                            .entries
+                            .firstOrNull { it.value == label }
+                            ?.let { onStartReadoutTypeChanged(it.key) }
+                    },
+                )
+            },
         )
     }
 }

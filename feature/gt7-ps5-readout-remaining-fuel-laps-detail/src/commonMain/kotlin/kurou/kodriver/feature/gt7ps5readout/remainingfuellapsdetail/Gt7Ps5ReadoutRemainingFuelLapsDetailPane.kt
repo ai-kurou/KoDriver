@@ -82,7 +82,6 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
         DetailPaneSubtitle(text = stringResource(Res.string.remaining_fuel_laps_readout_subtitle))
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
-            chipLabels = emptyList(),
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
                 DetailPaneCardChips(

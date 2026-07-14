@@ -55,7 +55,6 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_damage_overheat_switch_label),
             checked = uiState.overheatEnabled,
-            chipLabels = emptyList(),
             onCheckedChange = onOverheatEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
