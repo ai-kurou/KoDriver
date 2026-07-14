@@ -59,6 +59,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -82,6 +83,7 @@ fun LmuWindowsReadoutVehicleApproachDetailPane(
         onStartReadoutEnabledChanged = viewModel::onStartReadoutEnabledChanged,
         onStartReadoutTypeChanged = viewModel::onStartReadoutTypeChanged,
         onSustainedReadoutEnabledChanged = viewModel::onSustainedReadoutEnabledChanged,
+        onSustainedReadoutTypeChanged = viewModel::onSustainedReadoutTypeChanged,
         modifier = modifier,
     )
 }
@@ -100,6 +102,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     onStartReadoutEnabledChanged: (Boolean) -> Unit = {},
     onStartReadoutTypeChanged: (VehicleApproachStartReadoutType) -> Unit = {},
     onSustainedReadoutEnabledChanged: (Boolean) -> Unit = {},
+    onSustainedReadoutTypeChanged: (VehicleApproachSustainedReadoutType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val longitudinalLabel = stringResource(Res.string.vehicle_approach_longitudinal_label)
@@ -209,12 +212,22 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         )
         val keepLeftRightChipLabel = stringResource(Res.string.vehicle_approach_keep_left_right_chip_label)
         val leftRightSustainedChipLabel = stringResource(Res.string.vehicle_approach_left_right_sustained_chip_label)
+        val sustainedReadoutTypeLabels = mapOf(
+            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT to keepLeftRightChipLabel,
+            VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED to leftRightSustainedChipLabel,
+        )
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_approach_sustained_readout_switch_label),
             checked = uiState.sustainedReadoutEnabled,
-            chipLabels = listOf(keepLeftRightChipLabel, leftRightSustainedChipLabel),
-            selectedChipLabels = setOf(keepLeftRightChipLabel),
+            chipLabels = sustainedReadoutTypeLabels.values.toList(),
+            selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
             onCheckedChange = onSustainedReadoutEnabledChanged,
+            onChipClick = { label ->
+                sustainedReadoutTypeLabels
+                    .entries
+                    .firstOrNull { it.value == label }
+                    ?.let { onSustainedReadoutTypeChanged(it.key) }
+            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
         )
     }

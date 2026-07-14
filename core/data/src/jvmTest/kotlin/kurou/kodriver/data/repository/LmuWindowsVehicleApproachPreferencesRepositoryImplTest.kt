@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsVehicleApproachPreferencesSerializer
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -72,6 +73,43 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
         dataStore.updateData { it.copy(startReadoutType = "unknown") }
 
         assertEquals(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT, repository.observeStartReadoutType().first())
+    }
+
+    @Test
+    fun `sustainedReadoutType の初期値は KEEP_LEFT_RIGHT`() = testScope.runTest {
+        assertEquals(
+            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+            repository.observeSustainedReadoutType().first(),
+        )
+    }
+
+    @Test
+    fun `saveSustainedReadoutType で保存した値を observeSustainedReadoutType で取得できる`() = testScope.runTest {
+        repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
+        assertEquals(
+            VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
+            repository.observeSustainedReadoutType().first(),
+        )
+    }
+
+    @Test
+    fun `saveSustainedReadoutType を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+        repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
+        repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+        assertEquals(
+            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+            repository.observeSustainedReadoutType().first(),
+        )
+    }
+
+    @Test
+    fun `sustainedReadoutType が未知の ID のとき KEEP_LEFT_RIGHT を返す`() = testScope.runTest {
+        dataStore.updateData { it.copy(sustainedReadoutType = "unknown") }
+
+        assertEquals(
+            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+            repository.observeSustainedReadoutType().first(),
+        )
     }
 
     @Test

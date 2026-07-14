@@ -12,6 +12,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -128,5 +129,25 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.onNode(hasText("接近継続時の読み上げ")).performClick()
 
         assertEquals(true, changedEnabled)
+    }
+
+    @Test
+    fun `左側維持・右側維持チップをタップするとonSustainedReadoutTypeChangedが呼ばれる`() {
+        var changedType: VehicleApproachSustainedReadoutType? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(
+                        sustainedReadoutEnabled = true,
+                        sustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+                    ),
+                    onSustainedReadoutTypeChanged = { changedType = it },
+                )
+            }
+        }
+
+        rule.onNode(hasText("左側維持・右側維持")).performClick()
+
+        assertEquals(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED, changedType)
     }
 }

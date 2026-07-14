@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
@@ -33,7 +34,8 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         vehicleApproachPreferences.observeSkipFirstLap(),
         observeEnabledStates(),
         vehicleApproachPreferences.observeStartReadoutType(),
-    ) { thresholdValues, skipFirstLap, enabledStates, startReadoutType ->
+        vehicleApproachPreferences.observeSustainedReadoutType(),
+    ) { thresholdValues, skipFirstLap, enabledStates, startReadoutType, sustainedReadoutType ->
         val (lateral, longitudinal, sustainedDuration) = thresholdValues
         LmuWindowsReadoutVehicleApproachDetailUiState(
             lateralThresholdMeters = lateral,
@@ -43,6 +45,7 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
             startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
             startReadoutType = startReadoutType,
             sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
+            sustainedReadoutType = sustainedReadoutType,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
 
@@ -91,6 +94,10 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     fun onStartReadoutTypeChanged(type: VehicleApproachStartReadoutType) {
         viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutType(type) }
         playStartReadoutPreview(type)
+    }
+
+    fun onSustainedReadoutTypeChanged(type: VehicleApproachSustainedReadoutType) {
+        viewModelScope.launch { vehicleApproachPreferences.saveSustainedReadoutType(type) }
     }
 
     fun onStartReadoutPreviewClicked() {
