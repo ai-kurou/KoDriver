@@ -56,7 +56,6 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             DetailPaneCard(
                 title = stringResource(item.labelRes),
                 checked = checked,
-                chipLabels = emptyList(),
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                 bottomContent = {

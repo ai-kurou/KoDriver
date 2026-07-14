@@ -202,7 +202,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
             checked = uiState.overheatWarningEnabled,
-            chipLabels = emptyList(),
             onCheckedChange = onOverheatWarningEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
@@ -218,7 +217,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
-            chipLabels = emptyList(),
             onCheckedChange = onLowWarningEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
