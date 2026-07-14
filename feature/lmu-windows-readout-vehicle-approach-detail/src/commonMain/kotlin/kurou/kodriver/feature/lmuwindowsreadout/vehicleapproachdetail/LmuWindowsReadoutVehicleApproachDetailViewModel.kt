@@ -95,6 +95,6 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     companion object {
         const val DEFAULT_LONGITUDINAL_THRESHOLD_METERS = 5.0
         const val DEFAULT_LATERAL_THRESHOLD_METERS = 5.0
-        const val DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS = 4
+        const val DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS = 7
     }
 }

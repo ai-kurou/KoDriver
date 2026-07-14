@@ -12,11 +12,11 @@ import kotlin.test.assertFailsWith
 class LmuWindowsVehicleApproachThresholdsPreferencesSerializerTest {
 
     @Test
-    fun `デフォルト値は縦方向5m・横方向5m・継続時間4秒`() {
+    fun `デフォルト値は縦方向5m・横方向5m・継続時間7秒`() {
         val expected = LmuWindowsVehicleApproachThresholdsPreferences(
             longitudinalThresholdMeters = 5.0,
             lateralThresholdMeters = 5.0,
-            sustainedApproachDurationSeconds = 4,
+            sustainedApproachDurationSeconds = 7,
         )
         assertEquals(expected, LmuWindowsVehicleApproachThresholdsPreferencesSerializer.defaultValue)
     }

@@ -9,5 +9,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 internal data class LmuWindowsVehicleApproachThresholdsPreferences(
     @ProtoNumber(1) val longitudinalThresholdMeters: Double = 5.0,
     @ProtoNumber(2) val lateralThresholdMeters: Double = 5.0,
-    @ProtoNumber(3) val sustainedApproachDurationSeconds: Int = 4,
+    @ProtoNumber(3) val sustainedApproachDurationSeconds: Int = 7,
 )

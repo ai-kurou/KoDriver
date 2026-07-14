@@ -64,7 +64,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `継続時間閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(4, repository.observeSustainedApproachDurationSeconds().first())
+        assertEquals(7, repository.observeSustainedApproachDurationSeconds().first())
 
         repository.saveSustainedApproachDurationSeconds(8)
         assertEquals(8, repository.observeSustainedApproachDurationSeconds().first())
