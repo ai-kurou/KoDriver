@@ -12,6 +12,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -92,5 +93,61 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         ).performSemanticsAction(SemanticsActions.SetProgress) { it(4f) }
 
         assertEquals(4.0, changedValue)
+    }
+
+    @Test
+    fun `継続接近時間スライダーの値を確定するとonSustainedApproachDurationSecondsChangedが呼ばれる`() {
+        var changedValue: Int? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(sustainedApproachDurationSeconds = 4),
+                    onSustainedApproachDurationSecondsChanged = { changedValue = it },
+                )
+            }
+        }
+
+        rule.onNode(
+            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 4.0f, range = 4f..10f, steps = 5)),
+        ).performSemanticsAction(SemanticsActions.SetProgress) { it(8f) }
+
+        assertEquals(8, changedValue)
+    }
+
+    @Test
+    fun `接近継続時の読み上げスイッチをタップするとonSustainedReadoutEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(sustainedReadoutEnabled = false),
+                    onSustainedReadoutEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNode(hasText("接近継続時の読み上げ")).performClick()
+
+        assertEquals(true, changedEnabled)
+    }
+
+    @Test
+    fun `左側維持・右側維持チップをタップするとonSustainedReadoutTypeChangedが呼ばれる`() {
+        var changedType: VehicleApproachSustainedReadoutType? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(
+                        sustainedReadoutEnabled = true,
+                        sustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+                    ),
+                    onSustainedReadoutTypeChanged = { changedType = it },
+                )
+            }
+        }
+
+        rule.onNode(hasText("左側維持・右側維持")).performClick()
+
+        assertEquals(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED, changedType)
     }
 }

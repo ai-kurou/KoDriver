@@ -41,6 +41,7 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -50,6 +51,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureReposito
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -64,9 +66,11 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStat
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
@@ -92,6 +96,10 @@ class LmuWindowsNarratorViewModelTest {
 
     @MockK
     private lateinit var vehicleApproachPreferencesRepository: LmuWindowsVehicleApproachPreferencesRepository
+
+    @MockK
+    private lateinit var vehicleApproachThresholdsPreferencesRepository:
+        LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
     @MockK
     private lateinit var vehicleDamageRepository: LmuWindowsVehicleDamageRepository
@@ -153,6 +161,9 @@ class LmuWindowsNarratorViewModelTest {
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+        sustainedReadoutEnabled: Boolean = true,
+        sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+        sustainedApproachDurationSeconds: Int = 7,
         tyreTemperatureHighThreshold: Int = 90,
         tyreTemperatureOverheatWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningEnabled: Boolean = true,
@@ -163,10 +174,18 @@ class LmuWindowsNarratorViewModelTest {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
         every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(skipFirstLap)
-        every { vehicleApproachPreferencesRepository.observeStartReadoutEnabled() } returns
-            MutableStateFlow(startReadoutEnabled)
+        every { vehicleApproachPreferencesRepository.observeEnabledStates() } returns MutableStateFlow(
+            mapOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to startReadoutEnabled,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to sustainedReadoutEnabled,
+            ),
+        )
         every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
             MutableStateFlow(startReadoutType)
+        every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
+            MutableStateFlow(sustainedReadoutType)
+        every { vehicleApproachThresholdsPreferencesRepository.observeSustainedApproachDurationSeconds() } returns
+            MutableStateFlow(sustainedApproachDurationSeconds)
         every { vehicleDamageRepository.vehicleDamageStream() } returns damageChannel.receiveAsFlow()
         every { vehicleDamagePreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(vehicleDamageEnabledOverrides)
@@ -198,10 +217,16 @@ class LmuWindowsNarratorViewModelTest {
                 observeSkipFirstLap = ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
-                observeStartReadoutEnabled = ObserveLmuWindowsVehicleApproachStartReadoutEnabledUseCase(
+                observeEnabledStates = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
                 observeStartReadoutType = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(
+                    vehicleApproachPreferencesRepository,
+                ),
+                observeSustainedApproachDuration = ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(
+                    vehicleApproachThresholdsPreferencesRepository,
+                ),
+                observeSustainedReadoutType = ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(
                     vehicleApproachPreferencesRepository,
                 ),
             ),
@@ -489,6 +514,49 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `左接近が閾値秒数継続するとKeepRightを読み上げる`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            vehicleApproachChannel = channel,
+            ttsEngine = tts,
+            sustainedApproachDurationSeconds = 7,
+            currentTimeMs = { fakeTime },
+        )
+
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
+        fakeTime = 7_000L
+        channel.send(leftVehicleApproach(vehicleId = 1))
+
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepRight), spokenTexts)
+    }
+
+    @Test
+    fun `接近継続時の読み上げが無効のときは継続接近を読み上げない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            vehicleApproachChannel = channel,
+            ttsEngine = tts,
+            sustainedReadoutEnabled = false,
+            sustainedApproachDurationSeconds = 7,
+            currentTimeMs = { fakeTime },
+        )
+
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
+        fakeTime = 7_000L
+        channel.send(leftVehicleApproach(vehicleId = 1))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), spokenTexts)
+    }
+
+    @Test
     fun `接近読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         var fakeTime = 0L
         val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
@@ -498,6 +566,7 @@ class LmuWindowsNarratorViewModelTest {
         createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
+            sustainedReadoutEnabled = false,
             currentTimeMs = { fakeTime },
         )
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {

@@ -17,6 +17,11 @@ class LmuWindowsVehicleApproachPreferencesTest {
     }
 
     @Test
+    fun `デフォルト値は sustainedReadoutType が keep_left_right`() {
+        assertEquals("keep_left_right", LmuWindowsVehicleApproachPreferences().sustainedReadoutType)
+    }
+
+    @Test
     fun `copy で skipFirstLap を変更できる`() {
         val original = LmuWindowsVehicleApproachPreferences(skipFirstLap = false)
         val updated = original.copy(skipFirstLap = true)

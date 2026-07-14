@@ -8,6 +8,10 @@ sealed interface ReadoutItemKey {
 
         sealed interface VehicleApproach : LmuWindows {
             data object Root : VehicleApproach, TopLevel { override val value = "lmu_windows_vehicle_approach" }
+            data object Sustained : VehicleApproach { override val value = "lmu_windows_vehicle_approach_sustained" }
+            data object StartReadout : VehicleApproach {
+                override val value = "lmu_windows_vehicle_approach_start_readout"
+            }
         }
 
         sealed interface MyBestLap : LmuWindows {
@@ -54,6 +58,8 @@ sealed interface ReadoutItemKey {
         val entries by lazy {
             listOf(
                 LmuWindows.VehicleApproach.Root,
+                LmuWindows.VehicleApproach.Sustained,
+                LmuWindows.VehicleApproach.StartReadout,
                 LmuWindows.Flag.Root,
                 LmuWindows.Flag.BlueFlag,
                 LmuWindows.Flag.SectorYellowFlag,

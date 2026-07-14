@@ -8,53 +8,71 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachPreferencesUseCases
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLateralThresholdUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
 
 internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
-    observeLateralThreshold: ObserveLmuWindowsVehicleApproachLateralThresholdUseCase,
-    observeLongitudinalThreshold: ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase,
+    private val thresholds: LmuWindowsVehicleApproachThresholdsUseCases,
     private val vehicleApproachPreferences: LmuWindowsVehicleApproachPreferencesUseCases,
-    private val saveLateralThreshold: SaveLmuWindowsVehicleApproachLateralThresholdUseCase,
-    private val saveLongitudinalThreshold: SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase,
+    private val observeEnabledStates: ObserveLmuWindowsVehicleApproachEnabledStatesUseCase,
+    private val saveEnabledState: SaveLmuWindowsVehicleApproachEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> = combine(
-        observeLateralThreshold(),
-        observeLongitudinalThreshold(),
+        combine(
+            thresholds.observeLateralThresholdMeters(),
+            thresholds.observeLongitudinalThresholdMeters(),
+            thresholds.observeSustainedApproachDurationSeconds(),
+        ) { lateral, longitudinal, sustainedDuration -> Triple(lateral, longitudinal, sustainedDuration) },
         vehicleApproachPreferences.observeSkipFirstLap(),
-        vehicleApproachPreferences.observeStartReadoutEnabled(),
+        observeEnabledStates(),
         vehicleApproachPreferences.observeStartReadoutType(),
-    ) { lateral, longitudinal, skipFirstLap, startReadoutEnabled, startReadoutType ->
+        vehicleApproachPreferences.observeSustainedReadoutType(),
+    ) { thresholdValues, skipFirstLap, enabledStates, startReadoutType, sustainedReadoutType ->
+        val (lateral, longitudinal, sustainedDuration) = thresholdValues
         LmuWindowsReadoutVehicleApproachDetailUiState(
             lateralThresholdMeters = lateral,
             longitudinalThresholdMeters = longitudinal,
+            sustainedApproachDurationSeconds = sustainedDuration,
             skipFirstLap = skipFirstLap,
-            startReadoutEnabled = startReadoutEnabled,
+            startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
             startReadoutType = startReadoutType,
+            sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
+            sustainedReadoutType = sustainedReadoutType,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
 
     fun onLateralThresholdChanged(meters: Double) {
-        viewModelScope.launch { saveLateralThreshold(meters) }
+        viewModelScope.launch { thresholds.saveLateralThresholdMeters(meters) }
     }
 
     fun onLongitudinalThresholdChanged(meters: Double) {
-        viewModelScope.launch { saveLongitudinalThreshold(meters) }
+        viewModelScope.launch { thresholds.saveLongitudinalThresholdMeters(meters) }
     }
 
     fun onResetLongitudinalThreshold() {
-        viewModelScope.launch { saveLongitudinalThreshold(DEFAULT_LONGITUDINAL_THRESHOLD_METERS) }
+        viewModelScope.launch { thresholds.saveLongitudinalThresholdMeters(DEFAULT_LONGITUDINAL_THRESHOLD_METERS) }
     }
 
     fun onResetLateralThreshold() {
-        viewModelScope.launch { saveLateralThreshold(DEFAULT_LATERAL_THRESHOLD_METERS) }
+        viewModelScope.launch { thresholds.saveLateralThresholdMeters(DEFAULT_LATERAL_THRESHOLD_METERS) }
+    }
+
+    fun onSustainedApproachDurationSecondsChanged(seconds: Int) {
+        viewModelScope.launch { thresholds.saveSustainedApproachDurationSeconds(seconds) }
+    }
+
+    fun onResetSustainedApproachDurationSeconds() {
+        viewModelScope.launch {
+            thresholds.saveSustainedApproachDurationSeconds(DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS)
+        }
     }
 
     fun onSkipFirstLapChanged(skip: Boolean) {
@@ -62,12 +80,25 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     }
 
     fun onStartReadoutEnabledChanged(enabled: Boolean) {
-        viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutEnabled(enabled) }
+        viewModelScope.launch {
+            saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout, enabled)
+        }
+    }
+
+    fun onSustainedReadoutEnabledChanged(enabled: Boolean) {
+        viewModelScope.launch {
+            saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, enabled)
+        }
     }
 
     fun onStartReadoutTypeChanged(type: VehicleApproachStartReadoutType) {
         viewModelScope.launch { vehicleApproachPreferences.saveStartReadoutType(type) }
         playStartReadoutPreview(type)
+    }
+
+    fun onSustainedReadoutTypeChanged(type: VehicleApproachSustainedReadoutType) {
+        viewModelScope.launch { vehicleApproachPreferences.saveSustainedReadoutType(type) }
+        playSustainedReadoutPreview(type)
     }
 
     fun onStartReadoutPreviewClicked() {
@@ -83,8 +114,19 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         playSpeechEvent(events.second, queue = true)
     }
 
+    private fun playSustainedReadoutPreview(type: VehicleApproachSustainedReadoutType) {
+        val events = when (type) {
+            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft to SpeechEvent.KeepRight
+            VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED ->
+                SpeechEvent.LeftSustained to SpeechEvent.RightSustained
+        }
+        playSpeechEvent(events.first)
+        playSpeechEvent(events.second, queue = true)
+    }
+
     companion object {
         const val DEFAULT_LONGITUDINAL_THRESHOLD_METERS = 5.0
         const val DEFAULT_LATERAL_THRESHOLD_METERS = 5.0
+        const val DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS = 7
     }
 }
