@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 
 data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
@@ -31,6 +32,13 @@ data class LmuWindowsVehicleApproachState(
 data class LmuWindowsApproachState(
     val startedAtMs: Long,
     val announced: Boolean,
+    val sustainedAnnounced: Boolean = false,
+)
+
+private data class ApproachSideStatesResult(
+    val states: Map<Int, LmuWindowsApproachState>,
+    val announce: Boolean,
+    val sustainedAnnounce: Boolean,
 )
 
 data class LmuWindowsNarratorReadoutSettings(
@@ -39,6 +47,8 @@ data class LmuWindowsNarratorReadoutSettings(
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
+    val vehicleApproachSustainedApproachDurationSeconds: Int,
+    val vehicleApproachSustainedReadoutType: VehicleApproachSustainedReadoutType,
     val tyreTemperatureHighThresholdCelsius: Int,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
 )
@@ -85,40 +95,63 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
         observedAtMs: Long,
     ): LmuWindowsNarratorReadoutDecision {
-        var leftAnnounce = false
-        var rightAnnounce = false
+        val sustainedThresholdMs = settings.vehicleApproachSustainedApproachDurationSeconds * MILLIS_PER_SECOND
         val previousApproachState = state.vehicleApproachState
-        val newLeft = vehicleApproach.sideBySideLeftVehicleIds.associateWith { id ->
-            val prev = previousApproachState.left[id]
-            if (prev == null) {
-                LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)
-            } else {
-                val shouldAnnounce = !prev.announced && observedAtMs - prev.startedAtMs >= APPROACH_DEBOUNCE_MS
-                if (shouldAnnounce) leftAnnounce = true
-                prev.copy(announced = prev.announced || shouldAnnounce)
-            }
-        }
-        val newRight = vehicleApproach.sideBySideRightVehicleIds.associateWith { id ->
-            val prev = previousApproachState.right[id]
-            if (prev == null) {
-                LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)
-            } else {
-                val shouldAnnounce = !prev.announced && observedAtMs - prev.startedAtMs >= APPROACH_DEBOUNCE_MS
-                if (shouldAnnounce) rightAnnounce = true
-                prev.copy(announced = prev.announced || shouldAnnounce)
-            }
-        }
+        val left = computeApproachSideStates(
+            vehicleIds = vehicleApproach.sideBySideLeftVehicleIds,
+            previous = previousApproachState.left,
+            observedAtMs = observedAtMs,
+            sustainedThresholdMs = sustainedThresholdMs,
+        )
+        val right = computeApproachSideStates(
+            vehicleIds = vehicleApproach.sideBySideRightVehicleIds,
+            previous = previousApproachState.right,
+            observedAtMs = observedAtMs,
+            sustainedThresholdMs = sustainedThresholdMs,
+        )
         val nextState = state.copy(
             vehicleApproachState = LmuWindowsVehicleApproachState(
-                left = newLeft,
-                right = newRight,
+                left = left.states,
+                right = right.states,
             ),
         )
-        val event = determineVehicleApproachEvent(leftAnnounce, rightAnnounce, settings)
+        val event = determineVehicleApproachEvent(left.announce, right.announce, settings)
+        val sustainedEvent = determineVehicleApproachSustainedEvent(
+            leftSustainedAnnounce = left.sustainedAnnounce,
+            rightSustainedAnnounce = right.sustainedAnnounce,
+            settings = settings,
+        )
         return LmuWindowsNarratorReadoutDecision(
             state = nextState,
-            events = listOfNotNull(event),
+            events = listOfNotNull(event, sustainedEvent),
         )
+    }
+
+    private fun computeApproachSideStates(
+        vehicleIds: Set<Int>,
+        previous: Map<Int, LmuWindowsApproachState>,
+        observedAtMs: Long,
+        sustainedThresholdMs: Long,
+    ): ApproachSideStatesResult {
+        var announce = false
+        var sustainedAnnounce = false
+        val states = vehicleIds.associateWith { id ->
+            val prev = previous[id]
+            if (prev == null) {
+                LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)
+            } else {
+                val elapsedMs = observedAtMs - prev.startedAtMs
+                val shouldAnnounce = !prev.announced && elapsedMs >= APPROACH_DEBOUNCE_MS
+                val shouldAnnounceSustained = !prev.sustainedAnnounced && elapsedMs >= sustainedThresholdMs
+                if (shouldAnnounce) announce = true
+                if (shouldAnnounceSustained) sustainedAnnounce = true
+                prev.copy(
+                    announced = prev.announced || shouldAnnounce,
+                    sustainedAnnounced = prev.sustainedAnnounced || shouldAnnounceSustained,
+                )
+            }
+        }
+        return ApproachSideStatesResult(states, announce, sustainedAnnounce)
     }
 
     fun determineVehicleDamage(
@@ -288,8 +321,26 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
     }
 
+    private fun determineVehicleApproachSustainedEvent(
+        leftSustainedAnnounce: Boolean,
+        rightSustainedAnnounce: Boolean,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): SpeechEvent? {
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Root)) return null
+        if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained)) return null
+        if (settings.skipFirstLap && settings.currentLap <= 0) return null
+        return when {
+            leftSustainedAnnounce && !rightSustainedAnnounce ->
+                ApproachSide.LEFT.toSustainedSpeechEvent(settings.vehicleApproachSustainedReadoutType)
+            rightSustainedAnnounce && !leftSustainedAnnounce ->
+                ApproachSide.RIGHT.toSustainedSpeechEvent(settings.vehicleApproachSustainedReadoutType)
+            else -> null
+        }
+    }
+
     private companion object {
         const val APPROACH_DEBOUNCE_MS = 50L
+        const val MILLIS_PER_SECOND = 1_000L
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
     }
 }
@@ -308,6 +359,18 @@ private enum class ApproachSide {
             RIGHT -> when (readoutType) {
                 VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarRight
                 VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.RightApproach
+            }
+        }
+
+    fun toSustainedSpeechEvent(readoutType: VehicleApproachSustainedReadoutType): SpeechEvent =
+        when (this) {
+            LEFT -> when (readoutType) {
+                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft
+                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.LeftSustained
+            }
+            RIGHT -> when (readoutType) {
+                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepRight
+                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.RightSustained
             }
         }
 }

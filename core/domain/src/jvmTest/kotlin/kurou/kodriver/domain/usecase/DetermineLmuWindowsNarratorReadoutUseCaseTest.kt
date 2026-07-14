@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
+import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -214,6 +215,138 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `左接近が閾値秒数継続するとKeepLeftを返す`() {
+        val first = useCase.determineVehicleApproach(
+            state = LmuWindowsNarratorState(),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 0L,
+        )
+
+        val second = useCase.determineVehicleApproach(
+            state = first.state,
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 7_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.CarLeft, SpeechEvent.KeepLeft), second.events)
+    }
+
+    @Test
+    fun `右接近の継続読み上げ種別を変更するとRightSustainedを返す`() {
+        val first = useCase.determineVehicleApproach(
+            state = LmuWindowsNarratorState(),
+            vehicleApproach = rightVehicleApproach(vehicleId = 1),
+            settings = settings(
+                sustainedApproachDurationSeconds = 7,
+                sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
+            ),
+            observedAtMs = 0L,
+        )
+
+        val second = useCase.determineVehicleApproach(
+            state = first.state,
+            vehicleApproach = rightVehicleApproach(vehicleId = 1),
+            settings = settings(
+                sustainedApproachDurationSeconds = 7,
+                sustainedReadoutType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
+            ),
+            observedAtMs = 7_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.CarRight, SpeechEvent.RightSustained), second.events)
+    }
+
+    @Test
+    fun `閾値秒数未満では継続接近を読み上げない`() {
+        val first = useCase.determineVehicleApproach(
+            state = LmuWindowsNarratorState(),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 0L,
+        )
+
+        val second = useCase.determineVehicleApproach(
+            state = first.state,
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 6_999L,
+        )
+
+        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
+    }
+
+    @Test
+    fun `接近継続時の読み上げが無効なら継続接近を読み上げない`() {
+        val disabledStates = allEnabledStates + mapOf(
+            ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
+        )
+        val first = useCase.determineVehicleApproach(
+            state = LmuWindowsNarratorState(),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(enabledStates = disabledStates, sustainedApproachDurationSeconds = 7),
+            observedAtMs = 0L,
+        )
+
+        val second = useCase.determineVehicleApproach(
+            state = first.state,
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(enabledStates = disabledStates, sustainedApproachDurationSeconds = 7),
+            observedAtMs = 7_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.CarLeft), second.events)
+    }
+
+    @Test
+    fun `車両接近項目が無効なら継続接近も読み上げない`() {
+        val disabledStates = allEnabledStates + mapOf(
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root to false,
+        )
+        val first = useCase.determineVehicleApproach(
+            state = LmuWindowsNarratorState(),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(enabledStates = disabledStates, sustainedApproachDurationSeconds = 7),
+            observedAtMs = 0L,
+        )
+
+        val second = useCase.determineVehicleApproach(
+            state = first.state,
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(enabledStates = disabledStates, sustainedApproachDurationSeconds = 7),
+            observedAtMs = 7_000L,
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `一度読み上げた継続接近は同じ側の接近が続いても再度読み上げない`() {
+        val first = useCase.determineVehicleApproach(
+            state = LmuWindowsNarratorState(),
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 0L,
+        )
+        val second = useCase.determineVehicleApproach(
+            state = first.state,
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 7_000L,
+        )
+
+        val third = useCase.determineVehicleApproach(
+            state = second.state,
+            vehicleApproach = leftVehicleApproach(vehicleId = 1),
+            settings = settings(sustainedApproachDurationSeconds = 7),
+            observedAtMs = 14_000L,
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), third.events)
     }
 
     @Test
@@ -647,6 +780,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
     ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
     ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout to true,
+    ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
     ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
@@ -659,12 +793,15 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
 )
 
+@Suppress("LongParameterList")
 private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
     startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+    sustainedApproachDurationSeconds: Int = 7,
+    sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
@@ -672,6 +809,8 @@ private fun settings(
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
     vehicleApproachStartReadoutType = startReadoutType,
+    vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
+    vehicleApproachSustainedReadoutType = sustainedReadoutType,
     tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,
     tyreTemperatureLowWarningPhases = setOf(
         SessionPhase.GARAGE,
