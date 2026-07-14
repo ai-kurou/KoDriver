@@ -55,6 +55,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_reset_to_default
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -202,13 +203,20 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             chipLabels = startReadoutTypeLabels.values.toList(),
             selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
             onCheckedChange = onStartReadoutEnabledChanged,
-            onChipClick = { label ->
-                startReadoutTypeLabels
-                    .entries
-                    .firstOrNull { it.value == label }
-                    ?.let { onStartReadoutTypeChanged(it.key) }
-            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = startReadoutTypeLabels.values.toList(),
+                    selectedChipLabels = setOfNotNull(startReadoutTypeLabels[uiState.startReadoutType]),
+                    chipEnabled = uiState.startReadoutEnabled,
+                    onChipClick = { label ->
+                        startReadoutTypeLabels
+                            .entries
+                            .firstOrNull { it.value == label }
+                            ?.let { onStartReadoutTypeChanged(it.key) }
+                    },
+                )
+            },
         )
         val keepLeftRightChipLabel = stringResource(Res.string.vehicle_approach_keep_left_right_chip_label)
         val leftRightSustainedChipLabel = stringResource(Res.string.vehicle_approach_left_right_sustained_chip_label)
@@ -222,13 +230,20 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             chipLabels = sustainedReadoutTypeLabels.values.toList(),
             selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
             onCheckedChange = onSustainedReadoutEnabledChanged,
-            onChipClick = { label ->
-                sustainedReadoutTypeLabels
-                    .entries
-                    .firstOrNull { it.value == label }
-                    ?.let { onSustainedReadoutTypeChanged(it.key) }
-            },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = sustainedReadoutTypeLabels.values.toList(),
+                    selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
+                    chipEnabled = uiState.sustainedReadoutEnabled,
+                    onChipClick = { label ->
+                        sustainedReadoutTypeLabels
+                            .entries
+                            .firstOrNull { it.value == label }
+                            ?.let { onSustainedReadoutTypeChanged(it.key) }
+                    },
+                )
+            },
         )
     }
 }
