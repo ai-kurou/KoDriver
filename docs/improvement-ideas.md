@@ -111,3 +111,53 @@
 - **対象**: `feature/server-connection/src/commonMain/kotlin/kurou/kodriver/feature/serverconnection/ServerConnectionViewModel.kt`
   **課題**: バージョン不一致警告の表示判定が `map { }` 内の副作用（`versionMismatchWarningShown` フラグ更新と `_showVersionMismatchBottomSheet.update`）で行われており、CLAUDE.md の「宣言的に状態を組み立てる」規則から外れている。`WhileSubscribed` のため画面の再購読で upstream が再実行される点は `versionMismatchWarningShown` で守られているが、collect 中の副作用は挙動が追いにくい。
   **改善案**: 「初回の不一致検知で一度だけ表示する」ロジックを `distinctUntilChanged` + `runningFold` 等の演算子、または UseCase 側の状態として宣言的に表現する。
+
+## デザイン（UI/UX・designsystem）
+
+- **対象**: `core/designsystem/.../Theme.kt`
+  **課題**: `MaterialTheme` に `colorScheme` のみ渡しており、`typography` / `shapes` が Material3 デフォルトのまま。画面ごとに `fontSize` や `FontWeight` を直接指定し始めるとスタイルが分散し、後からアプリ全体の文字スケールを調整できなくなる。
+  **改善案**: designsystem に `KoDriverTypography`（必要なら `Shapes` も）を定義して `MaterialTheme` へ渡し、feature 側は `MaterialTheme.typography.*` だけを参照する運用にする。
+
+- **対象**: `core/designsystem/.../Color.kt` / `Theme.kt`（ライトテーマ）
+  **課題**: ライトテーマの `primary = Yellow40` に対して `onPrimary = Neutral99`（ほぼ白）を組み合わせている。黄色系 primary × 白文字は WCAG のコントラスト比 4.5:1 を満たさないことが多く、ボタンラベル等の可読性が低い恐れがある。secondary（Lime）・tertiary（Neon）も同様の懸念がある。
+  **改善案**: 主要な色ペア（primary/onPrimary など）のコントラスト比を実測し、不足していれば `onPrimary` を暗色（Yellow10 等）へ変更する。スクリーンショットテストとは別に、色定義だけのコントラスト検証ユニットテストを designsystem に置くことも検討する。
+
+- **対象**: Android アプリ全体のテーマ
+  **課題**: Android 12+ の Dynamic Color（Material You）に対応しておらず、常に固定のブランドカラーで表示される。レース用アプリとしてブランド色固定は妥当な判断でもあるため、対応しない場合でも「意図的に非対応」であることがどこにも記録されていない。
+  **改善案**: Dynamic Color を採用するか検討し、採用しない場合はその方針を designsystem の README に明記する。
+
+## 作業改善（開発体験）
+
+- **対象**: CLAUDE.md「コード変更時の必須確認」と日常の検証コマンド
+  **課題**: 完了報告前に必要なコマンドが 6 種類以上（ユニットテスト・detekt・assertModuleGraph・Android ビルド・desktop jar・desktop 統合テスト）あり、人も AI エージェントも打ち漏らしやすい。実際に CLAUDE.md には「常に実行すること」の注意書きが繰り返し追記されており、手順の多さ自体が抜け漏れの温床になっている。
+  **改善案**: ルート `build.gradle.kts` に集約タスク（例: `./gradlew preMergeCheck`）を定義し、必須チェック一式を 1 コマンドに束ねる。CLAUDE.md のチェックリストも「`preMergeCheck` を実行する」に簡素化できる。
+
+- **対象**: `.github/`（PR テンプレート）
+  **課題**: `PULL_REQUEST_TEMPLATE.md` がなく、PR 説明の構成（概要・変更点・確認事項）が作成者ごとにばらつく。CLAUDE.md の完了前チェックリストとも連動していない。
+  **改善案**: 日本語の PR テンプレートを追加し、「実行した検証コマンド」「スクリーンショットテスト要否」「ドキュメント更新要否」のチェックボックスを設ける。
+
+- **対象**: `docs/improvement-ideas.md` の運用
+  **課題**: 記録は蓄積される一方で、着手判断・優先度付けの仕組みがない。項目が増えるほど「書いたが誰も読まない」状態になりやすい。
+  **改善案**: 定期的（リリース前など）に棚卸しし、着手するものは GitHub Issue 化して本ファイルからは Issue 番号を添えて削除する運用を README に明記する。
+
+## CI（GitHub Actions）
+
+- **対象**: `.github/workflows/on-pull-request.yml` の `update-module-graph` ジョブ
+  **課題**: PR のたびに `GH_PAT` で PR ブランチへ `chore: update module graph images` をコミット・プッシュする構成のため、モジュール構成に変更がない PR でも毎回ジョブが走り、変更があった場合は push が新たな workflow run を誘発して CI が二重に実行される。また fork からの PR では secrets が使えず失敗する。
+  **改善案**: モジュール構成ファイル（`settings.gradle.kts` / 各 `build.gradle.kts`）に変更がある場合のみ実行する paths フィルタ（`dorny/paths-filter` 等）を入れる。あるいは main マージ時のみ画像を更新し、PR 中は `assertModuleGraph` の検証だけにする。
+
+- **対象**: `.github/workflows/on-pull-request.yml` 全ジョブ
+  **課題**: checkout / setup-java / setup-gradle の 3 ステップが 9 ジョブすべてに重複しており、actions のバージョン更新時に 9 箇所（on-main-merge 等も含めるとさらに多く）を書き換える必要がある。
+  **改善案**: `.github/actions/setup`（composite action）に共通セットアップを切り出し、各ジョブは 1 ステップで呼び出す。
+
+- **対象**: `.github/workflows/on-pull-request.yml` の `concurrency`
+  **課題**: `cancel-in-progress: false` のため、同一 PR に連続プッシュすると古いコミットの run が完走するまで新しい run が待たされる。PR の CI は最新コミットの結果だけが意味を持つため、古い run の完走は Actions 時間の浪費になる。
+  **改善案**: PR トリガーでは `cancel-in-progress: true` にする（`update-module-graph` の push と干渉しないよう、ジョブ分割や group 名の工夫と合わせて検討する）。
+
+- **対象**: `.github/workflows/on-pull-request.yml` の `android-test` ジョブ
+  **課題**: ドキュメントのみの変更でも Android エミュレータを起動して `connectedDebugAndroidTest` を実行しており、PR あたり数分〜十数分の Actions 時間を消費する。
+  **改善案**: `docs/**`・`*.md` のみの変更ではエミュレータテスト等の重いジョブをスキップする paths フィルタを導入する（branch protection の必須チェックと両立させるため、スキップ時に成功を返すゲートジョブ方式にする）。
+
+- **対象**: `.github/`（依存自動更新）
+  **課題**: GitHub Actions は SHA ピン留めされているが `dependabot.yml` / Renovate 設定がなく、actions・Gradle ライブラリの更新が手動任せになっている。CLAUDE.md は「ライブラリは最新安定版を使う」方針だが、それを支える自動化がない。
+  **改善案**: Dependabot（`github-actions` + `gradle` エコシステム）または Renovate を導入し、更新 PR を自動作成させる。
