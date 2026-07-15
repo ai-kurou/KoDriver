@@ -148,6 +148,19 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    ) {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(overheatWarningChipLabel),
+                            selectedChipLabels = setOf(overheatWarningChipLabel),
+                            chipEnabled = uiState.overheatWarningEnabled,
+                            onChipClick = { onPreviewClicked() },
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
                         trailingContent = {
@@ -171,19 +184,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         onResetToDefault = onHighThresholdReset,
                         resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
                     )
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    ) {
-                        DetailPaneCardChips(
-                            chipLabels = listOf(overheatWarningChipLabel),
-                            selectedChipLabels = setOf(overheatWarningChipLabel),
-                            chipEnabled = uiState.overheatWarningEnabled,
-                            onChipClick = { onPreviewClicked() },
-                        )
-                    }
                 }
             },
         )
@@ -195,6 +195,19 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    ) {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(lowWarningChipLabel),
+                            selectedChipLabels = setOf(lowWarningChipLabel),
+                            chipEnabled = uiState.lowWarningEnabled,
+                            onChipClick = { onLowWarningPreviewClicked() },
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
                         trailingContent = {
@@ -231,19 +244,6 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                                 },
                             )
                         }
-                    }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    ) {
-                        DetailPaneCardChips(
-                            chipLabels = listOf(lowWarningChipLabel),
-                            selectedChipLabels = setOf(lowWarningChipLabel),
-                            chipEnabled = uiState.lowWarningEnabled,
-                            onChipClick = { onLowWarningPreviewClicked() },
-                        )
                     }
                 }
             },
