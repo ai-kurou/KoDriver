@@ -54,8 +54,8 @@ class MainActivityTest {
         clickItemAndNavigateBack("車両故障")
         scrollToItem("タイヤ温度")
         clickItem("タイヤ温度")
-        scrollToContentDescription("閾値の説明を表示")
-        clickContentDescription("閾値の説明を表示")
+        scrollToContentDescription("高温閾値の説明を表示")
+        clickContentDescription("高温閾値の説明を表示")
         dismissBottomSheet()
         clickContentDescription("対象フェーズの説明を表示")
         dismissBottomSheet()
@@ -185,7 +185,7 @@ class MainActivityTest {
     }
 
     private fun scrollToContentDescription(contentDescription: String) {
-        composeTestRule.onNode(hasScrollAction()).performScrollToNode(hasContentDescription(contentDescription))
+        composeTestRule.onAllNodes(hasScrollAction())[0].performScrollToNode(hasContentDescription(contentDescription))
         composeTestRule.waitForIdle()
     }
 
