@@ -214,6 +214,11 @@ class MainActivityTest {
     }
 
     private fun dismissBottomSheet() {
+        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
+            composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
         composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
             .get(0)
             .performSemanticsAction(SemanticsActions.Dismiss)
@@ -223,10 +228,7 @@ class MainActivityTest {
     private fun clickReadoutPriorityHelp() {
         clickContentDescription(READOUT_PRIORITY_HELP_DESCRIPTION)
         // 実機では外側タップでボトムシートが閉じないことがあるため、dismissアクションを直接実行する。
-        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
-            .get(0)
-            .performSemanticsAction(SemanticsActions.Dismiss)
-        composeTestRule.waitForIdle()
+        dismissBottomSheet()
         composeTestRule.waitUntil(timeoutMillis = 5_000L) {
             composeTestRule.onAllNodes(hasText(READOUT_PRIORITY_HELP_DESCRIPTION)).fetchSemanticsNodes().isEmpty()
         }
