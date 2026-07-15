@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DetailPaneDescription(
+fun DetailPaneOverview(
     text: String,
     modifier: Modifier = Modifier,
 ) {
@@ -29,6 +29,19 @@ fun DetailPaneDescription(
 }
 
 @Composable
+fun DetailPaneDescription(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+    )
+}
+
+@Composable
 fun DetailPaneSubtitle(
     text: String,
     modifier: Modifier = Modifier,
@@ -36,7 +49,7 @@ fun DetailPaneSubtitle(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.height(IntrinsicSize.Min).padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = modifier.height(IntrinsicSize.Min).padding(horizontal = 4.dp, vertical = 8.dp),
     ) {
         Box(
             modifier = Modifier

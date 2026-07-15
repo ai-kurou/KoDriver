@@ -50,12 +50,12 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_help_icon_content_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_chip
-import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_readout_settings_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.SessionPhase
@@ -127,7 +127,9 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_description))
+        DetailPaneOverview(
+            text = stringResource(Res.string.tyre_temperature_description),
+        )
         val helpIconContentDescription =
             stringResource(Res.string.tyre_temperature_threshold_help_icon_content_description)
         val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
@@ -139,19 +141,18 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             SessionPhase.GRID_WALK to stringResource(Res.string.tyre_temperature_low_warning_phase_grid_walk),
             SessionPhase.FORMATION to stringResource(Res.string.tyre_temperature_low_warning_phase_formation),
         )
-        DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_readout_settings_subtitle))
         val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
             checked = uiState.overheatWarningEnabled,
             onCheckedChange = onOverheatWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         DetailPaneCardChips(
                             chipLabels = listOf(overheatWarningChipLabel),
@@ -160,7 +161,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             onChipClick = { onPreviewClicked() },
                         )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
                         trailingContent = {
@@ -192,13 +193,13 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
             onCheckedChange = onLowWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         DetailPaneCardChips(
                             chipLabels = listOf(lowWarningChipLabel),
@@ -207,7 +208,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             onChipClick = { onLowWarningPreviewClicked() },
                         )
                     }
-                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
                         trailingContent = {
@@ -224,7 +225,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
                     ) {
                         phaseLabels.forEach { (phase, label) ->
                             val selected = phase in uiState.lowWarningPhases
