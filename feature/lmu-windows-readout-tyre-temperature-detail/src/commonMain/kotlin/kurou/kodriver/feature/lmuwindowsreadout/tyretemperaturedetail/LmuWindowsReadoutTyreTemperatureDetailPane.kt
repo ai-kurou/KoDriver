@@ -3,7 +3,6 @@ package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -221,7 +220,9 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             }
                         },
                     )
-                    DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_low_warning_phases_description))
+                    DetailPaneDescription(
+                        text = stringResource(Res.string.tyre_temperature_low_warning_phases_description),
+                    )
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
