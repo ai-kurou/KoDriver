@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
@@ -54,7 +55,8 @@ class MainActivityTest {
         clickItemAndNavigateBack("車両故障")
         scrollToItem("タイヤ温度")
         clickItem("タイヤ温度")
-        scrollToContentDescription("高温閾値の説明を表示")
+        composeTestRule.onNodeWithText("高温閾値設定").performScrollTo()
+        composeTestRule.waitForIdle()
         clickContentDescription("高温閾値の説明を表示")
         dismissBottomSheet()
         clickContentDescription("対象フェーズの説明を表示")
@@ -181,11 +183,6 @@ class MainActivityTest {
 
     private fun scrollToItem(text: String) {
         composeTestRule.onNode(hasScrollAction()).performScrollToNode(hasText(text))
-        composeTestRule.waitForIdle()
-    }
-
-    private fun scrollToContentDescription(contentDescription: String) {
-        composeTestRule.onAllNodes(hasScrollAction())[0].performScrollToNode(hasContentDescription(contentDescription))
         composeTestRule.waitForIdle()
     }
 
