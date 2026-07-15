@@ -8,6 +8,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
@@ -54,9 +55,13 @@ class MainActivityTest {
         clickItemAndNavigateBack("車両故障")
         scrollToItem("タイヤ温度")
         clickItem("タイヤ温度")
-        clickContentDescription("閾値の説明を表示")
+        composeTestRule.onNodeWithText("高温閾値設定").performScrollTo()
+        composeTestRule.waitForIdle()
+        clickContentDescription("高温閾値の説明を表示")
         dismissBottomSheet()
-        clickContentDescription("対象フェーズの説明を表示")
+        composeTestRule.onNodeWithText("低温警告の対象フェーズ").performScrollTo()
+        composeTestRule.waitForIdle()
+        clickContentDescription("低温警告の対象フェーズの説明を表示")
         dismissBottomSheet()
         navigateBack()
         scrollToItem("自己ベストラップ")
@@ -211,6 +216,11 @@ class MainActivityTest {
     }
 
     private fun dismissBottomSheet() {
+        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
+            composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
         composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
             .get(0)
             .performSemanticsAction(SemanticsActions.Dismiss)
@@ -220,10 +230,7 @@ class MainActivityTest {
     private fun clickReadoutPriorityHelp() {
         clickContentDescription(READOUT_PRIORITY_HELP_DESCRIPTION)
         // 実機では外側タップでボトムシートが閉じないことがあるため、dismissアクションを直接実行する。
-        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
-            .get(0)
-            .performSemanticsAction(SemanticsActions.Dismiss)
-        composeTestRule.waitForIdle()
+        dismissBottomSheet()
         composeTestRule.waitUntil(timeoutMillis = 5_000L) {
             composeTestRule.onAllNodes(hasText(READOUT_PRIORITY_HELP_DESCRIPTION)).fetchSemanticsNodes().isEmpty()
         }

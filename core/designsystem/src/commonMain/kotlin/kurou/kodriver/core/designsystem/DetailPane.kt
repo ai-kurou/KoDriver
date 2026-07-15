@@ -16,6 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
+fun DetailPaneOverview(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+    )
+}
+
+@Composable
 fun DetailPaneDescription(
     text: String,
     modifier: Modifier = Modifier,

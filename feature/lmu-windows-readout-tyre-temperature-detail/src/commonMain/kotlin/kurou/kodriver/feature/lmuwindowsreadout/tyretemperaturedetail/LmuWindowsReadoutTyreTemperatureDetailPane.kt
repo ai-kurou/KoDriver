@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,12 +49,12 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_help_icon_content_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_phases_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_chip
-import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_readout_settings_subtitle
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.SessionPhase
@@ -125,92 +126,65 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_description))
+        DetailPaneOverview(
+            text = stringResource(Res.string.tyre_temperature_description),
+        )
         val helpIconContentDescription =
             stringResource(Res.string.tyre_temperature_threshold_help_icon_content_description)
-        DetailPaneSubtitle(
-            text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
-            trailingContent = {
-                IconButton(onClick = { showHelpSheet = true }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                        contentDescription = helpIconContentDescription,
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            },
-        )
-        DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_high_threshold_description))
         val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
-        ThresholdSlider(
-            value = uiState.highThresholdCelsius.toFloat(),
-            valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
-            steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
-            labelFormatter = { labelTemplate.format(it.roundToInt()) },
-            onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
-            defaultValue = HIGH_THRESHOLD_DEFAULT,
-            onResetToDefault = onHighThresholdReset,
-            resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
-        )
         val lowWarningPhasesHelpIconContentDescription =
             stringResource(Res.string.tyre_temperature_low_warning_phases_help_icon_content_description)
-        DetailPaneSubtitle(
-            text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
-            trailingContent = {
-                IconButton(onClick = { showLowWarningPhasesHelpSheet = true }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                        contentDescription = lowWarningPhasesHelpIconContentDescription,
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            },
-        )
-        DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_low_warning_phases_description))
         val phaseLabels = mapOf(
             SessionPhase.GARAGE to stringResource(Res.string.tyre_temperature_low_warning_phase_garage),
             SessionPhase.WARM_UP to stringResource(Res.string.tyre_temperature_low_warning_phase_warm_up),
             SessionPhase.GRID_WALK to stringResource(Res.string.tyre_temperature_low_warning_phase_grid_walk),
             SessionPhase.FORMATION to stringResource(Res.string.tyre_temperature_low_warning_phase_formation),
         )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-        ) {
-            phaseLabels.forEach { (phase, label) ->
-                val selected = phase in uiState.lowWarningPhases
-                FilterChip(
-                    selected = selected,
-                    onClick = { onLowWarningPhaseToggled(phase) },
-                    label = { Text(text = label) },
-                    leadingIcon = if (selected) {
-                        {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                            )
-                        }
-                    } else {
-                        null
-                    },
-                )
-            }
-        }
-        DetailPaneSubtitle(text = stringResource(Res.string.tyre_temperature_readout_settings_subtitle))
         val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
             checked = uiState.overheatWarningEnabled,
             onCheckedChange = onOverheatWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
-                DetailPaneCardChips(
-                    chipLabels = listOf(overheatWarningChipLabel),
-                    selectedChipLabels = setOf(overheatWarningChipLabel),
-                    chipEnabled = uiState.overheatWarningEnabled,
-                    onChipClick = { onPreviewClicked() },
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(overheatWarningChipLabel),
+                            selectedChipLabels = setOf(overheatWarningChipLabel),
+                            chipEnabled = uiState.overheatWarningEnabled,
+                            onChipClick = { onPreviewClicked() },
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
+                        trailingContent = {
+                            IconButton(onClick = { showHelpSheet = true }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
+                                    contentDescription = helpIconContentDescription,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                )
+                            }
+                        },
+                    )
+                    DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_high_threshold_description))
+                    ThresholdSlider(
+                        value = uiState.highThresholdCelsius.toFloat(),
+                        valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
+                        steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
+                        labelFormatter = { labelTemplate.format(it.roundToInt()) },
+                        onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
+                        defaultValue = HIGH_THRESHOLD_DEFAULT,
+                        onResetToDefault = onHighThresholdReset,
+                        resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
+                    )
+                }
             },
         )
         val lowWarningChipLabel = stringResource(Res.string.tyre_temperature_low_warning_chip)
@@ -218,14 +192,62 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
             checked = uiState.lowWarningEnabled,
             onCheckedChange = onLowWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
-                DetailPaneCardChips(
-                    chipLabels = listOf(lowWarningChipLabel),
-                    selectedChipLabels = setOf(lowWarningChipLabel),
-                    chipEnabled = uiState.lowWarningEnabled,
-                    onChipClick = { onLowWarningPreviewClicked() },
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(lowWarningChipLabel),
+                            selectedChipLabels = setOf(lowWarningChipLabel),
+                            chipEnabled = uiState.lowWarningEnabled,
+                            onChipClick = { onLowWarningPreviewClicked() },
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.tyre_temperature_low_warning_phases_subtitle),
+                        trailingContent = {
+                            IconButton(onClick = { showLowWarningPhasesHelpSheet = true }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
+                                    contentDescription = lowWarningPhasesHelpIconContentDescription,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                )
+                            }
+                        },
+                    )
+                    DetailPaneDescription(
+                        text = stringResource(Res.string.tyre_temperature_low_warning_phases_description),
+                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+                    ) {
+                        phaseLabels.forEach { (phase, label) ->
+                            val selected = phase in uiState.lowWarningPhases
+                            FilterChip(
+                                selected = selected,
+                                onClick = { onLowWarningPhaseToggled(phase) },
+                                label = { Text(text = label) },
+                                leadingIcon = if (selected) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                } else {
+                                    null
+                                },
+                            )
+                        }
+                    }
+                }
             },
         )
     }
