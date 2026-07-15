@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -171,12 +172,18 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                    DetailPaneCardChips(
-                        chipLabels = listOf(overheatWarningChipLabel),
-                        selectedChipLabels = setOf(overheatWarningChipLabel),
-                        chipEnabled = uiState.overheatWarningEnabled,
-                        onChipClick = { onPreviewClicked() },
-                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    ) {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(overheatWarningChipLabel),
+                            selectedChipLabels = setOf(overheatWarningChipLabel),
+                            chipEnabled = uiState.overheatWarningEnabled,
+                            onChipClick = { onPreviewClicked() },
+                        )
+                    }
                 }
             },
         )
@@ -226,12 +233,18 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         }
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                    DetailPaneCardChips(
-                        chipLabels = listOf(lowWarningChipLabel),
-                        selectedChipLabels = setOf(lowWarningChipLabel),
-                        chipEnabled = uiState.lowWarningEnabled,
-                        onChipClick = { onLowWarningPreviewClicked() },
-                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    ) {
+                        DetailPaneCardChips(
+                            chipLabels = listOf(lowWarningChipLabel),
+                            selectedChipLabels = setOf(lowWarningChipLabel),
+                            chipEnabled = uiState.lowWarningEnabled,
+                            onChipClick = { onLowWarningPreviewClicked() },
+                        )
+                    }
                 }
             },
         )
