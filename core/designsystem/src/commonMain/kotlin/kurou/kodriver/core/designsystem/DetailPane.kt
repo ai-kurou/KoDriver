@@ -37,7 +37,7 @@ fun DetailPaneDescription(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(horizontal = 4.dp, vertical = 4.dp),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
     )
 }
 
