@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 134" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="134" rx="6" fill="#16181d"/>
+<rect x="38" y="28" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="47.5" y="48" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">88</text>
+<rect x="58" y="28" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="67.5" y="48" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">90</text>
+<rect x="78" y="28" width="19" height="30" rx="1" fill="#e65c3c"/>
+<text x="87.5" y="48" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">94</text>
+<rect x="142" y="28" width="19" height="30" rx="1" fill="#e65c3c"/>
+<text x="151.5" y="48" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">93</text>
+<rect x="162" y="28" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="171.5" y="48" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">89</text>
+<rect x="182" y="28" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="191.5" y="48" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">86</text>
+<rect x="38" y="64" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="47.5" y="84" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">84</text>
+<rect x="58" y="64" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="67.5" y="84" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">85</text>
+<rect x="78" y="64" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="87.5" y="84" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">88</text>
+<rect x="142" y="64" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="151.5" y="84" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">87</text>
+<rect x="162" y="64" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="171.5" y="84" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">84</text>
+<rect x="182" y="64" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="191.5" y="84" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">82</text>
+<text x="120" y="120" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">タイヤ内層温度(表面より変化が緩やか)</text>
+
+</svg>

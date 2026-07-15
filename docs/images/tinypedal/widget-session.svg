@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 312 100" font-family="sans-serif">
+<rect x="0" y="0" width="312" height="100" rx="6" fill="#16181d"/>
+<text x="42.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">CLOCK</text>
+<text x="102.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">SESSION</text>
+<text x="162.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">REMAIN</text>
+<text x="222.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">LAP</text>
+<text x="282.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">POS</text>
+<text x="42.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">21:04</text>
+<text x="102.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">RACE</text>
+<text x="162.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">1:23:45</text>
+<text x="222.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">12</text>
+<text x="282.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">P5</text>
+<text x="156" y="82" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">システム時刻 / セッション名 / 残り時間 / ラップ / 順位</text>
+
+</svg>

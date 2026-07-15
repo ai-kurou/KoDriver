@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 104" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="104" rx="6" fill="#16181d"/>
+<circle cx="60" cy="36" r="10" fill="#4fc3f7"/><text x="60" y="60" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">LIFT</text>
+<circle cx="120" cy="36" r="10" fill="#fb8c00"/><text x="120" y="60" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">TC</text>
+<circle cx="180" cy="36" r="10" fill="#333"/><text x="180" y="60" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">ABS</text>
+<text x="120" y="90" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">リフト&amp;コースト / TC / ABS 作動 LED</text>
+
+</svg>

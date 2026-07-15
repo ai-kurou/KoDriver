@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="140" rx="6" fill="#16181d"/>
+<text x="36" y="30" font-size="12" fill="#9aa0a6" text-anchor="start" font-weight="normal">BEST</text>
+<text x="204" y="30" font-size="14" fill="#4fc3f7" text-anchor="end" font-weight="normal">1:51.204</text>
+<text x="36" y="54" font-size="12" fill="#9aa0a6" text-anchor="start" font-weight="normal">LAST</text>
+<text x="204" y="54" font-size="14" fill="#e8e8e8" text-anchor="end" font-weight="normal">1:52.331</text>
+<text x="36" y="78" font-size="12" fill="#9aa0a6" text-anchor="start" font-weight="normal">CURRENT</text>
+<text x="204" y="78" font-size="14" fill="#e8e8e8" text-anchor="end" font-weight="normal">0:48.107</text>
+<text x="36" y="102" font-size="12" fill="#9aa0a6" text-anchor="start" font-weight="normal">PACE</text>
+<text x="204" y="102" font-size="14" fill="#9aa0a6" text-anchor="end" font-weight="normal">1:52.450</text>
+<text x="120" y="130" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">ベスト / 前ラップ / 現在 / ペース</text>
+
+</svg>

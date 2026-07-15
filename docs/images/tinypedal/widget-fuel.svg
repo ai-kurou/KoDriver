@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 120" font-family="sans-serif">
+<rect x="0" y="0" width="310" height="120" rx="6" fill="#16181d"/>
+<text x="35.0" y="22" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">END</text>
+<text x="85.0" y="22" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">REMAIN</text>
+<text x="135.0" y="22" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">REFUEL</text>
+<text x="185.0" y="22" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">LAPS</text>
+<text x="235.0" y="22" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">MINS</text>
+<text x="285.0" y="22" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">PITS</text>
+<text x="35.0" y="46" font-size="13" fill="#9aa0a6" text-anchor="middle" font-weight="normal">1.5</text>
+<text x="85.0" y="46" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">42.6</text>
+<text x="135.0" y="46" font-size="13" fill="#fbc02d" text-anchor="middle" font-weight="normal">+18.3</text>
+<text x="185.0" y="46" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">14.2</text>
+<text x="235.0" y="46" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">26.5</text>
+<text x="285.0" y="46" font-size="13" fill="#fb8c00" text-anchor="middle" font-weight="normal">0.8</text>
+<rect x="14" y="58" width="282" height="7" rx="1" fill="#2a2e36"/>
+<rect x="14" y="58" width="158" height="7" rx="1" fill="#43a047"/>
+<line x1="230" y1="55" x2="230" y2="68" stroke="#e53935" stroke-width="2"/>
+<line x1="196" y1="55" x2="196" y2="68" stroke="#7cb342" stroke-width="2"/>
+<text x="155" y="90" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">残量 / 必要給油量 / 残り周回・分 / 必要ピット数</text>
+<text x="155" y="106" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">下部は燃料レベルバー(赤=スティント開始量, 緑=給油後)</text>
+
+</svg>

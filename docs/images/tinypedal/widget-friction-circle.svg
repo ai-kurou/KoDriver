@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="160" rx="6" fill="#16181d"/>
+<circle cx="120" cy="70" r="48" fill="#101216" stroke="#333"/>
+<circle cx="120" cy="70" r="24" fill="none" stroke="#333" stroke-dasharray="3 3"/>
+<line x1="72" y1="70" x2="168" y2="70" stroke="#2a2e36"/>
+<line x1="120" y1="22" x2="120" y2="118" stroke="#2a2e36"/>
+<path d="M 120 70 C 100 60 92 50 98 40 C 110 46 126 44 138 52" fill="none" stroke="#555" stroke-width="1.5"/>
+<circle cx="138" cy="52" r="5" fill="#fbc02d"/>
+<text x="120" y="146" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">フリクションサークル(G の軌跡)</text>
+
+</svg>

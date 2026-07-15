@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 154" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="154" rx="6" fill="#16181d"/>
+<line x1="30" y1="88" x2="210" y2="88" stroke="#444"/>
+<g transform="rotate(-3 120 70)"><rect x="52" y="56" width="136" height="20" rx="8" fill="#607d8b"/><circle cx="80" cy="82" r="11" fill="#263238" stroke="#888"/><circle cx="164" cy="82" r="11" fill="#263238" stroke="#888"/></g>
+<text x="120" y="118" font-size="14" fill="#4fc3f7" text-anchor="middle" font-weight="bold">RAKE  +0.82°</text>
+<text x="120" y="140" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">レーキ角(前後車高差による車体傾き)</text>
+
+</svg>
