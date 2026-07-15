@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 152" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="152" rx="6" fill="#16181d"/>
+<rect x="60" y="18" width="120" height="66" rx="4" fill="#0d0f13"/>
+<text x="104" y="68" font-size="44" fill="#e8e8e8" text-anchor="middle" font-weight="bold">4</text>
+<text x="150" y="46" font-size="17" fill="#9aa0a6" text-anchor="middle" font-weight="normal">213</text>
+<rect x="60" y="86" width="120" height="8" rx="1" fill="#2a2e36"/>
+<rect x="60" y="86" width="84" height="8" rx="1" fill="#4fc3f7"/>
+<text x="120" y="122" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">ギア + 速度 + RPMバー</text>
+<text x="120" y="138" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">(RPM域で背景色が変化・バッテリーバー対応)</text>
+
+</svg>

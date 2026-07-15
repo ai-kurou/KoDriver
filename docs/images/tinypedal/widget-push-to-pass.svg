@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 106" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="106" rx="6" fill="#16181d"/>
+<rect x="24" y="22" width="90" height="40" rx="2" fill="#43a047"/>
+<text x="69" y="48" font-size="17" fill="#111" text-anchor="middle" font-weight="bold">P2P</text>
+<text x="160" y="40" font-size="13" fill="#e8e8e8" text-anchor="start" font-weight="normal">残り 5 回</text>
+<text x="160" y="58" font-size="13" fill="#4fc3f7" text-anchor="start" font-weight="normal">8.2s</text>
+<text x="120" y="92" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">P2P の残り使用回数と作動タイマー</text>
+
+</svg>

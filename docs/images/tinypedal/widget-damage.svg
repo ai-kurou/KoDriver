@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 148" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="148" rx="6" fill="#16181d"/>
+<g transform="translate(84,18)">
+<rect x="16" y="0" width="40" height="18" rx="4" fill="#43a047"/>
+<rect x="0" y="22" width="14" height="26" rx="3" fill="#43a047"/>
+<rect x="58" y="22" width="14" height="26" rx="3" fill="#fb8c00"/>
+<rect x="16" y="22" width="40" height="56" rx="4" fill="#43a047"/>
+<rect x="0" y="54" width="14" height="26" rx="3" fill="#43a047"/>
+<rect x="58" y="54" width="14" height="26" rx="3" fill="#43a047"/>
+<rect x="16" y="82" width="40" height="18" rx="4" fill="#e53935"/>
+</g>
+<text x="120" y="134" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">部位別ダメージを色で可視化(緑→橙→赤)</text>
+
+</svg>

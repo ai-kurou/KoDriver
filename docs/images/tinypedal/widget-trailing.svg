@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="140" rx="6" fill="#16181d"/>
+<rect x="16" y="20" width="208" height="84" rx="2" fill="#101216"/>
+<path d="M 20 92 L 60 92 C 76 92 84 34 108 30 L 150 28 C 170 30 190 60 220 56" fill="none" stroke="#43a047" stroke-width="2"/>
+<path d="M 20 96 L 70 96 C 92 96 96 60 116 66 L 140 84 L 220 88" fill="none" stroke="#e53935" stroke-width="2"/>
+<text x="120" y="126" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">ペダル・ステア・FFB の時系列プロット</text>
+
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 146" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="146" rx="6" fill="#16181d"/>
+<circle cx="120" cy="66" r="42" fill="none" stroke="#888" stroke-width="7"/>
+<g transform="rotate(35 120 66)"><line x1="78" y1="66" x2="162" y2="66" stroke="#888" stroke-width="6"/><line x1="120" y1="66" x2="120" y2="104" stroke="#888" stroke-width="6"/><rect x="112" y="28" width="16" height="10" fill="#fbc02d"/></g>
+<text x="120" y="132" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">回転角付きバーチャルステアリング表示</text>
+
+</svg>

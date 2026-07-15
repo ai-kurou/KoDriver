@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 560" font-family="sans-serif">
+  <!-- 背景(モニター) -->
+  <rect x="0" y="0" width="960" height="560" rx="8" fill="#3a4a3f"/>
+  <rect x="0" y="0" width="960" height="560" rx="8" fill="url(#road)" opacity="0"/>
+  <text x="480" y="300" text-anchor="middle" font-size="26" fill="#5d7264">ゲーム画面(Borderless / Windowed)</text>
+
+  <!-- 上部中央: Session / Flag -->
+  <g>
+    <rect x="330" y="16" width="300" height="30" rx="3" fill="#111" opacity="0.9"/>
+    <text x="345" y="37" font-size="15" fill="#eee">RACE</text>
+    <text x="400" y="37" font-size="15" fill="#4fc3f7">1:23:45</text>
+    <text x="480" y="37" font-size="15" fill="#eee">LAP 12/30</text>
+    <text x="585" y="37" font-size="15" fill="#ffd54f">P 5</text>
+    <text x="480" y="66" text-anchor="middle" font-size="14" fill="#cfd8dc">Session(セッション情報)</text>
+  </g>
+
+  <!-- 上部左: Weather -->
+  <g>
+    <rect x="24" y="16" width="200" height="30" rx="3" fill="#111" opacity="0.9"/>
+    <text x="38" y="37" font-size="15" fill="#eee">☀ 24°C  路面 31°C  0%</text>
+    <text x="124" y="66" text-anchor="middle" font-size="14" fill="#cfd8dc">Weather(天候)</text>
+  </g>
+
+  <!-- 上部右: Tyre temperature -->
+  <g>
+    <rect x="770" y="16" width="166" height="72" rx="3" fill="#111" opacity="0.9"/>
+    <rect x="782" y="26" width="24" height="22" fill="#e6a23c"/><rect x="807" y="26" width="24" height="22" fill="#e6c04c"/>
+    <rect x="852" y="26" width="24" height="22" fill="#e6c04c"/><rect x="877" y="26" width="24" height="22" fill="#8bc34a"/>
+    <rect x="782" y="52" width="24" height="22" fill="#e67e3c"/><rect x="807" y="52" width="24" height="22" fill="#e6a23c"/>
+    <rect x="852" y="52" width="24" height="22" fill="#e6a23c"/><rect x="877" y="52" width="24" height="22" fill="#e6c04c"/>
+    <text x="853" y="106" text-anchor="middle" font-size="14" fill="#cfd8dc">Tyre temperature(タイヤ温度)</text>
+  </g>
+
+  <!-- 中央上: Deltabest -->
+  <g>
+    <rect x="390" y="120" width="180" height="44" rx="3" fill="#111" opacity="0.9"/>
+    <rect x="480" y="126" width="60" height="10" fill="#43a047"/>
+    <line x1="480" y1="124" x2="480" y2="140" stroke="#888" stroke-width="1"/>
+    <text x="480" y="158" text-anchor="middle" font-size="17" font-weight="bold" fill="#43a047">-0.245</text>
+    <text x="480" y="184" text-anchor="middle" font-size="14" fill="#cfd8dc">Deltabest(デルタ)</text>
+  </g>
+
+  <!-- 中央: Gear + RPM LED -->
+  <g>
+    <rect x="408" y="330" width="144" height="14" rx="7" fill="#111" opacity="0.9"/>
+    <circle cx="422" cy="337" r="5" fill="#43a047"/><circle cx="440" cy="337" r="5" fill="#43a047"/>
+    <circle cx="458" cy="337" r="5" fill="#43a047"/><circle cx="476" cy="337" r="5" fill="#fbc02d"/>
+    <circle cx="494" cy="337" r="5" fill="#fbc02d"/><circle cx="512" cy="337" r="5" fill="#333"/>
+    <circle cx="530" cy="337" r="5" fill="#333"/>
+    <rect x="428" y="350" width="104" height="64" rx="3" fill="#111" opacity="0.95"/>
+    <text x="462" y="398" text-anchor="middle" font-size="42" font-weight="bold" fill="#fff">4</text>
+    <text x="508" y="382" text-anchor="middle" font-size="17" fill="#bbb">213</text>
+    <rect x="428" y="408" width="78" height="6" fill="#4fc3f7"/>
+    <text x="480" y="436" text-anchor="middle" font-size="14" fill="#cfd8dc">RPM LED + Gear</text>
+  </g>
+
+  <!-- 左: Relative -->
+  <g>
+    <rect x="24" y="330" width="260" height="118" rx="3" fill="#111" opacity="0.9"/>
+    <text x="36" y="352" font-size="13" fill="#4dd0e1">4  HYP  T.Kobayashi   -2.5</text>
+    <text x="36" y="374" font-size="13" fill="#eee">5  GT3  A.Yamada      -0.8</text>
+    <rect x="30" y="382" width="248" height="20" fill="#fbc02d"/>
+    <text x="36" y="397" font-size="13" font-weight="bold" fill="#111">6  GT3  YOU           0.0</text>
+    <text x="36" y="420" font-size="13" fill="#eee">7  GT3  K.Suzuki      +1.2</text>
+    <text x="36" y="442" font-size="13" fill="#ef9a9a">8  LMP2 M.Sato        +3.9</text>
+    <text x="154" y="470" text-anchor="middle" font-size="14" fill="#cfd8dc">Relative(前後の相対順位)</text>
+  </g>
+
+  <!-- 右: Radar -->
+  <g>
+    <rect x="700" y="310" width="150" height="150" rx="3" fill="#111" opacity="0.9"/>
+    <circle cx="775" cy="385" r="60" fill="none" stroke="#333" stroke-width="1"/>
+    <circle cx="775" cy="385" r="30" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4 3"/>
+    <rect x="768" y="371" width="14" height="28" rx="3" fill="#fff"/>
+    <rect x="746" y="392" width="14" height="28" rx="3" fill="#ffb74d"/>
+    <text x="775" y="482" text-anchor="middle" font-size="14" fill="#cfd8dc">Radar(接近レーダー)</text>
+  </g>
+
+  <!-- 下部中央: Fuel -->
+  <g>
+    <rect x="330" y="470" width="300" height="60" rx="3" fill="#111" opacity="0.9"/>
+    <text x="345" y="488" font-size="11" fill="#888">REMAIN</text><text x="345" y="510" font-size="15" fill="#eee">42.6</text>
+    <text x="420" y="488" font-size="11" fill="#888">REFUEL</text><text x="420" y="510" font-size="15" fill="#ffd54f">18.3</text>
+    <text x="495" y="488" font-size="11" fill="#888">LAPS</text><text x="495" y="510" font-size="15" fill="#eee">14.2</text>
+    <text x="560" y="488" font-size="11" fill="#888">PITS</text><text x="560" y="510" font-size="15" fill="#eee">0.8</text>
+    <rect x="345" y="518" width="270" height="5" fill="#333"/>
+    <rect x="345" y="518" width="150" height="5" fill="#43a047"/>
+    <text x="480" y="548" text-anchor="middle" font-size="14" fill="#cfd8dc">Fuel(燃料)</text>
+  </g>
+
+  <!-- 左下: Pedal -->
+  <g>
+    <rect x="120" y="470" width="60" height="60" rx="3" fill="#111" opacity="0.9"/>
+    <rect x="130" y="486" width="10" height="38" fill="#333"/><rect x="130" y="504" width="10" height="20" fill="#ef5350"/>
+    <rect x="146" y="486" width="10" height="38" fill="#333"/><rect x="146" y="492" width="10" height="32" fill="#66bb6a"/>
+    <rect x="162" y="486" width="10" height="38" fill="#333"/>
+    <text x="150" y="548" text-anchor="middle" font-size="14" fill="#cfd8dc">Pedal(ペダル)</text>
+  </g>
+
+  <!-- 注記 -->
+  <text x="24" y="120" font-size="13" fill="#9aa89e">※ 配置は一例。全ウィジェットはドラッグで自由に配置できる</text>
+</svg>

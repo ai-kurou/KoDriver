@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 136" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="136" rx="6" fill="#16181d"/>
+<rect x="34" y="34" width="56" height="30" rx="2" fill="#7cb342"/>
+<text x="62.0" y="54.0" font-size="13" fill="#111" text-anchor="middle" font-weight="bold">3120</text>
+<rect x="98" y="34" width="56" height="30" rx="2" fill="#e6a23c"/>
+<text x="126.0" y="54.0" font-size="13" fill="#111" text-anchor="middle" font-weight="bold">4480</text>
+<rect x="34" y="72" width="56" height="30" rx="2" fill="#7cb342"/>
+<text x="62.0" y="92.0" font-size="13" fill="#111" text-anchor="middle" font-weight="bold">2890</text>
+<rect x="98" y="72" width="56" height="30" rx="2" fill="#e6a23c"/>
+<text x="126.0" y="92.0" font-size="13" fill="#111" text-anchor="middle" font-weight="bold">4020</text>
+<text x="120" y="122" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">タイヤ荷重(N)と荷重比率</text>
+
+</svg>
