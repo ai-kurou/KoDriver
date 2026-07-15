@@ -128,30 +128,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_description))
         val helpIconContentDescription =
             stringResource(Res.string.tyre_temperature_threshold_help_icon_content_description)
-        DetailPaneSubtitle(
-            text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
-            trailingContent = {
-                IconButton(onClick = { showHelpSheet = true }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-                        contentDescription = helpIconContentDescription,
-                        tint = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            },
-        )
-        DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_high_threshold_description))
         val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
-        ThresholdSlider(
-            value = uiState.highThresholdCelsius.toFloat(),
-            valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
-            steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
-            labelFormatter = { labelTemplate.format(it.roundToInt()) },
-            onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
-            defaultValue = HIGH_THRESHOLD_DEFAULT,
-            onResetToDefault = onHighThresholdReset,
-            resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
-        )
         val lowWarningPhasesHelpIconContentDescription =
             stringResource(Res.string.tyre_temperature_low_warning_phases_help_icon_content_description)
         DetailPaneSubtitle(
@@ -205,12 +182,37 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             onCheckedChange = onOverheatWarningEnabledChanged,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             bottomContent = {
-                DetailPaneCardChips(
-                    chipLabels = listOf(overheatWarningChipLabel),
-                    selectedChipLabels = setOf(overheatWarningChipLabel),
-                    chipEnabled = uiState.overheatWarningEnabled,
-                    onChipClick = { onPreviewClicked() },
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.tyre_temperature_high_threshold_subtitle),
+                        trailingContent = {
+                            IconButton(onClick = { showHelpSheet = true }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
+                                    contentDescription = helpIconContentDescription,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                )
+                            }
+                        },
+                    )
+                    DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_high_threshold_description))
+                    ThresholdSlider(
+                        value = uiState.highThresholdCelsius.toFloat(),
+                        valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
+                        steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
+                        labelFormatter = { labelTemplate.format(it.roundToInt()) },
+                        onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
+                        defaultValue = HIGH_THRESHOLD_DEFAULT,
+                        onResetToDefault = onHighThresholdReset,
+                        resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
+                    )
+                    DetailPaneCardChips(
+                        chipLabels = listOf(overheatWarningChipLabel),
+                        selectedChipLabels = setOf(overheatWarningChipLabel),
+                        chipEnabled = uiState.overheatWarningEnabled,
+                        onChipClick = { onPreviewClicked() },
+                    )
+                }
             },
         )
         val lowWarningChipLabel = stringResource(Res.string.tyre_temperature_low_warning_chip)
