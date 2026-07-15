@@ -13,11 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_switch_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneSubtitle
+import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -48,8 +46,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneDescription(text = stringResource(Res.string.flag_description))
-        DetailPaneSubtitle(text = stringResource(Res.string.flag_switch_subtitle))
+        DetailPaneOverview(text = stringResource(Res.string.flag_description))
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
             val checked = uiState.enabledStates[item.key] ?: true
@@ -57,7 +54,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 title = stringResource(item.labelRes),
                 checked = checked,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 bottomContent = {
                     DetailPaneCardChips(
                         chipLabels = listOf(chipLabel),
