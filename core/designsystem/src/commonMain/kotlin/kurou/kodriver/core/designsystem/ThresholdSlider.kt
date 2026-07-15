@@ -41,7 +41,7 @@ fun ThresholdSlider(
     val isDifferentFromDefault = defaultValue != null && abs(sliderValue - defaultValue) > 0.001f
     val resetButtonAlpha by animateFloatAsState(targetValue = if (isDifferentFromDefault) 1f else 0f)
 
-    Column(modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp)) {
+    Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = labelFormatter(sliderValue),

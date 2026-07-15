@@ -49,7 +49,7 @@ fun DetailPaneSubtitle(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.height(IntrinsicSize.Min).padding(horizontal = 4.dp, vertical = 8.dp),
+        modifier = modifier.height(IntrinsicSize.Min).padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Box(
             modifier = Modifier
