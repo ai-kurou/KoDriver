@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 104" font-family="sans-serif">
+<rect x="0" y="0" width="250" height="104" rx="6" fill="#16181d"/>
+<text x="60" y="44" font-size="26" fill="#fbc02d" text-anchor="middle" font-weight="normal">☀</text>
+<text x="115.0" y="28" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">AIR</text>
+<text x="165.0" y="28" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">TRACK</text>
+<text x="215.0" y="28" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">RAIN</text>
+<text x="115.0" y="50" font-size="14" fill="#e8e8e8" text-anchor="middle" font-weight="normal">24°</text>
+<text x="165.0" y="50" font-size="14" fill="#e8e8e8" text-anchor="middle" font-weight="normal">31°</text>
+<text x="215.0" y="50" font-size="14" fill="#e8e8e8" text-anchor="middle" font-weight="normal">0%</text>
+<text x="120" y="88" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">現在の天候・気温・路面温度・降水</text>
+
+</svg>

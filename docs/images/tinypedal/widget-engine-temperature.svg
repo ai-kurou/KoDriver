@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 102" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="102" rx="6" fill="#16181d"/>
+<text x="46" y="30" font-size="11" fill="#7c848c" text-anchor="start" font-weight="normal">OIL</text>
+<text x="46" y="54" font-size="16" fill="#fb8c00" text-anchor="start" font-weight="normal">108.4°C</text>
+<text x="150" y="30" font-size="11" fill="#7c848c" text-anchor="start" font-weight="normal">WATER</text>
+<text x="150" y="54" font-size="16" fill="#e8e8e8" text-anchor="start" font-weight="normal">92.1°C</text>
+<text x="120" y="88" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">油温・水温の詳細表示(警告色対応)</text>
+
+</svg>

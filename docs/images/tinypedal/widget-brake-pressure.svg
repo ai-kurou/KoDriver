@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 122" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="122" rx="6" fill="#16181d"/>
+<rect x="52" y="22" width="16" height="64" rx="2" fill="#2a2e36"/>
+<rect x="52" y="34" width="16" height="52" rx="2" fill="#e53935"/>
+<rect x="90" y="22" width="16" height="64" rx="2" fill="#2a2e36"/>
+<rect x="90" y="32" width="16" height="54" rx="2" fill="#e53935"/>
+<rect x="128" y="22" width="16" height="64" rx="2" fill="#2a2e36"/>
+<rect x="128" y="46" width="16" height="40" rx="2" fill="#e53935"/>
+<rect x="166" y="22" width="16" height="64" rx="2" fill="#2a2e36"/>
+<rect x="166" y="44" width="16" height="42" rx="2" fill="#e53935"/>
+<text x="120" y="108" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">各輪のブレーキ圧(%)</text>
+
+</svg>

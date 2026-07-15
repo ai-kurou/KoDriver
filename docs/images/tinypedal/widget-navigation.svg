@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="160" rx="6" fill="#16181d"/>
+<circle cx="120" cy="70" r="56" fill="#101216" stroke="#333"/>
+<path d="M 70 110 C 80 60 120 40 170 46" fill="none" stroke="#555" stroke-width="12" stroke-linecap="round"/>
+<path d="M 70 110 C 80 60 120 40 170 46" fill="none" stroke="#bbb" stroke-width="2"/>
+<polygon points="120,62 127,78 113,78" fill="#fbc02d"/>
+<circle cx="98" cy="88" r="5" fill="#c0392b"/>
+<text x="120" y="148" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">自車中心のズームマップ(要マップ記録)</text>
+
+</svg>

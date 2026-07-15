@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 122" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="122" rx="6" fill="#16181d"/>
+<text x="120" y="56" font-size="34" fill="#e8e8e8" text-anchor="middle" font-weight="bold">213</text>
+<text x="120" y="78" font-size="12" fill="#9aa0a6" text-anchor="middle" font-weight="normal">km/h</text>
+<text x="120" y="108" font-size="10" fill="#9aa0a6" text-anchor="middle" font-weight="normal">速度表示(ピットレーン等の条件付き表示)</text>
+
+</svg>

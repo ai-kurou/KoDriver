@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 138" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="138" rx="6" fill="#16181d"/>
+<text x="32" y="28" font-size="11" fill="#9aa0a6" text-anchor="start" font-weight="normal">0-100</text>
+<text x="208" y="28" font-size="13" fill="#e8e8e8" text-anchor="end" font-weight="normal">2.98s</text>
+<text x="32" y="50" font-size="11" fill="#9aa0a6" text-anchor="start" font-weight="normal">0-200</text>
+<text x="208" y="50" font-size="13" fill="#e8e8e8" text-anchor="end" font-weight="normal">6.45s</text>
+<text x="32" y="72" font-size="11" fill="#9aa0a6" text-anchor="start" font-weight="normal">100-200</text>
+<text x="208" y="72" font-size="13" fill="#4fc3f7" text-anchor="end" font-weight="normal">3.47s</text>
+<text x="32" y="94" font-size="11" fill="#9aa0a6" text-anchor="start" font-weight="normal">0-400m</text>
+<text x="208" y="94" font-size="13" fill="#e8e8e8" text-anchor="end" font-weight="normal">10.82s</text>
+<text x="120" y="124" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">指定速度区間の加速タイム計測</text>
+
+</svg>

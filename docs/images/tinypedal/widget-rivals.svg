@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 116" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="116" rx="6" fill="#16181d"/>
+<text x="120" y="22" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">同クラスの前後ライバル</text>
+<text x="24" y="48" font-size="12" fill="#e8e8e8" text-anchor="start" font-weight="normal">3</text>
+<text x="40" y="48" font-size="12" fill="#e8e8e8" text-anchor="start" font-weight="normal">B.MUELLER</text>
+<text x="216" y="48" font-size="12" fill="#e8e8e8" text-anchor="end" font-weight="normal">-4.2</text>
+<rect x="14" y="58" width="212" height="18" rx="2" fill="#fbc02d"/>
+<text x="24" y="72" font-size="12" fill="#111" text-anchor="start" font-weight="normal">4</text>
+<text x="40" y="72" font-size="12" fill="#111" text-anchor="start" font-weight="bold">YOU</text>
+<text x="216" y="72" font-size="12" fill="#111" text-anchor="end" font-weight="normal">0.0</text>
+<text x="24" y="96" font-size="12" fill="#e8e8e8" text-anchor="start" font-weight="normal">5</text>
+<text x="40" y="96" font-size="12" fill="#e8e8e8" text-anchor="start" font-weight="normal">J.SMITH</text>
+<text x="216" y="96" font-size="12" fill="#e8e8e8" text-anchor="end" font-weight="normal">+2.8</text>
+
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 132" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="132" rx="6" fill="#16181d"/>
+<circle cx="70" cy="56" r="34" fill="none" stroke="#444"/>
+<polygon points="70,30 78,64 70,58 62,64" fill="#fbc02d"/>
+<line x1="70" y1="56" x2="88" y2="30" stroke="#4fc3f7" stroke-width="2"/>
+<text x="150" y="46" font-size="13" fill="#e8e8e8" text-anchor="start" font-weight="normal">YAW  +4.2°</text>
+<text x="150" y="68" font-size="13" fill="#4fc3f7" text-anchor="start" font-weight="normal">SLIP  2.8°</text>
+<text x="120" y="118" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">ヨー角・スリップアングル・進行方位</text>
+
+</svg>

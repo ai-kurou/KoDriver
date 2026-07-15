@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 136" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="136" rx="6" fill="#16181d"/>
+<text x="120" y="22" font-size="10" fill="#7c848c" text-anchor="middle" font-weight="normal">OUT - CTR - IN(左右で鏡像)</text>
+<rect x="38" y="30" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="47.5" y="50" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">82</text>
+<rect x="58" y="30" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="67.5" y="50" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">88</text>
+<rect x="78" y="30" width="19" height="30" rx="1" fill="#e65c3c"/>
+<text x="87.5" y="50" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">95</text>
+<rect x="142" y="30" width="19" height="30" rx="1" fill="#e65c3c"/>
+<text x="151.5" y="50" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">93</text>
+<rect x="162" y="30" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="171.5" y="50" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">86</text>
+<rect x="182" y="30" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="191.5" y="50" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">80</text>
+<rect x="38" y="66" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="47.5" y="86" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">78</text>
+<rect x="58" y="66" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="67.5" y="86" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">81</text>
+<rect x="78" y="66" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="87.5" y="86" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">86</text>
+<rect x="142" y="66" width="19" height="30" rx="1" fill="#e6a23c"/>
+<text x="151.5" y="86" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">85</text>
+<rect x="162" y="66" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="171.5" y="86" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">80</text>
+<rect x="182" y="66" width="19" height="30" rx="1" fill="#7cb342"/>
+<text x="191.5" y="86" font-size="9" fill="#111" text-anchor="middle" font-weight="bold">76</text>
+<text x="120" y="122" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">表面温度をヒートマップ色で表示(°C)</text>
+
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="140" rx="6" fill="#16181d"/>
+<path d="M 20 90 C 50 60 80 50 110 62 C 140 74 170 96 220 78" fill="none" stroke="#4fc3f7" stroke-width="2.5"/>
+<line x1="96" y1="30" x2="96" y2="104" stroke="#fbc02d" stroke-width="1.5"/>
+<circle cx="96" cy="57" r="4" fill="#fbc02d"/>
+<text x="120" y="128" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">コース標高プロットと現在位置</text>
+
+</svg>

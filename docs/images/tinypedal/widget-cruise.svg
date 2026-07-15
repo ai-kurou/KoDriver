@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 96" font-family="sans-serif">
+<rect x="0" y="0" width="240" height="96" rx="6" fill="#16181d"/>
+<text x="49.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">COMPASS</text>
+<text x="119.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">ELEV</text>
+<text x="189.0" y="24" font-size="9" fill="#7c848c" text-anchor="middle" font-weight="normal">ODO</text>
+<text x="49.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">320° NW</text>
+<text x="119.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">42m</text>
+<text x="189.0" y="48" font-size="13" fill="#e8e8e8" text-anchor="middle" font-weight="normal">1284km</text>
+<text x="120" y="82" font-size="11" fill="#9aa0a6" text-anchor="middle" font-weight="normal">コンパス / 標高 / 積算走行距離</text>
+
+</svg>
