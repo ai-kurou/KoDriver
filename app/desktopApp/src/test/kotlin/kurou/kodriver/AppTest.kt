@@ -98,7 +98,7 @@ class AppTest {
         clickItem("タイヤ温度")
         clickContentDescription("高温閾値の説明を表示")
         dismissBottomSheet()
-        clickContentDescription("対象フェーズの説明を表示")
+        clickContentDescription("低温警告の対象フェーズの説明を表示")
         dismissBottomSheet()
         clickItem("自己ベストラップ")
         waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
