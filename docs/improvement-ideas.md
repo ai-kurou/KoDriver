@@ -64,6 +64,16 @@
   **課題**: 記録は蓄積される一方で、着手判断・優先度付けの仕組みがない。項目が増えるほど「書いたが誰も読まない」状態になりやすい。
   **改善案**: 定期的（リリース前など）に棚卸しし、着手するものは GitHub Issue 化して本ファイルからは Issue 番号を添えて削除する運用を README に明記する。
 
+## テスト構成
+
+- **対象**: 各 feature モジュールのスクリーンショットテストと Compose UI テスト（例: `LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest` の `casual選択` と `LmuWindowsReadoutMyBestLapDetailPaneTest` の `カジュアル音声を選択状態で表示できる`）
+  **課題**: 同一 uiState を表示するだけのケースが、スクリーンショットテストと UI テスト（assert ベース）の両方に存在するモジュールが複数ある。カバレッジ上は重複だが、スクリーンショットは見た目の回帰検知、UI テストは意味的な状態（選択状態など）の検証と役割が異なるため、機械的には削れない。
+  **改善案**: 「表示状態のバリエーションはスクリーンショットテストに寄せ、UI テストはコールバック・インタラクションの検証に限定する」といった役割分担の方針を CLAUDE.md のテストパターンに明文化し、新規テスト作成時の重複を防ぐ。
+
+- **対象**: jvmTest / androidHostTest の両方にスクリーンショットテストを持つモジュール
+  **課題**: jvm 版と androidHostTest 版で同一 Composable・同一状態を撮影する完全重複が複数モジュールにあった（削除済み）。ただし「どういう場合に Android（Robolectric）版のスクリーンショットテストが必要か」の基準がドキュメント化されていない（Android 専用項目を含む `other-list` / `app:shared` の OtherContent は Android 版が必要、それ以外は jvm 版のみで十分、など）。
+  **改善案**: スクリーンショットテストのプラットフォーム選択基準を CLAUDE.md またはテスト方針ドキュメントに明記する。
+
 ## CI（GitHub Actions）
 
 - **対象**: `.github/workflows/on-pull-request.yml` の `update-module-graph` ジョブ

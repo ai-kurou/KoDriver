@@ -17,16 +17,6 @@ internal fun SemanticsNodeInteraction.captureRoboImage() =
     captureRoboImage(roborazziOptions = defaultOptions)
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal val twoPaneDirective = PaneScaffoldDirective(
-    maxHorizontalPartitions = 2,
-    horizontalPartitionSpacerSize = 16.dp,
-    maxVerticalPartitions = 1,
-    verticalPartitionSpacerSize = 0.dp,
-    defaultPanePreferredWidth = 360.dp,
-    excludedBounds = emptyList(),
-)
-
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal val singlePaneDirective = PaneScaffoldDirective(
     maxHorizontalPartitions = 1,
     horizontalPartitionSpacerSize = 0.dp,
