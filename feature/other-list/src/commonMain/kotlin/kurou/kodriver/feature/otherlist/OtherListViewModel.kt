@@ -40,7 +40,7 @@ class OtherListViewModel(
             keepScreenOn = keepScreenOn,
             exitConfirmationEnabled = exitConfirmationEnabled,
         )
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, _uiState.value)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
         if (currentVersion.isBlank()) return
