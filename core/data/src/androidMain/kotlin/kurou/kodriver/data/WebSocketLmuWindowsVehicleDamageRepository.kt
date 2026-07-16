@@ -1,16 +1,10 @@
 package kurou.kodriver.data
 
-import io.ktor.client.plugins.websocket.webSocket
-import io.ktor.websocket.Frame
-import io.ktor.websocket.readText
-import kotlinx.coroutines.CancellationException
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -25,44 +19,25 @@ internal class WebSocketLmuWindowsVehicleDamageRepository(
     private val serverIpRepository: ServerIpPreferencesRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
+    private val client: HttpClient = createWebSocketHttpClient(),
 ) : LmuWindowsVehicleDamageRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
-
-    private val client = createWebSocketHttpClient()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
         serverIpRepository.serverIp()
             .flatMapLatest { ip ->
-                if (ip == null) emptyFlow()
-                else connectWithRetry(ip)
-            }
-
-    private fun connectWithRetry(ip: String): Flow<LmuWindowsVehicleDamageData> = flow {
-        while (true) {
-            try {
-                client.webSocket(
-                    host = ip,
-                    port = port,
-                    path = KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows),
-                ) {
-                    for (frame in incoming) {
-                        if (frame is Frame.Text) {
-                            try {
-                                emit(json.decodeFromString<LmuWindowsVehicleDamageData>(frame.readText()))
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (_: SerializationException) {
-                            }
-                        }
-                    }
+                if (ip == null) {
+                    emptyFlow()
+                } else {
+                    client.webSocketFlow(
+                        host = ip,
+                        port = port,
+                        path = KoDriverServerFeature.DAMAGE.webSocketPath(Simulator.LmuWindows),
+                        retryDelayMs = retryDelayMs,
+                        decode = { json.decodeFromString<LmuWindowsVehicleDamageData>(it) },
+                    )
                 }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
             }
-            delay(retryDelayMs)
-        }
-    }
 }

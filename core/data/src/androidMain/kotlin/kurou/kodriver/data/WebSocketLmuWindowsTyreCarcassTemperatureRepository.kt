@@ -1,16 +1,10 @@
 package kurou.kodriver.data
 
-import io.ktor.client.plugins.websocket.webSocket
-import io.ktor.websocket.Frame
-import io.ktor.websocket.readText
-import kotlinx.coroutines.CancellationException
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -25,44 +19,25 @@ internal class WebSocketLmuWindowsTyreCarcassTemperatureRepository(
     private val serverIpRepository: ServerIpPreferencesRepository,
     private val port: Int = DEFAULT_PORT,
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
+    private val client: HttpClient = createWebSocketHttpClient(),
 ) : LmuWindowsTyreCarcassTemperatureRepository {
 
     private val json = Json { ignoreUnknownKeys = true }
-
-    private val client = createWebSocketHttpClient()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =
         serverIpRepository.serverIp()
             .flatMapLatest { ip ->
-                if (ip == null) emptyFlow()
-                else connectWithRetry(ip)
-            }
-
-    private fun connectWithRetry(ip: String): Flow<LmuWindowsTyreCarcassTemperatureData> = flow {
-        while (true) {
-            try {
-                client.webSocket(
-                    host = ip,
-                    port = port,
-                    path = KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE.webSocketPath(Simulator.LmuWindows),
-                ) {
-                    for (frame in incoming) {
-                        if (frame is Frame.Text) {
-                            try {
-                                emit(json.decodeFromString<LmuWindowsTyreCarcassTemperatureData>(frame.readText()))
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (_: SerializationException) {
-                            }
-                        }
-                    }
+                if (ip == null) {
+                    emptyFlow()
+                } else {
+                    client.webSocketFlow(
+                        host = ip,
+                        port = port,
+                        path = KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE.webSocketPath(Simulator.LmuWindows),
+                        retryDelayMs = retryDelayMs,
+                        decode = { json.decodeFromString<LmuWindowsTyreCarcassTemperatureData>(it) },
+                    )
                 }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
             }
-            delay(retryDelayMs)
-        }
-    }
 }
