@@ -20,10 +20,6 @@
 
 ## ViewModel / UseCase 責務分離
 
-- **対象**: `feature/readout-list/.../ReadoutListViewModel.kt`
-  **課題**: 保存済み読み上げ順序と現在のデフォルト順序を突き合わせ、削除済み項目を除外し、新規項目を末尾に補完するロジックが ViewModel 内にある。これは UI 表示都合だけでなく、読み上げ項目順序の整合性を保つドメインルールに近い。
-  **改善案**: `ResolveReadoutOrderUseCase` などへ切り出し、`ObserveReadoutOrderUseCase` の結果と `ReadoutListItemType.defaultOrder(simulator)` から有効な順序を生成する責務を domain 側へ寄せる。
-
 - **対象**: `feature/telemetry-log-list/.../TelemetryLogListViewModel.kt`
   **課題**: テレメトリログの新しい順ソートと、削除後などに存在しなくなった選択IDを無効化する処理が ViewModel 内にある。現状は小さいが、ログ検索・フィルタ・ページングを追加すると ViewModel の表示整形責務が膨らみやすい。
   **改善案**: 必要になった段階で `ObserveSortedTelemetryLogsUseCase` やログ一覧用の query UseCase へ切り出し、ViewModel は選択状態とダイアログ状態だけを扱う。

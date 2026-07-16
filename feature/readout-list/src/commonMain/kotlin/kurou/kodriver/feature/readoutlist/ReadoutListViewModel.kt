@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -35,6 +36,7 @@ class ReadoutListViewModel(
     private val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     private val saveReadoutEnabledState: SaveReadoutEnabledStateUseCase,
     private val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    private val resolveReadoutOrder: ResolveReadoutOrderUseCase,
     private val saveReadoutOrder: SaveReadoutOrderUseCase,
 ) : ViewModel() {
 
@@ -67,15 +69,11 @@ class ReadoutListViewModel(
         _localOrder,
     ) { selected, persisted, local ->
         val defaultItems = selected?.let { ReadoutListItemType.defaultOrder(it) }.orEmpty()
-        when {
-            // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
-            local.simulator == selected -> local.items
-            persisted.isNotEmpty() -> {
-                val ordered = persisted.filter { it in defaultItems }
-                val unordered = defaultItems.filter { it !in persisted }
-                ordered + unordered
-            }
-            else -> defaultItems
+        // ドラッグ中の localOrder を最優先（DataStore の非同期更新より常に新しい）
+        if (local.simulator == selected) {
+            local.items
+        } else {
+            resolveReadoutOrder(persistedOrder = persisted, defaultOrder = defaultItems)
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
