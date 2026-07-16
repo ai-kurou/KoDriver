@@ -121,6 +121,27 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
+    fun `BindException以外のIOException発生時も再接続してパケット受信を再開する`() = runBlocking {
+        val workingSocket = FakeUdpSocket()
+        workingSocket.enqueuePacket(makeEncryptedPacket(lapCount = 11))
+        var callCount = 0
+        val source = Gt7Ps5UdpSource(
+            consoleAddressFlow = flowOf("192.168.1.100"),
+            socketFactory = {
+                callCount++
+                if (callCount == 1) throw java.net.SocketException("Network is unreachable")
+                workingSocket
+            },
+            scope = CoroutineScope(SupervisorJob()),
+        )
+
+        val result = source.packetFlow.first()
+
+        assertEquals(11.toShort(), result.getShort(0x74))
+        assertEquals(2, callCount)
+    }
+
+    @Test
     fun `タイムアウト発生時にハートビートを再送する`() = runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueueTimeout()
