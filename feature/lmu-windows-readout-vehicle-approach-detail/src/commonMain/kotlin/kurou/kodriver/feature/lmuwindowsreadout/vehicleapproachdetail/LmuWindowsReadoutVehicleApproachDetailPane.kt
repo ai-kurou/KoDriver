@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +47,6 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_approach_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_left_right_sustained_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_longitudinal_label
-import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_readout_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_subtitle
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_skip_first_lap_switch_content_description
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_start_readout_switch_label
@@ -56,7 +56,7 @@ import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.generated.resources.vehicle_approach_threshold_subtitle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -122,7 +122,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     }
 
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        DetailPaneDescription(text = stringResource(Res.string.vehicle_approach_description))
+        DetailPaneOverview(text = stringResource(Res.string.vehicle_approach_description))
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
             trailingContent = {
@@ -160,16 +160,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             onResetToDefault = onResetLateralThreshold,
             resetContentDescription = resetToDefaultLabel,
         )
-        ThresholdSlider(
-            value = uiState.sustainedApproachDurationSeconds.toFloat(),
-            valueRange = 4f..10f,
-            steps = 5,
-            labelFormatter = { sustainedDurationLabel.format(it) },
-            onValueChangeFinished = { onSustainedApproachDurationSecondsChanged(it.roundToInt()) },
-            defaultValue = defaultSustainedDuration,
-            onResetToDefault = onResetSustainedApproachDurationSeconds,
-            resetContentDescription = resetToDefaultLabel,
-        )
         DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -190,7 +180,6 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                 modifier = Modifier.semantics { contentDescription = skipFirstLapSwitchDescription },
             )
         }
-        DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_readout_subtitle))
         val carLeftRightChipLabel = stringResource(Res.string.vehicle_approach_car_left_right_chip_label)
         val leftRightApproachChipLabel = stringResource(Res.string.vehicle_approach_left_right_approach_chip_label)
         val startReadoutTypeLabels = mapOf(
@@ -201,7 +190,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             title = stringResource(Res.string.vehicle_approach_start_readout_switch_label),
             checked = uiState.startReadoutEnabled,
             onCheckedChange = onStartReadoutEnabledChanged,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = startReadoutTypeLabels.values.toList(),
@@ -226,19 +215,32 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             title = stringResource(Res.string.vehicle_approach_sustained_readout_switch_label),
             checked = uiState.sustainedReadoutEnabled,
             onCheckedChange = onSustainedReadoutEnabledChanged,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
-                DetailPaneCardChips(
-                    chipLabels = sustainedReadoutTypeLabels.values.toList(),
-                    selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
-                    chipEnabled = uiState.sustainedReadoutEnabled,
-                    onChipClick = { label ->
-                        sustainedReadoutTypeLabels
-                            .entries
-                            .firstOrNull { it.value == label }
-                            ?.let { onSustainedReadoutTypeChanged(it.key) }
-                    },
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneCardChips(
+                        chipLabels = sustainedReadoutTypeLabels.values.toList(),
+                        selectedChipLabels = setOfNotNull(sustainedReadoutTypeLabels[uiState.sustainedReadoutType]),
+                        chipEnabled = uiState.sustainedReadoutEnabled,
+                        onChipClick = { label ->
+                            sustainedReadoutTypeLabels
+                                .entries
+                                .firstOrNull { it.value == label }
+                                ?.let { onSustainedReadoutTypeChanged(it.key) }
+                        },
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    ThresholdSlider(
+                        value = uiState.sustainedApproachDurationSeconds.toFloat(),
+                        valueRange = 4f..10f,
+                        steps = 5,
+                        labelFormatter = { sustainedDurationLabel.format(it) },
+                        onValueChangeFinished = { onSustainedApproachDurationSecondsChanged(it.roundToInt()) },
+                        defaultValue = defaultSustainedDuration,
+                        onResetToDefault = onResetSustainedApproachDurationSeconds,
+                        resetContentDescription = resetToDefaultLabel,
+                    )
+                }
             },
         )
     }
