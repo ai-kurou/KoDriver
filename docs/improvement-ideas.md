@@ -54,12 +54,6 @@
   **課題**: `bufferFlow` は 16ms ごとに共有メモリ全体（約 324KB）を heap の `ByteBuffer` へコピーしており、購読中は約 20MB/s のアロケーションが発生する。ネイティブバッファを下流に渡さない設計自体は安全のため妥当だが、GC 負荷としては大きい。
   **改善案**: 実測で GC 負荷が問題になった場合に、ダブルバッファの再利用や、下流が必要とするセグメント（Scoring / Telemetry の一部）だけを構造体に読み出してから emit する方式を検討する。現状は「計測してから」の課題として記録に留める。
 
-## feature:server-connection
-
-- **対象**: `feature/server-connection/src/commonMain/kotlin/kurou/kodriver/feature/serverconnection/ServerConnectionViewModel.kt`
-  **課題**: バージョン不一致警告の表示判定が `map { }` 内の副作用（`versionMismatchWarningShown` フラグ更新と `_showVersionMismatchBottomSheet.update`）で行われており、CLAUDE.md の「宣言的に状態を組み立てる」規則から外れている。`WhileSubscribed` のため画面の再購読で upstream が再実行される点は `versionMismatchWarningShown` で守られているが、collect 中の副作用は挙動が追いにくい。
-  **改善案**: 「初回の不一致検知で一度だけ表示する」ロジックを `distinctUntilChanged` + `runningFold` 等の演算子、または UseCase 側の状態として宣言的に表現する。
-
 ## デザイン（UI/UX・designsystem）
 
 - **対象**: `core/designsystem/.../Theme.kt`

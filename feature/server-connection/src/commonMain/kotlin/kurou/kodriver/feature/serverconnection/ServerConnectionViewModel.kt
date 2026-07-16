@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.Simulator
@@ -35,15 +37,24 @@ class ServerConnectionViewModel(
     private val appVersion: String,
 ) : ViewModel() {
 
-    private val _showVersionMismatchBottomSheet = MutableStateFlow(false)
+    private val showVersionMismatchBottomSheetFlow = MutableStateFlow(false)
     private var versionMismatchWarningShown = false
 
-    private val baseUiStateFlow = observeKoDriverServerConnection(appVersion)
-        .map { state ->
+    private val connectionStateFlow = observeKoDriverServerConnection(appVersion)
+        .onEach { state ->
             if (state.isVersionMismatch && !versionMismatchWarningShown) {
                 versionMismatchWarningShown = true
-                _showVersionMismatchBottomSheet.update { true }
+                showVersionMismatchBottomSheetFlow.update { true }
             }
+        }
+        .shareIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            replay = 1,
+        )
+
+    private val baseUiStateFlow = connectionStateFlow
+        .map { state ->
             ServerConnectionUiState(
                 connectionStatus = state.connectionStatus.toUiStatus(),
                 requiresKoDriverServer = state.requiresKoDriverServer,
@@ -54,7 +65,7 @@ class ServerConnectionViewModel(
 
     val uiState: StateFlow<ServerConnectionUiState> = combine(
         baseUiStateFlow,
-        _showVersionMismatchBottomSheet,
+        showVersionMismatchBottomSheetFlow,
     ) { base, showBottomSheet ->
         base.copy(showVersionMismatchBottomSheet = showBottomSheet, appVersion = appVersion)
     }.stateIn(
@@ -64,7 +75,7 @@ class ServerConnectionViewModel(
     )
 
     fun dismissVersionMismatchBottomSheet() {
-        _showVersionMismatchBottomSheet.update { false }
+        showVersionMismatchBottomSheetFlow.update { false }
     }
 }
 

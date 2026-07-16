@@ -355,4 +355,27 @@ class ServerConnectionViewModelTest {
         confirmVerified(serverIpRepository, versionRepository, simulatorRepository)
         collectionJob.cancelAndJoin()
     }
+
+    @Test
+    fun `バージョン不一致のボトムシートはdismiss後に再購読しても再表示されない`() = runTest {
+        every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+        coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
+        val viewModel = createViewModel(appVersion = "1.0.0")
+        var collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+        dispatcher.scheduler.runCurrent()
+        viewModel.dismissVersionMismatchBottomSheet()
+        dispatcher.scheduler.runCurrent()
+        collectionJob.cancelAndJoin()
+
+        collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+        dispatcher.scheduler.runCurrent()
+
+        assertFalse(viewModel.uiState.first().showVersionMismatchBottomSheet)
+        verify(exactly = 1) { serverIpRepository.serverIp() }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        coVerify(exactly = 2) { versionRepository.fetchVersion("192.168.1.1") }
+        confirmVerified(serverIpRepository, versionRepository, simulatorRepository)
+        collectionJob.cancelAndJoin()
+    }
 }
