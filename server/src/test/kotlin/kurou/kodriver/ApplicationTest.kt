@@ -7,10 +7,14 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import io.ktor.websocket.Frame
+import io.ktor.websocket.close
 import io.ktor.websocket.readText
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.CountLapFlag
@@ -148,6 +152,32 @@ class ApplicationTest {
 
             assertEquals(greenFlagJson, first)
             assertEquals(yellowFlagJson, second)
+        }
+    }
+
+    @Test
+    fun `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする`() = testApplication {
+        val repository = CancellableLmuWindowsFlagRepository()
+        application {
+            module(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                    EmptyTyreCarcassTemperatureRepository,
+                ),
+                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/flags") {
+            close()
+        }
+
+        withTimeout(1_000) {
+            repository.cancelled.await()
         }
     }
 
@@ -535,6 +565,18 @@ private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
 
     fun emit(data: LmuWindowsRaceFlagsData) {
         channel.trySend(data).getOrThrow()
+    }
+}
+
+private class CancellableLmuWindowsFlagRepository : LmuWindowsFlagRepository {
+    val cancelled = CompletableDeferred<Unit>()
+
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = flow {
+        try {
+            awaitCancellation()
+        } finally {
+            cancelled.complete(Unit)
+        }
     }
 }
 
