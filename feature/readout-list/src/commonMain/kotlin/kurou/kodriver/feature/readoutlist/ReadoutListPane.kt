@@ -30,9 +30,7 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -92,6 +90,7 @@ import kodriver.feature.readoutlist.generated.resources.simulator_label
 import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.ListPaneCard
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -240,12 +239,13 @@ internal fun ReadoutListPane(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(vertical = 16.dp),
         ) {
             item(key = "simulatorSelector") {
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 ) {
                     OutlinedTextField(
                         value = uiState.selectedSimulator
@@ -298,7 +298,7 @@ internal fun ReadoutListPane(
             }
             if (uiState.selectedSimulator != null) {
                 item(key = "priorityHint") {
-                    PriorityHintRow(modifier = Modifier.padding(top = 16.dp))
+                    PriorityHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
                 }
                 itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
@@ -314,12 +314,10 @@ internal fun ReadoutListPane(
                             animationSpec = tween(durationMillis = 500),
                             label = "cardContainerColor",
                         )
-                        ElevatedCard(
+                        ListPaneCard(
                             onClick = { onItemClick(item) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            colors = CardDefaults.elevatedCardColors(containerColor = cardContainerColor),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            containerColor = cardContainerColor,
                         ) {
                             ListItem(
                                 headlineContent = { Text(itemDisplayName(item)) },
