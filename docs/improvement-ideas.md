@@ -36,18 +36,6 @@
 
 ## mDNS（server / feature:other-server-ip-detail）
 
-- **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`
-  **課題**: `start()` は既存の `JmDNS` インスタンスを close せずに新規生成して上書きする。現状 `KoDriverServer.start()` は起動時に1回しか呼ばれないため実害はないが、将来サーバー再起動フローができた場合に前のマルチキャストソケットがリークする。
-  **改善案**: `start()` 冒頭で既存インスタンスがあれば `stop()` を呼ぶ、または多重起動を防ぐガードを入れる。
-
-- **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`、`feature/other-server-ip-detail/src/jvmMain/kotlin/kurou/kodriver/feature/otherserveripdetail/PlatformWindowsServerDiscovery.jvm.kt`
-  **課題**: mDNSサービスタイプ文字列 `_kodriver._tcp.local.` がサーバー側・クライアント側それぞれに private 定数として個別定義されており、共有定数化されていない。将来どちらかだけ値を変更すると検出できなくなる。
-  **改善案**: 両モジュールから参照できる共通定数（例: `core:domain` 等）へ抽出する。
-
-- **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`
-  **課題**: mDNSのインスタンス名に `InetAddress.getLocalHost().hostName` を使用しているが、環境によってはFQDN（ドット区切り）が返ることがあり、mDNSサービス名にドットが含まれると `ServiceInfo.create` での名前解釈が崩れる可能性がある。
-  **改善案**: ホスト名のサニタイズ（ドット除去など）を検討する。
-
 - **対象**: `feature/other-server-ip-detail/src/androidMain/kotlin/kurou/kodriver/feature/otherserveripdetail/PlatformWindowsServerDiscovery.android.kt`
   **課題**: `NsdManager` ベースの検出実装で、実機のDoze/Wi-Fiスリープ設定次第では検出が不安定になる可能性がある既知の事例がある。また、プラットフォーム固有の外部APIを直接呼ぶためユニットテストの対象外（`CLAUDE.md`のテスト方針に基づく除外）となっており、実機確認でしか動作を担保できない。
   **改善案**: Doze/Wi-Fiスリープ中の実機動作確認を行う。必要であれば結合テスト（instrumented test）の追加を検討する。

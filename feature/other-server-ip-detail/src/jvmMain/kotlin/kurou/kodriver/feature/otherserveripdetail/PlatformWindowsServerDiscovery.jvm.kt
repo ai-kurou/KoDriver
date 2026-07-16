@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherserveripdetail
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kurou.kodriver.domain.MdnsConstants
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import java.io.IOException
@@ -11,7 +12,7 @@ import javax.jmdns.JmDNS
 import javax.jmdns.ServiceEvent
 import javax.jmdns.ServiceListener
 
-private const val SERVICE_TYPE = "_kodriver._tcp.local."
+private val SERVICE_TYPE = MdnsConstants.KO_DRIVER_SERVICE_TYPE
 
 internal class JmdnsWindowsServerDiscovery(
     private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },

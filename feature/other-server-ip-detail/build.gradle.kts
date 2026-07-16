@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.core.designsystem)
         }
         jvmMain.dependencies {
+            implementation(projects.core.domain)
             implementation(libs.jmdns)
         }
         jvmTest.dependencies {
