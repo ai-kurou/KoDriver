@@ -80,6 +80,7 @@ fun KoDriverTheme(
 ) {
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
+        typography = KoDriverTypography,
         content = content,
     )
 }

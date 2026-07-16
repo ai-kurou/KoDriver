@@ -34,10 +34,6 @@
 
 ## デザイン（UI/UX・designsystem）
 
-- **対象**: `core/designsystem/.../Theme.kt`
-  **課題**: `MaterialTheme` に `colorScheme` のみ渡しており、`typography` / `shapes` が Material3 デフォルトのまま。画面ごとに `fontSize` や `FontWeight` を直接指定し始めるとスタイルが分散し、後からアプリ全体の文字スケールを調整できなくなる。
-  **改善案**: designsystem に `KoDriverTypography`（必要なら `Shapes` も）を定義して `MaterialTheme` へ渡し、feature 側は `MaterialTheme.typography.*` だけを参照する運用にする。
-
 - **対象**: `core/designsystem/.../Color.kt` / `Theme.kt`（ライトテーマ）
   **課題**: ライトテーマの `primary = Yellow40` に対して `onPrimary = Neutral99`（ほぼ白）を組み合わせている。黄色系 primary × 白文字は WCAG のコントラスト比 4.5:1 を満たさないことが多く、ボタンラベル等の可読性が低い恐れがある。secondary（Lime）・tertiary（Neon）も同様の懸念がある。
   **改善案**: 主要な色ペア（primary/onPrimary など）のコントラスト比を実測し、不足していれば `onPrimary` を暗色（Yellow10 等）へ変更する。スクリーンショットテストとは別に、色定義だけのコントラスト検証ユニットテストを designsystem に置くことも検討する。
