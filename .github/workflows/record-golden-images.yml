@@ -11,15 +11,40 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  record:
+  record-jvm:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.ref_name }}
-          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Record JVM golden images
+        run: ./gradlew recordRoborazziJvmTests
+
+      - name: Upload JVM snapshots
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: jvm-snapshots
+          path: "**/jvmTest/snapshots/*.png"
+          if-no-files-found: ignore
+
+  record-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:
@@ -31,8 +56,36 @@ jobs:
       - name: Install Japanese fonts
         run: sudo apt-get install -y fonts-noto-cjk
 
-      - name: Record golden images
-        run: ./gradlew recordRoborazziJvmTests recordRoborazziAndroidHostTests
+      - name: Record Android golden images
+        run: ./gradlew recordRoborazziAndroidHostTests
+
+      - name: Upload Android snapshots
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: android-snapshots
+          path: "**/androidHostTest/snapshots/*.png"
+          if-no-files-found: ignore
+
+  commit:
+    needs: [record-jvm, record-android]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.ref_name }}
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Download JVM snapshots
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: jvm-snapshots
+
+      - name: Download Android snapshots
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: android-snapshots
 
       - name: Commit updated golden images
         run: |
