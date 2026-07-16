@@ -36,18 +36,6 @@
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
 
-## core:data（WebSocket クライアント）
-
-- **対象**: `core/data/src/androidMain/kotlin/kurou/kodriver/data/WebSocketLmuWindows*Repository.kt`（5 ファイル）
-  **課題**: 「serverIp を `flatMapLatest` → `client.webSocket` 接続 → Text フレームを JSON デコードして emit → 失敗時 `delay` 後リトライ」という構造が 5 リポジトリでほぼ同一のまま重複している。また接続失敗の `catch (_: Exception) {}` が完全に握りつぶしで、接続できない原因（ポート違い・ファイアウォール等）の調査手段がない。各リポジトリが `HttpClient` を個別生成しており、`close()` も呼ばれない。
-  **改善案**: 「path とデシリアライザを渡すと再接続付き Flow を返す」共通ヘルパー（例: `WebSocketFlowFactory`）に集約する。接続失敗時は少なくともデバッグログを残す。`HttpClient` は DI で単一インスタンスを共有する。
-
-## core:lmu-windows-data
-
-- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/LmuWindowsSharedMemorySource.kt`
-  **課題**: `bufferFlow` は 16ms ごとに共有メモリ全体（約 324KB）を heap の `ByteBuffer` へコピーしており、購読中は約 20MB/s のアロケーションが発生する。ネイティブバッファを下流に渡さない設計自体は安全のため妥当だが、GC 負荷としては大きい。
-  **改善案**: 実測で GC 負荷が問題になった場合に、ダブルバッファの再利用や、下流が必要とするセグメント（Scoring / Telemetry の一部）だけを構造体に読み出してから emit する方式を検討する。現状は「計測してから」の課題として記録に留める。
-
 ## デザイン（UI/UX・designsystem）
 
 - **対象**: `core/designsystem/.../Theme.kt`
