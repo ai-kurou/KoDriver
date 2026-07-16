@@ -42,16 +42,6 @@
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
 
-## core:gt7-ps5-data
-
-- **対象**: `core/gt7-ps5-data/src/jvmAndroidMain/kotlin/kurou/kodriver/core/gt7ps5data/datasource/Gt7Ps5UdpSource.kt`
-  **課題（バグ候補・優先度高）**: `udpPacketFlow` の受信ループで `DatagramPacket` の length をループごとにリセットしていない。`DatagramSocket.receive` は受信したバイト数に `length` を縮めるため、一度でも `PACKET_MIN_SIZE`（0x170）より短いパケット（LAN 内の迷子パケットや将来のパケットフォーマット差異など）を受信すると、以降のすべての受信がその短い length に切り詰められる。切り詰められたパケットは `decrypt` のサイズチェックで捨てられ続けるため、ソケットを開き直すまで GT7 テレメトリが恒久的に止まる。
-  **改善案**: `socket.receive(dgram)` の直前に `dgram.setLength(buf.size)` を入れてループごとに受信バッファ長をリセットする。短いパケット受信後も正常パケットを受信できることを `FakeUdpSocket` で再現するテストを追加する。
-
-- **対象**: `core/gt7-ps5-data/src/jvmAndroidMain/kotlin/kurou/kodriver/core/gt7ps5data/datasource/Gt7Ps5UdpSource.kt`
-  **課題**: `retryWhen` がリトライ対象とするのは `BindException` のみで、それ以外の `IOException`（Wi-Fi 切替・スリープ復帰時の `send` 失敗、`SocketException: Network is unreachable` 等）が発生すると flow が例外終了する。この flow は `shareIn(scope, WhileSubscribed)` の上流なので、例外は共有コルーチン側で発生し、購読者にエラーとして伝わらないまま受信が復帰不能になる（アプリ再起動か consoleAddress 変更まで回復しない）。また初回の `socket.send(HEARTBEAT_PAYLOAD, ...)` は try-catch の外にあり、宛先不達で即例外になる経路がある。
-  **改善案**: `retryWhen` を `IOException` 全般（またはリトライ可能な例外の集合）に広げ、遅延付きで再接続する。初回 heartbeat 送信も受信ループと同じ例外処理の中へ移す。
-
 ## server（WebSocket 配信）
 
 - **対象**: `server/src/main/kotlin/kurou/kodriver/FlagWebSocket.kt` ほか各 `*WebSocket.kt`

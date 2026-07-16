@@ -71,6 +71,7 @@ internal class Gt7Ps5UdpSource(
 
             while (true) {
                 try {
+                    dgram.length = buf.size
                     socket.receive(dgram)
                     val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue
                     val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)
@@ -90,7 +91,9 @@ internal class Gt7Ps5UdpSource(
             }
         }
     }.retryWhen { cause, attempt ->
-        if (cause is java.net.BindException) {
+        // Wi-Fi切替・スリープ復帰時のsend失敗、ポート競合(BindException)など、
+        // 一時的なネットワーク起因のIOExceptionは再接続を試みる
+        if (cause is java.io.IOException) {
             delay(BIND_RETRY_DELAY_MS * (attempt + 1))
             true
         } else {
