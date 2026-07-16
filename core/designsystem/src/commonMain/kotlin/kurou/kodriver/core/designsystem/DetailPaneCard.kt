@@ -31,8 +31,8 @@ fun DetailPaneCard(
     title: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    bottomContent: @Composable () -> Unit = {},
 ) {
     DetailPaneCardLayout(
         title = title,
@@ -54,8 +54,8 @@ fun DetailPaneCard(
 @Composable
 fun DetailPaneCard(
     title: String,
+    bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    bottomContent: @Composable () -> Unit = {},
 ) {
     DetailPaneCardLayout(
         title = title,
@@ -179,6 +179,14 @@ private fun DetailPaneCardPreview() {
             DetailPaneCard(
                 title = "自己ベストラップ更新",
                 modifier = Modifier.padding(16.dp),
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf("自己ベストラップ更新"),
+                        selectedChipLabels = setOf("自己ベストラップ更新"),
+                        chipEnabled = true,
+                        onChipClick = {},
+                    )
+                },
             )
         }
     }

@@ -20,16 +20,19 @@ fun DetailPaneOverview(
     text: String,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-    )
+    DetailPaneBodyText(text = text, modifier = modifier)
 }
 
 @Composable
 fun DetailPaneDescription(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    DetailPaneBodyText(text = text, modifier = modifier)
+}
+
+@Composable
+private fun DetailPaneBodyText(
     text: String,
     modifier: Modifier = Modifier,
 ) {
