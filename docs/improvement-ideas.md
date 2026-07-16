@@ -136,9 +136,3 @@
 - **対象**: `.github/`（依存自動更新）
   **課題**: GitHub Actions は SHA ピン留めされているが `dependabot.yml` / Renovate 設定がなく、actions・Gradle ライブラリの更新が手動任せになっている。CLAUDE.md は「ライブラリは最新安定版を使う」方針だが、それを支える自動化がない。
   **改善案**: Dependabot（`github-actions` + `gradle` エコシステム）または Renovate を導入し、更新 PR を自動作成させる。
-
-## feature:gt7-ps5-narrator
-
-- **対象**: `feature/gt7-ps5-narrator/src/androidMain/kotlin/kurou/kodriver/feature/gt7ps5narrator/AndroidSoundPlayer.kt`
-  **課題**: `MediaPlayer` に `setOnErrorListener` を設定していないため、prepare / 再生中にエラーが起きると `onCompletion` が呼ばれず `suspendCancellableCoroutine` が永久に resume されない恐れがある。LMU 側の `AndroidSoundPlayer`（SoundPool 版）で修正した「再生ジョブの永久サスペンド」と同型の潜在バグ。
-  **改善案**: `setOnErrorListener` でエラー時にも `cont.resume` する。あわせて `withTimeoutOrNull` による保険を検討する。
