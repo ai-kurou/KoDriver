@@ -2,9 +2,11 @@ package kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -14,15 +16,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.Res
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_description
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_enabled
-import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_readout_subtitle
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_reset_to_default
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_slider_label
-import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_subtitle
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_voice_type
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -67,29 +66,33 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneDescription(text = stringResource(Res.string.remaining_fuel_laps_description))
-        DetailPaneSubtitle(text = stringResource(Res.string.remaining_fuel_laps_subtitle))
-        ThresholdSlider(
-            value = uiState.remainingFuelLaps.toFloat(),
-            valueRange = MINIMUM_REMAINING_FUEL_LAPS..MAXIMUM_REMAINING_FUEL_LAPS,
-            labelFormatter = { sliderLabel.format(it.roundToInt()) },
-            onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
-            steps = 3,
-            defaultValue = DEFAULT_REMAINING_FUEL_LAPS.toFloat(),
-            onResetToDefault = onResetRemainingFuelLaps,
-            resetContentDescription = resetToDefaultLabel,
+        DetailPaneBodyText(
+            text = stringResource(Res.string.remaining_fuel_laps_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
-        DetailPaneSubtitle(text = stringResource(Res.string.remaining_fuel_laps_readout_subtitle))
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
-                DetailPaneCardChips(
-                    chipLabels = listOf(voiceTypeLabel),
-                    selectedChipLabels = setOf(voiceTypeLabel),
-                    chipEnabled = true,
-                    onChipClick = { onPreviewClicked() },
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneCardChips(
+                        chipLabels = listOf(voiceTypeLabel),
+                        selectedChipLabels = setOf(voiceTypeLabel),
+                        chipEnabled = true,
+                        onChipClick = { onPreviewClicked() },
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    ThresholdSlider(
+                        value = uiState.remainingFuelLaps.toFloat(),
+                        valueRange = MINIMUM_REMAINING_FUEL_LAPS..MAXIMUM_REMAINING_FUEL_LAPS,
+                        labelFormatter = { sliderLabel.format(it.roundToInt()) },
+                        onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
+                        steps = 3,
+                        defaultValue = DEFAULT_REMAINING_FUEL_LAPS.toFloat(),
+                        onResetToDefault = onResetRemainingFuelLaps,
+                        resetContentDescription = resetToDefaultLabel,
+                    )
+                }
             },
         )
     }

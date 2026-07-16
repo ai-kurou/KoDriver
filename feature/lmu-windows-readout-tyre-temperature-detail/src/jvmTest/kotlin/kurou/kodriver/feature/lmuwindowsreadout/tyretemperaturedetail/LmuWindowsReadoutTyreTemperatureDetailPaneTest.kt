@@ -45,7 +45,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
             }
         }
 
-        rule.onNodeWithContentDescription("閾値の説明を表示").performClick()
+        rule.onNodeWithContentDescription("高温閾値の説明を表示").performClick()
 
         rule.onAllNodesWithText("カーカス温度", substring = true)[0].assertIsDisplayed()
     }

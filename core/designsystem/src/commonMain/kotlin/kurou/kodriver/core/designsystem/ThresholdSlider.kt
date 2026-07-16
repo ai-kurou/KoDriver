@@ -4,7 +4,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.RestartAlt
@@ -41,7 +40,7 @@ fun ThresholdSlider(
     val isDifferentFromDefault = defaultValue != null && abs(sliderValue - defaultValue) > 0.001f
     val resetButtonAlpha by animateFloatAsState(targetValue = if (isDifferentFromDefault) 1f else 0f)
 
-    Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = labelFormatter(sliderValue),
