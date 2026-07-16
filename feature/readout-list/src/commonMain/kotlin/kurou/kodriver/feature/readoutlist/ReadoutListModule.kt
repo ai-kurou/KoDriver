@@ -3,6 +3,7 @@ package kurou.kodriver.feature.readoutlist
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -26,5 +27,6 @@ val readoutListModule = module {
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { SaveReadoutEnabledStateUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
+    factory { ResolveReadoutOrderUseCase() }
     factory { SaveReadoutOrderUseCase(get()) }
 }
