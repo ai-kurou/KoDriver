@@ -36,12 +36,6 @@
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
 
-## feature:server-connection
-
-- **対象**: `feature/server-connection/src/commonMain/kotlin/kurou/kodriver/feature/serverconnection/ServerConnectionViewModel.kt`
-  **課題**: バージョン不一致警告の表示判定が `map { }` 内の副作用（`versionMismatchWarningShown` フラグ更新と `_showVersionMismatchBottomSheet.update`）で行われており、CLAUDE.md の「宣言的に状態を組み立てる」規則から外れている。`WhileSubscribed` のため画面の再購読で upstream が再実行される点は `versionMismatchWarningShown` で守られているが、collect 中の副作用は挙動が追いにくい。
-  **改善案**: 「初回の不一致検知で一度だけ表示する」ロジックを `distinctUntilChanged` + `runningFold` 等の演算子、または UseCase 側の状態として宣言的に表現する。
-
 ## デザイン（UI/UX・designsystem）
 
 - **対象**: `core/designsystem/.../Theme.kt`
