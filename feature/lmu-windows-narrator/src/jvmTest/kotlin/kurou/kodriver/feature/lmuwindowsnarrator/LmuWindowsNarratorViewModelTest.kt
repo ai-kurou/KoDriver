@@ -1267,7 +1267,7 @@ private fun fakeTelemetryData(
         lastLapTimeMs = 0L,
         bestLapTimeMs = bestLapTimeMs,
         sector1Ms = 0L,
-        sector2Ms = 0L,
+        sector1And2Ms = 0L,
         currentLap = currentLap,
         maxLaps = 0,
     ),

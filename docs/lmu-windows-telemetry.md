@@ -254,7 +254,7 @@ rF2 プラグイン側にのみ存在する構造体（`rF2Rules`, `rF2MultiRule
 | `mUpgradePack[16]` | uint8[16] | +508 | — | アップグレードパック情報（エンコード済み） |
 | `mPitLapDist` | float | +524 | m | ピットロケーションのラップ距離位置 |
 | `mBestLapSector1` | float | +528 | s | ベストラップ時のセクター1タイム（ベストセクター1とは限らない） |
-| `mBestLapSector2` | float | +532 | s | ベストラップ時のセクター2タイム（ベストセクター2とは限らない） |
+| `mBestLapSector2` | float | +532 | s | ベストラップ時のセクター1+2累積タイム（ベストセクター2とは限らない） |
 | `mSteamID` | uint64 | +536 | — | 現在のドライバーの SteamID（あれば） |
 | `mVehFilename[32]` | char[32] | +544 | — | 車両識別用 veh ファイル名 |
 | `mAttackMode` | int16 | +576 | — | アタックモード |

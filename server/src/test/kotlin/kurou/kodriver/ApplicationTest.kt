@@ -611,7 +611,7 @@ private val timingTelemetryData1 = LmuWindowsTelemetryData(
         lastLapTimeMs = 90_000L,
         bestLapTimeMs = 88_000L,
         sector1Ms = 30_000L,
-        sector2Ms = 28_000L,
+        sector1And2Ms = 28_000L,
         currentLap = 3,
         maxLaps = 10,
     ),
@@ -627,7 +627,7 @@ private val timingTelemetryData2 = timingTelemetryData1.copy(
         lastLapTimeMs = 91_000L,
         bestLapTimeMs = 88_000L,
         sector1Ms = 31_000L,
-        sector2Ms = 29_000L,
+        sector1And2Ms = 29_000L,
         currentLap = 4,
         maxLaps = 10,
     ),
@@ -635,8 +635,8 @@ private val timingTelemetryData2 = timingTelemetryData1.copy(
 
 private const val timingJson1 =
     """{"currentLapTimeMs":65000,"lastLapTimeMs":90000,"bestLapTimeMs":88000,""" +
-        """"sector1Ms":30000,"sector2Ms":28000,"currentLap":3,"maxLaps":10}"""
+        """"sector1Ms":30000,"sector1And2Ms":28000,"currentLap":3,"maxLaps":10}"""
 
 private const val timingJson2 =
     """{"currentLapTimeMs":70000,"lastLapTimeMs":91000,"bestLapTimeMs":88000,""" +
-        """"sector1Ms":31000,"sector2Ms":29000,"currentLap":4,"maxLaps":10}"""
+        """"sector1Ms":31000,"sector1And2Ms":29000,"currentLap":4,"maxLaps":10}"""

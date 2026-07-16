@@ -169,7 +169,7 @@ private val TIMING_JSON = """
         "lastLapTimeMs": 61000,
         "bestLapTimeMs": 60000,
         "sector1Ms": 20000,
-        "sector2Ms": 20000,
+        "sector1And2Ms": 20000,
         "currentLap": 2,
         "maxLaps": 10
     }

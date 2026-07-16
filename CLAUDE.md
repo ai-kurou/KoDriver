@@ -68,7 +68,7 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 `:feature:other-server-ip-detail` の接続先 IP 入力画面（detailPane）は、画面が表示されている間だけ `WindowsServerDiscovery`（プラットフォーム実装: JVM は JmDNS、Android は `NsdManager`）で上記の mDNS 広告を検出する。`OtherServerIpDetailViewModel` は検出結果を `SharingStarted.WhileSubscribed` で `uiState` の購読に連動させており、アプリ起動時ではなく detailPane 表示中のみ検出が動作する。検出できた場合はホスト名・IP アドレスを選べるダイアログを自動表示し、「選択する」で選択した IP アドレスを入力欄へ自動入力する。
 
 ### TimingData のラップタイム
-`LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
+`LmuWindowsMapper` は Scoring セグメントのプレイヤー車両からラップタイム系フィールド（`currentLapTimeMs`, `lastLapTimeMs`, `bestLapTimeMs`, `sector1Ms`, `sector1And2Ms`）を取得する。Scoring のプレイヤー車両が見つからない場合は `0L` にフォールバックする。
 
 ### オフセット情報
 `LmuWindowsMapper.kt` のコメントに pyLMUSharedMemory の ctypes レイアウト（`_pack_=4`）を記載済み。

@@ -24,16 +24,6 @@
   **課題**: `recordRoborazziXxxTests` と `verifyRoborazziXxxTests` を同一ジョブ内で連続実行しており、両者とも各モジュールの `testJvmTest` / `testAndroidHostTest`（スクリーンショット以外も含む単体テスト全体）に依存するため、`unit-test` ジョブ（`koverXmlReport` 経由）と合わせて実質同じテストスイートがCI全体で3回実行されている。さらに、CIが自動生成する `chore: update golden images` コミット（スナップショットPNGの一括更新）が同一ジョブ内の `verify` ステップ実行前に発生すると、多くのモジュールでGradleの `UP-TO-DATE` 判定が広範囲に無効化され、本来スキップできるテストが軒並み再実行されて実行時間が数分〜15分超まで跳ね上がることがある（PR #561で timeout-minutes を 10→15→25 に順次引き上げる事態が発生）。
   **改善案（一部対応済み）**: record用ジョブとverify用ジョブを分離した後、さらに record を通常のPR push / main mergeから外し、`workflow_dispatch` で必要なときだけ起動する方式へ変更した。通常のPR pushでは `verify` のみを他ジョブと並列実行し、golden画像が古ければ通常どおり失敗させる。開発者は失敗を確認した上で明示的に `Record Golden Images` workflow を起動し、CI(Linux)上で生成した画像を自動コミットさせる。これにより、(1) 生成環境はLinux CIのまま維持でき、(2) 通常のPRでは record→verify の直列待ちが発生せず実行時間を短縮でき、(3) 意図しない見た目変化はverify失敗として検知でき自動コミットで握りつぶされない。ただし `unit-test` ジョブとの重複実行（同じテストスイートがCI全体で複数回走る点）は未解消であり、Roborazziタスクの入力宣言を見直してスナップショット全体ではなく変更されたファイル単位で正しく `UP-TO-DATE` 判定できるようにするなど、引き続き重複実行の削減を検討する。
 
-## core:lmu-windows-data
-
-- **対象**: `core/lmu-windows-data/.../mapper/LmuWindowsMapper.kt`、`core/domain/.../model/LmuWindowsTimingData.kt`
-  **課題**: `LmuWindowsTimingData.sector2Ms` には共有メモリの `mBestLapSector2` を格納しているが、このフィールドは S1+S2 の累積値であり、セクター2単体のタイムではない。フィールド名からは S2 単体に見えるため、将来これを表示・読み上げに使うと誤ったタイムを扱うバグになる（現時点で `sector1Ms` / `sector2Ms` を消費する実装はなく実害は未発生）。また `mBestLapSector1/2` は「ベストセクタータイム」ではなく「ベストラップ中のセクタータイム」である点も要注意。
-  **改善案**: 消費側を実装するときに `sector2Ms - sector1Ms` で S2 単体を算出するか、フィールド名を `sector1And2Ms` などの累積値であることが分かる名前に変更する。詳細は `docs/lmu-windows-telemetry.md` の注意事項を参照。
-
-- **対象**: `core/lmu-windows-data/.../mapper/LmuWindowsMapper.kt`
-  **課題**: `MAX_SCORING_VEHICLES = 128` は rF2 プラグイン由来の値で、LMU の `vehScoringInfo` 配列は 104 要素（`MAX_MAPPED_VEHICLES`）。`mNumVehicles` が万一 104 を超える値だった場合、105 台目以降の探索は配列末尾を越えて `scoringStream` 領域を車両データとして読むことになる（実際に LMU が 104 超を返す可能性は低く、実害はほぼない）。
-  **改善案**: `MAX_SCORING_VEHICLES` を 104 に修正する。
-
 ## mDNS（server / feature:other-server-ip-detail）
 
 - **対象**: `server/src/main/kotlin/kurou/kodriver/KoDriverServiceAdvertiser.kt`
@@ -97,10 +87,6 @@
   **改善案**: 「path とデシリアライザを渡すと再接続付き Flow を返す」共通ヘルパー（例: `WebSocketFlowFactory`）に集約する。接続失敗時は少なくともデバッグログを残す。`HttpClient` は DI で単一インスタンスを共有する。
 
 ## core:lmu-windows-data
-
-- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/WindowsSharedMemoryReader.kt`
-  **課題**: `open()` は既に open 済みの状態で呼ばれると、前の `handle` / `mappedPointer` を閉じずに上書きし、ハンドルとマップビューがリークする。現状の呼び出し元（`LmuWindowsSharedMemorySource`）は `isOpen()` チェックや `close()` 先行で守っているため実害はないが、Reader 単体としては誤用に弱い。
-  **改善案**: `open()` 冒頭で `isOpen()` なら `close()` を呼ぶ（または true を即返す）防御を入れる。
 
 - **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/LmuWindowsSharedMemorySource.kt`
   **課題**: `bufferFlow` は 16ms ごとに共有メモリ全体（約 324KB）を heap の `ByteBuffer` へコピーしており、購読中は約 20MB/s のアロケーションが発生する。ネイティブバッファを下流に渡さない設計自体は安全のため妥当だが、GC 負荷としては大きい。
