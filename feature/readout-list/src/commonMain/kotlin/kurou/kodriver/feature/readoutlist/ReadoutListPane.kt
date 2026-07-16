@@ -245,7 +245,7 @@ internal fun ReadoutListPane(
                 ExposedDropdownMenuBox(
                     expanded = expanded,
                     onExpandedChange = { expanded = it },
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp),
                 ) {
                     OutlinedTextField(
                         value = uiState.selectedSimulator
@@ -298,7 +298,7 @@ internal fun ReadoutListPane(
             }
             if (uiState.selectedSimulator != null) {
                 item(key = "priorityHint") {
-                    PriorityHintRow(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp))
+                    PriorityHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
                 }
                 itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
