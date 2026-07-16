@@ -2,7 +2,6 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -36,7 +35,7 @@ fun DetailPaneSubtitle(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.height(IntrinsicSize.Min).padding(vertical = 8.dp),
+        modifier = modifier.height(64.dp).padding(vertical = 8.dp),
     ) {
         Box(
             modifier = Modifier
