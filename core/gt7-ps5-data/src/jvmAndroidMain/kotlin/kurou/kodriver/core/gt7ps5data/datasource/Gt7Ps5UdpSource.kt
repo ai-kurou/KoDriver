@@ -71,6 +71,7 @@ internal class Gt7Ps5UdpSource(
 
             while (true) {
                 try {
+                    dgram.length = buf.size
                     socket.receive(dgram)
                     val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue
                     val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)

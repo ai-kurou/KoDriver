@@ -29,8 +29,11 @@ internal class FakeUdpSocket : UdpSocket {
             ?: throw SocketTimeoutException("FakeUdpSocket: no more responses")
         when (response) {
             is FakeResponse.Packet -> {
-                response.data.copyInto(packet.data, 0, 0, response.data.size)
-                packet.length = response.data.size
+                // 実際の DatagramSocket.receive は packet.length を超えるバイト数を切り詰め、
+                // 実際に受信できたバイト数へ packet.length を書き換える
+                val copyLength = minOf(response.data.size, packet.length)
+                response.data.copyInto(packet.data, 0, 0, copyLength)
+                packet.length = copyLength
             }
             FakeResponse.Timeout -> throw SocketTimeoutException("FakeUdpSocket: simulated timeout")
         }
