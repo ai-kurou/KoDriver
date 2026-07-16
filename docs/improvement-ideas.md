@@ -18,12 +18,6 @@
 
 ---
 
-## mDNS（server / feature:other-server-ip-detail）
-
-- **対象**: `feature/other-server-ip-detail/src/androidMain/kotlin/kurou/kodriver/feature/otherserveripdetail/PlatformWindowsServerDiscovery.android.kt`
-  **課題**: `NsdManager` ベースの検出実装で、実機のDoze/Wi-Fiスリープ設定次第では検出が不安定になる可能性がある既知の事例がある。また、プラットフォーム固有の外部APIを直接呼ぶためユニットテストの対象外（`CLAUDE.md`のテスト方針に基づく除外）となっており、実機確認でしか動作を担保できない。
-  **改善案**: Doze/Wi-Fiスリープ中の実機動作確認を行う。必要であれば結合テスト（instrumented test）の追加を検討する。
-
 ## ViewModel / UseCase 責務分離
 
 - **対象**: `feature/readout-list/.../ReadoutListViewModel.kt`
