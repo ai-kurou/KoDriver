@@ -54,6 +54,17 @@ class WindowsSharedMemoryReaderTest {
     }
 
     @Test
+    fun `open 済みの場合は再度マッピングせず true を返す`() {
+        val fake = FakeKernel32FileMapping()
+        val r = reader(fake)
+        r.open()
+
+        assertTrue(r.open())
+        assertEquals(1, fake.openFileMappingCallCount)
+        assertEquals(1, fake.mapViewOfFileCallCount)
+    }
+
+    @Test
     fun `open 前の readBuffer は null を返す`() {
         val r = reader()
 

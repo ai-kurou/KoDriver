@@ -144,7 +144,7 @@ class LmuWindowsMapperTest {
         assertEquals(92_345L, result.timing.lastLapTimeMs)
         assertEquals(91_234L, result.timing.bestLapTimeMs)
         assertEquals(30_123L, result.timing.sector1Ms)
-        assertEquals(60_456L, result.timing.sector2Ms)
+        assertEquals(60_456L, result.timing.sector1And2Ms)
     }
 
     @Test
@@ -162,11 +162,11 @@ class LmuWindowsMapperTest {
         assertEquals(0L, result.timing.lastLapTimeMs)
         assertEquals(0L, result.timing.bestLapTimeMs)
         assertEquals(0L, result.timing.sector1Ms)
-        assertEquals(0L, result.timing.sector2Ms)
+        assertEquals(0L, result.timing.sector1And2Ms)
     }
 
     @Test
-    fun `Scoringの104番目以降のプレイヤー車両からラップタイムフィールドがパースされる`() {
+    fun `Scoringの104台を超える車両は探索しない`() {
         val buf = emptyBuffer()
         val scoringBase = vehicleScoringBase(index = 127)
         buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 128)
@@ -175,7 +175,7 @@ class LmuWindowsMapperTest {
 
         val result = LmuWindowsMapper.map(buf)
 
-        assertEquals(88_765L, result.timing.bestLapTimeMs)
+        assertEquals(0L, result.timing.bestLapTimeMs)
     }
 
     @Test

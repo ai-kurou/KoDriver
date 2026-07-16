@@ -46,7 +46,7 @@ internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) = LmuWindowsTelem
     fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
     timing = LmuWindowsTimingData(
         currentLapTimeMs = 0L, lastLapTimeMs = 0L, bestLapTimeMs = 0L,
-        sector1Ms = 0L, sector2Ms = 0L, currentLap = 0, maxLaps = 0,
+        sector1Ms = 0L, sector1And2Ms = 0L, currentLap = 0, maxLaps = 0,
     ),
     vehicle = LmuWindowsVehicleData(
         localVelocityX = speedX, localVelocityY = 0.0, localVelocityZ = 0.0,

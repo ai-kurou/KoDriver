@@ -33,7 +33,7 @@ import kotlin.math.roundToLong
  *   mNumVehicles (c_int)       : +104
  *
  * rF2VehicleScoring オフセット:
- *   mVehicles[128]             : 先頭オフセット 2192, stride=584
+ *   mVehicles[104]             : 先頭オフセット 2192, stride=584
  *   mBestLapTime               : +144
  *   mLastLapTime               : +168
  *   mIsPlayer                  : +196
@@ -74,7 +74,7 @@ internal object LmuWindowsMapper {
     private const val SCORING_BASE = 1632
     private const val VEHICLE_SCORING_BASE = 2192
     private const val VEHICLE_SCORING_STRIDE = 584
-    private const val MAX_SCORING_VEHICLES = 128
+    private const val MAX_SCORING_VEHICLES = 104
 
     private const val OFF_SCORING_CURRENT_ET = 68
     private const val OFF_SCORING_MAX_LAPS = 84
@@ -147,7 +147,7 @@ internal object LmuWindowsMapper {
                 lastLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_LAST_LAP_TIME),
                 bestLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_TIME),
                 sector1Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR1),
-                sector2Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR2),
+                sector1And2Ms = vehicleScoringBase.readFloatSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_SECTOR2),
                 currentLap = buffer.getInt(vehicleBase + OFF_LAP_NUMBER),
                 maxLaps = buffer.getInt(SCORING_BASE + OFF_SCORING_MAX_LAPS),
             ),

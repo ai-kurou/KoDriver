@@ -17,6 +17,7 @@ internal class WindowsSharedMemoryReader(
 
     override fun open(): Boolean {
         if (!isWindows) return false
+        if (isOpen()) return true
 
         val h = kernel32.OpenFileMappingA(
             Kernel32FileMapping.FILE_MAP_READ,
