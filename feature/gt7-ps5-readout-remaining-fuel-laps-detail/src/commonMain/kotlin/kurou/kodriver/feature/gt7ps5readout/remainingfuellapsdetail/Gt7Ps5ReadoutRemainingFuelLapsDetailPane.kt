@@ -19,9 +19,9 @@ import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resource
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_reset_to_default
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_slider_label
 import kodriver.feature.gt7ps5readout.remainingfuellapsdetail.generated.resources.remaining_fuel_laps_voice_type
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -66,7 +66,10 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneOverview(text = stringResource(Res.string.remaining_fuel_laps_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.remaining_fuel_laps_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),

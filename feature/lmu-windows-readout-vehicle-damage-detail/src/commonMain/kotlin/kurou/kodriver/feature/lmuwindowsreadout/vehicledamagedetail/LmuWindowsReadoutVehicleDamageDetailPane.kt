@@ -15,9 +15,9 @@ import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resource
 import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_description
 import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_chip_label
 import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneOverview
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -47,7 +47,10 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneOverview(text = stringResource(Res.string.vehicle_damage_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.vehicle_damage_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         val chipLabel = stringResource(Res.string.vehicle_damage_overheat_chip_label)
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_damage_overheat_switch_label),

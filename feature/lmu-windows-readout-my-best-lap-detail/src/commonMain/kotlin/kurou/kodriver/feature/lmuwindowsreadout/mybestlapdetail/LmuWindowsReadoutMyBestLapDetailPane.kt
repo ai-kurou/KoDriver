@@ -16,9 +16,9 @@ import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my
 import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_enabled
 import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
 import kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -56,7 +56,10 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneOverview(text = stringResource(Res.string.my_best_lap_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.my_best_lap_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),

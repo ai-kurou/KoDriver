@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -46,7 +46,10 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneOverview(text = stringResource(Res.string.flag_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.flag_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
             val checked = uiState.enabledStates[item.key] ?: true

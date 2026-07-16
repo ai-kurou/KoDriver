@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,8 +30,8 @@ fun DetailPaneCard(
     title: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    bottomContent: @Composable () -> Unit = {},
 ) {
     DetailPaneCardLayout(
         title = title,
@@ -54,8 +53,8 @@ fun DetailPaneCard(
 @Composable
 fun DetailPaneCard(
     title: String,
+    bottomContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    bottomContent: @Composable () -> Unit = {},
 ) {
     DetailPaneCardLayout(
         title = title,
@@ -107,7 +106,7 @@ private fun DetailPaneCardLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .alpha(bottomContentAlpha)
-                    .padding(PaddingValues(horizontal = 16.dp, vertical = 12.dp)),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
             ) {
                 bottomContent()
             }
@@ -179,6 +178,14 @@ private fun DetailPaneCardPreview() {
             DetailPaneCard(
                 title = "自己ベストラップ更新",
                 modifier = Modifier.padding(16.dp),
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf("自己ベストラップ更新"),
+                        selectedChipLabels = setOf("自己ベストラップ更新"),
+                        chipEnabled = true,
+                        onChipClick = {},
+                    )
+                },
             )
         }
     }
