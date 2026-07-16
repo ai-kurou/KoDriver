@@ -157,6 +157,27 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
+    fun `検出済みサーバーがあっても保存済みになったら検出ダイアログを表示しない`() = runTest {
+        every { repository.serverIp() } returns ipFlow
+        coEvery { repository.saveServerIp(any()) } answers { ipFlow.update { firstArg() } }
+        val viewModel = createViewModel(
+            reachable = false,
+            discoveredServers = listOf(DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10")),
+        )
+
+        viewModel.onIpChanged("10.0.0.1")
+        viewModel.onSave()
+        viewModel.onSaveAnyway()
+
+        val state = viewModel.uiState.first()
+        assertTrue(state.isSaved)
+        assertFalse(state.isDiscoveryDialogVisible)
+        verify(exactly = 1) { repository.serverIp() }
+        coVerify(exactly = 1) { repository.saveServerIp("10.0.0.1") }
+        confirmVerified(repository)
+    }
+
+    @Test
     fun `onDismissで入力内容と警告がリセットされる`() = runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel(reachable = false)
