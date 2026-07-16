@@ -74,7 +74,7 @@ jobs:
 
   detekt:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 6
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -87,7 +87,7 @@ jobs:
 
   unit-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 13
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -105,7 +105,7 @@ jobs:
 
   desktop-screenshot-test-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 8
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -120,7 +120,7 @@ jobs:
 
   android-screenshot-test-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 18
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -135,7 +135,7 @@ jobs:
 
   desktop-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 6
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -148,7 +148,7 @@ jobs:
 
   android-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 11
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
