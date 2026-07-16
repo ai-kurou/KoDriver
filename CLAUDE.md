@@ -152,6 +152,7 @@ GitHub Actions ワークフロー:
 - `build-android.yml`: Android アプリのビルド
 - `build-windows.yml`: `workflow_dispatch` でのみ起動し、Windows MSI を Artifact として 30 日間保存する
 - `on-release.yml`: リリース時に実行
+- `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする
 
 ---
 
