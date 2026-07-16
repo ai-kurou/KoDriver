@@ -2,6 +2,7 @@ package kurou.kodriver.data
 
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
+import io.ktor.client.HttpClient
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
@@ -56,12 +57,20 @@ fun androidDataModule(context: Context) = module {
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
     }
-    // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）
-    single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(get()) }
-    single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(get()) }
-    single<LmuWindowsVehicleApproachRepository> { WebSocketLmuWindowsVehicleApproachRepository(get()) }
-    single<LmuWindowsVehicleDamageRepository> { WebSocketLmuWindowsVehicleDamageRepository(get()) }
-    single<LmuWindowsTyreCarcassTemperatureRepository> { WebSocketLmuWindowsTyreCarcassTemperatureRepository(get()) }
+    // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）。
+    // HttpClient は全リポジトリで単一インスタンスを共有する。
+    single<HttpClient> { createWebSocketHttpClient() }
+    single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
+    single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(serverIpRepository = get(), client = get()) }
+    single<LmuWindowsVehicleApproachRepository> {
+        WebSocketLmuWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
+    }
+    single<LmuWindowsVehicleDamageRepository> {
+        WebSocketLmuWindowsVehicleDamageRepository(serverIpRepository = get(), client = get())
+    }
+    single<LmuWindowsTyreCarcassTemperatureRepository> {
+        WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
+    }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }
