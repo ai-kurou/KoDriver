@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -107,7 +106,7 @@ private fun DetailPaneCardLayout(
                 modifier = Modifier
                     .fillMaxWidth()
                     .alpha(bottomContentAlpha)
-                    .padding(PaddingValues(horizontal = 16.dp, vertical = 12.dp)),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
             ) {
                 bottomContent()
             }

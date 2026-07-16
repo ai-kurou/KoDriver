@@ -66,7 +66,10 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(text = stringResource(Res.string.remaining_fuel_laps_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.remaining_fuel_laps_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_fuel_laps_enabled),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),

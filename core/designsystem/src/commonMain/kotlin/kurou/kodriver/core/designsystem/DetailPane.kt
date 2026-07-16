@@ -24,7 +24,7 @@ fun DetailPaneBodyText(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        modifier = modifier.padding(vertical = 4.dp),
     )
 }
 
@@ -36,7 +36,7 @@ fun DetailPaneSubtitle(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.height(IntrinsicSize.Min).padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = modifier.height(IntrinsicSize.Min).padding(vertical = 8.dp),
     ) {
         Box(
             modifier = Modifier

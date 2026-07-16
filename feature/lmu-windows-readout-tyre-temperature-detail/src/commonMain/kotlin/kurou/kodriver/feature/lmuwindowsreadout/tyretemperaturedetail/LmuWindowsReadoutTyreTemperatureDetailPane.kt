@@ -127,6 +127,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     ) {
         DetailPaneBodyText(
             text = stringResource(Res.string.tyre_temperature_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
         val helpIconContentDescription =
             stringResource(Res.string.tyre_temperature_threshold_help_icon_content_description)

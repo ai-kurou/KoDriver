@@ -122,9 +122,13 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
     }
 
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        DetailPaneBodyText(text = stringResource(Res.string.vehicle_approach_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.vehicle_approach_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         DetailPaneSubtitle(
             text = stringResource(Res.string.vehicle_approach_threshold_subtitle),
+            modifier = Modifier.padding(horizontal = 16.dp),
             trailingContent = {
                 IconButton(onClick = { showHelpSheet = true }) {
                     Icon(
@@ -147,6 +151,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             valueRange = 0.1f..10f,
             labelFormatter = { longitudinalLabel.format(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
+            modifier = Modifier.padding(horizontal = 16.dp),
             defaultValue = defaultLongitudinal,
             onResetToDefault = onResetLongitudinalThreshold,
             resetContentDescription = resetToDefaultLabel,
@@ -156,11 +161,15 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             valueRange = 2f..8f,
             labelFormatter = { lateralLabel.format(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
+            modifier = Modifier.padding(horizontal = 16.dp),
             defaultValue = defaultLateral,
             onResetToDefault = onResetLateralThreshold,
             resetContentDescription = resetToDefaultLabel,
         )
-        DetailPaneSubtitle(text = stringResource(Res.string.vehicle_approach_first_lap_subtitle))
+        DetailPaneSubtitle(
+            text = stringResource(Res.string.vehicle_approach_first_lap_subtitle),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),

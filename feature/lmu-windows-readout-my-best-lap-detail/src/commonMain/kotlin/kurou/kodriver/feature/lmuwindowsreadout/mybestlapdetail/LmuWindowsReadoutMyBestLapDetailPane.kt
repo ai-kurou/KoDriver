@@ -56,7 +56,10 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(text = stringResource(Res.string.my_best_lap_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.my_best_lap_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),

@@ -46,7 +46,10 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(text = stringResource(Res.string.flag_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.flag_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)
             val checked = uiState.enabledStates[item.key] ?: true

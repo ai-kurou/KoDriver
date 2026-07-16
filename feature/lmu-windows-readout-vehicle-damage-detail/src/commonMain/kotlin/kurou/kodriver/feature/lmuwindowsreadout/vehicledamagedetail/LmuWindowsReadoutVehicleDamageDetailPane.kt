@@ -47,7 +47,10 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(text = stringResource(Res.string.vehicle_damage_description))
+        DetailPaneBodyText(
+            text = stringResource(Res.string.vehicle_damage_description),
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
         val chipLabel = stringResource(Res.string.vehicle_damage_overheat_chip_label)
         DetailPaneCard(
             title = stringResource(Res.string.vehicle_damage_overheat_switch_label),
