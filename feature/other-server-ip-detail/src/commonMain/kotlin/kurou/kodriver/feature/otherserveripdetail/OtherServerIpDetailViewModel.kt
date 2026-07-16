@@ -56,7 +56,7 @@ internal class OtherServerIpDetailViewModel(
             connectivityWarning = m.connectivityWarning,
             isSaved = m.isSaved,
             discoveredServers = discovered,
-            isDiscoveryDialogVisible = discovered.isNotEmpty() && !m.isDiscoveryDialogDismissed,
+            isDiscoveryDialogVisible = !m.isSaved && discovered.isNotEmpty() && !m.isDiscoveryDialogDismissed,
             selectedDiscoveredServer = m.selectedDiscoveredServer ?: discovered.firstOrNull(),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherServerIpDetailUiState())
