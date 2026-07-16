@@ -18,12 +18,6 @@
 
 ---
 
-## mDNS（server / feature:other-server-ip-detail）
-
-- **対象**: `feature/other-server-ip-detail/src/androidMain/kotlin/kurou/kodriver/feature/otherserveripdetail/PlatformWindowsServerDiscovery.android.kt`
-  **課題**: `NsdManager` ベースの検出実装で、実機のDoze/Wi-Fiスリープ設定次第では検出が不安定になる可能性がある既知の事例がある。また、プラットフォーム固有の外部APIを直接呼ぶためユニットテストの対象外（`CLAUDE.md`のテスト方針に基づく除外）となっており、実機確認でしか動作を担保できない。
-  **改善案**: Doze/Wi-Fiスリープ中の実機動作確認を行う。必要であれば結合テスト（instrumented test）の追加を検討する。
-
 ## ViewModel / UseCase 責務分離
 
 - **対象**: `feature/readout-list/.../ReadoutListViewModel.kt`
@@ -47,12 +41,6 @@
 - **対象**: `core/data/src/androidMain/kotlin/kurou/kodriver/data/WebSocketLmuWindows*Repository.kt`（5 ファイル）
   **課題**: 「serverIp を `flatMapLatest` → `client.webSocket` 接続 → Text フレームを JSON デコードして emit → 失敗時 `delay` 後リトライ」という構造が 5 リポジトリでほぼ同一のまま重複している。また接続失敗の `catch (_: Exception) {}` が完全に握りつぶしで、接続できない原因（ポート違い・ファイアウォール等）の調査手段がない。各リポジトリが `HttpClient` を個別生成しており、`close()` も呼ばれない。
   **改善案**: 「path とデシリアライザを渡すと再接続付き Flow を返す」共通ヘルパー（例: `WebSocketFlowFactory`）に集約する。接続失敗時は少なくともデバッグログを残す。`HttpClient` は DI で単一インスタンスを共有する。
-
-## core:lmu-windows-data
-
-- **対象**: `core/lmu-windows-data/src/main/kotlin/kurou/kodriver/core/lmuwindowsdata/datasource/LmuWindowsSharedMemorySource.kt`
-  **課題**: `bufferFlow` は 16ms ごとに共有メモリ全体（約 324KB）を heap の `ByteBuffer` へコピーしており、購読中は約 20MB/s のアロケーションが発生する。ネイティブバッファを下流に渡さない設計自体は安全のため妥当だが、GC 負荷としては大きい。
-  **改善案**: 実測で GC 負荷が問題になった場合に、ダブルバッファの再利用や、下流が必要とするセグメント（Scoring / Telemetry の一部）だけを構造体に読み出してから emit する方式を検討する。現状は「計測してから」の課題として記録に留める。
 
 ## feature:server-connection
 
