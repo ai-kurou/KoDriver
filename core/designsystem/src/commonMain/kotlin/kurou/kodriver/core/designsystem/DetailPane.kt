@@ -16,23 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DetailPaneOverview(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    DetailPaneBodyText(text = text, modifier = modifier)
-}
-
-@Composable
-fun DetailPaneDescription(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    DetailPaneBodyText(text = text, modifier = modifier)
-}
-
-@Composable
-private fun DetailPaneBodyText(
+fun DetailPaneBodyText(
     text: String,
     modifier: Modifier = Modifier,
 ) {

@@ -51,10 +51,9 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_chip
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
-import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.core.designsystem.DetailPaneOverview
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.SessionPhase
@@ -126,7 +125,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneOverview(
+        DetailPaneBodyText(
             text = stringResource(Res.string.tyre_temperature_description),
         )
         val helpIconContentDescription =
@@ -173,7 +172,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             }
                         },
                     )
-                    DetailPaneDescription(text = stringResource(Res.string.tyre_temperature_high_threshold_description))
+                    DetailPaneBodyText(text = stringResource(Res.string.tyre_temperature_high_threshold_description))
                     ThresholdSlider(
                         value = uiState.highThresholdCelsius.toFloat(),
                         valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
@@ -220,7 +219,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             }
                         },
                     )
-                    DetailPaneDescription(
+                    DetailPaneBodyText(
                         text = stringResource(Res.string.tyre_temperature_low_warning_phases_description),
                     )
                     FlowRow(

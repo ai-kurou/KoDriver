@@ -17,7 +17,7 @@ import kodriver.feature.othervolumedetail.generated.resources.volume_label
 import kodriver.feature.othervolumedetail.generated.resources.volume_low_warning
 import kodriver.feature.othervolumedetail.generated.resources.volume_subtitle
 import kodriver.feature.othervolumedetail.generated.resources.volume_title
-import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -64,9 +64,9 @@ fun OtherVolumeDetailPaneContent(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            DetailPaneDescription(text = stringResource(Res.string.volume_description))
-            DetailPaneDescription(text = stringResource(Res.string.volume_formula))
-            DetailPaneDescription(text = stringResource(Res.string.volume_low_warning))
+            DetailPaneBodyText(text = stringResource(Res.string.volume_description))
+            DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
+            DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
             DetailPaneSubtitle(text = stringResource(Res.string.volume_subtitle))
             ThresholdSlider(
                 value = uiState.volume.toFloat(),
