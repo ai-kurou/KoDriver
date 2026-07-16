@@ -299,6 +299,28 @@ roborazziAggregateTasks.forEach { roborazziTask ->
     }
 }
 
+// 完了報告・PR 作成前に必須のチェック一式を 1 コマンドに集約する。
+// CLAUDE.md「コード変更時の必須確認」に対応: 全モジュールの detekt、
+// モジュールグラフ検証、全ユニットテスト（Kover カバレッジ付き）、
+// Android / デスクトップアプリのビルド、デスクトップアプリの統合テスト。
+val preMergeCheck = tasks.register("preMergeCheck") {
+    group = "verification"
+    description = "Runs all mandatory pre-merge checks (detekt, module graph, tests with coverage, app builds)."
+    dependsOn(
+        ":assertModuleGraph",
+        ":koverXmlReport",
+        ":app:androidApp:assembleDebug",
+        ":app:desktopApp:jar",
+        ":app:desktopApp:test",
+    )
+}
+
+gradle.projectsEvaluated {
+    preMergeCheck.configure {
+        dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "detekt" } })
+    }
+}
+
 kover {
     reports {
         filters {

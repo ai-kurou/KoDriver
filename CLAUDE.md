@@ -131,6 +131,10 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 # Kover 対象モジュールのテストとカバレッジレポート生成
 ./gradlew koverXmlReport
 
+# 完了報告・PR 作成前の必須チェック一式（detekt・モジュールグラフ検証・
+# 全ユニットテスト（カバレッジ付き）・両アプリのビルド・デスクトップ統合テスト）
+./gradlew preMergeCheck
+
 # 静的解析とモジュール依存関係の検証
 ./gradlew detekt assertModuleGraph
 
@@ -220,9 +224,8 @@ GitHub Actions ワークフロー:
    - モジュールを追加した場合は、Kover 集計対象、Gradle 設定、GitHub Actions ワークフロー、ドキュメントの更新要否を確認する。
    - GitHub Actions のスクリーンショットテストは集約タスクを使い、モジュール追加のたびに workflow を変更しない構成を維持する。
 4. 完了前
-   - 変更範囲に応じたユニットテスト・スクリーンショットテストを実行する。
-   - `./gradlew detekt` と `./gradlew assertModuleGraph` を必ず実行する。
-   - Android アプリ・デスクトップアプリのビルド確認と、デスクトップアプリの統合テストを実行する。
+   - 変更範囲に応じたスクリーンショットテストを実行する。
+   - `./gradlew preMergeCheck` を必ず実行する（detekt・assertModuleGraph・全ユニットテスト・両アプリのビルド・デスクトップ統合テストを含む）。
    - `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメント更新要否を確認する。
 5. PR 作成後
    - GitHub checks / Codacy / Actions の結果を確認し、指摘があれば修正する。
@@ -235,22 +238,24 @@ GitHub Actions ワークフロー:
 
 コードを変更・追加した場合は、変更範囲・変更規模・対象モジュールに関係なく、**完了報告の前に必ず以下を実行すること**。
 
-- `./gradlew detekt`
-- `./gradlew assertModuleGraph`
-
-これらは Codacy や CI で検出される基本的な問題を作業者側で事前に検出するための最低必須チェックであり、モジュール単位の detekt や個別テストだけで代替してはならない。実行できなかった場合は、完了報告で理由を明記すること。
-
-コードを変更・追加したら、**完了報告の前に必ず以下をすべて実行すること**。
-
 1. **ユニットテストの追加・更新**（→「[テスト方針](#テスト方針)」を参照。テストは実装と同時に書くこと）
-2. detekt（**常に全体で実行すること**。変更が 1 モジュールでも `./gradlew detekt` を使う。モジュール単位の `:xxx:detekt` だけでは `app:shared` 等の連鎖的な問題を見落とす）
-3. モジュールグラフの検証
-4. Android アプリ・デスクトップアプリのビルド確認
-5. デスクトップアプリの統合テスト（**常に実行すること**。Koin モジュール構成の変更は `AppTest` に影響するため）
-6. `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメントに変更が必要かを確認し、必要であれば更新する
+2. `./gradlew preMergeCheck`（必須チェックの集約タスク。以下をすべて含む）
+   - 全モジュールの detekt（モジュール単位の `:xxx:detekt` だけでは `app:shared` 等の連鎖的な問題を見落とすため、全体で実行される）
+   - モジュールグラフの検証（`assertModuleGraph`）
+   - 全ユニットテスト＋カバレッジレポート生成（`koverXmlReport`）
+   - Android アプリ・デスクトップアプリのビルド確認
+   - デスクトップアプリの統合テスト（Koin モジュール構成の変更は `AppTest` に影響するため）
+3. `CLAUDE.md`・`README.md`・`docs/` 以下のドキュメントに変更が必要かを確認し、必要であれば更新する
+
+`preMergeCheck` は Codacy や CI で検出される基本的な問題を作業者側で事前に検出するための最低必須チェックであり、モジュール単位の detekt や個別テストだけで代替してはならない。実行できなかった場合は、完了報告で理由を明記すること。
+
+作業中に個別のチェックを素早く回したい場合は、以下を利用できる（完了報告前の `preMergeCheck` 実行は省略不可）。
 
 ```bash
-# 変更したモジュールのテストを実行（例: feature:readout を変更した場合）
+# 完了報告・PR 作成前の必須チェック一式
+./gradlew preMergeCheck
+
+# 変更したモジュールのテストだけを実行（例: feature:readout-list を変更した場合）
 ./gradlew :feature:readout-list:jvmTest
 
 # server モジュールを変更した場合
@@ -258,21 +263,6 @@ GitHub Actions ワークフロー:
 
 # androidMain に変更がある場合は androidHostTest も実行（例: core:data を変更した場合）
 ./gradlew :core:data:testAndroidHostTest
-
-# detekt は常に全体で実行（モジュール単位では不十分）
-./gradlew detekt
-
-# モジュールグラフの依存関係ルールを検証（常に実行）
-./gradlew assertModuleGraph
-
-# Android アプリのビルド確認（常に実行）
-./gradlew :app:androidApp:assembleDebug
-
-# デスクトップアプリのビルド確認（常に実行）
-./gradlew :app:desktopApp:jar
-
-# デスクトップアプリの統合テスト（常に実行。Koin モジュール構成の変更を検証する）
-./gradlew :app:desktopApp:test
 ```
 
 detekt の主な閾値（`config/detekt/detekt.yml`）:
