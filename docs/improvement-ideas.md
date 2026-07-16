@@ -121,10 +121,6 @@
   **課題**: PR のたびに `GH_PAT` で PR ブランチへ `chore: update module graph images` をコミット・プッシュする構成のため、モジュール構成に変更がない PR でも毎回ジョブが走り、変更があった場合は push が新たな workflow run を誘発して CI が二重に実行される。また fork からの PR では secrets が使えず失敗する。
   **改善案**: モジュール構成ファイル（`settings.gradle.kts` / 各 `build.gradle.kts`）に変更がある場合のみ実行する paths フィルタ（`dorny/paths-filter` 等）を入れる。あるいは main マージ時のみ画像を更新し、PR 中は `assertModuleGraph` の検証だけにする。
 
-- **対象**: `.github/workflows/on-pull-request.yml` 全ジョブ
-  **課題**: checkout / setup-java / setup-gradle の 3 ステップが 9 ジョブすべてに重複しており、actions のバージョン更新時に 9 箇所（on-main-merge 等も含めるとさらに多く）を書き換える必要がある。
-  **改善案**: `.github/actions/setup`（composite action）に共通セットアップを切り出し、各ジョブは 1 ステップで呼び出す。
-
 - **対象**: `.github/workflows/on-pull-request.yml` の `concurrency`
   **課題**: `cancel-in-progress: false` のため、同一 PR に連続プッシュすると古いコミットの run が完走するまで新しい run が待たされる。PR の CI は最新コミットの結果だけが意味を持つため、古い run の完走は Actions 時間の浪費になる。
   **改善案**: PR トリガーでは `cancel-in-progress: true` にする（`update-module-graph` の push と干渉しないよう、ジョブ分割や group 名の工夫と合わせて検討する）。

@@ -17,12 +17,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: ./.github/actions/setup
 
       - run: ./gradlew detekt
 
@@ -35,12 +30,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: ./.github/actions/setup
 
       - run: ./gradlew :app:androidApp:lintDebug
 
@@ -53,12 +43,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: ./.github/actions/setup
 
       - run: ./gradlew assertModuleGraph
 
@@ -71,12 +56,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: ./.github/actions/setup
 
       - run: ./gradlew koverXmlReport
 
@@ -95,15 +75,7 @@ jobs:
           ref: main
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
-
-      - name: Install Japanese fonts
-        run: sudo apt-get install -y fonts-noto-cjk
+      - uses: ./.github/actions/setup-screenshot
 
       - name: Verify JVM screenshot tests
         run: ./gradlew verifyRoborazziJvmTests
@@ -118,15 +90,7 @@ jobs:
           ref: main
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
-
-      - name: Install Japanese fonts
-        run: sudo apt-get install -y fonts-noto-cjk
+      - uses: ./.github/actions/setup-screenshot
 
       - name: Verify Android screenshot tests
         run: ./gradlew verifyRoborazziAndroidHostTests
@@ -141,12 +105,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: ./.github/actions/setup
 
       - run: ./gradlew :app:androidApp:assembleDebug
 
@@ -159,11 +118,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+      - uses: ./.github/actions/setup
 
       - run: ./gradlew :app:desktopApp:jar

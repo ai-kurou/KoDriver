@@ -1,0 +1,11 @@
+name: Setup screenshot test environment
+description: Configure the build environment and install Japanese fonts
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/setup
+
+    - name: Install Japanese fonts
+      shell: bash
+      run: sudo apt-get install -y fonts-noto-cjk
