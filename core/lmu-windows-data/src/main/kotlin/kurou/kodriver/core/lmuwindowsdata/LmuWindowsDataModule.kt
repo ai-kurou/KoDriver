@@ -10,16 +10,19 @@ import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleApproachRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVirtualEnergyRepositoryImpl
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -60,6 +63,9 @@ val lmuWindowsDataModule = module {
             NoOpTyreCarcassTemperatureRepository()
         }
     }
+    single<LmuWindowsVirtualEnergyRepository> {
+        if (isWindows) LmuWindowsVirtualEnergyRepositoryImpl(source = get()) else NoOpVirtualEnergyRepository()
+    }
 }
 
 private class NoOpLmuWindowsRepository : LmuWindowsRepository {
@@ -82,4 +88,8 @@ private class NoOpVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
 
 private class NoOpTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private class NoOpVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+    override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
 }

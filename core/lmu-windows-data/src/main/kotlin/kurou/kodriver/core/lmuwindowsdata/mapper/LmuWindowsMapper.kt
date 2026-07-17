@@ -61,6 +61,7 @@ import kotlin.math.roundToLong
  *   mEngineMaxRPM        : +532
  *   mFuelCapacity        : +608
  *   mWheels[4]           : +848 (LMUWheel, stride=260)
+ *   mVirtualEnergy       : +776 (float, LMU固有。0.0-1.0の残量割合)
  *
  * LMUWheel 主要フィールドオフセット (ホイール先頭からの相対値):
  *   mBrakeTemp           : +24
@@ -111,6 +112,7 @@ internal object LmuWindowsMapper {
     private const val OFF_FUEL = 524
     private const val OFF_FUEL_CAPACITY = 608
     private const val OFF_WHEELS = 848
+    private const val OFF_VIRTUAL_ENERGY = 776
 
     private const val WHEEL_STRIDE = 260
     private const val OFF_WHEEL_BRAKE_TEMP = 24
@@ -172,6 +174,10 @@ internal object LmuWindowsMapper {
         if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
         return TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
     }
+
+    /** プレイヤー車両のバーチャルエナジー残量割合 (0.0-1.0) を返す。 */
+    internal fun readVirtualEnergyRatio(buffer: ByteBuffer, vehicleBase: Int): Double =
+        buffer.getFloat(vehicleBase + OFF_VIRTUAL_ENERGY).toDouble()
 
     /** プレイヤー車両の4輪ぶんのカーカス温度 (Kelvin) を返す。 */
     internal fun readCarcassTemperaturesK(buffer: ByteBuffer, vehicleBase: Int): Map<WheelIndex, Double> =
