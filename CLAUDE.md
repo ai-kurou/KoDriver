@@ -153,9 +153,10 @@ GitHub Actions ワークフロー:
 
 - `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行
 - `on-main-merge.yml`: main へのマージ時に実行
-- `build-android.yml`: Android アプリのビルド
+- `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-android.yml` と `on-release.yml` の両方から呼び出される
+- `build-android.yml`: `workflow_dispatch` で起動し、`_build-android-release.yml` を呼び出して Android アプリをビルドする
 - `build-windows.yml`: `workflow_dispatch` でのみ起動し、Windows MSI を Artifact として 30 日間保存する
-- `on-release.yml`: リリース時に実行
+- `on-release.yml`: リリース時に実行。Android APK のビルドは `_build-android-release.yml` を呼び出す
 - `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする
 
 ---

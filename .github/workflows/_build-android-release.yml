@@ -1,0 +1,73 @@
+name: _Build Android Release APK
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'ビルド対象のブランチ・タグ・コミットSHA'
+        type: string
+        required: true
+    outputs:
+      version:
+        description: 'gradle.properties の appVersion'
+        value: ${{ jobs.build.outputs.version }}
+      artifact-name:
+        description: 'アップロードした署名済みAPKのartifact名'
+        value: ${{ jobs.build.outputs.artifact-name }}
+    secrets:
+      KEYSTORE_BASE64:
+        required: true
+      STORE_PASSWORD:
+        required: true
+      KEY_ALIAS:
+        required: true
+      KEY_PASSWORD:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      artifact-name: ${{ steps.artifact.outputs.name }}
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/androidApp/kodriver.jks
+
+      - name: Get version
+        id: version
+        run: echo "version=$(grep '^appVersion=' gradle.properties | cut -d'=' -f2)" >> $GITHUB_OUTPUT
+
+      - name: Build APK
+        env:
+          STORE_FILE: app/androidApp/kodriver.jks
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew :app:androidApp:assembleRelease
+
+      - name: Rename APK
+        run: |
+          mv app/androidApp/build/outputs/apk/release/KoDriver-android-${{ steps.version.outputs.version }}-release.apk \
+             app/androidApp/build/outputs/apk/release/KoDriver-android-${{ steps.version.outputs.version }}.apk
+
+      - name: Set artifact name
+        id: artifact
+        run: echo "name=KoDriver-android-${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
+
+      - name: Upload APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: app/androidApp/build/outputs/apk/release/KoDriver-android-${{ steps.version.outputs.version }}.apk
+          retention-days: 30
