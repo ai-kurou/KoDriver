@@ -52,7 +52,6 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
     }
 
     @After
@@ -71,6 +70,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() = runTest {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -91,6 +91,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) } answers {
             statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.BlueFlag to false) }
         }
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         val viewModel = createViewModel()
 
         viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
@@ -106,6 +107,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) } answers {
             statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.RedFlag to false) }
         }
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         val viewModel = createViewModel()
 
         viewModel.onRedFlagEnabledChanged(false)
@@ -133,6 +135,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `onPreviewClicked に BlueFlag を渡すと BlueFlag イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         every { ttsEngine.speak(SpeechEvent.BlueFlag, false) } returns Unit
         val viewModel = createViewModel()
 
@@ -144,6 +147,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `onPreviewClicked に SectorYellowFlag を渡すと YellowFlag イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         every { ttsEngine.speak(SpeechEvent.YellowFlag, false) } returns Unit
         val viewModel = createViewModel()
 
@@ -155,6 +159,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `onPreviewClicked に FullCourseYellow を渡すと FullCourseYellow イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         every { ttsEngine.speak(SpeechEvent.FullCourseYellow, false) } returns Unit
         val viewModel = createViewModel()
 
@@ -166,6 +171,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `onRedFlagPreviewClicked に RED_FLAG を渡すと RedFlag イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         every { ttsEngine.speak(SpeechEvent.RedFlag, false) } returns Unit
         val viewModel = createViewModel()
 
@@ -177,6 +183,7 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `onRedFlagPreviewClicked に SESSION_STOP を渡すと SessionStop イベントが再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         every { ttsEngine.speak(SpeechEvent.SessionStop, false) } returns Unit
         val viewModel = createViewModel()
 
