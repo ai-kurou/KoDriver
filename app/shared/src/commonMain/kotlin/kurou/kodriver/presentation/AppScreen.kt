@@ -185,6 +185,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.ExitConfirmation,
                 OtherListItemType.Theme,
+                OtherListItemType.DynamicColor,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 -> {}
@@ -262,7 +263,7 @@ fun AppScreen(
     }
 
     if (showExitConfirmationDialog) {
-        AppTheme(darkTheme = darkTheme) {
+        AppTheme(darkTheme = darkTheme, dynamicColor = uiState.dynamicColorEnabled) {
             ExitConfirmationDialog(
                 onDismiss = { showExitConfirmationDialog = false },
                 onConfirm = { doNotShowAgain ->
@@ -292,6 +293,7 @@ fun AppScreen(
     VersionMismatchBottomSheetEffect()
     AppScreenContent(
         darkTheme = darkTheme,
+        dynamicColorEnabled = uiState.dynamicColorEnabled,
         bannerUiState = bannerUiState,
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
@@ -345,6 +347,7 @@ internal suspend fun saveExitConfirmationPreferenceForExit(
 @Composable
 internal fun AppScreenContent(
     darkTheme: Boolean = false,
+    dynamicColorEnabled: Boolean = false,
     layoutType: NavigationSuiteType? = null,
     bannerUiState: ConnectionBannerUiState = ConnectionBannerUiState(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -363,7 +366,7 @@ internal fun AppScreenContent(
         currentDestination = AppDestination.More
     }
 
-    AppTheme(darkTheme = darkTheme) {
+    AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
         KeepScreenOnEffect(keepScreenOn)

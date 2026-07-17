@@ -27,6 +27,7 @@ class OtherListPaneTest {
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -48,6 +49,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -69,6 +71,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -90,6 +93,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -111,12 +115,35 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
+                onDynamicColorEnabledChange = {},
             )
         }
 
         rule.onNode(hasText("終了確認を表示")).performClick()
 
         assertEquals(true, exitConfirmationEnabled)
+    }
+
+    @Test
+    fun `ダイナミックカラーをクリックすると切り替えコールバックを呼ぶ`() {
+        var dynamicColorEnabled: Boolean? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = listOf(OtherListItemType.DynamicColor),
+                    dynamicColorEnabled = true,
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = { dynamicColorEnabled = it },
+            )
+        }
+
+        rule.onNode(hasText("ダイナミックカラー")).performClick()
+
+        assertEquals(false, dynamicColorEnabled)
     }
 
     @Test
@@ -129,16 +156,19 @@ class OtherListPaneTest {
                     items = listOf(
                         OtherListItemType.KeepScreenOn,
                         OtherListItemType.ExitConfirmation,
+                        OtherListItemType.DynamicColor,
                     ),
                 ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
         rule.onNode(hasText("画面をスリープさせない")).performClick()
         rule.onNode(hasText("終了確認を表示")).performClick()
+        rule.onNode(hasText("ダイナミックカラー")).performClick()
 
         assertNull(clickedItem)
     }
@@ -155,6 +185,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -177,6 +208,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -196,6 +228,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
@@ -215,6 +248,7 @@ class OtherListPaneTest {
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
             )
         }
 
