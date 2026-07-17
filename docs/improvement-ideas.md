@@ -39,8 +39,8 @@
   **改善案**: 署名済みAndroid版に対するブラックボックスE2EはMaestroで担当し、デスクトップ版は`ComposeUiTest`（`app:desktopApp`の`jvmTest`/`test`）で担当する、とツールを役割分担する。両者を単一ツールで統一しようとしない。Maestro導入時はCIでAndroidエミュレータ起動・署名済みAPKインストール・flow実行の3ステップが必要になる点を踏まえてワークフロー（`build-android.yml`等）設計を検討する。
 
 - **対象**: `.github/workflows/_e2e-android-maestro.yml`・`.maestro/tap-bottom-tabs.yaml`
-  **課題**: `on-release.yml`からリリース前ゲートとして呼び出すよう配線済みだが、`on-pull-request.yml`や`build-android.yml`等、PR単位でのフィードバックには未配線。`workflow_call`専用のためこのままではPR時には実行されない。
-  **改善案**: PR毎に毎回実行するとAndroidエミュレータ起動のぶんCI時間・コストが増えるため、実行タイミング（毎PR／`record-golden-images.yml`のようなラベルトリガー等）を検討してから追加で配線するか判断する。合わせてMaestroテストのシナリオも、タブ遷移だけでなくシミュレータ選択やその他画面の詳細遷移など段階的に拡充する。
+  **課題**: `on-release.yml`からリリース前ゲートとして呼び出すよう配線済み。現状のMaestroテストシナリオはボトムナビゲーションのタブ遷移のみに留まっている。
+  **改善案**: シミュレータ選択やその他画面の詳細遷移など、Maestroテストのシナリオを段階的に拡充する。
 
 ## 作業改善（開発体験）
 
