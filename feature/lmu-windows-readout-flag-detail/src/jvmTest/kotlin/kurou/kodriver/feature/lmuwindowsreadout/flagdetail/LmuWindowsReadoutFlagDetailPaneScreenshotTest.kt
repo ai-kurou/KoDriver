@@ -50,6 +50,9 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
                             uiState = LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates),
                             onFlagEnabledChanged = { _, _ -> },
                             onPreviewClicked = {},
+                            onRedFlagEnabledChanged = {},
+                            onRedFlagVoiceTypeChanged = {},
+                            onRedFlagPreviewClicked = {},
                         )
                     }
                 }

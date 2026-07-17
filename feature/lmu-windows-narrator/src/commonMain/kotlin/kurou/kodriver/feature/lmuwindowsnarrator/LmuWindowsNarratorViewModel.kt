@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -33,6 +34,7 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -87,6 +89,7 @@ data class TyreTemperatureUseCases(
 data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
+    val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
     val saveTelemetryLog: SaveTelemetryLogUseCase,
 )
 
@@ -164,6 +167,9 @@ class LmuWindowsNarratorViewModel(
 
     private val voiceType = narratorUseCases.observeMyBestLapVoiceType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
+
+    private val redFlagVoiceType = narratorUseCases.observeRedFlagVoiceType()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, RedFlagVoiceType.SESSION_STOP)
 
     private val tyreHighThreshold = tyreTemperatureUseCases.observeHighThreshold()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 90)
@@ -333,6 +339,7 @@ class LmuWindowsNarratorViewModel(
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = mergedEnabledStates.value,
             myBestLapVoiceType = voiceType.value,
+            redFlagVoiceType = redFlagVoiceType.value,
             currentLap = currentLap.value,
             skipFirstLap = skipFirstLap.value,
             vehicleApproachStartReadoutType = startReadoutType.value,

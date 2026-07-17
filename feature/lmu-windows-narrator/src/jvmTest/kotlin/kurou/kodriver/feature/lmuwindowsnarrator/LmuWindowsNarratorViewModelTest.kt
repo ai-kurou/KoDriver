@@ -35,6 +35,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -46,6 +47,7 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -61,6 +63,7 @@ import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -129,6 +132,9 @@ class LmuWindowsNarratorViewModelTest {
     private lateinit var myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository
 
     @MockK
+    private lateinit var redFlagPreferencesRepository: LmuWindowsRedFlagPreferencesRepository
+
+    @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository
 
     @Before
@@ -158,6 +164,7 @@ class LmuWindowsNarratorViewModelTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
         ),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+        redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
         skipFirstLap: Boolean = false,
         startReadoutEnabled: Boolean = true,
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -208,6 +215,7 @@ class LmuWindowsNarratorViewModelTest {
         every { tyreTemperaturePreferencesRepository.observeLowWarningPhases() } returns
             MutableStateFlow(tyreTemperatureLowWarningPhasesOverride)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
+        every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
 
         return LmuWindowsNarratorViewModel(
@@ -263,6 +271,7 @@ class LmuWindowsNarratorViewModelTest {
             narratorUseCases = NarratorUseCases(
                 determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
                 observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
+                observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagPreferencesRepository),
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
             ),
             currentTimeMs = currentTimeMs,
@@ -844,6 +853,23 @@ class LmuWindowsNarratorViewModelTest {
             ),
             logs,
         )
+    }
+
+    @Test
+    fun `赤旗音声タイプがRED_FLAGのときはRedFlagイベントを読み上げる`() = runTest(testDispatcher) {
+        val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            flagChannel = flagChannel,
+            ttsEngine = tts,
+            redFlagVoiceType = RedFlagVoiceType.RED_FLAG,
+        )
+
+        flagChannel.send(clearFlags())
+        flagChannel.send(clearFlags(gamePhase = SessionPhase.RED_FLAG))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RedFlag), spokenTexts)
     }
 
     @Test
