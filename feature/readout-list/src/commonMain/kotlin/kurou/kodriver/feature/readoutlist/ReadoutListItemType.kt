@@ -9,6 +9,8 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage.Root)
         data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+        data object RemainingVirtualEnergyLaps :
+            LmuWindows(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root)
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
@@ -24,6 +26,8 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
+                    LmuWindows.RemainingVirtualEnergyLaps
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }
@@ -54,7 +58,8 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
             ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
             ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 3
-            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 4
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root -> 4
+            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 5
         }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int = when (key) {

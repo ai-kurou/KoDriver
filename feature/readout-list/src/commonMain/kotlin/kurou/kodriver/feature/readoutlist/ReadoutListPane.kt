@@ -74,6 +74,7 @@ import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_overheat
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
+import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy_laps
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
 import kodriver.feature.readoutlist.generated.resources.item_tyre_low_warning
 import kodriver.feature.readoutlist.generated.resources.item_tyre_overheat_warning
@@ -137,6 +138,8 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
         stringResource(Res.string.item_tyre_overheat_warning)
     is ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning ->
         stringResource(Res.string.item_tyre_low_warning)
+    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
+        stringResource(Res.string.item_remaining_virtual_energy_laps)
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.item_remaining_fuel_laps)
@@ -152,6 +155,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root -> Icons.Filled.LocalGasStation
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation

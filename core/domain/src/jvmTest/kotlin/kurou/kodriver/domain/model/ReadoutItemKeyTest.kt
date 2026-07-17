@@ -38,6 +38,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("lmu_windows_tyre_temperature_low_warning"),
         )
         assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
+        assertEquals(
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy_laps"),
+        )
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,

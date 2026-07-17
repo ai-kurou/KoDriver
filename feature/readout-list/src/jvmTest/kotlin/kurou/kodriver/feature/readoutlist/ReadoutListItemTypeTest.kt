@@ -41,6 +41,17 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
+    fun `lmu_windows の remaining_virtual_energy_laps は LmuWindows_RemainingVirtualEnergyLaps を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.RemainingVirtualEnergyLaps,
+            ReadoutListItemType.fromId(
+                Simulator.LmuWindows,
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ),
+        )
+    }
+
+    @Test
     fun `gt7_ps5 の best_lap は Gt7Ps5_BestLap を返す`() {
         assertEquals(
             ReadoutListItemType.Gt7Ps5.MyBestLap,
@@ -87,6 +98,7 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
