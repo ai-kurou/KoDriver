@@ -53,6 +53,8 @@ digraph G {
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-readout-remaining-energy-laps-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-remaining-energy-laps-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
