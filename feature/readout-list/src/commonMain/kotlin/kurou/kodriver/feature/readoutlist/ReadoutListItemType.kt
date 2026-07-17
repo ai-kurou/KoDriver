@@ -57,8 +57,8 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
             ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 3
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root -> 4
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root -> 3
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 4
             ReadoutItemKey.LmuWindows.MyBestLap.Root -> 5
         }
 
