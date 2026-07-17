@@ -17,6 +17,7 @@ import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 
+@Suppress("LongParameterList")
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
