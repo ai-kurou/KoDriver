@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -12,6 +15,12 @@ plugins {
     alias(libs.plugins.ktor) apply false
     alias(libs.plugins.modulesGraphAssert)
     alias(libs.plugins.kotlinxSerialization) apply false
+}
+
+plugins.withType<YarnPlugin> {
+    extensions.configure<YarnRootExtension> {
+        resolution("serialize-javascript", "7.0.5")
+    }
 }
 
 val isCI = System.getenv("CI") != null
@@ -164,7 +173,10 @@ tasks.register("generateModuleGraphImages") {
     doLast {
         val dotBinary = listOf("/opt/homebrew/bin/dot", "/usr/bin/dot", "/usr/local/bin/dot")
             .firstOrNull { File(it).exists() }
-            ?: error("Graphviz 'dot' not found. Install: brew install graphviz (Mac) / apt-get install graphviz (Linux)")
+            ?: error(
+                "Graphviz 'dot' not found. " +
+                    "Install: brew install graphviz (Mac) / apt-get install graphviz (Linux)",
+            )
 
         val graphsDir = file("docs/graphs")
         graphsDir.mkdirs()
@@ -247,7 +259,7 @@ tasks.register("generateModuleGraphImages") {
                 val updated = if (original.contains(startMarker)) {
                     original.replace(
                         Regex("""$startMarker.*?$endMarker""", RegexOption.DOT_MATCHES_ALL),
-                        block
+                        block,
                     )
                 } else {
                     original.trimEnd() + "\n\n$block\n"
