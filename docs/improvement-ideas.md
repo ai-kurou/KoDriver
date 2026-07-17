@@ -52,8 +52,3 @@
   **課題**: 記録は蓄積される一方で、着手判断・優先度付けの仕組みがない。項目が増えるほど「書いたが誰も読まない」状態になりやすい。
   **改善案**: 定期的（リリース前など）に棚卸しし、着手するものは GitHub Issue 化して本ファイルからは Issue 番号を添えて削除する運用を README に明記する。
 
-## CI（GitHub Actions）
-
-- **対象**: `.github/`（依存自動更新）
-  **課題**: GitHub Actions は SHA ピン留めされているが `dependabot.yml` / Renovate 設定がなく、actions・Gradle ライブラリの更新が手動任せになっている。CLAUDE.md は「ライブラリは最新安定版を使う」方針だが、それを支える自動化がない。
-  **改善案**: Dependabot（`github-actions` + `gradle` エコシステム）または Renovate を導入し、更新 PR を自動作成させる。
