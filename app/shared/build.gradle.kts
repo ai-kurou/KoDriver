@@ -12,16 +12,16 @@ plugins {
 
 kotlin {
     jvm()
-    
+
     js {
         browser()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
     }
-    
+
     android {
        namespace = "kurou.kodriver.app.shared"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
