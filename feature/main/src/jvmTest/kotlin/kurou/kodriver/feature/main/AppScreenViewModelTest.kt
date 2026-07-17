@@ -13,9 +13,11 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
@@ -44,6 +46,7 @@ class AppScreenViewModelTest {
         tagName: String? = null,
         version: String = "1.0.0",
         exitConfirmationEnabled: Boolean = true,
+        dynamicColorEnabled: Boolean = false,
     ): Pair<AppScreenViewModel, FakeExitConfirmationEnabledRepository> {
         val fakeRepo = FakeExitConfirmationEnabledRepository(exitConfirmationEnabled)
         val viewModel = AppScreenViewModel(
@@ -52,6 +55,9 @@ class AppScreenViewModelTest {
             observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(FakeKeepScreenOnRepository()),
             observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(fakeRepo),
             saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(fakeRepo),
+            observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(
+                FakeDynamicColorEnabledRepository(dynamicColorEnabled),
+            ),
         )
         return viewModel to fakeRepo
     }
@@ -134,6 +140,20 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
     }
+
+    @Test
+    fun `Dynamic Colorが有効な場合dynamicColorEnabledがtrueになる`() = runTest {
+        val (viewModel) = createViewModel(dynamicColorEnabled = true)
+
+        assertTrue(viewModel.uiState.first().dynamicColorEnabled)
+    }
+
+    @Test
+    fun `Dynamic Colorが無効な場合dynamicColorEnabledがfalseになる`() = runTest {
+        val (viewModel) = createViewModel(dynamicColorEnabled = false)
+
+        assertFalse(viewModel.uiState.first().dynamicColorEnabled)
+    }
 }
 
 private class FakeAppUpdateRepository(private val tagName: String?) : AppUpdateRepository {
@@ -155,4 +175,11 @@ private class FakeExitConfirmationEnabledRepository(
         savedValue = enabled
         _enabled.value = enabled
     }
+}
+
+private class FakeDynamicColorEnabledRepository(
+    private val enabled: Boolean,
+) : DynamicColorEnabledRepository {
+    override fun dynamicColorEnabled(): Flow<Boolean> = flowOf(enabled)
+    override suspend fun saveDynamicColorEnabled(enabled: Boolean) = Unit
 }

@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -117,12 +118,22 @@ private val AppDarkColorScheme = darkColorScheme(
 )
 
 @Composable
+internal expect fun dynamicAppColorScheme(darkTheme: Boolean): ColorScheme?
+
+@Composable
 fun AppTheme(
     darkTheme: Boolean = false,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    val fallbackColorScheme = if (darkTheme) AppDarkColorScheme else AppLightColorScheme
+    val colorScheme = if (dynamicColor) {
+        dynamicAppColorScheme(darkTheme) ?: fallbackColorScheme
+    } else {
+        fallbackColorScheme
+    }
     MaterialTheme(
-        colorScheme = if (darkTheme) AppDarkColorScheme else AppLightColorScheme,
+        colorScheme = colorScheme,
         content = content,
     )
 }

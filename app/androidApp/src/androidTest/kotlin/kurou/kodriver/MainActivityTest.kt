@@ -112,6 +112,7 @@ class MainActivityTest {
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
         clickScrollableItem("終了確認を表示")
+        clickScrollableItem("ダイナミックカラー")
         clickItemAndNavigateBack("ライセンス")
     }
 

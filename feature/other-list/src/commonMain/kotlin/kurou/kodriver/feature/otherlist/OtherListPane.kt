@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Output
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -40,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_console_ip
+import kodriver.feature.otherlist.generated.resources.item_dynamic_color
 import kodriver.feature.otherlist.generated.resources.item_exit_confirmation
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_keep_screen_on
@@ -79,6 +81,7 @@ private fun OtherListItemType.section(): OtherListSection = when (this) {
     OtherListItemType.KeepScreenOn,
     OtherListItemType.ExitConfirmation,
     OtherListItemType.Theme,
+    OtherListItemType.DynamicColor,
     -> OtherListSection.AppSettings
     OtherListItemType.GitHubRepository,
     OtherListItemType.ReleasePage,
@@ -95,6 +98,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
     OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
     OtherListItemType.ExitConfirmation -> stringResource(Res.string.item_exit_confirmation)
     OtherListItemType.Theme -> stringResource(Res.string.item_theme)
+    OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
     OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
     OtherListItemType.License -> stringResource(Res.string.item_license)
@@ -118,6 +122,7 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: 
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
         OtherListItemType.ExitConfirmation -> Icon(imageVector = Icons.Outlined.Output, contentDescription = null)
         OtherListItemType.Theme -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
+        OtherListItemType.DynamicColor -> Icon(imageVector = Icons.Outlined.Palette, contentDescription = null)
         OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
         OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
             Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
@@ -139,6 +144,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ExitConfirmation,
+        OtherListItemType.DynamicColor,
         -> Unit
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
@@ -152,6 +158,7 @@ fun OtherListPane(
     onItemClick: (OtherListItemType) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onExitConfirmationEnabledChange: (Boolean) -> Unit,
+    onDynamicColorEnabledChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -173,6 +180,7 @@ fun OtherListPane(
                         uiState = uiState,
                         onKeepScreenOnChange = onKeepScreenOnChange,
                         onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
+                        onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                         onItemClick = onItemClick,
                     )
                     HorizontalDivider()
@@ -209,6 +217,7 @@ private fun OtherListItem(
     uiState: OtherListUiState,
     onKeepScreenOnChange: (Boolean) -> Unit,
     onExitConfirmationEnabledChange: (Boolean) -> Unit,
+    onDynamicColorEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
     val isSelected = item == uiState.selectedItem
@@ -253,6 +262,10 @@ private fun OtherListItem(
                     checked = uiState.exitConfirmationEnabled,
                     onCheckedChange = onExitConfirmationEnabledChange,
                 )
+                OtherListItemType.DynamicColor -> Switch(
+                    checked = uiState.dynamicColorEnabled,
+                    onCheckedChange = onDynamicColorEnabledChange,
+                )
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
@@ -278,6 +291,8 @@ private fun OtherListItem(
                     OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
                     OtherListItemType.ExitConfirmation ->
                         onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
+                    OtherListItemType.DynamicColor ->
+                        onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
                     OtherListItemType.ServerIp,
                     OtherListItemType.ConsoleIp,
                     OtherListItemType.Volume,
@@ -331,5 +346,6 @@ private fun OtherListPanePreview() {
         onItemClick = {},
         onKeepScreenOnChange = {},
         onExitConfirmationEnabledChange = {},
+        onDynamicColorEnabledChange = {},
     )
 }
