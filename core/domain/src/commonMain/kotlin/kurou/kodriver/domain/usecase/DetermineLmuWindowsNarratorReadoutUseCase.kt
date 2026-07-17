@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -44,6 +45,7 @@ private data class ApproachSideStatesResult(
 data class LmuWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
+    val redFlagVoiceType: RedFlagVoiceType,
     val currentLap: Int,
     val skipFirstLap: Boolean,
     val vehicleApproachStartReadoutType: VehicleApproachStartReadoutType,
@@ -300,7 +302,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             previous.gamePhase != SessionPhase.RED_FLAG &&
             raceFlags.gamePhase == SessionPhase.RED_FLAG
         ) {
-            SpeechEvent.SessionStop
+            when (settings.redFlagVoiceType) {
+                RedFlagVoiceType.RED_FLAG -> SpeechEvent.RedFlag
+                RedFlagVoiceType.SESSION_STOP -> SpeechEvent.SessionStop
+            }
         } else {
             null
         }

@@ -60,6 +60,7 @@ internal class LmuWindowsWavNarratorEngine(
         SpeechEvent.YellowFlag to "files/yellow_flag.wav",
         SpeechEvent.FullCourseYellow to "files/full_course_yellow.wav",
         SpeechEvent.SessionStop to "files/session_stopped.wav",
+        SpeechEvent.RedFlag to "files/red_flag.wav",
         SpeechEvent.Overheating to "files/gp2_gp2.wav",
         SpeechEvent.LmuWindowsMyBestLapFormal to "files/my_best_lap_formal.wav",
         SpeechEvent.LmuWindowsMyBestLapCasual to "files/my_best_lap_casual.wav",

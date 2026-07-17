@@ -13,10 +13,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
+import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.RedFlagVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -30,15 +33,22 @@ fun LmuWindowsReadoutFlagDetailPane(
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
+        onRedFlagEnabledChanged = viewModel::onRedFlagEnabledChanged,
+        onRedFlagVoiceTypeChanged = viewModel::onRedFlagVoiceTypeChanged,
+        onRedFlagPreviewClicked = viewModel::onRedFlagPreviewClicked,
         modifier = modifier,
     )
 }
 
+@Suppress("LongParameterList")
 @Composable
 internal fun LmuWindowsReadoutFlagDetailPaneContent(
     uiState: LmuWindowsReadoutFlagDetailUiState,
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit,
     onPreviewClicked: (FlagReadoutItem) -> Unit,
+    onRedFlagEnabledChanged: (Boolean) -> Unit,
+    onRedFlagVoiceTypeChanged: (RedFlagVoiceType) -> Unit,
+    onRedFlagPreviewClicked: (RedFlagVoiceType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -68,6 +78,35 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 },
             )
         }
+        val redFlagLabel = stringResource(Res.string.flag_red)
+        val sessionStopLabel = stringResource(Res.string.flag_session_stop)
+        val redFlagChecked = uiState.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag] ?: true
+        val selectedRedFlagLabel = when (uiState.redFlagVoiceType) {
+            RedFlagVoiceType.RED_FLAG -> redFlagLabel
+            RedFlagVoiceType.SESSION_STOP -> sessionStopLabel
+        }
+        DetailPaneCard(
+            title = redFlagLabel,
+            checked = redFlagChecked,
+            onCheckedChange = onRedFlagEnabledChanged,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            bottomContent = {
+                DetailPaneCardChips(
+                    chipLabels = listOf(redFlagLabel, sessionStopLabel),
+                    selectedChipLabels = setOf(selectedRedFlagLabel),
+                    chipEnabled = redFlagChecked,
+                    onChipClick = { label ->
+                        val type = if (label == redFlagLabel) {
+                            RedFlagVoiceType.RED_FLAG
+                        } else {
+                            RedFlagVoiceType.SESSION_STOP
+                        }
+                        onRedFlagVoiceTypeChanged(type)
+                        onRedFlagPreviewClicked(type)
+                    },
+                )
+            },
+        )
     }
 }
 
@@ -82,8 +121,12 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
                 ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
                 ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
             ),
+            redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
         ),
         onFlagEnabledChanged = { _, _ -> },
         onPreviewClicked = {},
+        onRedFlagEnabledChanged = {},
+        onRedFlagVoiceTypeChanged = {},
+        onRedFlagPreviewClicked = {},
     )
 }

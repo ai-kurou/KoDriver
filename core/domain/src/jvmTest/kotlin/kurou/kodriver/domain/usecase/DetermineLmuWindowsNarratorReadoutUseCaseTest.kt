@@ -16,6 +16,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -400,6 +401,23 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         assertEquals(listOf(SpeechEvent.SessionStop), second.events)
+    }
+
+    @Test
+    fun `赤旗の音声種別がRED_FLAGのときはRedFlagイベントに変換する`() {
+        val first = useCase.determineRaceFlags(
+            state = LmuWindowsNarratorState(),
+            raceFlags = clearFlags(),
+            settings = settings(redFlagVoiceType = RedFlagVoiceType.RED_FLAG),
+        )
+
+        val second = useCase.determineRaceFlags(
+            state = first.state,
+            raceFlags = clearFlags(gamePhase = SessionPhase.RED_FLAG),
+            settings = settings(redFlagVoiceType = RedFlagVoiceType.RED_FLAG),
+        )
+
+        assertEquals(listOf(SpeechEvent.RedFlag), second.events)
     }
 
     @Test
@@ -797,6 +815,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
 private fun settings(
     enabledStates: Map<ReadoutItemKey, Boolean> = allEnabledStates,
     myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+    redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
     currentLap: Int = 1,
     skipFirstLap: Boolean = false,
     startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
@@ -806,6 +825,7 @@ private fun settings(
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
+    redFlagVoiceType = redFlagVoiceType,
     currentLap = currentLap,
     skipFirstLap = skipFirstLap,
     vehicleApproachStartReadoutType = startReadoutType,
