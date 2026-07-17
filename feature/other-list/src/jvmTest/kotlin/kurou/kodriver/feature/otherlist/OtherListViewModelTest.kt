@@ -18,11 +18,14 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
+import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import kotlin.test.AfterTest
@@ -47,8 +50,12 @@ class OtherListViewModelTest {
     @MockK
     private lateinit var exitConfirmationRepository: ExitConfirmationEnabledRepository
 
+    @MockK
+    private lateinit var dynamicColorRepository: DynamicColorEnabledRepository
+
     private val keepScreenOnFlow = MutableStateFlow(true)
     private val exitConfirmationFlow = MutableStateFlow(true)
+    private val dynamicColorFlow = MutableStateFlow(false)
 
     @BeforeTest
     fun setUp() {
@@ -67,6 +74,8 @@ class OtherListViewModelTest {
         saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
         observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(exitConfirmationRepository),
         saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationRepository),
+        observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorRepository),
+        saveDynamicColorEnabled = SaveDynamicColorEnabledUseCase(dynamicColorRepository),
         currentVersion = currentVersion,
         appVersionLabel = "Windows版KoDriverバージョン",
     )
@@ -79,6 +88,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         assertEquals(buildOtherListItems(), viewModel.uiState.first().items)
@@ -87,7 +100,8 @@ class OtherListViewModelTest {
         assertNull(viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -98,6 +112,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         viewModel.onItemSelected(OtherListItemType.Volume)
@@ -105,45 +123,33 @@ class OtherListViewModelTest {
         assertEquals(OtherListItemType.Volume, viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
-    fun `GitHubレポジトリを選択しても状態は変わらない`() = runTest {
+    fun `GitHubレポジトリまたはリリースページを選択しても状態は変わらない`() = runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         coEvery { keepScreenOnRepository.saveKeepScreenOn(any()) } answers { keepScreenOnFlow.update { firstArg() } }
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
+        }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
         }
         val viewModel = createViewModel()
         val initialState = viewModel.uiState.first()
 
         viewModel.onItemSelected(OtherListItemType.GitHubRepository)
-
-        assertEquals(initialState, viewModel.uiState.first())
-        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
-        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
-    }
-
-    @Test
-    fun `リリースページを選択しても状態は変わらない`() = runTest {
-        every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
-        coEvery { keepScreenOnRepository.saveKeepScreenOn(any()) } answers { keepScreenOnFlow.update { firstArg() } }
-        every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
-        coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
-            exitConfirmationFlow.update { firstArg() }
-        }
-        val viewModel = createViewModel()
-        val initialState = viewModel.uiState.first()
-
         viewModel.onItemSelected(OtherListItemType.ReleasePage)
 
         assertEquals(initialState, viewModel.uiState.first())
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -154,6 +160,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         viewModel.onItemSelected(OtherListItemType.License)
@@ -163,7 +173,8 @@ class OtherListViewModelTest {
         assertNull(viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -174,6 +185,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         viewModel.selectItem(OtherListItemType.ConsoleIp)
@@ -183,7 +198,8 @@ class OtherListViewModelTest {
         assertEquals(OtherListItemType.ConsoleIp, viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -194,6 +210,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         viewModel.onItemSelected(OtherListItemType.License)
@@ -202,7 +222,8 @@ class OtherListViewModelTest {
         assertNull(viewModel.uiState.first().selectedItem)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -213,6 +234,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         exitConfirmationFlow.update { false }
@@ -220,7 +245,8 @@ class OtherListViewModelTest {
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -231,6 +257,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         viewModel.onExitConfirmationEnabledChange(false)
@@ -239,8 +269,9 @@ class OtherListViewModelTest {
         assertEquals(false, viewModel.uiState.first().exitConfirmationEnabled)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
         coVerify(exactly = 1) { exitConfirmationRepository.saveExitConfirmationEnabled(false) }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -251,6 +282,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         keepScreenOnFlow.update { false }
@@ -258,7 +293,8 @@ class OtherListViewModelTest {
         assertEquals(false, viewModel.uiState.first().keepScreenOn)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -269,6 +305,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel()
 
         viewModel.onKeepScreenOnChange(false)
@@ -277,8 +317,34 @@ class OtherListViewModelTest {
         assertEquals(false, viewModel.uiState.first().keepScreenOn)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
         coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+    }
+
+    @Test
+    fun `Dynamic Colorの有効状態を監視・保存できる`() = runTest {
+        every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+        coEvery { keepScreenOnRepository.saveKeepScreenOn(any()) } answers { keepScreenOnFlow.update { firstArg() } }
+        every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
+        coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
+            exitConfirmationFlow.update { firstArg() }
+        }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
+        val viewModel = createViewModel()
+
+        viewModel.onDynamicColorEnabledChange(true)
+
+        assertEquals(true, dynamicColorFlow.first())
+        assertEquals(true, viewModel.uiState.first().dynamicColorEnabled)
+        verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+        verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        coVerify(exactly = 1) { dynamicColorRepository.saveDynamicColorEnabled(true) }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -289,6 +355,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v9.9.9")
         val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -298,7 +368,8 @@ class OtherListViewModelTest {
         coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -309,6 +380,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         coEvery { appUpdateRepository.getLatestRelease() } returns AppUpdate(tagName = "v1.0.0")
         val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -318,7 +393,8 @@ class OtherListViewModelTest {
         coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -329,12 +405,17 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel(currentVersion = "1.0.0")
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -345,6 +426,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         val viewModel = createViewModel(currentVersion = "")
 
         viewModel.checkUpdate()
@@ -352,7 +437,8 @@ class OtherListViewModelTest {
         assertFalse(viewModel.uiState.first().hasAppUpdate)
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 
     @Test
@@ -363,6 +449,10 @@ class OtherListViewModelTest {
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(any()) } answers {
             exitConfirmationFlow.update { firstArg() }
         }
+        every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+        coEvery { dynamicColorRepository.saveDynamicColorEnabled(any()) } answers {
+            dynamicColorFlow.update { firstArg() }
+        }
         coEvery { appUpdateRepository.getLatestRelease() } returns null
         val viewModel = createViewModel(currentVersion = "1.0.0")
 
@@ -372,6 +462,7 @@ class OtherListViewModelTest {
         coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
         verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
         verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
-        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository)
+        verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+        confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
     }
 }

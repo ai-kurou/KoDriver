@@ -32,12 +32,6 @@
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
 
-## デザイン（UI/UX・designsystem）
-
-- **対象**: Android アプリ全体のテーマ
-  **課題**: Android 12+ の Dynamic Color（Material You）に対応しておらず、常に固定のブランドカラーで表示される。レース用アプリとしてブランド色固定は妥当な判断でもあるため、対応しない場合でも「意図的に非対応」であることがどこにも記録されていない。
-  **改善案**: Dynamic Color を採用するか検討し、採用しない場合はその方針を designsystem の README に明記する。
-
 ## 作業改善（開発体験）
 
 - **対象**: `.github/`（PR テンプレート）

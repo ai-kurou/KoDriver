@@ -10,6 +10,7 @@ enum class OtherListItemType(
     ReadoutStartSound("readout_start_sound"),
     ExitConfirmation("exit_confirmation"),
     Theme("theme"),
+    DynamicColor("dynamic_color"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
     License("license"),

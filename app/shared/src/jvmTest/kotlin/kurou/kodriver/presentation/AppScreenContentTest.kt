@@ -162,4 +162,16 @@ class AppScreenContentTest {
 
         rule.onNodeWithText("TelemetryLogContent").assertExists()
     }
+
+    @Test
+    fun `dynamicColorEnabledがtrueでもJVMではフォールバックのテーマで描画される`() {
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                dynamicColorEnabled = true,
+            )
+        }
+
+        rule.onNode(hasText("その他")).assertExists()
+    }
 }

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
@@ -20,6 +21,7 @@ class AppScreenViewModel(
     observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
     private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
+    observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
 ) : ViewModel() {
 
     private val _hasAppUpdate = MutableStateFlow(false)
@@ -28,8 +30,14 @@ class AppScreenViewModel(
         _hasAppUpdate,
         observeKeepScreenOn(),
         observeExitConfirmationEnabled(),
-    ) { hasUpdate, keepOn, exitConfirmation ->
-        AppScreenUiState(hasAppUpdate = hasUpdate, keepScreenOn = keepOn, exitConfirmationEnabled = exitConfirmation)
+        observeDynamicColorEnabled(),
+    ) { hasUpdate, keepOn, exitConfirmation, dynamicColorEnabled ->
+        AppScreenUiState(
+            hasAppUpdate = hasUpdate,
+            keepScreenOn = keepOn,
+            exitConfirmationEnabled = exitConfirmation,
+            dynamicColorEnabled = dynamicColorEnabled,
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 
     fun checkUpdate() {
@@ -49,4 +57,5 @@ data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
     val keepScreenOn: Boolean = true,
     val exitConfirmationEnabled: Boolean = true,
+    val dynamicColorEnabled: Boolean = false,
 )

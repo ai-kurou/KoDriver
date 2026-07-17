@@ -44,6 +44,7 @@ class OtherContentTest {
         var themeDialogOpened = false
         var keepScreenOn = true
         var exitConfirmationEnabled = true
+        var dynamicColorEnabled = false
         var capturedOnBack: (() -> Unit)? = null
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
 
@@ -53,6 +54,8 @@ class OtherContentTest {
                     selectedItem = selectedItem,
                     keepScreenOn = keepScreenOn,
                     exitConfirmationEnabled = exitConfirmationEnabled,
+                    dynamicColorEnabled = dynamicColorEnabled,
+                    items = OtherListUiState().items + OtherListItemType.DynamicColor,
                 ),
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
@@ -60,6 +63,7 @@ class OtherContentTest {
                 onOpenThemeDialog = { themeDialogOpened = true },
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
+                onDynamicColorEnabledChange = { dynamicColorEnabled = it },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -104,6 +108,13 @@ class OtherContentTest {
         rule.waitForIdle()
 
         assertFalse(exitConfirmationEnabled)
+        assertFalse(backEnabled)
+
+        // DynamicColor（Switchで直接切り替える）
+        rule.onNode(hasText("ダイナミックカラー")).performClick()
+        rule.waitForIdle()
+
+        assertTrue(dynamicColorEnabled)
         assertFalse(backEnabled)
 
         // Theme（ダイアログを開く）
