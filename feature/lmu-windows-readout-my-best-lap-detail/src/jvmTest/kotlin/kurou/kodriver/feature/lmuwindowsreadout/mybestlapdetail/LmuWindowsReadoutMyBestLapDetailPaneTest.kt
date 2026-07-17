@@ -29,7 +29,7 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
         rule.onAllNodesWithText("自己ベストラップ更新")[1]
             .assertIsDisplayed()
             .assertIsSelected()
-        rule.onNodeWithText("自己ベストラップを更新したぞ").assertIsDisplayed()
+        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
     }
 
     @Test
@@ -42,7 +42,7 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("自己ベストラップを更新したぞ")
+        rule.onNodeWithText("ベストラップ")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -60,7 +60,7 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("自己ベストラップを更新したぞ").performClick()
+        rule.onNodeWithText("ベストラップ").performClick()
 
         assertEquals(MyBestLapVoiceType.CASUAL, changedVoiceType)
         assertEquals(MyBestLapVoiceType.CASUAL, previewedVoiceType)
