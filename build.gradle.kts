@@ -19,7 +19,7 @@ plugins {
 
 plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
-        resolution("serialize-javascript", "7.0.3")
+        resolution("serialize-javascript", "7.0.5")
     }
 }
 
