@@ -369,6 +369,7 @@ dependencies {
     kover(project(":feature:lmu-windows-readout-my-best-lap-detail"))
     kover(project(":feature:lmu-windows-readout-vehicle-damage-detail"))
     kover(project(":feature:lmu-windows-readout-tyre-temperature-detail"))
+    kover(project(":feature:lmu-windows-readout-remaining-energy-laps-detail"))
     kover(project(":feature:gt7-ps5-connection"))
     kover(project(":feature:gt7-ps5-readout-my-best-lap-detail"))
     kover(project(":feature:gt7-ps5-readout-remaining-fuel-laps-detail"))
