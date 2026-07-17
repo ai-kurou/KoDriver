@@ -1,0 +1,10 @@
+appId: kurou.kodriver
+---
+- launchApp
+- assertVisible: "読み上げ"
+- tapOn: "ログ"
+- assertVisible: "ログはまだありません"
+- tapOn: "その他"
+- assertVisible: "Windows版KoDriverへ接続するIPアドレス"
+- tapOn: "読み上げ"
+- assertVisible: "シミュレータを選択"
