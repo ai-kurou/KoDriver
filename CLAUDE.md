@@ -35,6 +35,7 @@ KoDriver/
 │   ├── lmu-windows-readout-vehicle-approach-detail/ 車両接近アナウンスの詳細設定
 │   ├── lmu-windows-readout-vehicle-damage-detail/   車両故障アナウンスの詳細設定
 │   ├── lmu-windows-readout-tyre-temperature-detail/ タイヤ温度アナウンスの詳細設定
+│   ├── lmu-windows-readout-remaining-virtual-energy-laps-detail/ バーチャルエナジー残量による残り周回数アナウンスの詳細設定（雛形のみ、未実装）
 │   ├── gt7-ps5-connection/              GT7 PS5 接続状態の監視
 │   ├── gt7-ps5-narrator/                GT7 PS5 WAV 音声再生とアナウンス制御
 │   ├── gt7-ps5-readout-my-best-lap-detail/      GT7自己ベストラップアナウンスの詳細設定

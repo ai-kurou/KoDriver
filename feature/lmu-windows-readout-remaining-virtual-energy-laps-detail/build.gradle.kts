@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "kurou.kodriver.feature.lmuwindowsreadout.remainingenergylapsdetail"
+        namespace = "kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail"
     }
 
     sourceSets {
@@ -18,5 +18,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmuwindowsreadout.remainingenergylapsdetail.generated.resources"
+    packageOfResClass = "kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.generated.resources"
 }
