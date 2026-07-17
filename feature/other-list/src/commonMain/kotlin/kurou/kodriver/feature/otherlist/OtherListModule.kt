@@ -12,5 +12,7 @@ import org.koin.dsl.module
  */
 val otherListModule = module {
     // ViewModel
-    viewModel { OtherListViewModel(get(), get(), get(), get(), get(), currentAppVersion(), currentAppVersionLabel()) }
+    viewModel {
+        OtherListViewModel(get(), get(), get(), get(), get(), get(), get(), currentAppVersion(), currentAppVersionLabel())
+    }
 }

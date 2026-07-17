@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 
@@ -21,6 +23,8 @@ class OtherListViewModel(
     private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
     observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
     private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
+    observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
+    private val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
     private val currentVersion: String,
     appVersionLabel: String,
 ) : ViewModel() {
@@ -35,10 +39,12 @@ class OtherListViewModel(
         _uiState,
         observeKeepScreenOn(),
         observeExitConfirmationEnabled(),
-    ) { state, keepScreenOn, exitConfirmationEnabled ->
+        observeDynamicColorEnabled(),
+    ) { state, keepScreenOn, exitConfirmationEnabled, dynamicColorEnabled ->
         state.copy(
             keepScreenOn = keepScreenOn,
             exitConfirmationEnabled = exitConfirmationEnabled,
+            dynamicColorEnabled = dynamicColorEnabled,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
@@ -76,5 +82,9 @@ class OtherListViewModel(
 
     fun onKeepScreenOnChange(enabled: Boolean) {
         viewModelScope.launch { saveKeepScreenOn(enabled) }
+    }
+
+    fun onDynamicColorEnabledChange(enabled: Boolean) {
+        viewModelScope.launch { saveDynamicColorEnabled(enabled) }
     }
 }
