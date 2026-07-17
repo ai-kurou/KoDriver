@@ -34,10 +34,6 @@
 
 ## デザイン（UI/UX・designsystem）
 
-- **対象**: `core/designsystem/.../Color.kt` / `Theme.kt`（ライトテーマ）
-  **課題**: ライトテーマの `primary = Yellow40` に対して `onPrimary = Neutral99`（ほぼ白）を組み合わせている。黄色系 primary × 白文字は WCAG のコントラスト比 4.5:1 を満たさないことが多く、ボタンラベル等の可読性が低い恐れがある。secondary（Lime）・tertiary（Neon）も同様の懸念がある。
-  **改善案**: 主要な色ペア（primary/onPrimary など）のコントラスト比を実測し、不足していれば `onPrimary` を暗色（Yellow10 等）へ変更する。スクリーンショットテストとは別に、色定義だけのコントラスト検証ユニットテストを designsystem に置くことも検討する。
-
 - **対象**: Android アプリ全体のテーマ
   **課題**: Android 12+ の Dynamic Color（Material You）に対応しておらず、常に固定のブランドカラーで表示される。レース用アプリとしてブランド色固定は妥当な判断でもあるため、対応しない場合でも「意図的に非対応」であることがどこにも記録されていない。
   **改善案**: Dynamic Color を採用するか検討し、採用しない場合はその方針を designsystem の README に明記する。
