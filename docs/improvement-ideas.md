@@ -54,10 +54,6 @@
 
 ## CI（GitHub Actions）
 
-- **対象**: `.github/workflows/on-pull-request.yml` の `concurrency`
-  **課題**: `cancel-in-progress: false` のため、同一 PR に連続プッシュすると古いコミットの run が完走するまで新しい run が待たされる。PR の CI は最新コミットの結果だけが意味を持つため、古い run の完走は Actions 時間の浪費になる。
-  **改善案**: PR トリガーでは `cancel-in-progress: true` にする（`update-module-graph` の push と干渉しないよう、ジョブ分割や group 名の工夫と合わせて検討する）。
-
 - **対象**: `.github/`（依存自動更新）
   **課題**: GitHub Actions は SHA ピン留めされているが `dependabot.yml` / Renovate 設定がなく、actions・Gradle ライブラリの更新が手動任せになっている。CLAUDE.md は「ライブラリは最新安定版を使う」方針だが、それを支える自動化がない。
   **改善案**: Dependabot（`github-actions` + `gradle` エコシステム）または Renovate を導入し、更新 PR を自動作成させる。
