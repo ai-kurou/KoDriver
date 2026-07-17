@@ -1,8 +1,10 @@
 package kurou.kodriver.feature.main
 
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
+import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
+import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 import org.koin.core.module.Module
@@ -29,6 +31,8 @@ val mainModule = module {
     factory { ObserveKeepScreenOnEnabledUseCase(get()) }
     factory { SaveExitConfirmationEnabledUseCase(get()) }
     factory { SaveKeepScreenOnEnabledUseCase(get()) }
+    factory { ObserveDynamicColorEnabledUseCase(get()) }
+    factory { SaveDynamicColorEnabledUseCase(get()) }
 }
 
 expect val mainPlatformModule: Module
