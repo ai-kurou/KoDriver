@@ -32,6 +32,12 @@
   **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
   **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
 
+## E2E テスト
+
+- **対象**: Android版（`app:androidApp`）・デスクトップ版（`app:desktopApp`）のE2Eテスト方針
+  **課題**: MaestroはiOS・Android・Flutter・Webブラウザに対応する一方、Compose MultiplatformのデスクトップターゲットをブラックボックスでUI操作するサポートがない。逆に`ComposeUiTest`（`androidx.compose.ui.test`、`AppTest.kt`で使用中）はComposable関数をテストコードから直接呼び出す方式のため、難読化・コード署名済みのリリースAPKをブラックボックスで操作する用途には使えない（debugビルド・ソース依存が前提）。デスクトップ版は現状署名も難読化もされておらず、ビルドタイプによる実質的な差もないため、`ComposeUiTest`（`AppTest.kt`）がそのまま実質的なUI結合テストとして機能している。
+  **改善案**: 署名済みAndroid版に対するブラックボックスE2EはMaestroで担当し、デスクトップ版は`ComposeUiTest`（`app:desktopApp`の`jvmTest`/`test`）で担当する、とツールを役割分担する。両者を単一ツールで統一しようとしない。Maestro導入時はCIでAndroidエミュレータ起動・署名済みAPKインストール・flow実行の3ステップが必要になる点を踏まえてワークフロー（`build-android.yml`等）設計を検討する。
+
 ## 作業改善（開発体験）
 
 - **対象**: `.github/`（PR テンプレート）
