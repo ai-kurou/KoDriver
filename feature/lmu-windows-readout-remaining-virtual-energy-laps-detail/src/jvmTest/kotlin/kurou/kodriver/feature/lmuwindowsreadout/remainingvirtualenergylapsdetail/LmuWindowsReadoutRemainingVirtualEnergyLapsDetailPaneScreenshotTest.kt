@@ -18,11 +18,25 @@ class LmuWindowsReadoutRemainingVirtualEnergyLapsDetailPaneScreenshotTest {
 
     @Test
     fun `デフォルト`() {
+        capturePane()
+    }
+
+    @Test
+    fun `1周設定`() {
+        capturePane(
+            uiState = LmuWindowsReadoutRemainingVirtualEnergyLapsDetailUiState(remainingVirtualEnergyLaps = 1),
+        )
+    }
+
+    private fun capturePane(
+        uiState: LmuWindowsReadoutRemainingVirtualEnergyLapsDetailUiState =
+            LmuWindowsReadoutRemainingVirtualEnergyLapsDetailUiState(),
+    ) {
         rule.setContent {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        LmuWindowsReadoutRemainingVirtualEnergyLapsDetailPane()
+                        LmuWindowsReadoutRemainingVirtualEnergyLapsDetailPaneContent(uiState = uiState)
                     }
                 }
             }

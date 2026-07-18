@@ -93,6 +93,8 @@ class AppTest {
         clickItem("車両接近")
         clickContentDescription("閾値の説明を表示")
         dismissBottomSheet()
+        clickItem("バーチャルエナジー残り周回数")
+        waitUntilDisplayed("残り約: 3 周")
         clickItem("車両故障")
         waitUntilDisplayed("オーバーヒート")
         clickItem("タイヤ温度")
