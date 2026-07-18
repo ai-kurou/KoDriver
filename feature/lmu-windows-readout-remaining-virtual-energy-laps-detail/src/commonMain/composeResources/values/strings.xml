@@ -2,4 +2,6 @@
 <resources>
     <string name="remaining_virtual_energy_laps_description">バーチャルエナジー残量から走行可能な残り周回数を計算し、音声でお知らせします。</string>
     <string name="remaining_virtual_energy_laps_enabled">バーチャルエナジー残り周回数</string>
+    <string name="remaining_virtual_energy_laps_slider_label">残り約: %1$d 周</string>
+    <string name="remaining_virtual_energy_laps_reset_to_default">デフォルト値にリセット</string>
 </resources>

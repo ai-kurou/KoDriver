@@ -8,6 +8,7 @@ import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.lmuWindowsReadoutMyBestLapDetailModule
+import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.lmuWindowsReadoutRemainingVirtualEnergyLapsDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.lmuWindowsReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.lmuWindowsReadoutVehicleApproachDetailModule
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsReadoutVehicleDamageDetailModule
@@ -55,6 +56,7 @@ val featureModules: List<Module> = listOf(
     lmuWindowsReadoutMyBestLapDetailModule,
     lmuWindowsReadoutVehicleDamageDetailModule,
     lmuWindowsReadoutTyreTemperatureDetailModule,
+    lmuWindowsReadoutRemainingVirtualEnergyLapsDetailModule,
     gt7Ps5ReadoutMyBestLapDetailModule,
     gt7Ps5ReadoutRemainingFuelLapsDetailModule,
 )
