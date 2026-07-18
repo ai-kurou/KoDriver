@@ -98,8 +98,10 @@ class Gt7Ps5NarratorViewModelTest {
                 observeRemainingFuelLapsThreshold =
                     ObserveGt7Ps5RemainingFuelLapsUseCase(remainingFuelLapsPreferencesRepository),
             ),
-            ttsEngine = ttsEngine,
-            saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            eventProcessor = Gt7Ps5NarratorEventProcessor(
+                ttsEngine = ttsEngine,
+                saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            ),
             currentTimeMs = currentTimeMs,
         )
     }
