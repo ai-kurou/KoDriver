@@ -3,6 +3,9 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -23,6 +26,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -75,6 +79,8 @@ fun androidDataModule(context: Context) = module {
     single<LmuWindowsTyreCarcassTemperatureRepository> {
         WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
     }
+    // バーチャルエナジー残量は現時点でサーバーから配信されていないため No-Op（常に空の Flow）を返す
+    single<LmuWindowsVirtualEnergyRepository> { NoOpLmuWindowsVirtualEnergyRepository() }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }
@@ -135,4 +141,8 @@ fun androidDataModule(context: Context) = module {
     single<TelemetryLogRepository> {
         createTelemetryLogRepository(context = context)
     }
+}
+
+private class NoOpLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+    override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
 }
