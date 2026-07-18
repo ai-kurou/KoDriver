@@ -14,9 +14,9 @@ import kotlin.test.assertFailsWith
 class LmuWindowsTyreTemperaturePreferencesSerializerTest {
 
     @Test
-    fun `デフォルト値は highThresholdCelsius が 90、enabledStates が空Map`() {
+    fun `デフォルト値は highThresholdCelsius が 95、enabledStates が空Map`() {
         assertEquals(
-            LmuWindowsTyreTemperaturePreferences(highThresholdCelsius = 90, enabledStates = emptyMap()),
+            LmuWindowsTyreTemperaturePreferences(highThresholdCelsius = 95, enabledStates = emptyMap()),
             LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue,
         )
     }

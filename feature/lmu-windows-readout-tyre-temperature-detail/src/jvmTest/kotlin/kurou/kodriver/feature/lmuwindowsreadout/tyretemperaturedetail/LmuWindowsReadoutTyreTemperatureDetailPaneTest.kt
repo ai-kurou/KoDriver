@@ -26,7 +26,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 95),
+                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90),
                     onHighThresholdReset = { resetCalled = true },
                 )
             }

@@ -63,7 +63,7 @@ import kotlin.math.roundToInt
 
 private const val HIGH_THRESHOLD_MIN = 90f
 private const val HIGH_THRESHOLD_MAX = 100f
-private const val HIGH_THRESHOLD_DEFAULT = 90f
+private const val HIGH_THRESHOLD_DEFAULT = 95f
 
 @Composable
 fun LmuWindowsReadoutTyreTemperatureDetailPane(

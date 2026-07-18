@@ -35,8 +35,8 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `highThresholdCelsius の初期値は 90`() = testScope.runTest {
-        assertEquals(90, repository.observeHighThresholdCelsius().first())
+    fun `highThresholdCelsius の初期値は 95`() = testScope.runTest {
+        assertEquals(95, repository.observeHighThresholdCelsius().first())
     }
 
     @Test

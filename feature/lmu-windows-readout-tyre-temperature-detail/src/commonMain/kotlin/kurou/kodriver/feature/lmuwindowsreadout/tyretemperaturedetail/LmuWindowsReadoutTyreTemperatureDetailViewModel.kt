@@ -80,6 +80,6 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     companion object {
-        const val DEFAULT_HIGH_THRESHOLD_CELSIUS = 90
+        const val DEFAULT_HIGH_THRESHOLD_CELSIUS = 95
     }
 }
