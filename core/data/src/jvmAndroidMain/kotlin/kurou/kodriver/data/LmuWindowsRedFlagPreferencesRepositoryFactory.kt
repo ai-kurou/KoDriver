@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createLmuWindowsRedFlagPreferencesDataStore
+import kurou.kodriver.data.repository.LmuWindowsRedFlagPreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
+
+fun createLmuWindowsRedFlagPreferencesRepository(directory: String): LmuWindowsRedFlagPreferencesRepository =
+    LmuWindowsRedFlagPreferencesRepositoryImpl(createLmuWindowsRedFlagPreferencesDataStore(directory))

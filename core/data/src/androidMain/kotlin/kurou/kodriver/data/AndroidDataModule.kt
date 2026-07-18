@@ -13,6 +13,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -99,6 +100,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsMyBestLapPreferencesRepository> {
         createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<LmuWindowsRedFlagPreferencesRepository> {
+        createLmuWindowsRedFlagPreferencesRepository(context.filesDir.absolutePath)
     }
     single<ServerIpPreferencesRepository> {
         AndroidServerIpPreferencesRepository(context.serverIpDataStore)

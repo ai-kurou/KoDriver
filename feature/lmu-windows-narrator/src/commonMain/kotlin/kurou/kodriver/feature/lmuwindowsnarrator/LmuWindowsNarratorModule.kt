@@ -5,6 +5,7 @@ import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -45,7 +46,7 @@ val lmuWindowsNarratorModule: Module = module {
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(named("lmu_windows")), get()) }
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-    factory { NarratorUseCases(get(), get(), get()) }
+    factory { NarratorUseCases(get(), get(), get(), get()) }
     factory { FlagUseCases(get(), get()) }
     factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
@@ -57,6 +58,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { SaveTelemetryLogUseCase(get()) }
     factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
+    factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
     factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }

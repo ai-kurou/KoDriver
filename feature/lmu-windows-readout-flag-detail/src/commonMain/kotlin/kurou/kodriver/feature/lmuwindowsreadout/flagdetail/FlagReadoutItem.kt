@@ -3,8 +3,6 @@ package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_yellow
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -33,11 +31,5 @@ internal enum class FlagReadoutItem(
         labelRes = Res.string.flag_full_course_yellow,
         chipLabelRes = Res.string.flag_full_course_yellow,
         previewEvent = SpeechEvent.FullCourseYellow,
-    ),
-    RedFlag(
-        key = ReadoutItemKey.LmuWindows.Flag.RedFlag,
-        labelRes = Res.string.flag_red,
-        chipLabelRes = Res.string.flag_session_stop,
-        previewEvent = SpeechEvent.SessionStop,
     ),
 }
