@@ -6,6 +6,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -18,6 +19,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -46,7 +48,7 @@ val lmuWindowsNarratorModule: Module = module {
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(named("lmu_windows")), get()) }
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-    factory { NarratorUseCases(get(), get(), get(), get()) }
+    factory { NarratorUseCases(get(), get(), get(), get(), get(), get()) }
     factory { FlagUseCases(get(), get()) }
     factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
@@ -75,6 +77,8 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
+    factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
+    factory { ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase(get()) }
 
     // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）
     factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }

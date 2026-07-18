@@ -32,6 +32,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -48,6 +49,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -56,6 +58,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -64,6 +67,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -77,6 +81,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -137,6 +142,13 @@ class LmuWindowsNarratorViewModelTest {
     @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository
 
+    @MockK
+    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
+
+    @MockK
+    private lateinit var remainingVirtualEnergyLapsPreferencesRepository:
+        LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -149,35 +161,32 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Suppress("LongParameterList")
-    private fun createViewModel(
-        vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
-        flagChannel: Channel<LmuWindowsRaceFlagsData> = Channel(Channel.UNLIMITED),
-        damageChannel: Channel<LmuWindowsVehicleDamageData> = Channel(Channel.UNLIMITED),
-        telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
-        tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
-        ttsEngine: TextToSpeechEngine,
-        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        orderOverride: List<ReadoutItemKey> = listOf(
-            ReadoutItemKey.LmuWindows.Flag.Root,
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-        ),
-        voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-        redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
-        skipFirstLap: Boolean = false,
-        startReadoutEnabled: Boolean = true,
-        startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-        sustainedReadoutEnabled: Boolean = true,
-        sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-        sustainedApproachDurationSeconds: Int = 7,
-        tyreTemperatureHighThreshold: Int = 90,
-        tyreTemperatureOverheatWarningEnabled: Boolean = true,
-        tyreTemperatureLowWarningEnabled: Boolean = true,
-        tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
-        simulator: Simulator? = Simulator.LmuWindows,
-        currentTimeMs: () -> Long = { 0L },
-    ): LmuWindowsNarratorViewModel {
+    private fun stubRepositories(
+        vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData>,
+        flagChannel: Channel<LmuWindowsRaceFlagsData>,
+        damageChannel: Channel<LmuWindowsVehicleDamageData>,
+        telemetryChannel: Channel<LmuWindowsTelemetryData>,
+        tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData>,
+        virtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData>,
+        enabledOverrides: Map<ReadoutItemKey, Boolean>,
+        flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
+        vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean>,
+        orderOverride: List<ReadoutItemKey>,
+        voiceType: MyBestLapVoiceType,
+        redFlagVoiceType: RedFlagVoiceType,
+        skipFirstLap: Boolean,
+        startReadoutEnabled: Boolean,
+        startReadoutType: VehicleApproachStartReadoutType,
+        sustainedReadoutEnabled: Boolean,
+        sustainedReadoutType: VehicleApproachSustainedReadoutType,
+        sustainedApproachDurationSeconds: Int,
+        tyreTemperatureHighThreshold: Int,
+        tyreTemperatureOverheatWarningEnabled: Boolean,
+        tyreTemperatureLowWarningEnabled: Boolean,
+        tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
+        remainingVirtualEnergyLapsThreshold: Int,
+        simulator: Simulator?,
+    ) {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
         every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
         every { vehicleApproachPreferencesRepository.observeSkipFirstLap() } returns MutableStateFlow(skipFirstLap)
@@ -216,7 +225,70 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(tyreTemperatureLowWarningPhasesOverride)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
+        every { virtualEnergyRepository.virtualEnergyStream() } returns virtualEnergyChannel.receiveAsFlow()
+        every { remainingVirtualEnergyLapsPreferencesRepository.observeRemainingVirtualEnergyLaps() } returns
+            MutableStateFlow(remainingVirtualEnergyLapsThreshold)
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+    }
+
+    @Suppress("LongParameterList")
+    private fun createViewModel(
+        vehicleApproachChannel: Channel<LmuWindowsVehicleApproachData> = Channel(Channel.UNLIMITED),
+        flagChannel: Channel<LmuWindowsRaceFlagsData> = Channel(Channel.UNLIMITED),
+        damageChannel: Channel<LmuWindowsVehicleDamageData> = Channel(Channel.UNLIMITED),
+        telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
+        tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
+        virtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
+        ttsEngine: TextToSpeechEngine,
+        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        orderOverride: List<ReadoutItemKey> = listOf(
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+        ),
+        voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+        redFlagVoiceType: RedFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
+        skipFirstLap: Boolean = false,
+        startReadoutEnabled: Boolean = true,
+        startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+        sustainedReadoutEnabled: Boolean = true,
+        sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+        sustainedApproachDurationSeconds: Int = 7,
+        tyreTemperatureHighThreshold: Int = 90,
+        tyreTemperatureOverheatWarningEnabled: Boolean = true,
+        tyreTemperatureLowWarningEnabled: Boolean = true,
+        tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
+        remainingVirtualEnergyLapsThreshold: Int = 3,
+        simulator: Simulator? = Simulator.LmuWindows,
+        currentTimeMs: () -> Long = { 0L },
+    ): LmuWindowsNarratorViewModel {
+        stubRepositories(
+            vehicleApproachChannel = vehicleApproachChannel,
+            flagChannel = flagChannel,
+            damageChannel = damageChannel,
+            telemetryChannel = telemetryChannel,
+            tyreTemperatureChannel = tyreTemperatureChannel,
+            virtualEnergyChannel = virtualEnergyChannel,
+            enabledOverrides = enabledOverrides,
+            flagEnabledOverrides = flagEnabledOverrides,
+            vehicleDamageEnabledOverrides = vehicleDamageEnabledOverrides,
+            orderOverride = orderOverride,
+            voiceType = voiceType,
+            redFlagVoiceType = redFlagVoiceType,
+            skipFirstLap = skipFirstLap,
+            startReadoutEnabled = startReadoutEnabled,
+            startReadoutType = startReadoutType,
+            sustainedReadoutEnabled = sustainedReadoutEnabled,
+            sustainedReadoutType = sustainedReadoutType,
+            sustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
+            tyreTemperatureHighThreshold = tyreTemperatureHighThreshold,
+            tyreTemperatureOverheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
+            tyreTemperatureLowWarningEnabled = tyreTemperatureLowWarningEnabled,
+            tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
+            remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold,
+            simulator = simulator,
+        )
 
         return LmuWindowsNarratorViewModel(
             vehicleApproachUseCases = VehicleApproachUseCases(
@@ -273,6 +345,10 @@ class LmuWindowsNarratorViewModelTest {
                 observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
                 observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagPreferencesRepository),
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
+                observeRemainingVirtualEnergyLapsThreshold = ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase(
+                    remainingVirtualEnergyLapsPreferencesRepository,
+                ),
             ),
             currentTimeMs = currentTimeMs,
         )
@@ -1237,6 +1313,130 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
+    }
+
+    // --- バーチャルエナジー残り周回数 ---
+
+    @Test
+    fun `最速ラップの30秒前を過ぎて閾値以下になったら読み上げる`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            virtualEnergyChannel = virtualEnergyChannel,
+            ttsEngine = tts,
+            remainingVirtualEnergyLapsThreshold = 3,
+            currentTimeMs = { fakeTime },
+        )
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
+        fakeTime = 100_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
+        fakeTime = 160_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), spokenTexts)
+    }
+
+    @Test
+    fun `バーチャルエナジー残り周回数項目が無効なら読み上げない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            virtualEnergyChannel = virtualEnergyChannel,
+            ttsEngine = tts,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to false),
+            remainingVirtualEnergyLapsThreshold = 3,
+            currentTimeMs = { fakeTime },
+        )
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
+        fakeTime = 100_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
+        fakeTime = 160_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    @Test
+    fun `バーチャルエナジー残り周回数読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val logs = mutableListOf<TelemetryLog>()
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            virtualEnergyChannel = virtualEnergyChannel,
+            ttsEngine = tts,
+            remainingVirtualEnergyLapsThreshold = 3,
+            currentTimeMs = { fakeTime },
+        )
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
+            logs.add(
+                TelemetryLog(
+                    id = 0,
+                    createdAt = firstArg(),
+                    simulatorId = secondArg(),
+                    readoutItemKey = thirdArg(),
+                    telemetryJson = arg(3),
+                ),
+            )
+        }
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
+        fakeTime = 100_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
+        fakeTime = 160_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+
+        assertEquals(1, logs.size)
+        val log = logs.first()
+        assertEquals(160_000L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.value, log.readoutItemKey)
+    }
+
+    @Test
+    fun `LMU非選択時はバーチャルエナジー残り周回数を読み上げない`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            virtualEnergyChannel = virtualEnergyChannel,
+            ttsEngine = tts,
+            simulator = null,
+            remainingVirtualEnergyLapsThreshold = 3,
+            currentTimeMs = { fakeTime },
+        )
+
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
+        fakeTime = 100_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
+        fakeTime = 160_000L
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 }
 

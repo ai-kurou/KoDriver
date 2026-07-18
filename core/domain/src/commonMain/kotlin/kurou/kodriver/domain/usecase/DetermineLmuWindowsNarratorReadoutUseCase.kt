@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -23,6 +24,22 @@ data class LmuWindowsNarratorState(
     val previousBestLapTimeMs: Long? = null,
     val tyreOverheating: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
+    val lastAnnouncedRemainingVirtualEnergyLaps: Int = -1,
+    val lastVirtualEnergyEvaluationLap: Int = -1,
+    val virtualEnergyTrackingState: LmuWindowsVirtualEnergyTrackingState = LmuWindowsVirtualEnergyTrackingState(),
+)
+
+data class LmuWindowsVirtualEnergyTrackingState(
+    val raceStartRemainingRatio: Double? = null,
+    val raceStartLap: Int? = null,
+    val currentLap: Int = -1,
+    val currentLapStartedAtMs: Long = 0L,
+    val currentRemainingRatio: Double = 0.0,
+    val bestLapTimeMs: Long = -1L,
+    val totalRefilled: Double = 0.0,
+    val hasRefilled: Boolean = false,
+    val isNewSession: Boolean = false,
+    val observedAtMs: Long = 0L,
 )
 
 data class LmuWindowsVehicleApproachState(
@@ -53,6 +70,8 @@ data class LmuWindowsNarratorReadoutSettings(
     val vehicleApproachSustainedReadoutType: VehicleApproachSustainedReadoutType,
     val tyreTemperatureHighThresholdCelsius: Int,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
+    val remainingVirtualEnergyLapsThreshold: Int,
+    val remainingVirtualEnergyLapsEnabled: Boolean,
 )
 
 data class LmuWindowsNarratorReadoutDecision(
@@ -326,6 +345,130 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
     }
 
+    fun determineRemainingVirtualEnergyLaps(
+        state: LmuWindowsNarratorState,
+        telemetry: LmuWindowsTelemetryData,
+        virtualEnergy: LmuWindowsVirtualEnergyData,
+        settings: LmuWindowsNarratorReadoutSettings,
+        observedAtMs: Long,
+    ): LmuWindowsNarratorReadoutDecision {
+        val trackingState = trackVirtualEnergy(state.virtualEnergyTrackingState, telemetry, virtualEnergy, observedAtMs)
+        val stateAfterTracking = when {
+            trackingState.isNewSession -> state.copy(
+                lastAnnouncedRemainingVirtualEnergyLaps = -1,
+                lastVirtualEnergyEvaluationLap = -1,
+                virtualEnergyTrackingState = trackingState,
+            )
+            trackingState.hasRefilled -> state.copy(
+                lastAnnouncedRemainingVirtualEnergyLaps = -1,
+                virtualEnergyTrackingState = trackingState,
+            )
+            else -> state.copy(virtualEnergyTrackingState = trackingState)
+        }
+        val evaluation = calculateRemainingVirtualEnergyLaps(stateAfterTracking, settings)
+        val stateAfterEvaluation = stateAfterTracking.copy(lastVirtualEnergyEvaluationLap = evaluation.evaluatedLap)
+        val remainingLaps = evaluation.remainingLaps ?: return LmuWindowsNarratorReadoutDecision(
+            stateAfterEvaluation,
+            emptyList(),
+        )
+        return LmuWindowsNarratorReadoutDecision(
+            state = stateAfterEvaluation.copy(lastAnnouncedRemainingVirtualEnergyLaps = remainingLaps),
+            events = listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(remainingLaps)),
+        )
+    }
+
+    private fun trackVirtualEnergy(
+        state: LmuWindowsVirtualEnergyTrackingState,
+        telemetry: LmuWindowsTelemetryData,
+        virtualEnergy: LmuWindowsVirtualEnergyData,
+        observedAtMs: Long,
+    ): LmuWindowsVirtualEnergyTrackingState {
+        val currentLap = telemetry.timing.currentLap
+        val remainingRatio = virtualEnergy.remainingRatio
+        return when {
+            currentLap < state.currentLap -> LmuWindowsVirtualEnergyTrackingState(
+                raceStartRemainingRatio = remainingRatio,
+                raceStartLap = currentLap,
+                currentLap = currentLap,
+                currentLapStartedAtMs = observedAtMs,
+                currentRemainingRatio = remainingRatio,
+                bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                totalRefilled = 0.0,
+                hasRefilled = false,
+                isNewSession = true,
+                observedAtMs = observedAtMs,
+            )
+            state.raceStartRemainingRatio == null -> LmuWindowsVirtualEnergyTrackingState(
+                raceStartRemainingRatio = remainingRatio,
+                raceStartLap = currentLap,
+                currentLap = currentLap,
+                currentLapStartedAtMs = observedAtMs,
+                currentRemainingRatio = remainingRatio,
+                bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                totalRefilled = 0.0,
+                hasRefilled = false,
+                isNewSession = false,
+                observedAtMs = observedAtMs,
+            )
+            else -> {
+                val refilled = (remainingRatio - state.currentRemainingRatio).coerceAtLeast(0.0)
+                val currentLapStartedAtMs = if (currentLap != state.currentLap) {
+                    observedAtMs
+                } else {
+                    state.currentLapStartedAtMs
+                }
+                state.copy(
+                    currentLap = currentLap,
+                    currentLapStartedAtMs = currentLapStartedAtMs,
+                    currentRemainingRatio = remainingRatio,
+                    bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                    totalRefilled = state.totalRefilled + refilled,
+                    hasRefilled = refilled > 0.0,
+                    isNewSession = false,
+                    observedAtMs = observedAtMs,
+                )
+            }
+        }
+    }
+
+    private fun calculateRemainingVirtualEnergyLaps(
+        state: LmuWindowsNarratorState,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): RemainingVirtualEnergyLapsEvaluation {
+        val trackingState = state.virtualEnergyTrackingState
+        if (trackingState.currentLap == state.lastVirtualEnergyEvaluationLap) {
+            return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        }
+        val bestLapTimeMs = trackingState.bestLapTimeMs
+        if (bestLapTimeMs <= 0L) return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        val readoutTimingMs =
+            (bestLapTimeMs - REMAINING_VIRTUAL_ENERGY_LAPS_READOUT_BEFORE_BEST_LAP_MS).coerceAtLeast(0L)
+        val currentLapElapsedMs = trackingState.observedAtMs - trackingState.currentLapStartedAtMs
+        if (currentLapElapsedMs < readoutTimingMs) {
+            return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        }
+        val startRatio = trackingState.raceStartRemainingRatio
+            ?: return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        val startLap = trackingState.raceStartLap
+            ?: return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        val lapsCompleted = trackingState.currentLap - startLap
+        if (lapsCompleted <= 0) return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        val consumedRatio = startRatio + trackingState.totalRefilled - trackingState.currentRemainingRatio
+        if (consumedRatio <= 0.0) return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+        val avgConsumption = consumedRatio / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
+        val remainingLapsFloor = (trackingState.currentRemainingRatio / avgConsumption).toInt()
+        if (remainingLapsFloor < 0 || remainingLapsFloor > settings.remainingVirtualEnergyLapsThreshold) {
+            return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+        }
+        if (remainingLapsFloor == state.lastAnnouncedRemainingVirtualEnergyLaps) {
+            return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+        }
+        if (!settings.remainingVirtualEnergyLapsEnabled) {
+            return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+        }
+        return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, remainingLapsFloor)
+    }
+
     private fun determineVehicleApproachSustainedEvent(
         leftSustainedAnnounce: Boolean,
         rightSustainedAnnounce: Boolean,
@@ -347,8 +490,15 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val APPROACH_DEBOUNCE_MS = 50L
         const val MILLIS_PER_SECOND = 1_000L
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
+        const val REMAINING_VIRTUAL_ENERGY_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000L
+        const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9
     }
 }
+
+private data class RemainingVirtualEnergyLapsEvaluation(
+    val evaluatedLap: Int,
+    val remainingLaps: Int?,
+)
 
 private enum class ApproachSide {
     LEFT,
