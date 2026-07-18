@@ -72,6 +72,7 @@ kotlin {
             implementation(projects.feature.lmuWindowsReadoutMyBestLapDetail)
             implementation(projects.feature.lmuWindowsReadoutVehicleDamageDetail)
             implementation(projects.feature.lmuWindowsReadoutTyreTemperatureDetail)
+            implementation(projects.feature.lmuWindowsReadoutRemainingVirtualEnergyLapsDetail)
             implementation(projects.feature.gt7Ps5ReadoutMyBestLapDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelLapsDetail)
             implementation(libs.koin.core)

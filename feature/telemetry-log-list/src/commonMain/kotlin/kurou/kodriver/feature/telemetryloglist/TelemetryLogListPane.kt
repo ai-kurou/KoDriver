@@ -56,6 +56,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_my_bes
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_overheat
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_virtual_energy_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_low_warning
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_overheat_warning
@@ -328,21 +329,35 @@ private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when
 }
 
 @Composable
-internal fun readoutItemDisplayName(readoutItemKey: String): String {
-    return when (val key = ReadoutItemKey.fromValue(readoutItemKey)) {
+private fun vehicleApproachDisplayName(vehicleApproach: ReadoutItemKey.LmuWindows.VehicleApproach): String =
+    when (vehicleApproach) {
         is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> stringResource(Res.string.readout_item_vehicle_approach)
         is ReadoutItemKey.LmuWindows.VehicleApproach.Sustained ->
             stringResource(Res.string.readout_item_vehicle_approach_sustained)
         is ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout ->
             stringResource(Res.string.readout_item_vehicle_approach_start_readout)
-        is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(key)
-        is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
-        is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
+    }
+
+@Composable
+private fun tyreTemperatureDisplayName(tyreTemperature: ReadoutItemKey.LmuWindows.TyreTemperature): String =
+    when (tyreTemperature) {
         is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> stringResource(Res.string.readout_item_tyre_temperature)
         is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning ->
             stringResource(Res.string.readout_item_tyre_overheat_warning)
         is ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning ->
             stringResource(Res.string.readout_item_tyre_low_warning)
+    }
+
+@Composable
+internal fun readoutItemDisplayName(readoutItemKey: String): String {
+    return when (val key = ReadoutItemKey.fromValue(readoutItemKey)) {
+        is ReadoutItemKey.LmuWindows.VehicleApproach -> vehicleApproachDisplayName(key)
+        is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(key)
+        is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
+        is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
+        is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureDisplayName(key)
+        is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
+            stringResource(Res.string.readout_item_remaining_virtual_energy_laps)
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)

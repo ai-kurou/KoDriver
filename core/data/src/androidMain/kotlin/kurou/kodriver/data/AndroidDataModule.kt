@@ -14,6 +14,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -22,6 +23,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -74,6 +76,9 @@ fun androidDataModule(context: Context) = module {
     single<LmuWindowsTyreCarcassTemperatureRepository> {
         WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
     }
+    single<LmuWindowsVirtualEnergyRepository> {
+        WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
+    }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
     }
@@ -103,6 +108,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsRedFlagPreferencesRepository> {
         createLmuWindowsRedFlagPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository> {
+        createLmuWindowsRemainingVirtualEnergyLapsPreferencesRepository(context.filesDir.absolutePath)
     }
     single<ServerIpPreferencesRepository> {
         AndroidServerIpPreferencesRepository(context.serverIpDataStore)

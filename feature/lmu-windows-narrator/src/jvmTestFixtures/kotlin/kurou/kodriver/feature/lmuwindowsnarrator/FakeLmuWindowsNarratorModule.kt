@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -23,6 +24,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import org.koin.dsl.module
 
@@ -42,6 +44,7 @@ val fakeLmuWindowsNarratorModule = module {
     single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
     single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
     single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
+    single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
 }
 
 class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
@@ -123,4 +126,8 @@ class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferen
     private val flow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
     override suspend fun saveVoiceType(type: MyBestLapVoiceType) { flow.update { type } }
+}
+
+class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+    override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
 }
