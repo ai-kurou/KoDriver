@@ -12,6 +12,10 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      # Roborazzi のスナップショットファイル名がテストクラスの完全修飾名を含むため長くなりやすく、
+      # Windows のデフォルトパス長上限（260文字）を超えて checkout が失敗することがある。
+      - run: git config --global core.longpaths true
+
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
