@@ -205,13 +205,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         data: LmuWindowsTyreCarcassTemperatureData,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
-        val threshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
-        val anyOverheating = data.wheels.values.any { it >= threshold }
-        val shouldAnnounce = !state.tyreOverheating && anyOverheating &&
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
+        val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
+        val anyHot = data.wheels.values.any { it >= hotThreshold }
+        val allCool = data.wheels.values.all { it <= coolThreshold }
+        val nextOverheating = when {
+            anyHot -> true
+            allCool -> false
+            else -> state.tyreOverheating
+        }
+        val shouldAnnounce = !state.tyreOverheating && nextOverheating &&
             settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
             settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning)
         return LmuWindowsNarratorReadoutDecision(
-            state = state.copy(tyreOverheating = anyOverheating),
+            state = state.copy(tyreOverheating = nextOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreOverheat) else emptyList(),
         )
     }
@@ -490,6 +497,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val APPROACH_DEBOUNCE_MS = 50L
         const val MILLIS_PER_SECOND = 1_000L
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
+        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
         const val REMAINING_VIRTUAL_ENERGY_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000L
         const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9
     }

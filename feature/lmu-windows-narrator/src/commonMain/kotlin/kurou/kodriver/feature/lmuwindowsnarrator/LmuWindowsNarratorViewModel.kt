@@ -177,7 +177,7 @@ class LmuWindowsNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, RedFlagVoiceType.SESSION_STOP)
 
     private val tyreHighThreshold = tyreTemperatureUseCases.observeHighThreshold()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 90)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 95)
 
     private val tyreLowWarningPhases = tyreTemperatureUseCases.observeLowWarningPhases()
         .stateIn(viewModelScope, SharingStarted.Eagerly, defaultTyreLowWarningPhases)

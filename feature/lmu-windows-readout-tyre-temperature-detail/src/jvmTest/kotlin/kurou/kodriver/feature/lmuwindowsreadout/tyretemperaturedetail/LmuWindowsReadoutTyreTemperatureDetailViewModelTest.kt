@@ -129,24 +129,24 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値90に戻る`() = runTest {
+    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値95に戻る`() = runTest {
         val highThresholdFlow = MutableStateFlow(90)
         every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
         coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
-        coEvery { repository.saveHighThresholdCelsius(90) } answers { highThresholdFlow.update { 90 } }
+        coEvery { repository.saveHighThresholdCelsius(95) } answers { highThresholdFlow.update { 95 } }
         val viewModel = createViewModel()
 
         viewModel.onHighThresholdChanged(100)
         viewModel.onHighThresholdReset()
 
-        assertEquals(90, viewModel.uiState.first().highThresholdCelsius)
+        assertEquals(95, viewModel.uiState.first().highThresholdCelsius)
         verify(exactly = 1) { repository.observeHighThresholdCelsius() }
         verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { repository.observeLowWarningPhases() }
         coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(90) }
+        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(95) }
         confirmVerified(repository)
     }
 

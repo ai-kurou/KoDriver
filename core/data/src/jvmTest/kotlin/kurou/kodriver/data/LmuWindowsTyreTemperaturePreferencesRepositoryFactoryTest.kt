@@ -24,10 +24,10 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は highThresholdCelsius が 90`() = testScope.runTest {
+    fun `デフォルト値は highThresholdCelsius が 95`() = testScope.runTest {
         val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(90, repository.observeHighThresholdCelsius().first())
+        assertEquals(95, repository.observeHighThresholdCelsius().first())
     }
 
     @Test
