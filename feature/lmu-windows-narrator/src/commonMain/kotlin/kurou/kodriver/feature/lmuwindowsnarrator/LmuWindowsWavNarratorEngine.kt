@@ -47,26 +47,29 @@ internal class LmuWindowsWavNarratorEngine(
     override val currentReadoutItemKey: ReadoutItemKey?
         get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
-    private val eventToFile = mapOf(
-        SpeechEvent.CarLeft to "files/car_left.wav",
-        SpeechEvent.CarRight to "files/car_right.wav",
-        SpeechEvent.LeftApproach to "files/left_approach.wav",
-        SpeechEvent.RightApproach to "files/right_approach.wav",
-        SpeechEvent.KeepLeft to "files/keep_left.wav",
-        SpeechEvent.KeepRight to "files/keep_right.wav",
-        SpeechEvent.LeftSustained to "files/left_sustained.wav",
-        SpeechEvent.RightSustained to "files/right_sustained.wav",
-        SpeechEvent.BlueFlag to "files/blue_flag.wav",
-        SpeechEvent.YellowFlag to "files/yellow_flag.wav",
-        SpeechEvent.FullCourseYellow to "files/full_course_yellow.wav",
-        SpeechEvent.SessionStop to "files/session_stopped.wav",
-        SpeechEvent.RedFlag to "files/red_flag.wav",
-        SpeechEvent.Overheating to "files/gp2_gp2.wav",
-        SpeechEvent.LmuWindowsMyBestLapFormal to "files/my_best_lap_formal.wav",
-        SpeechEvent.LmuWindowsMyBestLapCasual to "files/my_best_lap_casual.wav",
-        SpeechEvent.TyreOverheat to "files/tyre_overheat.wav",
-        SpeechEvent.TyreCold to "files/tyre_cold.wav",
-    )
+    private val eventToFile: Map<SpeechEvent, String> = buildMap {
+        put(SpeechEvent.CarLeft, "files/car_left.wav")
+        put(SpeechEvent.CarRight, "files/car_right.wav")
+        put(SpeechEvent.LeftApproach, "files/left_approach.wav")
+        put(SpeechEvent.RightApproach, "files/right_approach.wav")
+        put(SpeechEvent.KeepLeft, "files/keep_left.wav")
+        put(SpeechEvent.KeepRight, "files/keep_right.wav")
+        put(SpeechEvent.LeftSustained, "files/left_sustained.wav")
+        put(SpeechEvent.RightSustained, "files/right_sustained.wav")
+        put(SpeechEvent.BlueFlag, "files/blue_flag.wav")
+        put(SpeechEvent.YellowFlag, "files/yellow_flag.wav")
+        put(SpeechEvent.FullCourseYellow, "files/full_course_yellow.wav")
+        put(SpeechEvent.SessionStop, "files/session_stopped.wav")
+        put(SpeechEvent.RedFlag, "files/red_flag.wav")
+        put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
+        put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
+        put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
+        put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
+        for (laps in 0..MAX_REMAINING_VIRTUAL_ENERGY_LAPS) {
+            put(SpeechEvent.RemainingVirtualEnergyLapsWarning(laps), "files/remaining_virtual_energy_laps_$laps.wav")
+        }
+    }
 
     private val startSoundTypeToFile = mapOf(
         ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
@@ -135,5 +138,9 @@ internal class LmuWindowsWavNarratorEngine(
         startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         soundPlayer.play(mainSound, vol)
         _currentReadoutItemKey = null
+    }
+
+    internal companion object {
+        const val MAX_REMAINING_VIRTUAL_ENERGY_LAPS = 5
     }
 }

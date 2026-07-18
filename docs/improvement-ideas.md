@@ -27,9 +27,3 @@
 - **対象**: `feature/other-server-ip-detail/.../OtherServerIpDetailViewModel.kt`
   **課題**: IPv4 形式チェック、接続確認付き保存、接続警告後の強制保存が ViewModel 内にある。画面専用の入力処理としては許容範囲だが、接続先設定の保存ルールとして再利用される場合は責務が重くなる。
   **改善案**: 他画面や自動設定で再利用する段階で `ValidateIpAddressUseCase` や `SaveServerIpWithConnectivityCheckUseCase` へ切り出す。
-
-## 音声アセット
-
-- **対象**: `feature/lmu-windows-narrator/.../LmuWindowsWavNarratorEngine.kt`
-  **課題**: `LmuWindowsNarratorViewModel` にバーチャルエナジー残り周回数の判定・読み上げロジック（`determineRemainingVirtualEnergyLaps`）を実装したが、`SpeechEvent.RemainingVirtualEnergyLapsWarning` に対応する WAV ファイルが `eventToFile` に未登録。GT7 の `remaining_fuel_laps_0.wav`〜`remaining_fuel_laps_5.wav` 相当の音声アセットが存在しないため、実際には無音（`sounds[event] ?: return` で早期リターン）のままになる。
-  **改善案**: 音声アセット（`remaining_virtual_energy_laps_0.wav`〜`_N.wav` 等）を用意し、`LmuWindowsWavNarratorEngine.eventToFile` に登録する。
