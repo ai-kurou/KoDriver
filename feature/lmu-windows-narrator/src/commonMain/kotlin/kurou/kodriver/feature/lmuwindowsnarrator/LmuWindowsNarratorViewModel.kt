@@ -391,8 +391,9 @@ class LmuWindowsNarratorViewModel(
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
             remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold.value,
-            remainingVirtualEnergyLapsEnabled = mergedEnabledStates.value.getValue(
+            remainingVirtualEnergyLapsEnabled = mergedEnabledStates.value.getOrDefault(
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+                defaultValue = false,
             ),
         )
 
