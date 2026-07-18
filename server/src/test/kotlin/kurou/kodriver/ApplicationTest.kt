@@ -30,6 +30,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -40,11 +41,13 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -61,13 +64,16 @@ class ApplicationTest {
     fun `バージョンエンドポイントはアプリバージョンをJSONで返す`() = testApplication {
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
         val response = client.get("/version")
@@ -79,13 +85,16 @@ class ApplicationTest {
     fun `ルートはサーバーの応答を返す`() = testApplication {
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
         val response = client.get("/")
@@ -98,13 +107,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsFlagRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -130,13 +142,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsFlagRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -160,13 +175,16 @@ class ApplicationTest {
         val repository = CancellableLmuWindowsFlagRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -186,13 +204,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsVehicleApproachRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -217,13 +238,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsVehicleApproachRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -247,13 +271,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsVehicleDamageRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -277,13 +304,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsVehicleDamageRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             )
         }
 
@@ -307,11 +337,14 @@ class ApplicationTest {
         val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                ),
             )
         }
 
@@ -332,11 +365,14 @@ class ApplicationTest {
         val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
-                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                ),
             )
         }
 
@@ -356,16 +392,82 @@ class ApplicationTest {
     }
 
     @Test
+    fun `バーチャルエナジー残量をJSONでWebSocketへ送信する`() = testApplication {
+        val repository = FakeLmuWindowsVirtualEnergyRepository()
+        application {
+            module(
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
+                ),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/virtual_energy") {
+            repository.emit(virtualEnergyData1)
+
+            val message = withTimeout(1_000) {
+                (incoming.receive() as Frame.Text).readText()
+            }
+            assertEquals(virtualEnergyJson1, message)
+        }
+    }
+
+    @Test
+    fun `バーチャルエナジー残量の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeLmuWindowsVirtualEnergyRepository()
+        application {
+            module(
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
+                ),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/virtual_energy") {
+            repository.emit(virtualEnergyData1)
+            repository.emit(virtualEnergyData1)
+            repository.emit(virtualEnergyData2)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(virtualEnergyJson1, first)
+            assertEquals(virtualEnergyJson2, second)
+        }
+    }
+
+    @Test
     fun `KoDriverServerはstartで起動しstopで停止する`() {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
-            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-            observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-            observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-            observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                EmptyTyreCarcassTemperatureRepository,
+            useCases = KoDriverServerUseCases(
+                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                    EmptyTyreCarcassTemperatureRepository,
+                ),
+                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
             ),
-            observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             port = port,
             host = "127.0.0.1",
         )
@@ -384,13 +486,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(repository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(repository),
             )
         }
 
@@ -411,13 +516,16 @@ class ApplicationTest {
         val repository = FakeLmuWindowsRepository()
         application {
             module(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(repository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
-                observeLmuWindows = ObserveLmuWindowsUseCase(repository),
             )
         }
 
@@ -446,6 +554,7 @@ class ApplicationTest {
                     single<LmuWindowsVehicleDamageRepository> { EmptyVehicleDamageRepository }
                     single<LmuWindowsTyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
+                    single<LmuWindowsVirtualEnergyRepository> { EmptyVirtualEnergyRepository }
                 },
             )
         }.koin
@@ -682,3 +791,23 @@ private const val timingJson1 =
 private const val timingJson2 =
     """{"currentLapTimeMs":70000,"lastLapTimeMs":91000,"bestLapTimeMs":88000,""" +
         """"sector1Ms":31000,"sector1And2Ms":29000,"currentLap":4,"maxLaps":10}"""
+
+private val virtualEnergyData1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
+private val virtualEnergyData2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.3)
+
+private const val virtualEnergyJson1 = """{"remainingRatio":0.5}"""
+private const val virtualEnergyJson2 = """{"remainingRatio":0.3}"""
+
+private object EmptyVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+    override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
+}
+
+private class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+    private val channel = Channel<LmuWindowsVirtualEnergyData>(capacity = Channel.UNLIMITED)
+
+    override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = channel.receiveAsFlow()
+
+    fun emit(data: LmuWindowsVirtualEnergyData) {
+        channel.trySend(data).getOrThrow()
+    }
+}

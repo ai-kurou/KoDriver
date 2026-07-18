@@ -16,36 +16,53 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import org.koin.core.Koin
+
+/**
+ * `:server` が配信する各 WebSocket エンドポイントの購読用 UseCase をまとめたバンドル。
+ *
+ * [KoDriverServer] / [Application.module] のコンストラクタ・関数パラメータ数を detekt の
+ * LongParameterList 閾値内に収めるため、個別のコンストラクタ引数ではなくこのデータクラスで受け渡す。
+ */
+data class KoDriverServerUseCases(
+    val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
+    val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
+    val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
+    val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
+    val observeLmuWindows: ObserveLmuWindowsUseCase,
+    val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+)
 
 fun main() {
     KoDriverServer(
-        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyFlagRepository),
-        observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-        observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-        observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-            EmptyTyreCarcassTemperatureRepository,
+        useCases = KoDriverServerUseCases(
+            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyFlagRepository),
+            observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+            observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+            observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                EmptyTyreCarcassTemperatureRepository,
+            ),
+            observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+            observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
         ),
-        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
     ).start(wait = true)
 }
 
 class KoDriverServer(
-    observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
-    observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
-    observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
-    observeLmuWindows: ObserveLmuWindowsUseCase,
+    useCases: KoDriverServerUseCases,
     private val port: Int = DEFAULT_PORT,
     host: String = DEFAULT_HOST,
 ) {
@@ -55,13 +72,7 @@ class KoDriverServer(
         port = port,
         host = host,
         module = {
-            module(
-                observeRaceFlags,
-                observeVehicleApproach,
-                observeVehicleDamage,
-                observeTyreCarcassTemperature,
-                observeLmuWindows,
-            )
+            module(useCases)
         },
     )
 
@@ -83,28 +94,29 @@ class KoDriverServer(
 
 fun createKoDriverServer(koin: Koin): KoDriverServer {
     return KoDriverServer(
-        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
-        observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
-            koin.get<LmuWindowsVehicleApproachRepository>(),
+        useCases = KoDriverServerUseCases(
+            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
+            observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                koin.get<LmuWindowsVehicleApproachRepository>(),
+            ),
+            observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                koin.get<LmuWindowsVehicleDamageRepository>(),
+            ),
+            observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
+            ),
+            observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
+            observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                koin.get<LmuWindowsVirtualEnergyRepository>(),
+            ),
         ),
-        observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(koin.get<LmuWindowsVehicleDamageRepository>()),
-        observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-            koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
-        ),
-        observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
     )
 }
 
 private const val WEB_SOCKET_PING_PERIOD_MS = 15_000L
 private const val WEB_SOCKET_TIMEOUT_MS = 15_000L
 
-fun Application.module(
-    observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
-    observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
-    observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
-    observeLmuWindows: ObserveLmuWindowsUseCase,
-) {
+fun Application.module(useCases: KoDriverServerUseCases) {
     install(WebSockets) {
         // クライアントがサイレントに消えた（half-open になった）接続を検知して
         // セッションを解放するため、ping/pong を有効にする。
@@ -121,11 +133,12 @@ fun Application.module(
                 ContentType.Application.Json,
             )
         }
-        flagWebSocket(observeRaceFlags)
-        vehicleApproachWebSocket(observeVehicleApproach)
-        vehicleDamageWebSocket(observeVehicleDamage)
-        tyreCarcassTemperatureWebSocket(observeTyreCarcassTemperature)
-        timingWebSocket(observeLmuWindows)
+        flagWebSocket(useCases.observeRaceFlags)
+        vehicleApproachWebSocket(useCases.observeVehicleApproach)
+        vehicleDamageWebSocket(useCases.observeVehicleDamage)
+        tyreCarcassTemperatureWebSocket(useCases.observeTyreCarcassTemperature)
+        timingWebSocket(useCases.observeLmuWindows)
+        virtualEnergyWebSocket(useCases.observeVirtualEnergy)
     }
 }
 
@@ -149,4 +162,8 @@ private object EmptyLmuWindowsRepository : LmuWindowsRepository {
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
     override suspend fun isConnected(): Boolean = false
     override suspend fun disconnect() = Unit
+}
+
+private object EmptyVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+    override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
 }
