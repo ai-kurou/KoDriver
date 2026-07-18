@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="remaining_virtual_energy_laps_description">バーチャルエナジー残量から走行可能な残り周回数を計算し、音声でお知らせします。</string>
-    <string name="remaining_virtual_energy_laps_enabled">バーチャルエナジー残りラップ</string>
+    <string name="remaining_virtual_energy_laps_enabled">バーチャルエナジー残り周回数</string>
 </resources>
