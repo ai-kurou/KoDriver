@@ -11,9 +11,9 @@ on:
       version:
         description: 'gradle.properties の appVersion'
         value: ${{ jobs.build.outputs.version }}
-      artifact-name:
+      artifact_name:
         description: 'アップロードした署名済みAPKのartifact名'
-        value: ${{ jobs.build.outputs.artifact-name }}
+        value: ${{ jobs.build.outputs.artifact_name }}
     secrets:
       KEYSTORE_BASE64:
         required: true
@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 15
     outputs:
       version: ${{ steps.version.outputs.version }}
-      artifact-name: ${{ steps.artifact.outputs.name }}
+      artifact_name: ${{ steps.artifact.outputs.name }}
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
