@@ -99,6 +99,25 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
+    fun `RemainingVirtualEnergyLapsWarning はバーチャルエナジー残り周回数音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == REMAINING_VIRTUAL_ENERGY_LAPS_2_PATH) REMAINING_VIRTUAL_ENERGY_LAPS_2_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.RemainingVirtualEnergyLapsWarning(2))
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(REMAINING_VIRTUAL_ENERGY_LAPS_2_SOUND, player.playedSounds[1])
+    }
+
+    @Test
     fun `MyBestLapFormal は自己ベストラップ通常音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
@@ -434,8 +453,10 @@ class LmuWindowsWavNarratorEngineTest {
         const val TYRE_COLD_PATH = "files/tyre_cold.wav"
         const val KEEP_LEFT_PATH = "files/keep_left.wav"
         const val LEFT_SUSTAINED_PATH = "files/left_sustained.wav"
+        const val REMAINING_VIRTUAL_ENERGY_LAPS_2_PATH = "files/remaining_virtual_energy_laps_2.wav"
         val KEEP_LEFT_SOUND = byteArrayOf(10)
         val LEFT_SUSTAINED_SOUND = byteArrayOf(11)
+        val REMAINING_VIRTUAL_ENERGY_LAPS_2_SOUND = byteArrayOf(12)
         val CAR_LEFT_SOUND = byteArrayOf(1)
         val EVENT_SOUND = byteArrayOf(2)
         val FORMULA_RADIO_SOUND = byteArrayOf(3)

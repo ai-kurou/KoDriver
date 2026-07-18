@@ -56,4 +56,7 @@ sealed interface SpeechEvent {
     data class RemainingFuelLapsWarning(val laps: Int) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
     }
+    data class RemainingVirtualEnergyLapsWarning(val laps: Int) : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root
+    }
 }

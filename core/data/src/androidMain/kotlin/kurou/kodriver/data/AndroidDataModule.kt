@@ -23,6 +23,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -74,6 +75,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsTyreCarcassTemperatureRepository> {
         WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
+    }
+    single<LmuWindowsVirtualEnergyRepository> {
+        WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
     }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)

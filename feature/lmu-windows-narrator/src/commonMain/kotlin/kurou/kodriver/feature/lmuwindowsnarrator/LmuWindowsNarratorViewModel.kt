@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -35,6 +36,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -48,6 +50,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -91,6 +94,8 @@ data class NarratorUseCases(
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
     val saveTelemetryLog: SaveTelemetryLogUseCase,
+    val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+    val observeRemainingVirtualEnergyLapsThreshold: ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase,
 )
 
 private val defaultTyreLowWarningPhases =
@@ -188,6 +193,16 @@ class LmuWindowsNarratorViewModel(
 
     private val sustainedReadoutType = vehicleApproachUseCases.observeSustainedReadoutType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+
+    private val remainingVirtualEnergyLapsThreshold = narratorUseCases.observeRemainingVirtualEnergyLapsThreshold()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
+
+    private val virtualEnergyFlow = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) emptyFlow()
+            else narratorUseCases.observeVirtualEnergy()
+        }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob = lmuTelemetryFlow
@@ -335,6 +350,34 @@ class LmuWindowsNarratorViewModel(
         }
         .launchIn(viewModelScope)
 
+    @Suppress("UnusedPrivateProperty")
+    private val remainingVirtualEnergyLapsJob = combine(
+        lmuTelemetryFlow,
+        virtualEnergyFlow,
+    ) { telemetry, virtualEnergy -> telemetry to virtualEnergy }
+        .onEach { (telemetry, virtualEnergy) ->
+            val observedAtMs = currentTimeMs()
+            val decision = narratorUseCases.determineReadout.determineRemainingVirtualEnergyLaps(
+                state = narratorState,
+                telemetry = telemetry,
+                virtualEnergy = virtualEnergy,
+                settings = currentSettings,
+                observedAtMs = observedAtMs,
+            )
+            narratorState = decision.state
+            decision.events.forEach { event ->
+                if (speakWithPriority(event)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        simulatorId = Simulator.LmuWindows.id,
+                        readoutItemKey = event.readoutItemKey.value,
+                        telemetryJson = buildTelemetryLogJson(telemetry, virtualEnergy),
+                    )
+                }
+            }
+        }
+        .launchIn(viewModelScope)
+
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = mergedEnabledStates.value,
@@ -347,6 +390,10 @@ class LmuWindowsNarratorViewModel(
             vehicleApproachSustainedReadoutType = sustainedReadoutType.value,
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
+            remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold.value,
+            remainingVirtualEnergyLapsEnabled = mergedEnabledStates.value.getValue(
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ),
         )
 
     /**
@@ -400,6 +447,16 @@ private fun buildTelemetryLogJson(
 
 private fun buildTelemetryLogJson(previous: LmuWindowsTelemetryData?, current: LmuWindowsTelemetryData): String =
     """{"previous":${previous?.toJson() ?: "null"},"current":${current.toJson()}}"""
+
+private fun buildTelemetryLogJson(
+    telemetry: LmuWindowsTelemetryData,
+    virtualEnergy: LmuWindowsVirtualEnergyData,
+): String =
+    "{" +
+        """"currentLap":${telemetry.timing.currentLap},""" +
+        """"bestLapTimeMs":${telemetry.timing.bestLapTimeMs},""" +
+        """"remainingRatio":${virtualEnergy.remainingRatio}""" +
+        "}"
 
 private fun LmuWindowsTelemetryData.toJson(): String =
     "{" +

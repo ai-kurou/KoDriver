@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -26,6 +27,7 @@ import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCaseTest {
@@ -80,6 +82,171 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         assertEquals(emptyList<SpeechEvent>(), second.events)
+    }
+
+    @Test
+    fun `バーチャルエナジー残り周回数は最速ラップの30秒前を過ぎて閾値以下になったら読み上げる`() {
+        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val nextLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            settings = settings(remainingVirtualEnergyLapsThreshold = 3),
+            observedAtMs = 100_000L,
+        )
+        val decision = useCase.determineRemainingVirtualEnergyLaps(
+            state = nextLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            settings = settings(remainingVirtualEnergyLapsThreshold = 3),
+            observedAtMs = 160_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), decision.events)
+        assertEquals(2, decision.state.lastVirtualEnergyEvaluationLap)
+        assertEquals(0, decision.state.lastAnnouncedRemainingVirtualEnergyLaps)
+    }
+
+    @Test
+    fun `バーチャルエナジー残り周回数は読み上げタイミング前なら読み上げない`() {
+        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val nextLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            settings = settings(),
+            observedAtMs = 100_000L,
+        )
+        val decision = useCase.determineRemainingVirtualEnergyLaps(
+            state = nextLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            settings = settings(),
+            observedAtMs = 159_999L,
+        )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(-1, decision.state.lastVirtualEnergyEvaluationLap)
+    }
+
+    @Test
+    fun `バーチャルエナジー残り周回数が無効なら評価済みラップだけ更新して読み上げない`() {
+        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
+            settings = settings(remainingVirtualEnergyLapsEnabled = false),
+            observedAtMs = 0L,
+        )
+        val nextLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            settings = settings(remainingVirtualEnergyLapsEnabled = false),
+            observedAtMs = 100_000L,
+        )
+        val decision = useCase.determineRemainingVirtualEnergyLaps(
+            state = nextLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            settings = settings(remainingVirtualEnergyLapsEnabled = false),
+            observedAtMs = 160_000L,
+        )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(2, decision.state.lastVirtualEnergyEvaluationLap)
+    }
+
+    @Test
+    fun `補充後は同じバーチャルエナジー残り周回数でも再度読み上げる`() {
+        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val secondLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.3),
+            settings = settings(),
+            observedAtMs = 100_000L,
+        )
+        val firstWarningDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = secondLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.3),
+            settings = settings(),
+            observedAtMs = 160_000L,
+        )
+        val refilledDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = firstWarningDecision.state,
+            telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.8),
+            settings = settings(),
+            observedAtMs = 200_000L,
+        )
+        val fourthLapDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = refilledDecision.state,
+            telemetry = lapTelemetry(currentLap = 4, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.2),
+            settings = settings(),
+            observedAtMs = 300_000L,
+        )
+        val secondWarningDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = fourthLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 4, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.2),
+            settings = settings(),
+            observedAtMs = 360_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), firstWarningDecision.events)
+        assertTrue(refilledDecision.events.isEmpty())
+        assertEquals(-1, refilledDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
+        assertEquals(0.5, refilledDecision.state.virtualEnergyTrackingState.totalRefilled)
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), secondWarningDecision.events)
+    }
+
+    @Test
+    fun `ラップ数が戻ったらバーチャルエナジー残り周回数の読み上げ履歴をリセットする`() {
+        val state = LmuWindowsNarratorState(
+            lastAnnouncedRemainingVirtualEnergyLaps = 2,
+            lastVirtualEnergyEvaluationLap = 5,
+            virtualEnergyTrackingState = LmuWindowsVirtualEnergyTrackingState(
+                raceStartRemainingRatio = 1.0,
+                raceStartLap = 1,
+                currentLap = 5,
+                currentRemainingRatio = 0.2,
+                bestLapTimeMs = 90_000L,
+            ),
+        )
+
+        val decision = useCase.determineRemainingVirtualEnergyLaps(
+            state = state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 200_000L,
+        )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(-1, decision.state.lastAnnouncedRemainingVirtualEnergyLaps)
+        assertEquals(-1, decision.state.lastVirtualEnergyEvaluationLap)
+        assertEquals(1, decision.state.virtualEnergyTrackingState.currentLap)
     }
 
     @Test
@@ -809,6 +976,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
     ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
     ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+    ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to true,
 )
 
 @Suppress("LongParameterList")
@@ -822,6 +990,8 @@ private fun settings(
     sustainedApproachDurationSeconds: Int = 7,
     sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
+    remainingVirtualEnergyLapsThreshold: Int = 3,
+    remainingVirtualEnergyLapsEnabled: Boolean = true,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
@@ -838,6 +1008,8 @@ private fun settings(
         SessionPhase.GRID_WALK,
         SessionPhase.FORMATION,
     ),
+    remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold,
+    remainingVirtualEnergyLapsEnabled = remainingVirtualEnergyLapsEnabled,
 )
 
 private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
@@ -864,6 +1036,33 @@ private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
         positionZ = 0.0,
     ),
 )
+
+private fun lapTelemetry(currentLap: Int, bestLapTimeMs: Long) = LmuWindowsTelemetryData(
+    timestampMs = 0L,
+    engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+    inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+    tyres = LmuWindowsTyreData(wheels = emptyMap()),
+    fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+    timing = LmuWindowsTimingData(
+        currentLapTimeMs = 0L,
+        lastLapTimeMs = 0L,
+        bestLapTimeMs = bestLapTimeMs,
+        sector1Ms = 0L,
+        sector1And2Ms = 0L,
+        currentLap = currentLap,
+        maxLaps = 0,
+    ),
+    vehicle = LmuWindowsVehicleData(
+        localVelocityX = 0.0,
+        localVelocityY = 0.0,
+        localVelocityZ = 0.0,
+        positionX = 0.0,
+        positionY = 0.0,
+        positionZ = 0.0,
+    ),
+)
+
+private fun virtualEnergy(remainingRatio: Double) = LmuWindowsVirtualEnergyData(remainingRatio = remainingRatio)
 
 private fun leftVehicleApproach(vehicleId: Int) = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(vehicleId),
