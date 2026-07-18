@@ -10,10 +10,10 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  record-jvm:
+  record-desktop:
     if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'record-golden-images'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -59,7 +59,7 @@ jobs:
 
   commit:
     if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'record-golden-images'
-    needs: [record-jvm, record-android]
+    needs: [record-desktop, record-android]
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

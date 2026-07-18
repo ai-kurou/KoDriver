@@ -27,18 +27,3 @@
 - **対象**: `feature/other-server-ip-detail/.../OtherServerIpDetailViewModel.kt`
   **課題**: IPv4 形式チェック、接続確認付き保存、接続警告後の強制保存が ViewModel 内にある。画面専用の入力処理としては許容範囲だが、接続先設定の保存ルールとして再利用される場合は責務が重くなる。
   **改善案**: 他画面や自動設定で再利用する段階で `ValidateIpAddressUseCase` や `SaveServerIpWithConnectivityCheckUseCase` へ切り出す。
-
-- **対象**: `feature/gt7-ps5-narrator/.../Gt7Ps5NarratorViewModel.kt`
-  **課題**: 読み上げ判定自体は `DetermineGt7Ps5NarratorReadoutUseCase` に切れているが、優先度に基づく読み上げ中断判定、前回テレメトリとのログJSON生成、機能ごとの前回値保持が ViewModel に残っている。GT7の読み上げ項目が増えると LMU Narrator と同様に肥大化しやすい。
-  **改善案**: 読み上げ優先度制御やログ保存を担う小さな UseCase / service へ段階的に切り出し、ViewModel は Flow の接続とライフサイクル管理に寄せる。
-
-## 作業改善（開発体験）
-
-- **対象**: `.github/`（PR テンプレート）
-  **課題**: `PULL_REQUEST_TEMPLATE.md` がなく、PR 説明の構成（概要・変更点・確認事項）が作成者ごとにばらつく。CLAUDE.md の完了前チェックリストとも連動していない。
-  **改善案**: 日本語の PR テンプレートを追加し、「実行した検証コマンド」「スクリーンショットテスト要否」「ドキュメント更新要否」のチェックボックスを設ける。
-
-- **対象**: `docs/improvement-ideas.md` の運用
-  **課題**: 記録は蓄積される一方で、着手判断・優先度付けの仕組みがない。項目が増えるほど「書いたが誰も読まない」状態になりやすい。
-  **改善案**: 定期的（リリース前など）に棚卸しし、着手するものは GitHub Issue 化して本ファイルからは Issue 番号を添えて削除する運用を README に明記する。
-
