@@ -42,7 +42,8 @@ class Gt7Ps5NarratorEventProcessorTest {
             observedAtMs = 0L,
         )
 
-        assertEquals(true, logs.single().telemetryJson.startsWith("{\"previous\":null,"))
+        assertEquals(true, logs.single().telemetryJson.startsWith("{\"state\":{\"raw\":"))
+        assertEquals(true, logs.single().telemetryJson.contains("\"previousTelemetry\":null"))
     }
 
     @Test
@@ -65,21 +66,25 @@ class Gt7Ps5NarratorEventProcessorTest {
             200L,
         )
 
+        assertEquals(1, logs.size)
+        assertEquals(200L, logs.single().createdAt)
+        assertEquals(Simulator.Gt7Ps5.id, logs.single().simulatorId)
+        assertEquals(sourceKey.value, logs.single().readoutItemKey)
         assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = 200L,
-                    simulatorId = Simulator.Gt7Ps5.id,
-                    readoutItemKey = sourceKey.value,
-                    telemetryJson =
-                        """{"previous":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":60000,""" +
-                            """"gasLevel":20.0,"gasCapacity":100.0},"current":{"lapCount":0,""" +
-                            """"lapsInRace":5,"bestLapTimeMs":59000,"gasLevel":20.0,"gasCapacity":100.0}}""",
-                ),
+            true,
+            logs.single().telemetryJson.contains(
+                """"previousTelemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":60000,""" +
+                    """"gasLevel":20.0,"gasCapacity":100.0}""",
             ),
-            logs,
         )
+        assertEquals(
+            true,
+            logs.single().telemetryJson.contains(
+                """"telemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":59000,""" +
+                    """"gasLevel":20.0,"gasCapacity":100.0}""",
+            ),
+        )
+        assertEquals(true, logs.single().telemetryJson.contains(""""observedAtMs":200"""))
     }
 
     @Test
