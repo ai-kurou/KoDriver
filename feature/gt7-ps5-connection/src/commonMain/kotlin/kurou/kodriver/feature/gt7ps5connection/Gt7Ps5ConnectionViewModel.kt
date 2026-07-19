@@ -13,7 +13,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
-data class Gt7Ps5ConnectionUiState(
+internal data class Gt7Ps5ConnectionUiState(
     val connectionStatus: Gt7Ps5ConnectionStatus = Gt7Ps5ConnectionStatus.UNCHECKED,
     val fuelLevel: Float? = null,
     val fuelCapacity: Float? = null,
@@ -30,7 +30,7 @@ enum class Gt7Ps5ConnectionStatus {
     DISCONNECTED,
 }
 
-class Gt7Ps5ConnectionViewModel(
+internal class Gt7Ps5ConnectionViewModel(
     private val observeGt7Ps5Connection: ObserveGt7Ps5ConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {

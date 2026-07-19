@@ -56,7 +56,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
-data class VehicleApproachUseCases(
+internal data class VehicleApproachUseCases(
     val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeSkipFirstLap: ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase,
@@ -66,30 +66,30 @@ data class VehicleApproachUseCases(
     val observeSustainedReadoutType: ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase,
 )
 
-data class VehicleDamageUseCases(
+internal data class VehicleDamageUseCases(
     val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeVehicleDamageEnabledStates: ObserveLmuWindowsVehicleDamageEnabledStatesUseCase,
 )
 
-data class ReadoutListUseCases(
+internal data class ReadoutListUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
 )
 
-data class FlagUseCases(
+internal data class FlagUseCases(
     val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
     val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
 )
 
-data class TyreTemperatureUseCases(
+internal data class TyreTemperatureUseCases(
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
     val observeTyreTemperatureEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
     val observeLowWarningPhases: ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
 )
 
-data class NarratorUseCases(
+internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
@@ -103,7 +103,7 @@ private val defaultTyreLowWarningPhases =
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LongParameterList")
-class LmuWindowsNarratorViewModel(
+internal class LmuWindowsNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
     vehicleDamageUseCases: VehicleDamageUseCases,
     readoutListUseCases: ReadoutListUseCases,

@@ -13,7 +13,7 @@ import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundTypeUseCase
 
-class OtherReadoutStartSoundDetailViewModel(
+internal class OtherReadoutStartSoundDetailViewModel(
     observeReadoutStartSoundType: ObserveReadoutStartSoundTypeUseCase,
     private val saveReadoutStartSoundType: SaveReadoutStartSoundTypeUseCase,
     private val previewStartSound: PreviewStartSoundUseCase,

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.map
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 
-class ObserveSortedTelemetryLogsUseCase(
+internal class ObserveSortedTelemetryLogsUseCase(
     private val observeTelemetryLogs: ObserveTelemetryLogsUseCase,
 ) {
     operator fun invoke(): Flow<List<TelemetryLog>> =

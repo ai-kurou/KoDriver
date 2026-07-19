@@ -2,7 +2,7 @@ package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
 import kurou.kodriver.domain.model.SessionPhase
 
-data class LmuWindowsReadoutTyreTemperatureDetailUiState(
+internal data class LmuWindowsReadoutTyreTemperatureDetailUiState(
     val highThresholdCelsius: Int = 95,
     val overheatWarningEnabled: Boolean = true,
     val lowWarningEnabled: Boolean = true,

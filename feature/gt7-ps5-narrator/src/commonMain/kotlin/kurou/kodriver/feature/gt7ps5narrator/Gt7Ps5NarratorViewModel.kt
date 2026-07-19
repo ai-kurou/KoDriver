@@ -23,23 +23,23 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
-data class MyBestLapUseCases(
+internal data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
     val observeMyBestLapVoiceType: ObserveGt7Ps5MyBestLapVoiceTypeUseCase,
 )
 
-data class ReadoutListUseCases(
+internal data class ReadoutListUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
 )
 
-data class RemainingFuelLapsUseCases(
+internal data class RemainingFuelLapsUseCases(
     val observeRemainingFuelLapsThreshold: ObserveGt7Ps5RemainingFuelLapsUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class Gt7Ps5NarratorViewModel(
+internal class Gt7Ps5NarratorViewModel(
     myBestLapUseCases: MyBestLapUseCases,
     readoutListUseCases: ReadoutListUseCases,
     remainingFuelLapsUseCases: RemainingFuelLapsUseCases,
