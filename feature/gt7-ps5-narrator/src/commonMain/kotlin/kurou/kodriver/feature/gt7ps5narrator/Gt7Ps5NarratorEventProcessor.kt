@@ -3,9 +3,18 @@ package kurou.kodriver.feature.gt7ps5narrator
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
+import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+
+internal data class Gt7Ps5TelemetryLogContext(
+    val state: Gt7Ps5NarratorState,
+    val settings: Gt7Ps5NarratorReadoutSettings,
+    val finalState: Gt7Ps5NarratorState,
+)
 
 internal class Gt7Ps5NarratorEventProcessor(
     private val ttsEngine: TextToSpeechEngine,
@@ -19,6 +28,16 @@ internal class Gt7Ps5NarratorEventProcessor(
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
         observedAtMs: Long,
+        logContext: Gt7Ps5TelemetryLogContext = Gt7Ps5TelemetryLogContext(
+            state = Gt7Ps5NarratorState(),
+            settings = Gt7Ps5NarratorReadoutSettings(
+                enabledStates = emptyMap(),
+                myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+                remainingFuelLapsThreshold = 0,
+                remainingFuelLapsEnabled = false,
+            ),
+            finalState = Gt7Ps5NarratorState(),
+        ),
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
@@ -27,7 +46,14 @@ internal class Gt7Ps5NarratorEventProcessor(
                     createdAt = observedAtMs,
                     simulatorId = Simulator.Gt7Ps5.id,
                     readoutItemKey = event.readoutItemKey.value,
-                    telemetryJson = buildTelemetryLogJson(previous = previous, current = telemetry),
+                    telemetryJson = buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = telemetry,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
                 )
             }
         }
@@ -47,8 +73,28 @@ internal class Gt7Ps5NarratorEventProcessor(
     }
 }
 
-private fun buildTelemetryLogJson(previous: Gt7Ps5TelemetryData?, current: Gt7Ps5TelemetryData): String =
-    """{"previous":${if (previous == null) "null" else previous.toJson()},"current":${current.toJson()}}"""
+private fun buildTelemetryLogJson(
+    state: Gt7Ps5NarratorState,
+    previous: Gt7Ps5TelemetryData?,
+    current: Gt7Ps5TelemetryData,
+    settings: Gt7Ps5NarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: Gt7Ps5NarratorState,
+): String =
+    "{" +
+        """"state":${state.toJsonString()},""" +
+        """"previousTelemetry":${previous?.toJson() ?: "null"},""" +
+        """"telemetry":${current.toJson()},""" +
+        """"settings":${settings.toJsonString()},""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"finalState":${finalState.toJsonString()}""" +
+        "}"
+
+private fun Gt7Ps5NarratorReadoutSettings.toJsonString(): String =
+    """{"raw":${toString().toJsonStringLiteral()}}"""
+
+private fun Gt7Ps5NarratorState.toJsonString(): String =
+    """{"raw":${toString().toJsonStringLiteral()}}"""
 
 private fun Gt7Ps5TelemetryData.toJson(): String =
     "{" +
@@ -58,3 +104,19 @@ private fun Gt7Ps5TelemetryData.toJson(): String =
         """"gasLevel":$gasLevel,""" +
         """"gasCapacity":$gasCapacity""" +
         "}"
+
+private fun String.toJsonStringLiteral(): String =
+    buildString {
+        append('"')
+        this@toJsonStringLiteral.forEach { char ->
+            when (char) {
+                '\\' -> append("\\\\")
+                '"' -> append("\\\"")
+                '\n' -> append("\\n")
+                '\r' -> append("\\r")
+                '\t' -> append("\\t")
+                else -> append(char)
+            }
+        }
+        append('"')
+    }

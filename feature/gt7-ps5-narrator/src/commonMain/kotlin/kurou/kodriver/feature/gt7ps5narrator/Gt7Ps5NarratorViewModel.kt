@@ -92,10 +92,12 @@ internal class Gt7Ps5NarratorViewModel(
     private val myBestLapJob = gt7TelemetryFlow
         .onEach { telemetry ->
             val observedAtMs = currentTimeMs()
+            val state = narratorState
+            val settings = currentSettings
             val decision = determineGt7Ps5NarratorReadout.determineMyBestLap(
-                state = narratorState,
+                state = state,
                 telemetry = telemetry,
-                settings = currentSettings,
+                settings = settings,
             )
             narratorState = decision.state
             eventProcessor.process(
@@ -104,6 +106,11 @@ internal class Gt7Ps5NarratorViewModel(
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
                 observedAtMs = observedAtMs,
+                logContext = Gt7Ps5TelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
             )
         }
         .launchIn(viewModelScope)
@@ -112,10 +119,12 @@ internal class Gt7Ps5NarratorViewModel(
     private val remainingFuelLapsJob = gt7TelemetryFlow
         .onEach { telemetry ->
             val observedAtMs = currentTimeMs()
+            val state = narratorState
+            val settings = currentSettings
             val decision = determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
-                state = narratorState,
+                state = state,
                 telemetry = telemetry,
-                settings = currentSettings,
+                settings = settings,
                 observedAtMs = observedAtMs,
             )
             narratorState = decision.state
@@ -125,6 +134,11 @@ internal class Gt7Ps5NarratorViewModel(
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
                 observedAtMs = observedAtMs,
+                logContext = Gt7Ps5TelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
             )
         }
         .launchIn(viewModelScope)
