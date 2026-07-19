@@ -18,12 +18,18 @@ class ObserveSoundVolumeUseCaseTest {
         val repo = mockk<SoundVolumePreferencesRepository>()
         val state = MutableStateFlow(80)
         every { repo.volume() } returns state
-        coEvery { repo.saveVolume(any()) } answers { state.update { firstArg() } }
+        listOf(50).forEach { volume ->
+            coEvery { repo.saveVolume(volume) } answers { state.update { volume } }
+        }
         val useCase = ObserveSoundVolumeUseCase(repo)
 
         assertEquals(80, useCase().first())
 
         repo.saveVolume(50)
         assertEquals(50, useCase().first())
+
+        io.mockk.verify(exactly = 2) { repo.volume() }
+        io.mockk.coVerify(exactly = 1) { repo.saveVolume(50) }
+        io.mockk.confirmVerified(repo)
     }
 }

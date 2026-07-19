@@ -20,12 +20,18 @@ class ObserveSelectedSimulatorUseCaseTest {
         val repo = mockk<SimulatorPreferencesRepository>()
         val state = MutableStateFlow<Simulator?>(null)
         every { repo.selectedSimulator() } returns state
-        coEvery { repo.saveSelectedSimulator(any()) } answers { state.update { firstArg() } }
+        listOf(Simulator.LmuWindows).forEach { simulator ->
+            coEvery { repo.saveSelectedSimulator(simulator) } answers { state.update { simulator } }
+        }
         val useCase = ObserveSelectedSimulatorUseCase(repo)
 
         assertNull(useCase().first())
 
         repo.saveSelectedSimulator(Simulator.LmuWindows)
         assertEquals(Simulator.LmuWindows, useCase().first())
+
+        io.mockk.verify(exactly = 2) { repo.selectedSimulator() }
+        io.mockk.coVerify(exactly = 1) { repo.saveSelectedSimulator(Simulator.LmuWindows) }
+        io.mockk.confirmVerified(repo)
     }
 }

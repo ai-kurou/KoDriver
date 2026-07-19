@@ -18,24 +18,35 @@ private fun createServerIpPreferencesRepository(): ServerIpPreferencesRepository
     val repository = mockk<ServerIpPreferencesRepository>()
     val state = MutableStateFlow<String?>(null)
     every { repository.serverIp() } returns state
-    coEvery { repository.saveServerIp(any()) } answers { state.update { firstArg() } }
+    listOf("192.168.1.10", "10.0.0.1").forEach { serverIp ->
+        coEvery { repository.saveServerIp(serverIp) } answers { state.update { serverIp } }
+    }
     return repository
 }
 
 class ObserveServerIpUseCaseTest {
 
-    private val repo = createServerIpPreferencesRepository()
-    private val useCase = ObserveServerIpUseCase(repo)
-
     @Test
     fun `初期状態でnullを返す`() = runBlocking {
+        val repo = createServerIpPreferencesRepository()
+        val useCase = ObserveServerIpUseCase(repo)
+
         assertNull(useCase().first())
+
+        io.mockk.verify(exactly = 1) { repo.serverIp() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
     fun `保存後にIPアドレスを返す`() = runBlocking {
+        val repo = createServerIpPreferencesRepository()
+        val useCase = ObserveServerIpUseCase(repo)
+
         repo.saveServerIp("192.168.1.10")
 
         assertEquals("192.168.1.10", useCase().first())
+        io.mockk.coVerify(exactly = 1) { repo.saveServerIp("192.168.1.10") }
+        io.mockk.verify(exactly = 1) { repo.serverIp() }
+        io.mockk.confirmVerified(repo)
     }
 }

@@ -18,24 +18,39 @@ private fun createReadoutPreferencesRepository(): ReadoutPreferencesRepository {
     val repository = mockk<ReadoutPreferencesRepository>()
     val enabledStates = MutableStateFlow<Map<String, Map<ReadoutItemKey, Boolean>>>(emptyMap())
     val order = MutableStateFlow<Map<String, List<ReadoutItemKey>>>(emptyMap())
-    every { repository.observeReadoutEnabledStates(any()) } answers {
-        val simulator = firstArg<String>()
-        enabledStates.map { it[simulator] ?: emptyMap() }
+    listOf("lmu_windows", "gt7_ps5", "rFactor 2").forEach { simulator ->
+        every { repository.observeReadoutEnabledStates(simulator) } answers {
+            enabledStates.map { it[simulator] ?: emptyMap() }
+        }
+        every { repository.observeReadoutOrder(simulator) } answers {
+            order.map { it[simulator] ?: emptyList() }
+        }
     }
-    coEvery { repository.saveReadoutEnabledState(any(), any(), any()) } answers {
-        val simulator = firstArg<String>()
-        val key = secondArg<ReadoutItemKey>()
-        val enabled = thirdArg<Boolean>()
-        enabledStates.update { all -> all + (simulator to ((all[simulator] ?: emptyMap()) + (key to enabled))) }
+    listOf(
+        Triple("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true),
+        Triple("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, false),
+        Triple("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false),
+    ).forEach { (simulator, key, enabled) ->
+        coEvery { repository.saveReadoutEnabledState(simulator, key, enabled) } answers {
+            enabledStates.update { all -> all + (simulator to ((all[simulator] ?: emptyMap()) + (key to enabled))) }
+        }
     }
-    every { repository.observeReadoutOrder(any()) } answers {
-        val simulator = firstArg<String>()
-        order.map { it[simulator] ?: emptyList() }
-    }
-    coEvery { repository.saveReadoutOrder(any(), any()) } answers {
-        val simulator = firstArg<String>()
-        val newOrder = secondArg<List<ReadoutItemKey>>()
-        order.update { all -> all + (simulator to newOrder) }
+    listOf(
+        "lmu_windows" to listOf(
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+        ),
+        "lmu_windows" to listOf(
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+        ),
+        "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+    ).forEach { (simulator, newOrder) ->
+        coEvery { repository.saveReadoutOrder(simulator, newOrder) } answers {
+            order.update { all -> all + (simulator to newOrder) }
+        }
     }
     return repository
 }
@@ -48,6 +63,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
         assertTrue(useCase("rFactor 2").first().isEmpty())
+        io.mockk.verify(exactly = 1) { repo.observeReadoutEnabledStates("rFactor 2") }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -66,6 +83,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
             ),
             useCase("lmu_windows").first(),
         )
+        io.mockk.verify(exactly = 1) { repo.observeReadoutEnabledStates("lmu_windows") }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -80,6 +99,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
             ),
             useCase("gt7_ps5").first(),
         )
+        io.mockk.verify(exactly = 1) { repo.observeReadoutEnabledStates("gt7_ps5") }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -105,5 +126,14 @@ class ObserveReadoutEnabledStatesUseCaseTest {
             mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
             useCase("rFactor 2").first(),
         )
+        io.mockk.coVerify(exactly = 1) {
+            repo.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.MyBestLap.Root, true)
+        }
+        io.mockk.coVerify(exactly = 1) {
+            repo.saveReadoutEnabledState("rFactor 2", ReadoutItemKey.LmuWindows.VehicleApproach.Root, false)
+        }
+        io.mockk.verify(exactly = 1) { repo.observeReadoutEnabledStates("lmu_windows") }
+        io.mockk.verify(exactly = 1) { repo.observeReadoutEnabledStates("rFactor 2") }
+        io.mockk.confirmVerified(repo)
     }
 }

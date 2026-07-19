@@ -18,8 +18,11 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     val sustainedDuration = MutableStateFlow(initialSustainedDuration)
     every { repository.observeSustainedApproachDurationSeconds() } returns sustainedDuration
     coEvery {
-        repository.saveSustainedApproachDurationSeconds(any())
-    } answers { sustainedDuration.update { firstArg() } }
+        repository.saveSustainedApproachDurationSeconds(8)
+    } answers { sustainedDuration.update { 8 } }
+    coEvery {
+        repository.saveSustainedApproachDurationSeconds(6)
+    } answers { sustainedDuration.update { 6 } }
     return repository
 }
 
@@ -31,6 +34,9 @@ class ObserveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
         val useCase = ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(repo)
 
         assertEquals(4, useCase().first())
+
+        io.mockk.verify(exactly = 1) { repo.observeSustainedApproachDurationSeconds() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -40,5 +46,9 @@ class ObserveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
 
         repo.saveSustainedApproachDurationSeconds(8)
         assertEquals(8, useCase().first())
+
+        io.mockk.coVerify(exactly = 1) { repo.saveSustainedApproachDurationSeconds(8) }
+        io.mockk.verify(exactly = 1) { repo.observeSustainedApproachDurationSeconds() }
+        io.mockk.confirmVerified(repo)
     }
 }

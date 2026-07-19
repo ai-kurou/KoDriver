@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
@@ -11,11 +11,11 @@ class SaveDynamicColorEnabledUseCaseTest {
 
     @Test
     fun `Repositoryへ保存する`() = runBlocking {
-        val repository = mockk<DynamicColorEnabledRepository>()
-        coEvery { repository.saveDynamicColorEnabled(any()) } returns Unit
+        val repository = mockk<DynamicColorEnabledRepository>(relaxUnitFun = true)
 
         SaveDynamicColorEnabledUseCase(repository)(true)
 
-        coVerify { repository.saveDynamicColorEnabled(true) }
+        coVerify(exactly = 1) { repository.saveDynamicColorEnabled(true) }
+        confirmVerified(repository)
     }
 }

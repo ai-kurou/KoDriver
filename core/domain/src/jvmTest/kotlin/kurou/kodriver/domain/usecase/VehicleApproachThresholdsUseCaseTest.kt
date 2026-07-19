@@ -20,8 +20,12 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     val lateral = MutableStateFlow(initialLateral)
     every { repository.observeLongitudinalThresholdMeters() } returns longitudinal
     every { repository.observeLateralThresholdMeters() } returns lateral
-    coEvery { repository.saveLongitudinalThresholdMeters(any()) } answers { longitudinal.update { firstArg() } }
-    coEvery { repository.saveLateralThresholdMeters(any()) } answers { lateral.update { firstArg() } }
+    listOf(40.0, 50.0, 30.0).forEach { threshold ->
+        coEvery { repository.saveLongitudinalThresholdMeters(threshold) } answers { longitudinal.update { threshold } }
+    }
+    listOf(5.0, 3.5, 1.0).forEach { threshold ->
+        coEvery { repository.saveLateralThresholdMeters(threshold) } answers { lateral.update { threshold } }
+    }
     return repository
 }
 
@@ -38,6 +42,10 @@ class VehicleApproachThresholdsUseCaseTest {
 
         save(30.0)
         assertEquals(30.0, observe().first())
+        io.mockk.coVerify(exactly = 1) { repo.saveLongitudinalThresholdMeters(50.0) }
+        io.mockk.coVerify(exactly = 1) { repo.saveLongitudinalThresholdMeters(30.0) }
+        io.mockk.verify(exactly = 2) { repo.observeLongitudinalThresholdMeters() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -51,6 +59,10 @@ class VehicleApproachThresholdsUseCaseTest {
 
         save(1.0)
         assertEquals(1.0, observe().first())
+        io.mockk.coVerify(exactly = 1) { repo.saveLateralThresholdMeters(3.5) }
+        io.mockk.coVerify(exactly = 1) { repo.saveLateralThresholdMeters(1.0) }
+        io.mockk.verify(exactly = 2) { repo.observeLateralThresholdMeters() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -66,5 +78,10 @@ class VehicleApproachThresholdsUseCaseTest {
 
         assertEquals(40.0, observeLongitudinal().first())
         assertEquals(5.0, observeLateral().first())
+        io.mockk.coVerify(exactly = 1) { repo.saveLongitudinalThresholdMeters(40.0) }
+        io.mockk.coVerify(exactly = 1) { repo.saveLateralThresholdMeters(5.0) }
+        io.mockk.verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
+        io.mockk.verify(exactly = 1) { repo.observeLateralThresholdMeters() }
+        io.mockk.confirmVerified(repo)
     }
 }

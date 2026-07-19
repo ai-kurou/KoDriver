@@ -18,8 +18,15 @@ private fun createLmuWindowsVehicleDamagePreferencesRepository(): LmuWindowsVehi
     val repository = mockk<LmuWindowsVehicleDamagePreferencesRepository>()
     val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeEnabledStates() } returns states
-    coEvery { repository.saveEnabledState(any(), any()) } answers {
-        states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
+    listOf(
+        ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+    ).forEach { key ->
+        listOf(true, false).forEach { enabled ->
+            coEvery { repository.saveEnabledState(key, enabled) } answers {
+                states.update { it + (key to enabled) }
+            }
+        }
     }
     return repository
 }
@@ -33,6 +40,8 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
         val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true)
         assertEquals(expected, useCase().first())
+        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -44,6 +53,11 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
         val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false)
         assertEquals(expected, useCase().first())
+        io.mockk.coVerify(exactly = 1) {
+            repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+        }
+        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -60,5 +74,10 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
+        io.mockk.coVerify(exactly = 1) {
+            repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+        }
+        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
+        io.mockk.confirmVerified(repo)
     }
 }

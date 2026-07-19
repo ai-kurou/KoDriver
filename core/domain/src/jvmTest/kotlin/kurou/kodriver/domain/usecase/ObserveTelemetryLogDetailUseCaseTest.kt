@@ -19,33 +19,45 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
     val repository = mockk<TelemetryLogRepository>()
     val logs = MutableStateFlow(initialLogs)
     every { repository.observeTelemetryLogs() } returns logs
-    every { repository.observeTelemetryLogDetail(any()) } answers {
-        val id = firstArg<Long>()
-        logs.map { currentLogs ->
-            val sortedLogs = currentLogs.sortedWith(
-                compareByDescending<TelemetryLog> { it.createdAt }.thenByDescending { it.id },
-            )
-            val index = sortedLogs.indexOfFirst { it.id == id }
-            if (index == -1) {
-                null
-            } else {
-                TelemetryLogDetail(
-                    current = sortedLogs[index],
-                    previous = sortedLogs.getOrNull(index + 1),
+    listOf(1L, 2L, 999L).forEach { id ->
+        every { repository.observeTelemetryLogDetail(id) } answers {
+            logs.map { currentLogs ->
+                val sortedLogs = currentLogs.sortedWith(
+                    compareByDescending<TelemetryLog> { it.createdAt }.thenByDescending { it.id },
                 )
+                val index = sortedLogs.indexOfFirst { it.id == id }
+                if (index == -1) {
+                    null
+                } else {
+                    TelemetryLogDetail(
+                        current = sortedLogs[index],
+                        previous = sortedLogs.getOrNull(index + 1),
+                    )
+                }
             }
         }
     }
-    coEvery { repository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
-        logs.update {
-            it + TelemetryLog(
-                id = nextId,
-                createdAt = firstArg(),
-                simulatorId = secondArg(),
-                readoutItemKey = thirdArg(),
-                telemetryJson = arg(3),
-            )
+    listOf(
+        TelemetryLog(
+            id = 0L,
+            createdAt = 1000L,
+            simulatorId = "gt7_ps5",
+            readoutItemKey = "remaining_fuel_laps",
+            telemetryJson = """{"lapCount":1}""",
+        ),
+        TelemetryLog(
+            id = 0L,
+            createdAt = 2000L,
+            simulatorId = "lmu_windows",
+            readoutItemKey = "flag",
+            telemetryJson = """{"currentLap":2}""",
+        ),
+    ).forEach { log ->
+        coEvery {
+            repository.saveTelemetryLog(log.createdAt, log.simulatorId, log.readoutItemKey, log.telemetryJson)
+        } answers {
+            val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
+            logs.update { it + log.copy(id = nextId) }
         }
     }
     coEvery { repository.deleteAllTelemetryLogs() } answers {
@@ -72,6 +84,8 @@ class ObserveTelemetryLogDetailUseCaseTest {
             ),
             useCase(2L).first(),
         )
+        io.mockk.verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -82,6 +96,8 @@ class ObserveTelemetryLogDetailUseCaseTest {
         val useCase = ObserveTelemetryLogDetailUseCase(repository)
 
         assertNull(useCase(999L).first())
+        io.mockk.verify(exactly = 1) { repository.observeTelemetryLogDetail(999L) }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -102,6 +118,8 @@ class ObserveTelemetryLogDetailUseCaseTest {
             ),
             useCase(1L).first(),
         )
+        io.mockk.verify(exactly = 1) { repository.observeTelemetryLogDetail(1L) }
+        io.mockk.confirmVerified(repository)
     }
 }
 

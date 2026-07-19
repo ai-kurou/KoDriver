@@ -1,44 +1,24 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.coEvery
-import io.mockk.every
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kotlin.test.Test
-import kotlin.test.assertEquals
-
-private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-    initialLateral: Double = 5.0,
-): LmuWindowsVehicleApproachThresholdsPreferencesRepository {
-    val repository = mockk<LmuWindowsVehicleApproachThresholdsPreferencesRepository>()
-    val lateral = MutableStateFlow(initialLateral)
-    every { repository.observeLateralThresholdMeters() } returns lateral
-    coEvery { repository.saveLateralThresholdMeters(any()) } answers { lateral.update { firstArg() } }
-    return repository
-}
 
 class SaveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
 
     @Test
-    fun `保存した横方向閾値がFlowに反映される`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository()
-        val useCase = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
-
-        useCase(3.5)
-        assertEquals(3.5, repo.observeLateralThresholdMeters().first())
-    }
-
-    @Test
-    fun `上書き保存すると最新値がFlowに反映される`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository()
-        val useCase = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
+    fun `横方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
+        val repository = mockk<LmuWindowsVehicleApproachThresholdsPreferencesRepository>(relaxUnitFun = true)
+        val useCase = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repository)
 
         useCase(3.5)
         useCase(1.0)
-        assertEquals(1.0, repo.observeLateralThresholdMeters().first())
+
+        coVerify(exactly = 1) { repository.saveLateralThresholdMeters(3.5) }
+        coVerify(exactly = 1) { repository.saveLateralThresholdMeters(1.0) }
+        confirmVerified(repository)
     }
 }

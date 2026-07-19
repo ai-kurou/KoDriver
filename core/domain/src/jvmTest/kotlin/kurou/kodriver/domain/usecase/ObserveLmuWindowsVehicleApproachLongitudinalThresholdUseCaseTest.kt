@@ -17,7 +17,9 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     val repository = mockk<LmuWindowsVehicleApproachThresholdsPreferencesRepository>()
     val longitudinal = MutableStateFlow(initialLongitudinal)
     every { repository.observeLongitudinalThresholdMeters() } returns longitudinal
-    coEvery { repository.saveLongitudinalThresholdMeters(any()) } answers { longitudinal.update { firstArg() } }
+    listOf(40.0, 50.0, 30.0).forEach { threshold ->
+        coEvery { repository.saveLongitudinalThresholdMeters(threshold) } answers { longitudinal.update { threshold } }
+    }
     return repository
 }
 
@@ -29,6 +31,9 @@ class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
         val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
         assertEquals(10.0, useCase().first())
+
+        io.mockk.verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -38,5 +43,9 @@ class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
 
         repo.saveLongitudinalThresholdMeters(50.0)
         assertEquals(50.0, useCase().first())
+
+        io.mockk.coVerify(exactly = 1) { repo.saveLongitudinalThresholdMeters(50.0) }
+        io.mockk.verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
+        io.mockk.confirmVerified(repo)
     }
 }

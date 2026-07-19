@@ -18,8 +18,16 @@ private fun createLmuWindowsFlagPreferencesRepository(): LmuWindowsFlagPreferenc
     val repository = mockk<LmuWindowsFlagPreferencesRepository>()
     val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeFlagEnabledStates() } returns states
-    coEvery { repository.saveFlagEnabledState(any(), any()) } answers {
-        states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
+    listOf(
+        ReadoutItemKey.LmuWindows.Flag.BlueFlag,
+        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+        ReadoutItemKey.LmuWindows.Flag.RedFlag,
+    ).forEach { key ->
+        listOf(true, false).forEach { enabled ->
+            coEvery { repository.saveFlagEnabledState(key, enabled) } answers {
+                states.update { it + (key to enabled) }
+            }
+        }
     }
     return repository
 }
@@ -40,6 +48,8 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
+        io.mockk.verify(exactly = 1) { repo.observeFlagEnabledStates() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -58,5 +68,10 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
+        io.mockk.coVerify(exactly = 1) {
+            repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+        }
+        io.mockk.verify(exactly = 1) { repo.observeFlagEnabledStates() }
+        io.mockk.confirmVerified(repo)
     }
 }

@@ -19,10 +19,11 @@ private fun createLmuWindowsTyreTemperaturePreferencesRepository(
     val repository = mockk<LmuWindowsTyreTemperaturePreferencesRepository>()
     val lowWarningPhases = MutableStateFlow(initialLowWarningPhases)
     every { repository.observeLowWarningPhases() } returns lowWarningPhases
-    coEvery { repository.saveLowWarningPhases(any()) } answers {
-        val phases = firstArg<Set<SessionPhase>>()
-        lowWarningPhases.update {
-            lmuWindowsTyreTemperatureLowWarningSelectablePhases.associateWith { phase -> phase in phases }
+    listOf(setOf(SessionPhase.GARAGE)).forEach { phases ->
+        coEvery { repository.saveLowWarningPhases(phases) } answers {
+            lowWarningPhases.update {
+                lmuWindowsTyreTemperatureLowWarningSelectablePhases.associateWith { phase -> phase in phases }
+            }
         }
     }
     return repository
@@ -42,6 +43,9 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
 
         repo.saveLowWarningPhases(setOf(SessionPhase.GARAGE))
         assertEquals(setOf(SessionPhase.GARAGE), useCase().first())
+        io.mockk.coVerify(exactly = 1) { repo.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) }
+        io.mockk.verify(exactly = 2) { repo.observeLowWarningPhases() }
+        io.mockk.confirmVerified(repo)
     }
 
     @Test
@@ -55,5 +59,7 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
             setOf(SessionPhase.GARAGE, SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
             useCase().first(),
         )
+        io.mockk.verify(exactly = 1) { repo.observeLowWarningPhases() }
+        io.mockk.confirmVerified(repo)
     }
 }

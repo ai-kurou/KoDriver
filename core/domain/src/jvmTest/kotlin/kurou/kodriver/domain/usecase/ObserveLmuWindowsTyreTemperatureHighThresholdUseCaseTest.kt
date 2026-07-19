@@ -18,12 +18,16 @@ class ObserveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
         val repo = mockk<LmuWindowsTyreTemperaturePreferencesRepository>()
         val state = MutableStateFlow(90)
         every { repo.observeHighThresholdCelsius() } returns state
-        coEvery { repo.saveHighThresholdCelsius(any()) } answers { state.update { firstArg() } }
+        coEvery { repo.saveHighThresholdCelsius(110) } answers { state.update { 110 } }
         val useCase = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repo)
 
         assertEquals(90, useCase().first())
 
         repo.saveHighThresholdCelsius(110)
         assertEquals(110, useCase().first())
+
+        io.mockk.verify(exactly = 2) { repo.observeHighThresholdCelsius() }
+        io.mockk.coVerify(exactly = 1) { repo.saveHighThresholdCelsius(110) }
+        io.mockk.confirmVerified(repo)
     }
 }

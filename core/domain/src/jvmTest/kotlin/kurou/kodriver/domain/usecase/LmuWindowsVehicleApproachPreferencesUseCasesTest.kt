@@ -24,11 +24,15 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(
     val startReadoutType = MutableStateFlow(initialStartReadoutType)
     val sustainedReadoutType = MutableStateFlow(initialSustainedReadoutType)
     every { repository.observeSkipFirstLap() } returns skipFirstLap
-    coEvery { repository.saveSkipFirstLap(any()) } answers { skipFirstLap.update { firstArg() } }
+    coEvery { repository.saveSkipFirstLap(false) } answers { skipFirstLap.update { false } }
     every { repository.observeStartReadoutType() } returns startReadoutType
-    coEvery { repository.saveStartReadoutType(any()) } answers { startReadoutType.update { firstArg() } }
+    coEvery { repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH) } answers {
+        startReadoutType.update { VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH }
+    }
     every { repository.observeSustainedReadoutType() } returns sustainedReadoutType
-    coEvery { repository.saveSustainedReadoutType(any()) } answers { sustainedReadoutType.update { firstArg() } }
+    coEvery { repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED) } answers {
+        sustainedReadoutType.update { VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED }
+    }
     return repository
 }
 
@@ -40,6 +44,8 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         assertEquals(false, useCases.observeSkipFirstLap().first())
+        io.mockk.verify(exactly = 1) { repository.observeSkipFirstLap() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -50,6 +56,9 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
         useCases.saveSkipFirstLap(false)
 
         assertEquals(false, useCases.observeSkipFirstLap().first())
+        io.mockk.coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }
+        io.mockk.verify(exactly = 1) { repository.observeSkipFirstLap() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -60,6 +69,8 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
         val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
         assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCases.observeStartReadoutType().first())
+        io.mockk.verify(exactly = 1) { repository.observeStartReadoutType() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -70,6 +81,11 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
         useCases.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
 
         assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCases.observeStartReadoutType().first())
+        io.mockk.coVerify(exactly = 1) {
+            repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
+        }
+        io.mockk.verify(exactly = 1) { repository.observeStartReadoutType() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -83,6 +99,8 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
             VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
             useCases.observeSustainedReadoutType().first(),
         )
+        io.mockk.verify(exactly = 1) { repository.observeSustainedReadoutType() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -96,5 +114,10 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
             VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED,
             useCases.observeSustainedReadoutType().first(),
         )
+        io.mockk.coVerify(exactly = 1) {
+            repository.saveSustainedReadoutType(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED)
+        }
+        io.mockk.verify(exactly = 1) { repository.observeSustainedReadoutType() }
+        io.mockk.confirmVerified(repository)
     }
 }

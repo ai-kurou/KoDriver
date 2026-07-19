@@ -21,13 +21,20 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     val lateral = MutableStateFlow(initialLateral)
     val sustainedDuration = MutableStateFlow(initialSustainedDuration)
     every { repository.observeLongitudinalThresholdMeters() } returns longitudinal
-    coEvery { repository.saveLongitudinalThresholdMeters(any()) } answers { longitudinal.update { firstArg() } }
+    listOf(40.0, 50.0, 30.0).forEach { threshold ->
+        coEvery { repository.saveLongitudinalThresholdMeters(threshold) } answers { longitudinal.update { threshold } }
+    }
     every { repository.observeLateralThresholdMeters() } returns lateral
-    coEvery { repository.saveLateralThresholdMeters(any()) } answers { lateral.update { firstArg() } }
+    listOf(5.0, 3.5, 1.0).forEach { threshold ->
+        coEvery { repository.saveLateralThresholdMeters(threshold) } answers { lateral.update { threshold } }
+    }
     every { repository.observeSustainedApproachDurationSeconds() } returns sustainedDuration
     coEvery {
-        repository.saveSustainedApproachDurationSeconds(any())
-    } answers { sustainedDuration.update { firstArg() } }
+        repository.saveSustainedApproachDurationSeconds(8)
+    } answers { sustainedDuration.update { 8 } }
+    coEvery {
+        repository.saveSustainedApproachDurationSeconds(6)
+    } answers { sustainedDuration.update { 6 } }
     return repository
 }
 
@@ -39,6 +46,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
         assertEquals(10.0, useCases.observeLongitudinalThresholdMeters().first())
+        io.mockk.verify(exactly = 1) { repository.observeLongitudinalThresholdMeters() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -49,6 +58,9 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         useCases.saveLongitudinalThresholdMeters(50.0)
 
         assertEquals(50.0, useCases.observeLongitudinalThresholdMeters().first())
+        io.mockk.coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(50.0) }
+        io.mockk.verify(exactly = 1) { repository.observeLongitudinalThresholdMeters() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -57,6 +69,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
         assertEquals(5.0, useCases.observeLateralThresholdMeters().first())
+        io.mockk.verify(exactly = 1) { repository.observeLateralThresholdMeters() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -67,6 +81,9 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         useCases.saveLateralThresholdMeters(3.5)
 
         assertEquals(3.5, useCases.observeLateralThresholdMeters().first())
+        io.mockk.coVerify(exactly = 1) { repository.saveLateralThresholdMeters(3.5) }
+        io.mockk.verify(exactly = 1) { repository.observeLateralThresholdMeters() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -75,6 +92,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
         assertEquals(4, useCases.observeSustainedApproachDurationSeconds().first())
+        io.mockk.verify(exactly = 1) { repository.observeSustainedApproachDurationSeconds() }
+        io.mockk.confirmVerified(repository)
     }
 
     @Test
@@ -85,5 +104,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
         useCases.saveSustainedApproachDurationSeconds(8)
 
         assertEquals(8, useCases.observeSustainedApproachDurationSeconds().first())
+        io.mockk.coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
+        io.mockk.verify(exactly = 1) { repository.observeSustainedApproachDurationSeconds() }
+        io.mockk.confirmVerified(repository)
     }
 }

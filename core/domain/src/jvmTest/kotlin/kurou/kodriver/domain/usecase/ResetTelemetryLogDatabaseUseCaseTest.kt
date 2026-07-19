@@ -16,16 +16,27 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
     val repository = mockk<TelemetryLogRepository>()
     val logs = MutableStateFlow(initialLogs)
     every { repository.observeTelemetryLogs() } returns logs
-    coEvery { repository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
-        logs.update {
-            it + TelemetryLog(
-                id = nextId,
-                createdAt = firstArg(),
-                simulatorId = secondArg(),
-                readoutItemKey = thirdArg(),
-                telemetryJson = arg(3),
-            )
+    listOf(
+        TelemetryLog(
+            id = 0L,
+            createdAt = 1000L,
+            simulatorId = "gt7_ps5",
+            readoutItemKey = "remaining_fuel_laps",
+            telemetryJson = """{"lapCount":1}""",
+        ),
+        TelemetryLog(
+            id = 0L,
+            createdAt = 2000L,
+            simulatorId = "lmu_windows",
+            readoutItemKey = "flag",
+            telemetryJson = """{"currentLap":2}""",
+        ),
+    ).forEach { log ->
+        coEvery {
+            repository.saveTelemetryLog(log.createdAt, log.simulatorId, log.readoutItemKey, log.telemetryJson)
+        } answers {
+            val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
+            logs.update { it + log.copy(id = nextId) }
         }
     }
     coEvery { repository.deleteAllTelemetryLogs() } answers {
@@ -54,5 +65,8 @@ class ResetTelemetryLogDatabaseUseCaseTest {
         resetUseCase()
 
         assertEquals(emptyList(), observeUseCase().first())
+        io.mockk.coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+        io.mockk.verify(exactly = 1) { repository.observeTelemetryLogs() }
+        io.mockk.confirmVerified(repository)
     }
 }

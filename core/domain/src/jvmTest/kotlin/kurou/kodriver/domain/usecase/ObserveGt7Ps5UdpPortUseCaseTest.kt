@@ -18,12 +18,18 @@ class ObserveGt7Ps5UdpPortUseCaseTest {
         val repo = mockk<Gt7Ps5UdpPortPreferencesRepository>()
         val state = MutableStateFlow(33740)
         every { repo.port() } returns state
-        coEvery { repo.savePort(any()) } answers { state.update { firstArg() } }
+        listOf(33740, 33741).forEach { port ->
+            coEvery { repo.savePort(port) } answers { state.update { port } }
+        }
         val useCase = ObserveGt7Ps5UdpPortUseCase(repo)
 
         assertEquals(33740, useCase().first())
 
         repo.savePort(33741)
         assertEquals(33741, useCase().first())
+
+        io.mockk.verify(exactly = 2) { repo.port() }
+        io.mockk.coVerify(exactly = 1) { repo.savePort(33741) }
+        io.mockk.confirmVerified(repo)
     }
 }
