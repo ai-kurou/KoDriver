@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -46,7 +45,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 internal data class VehicleApproachUseCases(
     val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
@@ -85,7 +83,6 @@ internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
-    val saveTelemetryLog: SaveTelemetryLogUseCase,
     val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeRemainingVirtualEnergyLapsThreshold: ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase,
 )
@@ -101,16 +98,12 @@ internal class LmuWindowsNarratorViewModel(
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
-    private val ttsEngine: TextToSpeechEngine,
+    private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
     private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
     private var narratorState = LmuWindowsNarratorState()
-    private val eventProcessor = LmuWindowsNarratorEventProcessor(
-        ttsEngine = ttsEngine,
-        saveTelemetryLog = narratorUseCases.saveTelemetryLog,
-    )
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)

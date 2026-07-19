@@ -340,12 +340,14 @@ class LmuWindowsNarratorViewModelTest {
                     tyreTemperaturePreferencesRepository,
                 ),
             ),
-            ttsEngine = ttsEngine,
+            eventProcessor = LmuWindowsNarratorEventProcessor(
+                ttsEngine = ttsEngine,
+                saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+            ),
             narratorUseCases = NarratorUseCases(
                 determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
                 observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
                 observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagPreferencesRepository),
-                saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
                 observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
                 observeRemainingVirtualEnergyLapsThreshold = ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase(
                     remainingVirtualEnergyLapsPreferencesRepository,
