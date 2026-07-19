@@ -20,6 +20,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -52,7 +53,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { FlagUseCases(get(), get()) }
     factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
-    factory { ReadoutListUseCases(get(), get(), get()) }
+    factory { ReadoutListUseCases(get(), get(), get(), get()) }
     factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
     factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
 
@@ -80,6 +81,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
     factory { ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase(get()) }
+    factory { ObserveQueueEnabledStatesUseCase(get()) }
 
     // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）
     factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }

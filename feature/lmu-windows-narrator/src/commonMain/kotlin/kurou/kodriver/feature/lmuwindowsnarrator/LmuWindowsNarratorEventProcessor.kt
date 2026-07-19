@@ -48,12 +48,13 @@ internal class LmuWindowsNarratorEventProcessor(
         telemetry: LmuWindowsTelemetryData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousTelemetry
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey.value,
@@ -75,12 +76,13 @@ internal class LmuWindowsNarratorEventProcessor(
         vehicleApproach: LmuWindowsVehicleApproachData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousVehicleApproach
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey.value,
@@ -102,12 +104,13 @@ internal class LmuWindowsNarratorEventProcessor(
         vehicleDamage: LmuWindowsVehicleDamageData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousVehicleDamage
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey.value,
@@ -129,12 +132,13 @@ internal class LmuWindowsNarratorEventProcessor(
         raceFlags: LmuWindowsRaceFlagsData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTelemetryLogContext,
     ) {
         val previous = previousRaceFlags
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey.value,
@@ -157,11 +161,12 @@ internal class LmuWindowsNarratorEventProcessor(
         raceFlags: LmuWindowsRaceFlagsData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsTyreTemperatureLogContext,
     ) {
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey.value,
@@ -184,11 +189,12 @@ internal class LmuWindowsNarratorEventProcessor(
         virtualEnergy: LmuWindowsVirtualEnergyData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: LmuWindowsVirtualEnergyLogContext,
     ) {
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey.value,
@@ -205,7 +211,15 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
-    private fun speakWithPriority(event: SpeechEvent, readoutOrder: List<ReadoutItemKey>): Boolean {
+    private fun speakWithPriority(
+        event: SpeechEvent,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+    ): Boolean {
+        if (queueEnabledStates[event.readoutItemKey] == true) {
+            ttsEngine.speak(event, queue = true)
+            return true
+        }
         val currentKey = ttsEngine.currentReadoutItemKey
         if (currentKey != null) {
             val currentIndex = readoutOrder.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
