@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
-class TelemetryLogListViewModel(
+class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
 ) : ViewModel() {

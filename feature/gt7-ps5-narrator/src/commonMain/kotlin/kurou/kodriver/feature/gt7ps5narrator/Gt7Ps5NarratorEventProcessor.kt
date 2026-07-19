@@ -7,7 +7,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
-class Gt7Ps5NarratorEventProcessor(
+internal class Gt7Ps5NarratorEventProcessor(
     private val ttsEngine: TextToSpeechEngine,
     private val saveTelemetryLog: SaveTelemetryLogUseCase,
 ) {

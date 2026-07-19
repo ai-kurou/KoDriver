@@ -15,7 +15,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
-data class LmuWindowsConnectionUiState(
+internal data class LmuWindowsConnectionUiState(
     val connectionStatus: LmuWindowsConnectionStatus = LmuWindowsConnectionStatus.UNCHECKED,
 ) {
     val isConnected: Boolean get() = connectionStatus == LmuWindowsConnectionStatus.CONNECTED
@@ -28,7 +28,7 @@ enum class LmuWindowsConnectionStatus {
     DISCONNECTED,
 }
 
-class LmuWindowsConnectionViewModel(
+internal class LmuWindowsConnectionViewModel(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
