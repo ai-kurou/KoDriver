@@ -42,6 +42,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -65,6 +66,7 @@ internal data class ReadoutListUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
 internal data class FlagUseCases(
@@ -137,6 +139,10 @@ internal class LmuWindowsNarratorViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
+    private val queueEnabledStates = readoutListUseCases.observeQueueEnabledStates()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
+
     private val lmuTelemetryFlow = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) emptyFlow()
@@ -205,6 +211,7 @@ internal class LmuWindowsNarratorViewModel(
                 telemetry = telemetry,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = LmuWindowsTelemetryLogContext(
                     state = state,
@@ -236,6 +243,7 @@ internal class LmuWindowsNarratorViewModel(
                 vehicleApproach = vehicleApproach,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = LmuWindowsTelemetryLogContext(
                     state = state,
@@ -266,6 +274,7 @@ internal class LmuWindowsNarratorViewModel(
                 vehicleDamage = vehicleDamage,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = LmuWindowsTelemetryLogContext(
                     state = state,
@@ -292,6 +301,7 @@ internal class LmuWindowsNarratorViewModel(
                 raceFlags = raceFlags,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = LmuWindowsTelemetryLogContext(
                     state = state,
@@ -333,6 +343,7 @@ internal class LmuWindowsNarratorViewModel(
                 raceFlags = raceFlags,
                 events = overheatDecision.events + lowDecision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = LmuWindowsTyreTemperatureLogContext(
                     state = state,
@@ -366,6 +377,7 @@ internal class LmuWindowsNarratorViewModel(
                 virtualEnergy = virtualEnergy,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = LmuWindowsVirtualEnergyLogContext(
                     state = state,

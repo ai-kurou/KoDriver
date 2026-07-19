@@ -59,6 +59,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPrefe
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -82,6 +83,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -150,6 +152,9 @@ class LmuWindowsNarratorViewModelTest {
     private lateinit var remainingVirtualEnergyLapsPreferencesRepository:
         LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 
+    @MockK
+    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -187,6 +192,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
         remainingVirtualEnergyLapsThreshold: Int,
         simulator: Simulator?,
+        queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { vehicleApproachRepository.vehicleApproachStream() } returns vehicleApproachChannel.receiveAsFlow()
         every { lmuWindowsRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
@@ -229,6 +235,8 @@ class LmuWindowsNarratorViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns virtualEnergyChannel.receiveAsFlow()
         every { remainingVirtualEnergyLapsPreferencesRepository.observeRemainingVirtualEnergyLaps() } returns
             MutableStateFlow(remainingVirtualEnergyLapsThreshold)
+        every { queuePreferencesRepository.observeQueueEnabledStates() } returns
+            MutableStateFlow(queueEnabledOverrides)
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
     }
 
@@ -263,6 +271,7 @@ class LmuWindowsNarratorViewModelTest {
         remainingVirtualEnergyLapsThreshold: Int = 3,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
+        queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ): LmuWindowsNarratorViewModel {
         stubRepositories(
             vehicleApproachChannel = vehicleApproachChannel,
@@ -289,6 +298,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
             remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold,
             simulator = simulator,
+            queueEnabledOverrides = queueEnabledOverrides,
         )
 
         return LmuWindowsNarratorViewModel(
@@ -321,6 +331,7 @@ class LmuWindowsNarratorViewModelTest {
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
             ),
             flagUseCases = FlagUseCases(
                 observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
@@ -807,6 +818,35 @@ class LmuWindowsNarratorViewModelTest {
 
         assertEquals(false, tts.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    @Test
+    fun `キュー設定が有効なら優先度で本来無視される項目もキュー再生する`() = runTest(testDispatcher) {
+        var fakeTime = 0L
+        val channel = Channel<LmuWindowsVehicleApproachData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
+            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+        )
+        createViewModel(
+            vehicleApproachChannel = channel,
+            ttsEngine = tts,
+            orderOverride = listOf(
+                ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ),
+            queueEnabledOverrides = mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+            currentTimeMs = { fakeTime },
+        )
+
+        channel.send(noVehicleApproach())
+        channel.send(leftVehicleApproach(vehicleId = 1))
+        fakeTime = 50L
+        channel.send(leftVehicleApproach(vehicleId = 1))
+
+        assertEquals(false, tts.stopCalled)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft), spokenTexts)
     }
 
     // --- オーバーヒート / 旗 ---

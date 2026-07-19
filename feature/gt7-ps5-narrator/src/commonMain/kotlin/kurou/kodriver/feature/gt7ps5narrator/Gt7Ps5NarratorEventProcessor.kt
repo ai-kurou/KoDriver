@@ -27,6 +27,7 @@ internal class Gt7Ps5NarratorEventProcessor(
         telemetry: Gt7Ps5TelemetryData,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: Gt7Ps5TelemetryLogContext = Gt7Ps5TelemetryLogContext(
             state = Gt7Ps5NarratorState(),
@@ -41,7 +42,7 @@ internal class Gt7Ps5NarratorEventProcessor(
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder)) {
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLog(
                     createdAt = observedAtMs,
                     simulatorId = Simulator.Gt7Ps5.id,
@@ -60,7 +61,15 @@ internal class Gt7Ps5NarratorEventProcessor(
         previousTelemetry[sourceKey] = telemetry
     }
 
-    private fun speakWithPriority(event: SpeechEvent, readoutOrder: List<ReadoutItemKey>): Boolean {
+    private fun speakWithPriority(
+        event: SpeechEvent,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+    ): Boolean {
+        if (queueEnabledStates[event.readoutItemKey] == true) {
+            ttsEngine.speak(event, queue = true)
+            return true
+        }
         val currentKey = ttsEngine.currentReadoutItemKey
         if (currentKey != null) {
             val currentIndex = readoutOrder.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE

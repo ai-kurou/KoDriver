@@ -29,12 +29,14 @@ import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -67,6 +69,9 @@ class Gt7Ps5NarratorViewModelTest {
     @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository
 
+    @MockK
+    private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -93,6 +98,7 @@ class Gt7Ps5NarratorViewModelTest {
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
             ),
             remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
                 observeRemainingFuelLapsThreshold =
@@ -116,6 +122,7 @@ class Gt7Ps5NarratorViewModelTest {
         every { readoutPreferencesRepository.observeReadoutOrder(any()) } returns MutableStateFlow(emptyList())
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.FORMAL)
         every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
+        every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -338,6 +345,27 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `キュー設定が有効なら優先度で本来無視される項目もキュー再生する`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val ttsEngine = mockPriorityAwareTts(
+            spokenTexts = spokenTexts,
+            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+        )
+        stubReadoutDefaults(
+            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+            queueEnabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
+        )
+        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+        assertEquals(false, ttsEngine.stopCalled)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
+    }
+
+    @Test
     fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -365,6 +393,7 @@ class Gt7Ps5NarratorViewModelTest {
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         fuelThreshold: Int = 3,
+        queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
         every {
@@ -375,6 +404,9 @@ class Gt7Ps5NarratorViewModelTest {
         every {
             remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps()
         } returns MutableStateFlow(fuelThreshold)
+        every {
+            queuePreferencesRepository.observeQueueEnabledStates()
+        } returns MutableStateFlow(queueEnabledOverrides)
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
     }
 

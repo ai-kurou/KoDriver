@@ -47,6 +47,7 @@ class LmuWindowsNarratorEventProcessorTest {
             vehicleApproach = leftVehicleApproach(distance = 4.0),
             events = emptyList(),
             readoutOrder = emptyList(),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 100L,
             logContext = logContext(),
         )
@@ -54,6 +55,7 @@ class LmuWindowsNarratorEventProcessorTest {
             vehicleApproach = leftVehicleApproach(distance = 3.0),
             events = listOf(SpeechEvent.CarLeft),
             readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 200L,
             logContext = logContext(),
         )
@@ -84,6 +86,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 currentKey,
                 newEvent.readoutItemKey,
             ),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 0L,
             logContext = logContext(),
         )
@@ -91,6 +94,29 @@ class LmuWindowsNarratorEventProcessorTest {
         verify(exactly = 0) { ttsEngine.stop() }
         verify(exactly = 0) { ttsEngine.speak(any(), any()) }
         coVerify(exactly = 0) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
+        val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
+        val newEvent = SpeechEvent.CarLeft
+        every { ttsEngine.currentReadoutItemKey } returns currentKey
+        every { ttsEngine.speak(newEvent, queue = true) } just Runs
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+        val processor = createProcessor()
+
+        processor.processVehicleApproach(
+            vehicleApproach = leftVehicleApproach(),
+            events = listOf(newEvent),
+            readoutOrder = listOf(currentKey, newEvent.readoutItemKey),
+            queueEnabledStates = mapOf(newEvent.readoutItemKey to true),
+            observedAtMs = 0L,
+            logContext = logContext(),
+        )
+
+        verify(exactly = 0) { ttsEngine.stop() }
+        verify(exactly = 1) { ttsEngine.speak(newEvent, queue = true) }
+        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
     }
 
     @Test
@@ -107,6 +133,7 @@ class LmuWindowsNarratorEventProcessorTest {
             vehicleApproach = leftVehicleApproach(),
             events = listOf(newEvent),
             readoutOrder = listOf(newEvent.readoutItemKey, currentKey),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 0L,
             logContext = logContext(),
         )
@@ -131,6 +158,7 @@ class LmuWindowsNarratorEventProcessorTest {
             vehicleApproach = leftVehicleApproach(distance = 4.0),
             events = listOf(SpeechEvent.CarLeft),
             readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 100L,
             logContext = logContext(),
         )
@@ -138,6 +166,7 @@ class LmuWindowsNarratorEventProcessorTest {
             vehicleApproach = leftVehicleApproach(distance = 3.0),
             events = listOf(SpeechEvent.CarLeft),
             readoutOrder = listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 200L,
             logContext = logContext(),
         )
