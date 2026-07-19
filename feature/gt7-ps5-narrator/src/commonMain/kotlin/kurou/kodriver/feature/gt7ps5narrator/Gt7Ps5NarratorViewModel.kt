@@ -19,6 +19,7 @@ import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
@@ -32,6 +33,7 @@ internal data class ReadoutListUseCases(
     val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     val observeReadoutEnabledStates: ObserveReadoutEnabledStatesUseCase,
     val observeReadoutOrder: ObserveReadoutOrderUseCase,
+    val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
 internal data class RemainingFuelLapsUseCases(
@@ -64,6 +66,10 @@ internal class Gt7Ps5NarratorViewModel(
             if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
+    private val queueEnabledStates = readoutListUseCases.observeQueueEnabledStates()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     private val voiceType = myBestLapUseCases.observeMyBestLapVoiceType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
@@ -105,6 +111,7 @@ internal class Gt7Ps5NarratorViewModel(
                 telemetry = telemetry,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = Gt7Ps5TelemetryLogContext(
                     state = state,
@@ -133,6 +140,7 @@ internal class Gt7Ps5NarratorViewModel(
                 telemetry = telemetry,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = Gt7Ps5TelemetryLogContext(
                     state = state,

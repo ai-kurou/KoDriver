@@ -14,10 +14,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
+import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
@@ -38,6 +40,8 @@ class ReadoutListViewModel(
     private val observeReadoutOrder: ObserveReadoutOrderUseCase,
     private val resolveReadoutOrder: ResolveReadoutOrderUseCase,
     private val saveReadoutOrder: SaveReadoutOrderUseCase,
+    private val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
+    private val saveQueueEnabledState: SaveQueueEnabledStateUseCase,
 ) : ViewModel() {
 
     private val _selectedSimulator: StateFlow<Simulator?> = observeSelectedSimulator()
@@ -61,6 +65,9 @@ class ReadoutListViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = observeQueueEnabledStates()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
     private val _selectedItem = MutableStateFlow<ReadoutListItemType?>(null)
 
     private val _effectiveOrder: StateFlow<List<ReadoutItemKey>> = combine(
@@ -81,13 +88,15 @@ class ReadoutListViewModel(
         _selectedSimulator,
         _effectiveOrder,
         _readoutEnabledStates,
+        _queueEnabledStates,
         _selectedItem,
-    ) { selected, items, readoutEnabledStates, selectedItem ->
+    ) { selected, items, readoutEnabledStates, queueEnabledStates, selectedItem ->
         ReadoutListUiState(
             selectedSimulator = selected,
             simulators = simulators,
             items = items,
             readoutEnabledStates = readoutEnabledStates,
+            queueEnabledStates = queueEnabledStates,
             selectedItem = selectedItem,
         )
     }.stateIn(
@@ -126,6 +135,12 @@ class ReadoutListViewModel(
         val simulator = _selectedSimulator.value ?: return
         viewModelScope.launch {
             saveReadoutEnabledState(simulator.id, key, enabled)
+        }
+    }
+
+    fun onQueueEnabledChanged(key: ReadoutItemKey, enabled: Boolean) {
+        viewModelScope.launch {
+            saveQueueEnabledState(key, enabled)
         }
     }
 }

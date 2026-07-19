@@ -39,6 +39,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             telemetry = telemetry(),
             events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
             readoutOrder = listOf(sourceKey),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 0L,
         )
 
@@ -57,12 +58,13 @@ class Gt7Ps5NarratorEventProcessorTest {
         val processor = createProcessor()
         val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
 
-        processor.process(sourceKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), 100L)
+        processor.process(sourceKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), emptyMap(), 100L)
         processor.process(
             sourceKey,
             telemetry(bestLapTimeMs = 59_000),
             listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
             listOf(sourceKey),
+            emptyMap(),
             200L,
         )
 
@@ -99,13 +101,14 @@ class Gt7Ps5NarratorEventProcessorTest {
         val myBestLapKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val fuelKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
 
-        processor.process(myBestLapKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), 0L)
-        processor.process(fuelKey, telemetry(bestLapTimeMs = 50_000), emptyList(), emptyList(), 0L)
+        processor.process(myBestLapKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), emptyMap(), 0L)
+        processor.process(fuelKey, telemetry(bestLapTimeMs = 50_000), emptyList(), emptyList(), emptyMap(), 0L)
         processor.process(
             myBestLapKey,
             telemetry(bestLapTimeMs = 59_000),
             listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
             emptyList(),
+            emptyMap(),
             0L,
         )
 
@@ -125,12 +128,36 @@ class Gt7Ps5NarratorEventProcessorTest {
             telemetry = telemetry(),
             events = listOf(newEvent),
             readoutOrder = listOf(currentKey, newEvent.readoutItemKey),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 0L,
         )
 
         verify(exactly = 0) { ttsEngine.stop() }
         verify(exactly = 0) { ttsEngine.speak(any(), any()) }
         coVerify(exactly = 0) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
+        val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+        val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
+        every { ttsEngine.currentReadoutItemKey } returns currentKey
+        every { ttsEngine.speak(newEvent, queue = true) } just Runs
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+        val processor = createProcessor()
+
+        processor.process(
+            sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+            telemetry = telemetry(),
+            events = listOf(newEvent),
+            readoutOrder = listOf(currentKey, newEvent.readoutItemKey),
+            queueEnabledStates = mapOf(newEvent.readoutItemKey to true),
+            observedAtMs = 0L,
+        )
+
+        verify(exactly = 0) { ttsEngine.stop() }
+        verify(exactly = 1) { ttsEngine.speak(newEvent, queue = true) }
+        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
     }
 
     @Test
@@ -148,6 +175,7 @@ class Gt7Ps5NarratorEventProcessorTest {
             telemetry = telemetry(),
             events = listOf(newEvent),
             readoutOrder = listOf(newEvent.readoutItemKey, currentKey),
+            queueEnabledStates = emptyMap(),
             observedAtMs = 0L,
         )
 

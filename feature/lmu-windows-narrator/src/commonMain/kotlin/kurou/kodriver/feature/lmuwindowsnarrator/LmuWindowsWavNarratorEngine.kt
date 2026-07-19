@@ -39,6 +39,10 @@ internal class LmuWindowsWavNarratorEngine(
 
     private var playJob: Job? = null
 
+    // playJob はキューのチェーン最後尾しか指さないため、割り込み時に再生中・待機中の
+    // ジョブをまとめてキャンセルできるよう、全再生ジョブをこの親 Job にぶら下げる。
+    private var playbackParent: Job = SupervisorJob()
+
     @Volatile
     private var _currentReadoutItemKey: ReadoutItemKey? = null
 
@@ -109,27 +113,32 @@ internal class LmuWindowsWavNarratorEngine(
         val mainSound = sounds[event] ?: return
         if (queue) {
             val previousJob = playJob
-            playJob = scope.launch {
+            playJob = scope.launch(playbackParent) {
                 previousJob?.join()
                 play(event, mainSound)
             }
             return
         }
         if (soundPlayer.isPlaying) return
-        playJob?.cancel()
-        playJob = scope.launch { play(event, mainSound) }
+        cancelPlayback()
+        playJob = scope.launch(playbackParent) { play(event, mainSound) }
     }
 
     override fun stop() {
-        playJob?.cancel()
+        cancelPlayback()
+    }
+
+    private fun cancelPlayback() {
+        playbackParent.cancel()
+        playbackParent = SupervisorJob()
         playJob = null
     }
 
     override fun previewStartSound(type: ReadoutStartSoundType) {
         val sound = startSounds[type] ?: return
         if (soundPlayer.isPlaying) return
-        playJob?.cancel()
-        playJob = scope.launch { soundPlayer.play(sound, currentVolume) }
+        cancelPlayback()
+        playJob = scope.launch(playbackParent) { soundPlayer.play(sound, currentVolume) }
     }
 
     private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {

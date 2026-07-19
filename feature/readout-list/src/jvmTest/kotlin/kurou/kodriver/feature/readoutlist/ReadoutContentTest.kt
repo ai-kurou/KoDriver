@@ -94,6 +94,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
                 onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.LmuWindows, it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
@@ -135,6 +136,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
                 onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.Gt7Ps5, it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
@@ -169,6 +171,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { item, enabled -> changedItems += item to enabled },
+                onQueueEnabledChanged = { _, _ -> },
                 onItemSelected = {},
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
@@ -184,6 +187,48 @@ class ReadoutContentTest {
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
+    }
+
+    @Test
+    fun `キュー追加トグルをクリックするとON_OFF変更コールバックを呼ぶ`() {
+        val changedItems = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
+        var tyreTemperatureText by mutableStateOf("")
+
+        rule.setContent {
+            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.LmuWindows),
+                    selectedSimulator = Simulator.LmuWindows,
+                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                    readoutEnabledStates = mapOf(
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
+                        ReadoutItemKey.LmuWindows.Flag.Root to true,
+                    ),
+                    queueEnabledStates = mapOf(
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                        ReadoutItemKey.LmuWindows.Flag.Root to false,
+                    ),
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { item, enabled -> changedItems += item to enabled },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { _, _, _ -> },
+            )
+        }
+
+        rule.onNodeWithText(tyreTemperatureText).assertExists()
+        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
+        rule.onAllNodes(hasQueueToggleRole()).get(0).assertIsEnabled().performClick()
+        rule.onAllNodes(hasQueueToggleRole()).get(1).assertIsEnabled().performClick()
+
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
     }
 
     @Test
@@ -221,6 +266,7 @@ class ReadoutContentTest {
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }
@@ -255,4 +301,7 @@ class ReadoutContentTest {
     }
 
     private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
+
+    private fun hasQueueToggleRole(): SemanticsMatcher =
+        SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
 }

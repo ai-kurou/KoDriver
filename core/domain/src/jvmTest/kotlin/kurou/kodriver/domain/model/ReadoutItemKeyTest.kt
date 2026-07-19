@@ -53,4 +53,20 @@ class ReadoutItemKeyTest {
     fun `fromValue は未知の値のとき null を返す`() {
         assertNull(ReadoutItemKey.fromValue("unknown"))
     }
+
+    @Test
+    fun `車両接近の Root のみ supportsQueue が false`() {
+        assertEquals(false, ReadoutItemKey.LmuWindows.VehicleApproach.Root.supportsQueue)
+    }
+
+    @Test
+    fun `車両接近以外の Root は supportsQueue が true`() {
+        assertEquals(true, ReadoutItemKey.LmuWindows.Flag.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.VehicleDamage.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.MyBestLap.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.Gt7Ps5.MyBestLap.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.supportsQueue)
+    }
 }

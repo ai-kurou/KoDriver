@@ -5,6 +5,7 @@ import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
@@ -34,7 +35,7 @@ val gt7Ps5NarratorModule: Module = module {
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
     factory { MyBestLapUseCases(get(), get()) }
-    factory { ReadoutListUseCases(get(), get(), get()) }
+    factory { ReadoutListUseCases(get(), get(), get(), get()) }
     factory { RemainingFuelLapsUseCases(get()) }
     factory { Gt7Ps5NarratorEventProcessor(get(named("gt7_ps5")), get()) }
 
@@ -47,6 +48,7 @@ val gt7Ps5NarratorModule: Module = module {
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
+    factory { ObserveQueueEnabledStatesUseCase(get()) }
 
     // 音声再生（named "gt7_ps5" で LMU と分離。SoundPlayer は platformSoundModule が提供）
     includes(platformSoundModule)

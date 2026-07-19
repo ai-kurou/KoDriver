@@ -44,6 +44,7 @@ class ReadoutListPaneScreenshotTest {
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
                             onItemClick = { _ -> },
                         )
                     }
@@ -71,6 +72,7 @@ class ReadoutListPaneScreenshotTest {
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
                             onItemClick = { _ -> },
                         )
                     }
@@ -98,6 +100,7 @@ class ReadoutListPaneScreenshotTest {
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
                             onItemClick = { _ -> },
                         )
                     }
