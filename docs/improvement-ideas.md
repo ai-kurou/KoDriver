@@ -16,12 +16,6 @@
   **改善案**: <どう変えたいか>
 ```
 
-## readout-list のキュー追加トグルのUIテスト未追加
-
-- **対象**: `feature:readout-list` の `ReadoutListPane.kt`（`FilledIconToggleButton` → `onQueueEnabledChanged`）と `ReadoutContentTest.kt`
-  **課題**: listPane のキュー追加トグル（`FilledIconToggleButton`）は、既存の読み上げON/OFF `Switch` と同じ行に並んでいるが、`ReadoutContentTest.kt` では常に空実装（`onQueueEnabledChanged = { _, _ -> }`）しか渡されておらず、実際にクリックして `ReadoutItemKey`・有効値が正しく伝播することを検証するテストがない。隣接する `Switch`（`onReadoutEnabledChanged`）には `hasSwitchRole()` を使った `performClick()` 検証の先例テストが存在する（PR #667 レビュー時に指摘）。
-  **改善案**: `ReadoutContentTest.kt` に、キュー追加トグルをクリックして `onQueueEnabledChanged` が正しい `ReadoutItemKey` と値で呼ばれることを検証するテストケースを追加する。
-
 ## mockk テストの any() 使用
 
 - **対象**: `:app` 以下・`:server` 以外のほぼ全モジュール。特に `core:domain`（`*UseCaseTest.kt` 多数）、`feature:lmu-windows-narrator`・`feature:gt7-ps5-narrator`（`*EventProcessorTest.kt`・`*ViewModelTest.kt`）、`feature:gt7-ps5-connection`・`feature:lmu-windows-connection`・`feature:other-list`・`feature:other-server-ip-detail`・`feature:other-theme-detail`・`feature:readout-list`・`feature:server-connection` の各 `*ViewModelTest.kt` など（計 656 箇所、58 ファイル）。
