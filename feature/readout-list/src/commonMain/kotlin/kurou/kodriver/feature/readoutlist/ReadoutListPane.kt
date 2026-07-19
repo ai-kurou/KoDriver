@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -34,6 +35,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -355,10 +357,15 @@ internal fun ReadoutListPane(
                                     ) {
                                         if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
                                             var queueEnabled by remember { mutableStateOf(false) }
-                                            Switch(
+                                            FilledIconToggleButton(
                                                 checked = queueEnabled,
                                                 onCheckedChange = { queueEnabled = it },
-                                            )
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                                                    contentDescription = null,
+                                                )
+                                            }
                                         }
                                         Switch(
                                             checked = uiState.readoutEnabledStates[item] ?: false,
