@@ -1,18 +1,18 @@
 package kurou.kodriver
 
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
-import androidx.compose.ui.test.printToLog
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kurou.kodriver.domain.model.TelemetryLog
@@ -57,7 +57,6 @@ class MainActivityTest {
         clickItemAndNavigateBack("車両故障")
         scrollToItem("タイヤ温度")
         clickItem("タイヤ温度")
-        composeTestRule.onRoot().printToLog("DEBUG_TREE")
         waitUntilDisplayed("高温閾値設定")
         composeTestRule.onNodeWithText("高温閾値設定").performScrollTo()
         composeTestRule.waitForIdle()
@@ -173,10 +172,19 @@ class MainActivityTest {
     }
 
     private fun waitUntilDisplayed(text: String) {
-        composeTestRule.waitUntil(timeoutMillis = 15_000L) {
-            composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
+        try {
+            composeTestRule.waitUntil(timeoutMillis = 15_000L) {
+                composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
+            }
+        } catch (e: ComposeTimeoutException) {
+            throw AssertionError("\"$text\" not displayed. Visible texts: ${visibleTexts()}", e)
         }
     }
+
+    private fun visibleTexts(): List<String> =
+        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
+            .fetchSemanticsNodes()
+            .flatMap { node -> node.config.getOrElse(SemanticsProperties.Text) { emptyList() }.map { it.text } }
 
     private fun clickItemAndNavigateBack(text: String) {
         scrollToItem(text)
