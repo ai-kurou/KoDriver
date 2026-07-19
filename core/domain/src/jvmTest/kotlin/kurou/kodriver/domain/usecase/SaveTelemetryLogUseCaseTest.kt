@@ -1,64 +1,41 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import io.mockk.MockKAnnotations
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
-import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-
-private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = emptyList()): TelemetryLogRepository {
-    val repository = mockk<TelemetryLogRepository>()
-    val logs = MutableStateFlow(initialLogs)
-    every { repository.observeTelemetryLogs() } returns logs
-    coEvery { repository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
-        logs.update {
-            it + TelemetryLog(
-                id = nextId,
-                createdAt = firstArg(),
-                simulatorId = secondArg(),
-                readoutItemKey = thirdArg(),
-                telemetryJson = arg(3),
-            )
-        }
-    }
-    coEvery { repository.deleteAllTelemetryLogs() } answers {
-        logs.update { emptyList() }
-    }
-    return repository
-}
 
 class SaveTelemetryLogUseCaseTest {
+
+    @MockK(relaxUnitFun = true)
+    private lateinit var repository: TelemetryLogRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `ログを保存する`() = runBlocking {
-        val repository = createTelemetryLogRepository()
-        val saveUseCase = SaveTelemetryLogUseCase(repository)
-        val observeUseCase = ObserveTelemetryLogsUseCase(repository)
-
-        saveUseCase(
+        SaveTelemetryLogUseCase(repository)(
             createdAt = 1000L,
             simulatorId = "gt7_ps5",
             readoutItemKey = "remaining_fuel_laps",
             telemetryJson = """{"lapCount":1}""",
         )
 
-        assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 1L,
-                    createdAt = 1000L,
-                    simulatorId = "gt7_ps5",
-                    readoutItemKey = "remaining_fuel_laps",
-                    telemetryJson = """{"lapCount":1}""",
-                ),
-            ),
-            observeUseCase().first(),
-        )
+        coVerify(exactly = 1) {
+            repository.saveTelemetryLog(
+                createdAt = 1000L,
+                simulatorId = "gt7_ps5",
+                readoutItemKey = "remaining_fuel_laps",
+                telemetryJson = """{"lapCount":1}""",
+            )
+        }
+        confirmVerified(repository)
     }
 }

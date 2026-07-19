@@ -1,39 +1,30 @@
 package kurou.kodriver.domain.usecase
 
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import io.mockk.MockKAnnotations
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-
-private fun createLmuWindowsMyBestLapPreferencesRepository(
-    initial: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-): LmuWindowsMyBestLapPreferencesRepository {
-    val repository = mockk<LmuWindowsMyBestLapPreferencesRepository>()
-    val state = MutableStateFlow(initial)
-    every { repository.observeVoiceType() } returns state
-    coEvery { repository.saveVoiceType(any()) } answers {
-        state.update { firstArg() }
-    }
-    return repository
-}
 
 class SaveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var repository: LmuWindowsMyBestLapPreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `LMU自己ベストラップ音声タイプを保存する`() = runBlocking {
-        val repository = createLmuWindowsMyBestLapPreferencesRepository()
-        val saveUseCase = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository)
-        val observeUseCase = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository)
+        SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
 
-        saveUseCase(MyBestLapVoiceType.CASUAL)
-
-        assertEquals(MyBestLapVoiceType.CASUAL, observeUseCase().first())
+        coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
+        confirmVerified(repository)
     }
 }

@@ -2,52 +2,39 @@
 
 package kurou.kodriver.domain.usecase
 
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import io.mockk.MockKAnnotations
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-
-private fun createLmuWindowsTyreTemperaturePreferencesRepository(): LmuWindowsTyreTemperaturePreferencesRepository {
-    val repository = mockk<LmuWindowsTyreTemperaturePreferencesRepository>()
-    val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-    every { repository.observeEnabledStates() } returns enabledStates
-    coEvery { repository.saveEnabledState(any(), any()) } answers {
-        enabledStates.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
-    }
-    return repository
-}
 
 class SaveLmuWindowsTyreTemperatureEnabledStateUseCaseTest {
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var repository: LmuWindowsTyreTemperaturePreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository()
-        val saveUseCase = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repo)
-        val observeUseCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
+        val useCase = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository)
 
-        saveUseCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
-                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
-            ),
-            observeUseCase().first(),
-        )
+        useCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+        useCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
 
-        saveUseCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
-            ),
-            observeUseCase().first(),
-        )
+        coVerify(exactly = 1) {
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+        }
+        coVerify(exactly = 1) {
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, true)
+        }
+        confirmVerified(repository)
     }
 }

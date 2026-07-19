@@ -1,31 +1,49 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = emptyList()): TelemetryLogRepository {
-    val repository = mockk<TelemetryLogRepository>()
+private fun createTelemetryLogRepository(
+    repository: TelemetryLogRepository,
+    initialLogs: List<TelemetryLog> = emptyList(),
+): TelemetryLogRepository {
     val logs = MutableStateFlow(initialLogs)
     every { repository.observeTelemetryLogs() } returns logs
-    coEvery { repository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-        val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
-        logs.update {
-            it + TelemetryLog(
-                id = nextId,
-                createdAt = firstArg(),
-                simulatorId = secondArg(),
-                readoutItemKey = thirdArg(),
-                telemetryJson = arg(3),
-            )
+    listOf(
+        TelemetryLog(
+            id = 0L,
+            createdAt = 1000L,
+            simulatorId = "gt7_ps5",
+            readoutItemKey = "remaining_fuel_laps",
+            telemetryJson = """{"lapCount":1}""",
+        ),
+        TelemetryLog(
+            id = 0L,
+            createdAt = 2000L,
+            simulatorId = "lmu_windows",
+            readoutItemKey = "flag",
+            telemetryJson = """{"currentLap":2}""",
+        ),
+    ).forEach { log ->
+        coEvery {
+            repository.saveTelemetryLog(log.createdAt, log.simulatorId, log.readoutItemKey, log.telemetryJson)
+        } answers {
+            val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
+            logs.update { it + log.copy(id = nextId) }
         }
     }
     coEvery { repository.deleteAllTelemetryLogs() } answers {
@@ -35,9 +53,19 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
 }
 
 class ResetTelemetryLogDatabaseUseCaseTest {
+
+    @MockK
+    private lateinit var repository: TelemetryLogRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `全てのログを削除する`() = runBlocking {
         val repository = createTelemetryLogRepository(
+            repository,
             initialLogs = listOf(
                 TelemetryLog(
                     id = 1L,
@@ -54,5 +82,8 @@ class ResetTelemetryLogDatabaseUseCaseTest {
         resetUseCase()
 
         assertEquals(emptyList(), observeUseCase().first())
+        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+        verify(exactly = 1) { repository.observeTelemetryLogs() }
+        confirmVerified(repository)
     }
 }
