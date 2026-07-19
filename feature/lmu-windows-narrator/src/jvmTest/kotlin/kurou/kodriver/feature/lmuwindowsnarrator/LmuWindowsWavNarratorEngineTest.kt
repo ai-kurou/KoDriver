@@ -271,6 +271,51 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
+    fun `stopはキュー待機中のジョブも含めて全てキャンセルする`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.CarLeft)
+        engine.speak(SpeechEvent.CarRight, queue = true)
+        engine.stop()
+        advanceUntilIdle()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
+    @Test
+    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.LeftApproach)
+        engine.speak(SpeechEvent.CarRight, queue = true)
+        engine.speak(SpeechEvent.CarLeft)
+        advanceUntilIdle()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `stop後のqueue speakは正常に再生できる`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.stop()
+        engine.speak(SpeechEvent.CarLeft, queue = true)
+        advanceUntilIdle()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+    }
+
+    @Test
     fun `previewStartSoundは開始音のみを再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)

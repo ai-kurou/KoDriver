@@ -214,6 +214,51 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
+    fun `stopはキュー待機中のジョブも含めて全てキャンセルする`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(3), queue = true)
+        engine.stop()
+        advanceUntilIdle()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
+    @Test
+    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapCasual)
+        engine.speak(SpeechEvent.RemainingFuelLapsWarning(3), queue = true)
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
+        advanceUntilIdle()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(MY_BEST_LAP_FORMAL_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `stop後のqueue speakは正常に再生できる`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(player)
+        runCurrent()
+
+        engine.stop()
+        engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, queue = true)
+        advanceUntilIdle()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(MY_BEST_LAP_FORMAL_SOUND, player.playedSounds[1])
+    }
+
+    @Test
     fun `volumeFlowの音量で再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player, volumeFlow = flowOf(50))
