@@ -375,11 +375,11 @@ internal class LmuWindowsNarratorViewModel(
                         simulatorId = Simulator.LmuWindows.id,
                         readoutItemKey = event.readoutItemKey.value,
                         telemetryJson = buildTelemetryLogJson(
+                            state = state,
                             telemetry = telemetry,
                             virtualEnergy = virtualEnergy,
-                            observedAtMs = observedAtMs,
                             settings = settings,
-                            state = state,
+                            observedAtMs = observedAtMs,
                             trackingState = decision.state.virtualEnergyTrackingState,
                         ),
                     )
@@ -460,19 +460,19 @@ private fun buildTelemetryLogJson(previous: LmuWindowsTelemetryData?, current: L
     """{"previous":${previous?.toJson() ?: "null"},"current":${current.toJson()}}"""
 
 private fun buildTelemetryLogJson(
+    state: LmuWindowsNarratorState,
     telemetry: LmuWindowsTelemetryData,
     virtualEnergy: LmuWindowsVirtualEnergyData,
-    observedAtMs: Long,
     settings: LmuWindowsNarratorReadoutSettings,
-    state: LmuWindowsNarratorState,
+    observedAtMs: Long,
     trackingState: LmuWindowsVirtualEnergyTrackingState,
 ): String =
     "{" +
+        """"state":${state.toJsonString()},""" +
         """"telemetry":${telemetry.toJson()},""" +
         """"virtualEnergy":${virtualEnergy.toJson()},""" +
-        """"observedAtMs":$observedAtMs,""" +
         """"settings":${settings.toJsonString()},""" +
-        """"state":${state.toJsonString()},""" +
+        """"observedAtMs":$observedAtMs,""" +
         """"trackingState":${trackingState.toJsonString()}""" +
         "}"
 
