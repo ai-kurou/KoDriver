@@ -89,6 +89,7 @@ import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -487,21 +488,19 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 60_000L, currentLap = 1))
         telemetryChannel.send(fakeTelemetryData(bestLapTimeMs = 59_000L, currentLap = 2))
 
-        assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = 456L,
-                    simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root.value,
-                    telemetryJson =
-                        """{"previous":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":60000,""" +
-                            """"currentLap":1,"maxLaps":0},"current":{"currentLapTimeMs":0,""" +
-                            """"lastLapTimeMs":0,"bestLapTimeMs":59000,"currentLap":2,"maxLaps":0}}""",
-                ),
-            ),
-            logs,
-        )
+        assertEquals(1, logs.size)
+        val log = logs.single()
+        assertEquals(456L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root.value, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"previousTelemetry":{"currentLapTimeMs":0""")
+        assertContains(log.telemetryJson, """"bestLapTimeMs":60000""")
+        assertContains(log.telemetryJson, """"telemetry":{"currentLapTimeMs":0""")
+        assertContains(log.telemetryJson, """"bestLapTimeMs":59000""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":456""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
     // --- 接近アナウンス ---
@@ -671,24 +670,18 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 123_456L
         channel.send(leftVehicleApproach(vehicleId = 1))
 
-        assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = 123_456L,
-                    simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
-                    telemetryJson =
-                        """{"previous":{"sideBySideLeftVehicleIds":[1],""" +
-                            """"sideBySideRightVehicleIds":[],"lateralDistanceLeftMeters":3.0,""" +
-                            """"lateralDistanceRightMeters":${Double.MAX_VALUE}},""" +
-                            """"current":{"sideBySideLeftVehicleIds":[1],""" +
-                            """"sideBySideRightVehicleIds":[],"lateralDistanceLeftMeters":3.0,""" +
-                            """"lateralDistanceRightMeters":${Double.MAX_VALUE}}}""",
-                ),
-            ),
-            logs,
-        )
+        assertEquals(1, logs.size)
+        val log = logs.single()
+        assertEquals(123_456L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root.value, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"previousVehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
+        assertContains(log.telemetryJson, """"vehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
+        assertContains(log.telemetryJson, """"lateralDistanceLeftMeters":3.0""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":123456""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
     // --- 優先度 ---
@@ -909,26 +902,18 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 789L
         flagChannel.send(clearFlags(playerFlag = PrimaryFlag.BLUE))
 
-        assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = 789L,
-                    simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
-                    telemetryJson =
-                        """{"previous":{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
-                            """"sectorFlags":["CLEAR","CLEAR","CLEAR"],"startLight":0,"numRedLights":0,""" +
-                            """"playerFlag":"GREEN","playerUnderYellow":false,""" +
-                            """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"},""" +
-                            """"current":{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE",""" +
-                            """"sectorFlags":["CLEAR","CLEAR","CLEAR"],"startLight":0,"numRedLights":0,""" +
-                            """"playerFlag":"BLUE","playerUnderYellow":false,""" +
-                            """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}}""",
-                ),
-            ),
-            logs,
-        )
+        assertEquals(1, logs.size)
+        val log = logs.single()
+        assertEquals(789L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root.value, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"previousRaceFlags":{"gamePhase":"GREEN_FLAG"""")
+        assertContains(log.telemetryJson, """"raceFlags":{"gamePhase":"GREEN_FLAG"""")
+        assertContains(log.telemetryJson, """"playerFlag":"BLUE"""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":789""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
     @Test
@@ -1001,20 +986,17 @@ class LmuWindowsNarratorViewModelTest {
         fakeTime = 987L
         damageChannel.send(noDamage(overheating = true))
 
-        assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = 987L,
-                    simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root.value,
-                    telemetryJson =
-                        """{"previous":{"overheating":false,"partDetached":false,"lastImpactMagnitude":0.0},""" +
-                            """"current":{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.0}}""",
-                ),
-            ),
-            logs,
-        )
+        assertEquals(1, logs.size)
+        val log = logs.single()
+        assertEquals(987L, log.createdAt)
+        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
+        assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root.value, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"previousVehicleDamage":{"overheating":false""")
+        assertContains(log.telemetryJson, """"vehicleDamage":{"overheating":true""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":987""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
     // --- タイヤ温度 ---
@@ -1190,6 +1172,13 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0""")
+        assertContains(log.telemetryJson, """"raceFlags":{""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":123""")
+        assertContains(log.telemetryJson, """"overheatState":{"raw":"""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
     // --- タイヤ低温警告 ---
@@ -1313,6 +1302,13 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(123L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":55.0""")
+        assertContains(log.telemetryJson, """"raceFlags":{""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":123""")
+        assertContains(log.telemetryJson, """"overheatState":{"raw":"""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
     // --- バーチャルエナジー残り周回数 ---
@@ -1410,6 +1406,15 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(160_000L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.value, log.readoutItemKey)
+        assertContains(
+            log.telemetryJson,
+            """"telemetry":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":90000""",
+        )
+        assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.1}""")
+        assertContains(log.telemetryJson, """"observedAtMs":160000""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"LmuWindowsNarratorReadoutSettings(""")
+        assertContains(log.telemetryJson, """"state":{"raw":"LmuWindowsNarratorState(""")
+        assertContains(log.telemetryJson, """"trackingState":{"raw":"LmuWindowsVirtualEnergyTrackingState(""")
     }
 
     @Test
