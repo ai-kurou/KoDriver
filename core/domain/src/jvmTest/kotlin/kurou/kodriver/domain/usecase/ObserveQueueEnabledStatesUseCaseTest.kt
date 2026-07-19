@@ -41,8 +41,8 @@ class ObserveQueueEnabledStatesUseCaseTest {
         val repository = mockk<QueuePreferencesRepository>()
         val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeQueueEnabledStates() } returns states
-        coEvery { repository.saveQueueEnabledState(any(), any()) } answers {
-            states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
+        coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {
+            states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
         }
         val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
