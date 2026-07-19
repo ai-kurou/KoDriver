@@ -2,7 +2,6 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -13,14 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -32,7 +24,6 @@ import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectable
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
-import kurou.kodriver.domain.usecase.LmuWindowsVirtualEnergyTrackingState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -116,10 +107,10 @@ internal class LmuWindowsNarratorViewModel(
 ) : ViewModel() {
 
     private var narratorState = LmuWindowsNarratorState()
-    private var previousVehicleApproach: LmuWindowsVehicleApproachData? = null
-    private var previousLmuWindowsTelemetry: LmuWindowsTelemetryData? = null
-    private var previousVehicleDamage: LmuWindowsVehicleDamageData? = null
-    private var previousRaceFlags: LmuWindowsRaceFlagsData? = null
+    private val eventProcessor = LmuWindowsNarratorEventProcessor(
+        ttsEngine = ttsEngine,
+        saveTelemetryLog = narratorUseCases.saveTelemetryLog,
+    )
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -208,7 +199,6 @@ internal class LmuWindowsNarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob = lmuTelemetryFlow
         .onEach { telemetry ->
-            val previous = previousLmuWindowsTelemetry
             val observedAtMs = currentTimeMs()
             val state = narratorState
             val settings = currentSettings
@@ -218,24 +208,17 @@ internal class LmuWindowsNarratorViewModel(
                 settings = settings,
             )
             narratorState = decision.state
-            decision.events.forEach { event ->
-                if (speakWithPriority(event)) {
-                    saveTelemetryLogSafely(
-                        createdAt = observedAtMs,
-                        simulatorId = Simulator.LmuWindows.id,
-                        readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(
-                            state = state,
-                            previous = previous,
-                            current = telemetry,
-                            settings = settings,
-                            observedAtMs = observedAtMs,
-                            finalState = decision.state,
-                        ),
-                    )
-                }
-            }
-            previousLmuWindowsTelemetry = telemetry
+            eventProcessor.processTelemetry(
+                telemetry = telemetry,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+            )
         }
         .launchIn(viewModelScope)
 
@@ -246,7 +229,6 @@ internal class LmuWindowsNarratorViewModel(
             vehicleApproachUseCases.observeVehicleApproach()
         }
         .onEach { vehicleApproach ->
-            val previous = previousVehicleApproach
             val observedAtMs = currentTimeMs()
             val state = narratorState
             val settings = currentSettings
@@ -257,24 +239,17 @@ internal class LmuWindowsNarratorViewModel(
                 observedAtMs = observedAtMs,
             )
             narratorState = decision.state
-            decision.events.forEach { event ->
-                if (speakWithPriority(event)) {
-                    saveTelemetryLogSafely(
-                        createdAt = observedAtMs,
-                        simulatorId = Simulator.LmuWindows.id,
-                        readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(
-                            state = state,
-                            previous = previous,
-                            current = vehicleApproach,
-                            settings = settings,
-                            observedAtMs = observedAtMs,
-                            finalState = decision.state,
-                        ),
-                    )
-                }
-            }
-            previousVehicleApproach = vehicleApproach
+            eventProcessor.processVehicleApproach(
+                vehicleApproach = vehicleApproach,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+            )
         }
         .launchIn(viewModelScope)
 
@@ -285,7 +260,6 @@ internal class LmuWindowsNarratorViewModel(
             vehicleDamageUseCases.observeVehicleDamage()
         }
         .onEach { vehicleDamage ->
-            val previous = previousVehicleDamage
             val observedAtMs = currentTimeMs()
             val state = narratorState
             val settings = currentSettings
@@ -295,31 +269,23 @@ internal class LmuWindowsNarratorViewModel(
                 settings = settings,
             )
             narratorState = decision.state
-            decision.events.forEach { event ->
-                if (speakWithPriority(event)) {
-                    saveTelemetryLogSafely(
-                        createdAt = observedAtMs,
-                        simulatorId = Simulator.LmuWindows.id,
-                        readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(
-                            state = state,
-                            previous = previous,
-                            current = vehicleDamage,
-                            settings = settings,
-                            observedAtMs = observedAtMs,
-                            finalState = decision.state,
-                        ),
-                    )
-                }
-            }
-            previousVehicleDamage = vehicleDamage
+            eventProcessor.processVehicleDamage(
+                vehicleDamage = vehicleDamage,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+            )
         }
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
     private val flagJob = raceFlagsFlow
         .onEach { raceFlags ->
-            val previous = previousRaceFlags
             val observedAtMs = currentTimeMs()
             val state = narratorState
             val settings = currentSettings
@@ -329,24 +295,17 @@ internal class LmuWindowsNarratorViewModel(
                 settings = settings,
             )
             narratorState = decision.state
-            decision.events.forEach { event ->
-                if (speakWithPriority(event)) {
-                    saveTelemetryLogSafely(
-                        createdAt = observedAtMs,
-                        simulatorId = Simulator.LmuWindows.id,
-                        readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(
-                            state = state,
-                            previous = previous,
-                            current = raceFlags,
-                            settings = settings,
-                            observedAtMs = observedAtMs,
-                            finalState = decision.state,
-                        ),
-                    )
-                }
-            }
-            previousRaceFlags = raceFlags
+            eventProcessor.processRaceFlags(
+                raceFlags = raceFlags,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+            )
         }
         .launchIn(viewModelScope)
 
@@ -376,24 +335,19 @@ internal class LmuWindowsNarratorViewModel(
                 settings = settings,
             )
             narratorState = lowDecision.state
-            (overheatDecision.events + lowDecision.events).forEach { event ->
-                if (speakWithPriority(event)) {
-                    saveTelemetryLogSafely(
-                        createdAt = observedAtMs,
-                        simulatorId = Simulator.LmuWindows.id,
-                        readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(
-                            state = state,
-                            tyreCarcassTemperature = tyreCarcassTemperature,
-                            raceFlags = raceFlags,
-                            settings = settings,
-                            observedAtMs = observedAtMs,
-                            overheatState = overheatDecision.state,
-                            finalState = lowDecision.state,
-                        ),
-                    )
-                }
-            }
+            eventProcessor.processTyreTemperature(
+                tyreCarcassTemperature = tyreCarcassTemperature,
+                raceFlags = raceFlags,
+                events = overheatDecision.events + lowDecision.events,
+                readoutOrder = readoutOrder.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsTyreTemperatureLogContext(
+                    state = state,
+                    settings = settings,
+                    overheatState = overheatDecision.state,
+                    finalState = lowDecision.state,
+                ),
+            )
         }
         .launchIn(viewModelScope)
 
@@ -414,23 +368,18 @@ internal class LmuWindowsNarratorViewModel(
                 observedAtMs = observedAtMs,
             )
             narratorState = decision.state
-            decision.events.forEach { event ->
-                if (speakWithPriority(event)) {
-                    saveTelemetryLogSafely(
-                        createdAt = observedAtMs,
-                        simulatorId = Simulator.LmuWindows.id,
-                        readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(
-                            state = state,
-                            telemetry = telemetry,
-                            virtualEnergy = virtualEnergy,
-                            settings = settings,
-                            observedAtMs = observedAtMs,
-                            trackingState = decision.state.virtualEnergyTrackingState,
-                        ),
-                    )
-                }
-            }
+            eventProcessor.processVirtualEnergy(
+                telemetry = telemetry,
+                virtualEnergy = virtualEnergy,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsVirtualEnergyLogContext(
+                    state = state,
+                    settings = settings,
+                    trackingState = decision.state.virtualEnergyTrackingState,
+                ),
+            )
         }
         .launchIn(viewModelScope)
 
@@ -453,216 +402,7 @@ internal class LmuWindowsNarratorViewModel(
             ),
         )
 
-    /**
-     * 優先度を考慮して読み上げる。
-     * - 再生中のアイテムより優先度が高い（order の index が小さい）場合: 現在の再生を停止して割り込む
-     * - 再生中のアイテムと同じか優先度が低い場合: 無視する
-     */
-    private fun speakWithPriority(event: SpeechEvent): Boolean {
-        val order = readoutOrder.value
-        val currentKey = ttsEngine.currentReadoutItemKey
-        if (currentKey != null) {
-            val currentIndex = order.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            val newIndex = order.indexOf(event.readoutItemKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            if (newIndex >= currentIndex) return false
-            ttsEngine.stop()
-        }
-        ttsEngine.speak(event)
-        return true
-    }
-
-    private suspend fun saveTelemetryLogSafely(
-        createdAt: Long,
-        simulatorId: String,
-        readoutItemKey: String,
-        telemetryJson: String,
-    ) {
-        try {
-            narratorUseCases.saveTelemetryLog(
-                createdAt = createdAt,
-                simulatorId = simulatorId,
-                readoutItemKey = readoutItemKey,
-                telemetryJson = telemetryJson,
-            )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            // ログ保存は読み上げの補助機能のため、保存失敗で以後の読み上げを止めない。
-        }
-    }
-
     private companion object {
         const val DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS = 7
     }
 }
-
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    previous: LmuWindowsVehicleApproachData?,
-    current: LmuWindowsVehicleApproachData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    finalState: LmuWindowsNarratorState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousVehicleApproach":${previous?.toJson() ?: "null"},""" +
-        """"vehicleApproach":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    previous: LmuWindowsTelemetryData?,
-    current: LmuWindowsTelemetryData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    finalState: LmuWindowsNarratorState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousTelemetry":${previous?.toJson() ?: "null"},""" +
-        """"telemetry":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    telemetry: LmuWindowsTelemetryData,
-    virtualEnergy: LmuWindowsVirtualEnergyData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    trackingState: LmuWindowsVirtualEnergyTrackingState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"telemetry":${telemetry.toJson()},""" +
-        """"virtualEnergy":${virtualEnergy.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"trackingState":${trackingState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsVirtualEnergyData.toJson(): String =
-    """{"remainingRatio":$remainingRatio}"""
-
-private fun LmuWindowsNarratorReadoutSettings.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun LmuWindowsNarratorState.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun LmuWindowsVirtualEnergyTrackingState.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun LmuWindowsTelemetryData.toJson(): String =
-    "{" +
-        """"currentLapTimeMs":${timing.currentLapTimeMs},""" +
-        """"lastLapTimeMs":${timing.lastLapTimeMs},""" +
-        """"bestLapTimeMs":${timing.bestLapTimeMs},""" +
-        """"currentLap":${timing.currentLap},""" +
-        """"maxLaps":${timing.maxLaps}""" +
-        "}"
-
-private fun LmuWindowsVehicleApproachData.toJson(): String =
-    "{" +
-        """"sideBySideLeftVehicleIds":${sideBySideLeftVehicleIds.sorted()},""" +
-        """"sideBySideRightVehicleIds":${sideBySideRightVehicleIds.sorted()},""" +
-        """"lateralDistanceLeftMeters":$lateralDistanceLeftMeters,""" +
-        """"lateralDistanceRightMeters":$lateralDistanceRightMeters""" +
-        "}"
-
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    previous: LmuWindowsVehicleDamageData?,
-    current: LmuWindowsVehicleDamageData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    finalState: LmuWindowsNarratorState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousVehicleDamage":${previous?.toJson() ?: "null"},""" +
-        """"vehicleDamage":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsVehicleDamageData.toJson(): String =
-    "{" +
-        """"overheating":$overheating,""" +
-        """"partDetached":$partDetached,""" +
-        """"lastImpactMagnitude":$lastImpactMagnitude""" +
-        "}"
-
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    previous: LmuWindowsRaceFlagsData?,
-    current: LmuWindowsRaceFlagsData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    finalState: LmuWindowsNarratorState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousRaceFlags":${previous?.toJson() ?: "null"},""" +
-        """"raceFlags":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsRaceFlagsData.toJson(): String =
-    "{" +
-        """"gamePhase":"$gamePhase",""" +
-        """"yellowFlagState":"$yellowFlagState",""" +
-        """"sectorFlags":[${sectorFlags.joinToString(",") { """"$it"""" }}],""" +
-        """"startLight":$startLight,""" +
-        """"numRedLights":$numRedLights,""" +
-        """"playerFlag":"$playerFlag",""" +
-        """"playerUnderYellow":$playerUnderYellow,""" +
-        """"playerCountLapFlag":"$playerCountLapFlag"""" +
-        "}"
-
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData,
-    raceFlags: LmuWindowsRaceFlagsData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    overheatState: LmuWindowsNarratorState,
-    finalState: LmuWindowsNarratorState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"tyreCarcassTemperature":${tyreCarcassTemperature.toJson()},""" +
-        """"raceFlags":${raceFlags.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"overheatState":${overheatState.toJsonString()},""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsTyreCarcassTemperatureData.toJson(): String =
-    """{"wheels":{${wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
-
-private fun String.toJsonStringLiteral(): String =
-    buildString {
-        append('"')
-        this@toJsonStringLiteral.forEach { char ->
-            when (char) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                '\t' -> append("\\t")
-                else -> append(char)
-            }
-        }
-        append('"')
-    }
