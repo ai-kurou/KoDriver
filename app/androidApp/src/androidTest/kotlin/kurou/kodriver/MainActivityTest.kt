@@ -214,6 +214,8 @@ class MainActivityTest {
     }
 
     private fun clickItem(text: String) {
+        composeTestRule.onNodeWithText(text).performScrollTo()
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(text).performClick()
         composeTestRule.waitForIdle()
     }
