@@ -18,4 +18,7 @@ val telemetryLogListModule = module {
     // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
     factory { ObserveTelemetryLogsUseCase(get()) }
     factory { ResetTelemetryLogDatabaseUseCase(get()) }
+
+    // 一覧表示用 UseCase
+    factory { ObserveSortedTelemetryLogsUseCase(get()) }
 }
