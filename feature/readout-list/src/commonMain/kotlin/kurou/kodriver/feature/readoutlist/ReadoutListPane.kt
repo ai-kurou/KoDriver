@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -34,6 +35,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -85,6 +87,7 @@ import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach_su
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
+import kodriver.feature.readoutlist.generated.resources.queue_hint_description
 import kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
@@ -184,7 +187,13 @@ private fun PriorityHintRow(
                 text = stringResource(Res.string.priority_hint_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Text(
+                text = stringResource(Res.string.queue_hint_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 24.dp),
             )
         }
     }
@@ -318,13 +327,21 @@ internal fun ReadoutListPane(
                             animationSpec = tween(durationMillis = 500),
                             label = "cardContainerColor",
                         )
+                        val itemName = itemDisplayName(item)
                         ListPaneCard(
                             onClick = { onItemClick(item) },
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            // クリック可能なのはこの Card 自身であり、内部の headlineContent の Text 自体は
+                            // クリックアクションを持たない。Compose UI Test で座標タップ(performClick)ではなく
+                            // OnClick セマンティクスアクションを直接実行してクリックすると、
+                            // Text ノードを対象にした場合は「ノードが OnClick を持たない」エラーになるため、
+                            // Card 自身を一意に特定できるよう contentDescription を付与する。
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .semantics { contentDescription = itemName },
                             containerColor = cardContainerColor,
                         ) {
                             ListItem(
-                                headlineContent = { Text(itemDisplayName(item)) },
+                                headlineContent = { Text(itemName) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 leadingContent = {
                                     Row(
@@ -349,10 +366,27 @@ internal fun ReadoutListPane(
                                     }
                                 },
                                 trailingContent = {
-                                    Switch(
-                                        checked = uiState.readoutEnabledStates[item] ?: false,
-                                        onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    ) {
+                                        if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
+                                            var queueEnabled by remember { mutableStateOf(false) }
+                                            FilledIconToggleButton(
+                                                checked = queueEnabled,
+                                                onCheckedChange = { queueEnabled = it },
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        }
+                                        Switch(
+                                            checked = uiState.readoutEnabledStates[item] ?: false,
+                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                                        )
+                                    }
                                 },
                             )
                         }

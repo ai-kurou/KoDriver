@@ -54,11 +54,13 @@ class MainActivityTest {
         navigateBack()
         clickItemAndNavigateBack("車両故障")
         scrollToItem("タイヤ温度")
-        clickItem("タイヤ温度")
+        clickItemByOnClickAction("タイヤ温度")
+        waitUntilDisplayed("高温閾値設定")
         composeTestRule.onNodeWithText("高温閾値設定").performScrollTo()
         composeTestRule.waitForIdle()
         clickContentDescription("高温閾値の説明を表示")
         dismissBottomSheet()
+        waitUntilDisplayed("低温警告の対象フェーズ")
         composeTestRule.onNodeWithText("低温警告の対象フェーズ").performScrollTo()
         composeTestRule.waitForIdle()
         clickContentDescription("低温警告の対象フェーズの説明を表示")
@@ -202,6 +204,15 @@ class MainActivityTest {
 
     private fun clickItem(text: String) {
         composeTestRule.onNodeWithText(text).performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    // クリック可能なのは項目カード自身であり、内部の Text ノードはクリックアクションを持たないため、
+    // performClick()(座標タップ)ではなく OnClick セマンティクスアクションを直接実行する場合は
+    // カード自身を contentDescription で特定する必要がある。
+    private fun clickItemByOnClickAction(contentDescription: String) {
+        composeTestRule.onNode(hasContentDescription(contentDescription))
+            .performSemanticsAction(SemanticsActions.OnClick)
         composeTestRule.waitForIdle()
     }
 
