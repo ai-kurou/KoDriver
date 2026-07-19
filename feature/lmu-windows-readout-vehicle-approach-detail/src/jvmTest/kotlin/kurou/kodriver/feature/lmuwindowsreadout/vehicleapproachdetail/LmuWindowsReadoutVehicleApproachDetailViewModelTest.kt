@@ -137,6 +137,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
         assertEquals(3.5, viewModel.uiState.first().lateralThresholdMeters)
         coVerify(exactly = 1) { thresholdsRepository.saveLateralThresholdMeters(3.5) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -162,6 +170,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
         assertEquals(15.0, viewModel.uiState.first().longitudinalThresholdMeters)
         coVerify(exactly = 1) { thresholdsRepository.saveLongitudinalThresholdMeters(15.0) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -187,6 +203,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
         assertEquals(true, viewModel.uiState.first().skipFirstLap)
         coVerify(exactly = 1) { vehicleApproachPreferencesRepository.saveSkipFirstLap(true) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(vehicleApproachPreferencesRepository, thresholdsRepository)
     }
 
     @Test
@@ -222,6 +246,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 false,
             )
         }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(vehicleApproachPreferencesRepository, thresholdsRepository)
     }
 
     @Test
@@ -257,6 +289,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 true,
             )
         }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(vehicleApproachPreferencesRepository, thresholdsRepository)
     }
 
     @Test
@@ -290,6 +330,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LeftApproach, false) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RightApproach, true) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(vehicleApproachPreferencesRepository, ttsEngine, thresholdsRepository)
     }
 
     @Test
@@ -323,6 +371,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.LeftSustained, false) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RightSustained, true) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(vehicleApproachPreferencesRepository, ttsEngine, thresholdsRepository)
     }
 
     @Test
@@ -352,6 +408,15 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.KeepLeft, false) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.KeepRight, true) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        coVerify(exactly = 1) { vehicleApproachPreferencesRepository.saveSustainedReadoutType(newType) }
+        confirmVerified(ttsEngine, thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -390,6 +455,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
             )
         }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -428,6 +501,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS,
             )
         }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -453,6 +534,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
         assertEquals(8, viewModel.uiState.first().sustainedApproachDurationSeconds)
         coVerify(exactly = 1) { thresholdsRepository.saveSustainedApproachDurationSeconds(8) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -491,6 +580,14 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
             )
         }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 
     @Test
@@ -514,5 +611,13 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarRight, true) }
+        verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeLongitudinalThresholdMeters() }
+        verify(exactly = 1) { thresholdsRepository.observeSustainedApproachDurationSeconds() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSkipFirstLap() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeEnabledStates() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeStartReadoutType() }
+        verify(exactly = 1) { vehicleApproachPreferencesRepository.observeSustainedReadoutType() }
+        confirmVerified(ttsEngine, thresholdsRepository, vehicleApproachPreferencesRepository)
     }
 }

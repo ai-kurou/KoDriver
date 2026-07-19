@@ -1,9 +1,12 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +20,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -25,16 +29,25 @@ import kotlin.test.assertTrue
 
 class ObserveKoDriverServerConnectionUseCaseTest {
 
+    @MockK
+    private lateinit var serverIpRepository: ServerIpPreferencesRepository
+
+    @MockK
+    private lateinit var simulatorRepository: SimulatorPreferencesRepository
+
+    @MockK
+    private lateinit var versionRepository: ServerVersionRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `IP未設定時は未設定状態を返す`() = runBlocking {
-        val serverIpRepository = mockk<ServerIpPreferencesRepository>()
-        val simulatorRepository = mockk<SimulatorPreferencesRepository>()
         every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        val useCase = createUseCase(
-            serverIpRepository = serverIpRepository,
-            simulatorRepository = simulatorRepository,
-        )
+        val useCase = createUseCase()
 
         val state = useCase(appVersion = "1.0.0").first()
 
@@ -43,13 +56,17 @@ class ObserveKoDriverServerConnectionUseCaseTest {
         assertEquals(Simulator.LmuWindows, state.selectedSimulator)
         assertNull(state.serverVersion)
         assertFalse(state.isVersionMismatch)
+        verify(exactly = 1) { serverIpRepository.serverIp() }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        confirmVerified(serverIpRepository, simulatorRepository, versionRepository)
     }
 
     @Test
     fun `接続成功時は接続済み状態とサーバーバージョンを返す`() = runBlocking {
-        val versionRepository = mockk<ServerVersionRepository>()
+        every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
-        val useCase = createUseCase(versionRepository = versionRepository)
+        val useCase = createUseCase()
 
         val states = mutableListOf<KoDriverServerConnectionState>()
         val job = launch { useCase(appVersion = "1.0.0").collect { states += it } }
@@ -61,13 +78,17 @@ class ObserveKoDriverServerConnectionUseCaseTest {
         assertFalse(states[1].isVersionMismatch)
         coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
         job.cancel()
+        verify(exactly = 1) { serverIpRepository.serverIp() }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        confirmVerified(serverIpRepository, simulatorRepository, versionRepository)
     }
 
     @Test
     fun `サーバーバージョンがアプリバージョンと異なる場合は不一致を返す`() = runBlocking {
-        val versionRepository = mockk<ServerVersionRepository>()
+        every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
-        val useCase = createUseCase(versionRepository = versionRepository)
+        val useCase = createUseCase()
 
         val states = mutableListOf<KoDriverServerConnectionState>()
         val job = launch { useCase(appVersion = "1.0.0").collect { states += it } }
@@ -75,17 +96,22 @@ class ObserveKoDriverServerConnectionUseCaseTest {
 
         assertTrue(states[1].isVersionMismatch)
         job.cancel()
+        coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+        verify(exactly = 1) { serverIpRepository.serverIp() }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        confirmVerified(serverIpRepository, simulatorRepository, versionRepository)
     }
 
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `一定間隔で接続状態を更新する`() = runTest {
-        val versionRepository = mockk<ServerVersionRepository>()
+        every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany listOf(
             Result.failure(RuntimeException("down")),
             Result.success("1.0.0"),
         )
-        val useCase = createUseCase(versionRepository = versionRepository)
+        val useCase = createUseCase()
 
         val states = mutableListOf<KoDriverServerConnectionState>()
         val job = launch { useCase(appVersion = "1.0.0").collect { states += it } }
@@ -98,19 +124,12 @@ class ObserveKoDriverServerConnectionUseCaseTest {
         assertEquals(KoDriverServerConnectionStatus.CONNECTED, states[2].connectionStatus)
         coVerify(exactly = 2) { versionRepository.fetchVersion("192.168.1.1") }
         job.cancel()
+        verify(exactly = 1) { serverIpRepository.serverIp() }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        confirmVerified(serverIpRepository, simulatorRepository, versionRepository)
     }
 
-    private fun createUseCase(
-        serverIpRepository: ServerIpPreferencesRepository = mockk {
-            every { serverIp() } returns MutableStateFlow("192.168.1.1")
-        },
-        simulatorRepository: SimulatorPreferencesRepository = mockk {
-            every { selectedSimulator() } returns MutableStateFlow(null)
-        },
-        versionRepository: ServerVersionRepository = mockk {
-            coEvery { fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
-        },
-    ) = ObserveKoDriverServerConnectionUseCase(
+    private fun createUseCase() = ObserveKoDriverServerConnectionUseCase(
         fetchServerVersion = FetchServerVersionUseCase(versionRepository),
         observeServerIp = ObserveServerIpUseCase(serverIpRepository),
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),

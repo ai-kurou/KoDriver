@@ -1,22 +1,34 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import io.mockk.MockKAnnotations
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveSortedTelemetryLogsUseCaseTest {
-    private val repository = mockk<TelemetryLogRepository>()
+
+    @MockK
+    private lateinit var repository: TelemetryLogRepository
+
     private val logs = MutableStateFlow(emptyList<TelemetryLog>())
-    private val useCase = ObserveSortedTelemetryLogsUseCase(
-        ObserveTelemetryLogsUseCase(repository),
-    )
+    private lateinit var useCase: ObserveSortedTelemetryLogsUseCase
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+        logs.value = emptyList()
+        useCase = ObserveSortedTelemetryLogsUseCase(ObserveTelemetryLogsUseCase(repository))
+    }
 
     @Test
     fun `createdAtの降順かつ同時刻ではidの降順で返す`() = runTest {
@@ -28,6 +40,8 @@ class ObserveSortedTelemetryLogsUseCaseTest {
         )
 
         assertEquals(listOf(3L, 2L, 1L), useCase().first().map { it.id })
+        verify(exactly = 1) { repository.observeTelemetryLogs() }
+        confirmVerified(repository)
     }
 
     @Test
@@ -35,6 +49,8 @@ class ObserveSortedTelemetryLogsUseCaseTest {
         every { repository.observeTelemetryLogs() } returns logs
 
         assertEquals(emptyList(), useCase().first())
+        verify(exactly = 1) { repository.observeTelemetryLogs() }
+        confirmVerified(repository)
     }
 
     @Test
@@ -50,6 +66,8 @@ class ObserveSortedTelemetryLogsUseCaseTest {
             telemetryLog(id = 2, createdAt = 300),
         )
         assertEquals(listOf(2L, 1L), result.first().map { it.id })
+        verify(exactly = 1) { repository.observeTelemetryLogs() }
+        confirmVerified(repository)
     }
 }
 

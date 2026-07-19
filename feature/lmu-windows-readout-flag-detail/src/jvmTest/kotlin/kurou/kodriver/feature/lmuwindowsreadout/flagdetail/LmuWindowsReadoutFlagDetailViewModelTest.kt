@@ -98,6 +98,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
         assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.BlueFlag])
         coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(repository, redFlagRepository)
     }
 
     @Test
@@ -114,6 +117,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
         assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
         coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(repository, redFlagRepository)
     }
 
     @Test
@@ -130,6 +136,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
 
         assertEquals(RedFlagVoiceType.RED_FLAG, viewModel.uiState.first().redFlagVoiceType)
         coVerify(exactly = 1) { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(redFlagRepository, repository)
     }
 
     @Test
@@ -142,6 +151,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         viewModel.onPreviewClicked(FlagReadoutItem.BlueFlag)
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(ttsEngine, repository, redFlagRepository)
     }
 
     @Test
@@ -154,6 +166,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         viewModel.onPreviewClicked(FlagReadoutItem.SectorYellowFlag)
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.YellowFlag, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(ttsEngine, repository, redFlagRepository)
     }
 
     @Test
@@ -166,6 +181,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         viewModel.onPreviewClicked(FlagReadoutItem.FullCourseYellow)
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.FullCourseYellow, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(ttsEngine, repository, redFlagRepository)
     }
 
     @Test
@@ -178,6 +196,9 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         viewModel.onRedFlagPreviewClicked(RedFlagVoiceType.RED_FLAG)
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RedFlag, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(ttsEngine, repository, redFlagRepository)
     }
 
     @Test
@@ -190,5 +211,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         viewModel.onRedFlagPreviewClicked(RedFlagVoiceType.SESSION_STOP)
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.SessionStop, false) }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+        confirmVerified(ttsEngine, repository, redFlagRepository)
     }
 }

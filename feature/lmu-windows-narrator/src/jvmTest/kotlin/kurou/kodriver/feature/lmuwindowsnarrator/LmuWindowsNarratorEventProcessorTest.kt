@@ -2,12 +2,14 @@
 
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -24,14 +26,23 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class LmuWindowsNarratorEventProcessorTest {
 
-    private val telemetryLogRepository: TelemetryLogRepository = mockk()
-    private val ttsEngine: TextToSpeechEngine = mockk()
+    @MockK
+    private lateinit var telemetryLogRepository: TelemetryLogRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
 
     @Test
     fun `読み上げたイベントを直前と現在の接近データとともに保存する`() = runTest {
@@ -69,6 +80,10 @@ class LmuWindowsNarratorEventProcessorTest {
         assertContains(logs.single().telemetryJson, """"vehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
         assertContains(logs.single().telemetryJson, """"lateralDistanceLeftMeters":3.0""")
         assertContains(logs.single().telemetryJson, """"observedAtMs":200""")
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
+        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
@@ -94,13 +109,14 @@ class LmuWindowsNarratorEventProcessorTest {
         verify(exactly = 0) { ttsEngine.stop() }
         verify(exactly = 0) { ttsEngine.speak(any(), any()) }
         coVerify(exactly = 0) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val newEvent = SpeechEvent.CarLeft
-        every { ttsEngine.currentReadoutItemKey } returns currentKey
         every { ttsEngine.speak(newEvent, queue = true) } just Runs
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
         val processor = createProcessor()
@@ -117,6 +133,7 @@ class LmuWindowsNarratorEventProcessorTest {
         verify(exactly = 0) { ttsEngine.stop() }
         verify(exactly = 1) { ttsEngine.speak(newEvent, queue = true) }
         coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
@@ -140,6 +157,9 @@ class LmuWindowsNarratorEventProcessorTest {
 
         verify(exactly = 1) { ttsEngine.stop() }
         verify(exactly = 1) { ttsEngine.speak(newEvent, any()) }
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
@@ -173,6 +193,10 @@ class LmuWindowsNarratorEventProcessorTest {
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), spokenEvents)
         assertEquals(2, saveCount)
+        verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 2) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
+        coVerify(exactly = 2) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     private fun createProcessor() = LmuWindowsNarratorEventProcessor(
