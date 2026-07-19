@@ -228,7 +228,7 @@ class MainActivityTest {
     }
 
     private fun clickItemByTestTag(testTag: String) {
-        composeTestRule.onNodeWithTag(testTag).performClick()
+        composeTestRule.onNodeWithTag(testTag).performSemanticsAction(SemanticsActions.OnClick)
         composeTestRule.waitForIdle()
     }
 
