@@ -15,3 +15,9 @@
   **課題**: <現状の問題・気になっている点>
   **改善案**: <どう変えたいか>
 ```
+
+## mockk テストの any() 使用
+
+- **対象**: `:app` 以下・`:server` 以外のほぼ全モジュール。特に `core:domain`（`*UseCaseTest.kt` 多数）、`feature:lmu-windows-narrator`・`feature:gt7-ps5-narrator`（`*EventProcessorTest.kt`・`*ViewModelTest.kt`）、`feature:gt7-ps5-connection`・`feature:lmu-windows-connection`・`feature:other-list`・`feature:other-server-ip-detail`・`feature:other-theme-detail`・`feature:readout-list`・`feature:server-connection` の各 `*ViewModelTest.kt` など（計 656 箇所、58 ファイル）。
+  **課題**: mockk の `every`/`coEvery`/`verify` で `any()` を多用しており、引数の実値を検証できていない箇所がある。具体的な値が既知（固定の `ReadoutItemKey`・`Simulator.id` 文字列など）でも `any()` になっているケースと、可変長引数のスタブ（`saveTelemetryLog` の `createdAt`/`telemetryJson` など呼び出しごとに値が変わるもの）で本当に `any()` が必要なケースが混在している。
+  **改善案**: `:server`（`KoDriverServiceAdvertiserTest`）で先行して `any()` → `withArg { }` / 具体値へ置き換え済み。残りのモジュールも同様に、実値を指定できる箇所は具体値化し、呼び出しごとに値が変わり検証不能な箇所のみ `any()` を残す方針で、モジュール単位に分割して段階的に対応する。

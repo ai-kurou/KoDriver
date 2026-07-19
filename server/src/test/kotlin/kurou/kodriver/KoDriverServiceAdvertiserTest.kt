@@ -80,7 +80,13 @@ class KoDriverServiceAdvertiserTest {
         verify {
             firstJmdns.unregisterAllServices()
             firstJmdns.close()
-            secondJmdns.registerService(any())
+            secondJmdns.registerService(
+                withArg<ServiceInfo> {
+                    assert(it.type == KoDriverServiceAdvertiser.SERVICE_TYPE)
+                    assert(it.name == "my-pc")
+                    assert(it.port == 8081)
+                },
+            )
         }
     }
 
