@@ -14,22 +14,13 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createQueuePreferencesRepository(): QueuePreferencesRepository {
-    val repository = mockk<QueuePreferencesRepository>()
-    val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-    every { repository.observeQueueEnabledStates() } returns states
-    coEvery { repository.saveQueueEnabledState(any(), any()) } answers {
-        states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
-    }
-    return repository
-}
-
 class ObserveQueueEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() = runBlocking {
-        val repo = createQueuePreferencesRepository()
-        val useCase = ObserveQueueEnabledStatesUseCase(repo)
+        val repository = mockk<QueuePreferencesRepository>()
+        every { repository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+        val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
@@ -47,10 +38,15 @@ class ObserveQueueEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = createQueuePreferencesRepository()
-        val useCase = ObserveQueueEnabledStatesUseCase(repo)
+        val repository = mockk<QueuePreferencesRepository>()
+        val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+        every { repository.observeQueueEnabledStates() } returns states
+        coEvery { repository.saveQueueEnabledState(any(), any()) } answers {
+            states.update { it + (firstArg<ReadoutItemKey>() to secondArg<Boolean>()) }
+        }
+        val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
-        repo.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+        repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
