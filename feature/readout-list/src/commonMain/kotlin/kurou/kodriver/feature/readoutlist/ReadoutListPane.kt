@@ -60,7 +60,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -330,9 +329,7 @@ internal fun ReadoutListPane(
                         )
                         ListPaneCard(
                             onClick = { onItemClick(item) },
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                                .testTag(item.value),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                             containerColor = cardContainerColor,
                         ) {
                             ListItem(
