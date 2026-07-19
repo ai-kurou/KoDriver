@@ -349,10 +349,22 @@ internal fun ReadoutListPane(
                                     }
                                 },
                                 trailingContent = {
-                                    Switch(
-                                        checked = uiState.readoutEnabledStates[item] ?: false,
-                                        onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    ) {
+                                        if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
+                                            var queueEnabled by remember { mutableStateOf(false) }
+                                            Switch(
+                                                checked = queueEnabled,
+                                                onCheckedChange = { queueEnabled = it },
+                                            )
+                                        }
+                                        Switch(
+                                            checked = uiState.readoutEnabledStates[item] ?: false,
+                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                                        )
+                                    }
                                 },
                             )
                         }

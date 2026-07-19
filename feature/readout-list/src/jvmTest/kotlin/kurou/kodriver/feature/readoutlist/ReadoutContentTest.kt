@@ -178,9 +178,9 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
-        rule.onAllNodes(hasSwitchRole()).assertCountEquals(2)
-        rule.onAllNodes(hasSwitchRole()).get(0).assertIsEnabled().performClick()
+        rule.onAllNodes(hasSwitchRole()).assertCountEquals(4)
         rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
+        rule.onAllNodes(hasSwitchRole()).get(3).assertIsEnabled().performClick()
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
