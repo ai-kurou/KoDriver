@@ -1,8 +1,6 @@
 package kurou.kodriver
 
 import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.semantics.SemanticsProperties
-import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
@@ -173,27 +171,10 @@ class MainActivityTest {
     }
 
     private fun waitUntilDisplayed(text: String) {
-        try {
-            composeTestRule.waitUntil(timeoutMillis = 15_000L) {
-                composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
-            }
-        } catch (e: ComposeTimeoutException) {
-            throw AssertionError(
-                "\"$text\" not displayed. Visible texts: ${visibleTexts()}. Toggle states: ${toggleStates()}",
-                e,
-            )
+        composeTestRule.waitUntil(timeoutMillis = 15_000L) {
+            composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
         }
     }
-
-    private fun visibleTexts(): List<String> =
-        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
-            .fetchSemanticsNodes()
-            .flatMap { node -> node.config.getOrElse(SemanticsProperties.Text) { emptyList() }.map { it.text } }
-
-    private fun toggleStates(): List<String> =
-        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ToggleableState))
-            .fetchSemanticsNodes()
-            .map { node -> node.config[SemanticsProperties.ToggleableState].toString() }
 
     private fun clickItemAndNavigateBack(text: String) {
         scrollToItem(text)
