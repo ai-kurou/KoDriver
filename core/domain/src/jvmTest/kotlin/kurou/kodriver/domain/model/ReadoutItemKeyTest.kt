@@ -53,4 +53,29 @@ class ReadoutItemKeyTest {
     fun `fromValue は未知の値のとき null を返す`() {
         assertNull(ReadoutItemKey.fromValue("unknown"))
     }
+
+    @Test
+    fun `車両接近関連のキーは supportsQueue が false`() {
+        assertEquals(false, ReadoutItemKey.LmuWindows.VehicleApproach.Root.supportsQueue)
+        assertEquals(false, ReadoutItemKey.LmuWindows.VehicleApproach.Sustained.supportsQueue)
+        assertEquals(false, ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout.supportsQueue)
+    }
+
+    @Test
+    fun `車両接近以外のキーは supportsQueue が true`() {
+        assertEquals(true, ReadoutItemKey.LmuWindows.Flag.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.Flag.BlueFlag.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.Flag.FullCourseYellow.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.Flag.RedFlag.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.VehicleDamage.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.VehicleDamage.Overheat.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.MyBestLap.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.Gt7Ps5.MyBestLap.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.supportsQueue)
+    }
 }

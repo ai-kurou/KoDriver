@@ -3,14 +3,28 @@ package kurou.kodriver.domain.model
 sealed interface ReadoutItemKey {
     val value: String
 
+    /**
+     * 優先度で読み上げが後回しになった際に、キューへ積んで後で読み上げてよいかどうか。
+     * 車両接近は継続的に発火し続けるイベントのため、キューに積むと古い通知が溜まって
+     * 実況と現実がずれる恐れがあるため false とする。
+     */
+    val supportsQueue: Boolean get() = true
+
     sealed interface LmuWindows : ReadoutItemKey {
         sealed interface TopLevel : LmuWindows
 
         sealed interface VehicleApproach : LmuWindows {
-            data object Root : VehicleApproach, TopLevel { override val value = "lmu_windows_vehicle_approach" }
-            data object Sustained : VehicleApproach { override val value = "lmu_windows_vehicle_approach_sustained" }
+            data object Root : VehicleApproach, TopLevel {
+                override val value = "lmu_windows_vehicle_approach"
+                override val supportsQueue = false
+            }
+            data object Sustained : VehicleApproach {
+                override val value = "lmu_windows_vehicle_approach_sustained"
+                override val supportsQueue = false
+            }
             data object StartReadout : VehicleApproach {
                 override val value = "lmu_windows_vehicle_approach_start_readout"
+                override val supportsQueue = false
             }
         }
 
