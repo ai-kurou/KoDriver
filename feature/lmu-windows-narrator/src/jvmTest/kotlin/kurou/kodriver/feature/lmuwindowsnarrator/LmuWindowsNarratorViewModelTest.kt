@@ -89,6 +89,7 @@ import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -1410,6 +1411,15 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(160_000L, log.createdAt)
         assertEquals(Simulator.LmuWindows.id, log.simulatorId)
         assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.value, log.readoutItemKey)
+        assertContains(
+            log.telemetryJson,
+            """"telemetry":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":90000""",
+        )
+        assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.1}""")
+        assertContains(log.telemetryJson, """"observedAtMs":160000""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"LmuWindowsNarratorReadoutSettings(""")
+        assertContains(log.telemetryJson, """"state":{"raw":"LmuWindowsNarratorState(""")
+        assertContains(log.telemetryJson, """"trackingState":{"raw":"LmuWindowsVirtualEnergyTrackingState(""")
     }
 
     @Test

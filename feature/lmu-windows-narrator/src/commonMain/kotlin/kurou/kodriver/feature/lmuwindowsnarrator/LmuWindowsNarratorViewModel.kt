@@ -32,6 +32,7 @@ import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectable
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
+import kurou.kodriver.domain.usecase.LmuWindowsVirtualEnergyTrackingState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -357,11 +358,13 @@ internal class LmuWindowsNarratorViewModel(
     ) { telemetry, virtualEnergy -> telemetry to virtualEnergy }
         .onEach { (telemetry, virtualEnergy) ->
             val observedAtMs = currentTimeMs()
+            val state = narratorState
+            val settings = currentSettings
             val decision = narratorUseCases.determineReadout.determineRemainingVirtualEnergyLaps(
-                state = narratorState,
+                state = state,
                 telemetry = telemetry,
                 virtualEnergy = virtualEnergy,
-                settings = currentSettings,
+                settings = settings,
                 observedAtMs = observedAtMs,
             )
             narratorState = decision.state
@@ -371,7 +374,14 @@ internal class LmuWindowsNarratorViewModel(
                         createdAt = observedAtMs,
                         simulatorId = Simulator.LmuWindows.id,
                         readoutItemKey = event.readoutItemKey.value,
-                        telemetryJson = buildTelemetryLogJson(telemetry, virtualEnergy),
+                        telemetryJson = buildTelemetryLogJson(
+                            telemetry = telemetry,
+                            virtualEnergy = virtualEnergy,
+                            observedAtMs = observedAtMs,
+                            settings = settings,
+                            state = state,
+                            trackingState = decision.state.virtualEnergyTrackingState,
+                        ),
                     )
                 }
             }
@@ -452,12 +462,31 @@ private fun buildTelemetryLogJson(previous: LmuWindowsTelemetryData?, current: L
 private fun buildTelemetryLogJson(
     telemetry: LmuWindowsTelemetryData,
     virtualEnergy: LmuWindowsVirtualEnergyData,
+    observedAtMs: Long,
+    settings: LmuWindowsNarratorReadoutSettings,
+    state: LmuWindowsNarratorState,
+    trackingState: LmuWindowsVirtualEnergyTrackingState,
 ): String =
     "{" +
-        """"currentLap":${telemetry.timing.currentLap},""" +
-        """"bestLapTimeMs":${telemetry.timing.bestLapTimeMs},""" +
-        """"remainingRatio":${virtualEnergy.remainingRatio}""" +
+        """"telemetry":${telemetry.toJson()},""" +
+        """"virtualEnergy":${virtualEnergy.toJson()},""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"settings":${settings.toJsonString()},""" +
+        """"state":${state.toJsonString()},""" +
+        """"trackingState":${trackingState.toJsonString()}""" +
         "}"
+
+private fun LmuWindowsVirtualEnergyData.toJson(): String =
+    """{"remainingRatio":$remainingRatio}"""
+
+private fun LmuWindowsNarratorReadoutSettings.toJsonString(): String =
+    """{"raw":${toString().toJsonStringLiteral()}}"""
+
+private fun LmuWindowsNarratorState.toJsonString(): String =
+    """{"raw":${toString().toJsonStringLiteral()}}"""
+
+private fun LmuWindowsVirtualEnergyTrackingState.toJsonString(): String =
+    """{"raw":${toString().toJsonStringLiteral()}}"""
 
 private fun LmuWindowsTelemetryData.toJson(): String =
     "{" +
@@ -506,3 +535,19 @@ private fun LmuWindowsRaceFlagsData.toJson(): String =
 
 private fun buildTelemetryLogJson(data: LmuWindowsTyreCarcassTemperatureData): String =
     """{"wheels":{${data.wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
+
+private fun String.toJsonStringLiteral(): String =
+    buildString {
+        append('"')
+        this@toJsonStringLiteral.forEach { char ->
+            when (char) {
+                '\\' -> append("\\\\")
+                '"' -> append("\\\"")
+                '\n' -> append("\\n")
+                '\r' -> append("\\r")
+                '\t' -> append("\\t")
+                else -> append(char)
+            }
+        }
+        append('"')
+    }
