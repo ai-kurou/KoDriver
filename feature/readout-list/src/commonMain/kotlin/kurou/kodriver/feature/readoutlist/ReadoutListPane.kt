@@ -327,13 +327,21 @@ internal fun ReadoutListPane(
                             animationSpec = tween(durationMillis = 500),
                             label = "cardContainerColor",
                         )
+                        val itemName = itemDisplayName(item)
                         ListPaneCard(
                             onClick = { onItemClick(item) },
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            // クリック可能なのはこの Card 自身であり、内部の headlineContent の Text 自体は
+                            // クリックアクションを持たない。Compose UI Test で座標タップ(performClick)ではなく
+                            // OnClick セマンティクスアクションを直接実行してクリックすると、
+                            // Text ノードを対象にした場合は「ノードが OnClick を持たない」エラーになるため、
+                            // Card 自身を一意に特定できるよう contentDescription を付与する。
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                                .semantics { contentDescription = itemName },
                             containerColor = cardContainerColor,
                         ) {
                             ListItem(
-                                headlineContent = { Text(itemDisplayName(item)) },
+                                headlineContent = { Text(itemName) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 leadingContent = {
                                     Row(

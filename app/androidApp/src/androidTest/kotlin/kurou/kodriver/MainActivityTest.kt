@@ -207,8 +207,12 @@ class MainActivityTest {
         composeTestRule.waitForIdle()
     }
 
-    private fun clickItemByOnClickAction(text: String) {
-        composeTestRule.onNodeWithText(text).performSemanticsAction(SemanticsActions.OnClick)
+    // クリック可能なのは項目カード自身であり、内部の Text ノードはクリックアクションを持たないため、
+    // performClick()(座標タップ)ではなく OnClick セマンティクスアクションを直接実行する場合は
+    // カード自身を contentDescription で特定する必要がある。
+    private fun clickItemByOnClickAction(contentDescription: String) {
+        composeTestRule.onNode(hasContentDescription(contentDescription))
+            .performSemanticsAction(SemanticsActions.OnClick)
         composeTestRule.waitForIdle()
     }
 
