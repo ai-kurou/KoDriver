@@ -3,11 +3,24 @@ package kurou.kodriver.domain.model
 sealed interface ReadoutItemKey {
     val value: String
 
+    /**
+     * listPane のトップレベル項目（Root）であることを表すマーカー。
+     * キューへ積んで後で読み上げてよいかどうかは Root 単位でのみ判定するため、
+     * supportsQueue は TopLevel にのみ存在し、サブ項目には存在しない。
+     * デフォルト値は持たせず、新規追加時に必ず true/false を明示させる。
+     */
+    sealed interface TopLevel : ReadoutItemKey {
+        val supportsQueue: Boolean
+    }
+
     sealed interface LmuWindows : ReadoutItemKey {
-        sealed interface TopLevel : LmuWindows
+        sealed interface TopLevel : LmuWindows, ReadoutItemKey.TopLevel
 
         sealed interface VehicleApproach : LmuWindows {
-            data object Root : VehicleApproach, TopLevel { override val value = "lmu_windows_vehicle_approach" }
+            data object Root : VehicleApproach, TopLevel {
+                override val value = "lmu_windows_vehicle_approach"
+                override val supportsQueue = false
+            }
             data object Sustained : VehicleApproach { override val value = "lmu_windows_vehicle_approach_sustained" }
             data object StartReadout : VehicleApproach {
                 override val value = "lmu_windows_vehicle_approach_start_readout"
@@ -15,11 +28,17 @@ sealed interface ReadoutItemKey {
         }
 
         sealed interface MyBestLap : LmuWindows {
-            data object Root : MyBestLap, TopLevel { override val value = "lmu_windows_my_best_lap" }
+            data object Root : MyBestLap, TopLevel {
+                override val value = "lmu_windows_my_best_lap"
+                override val supportsQueue = true
+            }
         }
 
         sealed interface Flag : LmuWindows {
-            data object Root : Flag, TopLevel { override val value = "lmu_windows_flag" }
+            data object Root : Flag, TopLevel {
+                override val value = "lmu_windows_flag"
+                override val supportsQueue = true
+            }
             data object BlueFlag : Flag { override val value = "lmu_windows_blue_flag" }
             data object SectorYellowFlag : Flag { override val value = "lmu_windows_sector_yellow_flag" }
             data object FullCourseYellow : Flag { override val value = "lmu_windows_full_course_yellow" }
@@ -27,12 +46,18 @@ sealed interface ReadoutItemKey {
         }
 
         sealed interface VehicleDamage : LmuWindows {
-            data object Root : VehicleDamage, TopLevel { override val value = "lmu_windows_vehicle_damage" }
+            data object Root : VehicleDamage, TopLevel {
+                override val value = "lmu_windows_vehicle_damage"
+                override val supportsQueue = true
+            }
             data object Overheat : VehicleDamage { override val value = "lmu_windows_overheat" }
         }
 
         sealed interface TyreTemperature : LmuWindows {
-            data object Root : TyreTemperature, TopLevel { override val value = "lmu_windows_tyre_temperature" }
+            data object Root : TyreTemperature, TopLevel {
+                override val value = "lmu_windows_tyre_temperature"
+                override val supportsQueue = true
+            }
             data object OverheatWarning : TyreTemperature {
                 override val value = "lmu_windows_tyre_temperature_overheat_warning"
             }
@@ -44,19 +69,26 @@ sealed interface ReadoutItemKey {
         sealed interface RemainingVirtualEnergyLaps : LmuWindows {
             data object Root : RemainingVirtualEnergyLaps, TopLevel {
                 override val value = "lmu_windows_remaining_virtual_energy_laps"
+                override val supportsQueue = true
             }
         }
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
-        sealed interface TopLevel : Gt7Ps5
+        sealed interface TopLevel : Gt7Ps5, ReadoutItemKey.TopLevel
 
         sealed interface MyBestLap : Gt7Ps5 {
-            data object Root : MyBestLap, TopLevel { override val value = "gt7_ps5_my_best_lap" }
+            data object Root : MyBestLap, TopLevel {
+                override val value = "gt7_ps5_my_best_lap"
+                override val supportsQueue = true
+            }
         }
 
         sealed interface RemainingFuelLaps : Gt7Ps5 {
-            data object Root : RemainingFuelLaps, TopLevel { override val value = "gt7_ps5_remaining_fuel_laps" }
+            data object Root : RemainingFuelLaps, TopLevel {
+                override val value = "gt7_ps5_remaining_fuel_laps"
+                override val supportsQueue = true
+            }
         }
     }
 
