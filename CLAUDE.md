@@ -331,29 +331,6 @@ _state.value = _state.value.copy(count = _state.value.count + 1)
 _state.update { it.copy(count = it.count + 1) }
 ```
 
-### mockk テストでの any() 使用
-
-mockk の `every`/`coEvery`/`verify`/`coVerify` では、**`any()` でないとテストコードが書けない場合を除き `any()` を使わないこと**。引数の実値を検証できず、意図しない値でもテストが通ってしまうため。
-
-- 引数が固定値（`ReadoutItemKey`・`Simulator.id` など）なら、その具体値を直接指定する。
-- `verify`/`coVerify` で引数の中身を確認したい場合は `withArg<T> { assert(...) }` を使う（`server/src/test/kotlin/kurou/kodriver/KoDriverServiceAdvertiserTest.kt` を参照）。
-- 呼び出しごとに値が変わり検証が現実的でない場合（例: `saveTelemetryLog` の `createdAt` など）に限り `any()` を残してよい。
-
-```kotlin
-// NG: 具体値がわかっているのに any()
-verify { jmdns.registerService(any()) }
-
-// OK: withArg で実値を検証
-verify {
-    jmdns.registerService(
-        withArg<ServiceInfo> {
-            assert(it.name == "my-pc")
-            assert(it.port == 8080)
-        },
-    )
-}
-```
-
 ### Coroutines のエラーハンドリング
 
 `runCatching` および `mapCatching` は `CancellationException` を捕捉するため、structured concurrency を破壊する恐れがある。**使用禁止**。
