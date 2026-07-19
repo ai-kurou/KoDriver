@@ -52,6 +52,17 @@ class ObserveQueueEnabledStatesUseCaseTest {
 
         repo.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
 
-        assertEquals(true, useCase().first()[ReadoutItemKey.LmuWindows.Flag.Root])
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to false,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false,
+            ),
+            useCase().first(),
+        )
     }
 }
