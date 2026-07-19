@@ -24,6 +24,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPrefe
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -58,6 +59,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<ReadoutPreferencesRepository> {
         AndroidReadoutPreferencesRepository(context.readoutDataStore)
+    }
+    single<QueuePreferencesRepository> {
+        createQueuePreferencesRepository(context.filesDir.absolutePath)
     }
     single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
         createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
