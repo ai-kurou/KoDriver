@@ -177,7 +177,10 @@ class MainActivityTest {
                 composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
             }
         } catch (e: ComposeTimeoutException) {
-            throw AssertionError("\"$text\" not displayed. Visible texts: ${visibleTexts()}", e)
+            throw AssertionError(
+                "\"$text\" not displayed. Visible texts: ${visibleTexts()}. Toggle states: ${toggleStates()}",
+                e,
+            )
         }
     }
 
@@ -185,6 +188,11 @@ class MainActivityTest {
         composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.Text))
             .fetchSemanticsNodes()
             .flatMap { node -> node.config.getOrElse(SemanticsProperties.Text) { emptyList() }.map { it.text } }
+
+    private fun toggleStates(): List<String> =
+        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsProperties.ToggleableState))
+            .fetchSemanticsNodes()
+            .map { node -> node.config[SemanticsProperties.ToggleableState].toString() }
 
     private fun clickItemAndNavigateBack(text: String) {
         scrollToItem(text)
@@ -214,8 +222,6 @@ class MainActivityTest {
     }
 
     private fun clickItem(text: String) {
-        composeTestRule.onNodeWithText(text).performScrollTo()
-        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(text).performClick()
         composeTestRule.waitForIdle()
     }
