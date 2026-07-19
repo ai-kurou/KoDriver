@@ -21,6 +21,8 @@ val otherServerIpDetailModule = module {
     // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
     factory { ObserveServerIpUseCase(get()) }
     factory { SaveServerIpUseCase(get()) }
+    factory { ValidateServerIpAddressUseCase() }
+    factory { SaveServerIpWithConnectivityCheckUseCase(get(), get(), get()) }
 
     // feature 固有: サーバー疎通確認（プラットフォーム別実装）
     factory<ServerConnectivityChecker> { createServerConnectivityChecker() }

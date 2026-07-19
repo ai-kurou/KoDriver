@@ -51,8 +51,12 @@ class OtherServerIpDetailDiscoveryViewModelTest {
         discoveredServers: List<DiscoveredServer> = emptyList(),
     ) = OtherServerIpDetailViewModel(
         observeServerIp = ObserveServerIpUseCase(repository),
-        saveServerIp = SaveServerIpUseCase(repository),
-        connectivityChecker = ServerConnectivityChecker { true },
+        validateServerIpAddress = ValidateServerIpAddressUseCase(),
+        saveServerIpWithConnectivityCheck = SaveServerIpWithConnectivityCheckUseCase(
+            validateServerIpAddress = ValidateServerIpAddressUseCase(),
+            connectivityChecker = ServerConnectivityChecker { true },
+            saveServerIp = SaveServerIpUseCase(repository),
+        ),
         windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
     )
 
