@@ -171,7 +171,7 @@ class MainActivityTest {
     }
 
     private fun waitUntilDisplayed(text: String) {
-        composeTestRule.waitUntil(timeoutMillis = 15_000L) {
+        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
             composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
         }
     }
@@ -225,7 +225,7 @@ class MainActivityTest {
     }
 
     private fun dismissBottomSheet() {
-        composeTestRule.waitUntil(timeoutMillis = 15_000L) {
+        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
             composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
                 .fetchSemanticsNodes()
                 .isNotEmpty()
@@ -240,7 +240,7 @@ class MainActivityTest {
         clickContentDescription(READOUT_PRIORITY_HELP_DESCRIPTION)
         // 実機では外側タップでボトムシートが閉じないことがあるため、dismissアクションを直接実行する。
         dismissBottomSheet()
-        composeTestRule.waitUntil(timeoutMillis = 15_000L) {
+        composeTestRule.waitUntil(timeoutMillis = 5_000L) {
             composeTestRule.onAllNodes(hasText(READOUT_PRIORITY_HELP_DESCRIPTION)).fetchSemanticsNodes().isEmpty()
         }
     }
