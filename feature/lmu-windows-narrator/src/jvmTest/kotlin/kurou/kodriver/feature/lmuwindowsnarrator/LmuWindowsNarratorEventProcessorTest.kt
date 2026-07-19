@@ -71,16 +71,18 @@ class LmuWindowsNarratorEventProcessorTest {
 
     @Test
     fun `優先度の高い項目を再生中なら読み上げも保存もしない`() = runTest {
-        every { ttsEngine.currentReadoutItemKey } returns ReadoutItemKey.LmuWindows.Flag.Root
+        val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
+        val newEvent = SpeechEvent.CarLeft
+        every { ttsEngine.currentReadoutItemKey } returns currentKey
         coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
         val processor = createProcessor()
 
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(),
-            events = listOf(SpeechEvent.CarLeft),
+            events = listOf(newEvent),
             readoutOrder = listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                currentKey,
+                newEvent.readoutItemKey,
             ),
             observedAtMs = 0L,
             logContext = logContext(),
@@ -89,6 +91,28 @@ class LmuWindowsNarratorEventProcessorTest {
         verify(exactly = 0) { ttsEngine.stop() }
         verify(exactly = 0) { ttsEngine.speak(any(), any()) }
         coVerify(exactly = 0) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
+        val currentKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root
+        val newEvent = SpeechEvent.CarLeft
+        every { ttsEngine.currentReadoutItemKey } returns currentKey
+        every { ttsEngine.stop() } just Runs
+        every { ttsEngine.speak(newEvent, any()) } just Runs
+        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+        val processor = createProcessor()
+
+        processor.processVehicleApproach(
+            vehicleApproach = leftVehicleApproach(),
+            events = listOf(newEvent),
+            readoutOrder = listOf(newEvent.readoutItemKey, currentKey),
+            observedAtMs = 0L,
+            logContext = logContext(),
+        )
+
+        verify(exactly = 1) { ttsEngine.stop() }
+        verify(exactly = 1) { ttsEngine.speak(newEvent, any()) }
     }
 
     @Test

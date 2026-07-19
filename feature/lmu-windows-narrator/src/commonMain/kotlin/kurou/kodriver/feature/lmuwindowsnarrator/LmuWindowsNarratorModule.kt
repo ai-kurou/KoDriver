@@ -35,7 +35,7 @@ import org.koin.dsl.module
 /**
  * LMU アナウンス制御（lmu-windows-narrator feature）の Koin モジュール。
  *
- * 提供: LmuWindowsNarratorViewModel、この feature 内で定義した UseCase 集約 data class
+ * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
  *   ReadoutListUseCases / TyreTemperatureUseCases）、それらが束ねる各ドメイン UseCase、
  *   および named("lmu_windows") の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
@@ -44,16 +44,17 @@ import org.koin.dsl.module
  * 音声系は GT7 と区別するため named("lmu_windows") で登録している。
  */
 val lmuWindowsNarratorModule: Module = module {
-    // ViewModel（get(named "lmu_windows") は下記の TextToSpeechEngine を解決）
-    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(named("lmu_windows")), get()) }
+    // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
+    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-    factory { NarratorUseCases(get(), get(), get(), get(), get(), get()) }
+    factory { NarratorUseCases(get(), get(), get(), get(), get()) }
     factory { FlagUseCases(get(), get()) }
     factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
     factory { VehicleDamageUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get()) }
     factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
+    factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
 
     // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
     factory { DetermineLmuWindowsNarratorReadoutUseCase() }
