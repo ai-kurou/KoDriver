@@ -54,6 +54,7 @@ fun ReadoutContent(
         onSimulatorSelected = viewModel::onSimulatorSelected,
         onMove = viewModel::moveItem,
         onReadoutEnabledChanged = viewModel::onReadoutEnabledChanged,
+        onQueueEnabledChanged = viewModel::onQueueEnabledChanged,
         onItemSelected = viewModel::onItemSelected,
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
@@ -71,6 +72,7 @@ internal fun ReadoutContent(
     onSimulatorSelected: (Simulator) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemSelected: (ReadoutItemKey) -> Unit,
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
@@ -132,6 +134,7 @@ internal fun ReadoutContent(
                 onSimulatorSelected = onSimulatorSelected,
                 onMove = onMove,
                 onReadoutEnabledChanged = onReadoutEnabledChanged,
+                onQueueEnabledChanged = onQueueEnabledChanged,
                 onItemClick = onItemSelected,
             )
         },
@@ -181,6 +184,7 @@ private fun ReadoutContentPreview() {
         onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
+        onQueueEnabledChanged = { _, _ -> },
         onItemSelected = {},
         onClearSelectedItem = {},
     )
