@@ -87,6 +87,7 @@ import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach_su
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kodriver.feature.readoutlist.generated.resources.priority_hint_label
+import kodriver.feature.readoutlist.generated.resources.queue_hint_description
 import kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
@@ -186,7 +187,13 @@ private fun PriorityHintRow(
                 text = stringResource(Res.string.priority_hint_description),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp),
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            Text(
+                text = stringResource(Res.string.queue_hint_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 24.dp),
             )
         }
     }
