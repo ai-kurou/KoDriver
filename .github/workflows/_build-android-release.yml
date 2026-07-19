@@ -11,9 +11,6 @@ on:
       version:
         description: 'gradle.properties の appVersion'
         value: ${{ jobs.build.outputs.version }}
-      artifact_name:
-        description: 'アップロードした署名済みAPKのartifact名'
-        value: ${{ jobs.build.outputs.artifact_name }}
     secrets:
       KEYSTORE_BASE64:
         required: true
@@ -30,7 +27,6 @@ jobs:
     timeout-minutes: 15
     outputs:
       version: ${{ steps.version.outputs.version }}
-      artifact_name: ${{ steps.artifact.outputs.name }}
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -61,13 +57,9 @@ jobs:
           mv app/androidApp/build/outputs/apk/release/KoDriver-android-${{ steps.version.outputs.version }}-release.apk \
              app/androidApp/build/outputs/apk/release/KoDriver-android-${{ steps.version.outputs.version }}.apk
 
-      - name: Set artifact name
-        id: artifact
-        run: echo "name=KoDriver-android-${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
-
       - name: Upload APK
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: ${{ steps.artifact.outputs.name }}
+          name: KoDriver-android-${{ steps.version.outputs.version }}
           path: app/androidApp/build/outputs/apk/release/KoDriver-android-${{ steps.version.outputs.version }}.apk
           retention-days: 30
