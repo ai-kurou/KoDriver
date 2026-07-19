@@ -15,11 +15,3 @@
   **課題**: <現状の問題・気になっている点>
   **改善案**: <どう変えたいか>
 ```
-
----
-
-## ViewModel / UseCase 責務分離
-
-- **対象**: `feature/telemetry-log-list/.../TelemetryLogListViewModel.kt`
-  **課題**: テレメトリログの新しい順ソートと、削除後などに存在しなくなった選択IDを無効化する処理が ViewModel 内にある。現状は小さいが、ログ検索・フィルタ・ページングを追加すると ViewModel の表示整形責務が膨らみやすい。
-  **改善案**: 必要になった段階で `ObserveSortedTelemetryLogsUseCase` やログ一覧用の query UseCase へ切り出し、ViewModel は選択状態とダイアログ状態だけを扱う。

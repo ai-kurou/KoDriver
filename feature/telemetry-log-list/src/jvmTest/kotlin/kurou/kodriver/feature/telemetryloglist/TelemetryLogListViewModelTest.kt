@@ -49,30 +49,11 @@ class TelemetryLogListViewModelTest {
     }
 
     private fun createViewModel() = TelemetryLogListViewModel(
-        observeTelemetryLogs = ObserveTelemetryLogsUseCase(repository),
+        observeSortedTelemetryLogs = ObserveSortedTelemetryLogsUseCase(
+            ObserveTelemetryLogsUseCase(repository),
+        ),
         resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
     )
-
-    @Test
-    fun `ログを新しい順で表示する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
-
-        logsFlow.update {
-            listOf(
-                telemetryLog(id = 1, createdAt = 100),
-                telemetryLog(id = 3, createdAt = 200),
-                telemetryLog(id = 2, createdAt = 200),
-            )
-        }
-
-        assertEquals(
-            listOf(3L, 2L, 1L),
-            viewModel.uiState.first { it.logs.isNotEmpty() }.logs.map { it.id },
-        )
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
 
     @Test
     fun `ログの更新を観測する`() = runTest(dispatcher) {

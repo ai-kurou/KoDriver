@@ -7,32 +7,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
 class TelemetryLogListViewModel(
-    observeTelemetryLogs: ObserveTelemetryLogsUseCase,
+    observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
 ) : ViewModel() {
     private val _selectedLogId = MutableStateFlow<Long?>(null)
     private val _resetState = MutableStateFlow(ResetState())
     private val _showResetConfirmDialog = MutableStateFlow(false)
 
-    private val sortedLogs = observeTelemetryLogs()
-        .map { logs ->
-            logs.sortedWith(
-                compareByDescending<TelemetryLog> { it.createdAt }
-                    .thenByDescending { it.id },
-            )
-        }
-
     val uiState: StateFlow<TelemetryLogListUiState> = combine(
-        sortedLogs,
+        observeSortedTelemetryLogs(),
         _selectedLogId,
         _resetState,
         _showResetConfirmDialog,
