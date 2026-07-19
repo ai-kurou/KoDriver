@@ -1,18 +1,27 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class SaveSoundVolumeUseCaseTest {
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var repository: SoundVolumePreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `0から100の値を保存できる`() = runBlocking {
-        val repository = mockk<SoundVolumePreferencesRepository>(relaxUnitFun = true)
         val useCase = SaveSoundVolumeUseCase(repository)
 
         useCase(0)
@@ -27,8 +36,6 @@ class SaveSoundVolumeUseCaseTest {
 
     @Test
     fun `0未満はIllegalArgumentExceptionをスローする`() = runBlocking {
-        val repository = mockk<SoundVolumePreferencesRepository>(relaxUnitFun = true)
-
         assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(-1) }
 
         confirmVerified(repository)
@@ -36,8 +43,6 @@ class SaveSoundVolumeUseCaseTest {
 
     @Test
     fun `100超はIllegalArgumentExceptionをスローする`() = runBlocking {
-        val repository = mockk<SoundVolumePreferencesRepository>(relaxUnitFun = true)
-
         assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(101) }
 
         confirmVerified(repository)

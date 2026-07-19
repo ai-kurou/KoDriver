@@ -2,19 +2,28 @@
 
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachEnabledStateUseCaseTest {
 
+    @MockK(relaxUnitFun = true)
+    private lateinit var repository: LmuWindowsVehicleApproachPreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
-        val repository = mockk<LmuWindowsVehicleApproachPreferencesRepository>(relaxUnitFun = true)
         val useCase = SaveLmuWindowsVehicleApproachEnabledStateUseCase(repository)
 
         useCase(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, false)

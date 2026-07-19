@@ -1,19 +1,26 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = emptyList()): TelemetryLogRepository {
-    val repository = mockk<TelemetryLogRepository>()
+private fun createTelemetryLogRepository(
+    repository: TelemetryLogRepository,
+    initialLogs: List<TelemetryLog> = emptyList(),
+): TelemetryLogRepository {
     val logs = MutableStateFlow(initialLogs)
     every { repository.observeTelemetryLogs() } returns logs
     listOf(
@@ -46,9 +53,19 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
 }
 
 class ResetTelemetryLogDatabaseUseCaseTest {
+
+    @MockK
+    private lateinit var repository: TelemetryLogRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `全てのログを削除する`() = runBlocking {
         val repository = createTelemetryLogRepository(
+            repository,
             initialLogs = listOf(
                 TelemetryLog(
                     id = 1L,
@@ -65,8 +82,8 @@ class ResetTelemetryLogDatabaseUseCaseTest {
         resetUseCase()
 
         assertEquals(emptyList(), observeUseCase().first())
-        io.mockk.coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
-        io.mockk.verify(exactly = 1) { repository.observeTelemetryLogs() }
-        io.mockk.confirmVerified(repository)
+        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+        verify(exactly = 1) { repository.observeTelemetryLogs() }
+        confirmVerified(repository)
     }
 }

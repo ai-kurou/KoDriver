@@ -2,22 +2,27 @@
 
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 private fun createLmuWindowsTyreTemperaturePreferencesRepository(
+    repository: LmuWindowsTyreTemperaturePreferencesRepository,
     initialHighThreshold: Int = 90,
 ): LmuWindowsTyreTemperaturePreferencesRepository {
-    val repository = mockk<LmuWindowsTyreTemperaturePreferencesRepository>()
     val highThreshold = MutableStateFlow(initialHighThreshold)
     val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeHighThresholdCelsius() } returns highThreshold
@@ -42,9 +47,17 @@ private fun createLmuWindowsTyreTemperaturePreferencesRepository(
 
 class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
+    @MockK
+    private lateinit var repository: LmuWindowsTyreTemperaturePreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository()
+        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
         val expected = mapOf<ReadoutItemKey, Boolean>(
@@ -52,13 +65,13 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
             ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         )
         assertEquals(expected, useCase().first())
-        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeEnabledStates() }
+        confirmVerified(repo)
     }
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository()
+        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
@@ -68,16 +81,16 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
             ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         )
         assertEquals(expected, useCase().first())
-        io.mockk.coVerify(exactly = 1) {
+        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
         }
-        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeEnabledStates() }
+        confirmVerified(repo)
     }
 
     @Test
     fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository()
+        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
@@ -90,10 +103,10 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
-        io.mockk.coVerify(exactly = 1) {
+        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
         }
-        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeEnabledStates() }
+        confirmVerified(repo)
     }
 }

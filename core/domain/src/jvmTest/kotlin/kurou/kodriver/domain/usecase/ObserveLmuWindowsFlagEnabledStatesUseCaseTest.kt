@@ -2,20 +2,26 @@
 
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createLmuWindowsFlagPreferencesRepository(): LmuWindowsFlagPreferencesRepository {
-    val repository = mockk<LmuWindowsFlagPreferencesRepository>()
+private fun createLmuWindowsFlagPreferencesRepository(
+    repository: LmuWindowsFlagPreferencesRepository,
+): LmuWindowsFlagPreferencesRepository {
     val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeFlagEnabledStates() } returns states
     listOf(
@@ -34,9 +40,17 @@ private fun createLmuWindowsFlagPreferencesRepository(): LmuWindowsFlagPreferenc
 
 class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
 
+    @MockK
+    private lateinit var repository: LmuWindowsFlagPreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `初期値はフラグ4種のデフォルトtrueを返す`() = runBlocking {
-        val repo = createLmuWindowsFlagPreferencesRepository()
+        val repo = createLmuWindowsFlagPreferencesRepository(repository)
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
         assertEquals(
@@ -48,13 +62,13 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
-        io.mockk.verify(exactly = 1) { repo.observeFlagEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeFlagEnabledStates() }
+        confirmVerified(repo)
     }
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = createLmuWindowsFlagPreferencesRepository()
+        val repo = createLmuWindowsFlagPreferencesRepository(repository)
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
         repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
@@ -68,10 +82,10 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
-        io.mockk.coVerify(exactly = 1) {
+        coVerify(exactly = 1) {
             repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
         }
-        io.mockk.verify(exactly = 1) { repo.observeFlagEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeFlagEnabledStates() }
+        confirmVerified(repo)
     }
 }

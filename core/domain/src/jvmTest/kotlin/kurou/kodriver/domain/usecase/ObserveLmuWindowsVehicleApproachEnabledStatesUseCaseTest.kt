@@ -2,20 +2,26 @@
 
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createLmuWindowsVehicleApproachPreferencesRepository(): LmuWindowsVehicleApproachPreferencesRepository {
-    val repository = mockk<LmuWindowsVehicleApproachPreferencesRepository>()
+private fun createLmuWindowsVehicleApproachPreferencesRepository(
+    repository: LmuWindowsVehicleApproachPreferencesRepository,
+): LmuWindowsVehicleApproachPreferencesRepository {
     val enabledStates = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     every { repository.observeEnabledStates() } returns enabledStates
     listOf(
@@ -37,9 +43,17 @@ private fun createLmuWindowsVehicleApproachPreferencesRepository(): LmuWindowsVe
 
 class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
 
+    @MockK
+    private lateinit var repository: LmuWindowsVehicleApproachPreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `初期値はStartReadoutがtrue・Sustainedがfalseのデフォルトを返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachPreferencesRepository()
+        val repo = createLmuWindowsVehicleApproachPreferencesRepository(repository)
         val useCase = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(repo)
 
         val expected = mapOf<ReadoutItemKey, Boolean>(
@@ -47,13 +61,13 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to false,
         )
         assertEquals(expected, useCase().first())
-        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeEnabledStates() }
+        confirmVerified(repo)
     }
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachPreferencesRepository()
+        val repo = createLmuWindowsVehicleApproachPreferencesRepository(repository)
         val useCase = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
@@ -63,10 +77,10 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Sustained to true,
         )
         assertEquals(expected, useCase().first())
-        io.mockk.coVerify(exactly = 1) {
+        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained, true)
         }
-        io.mockk.verify(exactly = 1) { repo.observeEnabledStates() }
-        io.mockk.confirmVerified(repo)
+        verify(exactly = 1) { repo.observeEnabledStates() }
+        confirmVerified(repo)
     }
 }

@@ -1,19 +1,26 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = emptyList()): TelemetryLogRepository {
-    val repository = mockk<TelemetryLogRepository>()
+private fun createTelemetryLogRepository(
+    repository: TelemetryLogRepository,
+    initialLogs: List<TelemetryLog> = emptyList(),
+): TelemetryLogRepository {
     val logs = MutableStateFlow(initialLogs)
     every { repository.observeTelemetryLogs() } returns logs
     listOf(
@@ -46,9 +53,18 @@ private fun createTelemetryLogRepository(initialLogs: List<TelemetryLog> = empty
 }
 
 class ObserveTelemetryLogsUseCaseTest {
+
+    @MockK
+    private lateinit var repository: TelemetryLogRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() = runBlocking {
-        val repository = createTelemetryLogRepository()
+        val repository = createTelemetryLogRepository(repository)
         val useCase = ObserveTelemetryLogsUseCase(repository)
 
         assertEquals(emptyList(), useCase().first())
@@ -71,8 +87,8 @@ class ObserveTelemetryLogsUseCaseTest {
             ),
             useCase().first(),
         )
-        io.mockk.verify(exactly = 2) { repository.observeTelemetryLogs() }
-        io.mockk.coVerify(exactly = 1) {
+        verify(exactly = 2) { repository.observeTelemetryLogs() }
+        coVerify(exactly = 1) {
             repository.saveTelemetryLog(
                 createdAt = 2000L,
                 simulatorId = "lmu_windows",
@@ -80,6 +96,6 @@ class ObserveTelemetryLogsUseCaseTest {
                 telemetryJson = """{"currentLap":2}""",
             )
         }
-        io.mockk.confirmVerified(repository)
+        confirmVerified(repository)
     }
 }
