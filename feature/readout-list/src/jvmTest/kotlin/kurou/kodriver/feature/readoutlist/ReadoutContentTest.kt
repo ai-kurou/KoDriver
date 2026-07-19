@@ -94,6 +94,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
                 onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.LmuWindows, it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
@@ -135,6 +136,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
                 onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.Gt7Ps5, it) },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
@@ -169,6 +171,7 @@ class ReadoutContentTest {
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { item, enabled -> changedItems += item to enabled },
+                onQueueEnabledChanged = { _, _ -> },
                 onItemSelected = {},
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
@@ -221,6 +224,7 @@ class ReadoutContentTest {
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
                     onItemClick = {},
                 )
             }

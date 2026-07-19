@@ -18,8 +18,7 @@
 
 ## readout-list / Narrator
 
-- **対象**: `core:domain`（`QueuePreferencesRepository`・`ObserveQueueEnabledStatesUseCase`・`SaveQueueEnabledStateUseCase`）・`core:data`（DataStore 実装）・`feature:readout-list`・`feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator`
-  **課題**: キュー追加トグル（listPane の `FilledIconToggleButton`）の ON/OFF 状態を永続化するための Repository・UseCase（core モジュールのみ）を実装した。まだ以下は未着手。
-  1. `feature:readout-list` 側の配線（`ReadoutListViewModel`・`ReadoutListUiState`・`ReadoutListPane.kt`）。現状 `FilledIconToggleButton` は `remember { mutableStateOf(false) }` のローカル状態のままで、この Repository/UseCase を一切参照していない。
-  2. 読み上げが重なった際に実際にキューへ積んで順番に読み上げる、というキュー機能本体の動作（`LmuWindowsNarratorViewModel` / `Gt7Ps5NarratorViewModel` とその判定ロジックでのゲート・キューイング処理）。
-  **改善案**: 1 の配線と 2 のNarrator側ゲート処理を別作業として実装する。CLAUDE.md の「ReadoutItemKey の配線」の原則どおり、永続化・UI配線・実際のゲート処理の3つが揃って初めて機能するため、実装時はすべて確認すること（#464, #472 と同種の「スイッチはあるが効果がない」状態を避ける）。
+- **対象**: `feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator`
+  **課題**: キュー追加トグル（listPane の `FilledIconToggleButton`）の ON/OFF 状態の永続化（`core:domain`・`core:data`）と `feature:readout-list` 側の配線（`ReadoutListViewModel`・`ReadoutListUiState`・`ReadoutListPane.kt`）は実装済み。まだ以下は未着手。
+  1. 読み上げが重なった際に実際にキューへ積んで順番に読み上げる、というキュー機能本体の動作（`LmuWindowsNarratorViewModel` / `Gt7Ps5NarratorViewModel` とその判定ロジックでのゲート・キューイング処理）。
+  **改善案**: Narrator側のゲート・キューイング処理を別作業として実装する。CLAUDE.md の「ReadoutItemKey の配線」の原則どおり、永続化・UI配線・実際のゲート処理の3つが揃って初めて機能するため、実装時はすべて確認すること（#464, #472 と同種の「スイッチはあるが効果がない」状態を避ける）。

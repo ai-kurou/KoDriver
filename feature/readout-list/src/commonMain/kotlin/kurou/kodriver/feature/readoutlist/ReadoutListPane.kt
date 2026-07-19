@@ -229,6 +229,7 @@ internal fun ReadoutListPane(
     onSimulatorSelected: (Simulator) -> Unit,
     onMove: (Int, Int) -> Unit,
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -371,10 +372,9 @@ internal fun ReadoutListPane(
                                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     ) {
                                         if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
-                                            var queueEnabled by remember { mutableStateOf(false) }
                                             FilledIconToggleButton(
-                                                checked = queueEnabled,
-                                                onCheckedChange = { queueEnabled = it },
+                                                checked = uiState.queueEnabledStates[item] ?: false,
+                                                onCheckedChange = { onQueueEnabledChanged(item, it) },
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
@@ -449,6 +449,7 @@ private fun ReadoutListPanePreview(
         onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
+        onQueueEnabledChanged = { _, _ -> },
         onItemClick = { _ -> },
     )
 }
