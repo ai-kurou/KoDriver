@@ -7,8 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import io.mockk.MockKAnnotations
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -17,19 +20,22 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-private fun observeReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> {
-    val repository = mockk<ReadoutPreferencesRepository>()
-    every { repository.observeReadoutEnabledStates(simulator) } returns MutableStateFlow(emptyMap())
-    return runBlocking { ObserveReadoutEnabledStatesUseCase(repository)(simulator).first() }
-}
-
 class ReadoutListPaneScreenshotTest {
+
+    @MockK
+    private lateinit var repository: ReadoutPreferencesRepository
 
     @get:Rule
     val rule = createComposeRule()
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
 
     @Test
     fun `デフォルト`() {
@@ -56,6 +62,7 @@ class ReadoutListPaneScreenshotTest {
 
     @Test
     fun `lmu_windows選択`() {
+        every { repository.observeReadoutEnabledStates("lmu_windows") } returns MutableStateFlow(emptyMap())
         val enabledStates = observeReadoutEnabledStates("lmu_windows")
 
         rule.setContent {
@@ -80,10 +87,13 @@ class ReadoutListPaneScreenshotTest {
             }
         }
         rule.onRoot().captureRoboImage()
+        verify(exactly = 1) { repository.observeReadoutEnabledStates("lmu_windows") }
+        confirmVerified(repository)
     }
 
     @Test
     fun `gt7_ps5選択`() {
+        every { repository.observeReadoutEnabledStates("gt7_ps5") } returns MutableStateFlow(emptyMap())
         val enabledStates = observeReadoutEnabledStates("gt7_ps5")
 
         rule.setContent {
@@ -108,5 +118,10 @@ class ReadoutListPaneScreenshotTest {
             }
         }
         rule.onRoot().captureRoboImage()
+        verify(exactly = 1) { repository.observeReadoutEnabledStates("gt7_ps5") }
+        confirmVerified(repository)
     }
+
+    private fun observeReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> =
+        runBlocking { ObserveReadoutEnabledStatesUseCase(repository)(simulator).first() }
 }

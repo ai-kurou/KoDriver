@@ -5,10 +5,10 @@ package kurou.kodriver.feature.gt7ps5narrator
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,6 +72,12 @@ class Gt7Ps5NarratorViewModelTest {
     @MockK
     private lateinit var queuePreferencesRepository: QueuePreferencesRepository
 
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
+
+    @MockK
+    private lateinit var priorityAwareTts: PriorityAwareTts
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -130,7 +136,8 @@ class Gt7Ps5NarratorViewModelTest {
         channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
 
         assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        verify(atLeast = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        confirmVerified(simulatorPreferencesRepository)
     }
 
     @Test
@@ -273,6 +280,10 @@ class Gt7Ps5NarratorViewModelTest {
         assertEquals(false, ttsEngine.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         verify(exactly = 0) { ttsEngine.stop() }
+        verify(exactly = 0) { ttsEngine.speak(any(), any()) }
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 1) { ttsEngine.stopCalled }
+        confirmVerified(ttsEngine)
     }
 
     @Test
@@ -411,7 +422,6 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
-        val ttsEngine: TextToSpeechEngine = mockk()
         every { ttsEngine.currentReadoutItemKey } returns null
         every { ttsEngine.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
         every { ttsEngine.stop() } just Runs
@@ -422,17 +432,16 @@ class Gt7Ps5NarratorViewModelTest {
         spokenTexts: MutableList<SpeechEvent>,
         initialKey: ReadoutItemKey?,
     ): PriorityAwareTts {
-        val ttsEngine: PriorityAwareTts = mockk()
         var currentKey = initialKey
         var stopCalled = false
-        every { ttsEngine.currentReadoutItemKey } answers { currentKey }
-        every { ttsEngine.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
-        every { ttsEngine.stop() } answers {
+        every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
+        every { priorityAwareTts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { priorityAwareTts.stop() } answers {
             stopCalled = true
             currentKey = null
         }
-        every { ttsEngine.stopCalled } answers { stopCalled }
-        return ttsEngine
+        every { priorityAwareTts.stopCalled } answers { stopCalled }
+        return priorityAwareTts
     }
 
     private interface PriorityAwareTts : TextToSpeechEngine {

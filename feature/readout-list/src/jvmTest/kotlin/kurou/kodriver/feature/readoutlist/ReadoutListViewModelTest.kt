@@ -157,6 +157,13 @@ class ReadoutListViewModelTest {
                 ),
             )
         }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
+        verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
+        verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+        coVerify(exactly = 1) { readoutRepository.saveReadoutOrder("lmu_windows", any()) }
+        verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+        confirmVerified(readoutRepository, simulatorRepository, queueRepository)
     }
 
     @Test
@@ -207,6 +214,12 @@ class ReadoutListViewModelTest {
                 false,
             )
         }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
+        verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
+        verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+        verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+        confirmVerified(readoutRepository, simulatorRepository, queueRepository)
     }
 
     @Test

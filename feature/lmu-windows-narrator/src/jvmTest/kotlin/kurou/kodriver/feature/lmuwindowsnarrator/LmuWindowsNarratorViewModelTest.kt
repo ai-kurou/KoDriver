@@ -8,7 +8,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.just
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -154,6 +153,12 @@ class LmuWindowsNarratorViewModelTest {
 
     @MockK
     private lateinit var queuePreferencesRepository: QueuePreferencesRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
+
+    @MockK
+    private lateinit var priorityAwareTts: PriorityAwareTts
 
     @Before
     fun setUp() {
@@ -369,12 +374,11 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
-        val tts: TextToSpeechEngine = mockk()
-        every { tts.currentReadoutItemKey } returns null
-        every { tts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
-        every { tts.stop() } just Runs
-        every { tts.previewStartSound(any()) } just Runs
-        return tts
+        every { ttsEngine.currentReadoutItemKey } returns null
+        every { ttsEngine.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { ttsEngine.stop() } just Runs
+        every { ttsEngine.previewStartSound(any()) } just Runs
+        return ttsEngine
     }
 
     private interface PriorityAwareTts : TextToSpeechEngine {
@@ -385,17 +389,16 @@ class LmuWindowsNarratorViewModelTest {
         spokenTexts: MutableList<SpeechEvent>,
         initialKey: ReadoutItemKey?,
     ): PriorityAwareTts {
-        val tts: PriorityAwareTts = mockk()
         var currentKey = initialKey
         var stopCalled = false
-        every { tts.currentReadoutItemKey } answers { currentKey }
-        every { tts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
-        every { tts.stop() } answers {
+        every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
+        every { priorityAwareTts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { priorityAwareTts.stop() } answers {
             stopCalled = true
             currentKey = null
         }
-        every { tts.stopCalled } answers { stopCalled }
-        return tts
+        every { priorityAwareTts.stopCalled } answers { stopCalled }
+        return priorityAwareTts
     }
 
     // --- シミュレータ選択 ---

@@ -3,8 +3,10 @@ package kurou.kodriver.feature.readoutlist
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,7 +69,6 @@ class ReadoutListViewModelQueueTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
     }
 
     @After
@@ -77,6 +78,7 @@ class ReadoutListViewModelQueueTest {
 
     @Test
     fun `キューのデフォルト値にRepositoryの永続化済み状態がマージされて表示される`() = runTest {
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
         every { queueRepository.observeQueueEnabledStates() } returns
             MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true))
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
@@ -84,10 +86,14 @@ class ReadoutListViewModelQueueTest {
         val state = viewModel.uiState.first()
         assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
         assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root])
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+        confirmVerified(simulatorRepository, readoutRepository, queueRepository)
     }
 
     @Test
     fun `onQueueEnabledChangedでキューのON_OFF状態がRepositoryに保存される`() = runTest {
+        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
         val queueEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { queueRepository.observeQueueEnabledStates() } returns queueEnabledFlow
         coEvery {
@@ -103,5 +109,8 @@ class ReadoutListViewModelQueueTest {
         coVerify(exactly = 1) {
             queueRepository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
         }
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+        confirmVerified(simulatorRepository, readoutRepository, queueRepository)
     }
 }

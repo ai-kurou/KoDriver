@@ -2,23 +2,35 @@
 
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveQueueEnabledStatesUseCaseTest {
 
+    @MockK
+    private lateinit var repository: QueuePreferencesRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() = runBlocking {
-        val repository = mockk<QueuePreferencesRepository>()
         every { repository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
@@ -34,11 +46,12 @@ class ObserveQueueEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
+        verify(exactly = 1) { repository.observeQueueEnabledStates() }
+        confirmVerified(repository)
     }
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repository = mockk<QueuePreferencesRepository>()
         val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeQueueEnabledStates() } returns states
         coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {
@@ -60,5 +73,10 @@ class ObserveQueueEnabledStatesUseCaseTest {
             ),
             useCase().first(),
         )
+        coVerify(exactly = 1) {
+            repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+        }
+        verify(exactly = 1) { repository.observeQueueEnabledStates() }
+        confirmVerified(repository)
     }
 }
