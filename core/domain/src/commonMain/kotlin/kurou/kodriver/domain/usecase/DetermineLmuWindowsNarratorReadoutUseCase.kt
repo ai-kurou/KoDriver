@@ -31,13 +31,12 @@ data class LmuWindowsNarratorState(
 
 data class LmuWindowsVirtualEnergyTrackingState(
     val session: Int = LmuWindowsVirtualEnergyData.SESSION_UNKNOWN,
-    val raceStartRemainingRatio: Double? = null,
-    val raceStartLap: Int? = null,
     val currentLap: Int = -1,
     val currentLapStartedAtMs: Long = 0L,
+    val currentLapStartRemainingRatio: Double = 0.0,
+    val currentLapRefilled: Double = 0.0,
     val currentRemainingRatio: Double = 0.0,
     val bestLapTimeMs: Long = -1L,
-    val totalRefilled: Double = 0.0,
     val hasRefilled: Boolean = false,
     val isNewSession: Boolean = false,
     val observedAtMs: Long = 0L,
@@ -394,15 +393,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val currentLap = telemetry.timing.currentLap
         val remainingRatio = virtualEnergy.remainingRatio
         return when {
-            state.raceStartRemainingRatio == null -> LmuWindowsVirtualEnergyTrackingState(
+            state.currentLap == -1 -> LmuWindowsVirtualEnergyTrackingState(
                 session = virtualEnergy.session,
-                raceStartRemainingRatio = remainingRatio,
-                raceStartLap = currentLap,
                 currentLap = currentLap,
                 currentLapStartedAtMs = observedAtMs,
+                currentLapStartRemainingRatio = remainingRatio,
+                currentLapRefilled = 0.0,
                 currentRemainingRatio = remainingRatio,
                 bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                totalRefilled = 0.0,
                 hasRefilled = false,
                 isNewSession = false,
                 observedAtMs = observedAtMs,
@@ -410,13 +408,12 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             virtualEnergy.session != state.session || currentLap < state.currentLap ->
                 LmuWindowsVirtualEnergyTrackingState(
                     session = virtualEnergy.session,
-                    raceStartRemainingRatio = remainingRatio,
-                    raceStartLap = currentLap,
                     currentLap = currentLap,
                     currentLapStartedAtMs = observedAtMs,
+                    currentLapStartRemainingRatio = remainingRatio,
+                    currentLapRefilled = 0.0,
                     currentRemainingRatio = remainingRatio,
                     bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                    totalRefilled = 0.0,
                     hasRefilled = false,
                     isNewSession = true,
                     observedAtMs = observedAtMs,
@@ -426,18 +423,19 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 // しきい値未満の増加は給油とみなさず消費量の推定から除外する。
                 val delta = remainingRatio - state.currentRemainingRatio
                 val refilled = if (delta >= REFILL_DETECTION_MIN_RATIO) delta else 0.0
-                val currentLapStartedAtMs = if (currentLap != state.currentLap) {
-                    observedAtMs
-                } else {
-                    state.currentLapStartedAtMs
-                }
+                val lapChanged = currentLap != state.currentLap
                 state.copy(
                     session = virtualEnergy.session,
                     currentLap = currentLap,
-                    currentLapStartedAtMs = currentLapStartedAtMs,
+                    currentLapStartedAtMs = if (lapChanged) observedAtMs else state.currentLapStartedAtMs,
+                    currentLapStartRemainingRatio = if (lapChanged) {
+                        remainingRatio
+                    } else {
+                        state.currentLapStartRemainingRatio
+                    },
+                    currentLapRefilled = if (lapChanged) 0.0 else state.currentLapRefilled + refilled,
                     currentRemainingRatio = remainingRatio,
                     bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                    totalRefilled = state.totalRefilled + refilled,
                     hasRefilled = refilled > 0.0,
                     isNewSession = false,
                     observedAtMs = observedAtMs,
@@ -462,15 +460,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (currentLapElapsedMs < readoutTimingMs) {
             return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
         }
-        val startRatio = trackingState.raceStartRemainingRatio
-            ?: return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
-        val startLap = trackingState.raceStartLap
-            ?: return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
-        val lapsCompleted = trackingState.currentLap - startLap
-        if (lapsCompleted <= 0) return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
-        val consumedRatio = startRatio + trackingState.totalRefilled - trackingState.currentRemainingRatio
-        if (consumedRatio <= 0.0) return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
-        val avgConsumption = consumedRatio / (lapsCompleted + CURRENT_LAP_CONSUMPTION_WEIGHT)
+        val consumedThisLap = trackingState.currentLapStartRemainingRatio +
+            trackingState.currentLapRefilled - trackingState.currentRemainingRatio
+        if (consumedThisLap <= 0.0) return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+        // 直近ラップの消費率をラップ進捗率で正規化し、1ラップあたりの消費率として推定する。
+        // セッション全体の累積平均だと終盤のペース変化に追従できず、閾値を超えたまま無音が続いた末に
+        // 急に読み上げが発生する不具合があったため、直近ラップの実消費を直接使う方式に変更している。
+        val lapProgress = (currentLapElapsedMs.toDouble() / bestLapTimeMs).coerceIn(MIN_LAP_PROGRESS_RATIO, 1.0)
+        val avgConsumption = consumedThisLap / lapProgress
         val remainingLapsFloor = (trackingState.currentRemainingRatio / avgConsumption).toInt()
         if (remainingLapsFloor < 0 || remainingLapsFloor > settings.remainingVirtualEnergyLapsThreshold) {
             return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
@@ -507,10 +504,12 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
         const val REMAINING_VIRTUAL_ENERGY_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000L
-        const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9
 
         /** これ未満の残量増加はジッタとみなし、給油として扱わない（割合 0.0〜1.0 に対する値）。 */
         const val REFILL_DETECTION_MIN_RATIO = 0.005
+
+        /** ラップ進捗率の下限。ベストラップが極端に短い場合の消費率推定の過大評価を防ぐ。 */
+        const val MIN_LAP_PROGRESS_RATIO = 0.5
     }
 }
 
