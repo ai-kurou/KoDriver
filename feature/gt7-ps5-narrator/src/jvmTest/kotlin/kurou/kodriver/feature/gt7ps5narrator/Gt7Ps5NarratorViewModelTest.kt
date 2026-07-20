@@ -5,6 +5,7 @@ package kurou.kodriver.feature.gt7ps5narrator
 import io.mockk.MockKAnnotations
 import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -25,7 +26,6 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
@@ -124,8 +124,12 @@ class Gt7Ps5NarratorViewModelTest {
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { readoutPreferencesRepository.observeReadoutEnabledStates(any()) } returns MutableStateFlow(emptyMap())
-        every { readoutPreferencesRepository.observeReadoutOrder(any()) } returns MutableStateFlow(emptyList())
+        every {
+            readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+        } returns MutableStateFlow(emptyMap())
+        every {
+            readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+        } returns MutableStateFlow(emptyList())
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.FORMAL)
         every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -171,47 +175,50 @@ class Gt7Ps5NarratorViewModelTest {
     fun `読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val logs = mutableListOf<TelemetryLog>()
+        val telemetryJsons = mutableListOf<String>()
         val ttsEngine = mockTts(spokenTexts)
         stubReadoutDefaults()
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-            logs.add(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = firstArg(),
-                    simulatorId = secondArg(),
-                    readoutItemKey = thirdArg(),
-                    telemetryJson = arg(3),
-                ),
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                123_456L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                capture(telemetryJsons),
             )
-        }
+        } just Runs
         createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(1, logs.size)
-        assertEquals(123_456L, logs.single().createdAt)
-        assertEquals(Simulator.Gt7Ps5.id, logs.single().simulatorId)
-        assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value, logs.single().readoutItemKey)
-        assertEquals(true, logs.single().telemetryJson.startsWith("{\"state\":{\"raw\":"))
+        assertEquals(1, telemetryJsons.size)
+        assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
         assertEquals(
             true,
-            logs.single().telemetryJson.contains(
+            telemetryJsons.single().contains(
                 """"previousTelemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
                     """"gasLevel":0.0,"gasCapacity":100.0}""",
             ),
         )
         assertEquals(
             true,
-            logs.single().telemetryJson.contains(
+            telemetryJsons.single().contains(
                 """"telemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":59000,""" +
                     """"gasLevel":0.0,"gasCapacity":100.0}""",
             ),
         )
-        assertEquals(true, logs.single().telemetryJson.contains(""""settings":{"raw":"""))
-        assertEquals(true, logs.single().telemetryJson.contains(""""observedAtMs":123456"""))
-        assertEquals(true, logs.single().telemetryJson.contains(""""finalState":{"raw":"""))
+        assertEquals(true, telemetryJsons.single().contains(""""settings":{"raw":"""))
+        assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+        assertEquals(true, telemetryJsons.single().contains(""""finalState":{"raw":"""))
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                123_456L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                telemetryJsons.single(),
+            )
+        }
+        confirmVerified(telemetryLogRepository)
     }
 
     @Test
@@ -280,7 +287,6 @@ class Gt7Ps5NarratorViewModelTest {
         assertEquals(false, ttsEngine.stopCalled)
         assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         verify(exactly = 0) { ttsEngine.stop() }
-        verify(exactly = 0) { ttsEngine.speak(any(), any()) }
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         verify(exactly = 1) { ttsEngine.stopCalled }
         confirmVerified(ttsEngine)
@@ -290,7 +296,6 @@ class Gt7Ps5NarratorViewModelTest {
     fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val logs = mutableListOf<TelemetryLog>()
         val ttsEngine = mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
@@ -298,23 +303,12 @@ class Gt7Ps5NarratorViewModelTest {
         stubReadoutDefaults(
             orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         )
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-            logs.add(
-                TelemetryLog(
-                    id = 0,
-                    createdAt = firstArg(),
-                    simulatorId = secondArg(),
-                    readoutItemKey = thirdArg(),
-                    telemetryJson = arg(3),
-                ),
-            )
-        }
         createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
         channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
         channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(emptyList<TelemetryLog>(), logs)
+        confirmVerified(telemetryLogRepository)
     }
 
     @Test
@@ -408,9 +402,11 @@ class Gt7Ps5NarratorViewModelTest {
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
         every {
-            readoutPreferencesRepository.observeReadoutEnabledStates(any())
+            readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
         } returns MutableStateFlow(enabledOverrides)
-        every { readoutPreferencesRepository.observeReadoutOrder(any()) } returns MutableStateFlow(orderOverride)
+        every {
+            readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+        } returns MutableStateFlow(orderOverride)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every {
             remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps()
@@ -418,12 +414,28 @@ class Gt7Ps5NarratorViewModelTest {
         every {
             queuePreferencesRepository.observeQueueEnabledStates()
         } returns MutableStateFlow(queueEnabledOverrides)
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+        val telemetryJsons = mutableListOf<String>()
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
     }
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
         every { ttsEngine.currentReadoutItemKey } returns null
-        every { ttsEngine.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { ttsEngine.speak(capture(spokenTexts), capture(mutableListOf<Boolean>())) } just Runs
         every { ttsEngine.stop() } just Runs
         return ttsEngine
     }
@@ -435,7 +447,7 @@ class Gt7Ps5NarratorViewModelTest {
         var currentKey = initialKey
         var stopCalled = false
         every { priorityAwareTts.currentReadoutItemKey } answers { currentKey }
-        every { priorityAwareTts.speak(any(), any()) } answers { spokenTexts.add(firstArg()) }
+        every { priorityAwareTts.speak(capture(spokenTexts), capture(mutableListOf<Boolean>())) } just Runs
         every { priorityAwareTts.stop() } answers {
             stopCalled = true
             currentKey = null

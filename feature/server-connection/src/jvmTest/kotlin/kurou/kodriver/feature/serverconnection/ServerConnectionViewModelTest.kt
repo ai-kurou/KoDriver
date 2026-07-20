@@ -109,7 +109,7 @@ class ServerConnectionViewModelTest {
     fun `選択シミュレータがuiStateに反映される`() = runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        coEvery { versionRepository.fetchVersion(any()) } returns Result.success("1.0.0")
+        coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
         val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
@@ -128,7 +128,9 @@ class ServerConnectionViewModelTest {
         val ipFlow = MutableStateFlow<String?>(null)
         every { serverIpRepository.serverIp() } returns ipFlow
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-        coEvery { serverIpRepository.saveServerIp(any()) } answers { ipFlow.update { firstArg() } }
+        coEvery { serverIpRepository.saveServerIp("192.168.1.100") } answers {
+            ipFlow.update { "192.168.1.100" }
+        }
         coEvery { versionRepository.fetchVersion("192.168.1.100") } returns Result.success("1.0.0")
         val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
@@ -195,7 +197,7 @@ class ServerConnectionViewModelTest {
     fun `LMU選択時はrequiresKoDriverServerがtrueになる`() = runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        coEvery { versionRepository.fetchVersion(any()) } returns Result.success("1.0.0")
+        coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
         val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
