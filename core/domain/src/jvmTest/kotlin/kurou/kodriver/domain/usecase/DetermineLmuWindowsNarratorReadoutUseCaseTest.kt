@@ -250,6 +250,72 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `セッションが変わったらラップ数が戻らなくてもバーチャルエナジーの基準値をリセットする`() {
+        // 予選（session=5）でラップ 0 のまま残量 16% まで消費した状態から、
+        // ラップ番号が減少しないままレース（session=10）へ切り替わるケース。
+        val qualifyingDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 0, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.16, session = 5),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+
+        val raceDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = qualifyingDecision.state,
+            telemetry = lapTelemetry(currentLap = 0, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 1.0, session = 10),
+            settings = settings(),
+            observedAtMs = 10_000L,
+        )
+
+        val trackingState = raceDecision.state.virtualEnergyTrackingState
+        assertTrue(raceDecision.events.isEmpty())
+        assertEquals(10, trackingState.session)
+        assertEquals(1.0, trackingState.raceStartRemainingRatio)
+        assertEquals(0.0, trackingState.totalRefilled)
+        assertEquals(-1, raceDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
+        assertEquals(-1, raceDecision.state.lastVirtualEnergyEvaluationLap)
+    }
+
+    @Test
+    fun `しきい値未満の残量増加は補充とみなさず消費量の推定に含めない`() {
+        val firstDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.5),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+
+        // ジッタによる 0.4% の上振れ（しきい値 0.5% 未満）
+        val jitterDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = firstDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.504),
+            settings = settings(),
+            observedAtMs = 1_000L,
+        )
+
+        val jitterTrackingState = jitterDecision.state.virtualEnergyTrackingState
+        assertEquals(0.0, jitterTrackingState.totalRefilled)
+        assertEquals(false, jitterTrackingState.hasRefilled)
+
+        // ピット補給による 10% の増加（しきい値以上）は補充として扱う
+        val refillDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = jitterDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.604),
+            settings = settings(),
+            observedAtMs = 2_000L,
+        )
+
+        val refillTrackingState = refillDecision.state.virtualEnergyTrackingState
+        assertEquals(0.1, refillTrackingState.totalRefilled, 1e-9)
+        assertEquals(true, refillTrackingState.hasRefilled)
+    }
+
+    @Test
     fun `左接近が50ms継続するとCarLeftを返す`() {
         val first = useCase.determineVehicleApproach(
             state = LmuWindowsNarratorState(),
@@ -1104,7 +1170,10 @@ private fun lapTelemetry(currentLap: Int, bestLapTimeMs: Long) = LmuWindowsTelem
     ),
 )
 
-private fun virtualEnergy(remainingRatio: Double) = LmuWindowsVirtualEnergyData(remainingRatio = remainingRatio)
+private fun virtualEnergy(remainingRatio: Double, session: Int = 0) = LmuWindowsVirtualEnergyData(
+    remainingRatio = remainingRatio,
+    session = session,
+)
 
 private fun leftVehicleApproach(vehicleId: Int) = LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(vehicleId),

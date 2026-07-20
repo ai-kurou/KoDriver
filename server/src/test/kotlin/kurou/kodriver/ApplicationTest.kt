@@ -792,11 +792,11 @@ private const val timingJson2 =
     """{"currentLapTimeMs":70000,"lastLapTimeMs":91000,"bestLapTimeMs":88000,""" +
         """"sector1Ms":31000,"sector1And2Ms":29000,"currentLap":4,"maxLaps":10}"""
 
-private val virtualEnergyData1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
-private val virtualEnergyData2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.3)
+private val virtualEnergyData1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = 10)
+private val virtualEnergyData2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.3, session = 10)
 
-private const val virtualEnergyJson1 = """{"remainingRatio":0.5}"""
-private const val virtualEnergyJson2 = """{"remainingRatio":0.3}"""
+private const val virtualEnergyJson1 = """{"remainingRatio":0.5,"session":10}"""
+private const val virtualEnergyJson2 = """{"remainingRatio":0.3,"session":10}"""
 
 private object EmptyVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
