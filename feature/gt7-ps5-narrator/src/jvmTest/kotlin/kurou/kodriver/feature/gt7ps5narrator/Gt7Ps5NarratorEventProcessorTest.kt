@@ -15,7 +15,6 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 import kotlin.test.BeforeTest
@@ -37,13 +36,18 @@ class Gt7Ps5NarratorEventProcessorTest {
 
     @Test
     fun `直前のテレメトリがないイベントはnullとして保存する`() = runTest {
-        val logs = mutableListOf<TelemetryLog>()
+        val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
-        every { ttsEngine.speak(any(), any()) } just Runs
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-            logs += TelemetryLog(0, firstArg(), secondArg(), thirdArg(), arg(3))
-        }
         val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+        every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                sourceKey.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
 
         createProcessor().process(
             sourceKey = sourceKey,
@@ -54,24 +58,31 @@ class Gt7Ps5NarratorEventProcessorTest {
             observedAtMs = 0L,
         )
 
-        assertEquals(true, logs.single().telemetryJson.startsWith("{\"state\":{\"raw\":"))
-        assertEquals(true, logs.single().telemetryJson.contains("\"previousTelemetry\":null"))
+        assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
+        assertEquals(true, telemetryJsons.single().contains("\"previousTelemetry\":null"))
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
-        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(0L, Simulator.Gt7Ps5.id, sourceKey.value, telemetryJsons.single())
+        }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
     fun `読み上げたイベントを直前と現在のテレメトリとともに保存する`() = runTest {
-        val logs = mutableListOf<TelemetryLog>()
+        val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
-        every { ttsEngine.speak(any(), any()) } just Runs
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-            logs += TelemetryLog(0, firstArg(), secondArg(), thirdArg(), arg(3))
-        }
         val processor = createProcessor()
         val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+        every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                200L,
+                Simulator.Gt7Ps5.id,
+                sourceKey.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
 
         processor.process(sourceKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), emptyMap(), 100L)
         processor.process(
@@ -83,42 +94,46 @@ class Gt7Ps5NarratorEventProcessorTest {
             200L,
         )
 
-        assertEquals(1, logs.size)
-        assertEquals(200L, logs.single().createdAt)
-        assertEquals(Simulator.Gt7Ps5.id, logs.single().simulatorId)
-        assertEquals(sourceKey.value, logs.single().readoutItemKey)
+        assertEquals(1, telemetryJsons.size)
         assertEquals(
             true,
-            logs.single().telemetryJson.contains(
+            telemetryJsons.single().contains(
                 """"previousTelemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":60000,""" +
                     """"gasLevel":20.0,"gasCapacity":100.0}""",
             ),
         )
         assertEquals(
             true,
-            logs.single().telemetryJson.contains(
+            telemetryJsons.single().contains(
                 """"telemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":59000,""" +
                     """"gasLevel":20.0,"gasCapacity":100.0}""",
             ),
         )
-        assertEquals(true, logs.single().telemetryJson.contains(""""observedAtMs":200"""))
+        assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
-        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(200L, Simulator.Gt7Ps5.id, sourceKey.value, telemetryJsons.single())
+        }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
     fun `機能ごとに直前のテレメトリを保持する`() = runTest {
-        val logs = mutableListOf<TelemetryLog>()
+        val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
-        every { ttsEngine.speak(any(), any()) } just Runs
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } answers {
-            logs += TelemetryLog(0, firstArg(), secondArg(), thirdArg(), arg(3))
-        }
         val processor = createProcessor()
         val myBestLapKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val fuelKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
+        every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                myBestLapKey.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
 
         processor.process(myBestLapKey, telemetry(bestLapTimeMs = 60_000), emptyList(), emptyList(), emptyMap(), 0L)
         processor.process(fuelKey, telemetry(bestLapTimeMs = 50_000), emptyList(), emptyList(), emptyMap(), 0L)
@@ -131,10 +146,17 @@ class Gt7Ps5NarratorEventProcessorTest {
             0L,
         )
 
-        assertEquals(true, logs.single().telemetryJson.contains("\"bestLapTimeMs\":60000"))
+        assertEquals(true, telemetryJsons.single().contains("\"bestLapTimeMs\":60000"))
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
-        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                myBestLapKey.value,
+                telemetryJsons.single(),
+            )
+        }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
@@ -143,7 +165,6 @@ class Gt7Ps5NarratorEventProcessorTest {
         val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
         every { ttsEngine.currentReadoutItemKey } returns currentKey
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
         val processor = createProcessor()
 
         processor.process(
@@ -156,8 +177,6 @@ class Gt7Ps5NarratorEventProcessorTest {
         )
 
         verify(exactly = 0) { ttsEngine.stop() }
-        verify(exactly = 0) { ttsEngine.speak(any(), any()) }
-        coVerify(exactly = 0) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
@@ -166,8 +185,16 @@ class Gt7Ps5NarratorEventProcessorTest {
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
         val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
+        val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.speak(newEvent, queue = true) } just Runs
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
         val processor = createProcessor()
 
         processor.process(
@@ -181,7 +208,14 @@ class Gt7Ps5NarratorEventProcessorTest {
 
         verify(exactly = 0) { ttsEngine.stop() }
         verify(exactly = 1) { ttsEngine.speak(newEvent, queue = true) }
-        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                telemetryJsons.single(),
+            )
+        }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
@@ -189,10 +223,18 @@ class Gt7Ps5NarratorEventProcessorTest {
     fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
         val currentKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
         val newEvent = SpeechEvent.Gt7Ps5MyBestLapFormal
+        val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns currentKey
         every { ttsEngine.stop() } just Runs
-        every { ttsEngine.speak(newEvent, any()) } just Runs
-        coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+        every { ttsEngine.speak(newEvent, false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                capture(telemetryJsons),
+            )
+        } just Runs
         val processor = createProcessor()
 
         processor.process(
@@ -205,9 +247,16 @@ class Gt7Ps5NarratorEventProcessorTest {
         )
 
         verify(exactly = 1) { ttsEngine.stop() }
-        verify(exactly = 1) { ttsEngine.speak(newEvent, any()) }
+        verify(exactly = 1) { ttsEngine.speak(newEvent, false) }
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                0L,
+                Simulator.Gt7Ps5.id,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                telemetryJsons.single(),
+            )
+        }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 

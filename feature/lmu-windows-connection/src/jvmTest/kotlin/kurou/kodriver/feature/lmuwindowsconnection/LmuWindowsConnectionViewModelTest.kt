@@ -43,7 +43,7 @@ class LmuWindowsConnectionViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        MockKAnnotations.init(this, relaxUnitFun = true)
+        MockKAnnotations.init(this)
         Dispatchers.setMain(dispatcher)
     }
 
