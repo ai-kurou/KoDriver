@@ -90,7 +90,7 @@ class OtherThemeDetailViewModelTest {
     @Test
     fun `onConfirmを呼ぶとpendingThemeModeを保存する`() = runTest(dispatcher) {
         every { repository.observeThemeMode() } returns themeModeFlow
-        coEvery { repository.saveThemeMode(any()) } answers { themeModeFlow.update { firstArg() } }
+        coEvery { repository.saveThemeMode(ThemeMode.DARK) } answers { themeModeFlow.update { ThemeMode.DARK } }
         val viewModel = createViewModel()
 
         viewModel.onPendingThemeModeSelected(ThemeMode.DARK)

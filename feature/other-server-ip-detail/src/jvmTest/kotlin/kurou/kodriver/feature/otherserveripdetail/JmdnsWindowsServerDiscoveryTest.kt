@@ -7,6 +7,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelAndJoin
@@ -25,6 +26,10 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class JmdnsWindowsServerDiscoveryTest {
+
+    private companion object {
+        const val SERVICE_TYPE = "_kodriver._tcp.local."
+    }
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -50,8 +55,8 @@ class JmdnsWindowsServerDiscoveryTest {
 
     @Test
     fun `サービスが解決されるとホスト名とIPアドレスを含むリストを送信する`() = runTest(testDispatcher) {
-        var listener: ServiceListener? = null
-        every { jmdns.addServiceListener(any(), any()) } answers { listener = secondArg() }
+        val listenerSlot = slot<ServiceListener>()
+        every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
 
         val results = mutableListOf<List<DiscoveredServer>>()
@@ -61,7 +66,7 @@ class JmdnsWindowsServerDiscoveryTest {
         every { info.hostAddresses } returns arrayOf("192.168.1.10")
         every { event.getInfo() } returns info
         every { event.getName() } returns "my-pc"
-        requireNotNull(listener).serviceResolved(event)
+        listenerSlot.captured.serviceResolved(event)
         job.cancelAndJoin()
 
         assertEquals(listOf(DiscoveredServer("my-pc", "192.168.1.10")), results.last())
@@ -69,8 +74,8 @@ class JmdnsWindowsServerDiscoveryTest {
 
     @Test
     fun `サービスが削除されると一覧から除かれる`() = runTest(testDispatcher) {
-        var listener: ServiceListener? = null
-        every { jmdns.addServiceListener(any(), any()) } answers { listener = secondArg() }
+        val listenerSlot = slot<ServiceListener>()
+        every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
 
         val results = mutableListOf<List<DiscoveredServer>>()
@@ -80,10 +85,10 @@ class JmdnsWindowsServerDiscoveryTest {
         every { info.hostAddresses } returns arrayOf("192.168.1.10")
         every { resolvedEvent.getInfo() } returns info
         every { resolvedEvent.getName() } returns "my-pc"
-        requireNotNull(listener).serviceResolved(resolvedEvent)
+        listenerSlot.captured.serviceResolved(resolvedEvent)
 
         every { removedEvent.getName() } returns "my-pc"
-        requireNotNull(listener).serviceRemoved(removedEvent)
+        listenerSlot.captured.serviceRemoved(removedEvent)
         job.cancelAndJoin()
 
         assertEquals(emptyList(), results.last())
@@ -91,34 +96,36 @@ class JmdnsWindowsServerDiscoveryTest {
 
     @Test
     fun `serviceAddedでrequestServiceInfoが呼ばれる`() = runTest(testDispatcher) {
-        var listener: ServiceListener? = null
-        every { jmdns.addServiceListener(any(), any()) } answers { listener = secondArg() }
+        val listenerSlot = slot<ServiceListener>()
+        every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
 
         val job = launch { discovery.discover().collect { } }
 
-        every { event.getType() } returns "_kodriver._tcp.local."
+        every { event.getType() } returns SERVICE_TYPE
         every { event.getName() } returns "my-pc"
-        requireNotNull(listener).serviceAdded(event)
+        listenerSlot.captured.serviceAdded(event)
         job.cancelAndJoin()
 
-        verify(exactly = 1) { jmdns.requestServiceInfo("_kodriver._tcp.local.", "my-pc") }
-        verify(exactly = 1) { jmdns.addServiceListener(any(), any()) }
-        verify(exactly = 1) { jmdns.removeServiceListener(any(), any()) }
+        verify(exactly = 1) { jmdns.requestServiceInfo(SERVICE_TYPE, "my-pc") }
+        verify(exactly = 1) { jmdns.addServiceListener(SERVICE_TYPE, listenerSlot.captured) }
+        verify(exactly = 1) { jmdns.removeServiceListener(SERVICE_TYPE, listenerSlot.captured) }
         verify(exactly = 1) { jmdns.close() }
         confirmVerified(jmdns)
     }
 
     @Test
     fun `キャンセルされるとリスナーの解除とJmDNSのクローズが行われる`() = runTest(testDispatcher) {
+        val listenerSlot = slot<ServiceListener>()
+        every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
 
         val job = launch { discovery.discover().collect { } }
         job.cancelAndJoin()
 
-        verify(exactly = 1) { jmdns.removeServiceListener(any(), any()) }
+        verify(exactly = 1) { jmdns.removeServiceListener(SERVICE_TYPE, listenerSlot.captured) }
         verify(exactly = 1) { jmdns.close() }
-        verify(exactly = 1) { jmdns.addServiceListener(any(), any()) }
+        verify(exactly = 1) { jmdns.addServiceListener(SERVICE_TYPE, listenerSlot.captured) }
         confirmVerified(jmdns)
     }
 
