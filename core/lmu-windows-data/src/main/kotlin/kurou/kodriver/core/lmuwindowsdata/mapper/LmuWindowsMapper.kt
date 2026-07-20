@@ -186,6 +186,13 @@ internal object LmuWindowsMapper {
             buffer.getDouble(offset + OFF_WHEEL_TIRE_CARCASS_TEMPERATURE)
         }
 
+    /** プレイヤー車両の4輪ぶんの残タイヤ溝割合 (0.0-1.0) を返す。 */
+    internal fun readWearFractions(buffer: ByteBuffer, vehicleBase: Int): Map<WheelIndex, Double> =
+        WheelIndex.entries.associateWith { wheel ->
+            val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
+            buffer.getDouble(offset + OFF_WHEEL_WEAR)
+        }
+
     private fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)
         for (index in 0 until vehicleCount) {

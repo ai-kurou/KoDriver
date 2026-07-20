@@ -8,18 +8,21 @@ import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySourc
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreWearRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleApproachRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVirtualEnergyRepositoryImpl
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
@@ -63,6 +66,9 @@ val lmuWindowsDataModule = module {
             NoOpTyreCarcassTemperatureRepository()
         }
     }
+    single<LmuWindowsTyreWearRepository> {
+        if (isWindows) LmuWindowsTyreWearRepositoryImpl(source = get()) else NoOpTyreWearRepository()
+    }
     single<LmuWindowsVirtualEnergyRepository> {
         if (isWindows) LmuWindowsVirtualEnergyRepositoryImpl(source = get()) else NoOpVirtualEnergyRepository()
     }
@@ -88,6 +94,10 @@ private class NoOpVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
 
 private class NoOpTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private class NoOpTyreWearRepository : LmuWindowsTyreWearRepository {
+    override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> = emptyFlow()
 }
 
 private class NoOpVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
