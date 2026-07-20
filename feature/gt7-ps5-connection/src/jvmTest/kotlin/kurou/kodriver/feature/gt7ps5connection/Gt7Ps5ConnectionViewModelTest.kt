@@ -179,7 +179,9 @@ class Gt7Ps5ConnectionViewModelTest {
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        coEvery { simulatorRepository.saveSelectedSimulator(any()) } answers { simulatorFlow.update { firstArg() } }
+        coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
+            simulatorFlow.update { Simulator.Gt7Ps5 }
+        }
         val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()

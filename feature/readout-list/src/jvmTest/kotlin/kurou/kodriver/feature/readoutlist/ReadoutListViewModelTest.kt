@@ -126,7 +126,15 @@ class ReadoutListViewModelTest {
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", any()) } returns Unit
+        val movedOrder = listOf(
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+        )
+        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } returns Unit
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
 
@@ -161,7 +169,7 @@ class ReadoutListViewModelTest {
         coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
         verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
         verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
-        coVerify(exactly = 1) { readoutRepository.saveReadoutOrder("lmu_windows", any()) }
+        coVerify(exactly = 1) { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) }
         verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
         confirmVerified(readoutRepository, simulatorRepository, queueRepository)
     }
@@ -293,8 +301,16 @@ class ReadoutListViewModelTest {
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
-        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", any()) } answers {
-            orderFlow.update { secondArg() }
+        val movedOrder = listOf(
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+        )
+        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } answers {
+            orderFlow.update { movedOrder }
         }
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
@@ -325,7 +341,24 @@ class ReadoutListViewModelTest {
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", any()) } returns Unit
+        val firstMovedOrder = listOf(
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+        )
+        val secondMovedOrder = listOf(
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+        )
+        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", firstMovedOrder) } returns Unit
+        coEvery { readoutRepository.saveReadoutOrder("lmu_windows", secondMovedOrder) } returns Unit
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
 
@@ -476,8 +509,11 @@ class ReadoutListViewModelTest {
         val gt7EnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         val lmuEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        coEvery { simulatorRepository.saveSelectedSimulator(any()) } answers {
-            simulatorFlow.update { firstArg() }
+        coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
+            simulatorFlow.update { Simulator.Gt7Ps5 }
+        }
+        coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
+            simulatorFlow.update { Simulator.LmuWindows }
         }
         every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns gt7EnabledFlow
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns lmuEnabledFlow
