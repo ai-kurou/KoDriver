@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -228,6 +229,48 @@ class ReadoutContentTest {
         rule.onAllNodes(hasQueueToggleRole()).get(1).assertIsEnabled().performClick()
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
+        assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
+    }
+
+    @Test
+    fun `読み上げスイッチがOFFの項目はキュー追加トグルもdisableになりクリックしてもコールバックを呼ばない`() {
+        val changedItems = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
+        var tyreTemperatureText by mutableStateOf("")
+
+        rule.setContent {
+            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.LmuWindows),
+                    selectedSimulator = Simulator.LmuWindows,
+                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                    readoutEnabledStates = mapOf(
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                        ReadoutItemKey.LmuWindows.Flag.Root to true,
+                    ),
+                    queueEnabledStates = mapOf(
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                        ReadoutItemKey.LmuWindows.Flag.Root to false,
+                    ),
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { item, enabled -> changedItems += item to enabled },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { _, _, _ -> },
+            )
+        }
+
+        rule.onNodeWithText(tyreTemperatureText).assertExists()
+        rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
+        rule.onAllNodes(hasQueueToggleRole()).get(0).assertIsNotEnabled().performClick()
+        rule.onAllNodes(hasQueueToggleRole()).get(1).assertIsEnabled().performClick()
+
+        assertFalse(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
     }
 

@@ -329,6 +329,7 @@ internal fun ReadoutListPane(
                             label = "cardContainerColor",
                         )
                         val itemName = itemDisplayName(item)
+                        val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
                         ListPaneCard(
                             onClick = { onItemClick(item) },
                             // クリック可能なのはこの Card 自身であり、内部の headlineContent の Text 自体は
@@ -375,6 +376,7 @@ internal fun ReadoutListPane(
                                             FilledIconToggleButton(
                                                 checked = uiState.queueEnabledStates[item] ?: false,
                                                 onCheckedChange = { onQueueEnabledChanged(item, it) },
+                                                enabled = readoutEnabled,
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
@@ -383,7 +385,7 @@ internal fun ReadoutListPane(
                                             }
                                         }
                                         Switch(
-                                            checked = uiState.readoutEnabledStates[item] ?: false,
+                                            checked = readoutEnabled,
                                             onCheckedChange = { onReadoutEnabledChanged(item, it) },
                                         )
                                     }
