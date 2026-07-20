@@ -3,8 +3,10 @@ package kurou.kodriver.feature.main
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,6 +95,7 @@ class AppScreenViewModelTest {
 
         assertTrue(viewModel.uiState.first().hasAppUpdate)
         coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -104,6 +107,7 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
         coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -112,6 +116,7 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
         coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -123,6 +128,7 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
         coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -134,6 +140,7 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
         coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -157,9 +164,11 @@ class AppScreenViewModelTest {
         viewModel.saveExitConfirmationEnabled(false)
 
         assertFalse(exitConfirmationEnabledFlow.value)
+        verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
         coVerify(exactly = 1) {
             exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
         }
+        confirmVerified(exitConfirmationEnabledRepository)
     }
 
     @Test
@@ -169,9 +178,11 @@ class AppScreenViewModelTest {
         viewModel.saveExitConfirmationEnabled(false)
 
         assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+        verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
         coVerify(exactly = 1) {
             exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
         }
+        confirmVerified(exitConfirmationEnabledRepository)
     }
 
     @Test

@@ -5,6 +5,7 @@ package kurou.kodriver.feature.main
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,6 +57,7 @@ class LmuServerBannerConnectionCheckerTest {
         assertEquals(ConnectionBannerVmStatus.UNCHECKED, statuses[0])
         assertEquals(ConnectionBannerVmStatus.CONNECTED, statuses[1])
         coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+        confirmVerified(versionRepository)
     }
 
     @Test
@@ -67,6 +69,7 @@ class LmuServerBannerConnectionCheckerTest {
         assertEquals(ConnectionBannerVmStatus.UNCHECKED, statuses[0])
         assertEquals(ConnectionBannerVmStatus.DISCONNECTED, statuses[1])
         coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+        confirmVerified(versionRepository)
     }
 
     @Test
@@ -83,6 +86,7 @@ class LmuServerBannerConnectionCheckerTest {
 
             assertEquals(ConnectionBannerVmStatus.CONNECTED, emitted.last())
             coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+            confirmVerified(versionRepository)
             job.cancel()
         }
 
