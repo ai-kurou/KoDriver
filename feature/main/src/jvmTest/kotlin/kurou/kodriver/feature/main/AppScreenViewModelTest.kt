@@ -1,8 +1,14 @@
 package kurou.kodriver.feature.main
 
+import io.mockk.MockKAnnotations
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -32,8 +38,21 @@ class AppScreenViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
+    @MockK
+    private lateinit var appUpdateRepository: AppUpdateRepository
+
+    @MockK
+    private lateinit var keepScreenOnRepository: KeepScreenOnEnabledRepository
+
+    @MockK
+    private lateinit var exitConfirmationEnabledRepository: ExitConfirmationEnabledRepository
+
+    @MockK
+    private lateinit var dynamicColorEnabledRepository: DynamicColorEnabledRepository
+
     @Before
     fun setUp() {
+        MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
@@ -47,19 +66,24 @@ class AppScreenViewModelTest {
         version: String = "1.0.0",
         exitConfirmationEnabled: Boolean = true,
         dynamicColorEnabled: Boolean = false,
-    ): Pair<AppScreenViewModel, FakeExitConfirmationEnabledRepository> {
-        val fakeRepo = FakeExitConfirmationEnabledRepository(exitConfirmationEnabled)
-        val viewModel = AppScreenViewModel(
-            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(FakeAppUpdateRepository(tagName)),
+    ): Pair<AppScreenViewModel, MutableStateFlow<Boolean>> {
+        val exitConfirmationEnabledFlow = MutableStateFlow(exitConfirmationEnabled)
+        coEvery { appUpdateRepository.getLatestRelease() } returns tagName?.let { AppUpdate(it) }
+        every { keepScreenOnRepository.keepScreenOn() } returns flowOf(false)
+        every { exitConfirmationEnabledRepository.exitConfirmationEnabled() } returns exitConfirmationEnabledFlow
+        coEvery { exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false) } answers {
+            exitConfirmationEnabledFlow.value = false
+        }
+        every { dynamicColorEnabledRepository.dynamicColorEnabled() } returns flowOf(dynamicColorEnabled)
+
+        return AppScreenViewModel(
+            checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
             currentVersion = version,
-            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(FakeKeepScreenOnRepository()),
-            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(fakeRepo),
-            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(fakeRepo),
-            observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(
-                FakeDynamicColorEnabledRepository(dynamicColorEnabled),
-            ),
-        )
-        return viewModel to fakeRepo
+            observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
+            observeExitConfirmationEnabled = ObserveExitConfirmationEnabledUseCase(exitConfirmationEnabledRepository),
+            saveExitConfirmationEnabled = SaveExitConfirmationEnabledUseCase(exitConfirmationEnabledRepository),
+            observeDynamicColorEnabled = ObserveDynamicColorEnabledUseCase(dynamicColorEnabledRepository),
+        ) to exitConfirmationEnabledFlow
     }
 
     @Test
@@ -70,6 +94,8 @@ class AppScreenViewModelTest {
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -80,6 +106,8 @@ class AppScreenViewModelTest {
         advanceUntilIdle()
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -87,6 +115,8 @@ class AppScreenViewModelTest {
         val (viewModel) = createViewModel(tagName = "v9.9.9")
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -97,6 +127,8 @@ class AppScreenViewModelTest {
         advanceUntilIdle()
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -107,6 +139,8 @@ class AppScreenViewModelTest {
         advanceUntilIdle()
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
+        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+        confirmVerified(appUpdateRepository)
     }
 
     @Test
@@ -125,11 +159,16 @@ class AppScreenViewModelTest {
 
     @Test
     fun `saveExitConfirmationEnabledを呼ぶとリポジトリに保存される`() = runTest {
-        val (viewModel, fakeRepo) = createViewModel(exitConfirmationEnabled = true)
+        val (viewModel, exitConfirmationEnabledFlow) = createViewModel(exitConfirmationEnabled = true)
 
         viewModel.saveExitConfirmationEnabled(false)
 
-        assertFalse(fakeRepo.savedValue!!)
+        assertFalse(exitConfirmationEnabledFlow.value)
+        verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
+        coVerify(exactly = 1) {
+            exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
+        }
+        confirmVerified(exitConfirmationEnabledRepository)
     }
 
     @Test
@@ -139,6 +178,11 @@ class AppScreenViewModelTest {
         viewModel.saveExitConfirmationEnabled(false)
 
         assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+        verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
+        coVerify(exactly = 1) {
+            exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
+        }
+        confirmVerified(exitConfirmationEnabledRepository)
     }
 
     @Test
@@ -154,32 +198,4 @@ class AppScreenViewModelTest {
 
         assertFalse(viewModel.uiState.first().dynamicColorEnabled)
     }
-}
-
-private class FakeAppUpdateRepository(private val tagName: String?) : AppUpdateRepository {
-    override suspend fun getLatestRelease(): AppUpdate? = tagName?.let { AppUpdate(it) }
-}
-
-private class FakeKeepScreenOnRepository : KeepScreenOnEnabledRepository {
-    override fun keepScreenOn(): Flow<Boolean> = flowOf(false)
-    override suspend fun saveKeepScreenOn(enabled: Boolean) = Unit
-}
-
-private class FakeExitConfirmationEnabledRepository(
-    enabled: Boolean,
-) : ExitConfirmationEnabledRepository {
-    private val _enabled = MutableStateFlow(enabled)
-    var savedValue: Boolean? = null
-    override fun exitConfirmationEnabled(): Flow<Boolean> = _enabled
-    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
-        savedValue = enabled
-        _enabled.value = enabled
-    }
-}
-
-private class FakeDynamicColorEnabledRepository(
-    private val enabled: Boolean,
-) : DynamicColorEnabledRepository {
-    override fun dynamicColorEnabled(): Flow<Boolean> = flowOf(enabled)
-    override suspend fun saveDynamicColorEnabled(enabled: Boolean) = Unit
 }

@@ -106,7 +106,9 @@ class LmuWindowsConnectionViewModelTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        coEvery { simulatorRepository.saveSelectedSimulator(any()) } answers { simulatorFlow.update { firstArg() } }
+        coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
+            simulatorFlow.update { Simulator.LmuWindows }
+        }
         val viewModel = createViewModel()
         val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
         dispatcher.scheduler.runCurrent()
