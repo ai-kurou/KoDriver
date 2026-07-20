@@ -52,14 +52,12 @@ actual fun VersionMismatchBottomSheetEffect() {
 }
 
 @Composable
-private fun VersionMismatchBottomSheetContent(
+internal fun VersionMismatchBottomSheetContent(
     windowsKoDriverVersion: String,
     appVersion: String,
     onDismiss: () -> Unit,
 ) {
-    val windowsParsed = parseVersion(windowsKoDriverVersion)
-    val appParsed = parseVersion(appVersion)
-    val windowsIsNewer = windowsParsed > appParsed
+    val windowsIsNewer = parseVersion(windowsKoDriverVersion) > parseVersion(appVersion)
 
     Column(
         modifier = Modifier
