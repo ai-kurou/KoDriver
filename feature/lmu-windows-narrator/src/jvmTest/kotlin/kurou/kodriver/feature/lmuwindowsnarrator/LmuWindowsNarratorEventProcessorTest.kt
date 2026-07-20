@@ -2,36 +2,62 @@
 
 package kurou.kodriver.feature.lmuwindowsnarrator
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
+import io.mockk.MockKAnnotations
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.slot
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
-import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class LmuWindowsNarratorEventProcessorTest {
 
+    @MockK
+    private lateinit var telemetryLogRepository: TelemetryLogRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
     @Test
     fun `読み上げたイベントを直前と現在の接近データとともに保存する`() = runTest {
-        val telemetryLogRepository = EventProcessorTelemetryLogRepository()
-        val ttsEngine = EventProcessorRecordingTts()
-        val processor = createProcessor(telemetryLogRepository, ttsEngine)
+        val telemetryJsonSlot = slot<String>()
+        every { ttsEngine.currentReadoutItemKey } returns null
+        every { ttsEngine.speak(SpeechEvent.CarLeft, queue = false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 200L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(telemetryJsonSlot),
+            )
+        } just Runs
+        val processor = createProcessor()
 
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(distance = 4.0),
@@ -50,26 +76,31 @@ class LmuWindowsNarratorEventProcessorTest {
             logContext = logContext(),
         )
 
-        val log = telemetryLogRepository.logs.single()
-        assertEquals(200L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root.value, log.readoutItemKey)
-        assertContains(log.telemetryJson, """"previousVehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
-        assertContains(log.telemetryJson, """"lateralDistanceLeftMeters":4.0""")
-        assertContains(log.telemetryJson, """"vehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
-        assertContains(log.telemetryJson, """"lateralDistanceLeftMeters":3.0""")
-        assertContains(log.telemetryJson, """"observedAtMs":200""")
-        assertEquals(listOf(SpokenEvent(SpeechEvent.CarLeft, queue = false)), ttsEngine.spokenEvents)
-        assertEquals(1, ttsEngine.currentReadoutItemKeyReadCount)
+        val telemetryJson = telemetryJsonSlot.captured
+        assertContains(telemetryJson, """"previousVehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
+        assertContains(telemetryJson, """"lateralDistanceLeftMeters":4.0""")
+        assertContains(telemetryJson, """"vehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
+        assertContains(telemetryJson, """"lateralDistanceLeftMeters":3.0""")
+        assertContains(telemetryJson, """"observedAtMs":200""")
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 200L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = telemetryJson,
+            )
+        }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
     fun `優先度の高い項目を再生中なら読み上げも保存もしない`() = runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val newEvent = SpeechEvent.CarLeft
-        val telemetryLogRepository = EventProcessorTelemetryLogRepository()
-        val ttsEngine = EventProcessorRecordingTts(currentKey = currentKey)
-        val processor = createProcessor(telemetryLogRepository, ttsEngine)
+        every { ttsEngine.currentReadoutItemKey } returns currentKey
+        val processor = createProcessor()
 
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(),
@@ -83,19 +114,27 @@ class LmuWindowsNarratorEventProcessorTest {
             logContext = logContext(),
         )
 
-        assertEquals(0, ttsEngine.stopCount)
-        assertEquals(emptyList<SpokenEvent>(), ttsEngine.spokenEvents)
-        assertEquals(emptyList<TelemetryLog>(), telemetryLogRepository.logs)
-        assertEquals(1, ttsEngine.currentReadoutItemKeyReadCount)
+        verify(exactly = 0) { ttsEngine.stop() }
+        verify(exactly = 0) { ttsEngine.speak(newEvent, false) }
+        verify(exactly = 0) { ttsEngine.speak(newEvent, true) }
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        confirmVerified(ttsEngine)
     }
 
     @Test
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val newEvent = SpeechEvent.CarLeft
-        val telemetryLogRepository = EventProcessorTelemetryLogRepository()
-        val ttsEngine = EventProcessorRecordingTts()
-        val processor = createProcessor(telemetryLogRepository, ttsEngine)
+        every { ttsEngine.speak(newEvent, queue = true) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 0L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        } just Runs
+        val processor = createProcessor()
 
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(),
@@ -106,18 +145,35 @@ class LmuWindowsNarratorEventProcessorTest {
             logContext = logContext(),
         )
 
-        assertEquals(0, ttsEngine.stopCount)
-        assertEquals(listOf(SpokenEvent(newEvent, queue = true)), ttsEngine.spokenEvents)
-        assertEquals(1, telemetryLogRepository.logs.size)
+        verify(exactly = 0) { ttsEngine.stop() }
+        verify(exactly = 1) { ttsEngine.speak(newEvent, queue = true) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 0L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
     fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
         val currentKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root
         val newEvent = SpeechEvent.CarLeft
-        val telemetryLogRepository = EventProcessorTelemetryLogRepository()
-        val ttsEngine = EventProcessorRecordingTts(currentKey = currentKey)
-        val processor = createProcessor(telemetryLogRepository, ttsEngine)
+        every { ttsEngine.currentReadoutItemKey } returns currentKey
+        every { ttsEngine.stop() } just Runs
+        every { ttsEngine.speak(newEvent, queue = false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 0L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        } just Runs
+        val processor = createProcessor()
 
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(),
@@ -128,17 +184,46 @@ class LmuWindowsNarratorEventProcessorTest {
             logContext = logContext(),
         )
 
-        assertEquals(1, ttsEngine.stopCount)
-        assertEquals(listOf(SpokenEvent(newEvent, queue = false)), ttsEngine.spokenEvents)
-        assertEquals(1, ttsEngine.currentReadoutItemKeyReadCount)
-        assertEquals(1, telemetryLogRepository.logs.size)
+        verify(exactly = 1) { ttsEngine.stop() }
+        verify(exactly = 1) { ttsEngine.speak(newEvent, queue = false) }
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 0L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
     @Test
     fun `ログ保存に失敗しても次の読み上げは継続する`() = runTest {
-        val telemetryLogRepository = EventProcessorTelemetryLogRepository(failureCount = 1)
-        val ttsEngine = EventProcessorRecordingTts()
-        val processor = createProcessor(telemetryLogRepository, ttsEngine)
+        val spokenEvents = mutableListOf<SpeechEvent>()
+        var saveCount = 0
+        every { ttsEngine.currentReadoutItemKey } returns null
+        every { ttsEngine.speak(capture(spokenEvents), queue = false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 100L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        } answers {
+            saveCount += 1
+            error("failed")
+        }
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 200L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        } answers { saveCount += 1 }
+        val processor = createProcessor()
 
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(distance = 4.0),
@@ -157,84 +242,33 @@ class LmuWindowsNarratorEventProcessorTest {
             logContext = logContext(),
         )
 
-        assertEquals(
-            listOf(
-                SpokenEvent(SpeechEvent.CarLeft, queue = false),
-                SpokenEvent(SpeechEvent.CarLeft, queue = false),
-            ),
-            ttsEngine.spokenEvents,
-        )
-        assertEquals(2, telemetryLogRepository.saveCount)
-        assertEquals(2, ttsEngine.currentReadoutItemKeyReadCount)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.CarLeft, SpeechEvent.CarLeft), spokenEvents)
+        assertEquals(2, saveCount)
+        verify(exactly = 2) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 2) { ttsEngine.speak(SpeechEvent.CarLeft, false) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 100L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                createdAt = 200L,
+                simulatorId = Simulator.LmuWindows.id,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                telemetryJson = capture(slot()),
+            )
+        }
+        confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
-    private fun createProcessor(
-        telemetryLogRepository: TelemetryLogRepository,
-        ttsEngine: TextToSpeechEngine,
-    ) = LmuWindowsNarratorEventProcessor(
+    private fun createProcessor() = LmuWindowsNarratorEventProcessor(
         ttsEngine = ttsEngine,
         saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
     )
-}
-
-private data class SpokenEvent(val event: SpeechEvent, val queue: Boolean)
-
-private class EventProcessorRecordingTts(
-    private var currentKey: ReadoutItemKey? = null,
-) : TextToSpeechEngine {
-    val spokenEvents = mutableListOf<SpokenEvent>()
-    var currentReadoutItemKeyReadCount = 0
-    var stopCount = 0
-
-    override val currentReadoutItemKey: ReadoutItemKey?
-        get() {
-            currentReadoutItemKeyReadCount += 1
-            return currentKey
-        }
-
-    override fun speak(event: SpeechEvent, queue: Boolean) {
-        spokenEvents += SpokenEvent(event, queue)
-    }
-
-    override fun stop() {
-        stopCount += 1
-        currentKey = null
-    }
-
-    override fun previewStartSound(type: ReadoutStartSoundType) = Unit
-}
-
-private class EventProcessorTelemetryLogRepository(
-    private var failureCount: Int = 0,
-) : TelemetryLogRepository {
-    val logs = mutableListOf<TelemetryLog>()
-    var saveCount = 0
-
-    override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> = emptyFlow()
-
-    override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> = emptyFlow()
-
-    override suspend fun saveTelemetryLog(
-        createdAt: Long,
-        simulatorId: String,
-        readoutItemKey: String,
-        telemetryJson: String,
-    ) {
-        saveCount += 1
-        if (failureCount > 0) {
-            failureCount -= 1
-            error("failed")
-        }
-        logs += TelemetryLog(
-            id = 0,
-            createdAt = createdAt,
-            simulatorId = simulatorId,
-            readoutItemKey = readoutItemKey,
-            telemetryJson = telemetryJson,
-        )
-    }
-
-    override suspend fun deleteAllTelemetryLogs() = Unit
 }
 
 private fun logContext() = LmuWindowsTelemetryLogContext(
