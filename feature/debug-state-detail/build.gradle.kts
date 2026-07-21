@@ -13,6 +13,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
+            implementation(libs.reorderable)
         }
         jvmTest.dependencies {
             implementation(libs.mockk)

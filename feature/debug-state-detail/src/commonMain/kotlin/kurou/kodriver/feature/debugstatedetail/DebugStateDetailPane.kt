@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +31,7 @@ import kodriver.feature.debugstatedetail.generated.resources.simulator_name_gt7_
 import kodriver.feature.debugstatedetail.generated.resources.simulator_name_lmu
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -37,6 +40,8 @@ import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyGridState
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
@@ -59,6 +64,7 @@ fun DebugStateDetailPane(
         uiState = uiState,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
+        onMoveCard = viewModel::moveCard,
         modifier = modifier,
     )
 }
@@ -68,6 +74,7 @@ internal fun DebugStateDetailPaneContent(
     uiState: DebugStateDetailUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
+    onMoveCard: (Int, Int) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier,
 ) {
     DetailPaneScaffold(
@@ -79,27 +86,46 @@ internal fun DebugStateDetailPaneContent(
     ) {
         BoxWithConstraints {
             val columns = calculateDebugStateColumns(maxWidth)
-            LazyVerticalGrid(columns = GridCells.Fixed(columns)) {
-                item {
-                    DetailPaneCard(
-                        title = stringResource(Res.string.debug_state_simulator_info_title),
-                        modifier = Modifier.padding(8.dp),
-                        bottomContent = {
-                            SimulatorInfoContent(uiState.selectedSimulator)
-                        },
-                    )
-                }
-                item {
-                    DetailPaneCard(
-                        title = stringResource(Res.string.debug_state_flag_info_title),
-                        modifier = Modifier.padding(8.dp),
-                        bottomContent = {
-                            FlagInfoContent(uiState.raceFlags)
-                        },
-                    )
+            val gridState = rememberLazyGridState()
+            val reorderableState = rememberReorderableLazyGridState(gridState) { from, to ->
+                onMoveCard(from.index, to.index)
+            }
+            LazyVerticalGrid(columns = GridCells.Fixed(columns), state = gridState) {
+                items(uiState.cardOrder, key = { it.name }) { cardKey ->
+                    ReorderableItem(reorderableState, key = cardKey.name) {
+                        DebugStateCard(
+                            cardKey = cardKey,
+                            uiState = uiState,
+                            modifier = Modifier.padding(8.dp).longPressDraggableHandle(),
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DebugStateCard(
+    cardKey: DebugStateCardKey,
+    uiState: DebugStateDetailUiState,
+    modifier: Modifier = Modifier,
+) {
+    when (cardKey) {
+        DebugStateCardKey.SIMULATOR -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_simulator_info_title),
+            modifier = modifier,
+            bottomContent = {
+                SimulatorInfoContent(uiState.selectedSimulator)
+            },
+        )
+        DebugStateCardKey.FLAG_INFO -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_flag_info_title),
+            modifier = modifier,
+            bottomContent = {
+                FlagInfoContent(uiState.raceFlags)
+            },
+        )
     }
 }
 

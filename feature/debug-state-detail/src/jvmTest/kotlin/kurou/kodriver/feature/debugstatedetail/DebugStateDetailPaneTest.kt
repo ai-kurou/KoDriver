@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -137,6 +138,24 @@ class DebugStateDetailPaneTest {
         }
 
         rule.onNodeWithText("ブルーフラッグ").assertIsDisplayed()
+    }
+
+    @Test
+    fun `cardOrderを入れ替えても両方のカードが表示される`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        cardOrder = listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("フラグ情報").assertIsDisplayed()
+        rule.onNodeWithText("選択中のシミュレータ").assertIsDisplayed()
     }
 
     @Test
