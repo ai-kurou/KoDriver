@@ -1,5 +1,7 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
@@ -15,6 +17,7 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -273,6 +276,28 @@ class TelemetryLogContentTest {
         rule.onNodeWithText("新しいログ").performClick()
 
         rule.onNodeWithText("new_log").assertExists()
+    }
+
+    @Test
+    fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
+        var scrollToTopRequest by mutableStateOf(0)
+        val logs = createTelemetryLogs()
+
+        rule.setContent {
+            Box(modifier = Modifier.height(240.dp)) {
+                TelemetryLogListPane(
+                    uiState = TelemetryLogListUiState(logs = logs),
+                    scrollToTopRequest = scrollToTopRequest,
+                )
+            }
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("log_20"))
+        rule.runOnIdle { scrollToTopRequest++ }
+
+        rule.waitUntil {
+            rule.onAllNodesWithText("log_30").fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }
 
