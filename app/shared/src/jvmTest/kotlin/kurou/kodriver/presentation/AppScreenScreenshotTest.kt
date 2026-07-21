@@ -3,6 +3,7 @@ package kurou.kodriver.presentation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -73,7 +74,7 @@ class AppScreenScreenshotTest {
 
     @Test
     fun `NavigationRail 読み上げタブ`() {
-        composeRule.setContent {
+        setAppContent {
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
                 AppScreenContent(
@@ -94,7 +95,7 @@ class AppScreenScreenshotTest {
 
     @Test
     fun `NavigationRail 読み上げタブ ダークテーマ`() {
-        composeRule.setContent {
+        setAppContent {
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
                 AppScreenContent(
@@ -118,7 +119,7 @@ class AppScreenScreenshotTest {
     fun `NavigationRail その他タブ`() {
         var navMore by mutableStateOf("")
 
-        composeRule.setContent {
+        setAppContent {
             navMore = stringResource(Res.string.nav_more)
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
@@ -149,7 +150,7 @@ class AppScreenScreenshotTest {
     fun `NavigationRail ログタブ`() {
         var navLog by mutableStateOf("")
 
-        composeRule.setContent {
+        setAppContent {
             navLog = stringResource(Res.string.nav_log)
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
@@ -171,7 +172,7 @@ class AppScreenScreenshotTest {
 
     @Test
     fun `NavigationBar 読み上げタブ`() {
-        composeRule.setContent {
+        setAppContent {
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                 AppScreenContent(
@@ -194,7 +195,7 @@ class AppScreenScreenshotTest {
     fun `NavigationBar ログタブ`() {
         var navLog by mutableStateOf("")
 
-        composeRule.setContent {
+        setAppContent {
             navLog = stringResource(Res.string.nav_log)
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
@@ -218,7 +219,7 @@ class AppScreenScreenshotTest {
     fun `NavigationBar その他タブ`() {
         var navMore by mutableStateOf("")
 
-        composeRule.setContent {
+        setAppContent {
             navMore = stringResource(Res.string.nav_more)
             val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
             Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
@@ -243,5 +244,13 @@ class AppScreenScreenshotTest {
         composeRule.onNodeWithText(navMore).performClick()
         composeRule.waitForIdle()
         composeRule.onRoot().captureRoboImage()
+    }
+
+    private fun setAppContent(content: @Composable () -> Unit) {
+        composeRule.setContent {
+            AppTheme {
+                content()
+            }
+        }
     }
 }
