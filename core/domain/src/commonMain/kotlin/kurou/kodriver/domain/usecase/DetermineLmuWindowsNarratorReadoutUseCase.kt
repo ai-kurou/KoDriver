@@ -34,7 +34,10 @@ data class LmuWindowsVirtualEnergyTrackingState(
     val currentLap: Int = -1,
     val currentLapStartedAtMs: Long = 0L,
     val currentLapStartRemainingRatio: Double = 0.0,
+    val currentLapHasRefilled: Boolean = false,
     val currentRemainingRatio: Double = 0.0,
+    /** 直近に完走した（給油なしの）ラップの消費率。まだ存在しなければ null。 */
+    val lastValidLapConsumption: Double? = null,
     val bestLapTimeMs: Long = -1L,
     val hasRefilled: Boolean = false,
     val isNewSession: Boolean = false,
@@ -397,7 +400,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 currentLap = currentLap,
                 currentLapStartedAtMs = observedAtMs,
                 currentLapStartRemainingRatio = remainingRatio,
+                currentLapHasRefilled = false,
                 currentRemainingRatio = remainingRatio,
+                lastValidLapConsumption = null,
                 bestLapTimeMs = telemetry.timing.bestLapTimeMs,
                 hasRefilled = false,
                 isNewSession = false,
@@ -409,7 +414,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                     currentLap = currentLap,
                     currentLapStartedAtMs = observedAtMs,
                     currentLapStartRemainingRatio = remainingRatio,
+                    currentLapHasRefilled = false,
                     currentRemainingRatio = remainingRatio,
+                    lastValidLapConsumption = null,
                     bestLapTimeMs = telemetry.timing.bestLapTimeMs,
                     hasRefilled = false,
                     isNewSession = true,
@@ -420,25 +427,42 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 // しきい値未満の増加は給油とみなさず消費量の推定から除外する。
                 val delta = remainingRatio - state.currentRemainingRatio
                 val refilled = if (delta >= REFILL_DETECTION_MIN_RATIO) delta else 0.0
-                // ラップ境界だけでなく給油発生時も消費率推定の基準点をリセットする。
-                // 基準時刻をリセットしないと、ピット停車時間がそのままラップ経過時間に
-                // 含まれてしまい、給油直後の消費率推定が大きく狂うため。
-                val resetBaseline = currentLap != state.currentLap || refilled > 0.0
-                state.copy(
-                    session = virtualEnergy.session,
-                    currentLap = currentLap,
-                    currentLapStartedAtMs = if (resetBaseline) observedAtMs else state.currentLapStartedAtMs,
-                    currentLapStartRemainingRatio = if (resetBaseline) {
-                        remainingRatio
+                if (currentLap != state.currentLap) {
+                    // ラップが変わるタイミングで、直前のラップが給油なしで完走していれば
+                    // その消費量を今後の残り周回数推定の基準として採用する（TinyPedal同様の方式）。
+                    // ピットで給油した周は基準として採用しない。ラップ経過時間に基づく進捗率補正では
+                    // ピット停車時間がラップ経過時間に混入してしまう問題があったため、この方式に変更した。
+                    val completedLapConsumption =
+                        state.currentLapStartRemainingRatio - state.currentRemainingRatio
+                    val lastValidLapConsumption = if (!state.currentLapHasRefilled && completedLapConsumption > 0.0) {
+                        completedLapConsumption
                     } else {
-                        state.currentLapStartRemainingRatio
-                    },
-                    currentRemainingRatio = remainingRatio,
-                    bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-                    hasRefilled = refilled > 0.0,
-                    isNewSession = false,
-                    observedAtMs = observedAtMs,
-                )
+                        state.lastValidLapConsumption
+                    }
+                    state.copy(
+                        session = virtualEnergy.session,
+                        currentLap = currentLap,
+                        currentLapStartedAtMs = observedAtMs,
+                        currentLapStartRemainingRatio = remainingRatio,
+                        currentLapHasRefilled = false,
+                        currentRemainingRatio = remainingRatio,
+                        lastValidLapConsumption = lastValidLapConsumption,
+                        bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                        hasRefilled = refilled > 0.0,
+                        isNewSession = false,
+                        observedAtMs = observedAtMs,
+                    )
+                } else {
+                    state.copy(
+                        session = virtualEnergy.session,
+                        currentLapHasRefilled = state.currentLapHasRefilled || refilled > 0.0,
+                        currentRemainingRatio = remainingRatio,
+                        bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                        hasRefilled = refilled > 0.0,
+                        isNewSession = false,
+                        observedAtMs = observedAtMs,
+                    )
+                }
             }
         }
     }
@@ -459,13 +483,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (currentLapElapsedMs < readoutTimingMs) {
             return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
         }
-        val consumedThisLap = trackingState.currentLapStartRemainingRatio - trackingState.currentRemainingRatio
-        if (consumedThisLap <= 0.0) return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
-        // 直近ラップの消費率をラップ進捗率で正規化し、1ラップあたりの消費率として推定する。
-        // セッション全体の累積平均だと終盤のペース変化に追従できず、閾値を超えたまま無音が続いた末に
-        // 急に読み上げが発生する不具合があったため、直近ラップの実消費を直接使う方式に変更している。
-        val lapProgress = (currentLapElapsedMs.toDouble() / bestLapTimeMs).coerceIn(MIN_LAP_PROGRESS_RATIO, 1.0)
-        val avgConsumption = consumedThisLap / lapProgress
+        // セッション全体の累積平均や進行中ラップの進捗率補正では、ピット給油やペース変化に
+        // 追従できなかったため、直近に完走した給油なしラップの実消費量をそのまま基準に使う。
+        val avgConsumption = trackingState.lastValidLapConsumption
+            ?: return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+        if (avgConsumption <= 0.0) return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
         val remainingLapsFloor = (trackingState.currentRemainingRatio / avgConsumption).toInt()
         if (remainingLapsFloor < 0 || remainingLapsFloor > settings.remainingVirtualEnergyLapsThreshold) {
             return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
@@ -505,9 +527,6 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
         /** これ未満の残量増加はジッタとみなし、給油として扱わない（割合 0.0〜1.0 に対する値）。 */
         const val REFILL_DETECTION_MIN_RATIO = 0.005
-
-        /** ラップ進捗率の下限。ベストラップが極端に短い場合の消費率推定の過大評価を防ぐ。 */
-        const val MIN_LAP_PROGRESS_RATIO = 0.5
     }
 }
 

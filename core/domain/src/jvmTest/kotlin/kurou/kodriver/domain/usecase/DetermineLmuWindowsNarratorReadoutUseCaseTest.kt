@@ -85,7 +85,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー残り周回数は最速ラップの30秒前を過ぎて閾値以下になったら読み上げる`() {
+    fun `バーチャルエナジー残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
         val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
             state = LmuWindowsNarratorState(),
             telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
@@ -93,21 +93,34 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             settings = settings(),
             observedAtMs = 0L,
         )
-        val lapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
+        val midLap1Decision = useCase.determineRemainingVirtualEnergyLaps(
             state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
             virtualEnergy = virtualEnergy(remainingRatio = 0.9),
+            settings = settings(),
+            observedAtMs = 45_000L,
+        )
+        // ラップ1完走時の消費率(0.1)が、ラップ2開始時に次回以降の推定基準として採用される。
+        val lapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = midLap1Decision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.8),
             settings = settings(remainingVirtualEnergyLapsThreshold = 3),
             observedAtMs = 90_000L,
         )
         val decision = useCase.determineRemainingVirtualEnergyLaps(
             state = lapStartDecision.state,
             telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
             settings = settings(remainingVirtualEnergyLapsThreshold = 3),
             observedAtMs = 150_000L,
         )
 
+        assertEquals(
+            0.1,
+            lapStartDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
+            1e-9,
+        )
         assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), decision.events)
         assertEquals(2, decision.state.lastVirtualEnergyEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedRemainingVirtualEnergyLaps)
@@ -170,7 +183,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
-    fun `補充後は同じバーチャルエナジー残り周回数でも再度読み上げる`() {
+    fun `給油した周は次回以降の推定基準として採用されず補充直後は同じ残り周回数でも再度読み上げる`() {
         val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
             state = LmuWindowsNarratorState(),
             telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
@@ -178,48 +191,65 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             settings = settings(),
             observedAtMs = 0L,
         )
-        val secondLapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
+        val midLap1Decision = useCase.determineRemainingVirtualEnergyLaps(
             state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.9),
+            settings = settings(),
+            observedAtMs = 50_000L,
+        )
+        // ラップ1完走時の消費率(0.1)が採用される。
+        val lap2StartDecision = useCase.determineRemainingVirtualEnergyLaps(
+            state = midLap1Decision.state,
             telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.5),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.85),
             settings = settings(),
             observedAtMs = 100_000L,
         )
         val firstWarningDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = secondLapStartDecision.state,
+            state = lap2StartDecision.state,
             telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
             settings = settings(),
             observedAtMs = 170_000L,
         )
+        // ラップ2の途中で給油。この周は次回以降の推定基準として採用されなくなる。
         val refilledDecision = useCase.determineRemainingVirtualEnergyLaps(
             state = firstWarningDecision.state,
             telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
             virtualEnergy = virtualEnergy(remainingRatio = 0.9),
             settings = settings(),
-            observedAtMs = 180_000L,
+            observedAtMs = 175_000L,
         )
-        val thirdLapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
+        // ラップ2は給油済みのため除外され、ラップ1由来の消費率(0.1)がそのまま使われ続ける。
+        val lap3StartDecision = useCase.determineRemainingVirtualEnergyLaps(
             state = refilledDecision.state,
             telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.85),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.88),
             settings = settings(),
             observedAtMs = 280_000L,
         )
         val secondWarningDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = thirdLapStartDecision.state,
+            state = lap3StartDecision.state,
             telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.3),
+            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
             settings = settings(),
             observedAtMs = 350_000L,
         )
 
+        assertEquals(0.1, lap2StartDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
         assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), firstWarningDecision.events)
         assertTrue(refilledDecision.events.isEmpty())
         assertEquals(-1, refilledDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
-        assertEquals(0.9, refilledDecision.state.virtualEnergyTrackingState.currentLapStartRemainingRatio, 1e-9)
-        assertEquals(180_000L, refilledDecision.state.virtualEnergyTrackingState.currentLapStartedAtMs)
+        assertEquals(true, refilledDecision.state.virtualEnergyTrackingState.currentLapHasRefilled)
+        assertEquals(0.1, refilledDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
+        assertEquals(0.1, lap3StartDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
         assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), secondWarningDecision.events)
+        assertEquals(
+            0.1,
+            secondWarningDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
+            1e-9,
+        )
     }
 
     @Test
@@ -302,8 +332,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         val jitterTrackingState = jitterDecision.state.virtualEnergyTrackingState
-        assertEquals(0.5, jitterTrackingState.currentLapStartRemainingRatio)
-        assertEquals(0L, jitterTrackingState.currentLapStartedAtMs)
+        assertEquals(false, jitterTrackingState.currentLapHasRefilled)
         assertEquals(false, jitterTrackingState.hasRefilled)
 
         // ピット補給による 10% の増加（しきい値以上）は補充として扱う
@@ -315,41 +344,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             observedAtMs = 2_000L,
         )
 
-        // 給油を検知すると、ピット停車時間が消費率推定に混入しないよう基準時刻も給油時点にリセットする。
+        // 給油を検知すると、そのラップは次回以降の消費率推定の基準として採用されなくなる。
         val refillTrackingState = refillDecision.state.virtualEnergyTrackingState
-        assertEquals(0.604, refillTrackingState.currentLapStartRemainingRatio, 1e-9)
-        assertEquals(2_000L, refillTrackingState.currentLapStartedAtMs)
+        assertEquals(true, refillTrackingState.currentLapHasRefilled)
         assertEquals(true, refillTrackingState.hasRefilled)
-    }
-
-    @Test
-    fun `ベストラップが短くラップ進捗率が5割未満の時点で読み上げタイミングを迎える場合は下限でクランプされる`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 40_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-        val secondLapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 40_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.5),
-            settings = settings(),
-            observedAtMs = 40_000L,
-        )
-        val decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = secondLapStartDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 40_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.45),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 5),
-            observedAtMs = 50_000L,
-        )
-
-        // 読み上げタイミング（ベストラップの30秒前 = ラップ開始から10,000ms）の時点でのラップ進捗率
-        // 10,000ms / 40,000ms = 0.25 は下限 0.5 にクランプされるため、
-        // avgConsumption = 0.05 / 0.5 = 0.1、remainingLapsFloor = 0.45 / 0.1 = 4 となる。
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(4)), decision.events)
     }
 
     @Test

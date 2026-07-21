@@ -1335,12 +1335,16 @@ class LmuWindowsNarratorViewModelTest {
             currentTimeMs = { fakeTime },
         )
 
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
         virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        fakeTime = 50_000L
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.9))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
         fakeTime = 100_000L
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.8))
         telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
         fakeTime = 160_000L
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.05))
         telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), spokenTexts)
@@ -1390,12 +1394,16 @@ class LmuWindowsNarratorViewModelTest {
         )
         stubTelemetryLogSave(logs, createdAt = 160_000L, ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root)
 
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
         virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        fakeTime = 50_000L
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.9))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
         fakeTime = 100_000L
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.8))
         telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
         fakeTime = 160_000L
+        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.05))
         telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
 
         assertEquals(1, logs.size)
@@ -1407,7 +1415,7 @@ class LmuWindowsNarratorViewModelTest {
             log.telemetryJson,
             """"telemetry":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":90000""",
         )
-        assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.1,"session":-1}""")
+        assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.05,"session":-1}""")
         assertContains(log.telemetryJson, """"observedAtMs":160000""")
         assertContains(log.telemetryJson, """"settings":{"raw":"LmuWindowsNarratorReadoutSettings(""")
         assertContains(log.telemetryJson, """"state":{"raw":"LmuWindowsNarratorState(""")
