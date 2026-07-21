@@ -16,8 +16,4 @@
   **改善案**: <どう変えたいか>
 ```
 
-## mockk テストの any() 使用
-
-- **対象**: `:core:*data`、`:core:domain`、`:server`、`:feature:other*`、`:feature:lmu-windows*`、`:feature:gt7-ps5-connection`、`:feature:gt7-ps5-narrator`、`:feature:readout-list`、`:feature:server-connection` は対応済み。
-  **課題**: mockk の `every`/`coEvery`/`verify` で `any()` を多用しており、引数の実値を検証できていない箇所があった。具体的な値が既知（固定の `ReadoutItemKey`・`Simulator.id` 文字列など）でも `any()` になっているケースと、可変長引数のスタブ（`saveTelemetryLog` の `createdAt`/`telemetryJson` など呼び出しごとに値が変わるもの）が混在していた。
-  **改善案**: 対象モジュールでは `any()` を具体値または `capture(...)` に置き換え済み。今後追加する MockK テストでも、実値を指定できる箇所は具体値化し、呼び出し時に生成される値は `capture(...)` で受けて検証する。
+現在、未対応の改善案はありません。
