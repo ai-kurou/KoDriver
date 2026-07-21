@@ -12,4 +12,16 @@
     <string name="debug_state_simulator_info_unselected">未選択</string>
     <string name="simulator_name_lmu">Le Mans Ultimate（Windows版）</string>
     <string name="simulator_name_gt7_ps5">GranTurismo 7（PS5）</string>
+    <string name="debug_state_game_phase_title">mGamePhase</string>
+    <string name="debug_state_game_phase_garage">セッション開始前</string>
+    <string name="debug_state_game_phase_warm_up">Reconnaissance laps（レースのみ）</string>
+    <string name="debug_state_game_phase_grid_walk">GridWalk（グリッドウォーク、レースのみ）</string>
+    <string name="debug_state_game_phase_formation">Formation（フォーメーションラップ、レースのみ）</string>
+    <string name="debug_state_game_phase_countdown">Countdown（スタートライト点灯開始、レースのみ）</string>
+    <string name="debug_state_game_phase_green_flag">GreenFlag（グリーンフラッグ）</string>
+    <string name="debug_state_game_phase_full_course_yellow">FullCourseYellow（FCY / セーフティカー）</string>
+    <string name="debug_state_game_phase_session_stopped">SessionStopped（セッション停止）</string>
+    <string name="debug_state_game_phase_session_over">SessionOver（セッション終了）</string>
+    <string name="debug_state_game_phase_paused">Paused（ポーズ中。プラグインへのハートビート呼び出し）</string>
+    <string name="debug_state_game_phase_unknown">不明</string>
 </resources>
