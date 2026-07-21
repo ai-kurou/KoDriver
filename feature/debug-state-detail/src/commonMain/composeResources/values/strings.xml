@@ -1,4 +1,11 @@
 <resources>
     <string name="debug_state_title">デバッグ状態</string>
     <string name="navigate_back">戻る</string>
+    <string name="debug_state_flag_info_title">フラグ情報</string>
+    <string name="debug_state_flag_info_unavailable">未取得</string>
+    <string name="debug_state_flag_blue">ブルーフラッグ</string>
+    <string name="debug_state_flag_yellow">イエローフラッグ</string>
+    <string name="debug_state_flag_full_course_yellow">フルコースイエロー</string>
+    <string name="debug_state_flag_red">レッドフラッグ</string>
+    <string name="debug_state_flag_none">フラッグなし</string>
 </resources>

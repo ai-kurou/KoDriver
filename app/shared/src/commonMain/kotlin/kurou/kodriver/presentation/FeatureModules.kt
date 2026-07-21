@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import kurou.kodriver.feature.debugstatedetail.debugStateDetailModule
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
 import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
@@ -59,4 +60,5 @@ val featureModules: List<Module> = listOf(
     lmuWindowsReadoutRemainingVirtualEnergyLapsDetailModule,
     gt7Ps5ReadoutMyBestLapDetailModule,
     gt7Ps5ReadoutRemainingFuelLapsDetailModule,
+    debugStateDetailModule,
 )
