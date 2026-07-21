@@ -119,6 +119,16 @@ class MainActivityTest {
     }
 
     @Test
+    fun `アプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        launchActivity()
+        clickItem("その他")
+        scrollToItem("Android版KoDriverバージョン")
+        repeat(5) { clickItem("Android版KoDriverバージョン") }
+        waitUntilDisplayed("デバッグ状態")
+        navigateBack()
+    }
+
+    @Test
     fun `ログタブにログがない場合は空状態を表示する`() {
         launchActivity()
 
