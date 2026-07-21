@@ -19,6 +19,7 @@ internal class LmuWindowsVirtualEnergyRepositoryImpl(
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
         return LmuWindowsVirtualEnergyData(
             remainingRatio = LmuWindowsMapper.readVirtualEnergyRatio(buffer, vehicleBase),
+            session = LmuWindowsMapper.readSession(buffer),
         )
     }
 }

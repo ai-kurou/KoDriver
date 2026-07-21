@@ -33,13 +33,14 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     @Test
     fun `共有メモリからバーチャルエナジー残量割合を読み取る`() = runBlocking {
         val reader = FakeVirtualEnergyMemoryReader(
-            buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(remainingRatio = 0.75f)),
+            buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(remainingRatio = 0.75f, session = 10)),
         )
         val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
 
         val result = repo.virtualEnergyStream().first()
 
         assertEquals(0.75, result.remainingRatio, 1e-6)
+        assertEquals(10, result.session)
     }
 
     @Test
@@ -111,6 +112,7 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
 
         val vehicleBase = TELEMETRY_BASE + OFF_TELEM_INFO + config.playerIdx * VEHICLE_STRIDE
         buffer.putFloat(vehicleBase + OFF_VIRTUAL_ENERGY, config.remainingRatio)
+        buffer.putInt(SCORING_BASE + OFF_SCORING_SESSION, config.session)
 
         return buffer
     }
@@ -119,9 +121,12 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
         val activeVehicles: Int = 1,
         val playerIdx: Int = 0,
         val remainingRatio: Float = 0.0f,
+        val session: Int = 0,
     )
 
     private companion object {
+        const val SCORING_BASE = 1_632
+        const val OFF_SCORING_SESSION = 64
         const val TELEMETRY_BASE = 128_464
         const val OFF_ACTIVE_VEHICLES = 0
         const val OFF_PLAYER_VEHICLE_IDX = 1

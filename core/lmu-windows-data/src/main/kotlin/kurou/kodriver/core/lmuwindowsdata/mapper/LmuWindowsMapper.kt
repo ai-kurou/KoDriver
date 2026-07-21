@@ -78,6 +78,7 @@ internal object LmuWindowsMapper {
     private const val MAX_SCORING_VEHICLES = 104
 
     private const val OFF_SCORING_CURRENT_ET = 68
+    private const val OFF_SCORING_SESSION = 64
     private const val OFF_SCORING_MAX_LAPS = 84
     private const val OFF_SCORING_NUM_VEHICLES = 104
 
@@ -178,6 +179,10 @@ internal object LmuWindowsMapper {
     /** プレイヤー車両のバーチャルエナジー残量割合 (0.0-1.0) を返す。 */
     internal fun readVirtualEnergyRatio(buffer: ByteBuffer, vehicleBase: Int): Double =
         buffer.getFloat(vehicleBase + OFF_VIRTUAL_ENERGY).toDouble()
+
+    /** Scoring の mSession (プラクティス・予選・レースなどのセッション種別) を返す。 */
+    internal fun readSession(buffer: ByteBuffer): Int =
+        buffer.getInt(SCORING_BASE + OFF_SCORING_SESSION)
 
     /** プレイヤー車両の4輪ぶんのカーカス温度 (Kelvin) を返す。 */
     internal fun readCarcassTemperaturesK(buffer: ByteBuffer, vehicleBase: Int): Map<WheelIndex, Double> =
