@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -67,7 +68,7 @@ class DebugStateDetailViewModelTest {
         every { repository.flagStream() } returns flagsFlow
         val viewModel = createViewModel()
 
-        flagsFlow.value = sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG)
+        flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
         val state = viewModel.uiState.first()
 
         assertEquals(SessionPhase.GREEN_FLAG, state.raceFlags?.gamePhase)
