@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 
@@ -58,7 +59,10 @@ class DebugStateDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         DebugStateDetailPaneContent(
-                            uiState = DebugStateDetailUiState(raceFlags = sampleRaceFlags),
+                            uiState = DebugStateDetailUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                raceFlags = sampleRaceFlags,
+                            ),
                             canNavigateBack = true,
                             onBack = {},
                         )

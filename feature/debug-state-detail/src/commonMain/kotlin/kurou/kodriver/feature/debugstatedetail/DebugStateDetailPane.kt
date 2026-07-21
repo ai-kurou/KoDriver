@@ -21,14 +21,19 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_in
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_none
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_red
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_yellow
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
 import kodriver.feature.debugstatedetail.generated.resources.navigate_back
+import kodriver.feature.debugstatedetail.generated.resources.simulator_name_gt7_ps5
+import kodriver.feature.debugstatedetail.generated.resources.simulator_name_lmu
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -77,6 +82,15 @@ internal fun DebugStateDetailPaneContent(
             LazyVerticalGrid(columns = GridCells.Fixed(columns)) {
                 item {
                     DetailPaneCard(
+                        title = stringResource(Res.string.debug_state_simulator_info_title),
+                        modifier = Modifier.padding(8.dp),
+                        bottomContent = {
+                            SimulatorInfoContent(uiState.selectedSimulator)
+                        },
+                    )
+                }
+                item {
+                    DetailPaneCard(
                         title = stringResource(Res.string.debug_state_flag_info_title),
                         modifier = Modifier.padding(8.dp),
                         bottomContent = {
@@ -87,6 +101,21 @@ internal fun DebugStateDetailPaneContent(
             }
         }
     }
+}
+
+@Composable
+private fun simulatorDisplayName(simulator: Simulator): String = when (simulator) {
+    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu)
+    is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
+}
+
+@Composable
+private fun SimulatorInfoContent(selectedSimulator: Simulator?) {
+    Text(
+        text = selectedSimulator
+            ?.let { simulatorDisplayName(it) }
+            ?: stringResource(Res.string.debug_state_simulator_info_unselected),
+    )
 }
 
 internal enum class ActiveRaceFlag(val labelRes: StringResource) {

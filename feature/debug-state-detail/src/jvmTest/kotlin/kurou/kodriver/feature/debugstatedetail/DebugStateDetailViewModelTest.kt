@@ -20,8 +20,11 @@ import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.junit.After
 import org.junit.Before
 import kotlin.test.Test
@@ -33,7 +36,10 @@ class DebugStateDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
-    private lateinit var repository: LmuWindowsFlagRepository
+    private lateinit var flagRepository: LmuWindowsFlagRepository
+
+    @MockK
+    private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
 
     @Before
     fun setUp() {
@@ -47,33 +53,54 @@ class DebugStateDetailViewModelTest {
     }
 
     private fun createViewModel() = DebugStateDetailViewModel(
-        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
+        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
     )
 
     @Test
     fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() = runTest {
-        every { repository.flagStream() } returns MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+        every { flagRepository.flagStream() } returns
+            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
 
         assertEquals(SessionPhase.UNKNOWN, state.raceFlags?.gamePhase)
-        verify(exactly = 1) { repository.flagStream() }
-        confirmVerified(repository)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository)
     }
 
     @Test
     fun `フラグ情報を購読すると uiState に反映される`() = runTest {
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
-        every { repository.flagStream() } returns flagsFlow
+        every { flagRepository.flagStream() } returns flagsFlow
         val viewModel = createViewModel()
 
         flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
         val state = viewModel.uiState.first()
 
         assertEquals(SessionPhase.GREEN_FLAG, state.raceFlags?.gamePhase)
-        verify(exactly = 1) { repository.flagStream() }
-        confirmVerified(repository)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository)
+    }
+
+    @Test
+    fun `選択中シミュレータを購読すると uiState に反映される`() = runTest {
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+        every { flagRepository.flagStream() } returns
+            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        val viewModel = createViewModel()
+
+        val state = viewModel.uiState.first()
+
+        assertEquals(Simulator.LmuWindows, state.selectedSimulator)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository)
     }
 
     private fun sampleRaceFlags(gamePhase: SessionPhase) = LmuWindowsRaceFlagsData(
