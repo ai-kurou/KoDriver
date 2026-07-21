@@ -208,9 +208,10 @@ fun AppScreen(
     exitRequested: Boolean = false,
     onExitRequestConsumed: () -> Unit = {},
     onDarkThemeChanged: (Boolean) -> Unit = {},
-    readoutContent: @Composable () -> Unit = {
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         ReadoutContent(
             backHandler = backHandler,
+            scrollToTopRequest = scrollToTopRequest,
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
@@ -230,8 +231,10 @@ fun AppScreen(
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
+    val readoutListUiState by readoutListViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmationDialog by rememberSaveable { mutableStateOf(false) }
+    var readoutListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
 
     val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
         {
@@ -302,10 +305,17 @@ fun AppScreen(
         hasAppUpdate = uiState.hasAppUpdate,
         keepScreenOn = uiState.keepScreenOn,
         onBannerTap = onBannerTap,
-        onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
+        onReadoutTabReselected = {
+            if (readoutListUiState.selectedItem != null) {
+                readoutListViewModel.clearSelectedItem()
+            } else {
+                readoutListScrollToTopRequest++
+            }
+        },
         onLogTabReselected = telemetryLogListViewModel::clearSelectedLog,
         onOtherTabReselected = otherListViewModel::clearSelectedItem,
         readoutContent = readoutContent,
+        readoutListScrollToTopRequest = readoutListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
     )
@@ -360,7 +370,8 @@ internal fun AppScreenContent(
     onReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
-    readoutContent: @Composable () -> Unit = {},
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    readoutListScrollToTopRequest: Int = 0,
     telemetryLogContent: @Composable () -> Unit = {},
     otherContent: @Composable () -> Unit = {},
 ) {
@@ -469,7 +480,7 @@ internal fun AppScreenContent(
                     ) { destination ->
                         AppDestinationContent(
                             destination = destination,
-                            readoutContent = readoutContent,
+                            readoutContent = { readoutContent(readoutListScrollToTopRequest) },
                             telemetryLogContent = telemetryLogContent,
                             otherContent = otherContent,
                         )
