@@ -217,7 +217,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), firstWarningDecision.events)
         assertTrue(refilledDecision.events.isEmpty())
         assertEquals(-1, refilledDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
-        assertEquals(0.8, refilledDecision.state.virtualEnergyTrackingState.currentLapRefilled, 1e-9)
+        assertEquals(0.9, refilledDecision.state.virtualEnergyTrackingState.currentLapStartRemainingRatio, 1e-9)
+        assertEquals(180_000L, refilledDecision.state.virtualEnergyTrackingState.currentLapStartedAtMs)
         assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), secondWarningDecision.events)
     }
 
@@ -276,7 +277,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         assertTrue(raceDecision.events.isEmpty())
         assertEquals(10, trackingState.session)
         assertEquals(1.0, trackingState.currentLapStartRemainingRatio)
-        assertEquals(0.0, trackingState.currentLapRefilled)
+        assertEquals(10_000L, trackingState.currentLapStartedAtMs)
         assertEquals(-1, raceDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
         assertEquals(-1, raceDecision.state.lastVirtualEnergyEvaluationLap)
     }
@@ -301,7 +302,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         val jitterTrackingState = jitterDecision.state.virtualEnergyTrackingState
-        assertEquals(0.0, jitterTrackingState.currentLapRefilled)
+        assertEquals(0.5, jitterTrackingState.currentLapStartRemainingRatio)
+        assertEquals(0L, jitterTrackingState.currentLapStartedAtMs)
         assertEquals(false, jitterTrackingState.hasRefilled)
 
         // ピット補給による 10% の増加（しきい値以上）は補充として扱う
@@ -313,8 +315,10 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             observedAtMs = 2_000L,
         )
 
+        // 給油を検知すると、ピット停車時間が消費率推定に混入しないよう基準時刻も給油時点にリセットする。
         val refillTrackingState = refillDecision.state.virtualEnergyTrackingState
-        assertEquals(0.1, refillTrackingState.currentLapRefilled, 1e-9)
+        assertEquals(0.604, refillTrackingState.currentLapStartRemainingRatio, 1e-9)
+        assertEquals(2_000L, refillTrackingState.currentLapStartedAtMs)
         assertEquals(true, refillTrackingState.hasRefilled)
     }
 
