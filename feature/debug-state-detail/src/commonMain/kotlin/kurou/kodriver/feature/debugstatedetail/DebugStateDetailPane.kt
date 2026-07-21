@@ -14,13 +14,22 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.debugstatedetail.generated.resources.Res
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_blue
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_full_course_yellow
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_none
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_red
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_yellow
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
 import kodriver.feature.debugstatedetail.generated.resources.navigate_back
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.SectorFlagState
+import kurou.kodriver.domain.model.SessionPhase
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,21 +89,37 @@ internal fun DebugStateDetailPaneContent(
     }
 }
 
+internal enum class ActiveRaceFlag(val labelRes: StringResource) {
+    BLUE(Res.string.debug_state_flag_blue),
+    YELLOW(Res.string.debug_state_flag_yellow),
+    FULL_COURSE_YELLOW(Res.string.debug_state_flag_full_course_yellow),
+    RED(Res.string.debug_state_flag_red),
+}
+
+internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<ActiveRaceFlag> = buildList {
+    if (raceFlags.playerFlag == PrimaryFlag.BLUE) add(ActiveRaceFlag.BLUE)
+    if (raceFlags.playerUnderYellow || raceFlags.sectorFlags.any { it == SectorFlagState.YELLOW }) {
+        add(ActiveRaceFlag.YELLOW)
+    }
+    if (raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW) add(ActiveRaceFlag.FULL_COURSE_YELLOW)
+    if (raceFlags.gamePhase == SessionPhase.RED_FLAG) add(ActiveRaceFlag.RED)
+}
+
 @Composable
 private fun FlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
     if (raceFlags == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
+    val activeFlags = determineActiveRaceFlags(raceFlags)
     Column {
-        Text(text = "gamePhase: ${raceFlags.gamePhase}")
-        Text(text = "yellowFlagState: ${raceFlags.yellowFlagState}")
-        Text(text = "sectorFlags: ${raceFlags.sectorFlags}")
-        Text(text = "startLight: ${raceFlags.startLight}")
-        Text(text = "numRedLights: ${raceFlags.numRedLights}")
-        Text(text = "playerFlag: ${raceFlags.playerFlag}")
-        Text(text = "playerUnderYellow: ${raceFlags.playerUnderYellow}")
-        Text(text = "playerCountLapFlag: ${raceFlags.playerCountLapFlag}")
+        if (activeFlags.isEmpty()) {
+            Text(text = stringResource(Res.string.debug_state_flag_none))
+        } else {
+            activeFlags.forEach { flag ->
+                Text(text = stringResource(flag.labelRes))
+            }
+        }
     }
 }
 
