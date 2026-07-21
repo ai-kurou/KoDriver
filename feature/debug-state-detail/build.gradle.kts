@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
     android {
-        namespace = "kurou.kodriver.feature.debuglogdetail"
+        namespace = "kurou.kodriver.feature.debugstatedetail"
     }
 
     sourceSets {
