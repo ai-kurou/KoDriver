@@ -485,18 +485,23 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         }
         // セッション全体の累積平均や進行中ラップの進捗率補正では、ピット給油やペース変化に
         // 追従できなかったため、直近に完走した給油なしラップの実消費量をそのまま基準に使う。
+        // ここから先の早期リターンは、まだ読み上げ対象の残り周回数に達していないだけの可能性があるため
+        // evaluatedLap を state.lastVirtualEnergyEvaluationLap のまま維持し、同一ラップ内での再評価を許可する。
+        // （読み上げが発生した場合のみ evaluatedLap をロックする）
         val avgConsumption = trackingState.lastValidLapConsumption
-            ?: return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
-        if (avgConsumption <= 0.0) return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+            ?: return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        if (avgConsumption <= 0.0) {
+            return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
+        }
         val remainingLapsFloor = (trackingState.currentRemainingRatio / avgConsumption).toInt()
         if (remainingLapsFloor < 0 || remainingLapsFloor > settings.remainingVirtualEnergyLapsThreshold) {
-            return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+            return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
         }
         if (remainingLapsFloor == state.lastAnnouncedRemainingVirtualEnergyLaps) {
-            return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+            return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
         }
         if (!settings.remainingVirtualEnergyLapsEnabled) {
-            return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, null)
+            return RemainingVirtualEnergyLapsEvaluation(state.lastVirtualEnergyEvaluationLap, null)
         }
         return RemainingVirtualEnergyLapsEvaluation(trackingState.currentLap, remainingLapsFloor)
     }
