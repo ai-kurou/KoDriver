@@ -22,9 +22,9 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
-import org.junit.After
-import org.junit.Before
 import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -40,13 +40,13 @@ class OtherServerIpDetailViewModelTest {
 
     private val ipFlow = MutableStateFlow<String?>("192.168.1.1")
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }

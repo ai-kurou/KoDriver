@@ -32,12 +32,12 @@ import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.featureModules
 import org.junit.AfterClass
-import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import kotlin.test.BeforeTest
 
 class AppTest {
 
@@ -45,7 +45,8 @@ class AppTest {
         private const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
 
-        @BeforeClass @JvmStatic
+        @BeforeClass
+        @JvmStatic
         fun setUpKoin() {
             startKoin {
                 // Koinは同一型のsingleが複数登録された場合、後から登録した方で上書きする。
@@ -69,7 +70,8 @@ class AppTest {
             }
         }
 
-        @AfterClass @JvmStatic
+        @AfterClass
+        @JvmStatic
         fun tearDownKoin() {
             stopKoin()
         }
@@ -78,7 +80,7 @@ class AppTest {
     @get:Rule
     val rule = createComposeRule()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         fakeTelemetryLogRepository.clear()
     }

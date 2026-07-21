@@ -9,8 +9,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.usecase.SaveServerIpUseCase
-import org.junit.Before
 import java.io.IOException
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -19,7 +19,7 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
     @MockK
     private lateinit var repository: ServerIpPreferencesRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
     }
