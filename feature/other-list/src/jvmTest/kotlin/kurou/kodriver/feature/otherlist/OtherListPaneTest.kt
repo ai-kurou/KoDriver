@@ -194,6 +194,79 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `デバッグ状態項目をクリックすると項目クリックコールバックを呼ぶ`() {
+        var clickedItem: OtherListItemType? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = listOf(OtherListItemType.DebugState),
+                ),
+                onItemClick = { clickedItem = it },
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("デバッグ状態")).performClick()
+
+        assertEquals(OtherListItemType.DebugState, clickedItem)
+    }
+
+    @Test
+    fun `アプリバージョンを5回連続タップするとコールバックを呼ぶ`() {
+        var tappedCount = 0
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = emptyList(),
+                    appVersionLabel = "Android版KoDriverバージョン",
+                    appVersion = "1.2.3",
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+                onAppVersionTapped = { tappedCount++ },
+            )
+        }
+
+        repeat(5) {
+            rule.onNode(hasText("Android版KoDriverバージョン")).performClick()
+        }
+
+        assertEquals(1, tappedCount)
+    }
+
+    @Test
+    fun `アプリバージョンを4回タップしてもコールバックを呼ばない`() {
+        var tappedCount = 0
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = emptyList(),
+                    appVersionLabel = "Android版KoDriverバージョン",
+                    appVersion = "1.2.3",
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+                onAppVersionTapped = { tappedCount++ },
+            )
+        }
+
+        repeat(4) {
+            rule.onNode(hasText("Android版KoDriverバージョン")).performClick()
+        }
+
+        assertEquals(0, tappedCount)
+    }
+
+    @Test
     fun `表示項目に応じたセクション見出しを表示する`() {
         rule.setContent {
             OtherListPane(

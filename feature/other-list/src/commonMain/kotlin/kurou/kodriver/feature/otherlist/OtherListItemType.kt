@@ -14,6 +14,7 @@ enum class OtherListItemType(
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
     License("license"),
+    DebugState("debug_state"),
     ;
 
     companion object {

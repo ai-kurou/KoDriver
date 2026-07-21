@@ -63,6 +63,7 @@ fun OtherContent(
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onExitConfirmationEnabledChange = viewModel::onExitConfirmationEnabledChange,
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
+        onAppVersionTapped = { viewModel.selectItem(OtherListItemType.DebugState) },
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
@@ -91,6 +92,7 @@ private fun handleOtherItemClick(
         OtherListItemType.ExitConfirmation,
         OtherListItemType.DynamicColor,
         OtherListItemType.License,
+        OtherListItemType.DebugState,
         -> onItemSelected(itemType)
     }
 }
@@ -107,6 +109,7 @@ internal fun OtherContent(
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onExitConfirmationEnabledChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
+    onAppVersionTapped: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
@@ -171,6 +174,7 @@ internal fun OtherContent(
                 onKeepScreenOnChange = onKeepScreenOnChange,
                 onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
                 onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                onAppVersionTapped = onAppVersionTapped,
                 onItemClick = { itemType ->
                     handleOtherItemClick(
                         itemType = itemType,

@@ -8,11 +8,13 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
@@ -149,6 +151,16 @@ class AppTest {
         // 「画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
         clickItem("終了確認を表示")
         clickItem("ライセンス")
+    }
+
+    @Test
+    fun `アプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        setContent()
+
+        clickItem("その他")
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("Windows版KoDriverバージョン"))
+        repeat(5) { clickItem("Windows版KoDriverバージョン") }
+        waitUntilDisplayed("デバッグ状態")
     }
 
     @Test

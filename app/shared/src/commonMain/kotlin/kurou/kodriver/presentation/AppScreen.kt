@@ -57,6 +57,7 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
@@ -182,6 +183,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.ConsoleIp -> OtherConsoleIpDetailPane(canNavigateBack, onBack)
                 OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                 OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
+                OtherListItemType.DebugState -> DebugStateDetailPane(canNavigateBack, onBack)
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.ExitConfirmation,

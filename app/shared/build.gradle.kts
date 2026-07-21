@@ -57,6 +57,7 @@ kotlin {
             implementation(projects.feature.serverConnection)
             implementation(projects.feature.lmuWindowsNarrator)
             implementation(projects.feature.gt7Ps5Narrator)
+            implementation(projects.feature.debugStateDetail)
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
             implementation(projects.feature.otherServerIpDetail)
