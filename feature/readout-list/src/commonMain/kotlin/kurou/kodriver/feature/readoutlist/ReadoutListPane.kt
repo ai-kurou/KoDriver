@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -231,6 +232,7 @@ internal fun ReadoutListPane(
     onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
     onItemClick: (ReadoutItemKey) -> Unit,
+    scrollToTopRequest: Int = 0,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -246,6 +248,10 @@ internal fun ReadoutListPane(
             readoutItemIndex(from.index, readoutItemStartIndex, uiState.items.size),
             readoutItemIndex(to.index, readoutItemStartIndex, uiState.items.size),
         )
+    }
+
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -418,6 +424,18 @@ internal fun ReadoutListPane(
                     }
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun ScrollToTopEffect(
+    scrollToTopRequest: Int,
+    scrollToTop: suspend () -> Unit,
+) {
+    LaunchedEffect(scrollToTopRequest) {
+        if (scrollToTopRequest > 0) {
+            scrollToTop()
         }
     }
 }

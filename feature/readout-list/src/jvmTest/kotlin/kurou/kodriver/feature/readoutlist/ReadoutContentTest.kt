@@ -323,6 +323,55 @@ class ReadoutContentTest {
         }
     }
 
+    @Test
+    fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
+        var simulatorLabelText by mutableStateOf("")
+        var lastItemText by mutableStateOf("")
+        var scrollToTopRequest by mutableStateOf(0)
+        val items = listOf(
+            ReadoutItemKey.LmuWindows.Flag.Root,
+            ReadoutItemKey.LmuWindows.Flag.BlueFlag,
+            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
+            ReadoutItemKey.LmuWindows.Flag.RedFlag,
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+            ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
+            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
+            ReadoutItemKey.LmuWindows.MyBestLap.Root,
+        )
+
+        rule.setContent {
+            simulatorLabelText = stringResource(Res.string.simulator_label)
+            lastItemText = stringResource(Res.string.item_my_best_lap)
+            Box(modifier = Modifier.height(240.dp)) {
+                ReadoutListPane(
+                    uiState = ReadoutListUiState(
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = items,
+                        readoutEnabledStates = items.associateWith { true },
+                    ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                    scrollToTopRequest = scrollToTopRequest,
+                )
+            }
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText(lastItemText))
+        rule.runOnIdle { scrollToTopRequest++ }
+
+        rule.waitUntil {
+            rule.onAllNodes(hasText(simulatorLabelText)).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
     private fun assertAllItemsCanNavigateBack(
         itemTexts: List<String>,
         backEnabled: () -> Boolean,

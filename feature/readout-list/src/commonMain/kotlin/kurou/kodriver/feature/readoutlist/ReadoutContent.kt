@@ -45,6 +45,7 @@ fun ReadoutContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val viewModel: ReadoutListViewModel = koinViewModel()
@@ -60,6 +61,7 @@ fun ReadoutContent(
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
+        scrollToTopRequest = scrollToTopRequest,
         detailContent = detailContent,
     )
 }
@@ -79,6 +81,7 @@ internal fun ReadoutContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -136,6 +139,7 @@ internal fun ReadoutContent(
                 onReadoutEnabledChanged = onReadoutEnabledChanged,
                 onQueueEnabledChanged = onQueueEnabledChanged,
                 onItemClick = onItemSelected,
+                scrollToTopRequest = scrollToTopRequest,
             )
         },
         detailPane = {
