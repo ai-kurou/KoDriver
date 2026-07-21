@@ -4,7 +4,7 @@ digraph G {
   ":core:data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
-  ":feature:debug-log-detail" -> ":core:domain"
+  ":feature:debug-state-detail" -> ":core:domain"
   ":feature:desktop-splash" -> ":core:domain"
   ":feature:gt7-ps5-connection" -> ":core:domain"
   ":feature:gt7-ps5-narrator" -> ":core:domain"
