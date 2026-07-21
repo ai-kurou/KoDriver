@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
@@ -269,7 +270,7 @@ class LmuWindowsNarratorViewModelTest {
         startReadoutType: VehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
         sustainedReadoutEnabled: Boolean = true,
         sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-        sustainedApproachDurationSeconds: Int = 7,
+        sustainedApproachDurationSeconds: Int = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
         tyreTemperatureHighThreshold: Int = 90,
         tyreTemperatureOverheatWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningEnabled: Boolean = true,
@@ -639,7 +640,7 @@ class LmuWindowsNarratorViewModelTest {
         createViewModel(
             vehicleApproachChannel = channel,
             ttsEngine = tts,
-            sustainedApproachDurationSeconds = 7,
+            sustainedApproachDurationSeconds = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             currentTimeMs = { fakeTime },
         )
 
@@ -661,7 +662,7 @@ class LmuWindowsNarratorViewModelTest {
             vehicleApproachChannel = channel,
             ttsEngine = tts,
             sustainedReadoutEnabled = false,
-            sustainedApproachDurationSeconds = 7,
+            sustainedApproachDurationSeconds = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             currentTimeMs = { fakeTime },
         )
 

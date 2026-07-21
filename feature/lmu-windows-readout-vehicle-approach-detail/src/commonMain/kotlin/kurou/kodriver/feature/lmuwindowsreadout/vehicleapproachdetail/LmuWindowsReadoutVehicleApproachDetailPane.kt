@@ -59,6 +59,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import org.jetbrains.compose.resources.painterResource
@@ -144,7 +145,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         val defaultLateral =
             LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS.toFloat()
         val defaultSustainedDuration =
-            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS.toFloat()
+            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT.toFloat()
         val resetToDefaultLabel = stringResource(Res.string.vehicle_approach_threshold_reset_to_default)
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
