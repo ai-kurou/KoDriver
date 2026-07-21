@@ -16,8 +16,8 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -27,14 +27,14 @@ class WebSocketFlagRepositoryTest {
     private lateinit var server: MockWebServer
     private lateinit var fakeIpRepository: FakeServerIpPreferencesRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
         fakeIpRepository = FakeServerIpPreferencesRepository(null)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         server.shutdown()
     }

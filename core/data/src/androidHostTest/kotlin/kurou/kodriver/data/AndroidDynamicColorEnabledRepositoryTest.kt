@@ -9,9 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -23,7 +23,7 @@ class AndroidDynamicColorEnabledRepositoryTest {
     private lateinit var tempFile: File
     private lateinit var repository: AndroidDynamicColorEnabledRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("dynamic_color_enabled_test", ".preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(
@@ -33,7 +33,7 @@ class AndroidDynamicColorEnabledRepositoryTest {
         repository = AndroidDynamicColorEnabledRepository(dataStore)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         tempFile.delete()
     }

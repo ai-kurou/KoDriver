@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
-import org.junit.After
-import org.junit.Before
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -23,7 +23,7 @@ class AndroidReadoutPreferencesRepositoryTest {
     private lateinit var tempFile: File
     private lateinit var repository: AndroidReadoutPreferencesRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("readout_test", ".preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(
@@ -33,7 +33,7 @@ class AndroidReadoutPreferencesRepositoryTest {
         repository = AndroidReadoutPreferencesRepository(dataStore)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         tempFile.delete()
     }

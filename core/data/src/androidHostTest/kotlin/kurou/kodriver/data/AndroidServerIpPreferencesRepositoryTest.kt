@@ -9,9 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -23,7 +23,7 @@ class AndroidServerIpPreferencesRepositoryTest {
     private lateinit var tempFile: File
     private lateinit var repository: AndroidServerIpPreferencesRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("server_ip_test", ".preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(
@@ -33,7 +33,7 @@ class AndroidServerIpPreferencesRepositoryTest {
         repository = AndroidServerIpPreferencesRepository(dataStore)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         tempFile.delete()
     }

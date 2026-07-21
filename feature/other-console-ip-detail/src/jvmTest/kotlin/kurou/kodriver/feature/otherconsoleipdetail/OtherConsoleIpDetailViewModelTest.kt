@@ -18,8 +18,8 @@ import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5UdpPortUseCase
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,7 +33,7 @@ class OtherConsoleIpDetailViewModelTest {
     private lateinit var portRepository: FakeGt7Ps5UdpPortPreferencesRepository
     private lateinit var viewModel: OtherConsoleIpDetailViewModel
 
-    @Before
+    @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         addressRepository = FakeConsoleAddressPreferencesRepository(initial = "192.168.1.1")
@@ -41,7 +41,7 @@ class OtherConsoleIpDetailViewModelTest {
         viewModel = buildViewModel()
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }
