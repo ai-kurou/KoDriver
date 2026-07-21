@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -33,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -173,8 +175,16 @@ fun OtherListPane(
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
+    scrollToTopRequest: Int = 0,
 ) {
+    val listState = rememberLazyListState()
+
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+    }
+
     LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxSize()
             .padding(vertical = 8.dp),
@@ -209,6 +219,18 @@ fun OtherListPane(
                 )
                 HorizontalDivider()
             }
+        }
+    }
+}
+
+@Composable
+private fun ScrollToTopEffect(
+    scrollToTopRequest: Int,
+    scrollToTop: suspend () -> Unit,
+) {
+    LaunchedEffect(scrollToTopRequest) {
+        if (scrollToTopRequest > 0) {
+            scrollToTop()
         }
     }
 }

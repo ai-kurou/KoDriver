@@ -84,6 +84,7 @@ internal fun TelemetryLogListPane(
     modifier: Modifier = Modifier,
     onLogClick: (Long) -> Unit = {},
     onResetClick: () -> Unit = {},
+    scrollToTopRequest: Int = 0,
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
@@ -115,6 +116,11 @@ internal fun TelemetryLogListPane(
             }
             previousFirstLogId = firstLogId
         }
+    }
+
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+        showNewLogsButton = false
     }
 
     LaunchedEffect(isAtTop) {
@@ -181,6 +187,18 @@ internal fun TelemetryLogListPane(
                     },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ScrollToTopEffect(
+    scrollToTopRequest: Int,
+    scrollToTop: suspend () -> Unit,
+) {
+    LaunchedEffect(scrollToTopRequest) {
+        if (scrollToTopRequest > 0) {
+            scrollToTop()
         }
     }
 }

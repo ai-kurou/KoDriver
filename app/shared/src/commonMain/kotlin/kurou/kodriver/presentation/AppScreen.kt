@@ -164,6 +164,7 @@ private fun AppNavIcon(
 @Composable
 private fun DefaultOtherContent(
     backHandler: AppBackHandler,
+    scrollToTopRequest: Int,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
@@ -175,6 +176,7 @@ private fun DefaultOtherContent(
     }
     OtherContent(
         backHandler = backHandler,
+        scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
@@ -215,16 +217,20 @@ fun AppScreen(
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
-    telemetryLogContent: @Composable () -> Unit = {
+    telemetryLogContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         TelemetryLogContent(
             backHandler = backHandler,
+            scrollToTopRequest = scrollToTopRequest,
             detailContent = { id ->
                 TelemetryLogDetailContent(id = id)
             },
         )
     },
-    otherContent: @Composable () -> Unit = {
-        DefaultOtherContent(backHandler = backHandler)
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
+        DefaultOtherContent(
+            backHandler = backHandler,
+            scrollToTopRequest = scrollToTopRequest,
+        )
     },
 ) {
     val darkTheme = rememberAppDarkTheme()
@@ -232,9 +238,13 @@ fun AppScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
     val readoutListUiState by readoutListViewModel.uiState.collectAsState()
+    val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
+    val otherListUiState by otherListViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmationDialog by rememberSaveable { mutableStateOf(false) }
     var readoutListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
+    var telemetryLogListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
+    var otherListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
 
     val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
         {
@@ -312,10 +322,24 @@ fun AppScreen(
                 readoutListScrollToTopRequest++
             }
         },
-        onLogTabReselected = telemetryLogListViewModel::clearSelectedLog,
-        onOtherTabReselected = otherListViewModel::clearSelectedItem,
+        onLogTabReselected = {
+            if (telemetryLogListUiState.selectedLogId != null) {
+                telemetryLogListViewModel.clearSelectedLog()
+            } else {
+                telemetryLogListScrollToTopRequest++
+            }
+        },
+        onOtherTabReselected = {
+            if (otherListUiState.selectedItem != null) {
+                otherListViewModel.clearSelectedItem()
+            } else {
+                otherListScrollToTopRequest++
+            }
+        },
         readoutContent = readoutContent,
         readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+        telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+        otherListScrollToTopRequest = otherListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
     )
@@ -372,8 +396,10 @@ internal fun AppScreenContent(
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     readoutListScrollToTopRequest: Int = 0,
-    telemetryLogContent: @Composable () -> Unit = {},
-    otherContent: @Composable () -> Unit = {},
+    telemetryLogContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    telemetryLogListScrollToTopRequest: Int = 0,
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    otherListScrollToTopRequest: Int = 0,
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
     val onBannerTapWithTabSwitch = bannerTapWithTabSwitch(onBannerTap) {
@@ -481,8 +507,8 @@ internal fun AppScreenContent(
                         AppDestinationContent(
                             destination = destination,
                             readoutContent = { readoutContent(readoutListScrollToTopRequest) },
-                            telemetryLogContent = telemetryLogContent,
-                            otherContent = otherContent,
+                            telemetryLogContent = { telemetryLogContent(telemetryLogListScrollToTopRequest) },
+                            otherContent = { otherContent(otherListScrollToTopRequest) },
                         )
                     }
                 }

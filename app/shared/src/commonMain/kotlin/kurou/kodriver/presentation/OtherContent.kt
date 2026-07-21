@@ -41,6 +41,7 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
@@ -68,6 +69,7 @@ fun OtherContent(
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
+        scrollToTopRequest = scrollToTopRequest,
         detailContent = detailContent,
     )
 }
@@ -115,6 +117,7 @@ internal fun OtherContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -185,6 +188,7 @@ internal fun OtherContent(
                         onOpenThemeDialog = onOpenThemeDialog,
                     )
                 },
+                scrollToTopRequest = scrollToTopRequest,
             )
         },
         detailPane = {

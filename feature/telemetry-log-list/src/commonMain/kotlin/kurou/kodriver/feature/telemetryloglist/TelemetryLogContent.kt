@@ -44,6 +44,7 @@ fun TelemetryLogContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val viewModel = koinViewModel<TelemetryLogListViewModel>()
@@ -59,6 +60,7 @@ fun TelemetryLogContent(
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
+        scrollToTopRequest = scrollToTopRequest,
         detailContent = detailContent,
     )
 }
@@ -77,6 +79,7 @@ internal fun TelemetryLogContentScaffold(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -149,6 +152,7 @@ internal fun TelemetryLogContentScaffold(
                     uiState = uiState,
                     onLogClick = onLogSelected,
                     onResetClick = onResetClick,
+                    scrollToTopRequest = scrollToTopRequest,
                 )
             },
             detailPane = {

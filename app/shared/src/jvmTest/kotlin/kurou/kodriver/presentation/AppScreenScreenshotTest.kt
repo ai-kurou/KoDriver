@@ -129,7 +129,7 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    otherContent = {
+                    otherContent = { _ ->
                         OtherContent(
                             uiState = OtherListUiState(),
                             onItemSelected = {},
@@ -160,7 +160,7 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    telemetryLogContent = { TelemetryLogContent() },
+                    telemetryLogContent = { _ -> TelemetryLogContent() },
                 )
             }
         }
@@ -205,7 +205,7 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    telemetryLogContent = { TelemetryLogContent() },
+                    telemetryLogContent = { _ -> TelemetryLogContent() },
                 )
             }
         }
@@ -229,7 +229,7 @@ class AppScreenScreenshotTest {
                         message = bannerMessage,
                     ),
                     hasAppUpdate = true,
-                    otherContent = {
+                    otherContent = { _ ->
                         OtherContent(
                             uiState = OtherListUiState(),
                             onItemSelected = {},

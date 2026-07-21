@@ -1,10 +1,19 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -327,5 +336,42 @@ class OtherListPaneTest {
 
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
         rule.onAllNodesWithText("テーマ").assertCountEquals(1)
+    }
+
+    @Test
+    fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
+        var scrollToTopRequest by mutableStateOf(0)
+
+        rule.setContent {
+            Box(modifier = Modifier.height(160.dp)) {
+                OtherListPane(
+                    uiState = OtherListUiState(
+                        items = listOf(
+                            OtherListItemType.ConsoleIp,
+                            OtherListItemType.Volume,
+                            OtherListItemType.ReadoutStartSound,
+                            OtherListItemType.ExitConfirmation,
+                            OtherListItemType.Theme,
+                            OtherListItemType.DynamicColor,
+                            OtherListItemType.GitHubRepository,
+                            OtherListItemType.ReleasePage,
+                            OtherListItemType.License,
+                        ),
+                    ),
+                    onItemClick = {},
+                    onKeepScreenOnChange = {},
+                    onExitConfirmationEnabledChange = {},
+                    onDynamicColorEnabledChange = {},
+                    scrollToTopRequest = scrollToTopRequest,
+                )
+            }
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
+        rule.runOnIdle { scrollToTopRequest++ }
+
+        rule.waitUntil {
+            rule.onAllNodesWithText("ゲーム機・SimHubへ接続するIPアドレス").fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }
