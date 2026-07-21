@@ -7,6 +7,12 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.PrimaryFlag
+import kurou.kodriver.domain.model.SectorFlagState
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -21,7 +27,8 @@ class DebugStateDetailPaneTest {
         var backCount = 0
         rule.setContent {
             MaterialTheme {
-                DebugStateDetailPane(
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(),
                     canNavigateBack = true,
                     onBack = { backCount++ },
                 )
@@ -32,6 +39,48 @@ class DebugStateDetailPaneTest {
         rule.onNode(hasContentDescription("戻る")).performClick()
 
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `フラグ情報が未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `フラグ情報が取得済みの場合は各フィールドを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        raceFlags = LmuWindowsRaceFlagsData(
+                            gamePhase = SessionPhase.GREEN_FLAG,
+                            yellowFlagState = SessionYellowFlagState.NONE,
+                            sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
+                            startLight = 0,
+                            numRedLights = 0,
+                            playerFlag = PrimaryFlag.GREEN,
+                            playerUnderYellow = false,
+                            playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+                        ),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("gamePhase: GREEN_FLAG").assertIsDisplayed()
+        rule.onNodeWithText("playerUnderYellow: false").assertIsDisplayed()
     }
 
     @Test
