@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -54,6 +55,36 @@ class DebugStateDetailPaneTest {
         }
 
         rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `選択中のシミュレータが未選択の場合は未選択の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("未選択").assertIsDisplayed()
+    }
+
+    @Test
+    fun `選択中のシミュレータがLMUの場合は表示名を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(selectedSimulator = Simulator.LmuWindows),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("Le Mans Ultimate（Windows版）").assertIsDisplayed()
     }
 
     @Test

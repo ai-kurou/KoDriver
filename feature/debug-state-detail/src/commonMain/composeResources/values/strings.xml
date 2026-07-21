@@ -8,4 +8,8 @@
     <string name="debug_state_flag_full_course_yellow">フルコースイエロー</string>
     <string name="debug_state_flag_red">レッドフラッグ</string>
     <string name="debug_state_flag_none">フラッグなし</string>
+    <string name="debug_state_simulator_info_title">選択中のシミュレータ</string>
+    <string name="debug_state_simulator_info_unselected">未選択</string>
+    <string name="simulator_name_lmu">Le Mans Ultimate（Windows版）</string>
+    <string name="simulator_name_gt7_ps5">GranTurismo 7（PS5）</string>
 </resources>
