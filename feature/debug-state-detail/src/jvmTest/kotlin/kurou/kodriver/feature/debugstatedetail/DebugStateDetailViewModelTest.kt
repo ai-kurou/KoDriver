@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.CountLapFlag
+import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -98,6 +99,37 @@ class DebugStateDetailViewModelTest {
         val state = viewModel.uiState.first()
 
         assertEquals(Simulator.LmuWindows, state.selectedSimulator)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository)
+    }
+
+    @Test
+    fun `初期状態のcardOrderはデフォルト順序`() = runTest {
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+        every { flagRepository.flagStream() } returns
+            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        val viewModel = createViewModel()
+
+        val state = viewModel.uiState.first()
+
+        assertEquals(listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO), state.cardOrder)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository)
+    }
+
+    @Test
+    fun `moveCardで順序を入れ替えるとuiStateへ即座に反映される`() = runTest {
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+        every { flagRepository.flagStream() } returns
+            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        val viewModel = createViewModel()
+
+        viewModel.moveCard(0, 1)
+        val state = viewModel.uiState.first()
+
+        assertEquals(listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR), state.cardOrder)
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
         confirmVerified(simulatorPreferencesRepository, flagRepository)
