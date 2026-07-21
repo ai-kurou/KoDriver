@@ -303,7 +303,7 @@ private fun buildTelemetryLogJson(
         "}"
 
 private fun LmuWindowsVirtualEnergyData.toJson(): String =
-    """{"remainingRatio":$remainingRatio}"""
+    """{"remainingRatio":$remainingRatio,"session":$session}"""
 
 private fun LmuWindowsNarratorReadoutSettings.toJsonString(): String =
     """{"raw":${toString().toJsonStringLiteral()}}"""
