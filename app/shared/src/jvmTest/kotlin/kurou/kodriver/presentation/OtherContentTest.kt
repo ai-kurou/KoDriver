@@ -149,4 +149,37 @@ class OtherContentTest {
 
         assertFalse(backEnabled)
     }
+
+    @Test
+    fun `アプリバージョンを5回連続タップするとonAppVersionTappedを経由してデバッグ状態の詳細ペインへ遷移する`() {
+        var backEnabled = false
+        var selectedItem by mutableStateOf<OtherListItemType?>(null)
+
+        rule.setContent {
+            OtherContent(
+                uiState = OtherListUiState(
+                    selectedItem = selectedItem,
+                    appVersionLabel = "Windows版KoDriverバージョン",
+                    appVersion = "1.2.3",
+                ),
+                onItemSelected = { selectedItem = it },
+                onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
+                onClearSelectedItem = { selectedItem = null },
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                backHandler = { enabled: Boolean, _, _: () -> Unit -> backEnabled = enabled },
+                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit -> Text("Detail: ${item.id}") },
+            )
+        }
+
+        assertFalse(backEnabled)
+
+        repeat(5) {
+            rule.onNode(hasText("Windows版KoDriverバージョン")).performClick()
+            rule.waitForIdle()
+        }
+
+        rule.onNodeWithText("Detail: debug_state").assertExists()
+        assertTrue(backEnabled)
+    }
 }
