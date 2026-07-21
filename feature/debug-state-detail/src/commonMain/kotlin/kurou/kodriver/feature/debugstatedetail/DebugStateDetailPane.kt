@@ -23,6 +23,18 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_in
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_none
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_red
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_yellow
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_countdown
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_formation
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_full_course_yellow
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_garage
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_green_flag
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_grid_walk
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_paused
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_session_over
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_session_stopped
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_unknown
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_warm_up
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
@@ -126,6 +138,13 @@ private fun DebugStateCard(
                 FlagInfoContent(uiState.raceFlags)
             },
         )
+        DebugStateCardKey.GAME_PHASE -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_game_phase_title),
+            modifier = modifier,
+            bottomContent = {
+                GamePhaseContent(uiState.raceFlags)
+            },
+        )
     }
 }
 
@@ -176,6 +195,30 @@ private fun FlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
             }
         }
     }
+}
+
+@Composable
+private fun gamePhaseDisplayName(gamePhase: SessionPhase): String = when (gamePhase) {
+    SessionPhase.GARAGE -> stringResource(Res.string.debug_state_game_phase_garage)
+    SessionPhase.WARM_UP -> stringResource(Res.string.debug_state_game_phase_warm_up)
+    SessionPhase.GRID_WALK -> stringResource(Res.string.debug_state_game_phase_grid_walk)
+    SessionPhase.FORMATION -> stringResource(Res.string.debug_state_game_phase_formation)
+    SessionPhase.COUNTDOWN -> stringResource(Res.string.debug_state_game_phase_countdown)
+    SessionPhase.GREEN_FLAG -> stringResource(Res.string.debug_state_game_phase_green_flag)
+    SessionPhase.FULL_COURSE_YELLOW -> stringResource(Res.string.debug_state_game_phase_full_course_yellow)
+    SessionPhase.RED_FLAG -> stringResource(Res.string.debug_state_game_phase_session_stopped)
+    SessionPhase.SESSION_OVER -> stringResource(Res.string.debug_state_game_phase_session_over)
+    SessionPhase.PAUSED_OR_HEARTBEAT -> stringResource(Res.string.debug_state_game_phase_paused)
+    SessionPhase.UNKNOWN -> stringResource(Res.string.debug_state_game_phase_unknown)
+}
+
+@Composable
+private fun GamePhaseContent(raceFlags: LmuWindowsRaceFlagsData?) {
+    if (raceFlags == null) {
+        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        return
+    }
+    Text(text = gamePhaseDisplayName(raceFlags.gamePhase))
 }
 
 @Preview(showBackground = true)

@@ -113,7 +113,10 @@ class DebugStateDetailViewModelTest {
 
         val state = viewModel.uiState.first()
 
-        assertEquals(listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO), state.cardOrder)
+        assertEquals(
+            listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO, DebugStateCardKey.GAME_PHASE),
+            state.cardOrder,
+        )
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
         confirmVerified(simulatorPreferencesRepository, flagRepository)
@@ -129,7 +132,10 @@ class DebugStateDetailViewModelTest {
         viewModel.moveCard(0, 1)
         val state = viewModel.uiState.first()
 
-        assertEquals(listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR), state.cardOrder)
+        assertEquals(
+            listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR, DebugStateCardKey.GAME_PHASE),
+            state.cardOrder,
+        )
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
         confirmVerified(simulatorPreferencesRepository, flagRepository)

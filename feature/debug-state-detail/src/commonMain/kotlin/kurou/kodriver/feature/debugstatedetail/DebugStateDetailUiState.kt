@@ -4,7 +4,11 @@ import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.Simulator
 
-internal val defaultDebugStateCardOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO)
+internal val defaultDebugStateCardOrder = listOf(
+    DebugStateCardKey.SIMULATOR,
+    DebugStateCardKey.FLAG_INFO,
+    DebugStateCardKey.GAME_PHASE,
+)
 
 internal data class DebugStateDetailUiState(
     val selectedSimulator: Simulator? = null,

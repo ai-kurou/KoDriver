@@ -1,9 +1,11 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -44,7 +46,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `フラグ情報が未取得の場合は未取得の文言を表示する`() {
+    fun `フラグ情報とゲームフェーズが未取得の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -55,7 +57,53 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("未取得").assertIsDisplayed()
+        rule.onAllNodesWithText("未取得").assertCountEquals(2)
+    }
+
+    @Test
+    fun `mGamePhaseカードのタイトルを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("mGamePhase").assertIsDisplayed()
+    }
+
+    @Test
+    fun `gamePhaseの各値に対応する表示文言を表示する`() {
+        val expectedByGamePhase = mapOf(
+            SessionPhase.GARAGE to "セッション開始前",
+            SessionPhase.WARM_UP to "Reconnaissance laps（レースのみ）",
+            SessionPhase.GRID_WALK to "GridWalk（グリッドウォーク、レースのみ）",
+            SessionPhase.FORMATION to "Formation（フォーメーションラップ、レースのみ）",
+            SessionPhase.COUNTDOWN to "Countdown（スタートライト点灯開始、レースのみ）",
+            SessionPhase.GREEN_FLAG to "GreenFlag（グリーンフラッグ）",
+            SessionPhase.FULL_COURSE_YELLOW to "FullCourseYellow（FCY / セーフティカー）",
+            SessionPhase.RED_FLAG to "SessionStopped（セッション停止）",
+            SessionPhase.SESSION_OVER to "SessionOver（セッション終了）",
+            SessionPhase.PAUSED_OR_HEARTBEAT to "Paused（ポーズ中。プラグインへのハートビート呼び出し）",
+            SessionPhase.UNKNOWN to "不明",
+        )
+
+        expectedByGamePhase.forEach { (gamePhase, expectedText) ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState = DebugStateDetailUiState(raceFlags = sampleRaceFlags(gamePhase = gamePhase)),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText(expectedText).assertIsDisplayed()
+        }
     }
 
     @Test
