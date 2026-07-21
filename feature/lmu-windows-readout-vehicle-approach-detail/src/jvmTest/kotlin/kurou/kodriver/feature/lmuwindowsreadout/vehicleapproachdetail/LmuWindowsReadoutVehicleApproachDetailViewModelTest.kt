@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
@@ -560,24 +561,22 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
         coEvery {
             thresholdsRepository.saveSustainedApproachDurationSeconds(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             )
         } answers {
-            sustainedDurationFlow.update {
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS
-            }
+            sustainedDurationFlow.update { LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT }
         }
         val viewModel = createViewModel()
 
         viewModel.onResetSustainedApproachDurationSeconds()
 
         assertEquals(
-            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             viewModel.uiState.first().sustainedApproachDurationSeconds,
         )
         coVerify(exactly = 1) {
             thresholdsRepository.saveSustainedApproachDurationSeconds(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             )
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }

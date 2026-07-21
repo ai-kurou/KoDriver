@@ -12,3 +12,6 @@ val lmuWindowsTyreTemperatureLowWarningSelectablePhases: Set<SessionPhase> = set
     SessionPhase.GRID_WALK,
     SessionPhase.FORMATION,
 )
+
+val lmuWindowsTyreTemperatureLowWarningDefaultPhases: Set<SessionPhase> =
+    lmuWindowsTyreTemperatureLowWarningSelectablePhases - SessionPhase.GARAGE

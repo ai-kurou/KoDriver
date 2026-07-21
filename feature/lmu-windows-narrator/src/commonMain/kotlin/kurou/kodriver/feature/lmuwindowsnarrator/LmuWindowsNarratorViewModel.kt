@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
-import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
-import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
+import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
@@ -88,9 +88,6 @@ internal data class NarratorUseCases(
     val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeRemainingVirtualEnergyLapsThreshold: ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase,
 )
-
-private val defaultTyreLowWarningPhases =
-    lmuWindowsTyreTemperatureLowWarningSelectablePhases - SessionPhase.GARAGE
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @Suppress("LongParameterList")
@@ -171,7 +168,7 @@ internal class LmuWindowsNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, 95)
 
     private val tyreLowWarningPhases = tyreTemperatureUseCases.observeLowWarningPhases()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, defaultTyreLowWarningPhases)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, lmuWindowsTyreTemperatureLowWarningDefaultPhases)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -180,7 +177,11 @@ internal class LmuWindowsNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
 
     private val sustainedApproachDurationSeconds = vehicleApproachUseCases.observeSustainedApproachDuration()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
+        )
 
     private val sustainedReadoutType = vehicleApproachUseCases.observeSustainedReadoutType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
@@ -406,8 +407,4 @@ internal class LmuWindowsNarratorViewModel(
                 defaultValue = false,
             ),
         )
-
-    private companion object {
-        const val DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS = 7
-    }
 }
