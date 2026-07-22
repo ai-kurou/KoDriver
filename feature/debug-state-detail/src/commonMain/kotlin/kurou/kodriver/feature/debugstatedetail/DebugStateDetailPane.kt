@@ -35,6 +35,13 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_ph
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_unknown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_warm_up
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_practice
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_qualifying
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_race
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_test_day
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_unknown
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_warmup
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
@@ -45,6 +52,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -145,6 +153,13 @@ private fun DebugStateCard(
                 GamePhaseContent(uiState.raceFlags)
             },
         )
+        DebugStateCardKey.SESSION -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_session_title),
+            modifier = modifier,
+            bottomContent = {
+                SessionContent(uiState.virtualEnergy)
+            },
+        )
     }
 }
 
@@ -219,6 +234,25 @@ private fun GamePhaseContent(raceFlags: LmuWindowsRaceFlagsData?) {
         return
     }
     Text(text = gamePhaseDisplayName(raceFlags.gamePhase))
+}
+
+@Composable
+private fun sessionDisplayName(session: Int): String = when (session) {
+    0 -> stringResource(Res.string.debug_state_session_test_day)
+    in 1..4 -> stringResource(Res.string.debug_state_session_practice)
+    in 5..8 -> stringResource(Res.string.debug_state_session_qualifying)
+    9 -> stringResource(Res.string.debug_state_session_warmup)
+    in 10..13 -> stringResource(Res.string.debug_state_session_race)
+    else -> stringResource(Res.string.debug_state_session_unknown)
+}
+
+@Composable
+private fun SessionContent(virtualEnergy: LmuWindowsVirtualEnergyData?) {
+    if (virtualEnergy == null) {
+        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        return
+    }
+    Text(text = sessionDisplayName(virtualEnergy.session))
 }
 
 @Preview(showBackground = true)
