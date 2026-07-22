@@ -16,6 +16,7 @@ digraph G {
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-remaining-virtual-energy-laps-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-tyre-wear-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-damage-detail" -> ":core:domain"
   ":feature:main" -> ":core:domain"
