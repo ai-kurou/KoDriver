@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -47,20 +49,20 @@ private fun createTelemetryLogRepository(
         TelemetryLog(
             id = 0L,
             createdAt = 1000L,
-            simulatorId = "gt7_ps5",
-            readoutItemKey = "remaining_fuel_laps",
+            simulator = Simulator.Gt7Ps5,
+            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             telemetryJson = """{"lapCount":1}""",
         ),
         TelemetryLog(
             id = 0L,
             createdAt = 2000L,
-            simulatorId = "lmu_windows",
-            readoutItemKey = "flag",
+            simulator = Simulator.LmuWindows,
+            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
             telemetryJson = """{"currentLap":2}""",
         ),
     ).forEach { log ->
         coEvery {
-            repository.saveTelemetryLog(log.createdAt, log.simulatorId, log.readoutItemKey, log.telemetryJson)
+            repository.saveTelemetryLog(log.createdAt, log.simulator, log.readoutItemKey, log.telemetryJson)
         } answers {
             val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
             logs.update { it + log.copy(id = nextId) }
@@ -147,7 +149,7 @@ private fun telemetryLog(
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulatorId = "lmu_windows",
-    readoutItemKey = "flag",
+    simulator = Simulator.LmuWindows,
+    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     telemetryJson = """{"id":$id}""",
 )

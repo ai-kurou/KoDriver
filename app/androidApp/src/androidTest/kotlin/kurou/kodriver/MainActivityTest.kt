@@ -13,6 +13,8 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogListModule
 import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
@@ -144,13 +146,13 @@ class MainActivityTest {
                 telemetryLog(
                     id = 1,
                     createdAt = 100,
-                    readoutItemKey = "old_flag",
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
                     telemetryJson = """{"flag":"yellow"}""",
                 ),
                 telemetryLog(
                     id = 2,
                     createdAt = 200,
-                    readoutItemKey = "new_flag",
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     telemetryJson = """{"flag":"green"}""",
                 ),
             ),
@@ -159,10 +161,10 @@ class MainActivityTest {
 
         clickItem("ログ")
 
-        waitUntilDisplayed("new_flag")
+        waitUntilDisplayed("フラッグ")
         waitUntilDisplayed("09:00:00.200 / レース +00:00:00.100")
-        waitUntilDisplayed("old_flag")
-        clickItem("new_flag")
+        waitUntilDisplayed("イエローフラッグ")
+        clickItem("フラッグ")
         waitUntilDisplayed("選択したログ")
         waitUntilDisplayed("一つ前のログ")
         waitUntilDisplayed("""{"flag":"yellow"}""")
@@ -275,12 +277,12 @@ class MainActivityTest {
 private fun telemetryLog(
     id: Long,
     createdAt: Long,
-    readoutItemKey: String,
+    readoutItemKey: ReadoutItemKey,
     telemetryJson: String,
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulatorId = "lmu_windows",
+    simulator = Simulator.LmuWindows,
     readoutItemKey = readoutItemKey,
     telemetryJson = telemetryJson,
 )

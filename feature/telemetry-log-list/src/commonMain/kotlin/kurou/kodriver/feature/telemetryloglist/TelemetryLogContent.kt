@@ -34,6 +34,8 @@ import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -184,15 +186,15 @@ internal val previewTelemetryLogListUiState = TelemetryLogListUiState(
         TelemetryLog(
             id = 2,
             createdAt = 1_820_000,
-            simulatorId = "lmu_windows",
-            readoutItemKey = "lmu_windows_flag",
+            simulator = Simulator.LmuWindows,
+            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
             telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
         ),
         TelemetryLog(
             id = 1,
             createdAt = 1_800_000,
-            simulatorId = "gt7_ps5",
-            readoutItemKey = "gt7_ps5_remaining_fuel_laps",
+            simulator = Simulator.Gt7Ps5,
+            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
         ),
     ),

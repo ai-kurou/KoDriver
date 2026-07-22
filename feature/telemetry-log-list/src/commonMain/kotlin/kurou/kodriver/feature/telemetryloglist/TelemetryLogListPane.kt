@@ -342,20 +342,18 @@ private fun TelemetryLogListItem(
                 overflow = TextOverflow.Ellipsis,
             )
         },
-        leadingContent = simulatorIcon(log.simulatorId)?.let { painter ->
-            {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.size(width = 40.dp, height = 64.dp),
-                ) {
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(6.dp)),
-                    )
-                }
+        leadingContent = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(width = 40.dp, height = 64.dp),
+            ) {
+                Image(
+                    painter = simulatorIcon(log.simulator),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(6.dp)),
+                )
             }
         },
         colors = ListItemDefaults.colors(containerColor = containerColor),
@@ -366,10 +364,9 @@ private fun TelemetryLogListItem(
 }
 
 @Composable
-private fun simulatorIcon(simulatorId: String): Painter? = when (Simulator.fromId(simulatorId)) {
+private fun simulatorIcon(simulator: Simulator): Painter = when (simulator) {
     Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
     Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
-    null -> null
 }
 
 @Composable
@@ -402,21 +399,19 @@ private fun tyreTemperatureDisplayName(tyreTemperature: ReadoutItemKey.LmuWindow
     }
 
 @Composable
-internal fun readoutItemDisplayName(readoutItemKey: String): String {
-    return when (val key = ReadoutItemKey.fromValue(readoutItemKey)) {
-        is ReadoutItemKey.LmuWindows.VehicleApproach -> vehicleApproachDisplayName(key)
-        is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(key)
+internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
+    when (readoutItemKey) {
+        is ReadoutItemKey.LmuWindows.VehicleApproach -> vehicleApproachDisplayName(readoutItemKey)
+        is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
         is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
-        is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureDisplayName(key)
+        is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
             stringResource(Res.string.readout_item_remaining_virtual_energy_laps)
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)
-        null -> readoutItemKey
     }
-}
 
 internal fun formatTelemetryLogTime(
     createdAt: Long,

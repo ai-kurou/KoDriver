@@ -181,8 +181,8 @@ class Gt7Ps5NarratorViewModelTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 123_456L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -213,8 +213,8 @@ class Gt7Ps5NarratorViewModelTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 123_456L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 telemetryJsons.single(),
             )
         }
@@ -418,16 +418,16 @@ class Gt7Ps5NarratorViewModelTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 capture(telemetryJsons),
             )
         } just Runs
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 capture(telemetryJsons),
             )
         } just Runs

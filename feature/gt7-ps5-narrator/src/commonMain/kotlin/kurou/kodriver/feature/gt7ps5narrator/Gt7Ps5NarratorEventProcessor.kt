@@ -45,8 +45,8 @@ internal class Gt7Ps5NarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLog(
                     createdAt = observedAtMs,
-                    simulatorId = Simulator.Gt7Ps5.id,
-                    readoutItemKey = event.readoutItemKey.value,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
