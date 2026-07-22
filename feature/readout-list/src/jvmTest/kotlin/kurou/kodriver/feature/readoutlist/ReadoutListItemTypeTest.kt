@@ -107,8 +107,11 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
-    fun `lmu_windows の tyre_wear は detailPane未実装のため null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreWear.Root))
+    fun `lmu_windows の tyre_wear は LmuWindows_TyreWear を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.TyreWear,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreWear.Root),
+        )
     }
 
     @Test

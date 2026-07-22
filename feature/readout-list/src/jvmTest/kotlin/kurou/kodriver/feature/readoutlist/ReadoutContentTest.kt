@@ -27,6 +27,7 @@ import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
+import kodriver.feature.readoutlist.generated.resources.item_tyre_wear
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kodriver.feature.readoutlist.generated.resources.scroll_to_top
@@ -109,6 +110,34 @@ class ReadoutContentTest {
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
         assertAllItemsCanNavigateBack(itemTexts, { backEnabled }, { capturedOnBack?.invoke() })
+    }
+
+    @Test
+    fun `tyre_wearの項目を選択すると詳細ペインのタイトルにタイヤ摩耗を表示する`() {
+        var tyreWearText by mutableStateOf("")
+
+        rule.setContent {
+            tyreWearText = stringResource(Res.string.item_tyre_wear)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.LmuWindows),
+                    selectedSimulator = Simulator.LmuWindows,
+                    items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                    readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+                    selectedItem = ReadoutListItemType.LmuWindows.TyreWear,
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText(tyreWearText).assertExists()
     }
 
     @Test
