@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -69,6 +70,13 @@ private val sampleGt7Ps5Telemetry = Gt7Ps5TelemetryData(
     gasCapacity = 0f,
 )
 
+private val sampleVehicleApproach = LmuWindowsVehicleApproachData(
+    sideBySideLeftVehicleIds = setOf(4),
+    sideBySideRightVehicleIds = setOf(7),
+    lateralDistanceLeftMeters = 2.0,
+    lateralDistanceRightMeters = 1.5,
+)
+
 class DebugStateDetailPaneScreenshotTest {
 
     @get:Rule
@@ -105,6 +113,7 @@ class DebugStateDetailPaneScreenshotTest {
                                 virtualEnergy = sampleVirtualEnergy,
                                 lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
                                 gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
+                                vehicleApproach = sampleVehicleApproach,
                             ),
                             canNavigateBack = true,
                             onBack = {},
