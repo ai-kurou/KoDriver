@@ -371,6 +371,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.YELLOW_FLAG_STATE,
                 DebugStateCardKey.CURRENT_LAP,
                 DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                DebugStateCardKey.BEST_LAP,
             ),
             state.cardOrder,
         )
@@ -414,6 +415,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.YELLOW_FLAG_STATE,
                 DebugStateCardKey.CURRENT_LAP,
                 DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                DebugStateCardKey.BEST_LAP,
             ),
             state.cardOrder,
         )

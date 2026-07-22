@@ -50,7 +50,7 @@ private val sampleLmuWindowsTelemetry = LmuWindowsTelemetryData(
     timing = LmuWindowsTimingData(
         currentLapTimeMs = 0L,
         lastLapTimeMs = 0L,
-        bestLapTimeMs = 0L,
+        bestLapTimeMs = 83_456L,
         sector1Ms = 0L,
         sector1And2Ms = 0L,
         currentLap = 3,
@@ -65,7 +65,7 @@ private val sampleLmuWindowsTelemetry = LmuWindowsTelemetryData(
 private val sampleGt7Ps5Telemetry = Gt7Ps5TelemetryData(
     lapCount = 3,
     lapsInRace = 0,
-    bestLapTimeMs = 0,
+    bestLapTimeMs = 90_000,
     gasLevel = 0f,
     gasCapacity = 0f,
 )
