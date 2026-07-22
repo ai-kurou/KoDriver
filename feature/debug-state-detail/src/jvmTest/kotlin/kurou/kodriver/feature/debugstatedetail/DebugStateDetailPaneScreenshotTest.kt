@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.CountLapFlag
@@ -117,6 +119,15 @@ class DebugStateDetailPaneScreenshotTest {
         rule.onRoot().captureRoboImage()
     }
 
+    private val allCardsFilledUiState = DebugStateDetailUiState(
+        selectedSimulator = Simulator.LmuWindows,
+        raceFlags = sampleRaceFlags,
+        virtualEnergy = sampleVirtualEnergy,
+        lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
+        gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
+        vehicleApproach = sampleVehicleApproach,
+    )
+
     @Test
     fun `全カードにデータ取得済み`() {
         rule.setContent {
@@ -124,14 +135,7 @@ class DebugStateDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         DebugStateDetailPaneContent(
-                            uiState = DebugStateDetailUiState(
-                                selectedSimulator = Simulator.LmuWindows,
-                                raceFlags = sampleRaceFlags,
-                                virtualEnergy = sampleVirtualEnergy,
-                                lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
-                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
-                                vehicleApproach = sampleVehicleApproach,
-                            ),
+                            uiState = allCardsFilledUiState,
                             canNavigateBack = true,
                             onBack = {},
                         )
@@ -139,6 +143,26 @@ class DebugStateDetailPaneScreenshotTest {
                 }
             }
         }
+        rule.onRoot().captureRoboImage()
+    }
+
+    @Test
+    fun `全カードにデータ取得済み スクロール後は残りのカードが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        DebugStateDetailPaneContent(
+                            uiState = allCardsFilledUiState,
+                            canNavigateBack = true,
+                            onBack = {},
+                        )
+                    }
+                }
+            }
+        }
+        rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+            .performScrollToIndex(allCardsFilledUiState.cardOrder.lastIndex)
         rule.onRoot().captureRoboImage()
     }
 }

@@ -58,7 +58,7 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(8)
+        rule.onAllNodesWithText("未取得").assertCountEquals(9)
     }
 
     @Test

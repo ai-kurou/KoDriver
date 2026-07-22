@@ -1,8 +1,12 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kodriver.feature.debugstatedetail.generated.resources.Res
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_fl
@@ -10,9 +14,13 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_te
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_rl
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_rr
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+
+private val WHEEL_COLUMN_WIDTH = 110.dp
 
 @Composable
 internal fun TyreTemperatureContent(
@@ -25,29 +33,26 @@ internal fun TyreTemperatureContent(
         return
     }
     Column {
-        Text(
-            text = stringResource(
-                Res.string.debug_state_tyre_temperature_fl,
-                wheelTemperatureText(wheels, WheelIndex.FRONT_LEFT),
-            ),
-        )
-        Text(
-            text = stringResource(
-                Res.string.debug_state_tyre_temperature_fr,
-                wheelTemperatureText(wheels, WheelIndex.FRONT_RIGHT),
-            ),
-        )
-        Text(
-            text = stringResource(
-                Res.string.debug_state_tyre_temperature_rl,
-                wheelTemperatureText(wheels, WheelIndex.REAR_LEFT),
-            ),
-        )
-        Text(
-            text = stringResource(
-                Res.string.debug_state_tyre_temperature_rr,
-                wheelTemperatureText(wheels, WheelIndex.REAR_RIGHT),
-            ),
-        )
+        Row {
+            WheelTemperatureText(wheels, WheelIndex.FRONT_LEFT, Res.string.debug_state_tyre_temperature_fl)
+            WheelTemperatureText(wheels, WheelIndex.FRONT_RIGHT, Res.string.debug_state_tyre_temperature_fr)
+        }
+        Row {
+            WheelTemperatureText(wheels, WheelIndex.REAR_LEFT, Res.string.debug_state_tyre_temperature_rl)
+            WheelTemperatureText(wheels, WheelIndex.REAR_RIGHT, Res.string.debug_state_tyre_temperature_rr)
+        }
     }
+}
+
+@Composable
+private fun WheelTemperatureText(
+    wheels: Map<WheelIndex, LmuWindowsTyreWheelData>,
+    wheelIndex: WheelIndex,
+    labelRes: StringResource,
+) {
+    Text(
+        text = stringResource(labelRes, wheelTemperatureText(wheels, wheelIndex)),
+        modifier = Modifier.width(WHEEL_COLUMN_WIDTH),
+        softWrap = false,
+    )
 }

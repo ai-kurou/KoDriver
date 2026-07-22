@@ -10,4 +10,5 @@ enum class DebugStateCardKey {
     SIDE_BY_SIDE_VEHICLES,
     BEST_LAP,
     TYRE_TEMPERATURE,
+    FUEL_CONSUMPTION,
 }

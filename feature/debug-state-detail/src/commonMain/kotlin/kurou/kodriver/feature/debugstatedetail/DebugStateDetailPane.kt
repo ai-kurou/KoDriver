@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_in
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_none
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_red
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_yellow
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_countdown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_formation
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_full_course_yellow
@@ -89,6 +91,8 @@ import kotlin.math.round
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
 
+internal const val DEBUG_STATE_GRID_TEST_TAG = "debug_state_grid"
+
 internal fun calculateDebugStateColumns(maxWidth: Dp): Int = when {
     maxWidth < NARROW_WIDTH_UPPER_BOUND -> 1
     maxWidth < MEDIUM_WIDTH_UPPER_BOUND -> 2
@@ -133,7 +137,11 @@ internal fun DebugStateDetailPaneContent(
             val reorderableState = rememberReorderableLazyGridState(gridState) { from, to ->
                 onMoveCard(from.index, to.index)
             }
-            LazyVerticalGrid(columns = GridCells.Fixed(columns), state = gridState) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                state = gridState,
+                modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
+            ) {
                 items(uiState.cardOrder, key = { it.name }) { cardKey ->
                     ReorderableItem(reorderableState, key = cardKey.name) {
                         DebugStateCard(
@@ -216,6 +224,18 @@ private fun DebugStateCard(
             modifier = modifier,
             bottomContent = {
                 TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
+            },
+        )
+        DebugStateCardKey.FUEL_CONSUMPTION -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_fuel_consumption_title),
+            modifier = modifier,
+            bottomContent = {
+                FuelConsumptionContent(
+                    uiState.selectedSimulator,
+                    uiState.virtualEnergy,
+                    uiState.lmuWindowsTelemetry,
+                    uiState.gt7Ps5Telemetry,
+                )
             },
         )
     }
