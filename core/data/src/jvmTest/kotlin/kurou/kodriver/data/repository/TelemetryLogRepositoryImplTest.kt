@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.TelemetryLogDao
 import kurou.kodriver.data.model.TelemetryLogEntity
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kotlin.test.Test
@@ -22,8 +24,8 @@ class TelemetryLogRepositoryImplTest {
 
         repository.saveTelemetryLog(
             createdAt = 1000L,
-            simulatorId = "gt7_ps5",
-            readoutItemKey = "remaining_fuel_laps",
+            simulator = Simulator.Gt7Ps5,
+            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
             telemetryJson = """{"lapCount":1}""",
         )
 
@@ -31,8 +33,8 @@ class TelemetryLogRepositoryImplTest {
             listOf(
                 TelemetryLogEntity(
                     createdAt = 1000L,
-                    simulatorId = "gt7_ps5",
-                    readoutItemKey = "remaining_fuel_laps",
+                    simulatorId = Simulator.Gt7Ps5.id,
+                    readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
                     telemetryJson = """{"lapCount":1}""",
                 ),
             ),
@@ -59,8 +61,8 @@ class TelemetryLogRepositoryImplTest {
                 TelemetryLogEntity(
                     id = 1L,
                     createdAt = 2000L,
-                    simulatorId = "lmu_windows",
-                    readoutItemKey = "flag",
+                    simulatorId = Simulator.LmuWindows.id,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
                     telemetryJson = """{"currentLap":2}""",
                 ),
             ),
@@ -72,8 +74,8 @@ class TelemetryLogRepositoryImplTest {
                 TelemetryLog(
                     id = 1L,
                     createdAt = 2000L,
-                    simulatorId = "lmu_windows",
-                    readoutItemKey = "flag",
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                     telemetryJson = """{"currentLap":2}""",
                 ),
             ),
@@ -182,15 +184,15 @@ private fun telemetryLogEntity(
 ) = TelemetryLogEntity(
     id = id,
     createdAt = createdAt,
-    simulatorId = "lmu_windows",
-    readoutItemKey = "flag",
+    simulatorId = Simulator.LmuWindows.id,
+    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
     telemetryJson = """{"id":$id}""",
 )
 
 private fun TelemetryLogEntity.toDomainLog() = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulatorId = simulatorId,
-    readoutItemKey = readoutItemKey,
+    simulator = Simulator.fromId(simulatorId) ?: error("Unknown simulatorId: $simulatorId"),
+    readoutItemKey = ReadoutItemKey.fromValue(readoutItemKey) ?: error("Unknown readoutItemKey: $readoutItemKey"),
     telemetryJson = telemetryJson,
 )

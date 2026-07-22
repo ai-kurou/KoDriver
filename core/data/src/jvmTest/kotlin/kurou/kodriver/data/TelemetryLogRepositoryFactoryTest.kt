@@ -2,6 +2,8 @@ package kurou.kodriver.data
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import java.nio.file.Files
 import kotlin.test.Test
@@ -16,8 +18,8 @@ class TelemetryLogRepositoryFactoryTest {
 
         repository.saveTelemetryLog(
             createdAt = 123L,
-            simulatorId = "gt7_ps5",
-            readoutItemKey = "my_best_lap",
+            simulator = Simulator.Gt7Ps5,
+            readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
             telemetryJson = """{"current":{}}""",
         )
 
@@ -26,8 +28,8 @@ class TelemetryLogRepositoryFactoryTest {
                 TelemetryLog(
                     id = 1L,
                     createdAt = 123L,
-                    simulatorId = "gt7_ps5",
-                    readoutItemKey = "my_best_lap",
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                     telemetryJson = """{"current":{}}""",
                 ),
             ),

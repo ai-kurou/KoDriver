@@ -1,5 +1,7 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 
 class SaveTelemetryLogUseCase(
@@ -7,13 +9,13 @@ class SaveTelemetryLogUseCase(
 ) {
     suspend operator fun invoke(
         createdAt: Long,
-        simulatorId: String,
-        readoutItemKey: String,
+        simulator: Simulator,
+        readoutItemKey: ReadoutItemKey,
         telemetryJson: String,
     ) {
         repository.saveTelemetryLog(
             createdAt = createdAt,
-            simulatorId = simulatorId,
+            simulator = simulator,
             readoutItemKey = readoutItemKey,
             telemetryJson = telemetryJson,
         )

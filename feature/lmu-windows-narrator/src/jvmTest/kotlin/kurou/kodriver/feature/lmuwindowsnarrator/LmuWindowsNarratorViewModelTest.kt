@@ -412,8 +412,8 @@ class LmuWindowsNarratorViewModelTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = createdAt,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = readoutItemKey.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = readoutItemKey,
                 telemetryJson = capture(telemetryJsonSlot),
             )
         } answers {
@@ -421,8 +421,8 @@ class LmuWindowsNarratorViewModelTest {
                 TelemetryLog(
                     id = 0,
                     createdAt = createdAt,
-                    simulatorId = Simulator.LmuWindows.id,
-                    readoutItemKey = readoutItemKey.value,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = readoutItemKey,
                     telemetryJson = telemetryJsonSlot.captured,
                 ),
             )
@@ -525,8 +525,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.single()
         assertEquals(456L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, log.readoutItemKey)
         assertContains(log.telemetryJson, """"state":{"raw":"""")
         assertContains(log.telemetryJson, """"previousTelemetry":{"currentLapTimeMs":0""")
         assertContains(log.telemetryJson, """"bestLapTimeMs":60000""")
@@ -697,8 +697,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.single()
         assertEquals(123_456L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root, log.readoutItemKey)
         assertContains(log.telemetryJson, """"state":{"raw":"""")
         assertContains(log.telemetryJson, """"previousVehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
         assertContains(log.telemetryJson, """"vehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
@@ -938,8 +938,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.single()
         assertEquals(789L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root, log.readoutItemKey)
         assertContains(log.telemetryJson, """"state":{"raw":"""")
         assertContains(log.telemetryJson, """"previousRaceFlags":{"gamePhase":"GREEN_FLAG"""")
         assertContains(log.telemetryJson, """"raceFlags":{"gamePhase":"GREEN_FLAG"""")
@@ -978,8 +978,8 @@ class LmuWindowsNarratorViewModelTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 0L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                 telemetryJson = capture(slot()),
             )
         } throws IllegalStateException("Failed to save")
@@ -1017,8 +1017,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.single()
         assertEquals(987L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, log.readoutItemKey)
         assertContains(log.telemetryJson, """"state":{"raw":"""")
         assertContains(log.telemetryJson, """"previousVehicleDamage":{"overheating":false""")
         assertContains(log.telemetryJson, """"vehicleDamage":{"overheating":true""")
@@ -1188,8 +1188,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.first()
         assertEquals(123L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, log.readoutItemKey)
         assertContains(log.telemetryJson, """"state":{"raw":"""")
         assertContains(log.telemetryJson, """"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0""")
         assertContains(log.telemetryJson, """"raceFlags":{""")
@@ -1308,8 +1308,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.first()
         assertEquals(123L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, log.readoutItemKey)
         assertContains(log.telemetryJson, """"state":{"raw":"""")
         assertContains(log.telemetryJson, """"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":55.0""")
         assertContains(log.telemetryJson, """"raceFlags":{""")
@@ -1410,8 +1410,8 @@ class LmuWindowsNarratorViewModelTest {
         assertEquals(1, logs.size)
         val log = logs.first()
         assertEquals(160_000L, log.createdAt)
-        assertEquals(Simulator.LmuWindows.id, log.simulatorId)
-        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.value, log.readoutItemKey)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root, log.readoutItemKey)
         assertContains(
             log.telemetryJson,
             """"telemetry":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":90000""",
