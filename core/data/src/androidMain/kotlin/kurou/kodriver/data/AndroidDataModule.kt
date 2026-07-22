@@ -13,6 +13,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsNearbyVehiclesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -82,6 +83,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsVirtualEnergyRepository> {
         WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
+    }
+    single<LmuWindowsNearbyVehiclesRepository> {
+        WebSocketLmuWindowsNearbyVehiclesRepository(serverIpRepository = get(), client = get())
     }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)

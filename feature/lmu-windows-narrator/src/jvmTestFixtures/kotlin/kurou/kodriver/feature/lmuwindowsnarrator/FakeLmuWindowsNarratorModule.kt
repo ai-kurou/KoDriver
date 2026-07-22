@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsNearbyVehiclesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -45,6 +47,7 @@ val fakeLmuWindowsNarratorModule = module {
     single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
     single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
     single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
+    single<LmuWindowsNearbyVehiclesRepository> { FakeLmuWindowsNearbyVehiclesRepository() }
 }
 
 class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
@@ -130,4 +133,8 @@ class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferen
 
 class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
+}
+
+class FakeLmuWindowsNearbyVehiclesRepository : LmuWindowsNearbyVehiclesRepository {
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
 }

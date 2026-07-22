@@ -9,12 +9,20 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsNearbyVehiclesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+
+private data class OptionalTelemetry(
+    val lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+    val gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
+    val nearbyVehicles: LmuWindowsNearbyVehiclesData?,
+)
 
 @Suppress("LongParameterList")
 internal class DebugStateDetailViewModel(
@@ -23,35 +31,41 @@ internal class DebugStateDetailViewModel(
     observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     observeLmuWindowsTelemetry: ObserveLmuWindowsUseCase,
     observeGt7Ps5Telemetry: ObserveGt7Ps5UseCase,
+    observeNearbyVehicles: ObserveLmuWindowsNearbyVehiclesUseCase,
 ) : ViewModel() {
 
     // ドラッグ操作で並び替えたカード順序。永続化はせずインメモリのみで保持する。
     private val _cardOrder = MutableStateFlow(defaultDebugStateCardOrder)
 
-    // LMU / GT7 いずれか片方しか実際には接続されないため、combine の必須ソースにはせず
-    // 初期値 null を持つ StateFlow 化して uiState 全体がブロックされないようにする。
+    // LMU / GT7 いずれか片方しか実際には接続されず、近くの車両情報もLMU接続時のみ得られるため、
+    // combine の必須ソースにはせず、初期値 null を持つ StateFlow 化して uiState 全体がブロックされないようにする。
     private val _lmuWindowsTelemetry: StateFlow<LmuWindowsTelemetryData?> = observeLmuWindowsTelemetry()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     private val _gt7Ps5Telemetry: StateFlow<Gt7Ps5TelemetryData?> = observeGt7Ps5Telemetry()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
-    private val _telemetry: StateFlow<Pair<LmuWindowsTelemetryData?, Gt7Ps5TelemetryData?>> = combine(
+    private val _nearbyVehicles: StateFlow<LmuWindowsNearbyVehiclesData?> = observeNearbyVehicles()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    private val _optionalTelemetry: StateFlow<OptionalTelemetry> = combine(
         _lmuWindowsTelemetry,
         _gt7Ps5Telemetry,
-    ) { lmu, gt7 -> lmu to gt7 }.stateIn(viewModelScope, SharingStarted.Eagerly, null to null)
+        _nearbyVehicles,
+    ) { lmu, gt7, nearbyVehicles -> OptionalTelemetry(lmu, gt7, nearbyVehicles) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null))
 
     val uiState: StateFlow<DebugStateDetailUiState> = combine(
         observeSelectedSimulator(),
         observeRaceFlags(),
         observeVirtualEnergy(),
         _cardOrder,
-        _telemetry,
-    ) { selectedSimulator, raceFlags, virtualEnergy, cardOrder, (lmuWindowsTelemetry, gt7Ps5Telemetry) ->
+        _optionalTelemetry,
+    ) { selectedSimulator, raceFlags, virtualEnergy, cardOrder, optionalTelemetry ->
         DebugStateDetailUiState(
             selectedSimulator = selectedSimulator,
             raceFlags = raceFlags,
             virtualEnergy = virtualEnergy,
-            lmuWindowsTelemetry = lmuWindowsTelemetry,
-            gt7Ps5Telemetry = gt7Ps5Telemetry,
+            lmuWindowsTelemetry = optionalTelemetry.lmuWindowsTelemetry,
+            gt7Ps5Telemetry = optionalTelemetry.gt7Ps5Telemetry,
+            nearbyVehicles = optionalTelemetry.nearbyVehicles,
             cardOrder = cardOrder,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())

@@ -36,6 +36,13 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_ph
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_unknown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_warm_up
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_ahead
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_behind
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_item
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_left
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_none
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_right
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_practice
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_qualifying
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_race
@@ -64,6 +71,8 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -77,6 +86,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyGridState
+import kotlin.math.abs
+import kotlin.math.round
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
@@ -187,6 +198,13 @@ private fun DebugStateCard(
             modifier = modifier,
             bottomContent = {
                 CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+            },
+        )
+        DebugStateCardKey.NEARBY_VEHICLES -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_nearby_vehicles_title),
+            modifier = modifier,
+            bottomContent = {
+                NearbyVehiclesContent(uiState.nearbyVehicles)
             },
         )
     }
@@ -321,6 +339,50 @@ private fun CurrentLapContent(
     Text(
         text = currentLap?.toString() ?: stringResource(Res.string.debug_state_flag_info_unavailable),
     )
+}
+
+@Composable
+private fun nearbyVehicleDisplayName(vehicle: LmuWindowsNearbyVehicleData): String {
+    val longitudinalLabel = if (vehicle.longitudinalDistanceMeters >= 0) {
+        stringResource(Res.string.debug_state_nearby_vehicles_ahead)
+    } else {
+        stringResource(Res.string.debug_state_nearby_vehicles_behind)
+    }
+    val lateralLabel = if (vehicle.lateralDistanceMeters >= 0) {
+        stringResource(Res.string.debug_state_nearby_vehicles_right)
+    } else {
+        stringResource(Res.string.debug_state_nearby_vehicles_left)
+    }
+    return stringResource(
+        Res.string.debug_state_nearby_vehicles_item,
+        vehicle.vehicleId,
+        longitudinalLabel,
+        formatMeters(vehicle.longitudinalDistanceMeters),
+        lateralLabel,
+        formatMeters(vehicle.lateralDistanceMeters),
+    )
+}
+
+private fun formatMeters(value: Double): String {
+    val rounded = round(abs(value) * 10) / 10
+    return rounded.toString()
+}
+
+@Composable
+private fun NearbyVehiclesContent(nearbyVehicles: LmuWindowsNearbyVehiclesData?) {
+    if (nearbyVehicles == null) {
+        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        return
+    }
+    Column {
+        if (nearbyVehicles.vehicles.isEmpty()) {
+            Text(text = stringResource(Res.string.debug_state_nearby_vehicles_none))
+        } else {
+            nearbyVehicles.vehicles.forEach { vehicle ->
+                Text(text = nearbyVehicleDisplayName(vehicle))
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

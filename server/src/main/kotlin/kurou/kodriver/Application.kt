@@ -11,6 +11,7 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -18,11 +19,13 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsNearbyVehiclesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsNearbyVehiclesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -44,6 +47,7 @@ data class KoDriverServerUseCases(
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+    val observeNearbyVehicles: ObserveLmuWindowsNearbyVehiclesUseCase,
 )
 
 fun main() {
@@ -57,6 +61,7 @@ fun main() {
             ),
             observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
             observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+            observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
         ),
     ).start(wait = true)
 }
@@ -109,6 +114,9 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
             observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                 koin.get<LmuWindowsVirtualEnergyRepository>(),
             ),
+            observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(
+                koin.get<LmuWindowsNearbyVehiclesRepository>(),
+            ),
         ),
     )
 }
@@ -139,6 +147,7 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         tyreCarcassTemperatureWebSocket(useCases.observeTyreCarcassTemperature)
         timingWebSocket(useCases.observeLmuWindows)
         virtualEnergyWebSocket(useCases.observeVirtualEnergy)
+        nearbyVehiclesWebSocket(useCases.observeNearbyVehicles)
     }
 }
 
@@ -166,4 +175,8 @@ private object EmptyLmuWindowsRepository : LmuWindowsRepository {
 
 private object EmptyVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
+}
+
+private object EmptyNearbyVehiclesRepository : LmuWindowsNearbyVehiclesRepository {
+    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
 }

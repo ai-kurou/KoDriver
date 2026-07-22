@@ -20,6 +20,8 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehicleData
+import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -33,10 +35,12 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsNearbyVehiclesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsNearbyVehiclesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
@@ -66,6 +70,9 @@ class DebugStateDetailViewModelTest {
     @MockK
     private lateinit var gt7Ps5Repository: Gt7Ps5Repository
 
+    @MockK
+    private lateinit var nearbyVehiclesRepository: LmuWindowsNearbyVehiclesRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -83,6 +90,7 @@ class DebugStateDetailViewModelTest {
         observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
         observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
         observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
+        observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(nearbyVehiclesRepository),
     )
 
     private fun sampleVirtualEnergy(session: Int) = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session)
@@ -116,6 +124,12 @@ class DebugStateDetailViewModelTest {
         gasCapacity = 0f,
     )
 
+    private fun sampleNearbyVehicles(vehicleCount: Int) = LmuWindowsNearbyVehiclesData(
+        vehicles = (1..vehicleCount).map {
+            LmuWindowsNearbyVehicleData(vehicleId = it, longitudinalDistanceMeters = 1.0, lateralDistanceMeters = 1.0)
+        },
+    )
+
     @Test
     fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() = runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
@@ -124,6 +138,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -134,12 +149,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -151,6 +168,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
@@ -162,12 +180,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -179,6 +199,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -189,12 +210,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -206,6 +229,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -216,12 +240,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -233,6 +259,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(3))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -243,12 +270,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -260,6 +289,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(5))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -270,12 +300,44 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
+        )
+    }
+
+    @Test
+    fun `近くの車両情報を購読すると uiState に反映される`() = runTest {
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+        every { flagRepository.flagStream() } returns
+            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(2))
+        val viewModel = createViewModel()
+
+        val state = viewModel.uiState.first()
+
+        assertEquals(2, state.nearbyVehicles?.vehicles?.size)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
+        confirmVerified(
+            simulatorPreferencesRepository,
+            flagRepository,
+            virtualEnergyRepository,
+            lmuWindowsRepository,
+            gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -287,6 +349,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -299,6 +362,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.SESSION,
                 DebugStateCardKey.YELLOW_FLAG_STATE,
                 DebugStateCardKey.CURRENT_LAP,
+                DebugStateCardKey.NEARBY_VEHICLES,
             ),
             state.cardOrder,
         )
@@ -307,12 +371,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 
@@ -324,6 +390,7 @@ class DebugStateDetailViewModelTest {
         every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
         every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+        every { nearbyVehiclesRepository.nearbyVehiclesStream() } returns MutableStateFlow(sampleNearbyVehicles(0))
         val viewModel = createViewModel()
 
         viewModel.moveCard(0, 1)
@@ -337,6 +404,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.SESSION,
                 DebugStateCardKey.YELLOW_FLAG_STATE,
                 DebugStateCardKey.CURRENT_LAP,
+                DebugStateCardKey.NEARBY_VEHICLES,
             ),
             state.cardOrder,
         )
@@ -345,12 +413,14 @@ class DebugStateDetailViewModelTest {
         verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
         verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
         verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+        verify(exactly = 1) { nearbyVehiclesRepository.nearbyVehiclesStream() }
         confirmVerified(
             simulatorPreferencesRepository,
             flagRepository,
             virtualEnergyRepository,
             lmuWindowsRepository,
             gt7Ps5Repository,
+            nearbyVehiclesRepository,
         )
     }
 

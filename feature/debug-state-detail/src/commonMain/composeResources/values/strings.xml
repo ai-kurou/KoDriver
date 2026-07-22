@@ -43,4 +43,11 @@
     <string name="debug_state_yellow_flag_state_race_halt">RaceHalt（レース中断、現在未使用）</string>
     <string name="debug_state_yellow_flag_state_unknown">不明</string>
     <string name="debug_state_current_lap_title">現在のラップ</string>
+    <string name="debug_state_nearby_vehicles_title">10m以内の車両</string>
+    <string name="debug_state_nearby_vehicles_none">10m以内に車両なし</string>
+    <string name="debug_state_nearby_vehicles_ahead">前方</string>
+    <string name="debug_state_nearby_vehicles_behind">後方</string>
+    <string name="debug_state_nearby_vehicles_right">右</string>
+    <string name="debug_state_nearby_vehicles_left">左</string>
+    <string name="debug_state_nearby_vehicles_item">#%1$d %2$s%3$sm %4$s%5$sm</string>
 </resources>

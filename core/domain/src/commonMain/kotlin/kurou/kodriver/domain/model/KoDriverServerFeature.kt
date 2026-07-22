@@ -9,6 +9,7 @@ enum class KoDriverServerFeature(
     TYRE_CARCASS_TEMPERATURE(pathSegment = "tyre_carcass_temperature"),
     MY_BEST_LAP(pathSegment = "my_best_lap"),
     VIRTUAL_ENERGY(pathSegment = "virtual_energy"),
+    NEARBY_VEHICLES(pathSegment = "nearby_vehicles"),
     ;
 
     fun webSocketPath(simulator: Simulator): String =
