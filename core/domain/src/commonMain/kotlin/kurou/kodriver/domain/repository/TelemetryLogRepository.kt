@@ -1,6 +1,8 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 
@@ -11,8 +13,8 @@ interface TelemetryLogRepository {
 
     suspend fun saveTelemetryLog(
         createdAt: Long,
-        simulatorId: String,
-        readoutItemKey: String,
+        simulator: Simulator,
+        readoutItemKey: ReadoutItemKey,
         telemetryJson: String,
     )
 

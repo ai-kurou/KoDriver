@@ -52,8 +52,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 200L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(telemetryJsonSlot),
             )
         } just Runs
@@ -87,8 +87,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 200L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = telemetryJson,
             )
         }
@@ -129,8 +129,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 0L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         } just Runs
@@ -150,8 +150,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 0L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         }
@@ -168,8 +168,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 0L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         } just Runs
@@ -190,8 +190,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 0L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         }
@@ -207,8 +207,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 100L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         } answers {
@@ -218,8 +218,8 @@ class LmuWindowsNarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 200L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         } answers { saveCount += 1 }
@@ -249,16 +249,16 @@ class LmuWindowsNarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 100L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         }
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 createdAt = 200L,
-                simulatorId = Simulator.LmuWindows.id,
-                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root.value,
+                simulator = Simulator.LmuWindows,
+                readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 telemetryJson = capture(slot()),
             )
         }

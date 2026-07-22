@@ -57,7 +57,7 @@ internal class LmuWindowsNarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey.value,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
@@ -85,7 +85,7 @@ internal class LmuWindowsNarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey.value,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
@@ -113,7 +113,7 @@ internal class LmuWindowsNarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey.value,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
@@ -141,7 +141,7 @@ internal class LmuWindowsNarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey.value,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
@@ -169,7 +169,7 @@ internal class LmuWindowsNarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey.value,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         tyreCarcassTemperature = tyreCarcassTemperature,
@@ -197,7 +197,7 @@ internal class LmuWindowsNarratorEventProcessor(
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey.value,
+                    readoutItemKey = event.readoutItemKey,
                     telemetryJson = buildTelemetryLogJson(
                         state = logContext.state,
                         telemetry = telemetry,
@@ -233,13 +233,13 @@ internal class LmuWindowsNarratorEventProcessor(
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
-        readoutItemKey: String,
+        readoutItemKey: ReadoutItemKey,
         telemetryJson: String,
     ) {
         try {
             saveTelemetryLog(
                 createdAt = createdAt,
-                simulatorId = Simulator.LmuWindows.id,
+                simulator = Simulator.LmuWindows,
                 readoutItemKey = readoutItemKey,
                 telemetryJson = telemetryJson,
             )

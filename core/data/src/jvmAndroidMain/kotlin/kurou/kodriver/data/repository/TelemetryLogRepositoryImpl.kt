@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.datasource.TelemetryLogDao
 import kurou.kodriver.data.model.TelemetryLogEntity
 import kurou.kodriver.data.model.toDomain
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -16,7 +18,7 @@ internal class TelemetryLogRepositoryImpl(
     private val dao: TelemetryLogDao,
 ) : TelemetryLogRepository {
     override fun observeTelemetryLogs(): Flow<List<TelemetryLog>> =
-        dao.observeTelemetryLogs().map { logs -> logs.map { it.toDomain() } }
+        dao.observeTelemetryLogs().map { logs -> logs.mapNotNull { it.toDomain() } }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeTelemetryLogDetail(id: Long): Flow<TelemetryLogDetail?> =
@@ -28,25 +30,27 @@ internal class TelemetryLogRepositoryImpl(
                     createdAt = current.createdAt,
                     id = current.id,
                 ).map { previous ->
-                    TelemetryLogDetail(
-                        current = current.toDomain(),
-                        previous = previous?.toDomain(),
-                    )
+                    current.toDomain()?.let { currentLog ->
+                        TelemetryLogDetail(
+                            current = currentLog,
+                            previous = previous?.toDomain(),
+                        )
+                    }
                 }
             }
         }
 
     override suspend fun saveTelemetryLog(
         createdAt: Long,
-        simulatorId: String,
-        readoutItemKey: String,
+        simulator: Simulator,
+        readoutItemKey: ReadoutItemKey,
         telemetryJson: String,
     ) {
         dao.insert(
             TelemetryLogEntity(
                 createdAt = createdAt,
-                simulatorId = simulatorId,
-                readoutItemKey = readoutItemKey,
+                simulatorId = simulator.id,
+                readoutItemKey = readoutItemKey.value,
                 telemetryJson = telemetryJson,
             ),
         )

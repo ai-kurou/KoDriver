@@ -3,6 +3,8 @@ package kurou.kodriver.feature.telemetryloglist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -33,8 +35,8 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
 
     override suspend fun saveTelemetryLog(
         createdAt: Long,
-        simulatorId: String,
-        readoutItemKey: String,
+        simulator: Simulator,
+        readoutItemKey: ReadoutItemKey,
         telemetryJson: String,
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
@@ -42,7 +44,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
             logs.value + TelemetryLog(
                 id = nextId,
                 createdAt = createdAt,
-                simulatorId = simulatorId,
+                simulator = simulator,
                 readoutItemKey = readoutItemKey,
                 telemetryJson = telemetryJson,
             ),

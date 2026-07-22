@@ -43,8 +43,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                sourceKey.value,
+                Simulator.Gt7Ps5,
+                sourceKey,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -63,7 +63,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
         coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.Gt7Ps5.id, sourceKey.value, telemetryJsons.single())
+            telemetryLogRepository.saveTelemetryLog(0L, Simulator.Gt7Ps5, sourceKey, telemetryJsons.single())
         }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
@@ -78,8 +78,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 200L,
-                Simulator.Gt7Ps5.id,
-                sourceKey.value,
+                Simulator.Gt7Ps5,
+                sourceKey,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -113,7 +113,7 @@ class Gt7Ps5NarratorEventProcessorTest {
         verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
         coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(200L, Simulator.Gt7Ps5.id, sourceKey.value, telemetryJsons.single())
+            telemetryLogRepository.saveTelemetryLog(200L, Simulator.Gt7Ps5, sourceKey, telemetryJsons.single())
         }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
@@ -129,8 +129,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                myBestLapKey.value,
+                Simulator.Gt7Ps5,
+                myBestLapKey,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -152,8 +152,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                myBestLapKey.value,
+                Simulator.Gt7Ps5,
+                myBestLapKey,
                 telemetryJsons.single(),
             )
         }
@@ -190,8 +190,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -211,8 +211,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 telemetryJsons.single(),
             )
         }
@@ -230,8 +230,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 capture(telemetryJsons),
             )
         } just Runs
@@ -252,8 +252,8 @@ class Gt7Ps5NarratorEventProcessorTest {
         coVerify(exactly = 1) {
             telemetryLogRepository.saveTelemetryLog(
                 0L,
-                Simulator.Gt7Ps5.id,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 telemetryJsons.single(),
             )
         }

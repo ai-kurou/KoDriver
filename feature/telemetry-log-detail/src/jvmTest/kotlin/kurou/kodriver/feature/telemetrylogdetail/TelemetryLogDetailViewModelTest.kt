@@ -15,6 +15,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -151,7 +153,7 @@ private fun telemetryLog(
 ) = TelemetryLog(
     id = id,
     createdAt = createdAt,
-    simulatorId = "lmu_windows",
-    readoutItemKey = "flag",
+    simulator = Simulator.LmuWindows,
+    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
     telemetryJson = telemetryJson,
 )

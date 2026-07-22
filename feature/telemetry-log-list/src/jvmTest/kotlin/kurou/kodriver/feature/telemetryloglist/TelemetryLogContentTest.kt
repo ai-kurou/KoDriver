@@ -21,6 +21,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
@@ -127,19 +128,19 @@ class TelemetryLogContentTest {
     @Test
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
         val expectedDisplayNames = listOf(
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root.value to "車両接近",
-            ReadoutItemKey.LmuWindows.Flag.Root.value to "フラッグ",
-            ReadoutItemKey.LmuWindows.Flag.BlueFlag.value to "ブルーフラッグ",
-            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag.value to "イエローフラッグ",
-            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow.value to "フルコースイエロー",
-            ReadoutItemKey.LmuWindows.Flag.RedFlag.value to "レッドフラッグ",
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root.value to "車両故障",
-            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat.value to "オーバーヒート",
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root.value to "タイヤ温度",
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.value to "バーチャルエナジー残り周回数",
-            ReadoutItemKey.LmuWindows.MyBestLap.Root.value to "自己ベストラップ",
-            ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value to "自己ベストラップ",
-            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value to "燃料残り周回数",
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root to "車両接近",
+            ReadoutItemKey.LmuWindows.Flag.Root to "フラッグ",
+            ReadoutItemKey.LmuWindows.Flag.BlueFlag to "ブルーフラッグ",
+            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to "イエローフラッグ",
+            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to "フルコースイエロー",
+            ReadoutItemKey.LmuWindows.Flag.RedFlag to "レッドフラッグ",
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root to "車両故障",
+            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to "オーバーヒート",
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root to "タイヤ温度",
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to "バーチャルエナジー残り周回数",
+            ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
+            ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
         )
 
         rule.setContent {
@@ -151,15 +152,6 @@ class TelemetryLogContentTest {
         expectedDisplayNames.groupingBy { it.second }.eachCount().forEach { (displayName, count) ->
             rule.onAllNodesWithText(displayName).assertCountEquals(count)
         }
-    }
-
-    @Test
-    fun `readoutItemDisplayNameは未知の読み上げ項目IDをそのまま返す`() {
-        rule.setContent {
-            Text(readoutItemDisplayName("unknown_readout_item"))
-        }
-
-        rule.onNodeWithText("unknown_readout_item").assertExists()
     }
 
     @Test
@@ -266,16 +258,17 @@ class TelemetryLogContentTest {
             )
         }
 
-        rule.onNode(hasScrollAction()).performScrollToNode(hasText("log_20"))
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("オーバーヒート"))
         rule.runOnIdle {
-            logs.value = listOf(createTelemetryLog(id = 100, readoutItemKey = "new_log")) + logs.value
+            logs.value = listOf(createTelemetryLog(id = 100, readoutItemKey = ReadoutItemKey.LmuWindows.Flag.RedFlag)) +
+                logs.value
         }
 
         rule.onNodeWithText("新しいログ").assertExists()
 
         rule.onNodeWithText("新しいログ").performClick()
 
-        rule.onNodeWithText("new_log").assertExists()
+        rule.onNodeWithText("レッドフラッグ").assertExists()
     }
 
     @Test
@@ -292,26 +285,33 @@ class TelemetryLogContentTest {
             }
         }
 
-        rule.onNode(hasScrollAction()).performScrollToNode(hasText("log_20"))
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("オーバーヒート"))
         rule.runOnIdle { scrollToTopRequest++ }
 
         rule.waitUntil {
-            rule.onAllNodesWithText("log_30").fetchSemanticsNodes().isNotEmpty()
+            rule.onAllNodesWithText("バーチャルエナジー残り周回数").fetchSemanticsNodes().isNotEmpty()
         }
     }
 }
 
 private fun createTelemetryLogs(): List<TelemetryLog> = (30 downTo 1).map { id ->
-    createTelemetryLog(id = id.toLong(), readoutItemKey = "log_$id")
+    createTelemetryLog(
+        id = id.toLong(),
+        readoutItemKey = when (id) {
+            30 -> ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root
+            20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
+            else -> ReadoutItemKey.LmuWindows.Flag.Root
+        },
+    )
 }
 
 private fun createTelemetryLog(
     id: Long,
-    readoutItemKey: String,
+    readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
 ) = TelemetryLog(
     id = id,
     createdAt = id,
-    simulatorId = "lmu_windows",
+    simulator = Simulator.LmuWindows,
     readoutItemKey = readoutItemKey,
     telemetryJson = """{"id":$id}""",
 )
