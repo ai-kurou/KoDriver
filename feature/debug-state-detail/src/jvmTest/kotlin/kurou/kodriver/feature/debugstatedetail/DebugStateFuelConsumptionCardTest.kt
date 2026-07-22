@@ -39,7 +39,7 @@ class DebugStateFuelConsumptionCardTest {
     }
 
     @Test
-    fun `selectedSimulatorがLMUの場合はバーチャルエナジー消費率と残り週数を表示する`() {
+    fun `selectedSimulatorがLMUの場合はバーチャルエナジー消費率と残り周数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -55,12 +55,12 @@ class DebugStateFuelConsumptionCardTest {
             }
         }
 
-        rule.onNodeWithText("消費 10.0%/週").assertIsDisplayed()
-        rule.onNodeWithText("残り 5週").assertIsDisplayed()
+        rule.onNodeWithText("消費 10.0%/周").assertIsDisplayed()
+        rule.onNodeWithText("残り 5周").assertIsDisplayed()
     }
 
     @Test
-    fun `selectedSimulatorがGT7の場合は燃料消費量Lと残り週数を表示する`() {
+    fun `selectedSimulatorがGT7の場合は燃料消費量Lと残り周数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -75,8 +75,8 @@ class DebugStateFuelConsumptionCardTest {
             }
         }
 
-        rule.onNodeWithText("消費 10.0L/週").assertIsDisplayed()
-        rule.onNodeWithText("残り 4週").assertIsDisplayed()
+        rule.onNodeWithText("消費 10.0L/周").assertIsDisplayed()
+        rule.onNodeWithText("残り 4周").assertIsDisplayed()
     }
 
     @Test

@@ -16,7 +16,7 @@ import kotlin.test.assertNull
 class FuelConsumptionCalculatorTest {
 
     @Test
-    fun `LMU 5週消費後の残量50パーセントなら1週あたり10パーセント消費で残り5週`() {
+    fun `LMU 5周消費後の残量50パーセントなら1周あたり10パーセント消費で残り5周`() {
         val result = calculateLmuVirtualEnergyConsumption(
             virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
             telemetry = sampleLmuTelemetry(currentLap = 5),
@@ -64,7 +64,7 @@ class FuelConsumptionCalculatorTest {
     }
 
     @Test
-    fun `GT7 3週で30L消費し残り40Lなら1週あたり10Lで残り4週`() {
+    fun `GT7 3周で30L消費し残り40Lなら1周あたり10Lで残り4周`() {
         val result = calculateGt7FuelConsumption(
             sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
         )

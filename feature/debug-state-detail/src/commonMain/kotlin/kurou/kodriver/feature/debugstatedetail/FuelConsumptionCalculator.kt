@@ -31,7 +31,7 @@ internal fun calculateLmuVirtualEnergyConsumption(
 }
 
 /**
- * レース開始からの平均消費量（リッター/週）で近似する簡易計算。直近の給油は考慮しない。
+ * レース開始からの平均消費量（リッター/周）で近似する簡易計算。直近の給油は考慮しない。
  */
 internal fun calculateGt7FuelConsumption(telemetry: Gt7Ps5TelemetryData?): FuelConsumptionResult? {
     if (telemetry == null || telemetry.lapCount <= 0) return null

@@ -104,7 +104,7 @@ class DebugStateDetailPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(1000.dp, 768.dp)) {
                         DebugStateDetailPaneContent(
                             uiState = DebugStateDetailUiState(),
                             canNavigateBack = true,
@@ -122,7 +122,7 @@ class DebugStateDetailPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(1000.dp, 768.dp)) {
                         DebugStateDetailPaneContent(
                             uiState = DebugStateDetailUiState(
                                 selectedSimulator = Simulator.LmuWindows,
