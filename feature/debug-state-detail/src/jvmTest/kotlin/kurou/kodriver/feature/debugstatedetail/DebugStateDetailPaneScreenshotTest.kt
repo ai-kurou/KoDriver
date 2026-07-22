@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -25,6 +26,7 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
 
@@ -41,11 +43,26 @@ private val sampleRaceFlags = LmuWindowsRaceFlagsData(
 
 private val sampleVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = 10)
 
+private fun sampleWheel(surfaceTemperatureCelsius: Double) = LmuWindowsTyreWheelData(
+    surfaceTemperatureK = surfaceTemperatureCelsius + 273.15,
+    carcassTemperatureK = 0.0,
+    brakeTemperatureC = 0.0,
+    pressureKpa = 0.0,
+    wear = 0.0,
+)
+
 private val sampleLmuWindowsTelemetry = LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-    tyres = LmuWindowsTyreData(wheels = emptyMap()),
+    tyres = LmuWindowsTyreData(
+        wheels = mapOf(
+            WheelIndex.FRONT_LEFT to sampleWheel(85.0),
+            WheelIndex.FRONT_RIGHT to sampleWheel(86.0),
+            WheelIndex.REAR_LEFT to sampleWheel(87.0),
+            WheelIndex.REAR_RIGHT to sampleWheel(88.0),
+        ),
+    ),
     fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
     timing = LmuWindowsTimingData(
         currentLapTimeMs = 0L,

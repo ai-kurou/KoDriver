@@ -9,4 +9,5 @@ enum class DebugStateCardKey {
     CURRENT_LAP,
     SIDE_BY_SIDE_VEHICLES,
     BEST_LAP,
+    TYRE_TEMPERATURE,
 }

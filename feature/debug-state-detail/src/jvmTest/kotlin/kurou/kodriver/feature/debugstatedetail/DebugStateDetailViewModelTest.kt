@@ -372,6 +372,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.CURRENT_LAP,
                 DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
                 DebugStateCardKey.BEST_LAP,
+                DebugStateCardKey.TYRE_TEMPERATURE,
             ),
             state.cardOrder,
         )
@@ -416,6 +417,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.CURRENT_LAP,
                 DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
                 DebugStateCardKey.BEST_LAP,
+                DebugStateCardKey.TYRE_TEMPERATURE,
             ),
             state.cardOrder,
         )

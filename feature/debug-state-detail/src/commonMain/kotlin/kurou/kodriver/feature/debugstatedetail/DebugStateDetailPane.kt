@@ -51,6 +51,7 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_last_lap
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_none
@@ -208,6 +209,13 @@ private fun DebugStateCard(
             modifier = modifier,
             bottomContent = {
                 BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+            },
+        )
+        DebugStateCardKey.TYRE_TEMPERATURE -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_tyre_temperature_title),
+            modifier = modifier,
+            bottomContent = {
+                TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
             },
         )
     }
