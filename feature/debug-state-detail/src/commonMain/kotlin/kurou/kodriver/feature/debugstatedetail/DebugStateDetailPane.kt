@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -90,6 +91,8 @@ import kotlin.math.round
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
 
+internal const val DEBUG_STATE_GRID_TEST_TAG = "debug_state_grid"
+
 internal fun calculateDebugStateColumns(maxWidth: Dp): Int = when {
     maxWidth < NARROW_WIDTH_UPPER_BOUND -> 1
     maxWidth < MEDIUM_WIDTH_UPPER_BOUND -> 2
@@ -134,7 +137,11 @@ internal fun DebugStateDetailPaneContent(
             val reorderableState = rememberReorderableLazyGridState(gridState) { from, to ->
                 onMoveCard(from.index, to.index)
             }
-            LazyVerticalGrid(columns = GridCells.Fixed(columns), state = gridState) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                state = gridState,
+                modifier = Modifier.testTag(DEBUG_STATE_GRID_TEST_TAG),
+            ) {
                 items(uiState.cardOrder, key = { it.name }) { cardKey ->
                     ReorderableItem(reorderableState, key = cardKey.name) {
                         DebugStateCard(
