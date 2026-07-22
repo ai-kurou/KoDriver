@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.debugstatedetail.generated.resources.Res
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_best_lap_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_current_lap_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_blue
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_full_course_yellow
@@ -202,6 +203,13 @@ private fun DebugStateCard(
                 SideBySideVehiclesContent(uiState.vehicleApproach)
             },
         )
+        DebugStateCardKey.BEST_LAP -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_best_lap_title),
+            modifier = modifier,
+            bottomContent = {
+                BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+            },
+        )
     }
 }
 
@@ -333,6 +341,23 @@ private fun CurrentLapContent(
     }
     Text(
         text = currentLap?.toString() ?: stringResource(Res.string.debug_state_flag_info_unavailable),
+    )
+}
+
+@Composable
+private fun BestLapContent(
+    selectedSimulator: Simulator?,
+    lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+    gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
+) {
+    val bestLapTimeMs = when (selectedSimulator) {
+        is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.bestLapTimeMs
+        is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.bestLapTimeMs?.toLong()
+        null -> null
+    }
+    Text(
+        text = bestLapTimeMs?.takeIf { it > 0L }?.let { formatLapTimeMs(it) }
+            ?: stringResource(Res.string.debug_state_flag_info_unavailable),
     )
 }
 

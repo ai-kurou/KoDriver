@@ -8,4 +8,5 @@ enum class DebugStateCardKey {
     YELLOW_FLAG_STATE,
     CURRENT_LAP,
     SIDE_BY_SIDE_VEHICLES,
+    BEST_LAP,
 }
