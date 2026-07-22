@@ -105,6 +105,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             state.items,
@@ -132,6 +133,7 @@ class ReadoutListViewModelTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.LmuWindows.MyBestLap.Root,
         )
         coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } returns Unit
@@ -148,6 +150,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             viewModel.uiState.first().items,
@@ -161,6 +164,7 @@ class ReadoutListViewModelTest {
                     ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                     ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                     ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    ReadoutItemKey.LmuWindows.TyreWear.Root,
                     ReadoutItemKey.LmuWindows.MyBestLap.Root,
                 ),
             )
@@ -284,6 +288,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             viewModel.uiState.first().items,
@@ -307,6 +312,7 @@ class ReadoutListViewModelTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.LmuWindows.MyBestLap.Root,
         )
         coEvery { readoutRepository.saveReadoutOrder("lmu_windows", movedOrder) } answers {
@@ -325,6 +331,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             orderFlow.value,
@@ -347,6 +354,7 @@ class ReadoutListViewModelTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.LmuWindows.MyBestLap.Root,
         )
         val secondMovedOrder = listOf(
@@ -355,6 +363,7 @@ class ReadoutListViewModelTest {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+            ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.LmuWindows.MyBestLap.Root,
         )
         coEvery { readoutRepository.saveReadoutOrder("lmu_windows", firstMovedOrder) } returns Unit
@@ -373,6 +382,7 @@ class ReadoutListViewModelTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             viewModel.uiState.first().items,

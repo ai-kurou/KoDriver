@@ -137,6 +137,7 @@ class TelemetryLogContentTest {
             ReadoutItemKey.LmuWindows.VehicleDamage.Overheat.value to "オーバーヒート",
             ReadoutItemKey.LmuWindows.TyreTemperature.Root.value to "タイヤ温度",
             ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.value to "バーチャルエナジー残り周回数",
+            ReadoutItemKey.LmuWindows.TyreWear.Root.value to "タイヤ摩耗",
             ReadoutItemKey.LmuWindows.MyBestLap.Root.value to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root.value to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value to "燃料残り周回数",

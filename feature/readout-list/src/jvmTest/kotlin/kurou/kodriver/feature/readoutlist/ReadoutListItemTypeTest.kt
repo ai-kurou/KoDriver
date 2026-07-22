@@ -99,10 +99,16 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
         )
+    }
+
+    @Test
+    fun `lmu_windows の tyre_wear は detailPane未実装のため null を返す`() {
+        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreWear.Root))
     }
 
     @Test
