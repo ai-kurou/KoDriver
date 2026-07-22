@@ -106,6 +106,10 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 `expect` / `actual` を使わない ViewModel・UiState・純粋ロジックのテストは、原則 `jvmTest` に置くこと。`commonTest` は js / wasmJs / android を含む全ターゲットでコンパイル・実行されるため、モック等の JVM/Android 専用ライブラリを使えない。このプロジェクトの配布対象は実質 JVM（デスクトップ）と Android のみで、js / wasmJs（`:app:webApp`）はビルド設定のみのため、`commonTest` に置く意味があるのは実際にマルチプラットフォームで分岐する実装（`expect` / `actual` を持つコードなど）をテストする場合に限る。
 
+### スクリーンショットテストの配置先
+
+スクリーンショットテストは、原則として Desktop/JVM 向けの `src/jvmTest` のみに実装すること。Android と Desktop で見た目・レイアウト・表示内容が異なる場合に限り、差分を確認するための Android 向けスクリーンショットテストを `src/androidHostTest` に追加する。
+
 ---
 
 ## ライブラリバージョン管理

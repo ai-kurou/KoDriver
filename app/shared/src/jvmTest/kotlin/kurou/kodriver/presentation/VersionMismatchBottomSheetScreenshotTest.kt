@@ -3,20 +3,19 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.github.takahirom.roborazzi.captureRoboImage
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.dp
+import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.robolectric.annotation.GraphicsMode
 
-@RunWith(RobolectricTestRunner::class)
-@GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "w480dp-h360dp")
 class VersionMismatchBottomSheetScreenshotTest {
+
+    @get:Rule
+    val rule = createComposeRule()
 
     @Test
     fun `Windows版が新しい`() {
@@ -29,10 +28,10 @@ class VersionMismatchBottomSheetScreenshotTest {
     }
 
     private fun capture(windowsKoDriverVersion: String, appVersion: String) {
-        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
+        rule.setContent {
             AppTheme {
                 Surface {
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.requiredSize(width = 480.dp, height = 360.dp)) {
                         VersionMismatchBottomSheetContent(
                             windowsKoDriverVersion = windowsKoDriverVersion,
                             appVersion = appVersion,
@@ -42,5 +41,6 @@ class VersionMismatchBottomSheetScreenshotTest {
                 }
             }
         }
+        rule.onRoot().captureRoboImage()
     }
 }
