@@ -36,13 +36,6 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_ph
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_unknown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_warm_up
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_ahead
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_behind
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_item
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_left
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_none
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_right
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_nearby_vehicles_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_practice
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_qualifying
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_race
@@ -50,6 +43,10 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_session
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_unknown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_warmup
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_left
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_none
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_right
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_side_by_side_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
@@ -71,10 +68,9 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.LmuWindowsNearbyVehicleData
-import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -86,7 +82,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyGridState
-import kotlin.math.abs
 import kotlin.math.round
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
@@ -200,11 +195,11 @@ private fun DebugStateCard(
                 CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
             },
         )
-        DebugStateCardKey.NEARBY_VEHICLES -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_nearby_vehicles_title),
+        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_side_by_side_title),
             modifier = modifier,
             bottomContent = {
-                NearbyVehiclesContent(uiState.nearbyVehicles)
+                SideBySideVehiclesContent(uiState.vehicleApproach)
             },
         )
     }
@@ -341,45 +336,36 @@ private fun CurrentLapContent(
     )
 }
 
-@Composable
-private fun nearbyVehicleDisplayName(vehicle: LmuWindowsNearbyVehicleData): String {
-    val longitudinalLabel = if (vehicle.longitudinalDistanceMeters >= 0) {
-        stringResource(Res.string.debug_state_nearby_vehicles_ahead)
-    } else {
-        stringResource(Res.string.debug_state_nearby_vehicles_behind)
-    }
-    val lateralLabel = if (vehicle.lateralDistanceMeters >= 0) {
-        stringResource(Res.string.debug_state_nearby_vehicles_right)
-    } else {
-        stringResource(Res.string.debug_state_nearby_vehicles_left)
-    }
-    return stringResource(
-        Res.string.debug_state_nearby_vehicles_item,
-        vehicle.vehicleId,
-        longitudinalLabel,
-        formatMeters(vehicle.longitudinalDistanceMeters),
-        lateralLabel,
-        formatMeters(vehicle.lateralDistanceMeters),
-    )
-}
-
 private fun formatMeters(value: Double): String {
-    val rounded = round(abs(value) * 10) / 10
+    val rounded = round(value * 10) / 10
     return rounded.toString()
 }
 
 @Composable
-private fun NearbyVehiclesContent(nearbyVehicles: LmuWindowsNearbyVehiclesData?) {
-    if (nearbyVehicles == null) {
+private fun SideBySideVehiclesContent(vehicleApproach: LmuWindowsVehicleApproachData?) {
+    if (vehicleApproach == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
     Column {
-        if (nearbyVehicles.vehicles.isEmpty()) {
-            Text(text = stringResource(Res.string.debug_state_nearby_vehicles_none))
+        if (!vehicleApproach.isSideBySideLeft && !vehicleApproach.isSideBySideRight) {
+            Text(text = stringResource(Res.string.debug_state_side_by_side_none))
         } else {
-            nearbyVehicles.vehicles.forEach { vehicle ->
-                Text(text = nearbyVehicleDisplayName(vehicle))
+            if (vehicleApproach.isSideBySideLeft) {
+                Text(
+                    text = stringResource(
+                        Res.string.debug_state_side_by_side_left,
+                        formatMeters(vehicleApproach.lateralDistanceLeftMeters),
+                    ),
+                )
+            }
+            if (vehicleApproach.isSideBySideRight) {
+                Text(
+                    text = stringResource(
+                        Res.string.debug_state_side_by_side_right,
+                        formatMeters(vehicleApproach.lateralDistanceRightMeters),
+                    ),
+                )
             }
         }
     }

@@ -21,8 +21,6 @@ import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsNearbyVehicleData
-import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -39,13 +37,11 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
-import kurou.kodriver.domain.repository.LmuWindowsNearbyVehiclesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsNearbyVehiclesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -77,7 +73,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -99,7 +94,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -122,7 +116,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -158,7 +151,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -192,7 +184,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -222,7 +213,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -257,7 +247,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -291,7 +280,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -325,7 +313,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -357,7 +344,6 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -386,7 +372,6 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -420,7 +405,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -451,7 +435,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -472,71 +455,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun `近くの車両情報をJSONでWebSocketへ送信する`() = testApplication {
-        val repository = FakeLmuWindowsNearbyVehiclesRepository()
-        application {
-            module(
-                KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
-                    ),
-                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(repository),
-                ),
-            )
-        }
-
-        client.config {
-            install(WebSockets)
-        }.webSocket("/ws/lmu_windows/nearby_vehicles") {
-            repository.emit(nearbyVehiclesData1)
-
-            val message = withTimeout(1_000) {
-                (incoming.receive() as Frame.Text).readText()
-            }
-            assertEquals(nearbyVehiclesJson1, message)
-        }
-    }
-
-    @Test
-    fun `近くの車両情報の同一値は重複して送信されない`() = testApplication {
-        val repository = FakeLmuWindowsNearbyVehiclesRepository()
-        application {
-            module(
-                KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
-                    ),
-                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(repository),
-                ),
-            )
-        }
-
-        client.config {
-            install(WebSockets)
-        }.webSocket("/ws/lmu_windows/nearby_vehicles") {
-            repository.emit(nearbyVehiclesData1)
-            repository.emit(nearbyVehiclesData1)
-            repository.emit(nearbyVehiclesData2)
-
-            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
-
-            assertEquals(nearbyVehiclesJson1, first)
-            assertEquals(nearbyVehiclesJson2, second)
-        }
-    }
-
-    @Test
     fun `KoDriverServerはstartで起動しstopで停止する`() {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
@@ -549,7 +467,6 @@ class ApplicationTest {
                 ),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                 observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
             ),
             port = port,
             host = "127.0.0.1",
@@ -578,7 +495,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -609,7 +525,6 @@ class ApplicationTest {
                     ),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
-                    observeNearbyVehicles = ObserveLmuWindowsNearbyVehiclesUseCase(EmptyNearbyVehiclesRepository),
                 ),
             )
         }
@@ -640,7 +555,6 @@ class ApplicationTest {
                     single<LmuWindowsTyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
                     single<LmuWindowsVirtualEnergyRepository> { EmptyVirtualEnergyRepository }
-                    single<LmuWindowsNearbyVehiclesRepository> { EmptyNearbyVehiclesRepository }
                 },
             )
         }.koin
@@ -886,31 +800,6 @@ private const val virtualEnergyJson2 = """{"remainingRatio":0.3,"session":10}"""
 
 private object EmptyVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
-}
-
-private object EmptyNearbyVehiclesRepository : LmuWindowsNearbyVehiclesRepository {
-    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = emptyFlow()
-}
-
-private val nearbyVehiclesData1 = LmuWindowsNearbyVehiclesData(
-    vehicles = listOf(
-        LmuWindowsNearbyVehicleData(vehicleId = 1, longitudinalDistanceMeters = 3.0, lateralDistanceMeters = -2.0),
-    ),
-)
-private val nearbyVehiclesData2 = LmuWindowsNearbyVehiclesData(vehicles = emptyList())
-
-private const val nearbyVehiclesJson1 =
-    """{"vehicles":[{"vehicleId":1,"longitudinalDistanceMeters":3.0,"lateralDistanceMeters":-2.0}]}"""
-private const val nearbyVehiclesJson2 = """{"vehicles":[]}"""
-
-private class FakeLmuWindowsNearbyVehiclesRepository : LmuWindowsNearbyVehiclesRepository {
-    private val channel = Channel<LmuWindowsNearbyVehiclesData>(capacity = Channel.UNLIMITED)
-
-    override fun nearbyVehiclesStream(): Flow<LmuWindowsNearbyVehiclesData> = channel.receiveAsFlow()
-
-    fun emit(data: LmuWindowsNearbyVehiclesData) {
-        channel.trySend(data).getOrThrow()
-    }
 }
 
 private class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {

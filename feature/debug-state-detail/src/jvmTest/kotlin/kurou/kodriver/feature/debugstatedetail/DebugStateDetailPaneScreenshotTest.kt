@@ -13,12 +13,11 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsNearbyVehicleData
-import kurou.kodriver.domain.model.LmuWindowsNearbyVehiclesData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -71,11 +70,11 @@ private val sampleGt7Ps5Telemetry = Gt7Ps5TelemetryData(
     gasCapacity = 0f,
 )
 
-private val sampleNearbyVehicles = LmuWindowsNearbyVehiclesData(
-    vehicles = listOf(
-        LmuWindowsNearbyVehicleData(vehicleId = 4, longitudinalDistanceMeters = 3.0, lateralDistanceMeters = 2.0),
-        LmuWindowsNearbyVehicleData(vehicleId = 7, longitudinalDistanceMeters = -1.5, lateralDistanceMeters = -4.2),
-    ),
+private val sampleVehicleApproach = LmuWindowsVehicleApproachData(
+    sideBySideLeftVehicleIds = setOf(4),
+    sideBySideRightVehicleIds = setOf(7),
+    lateralDistanceLeftMeters = 2.0,
+    lateralDistanceRightMeters = 1.5,
 )
 
 class DebugStateDetailPaneScreenshotTest {
@@ -114,7 +113,7 @@ class DebugStateDetailPaneScreenshotTest {
                                 virtualEnergy = sampleVirtualEnergy,
                                 lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
                                 gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
-                                nearbyVehicles = sampleNearbyVehicles,
+                                vehicleApproach = sampleVehicleApproach,
                             ),
                             canNavigateBack = true,
                             onBack = {},
