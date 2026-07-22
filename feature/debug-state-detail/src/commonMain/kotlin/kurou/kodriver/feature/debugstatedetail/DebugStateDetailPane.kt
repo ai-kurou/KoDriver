@@ -2,7 +2,9 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -400,29 +402,37 @@ private fun SideBySideVehiclesContent(vehicleApproach: LmuWindowsVehicleApproach
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
-    Column {
-        if (!vehicleApproach.isSideBySideLeft && !vehicleApproach.isSideBySideRight) {
-            Text(text = stringResource(Res.string.debug_state_side_by_side_none))
-        } else {
-            if (vehicleApproach.isSideBySideLeft) {
-                Text(
-                    text = stringResource(
-                        Res.string.debug_state_side_by_side_left,
-                        formatMeters(vehicleApproach.lateralDistanceLeftMeters),
-                    ),
+    if (!vehicleApproach.isSideBySideLeft && !vehicleApproach.isSideBySideRight) {
+        Text(text = stringResource(Res.string.debug_state_side_by_side_none))
+        return
+    }
+    Row {
+        Text(
+            text = if (vehicleApproach.isSideBySideLeft) {
+                stringResource(
+                    Res.string.debug_state_side_by_side_left,
+                    formatMeters(vehicleApproach.lateralDistanceLeftMeters),
                 )
-            }
-            if (vehicleApproach.isSideBySideRight) {
-                Text(
-                    text = stringResource(
-                        Res.string.debug_state_side_by_side_right,
-                        formatMeters(vehicleApproach.lateralDistanceRightMeters),
-                    ),
+            } else {
+                ""
+            },
+            modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH),
+        )
+        Text(
+            text = if (vehicleApproach.isSideBySideRight) {
+                stringResource(
+                    Res.string.debug_state_side_by_side_right,
+                    formatMeters(vehicleApproach.lateralDistanceRightMeters),
                 )
-            }
-        }
+            } else {
+                ""
+            },
+            modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH),
+        )
     }
 }
+
+private val SIDE_BY_SIDE_COLUMN_WIDTH = 80.dp
 
 @Preview(showBackground = true)
 @Composable
