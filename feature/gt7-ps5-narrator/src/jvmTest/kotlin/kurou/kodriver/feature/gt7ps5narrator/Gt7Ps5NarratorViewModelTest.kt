@@ -41,8 +41,8 @@ import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -78,13 +78,13 @@ class Gt7Ps5NarratorViewModelTest {
     @MockK
     private lateinit var priorityAwareTts: PriorityAwareTts
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }

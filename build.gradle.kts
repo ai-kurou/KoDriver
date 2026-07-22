@@ -376,6 +376,7 @@ dependencies {
     kover(project(":feature:gt7-ps5-narrator"))
     kover(project(":feature:telemetry-log-list"))
     kover(project(":feature:telemetry-log-detail"))
+    kover(project(":feature:debug-state-detail"))
     kover(project(":app:androidApp"))
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))

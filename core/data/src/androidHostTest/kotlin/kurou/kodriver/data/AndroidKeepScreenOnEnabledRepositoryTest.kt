@@ -9,9 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -23,7 +23,7 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
     private lateinit var tempFile: File
     private lateinit var repository: AndroidKeepScreenOnEnabledRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("keep_screen_on_test", ".preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(
@@ -33,7 +33,7 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
         repository = AndroidKeepScreenOnEnabledRepository(dataStore)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         tempFile.delete()
     }

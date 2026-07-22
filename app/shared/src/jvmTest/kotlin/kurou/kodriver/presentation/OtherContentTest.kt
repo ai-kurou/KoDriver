@@ -56,6 +56,8 @@ class OtherContentTest {
                     exitConfirmationEnabled = exitConfirmationEnabled,
                     dynamicColorEnabled = dynamicColorEnabled,
                     items = OtherListUiState().items + OtherListItemType.DynamicColor,
+                    appVersionLabel = "Windows版KoDriverバージョン",
+                    appVersion = "1.2.3",
                 ),
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
@@ -64,6 +66,7 @@ class OtherContentTest {
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
+                onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
                 onClearSelectedItem = { selectedItem = null },
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
@@ -142,6 +145,20 @@ class OtherContentTest {
         rule.onNode(hasText("ライセンス")).performClick()
         rule.waitForIdle()
 
+        assertTrue(backEnabled)
+
+        rule.runOnIdle { capturedOnBack?.invoke() }
+        rule.waitUntil { !backEnabled }
+
+        assertFalse(backEnabled)
+
+        // アプリバージョンを5回連続タップ（onAppVersionTapped経由でDebugStateの詳細ペインへ遷移）
+        repeat(5) {
+            rule.onNode(hasText("Windows版KoDriverバージョン")).performClick()
+            rule.waitForIdle()
+        }
+
+        rule.onNodeWithText("Detail: debug_state").assertExists()
         assertTrue(backEnabled)
 
         rule.runOnIdle { capturedOnBack?.invoke() }

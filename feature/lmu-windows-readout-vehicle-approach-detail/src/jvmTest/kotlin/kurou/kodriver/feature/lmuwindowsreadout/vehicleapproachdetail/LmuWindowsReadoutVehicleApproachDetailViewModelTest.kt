@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
@@ -31,8 +32,8 @@ import kurou.kodriver.domain.usecase.LmuWindowsVehicleApproachThresholdsUseCases
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleApproachEnabledStateUseCase
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -50,13 +51,13 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
     @MockK
     private lateinit var ttsEngine: TextToSpeechEngine
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }
@@ -560,24 +561,22 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
         coEvery {
             thresholdsRepository.saveSustainedApproachDurationSeconds(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             )
         } answers {
-            sustainedDurationFlow.update {
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS
-            }
+            sustainedDurationFlow.update { LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT }
         }
         val viewModel = createViewModel()
 
         viewModel.onResetSustainedApproachDurationSeconds()
 
         assertEquals(
-            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             viewModel.uiState.first().sustainedApproachDurationSeconds,
         )
         coVerify(exactly = 1) {
             thresholdsRepository.saveSustainedApproachDurationSeconds(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_SUSTAINED_APPROACH_DURATION_SECONDS,
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             )
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }

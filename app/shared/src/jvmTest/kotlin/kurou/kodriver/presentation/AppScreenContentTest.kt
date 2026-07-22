@@ -153,7 +153,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                telemetryLogContent = { Text("TelemetryLogContent") },
+                telemetryLogContent = { _ -> Text("TelemetryLogContent") },
             )
         }
 

@@ -8,11 +8,13 @@ import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
@@ -30,12 +32,12 @@ import kurou.kodriver.feature.telemetryloglist.fakeTelemetryLogRepository
 import kurou.kodriver.presentation.AppScreen
 import kurou.kodriver.presentation.featureModules
 import org.junit.AfterClass
-import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import kotlin.test.BeforeTest
 
 class AppTest {
 
@@ -43,7 +45,8 @@ class AppTest {
         private const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
 
-        @BeforeClass @JvmStatic
+        @BeforeClass
+        @JvmStatic
         fun setUpKoin() {
             startKoin {
                 // Koinは同一型のsingleが複数登録された場合、後から登録した方で上書きする。
@@ -67,7 +70,8 @@ class AppTest {
             }
         }
 
-        @AfterClass @JvmStatic
+        @AfterClass
+        @JvmStatic
         fun tearDownKoin() {
             stopKoin()
         }
@@ -76,7 +80,7 @@ class AppTest {
     @get:Rule
     val rule = createComposeRule()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         fakeTelemetryLogRepository.clear()
     }
@@ -149,6 +153,16 @@ class AppTest {
         // 「画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
         clickItem("終了確認を表示")
         clickItem("ライセンス")
+    }
+
+    @Test
+    fun `アプリバージョンを5回連続タップするとデバッグ状態画面へ遷移する`() {
+        setContent()
+
+        clickItem("その他")
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("Windows版KoDriverバージョン"))
+        repeat(5) { clickItem("Windows版KoDriverバージョン") }
+        waitUntilDisplayed("デバッグ状態")
     }
 
     @Test

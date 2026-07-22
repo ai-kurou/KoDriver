@@ -5,8 +5,8 @@ package kurou.kodriver.data
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,13 +15,13 @@ class HttpServerVersionRepositoryTest {
 
     private lateinit var server: MockWebServer
 
-    @Before
+    @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         server.shutdown()
     }

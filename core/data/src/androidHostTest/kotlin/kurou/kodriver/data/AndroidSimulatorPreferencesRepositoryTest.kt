@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
-import org.junit.After
-import org.junit.Before
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -24,7 +24,7 @@ class AndroidSimulatorPreferencesRepositoryTest {
     private lateinit var tempFile: File
     private lateinit var repository: AndroidSimulatorPreferencesRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("simulator_test", ".preferences_pb")
         val dataStore = PreferenceDataStoreFactory.create(
@@ -34,7 +34,7 @@ class AndroidSimulatorPreferencesRepositoryTest {
         repository = AndroidSimulatorPreferencesRepository(dataStore)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         tempFile.delete()
     }

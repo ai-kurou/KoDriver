@@ -1,10 +1,19 @@
 package kurou.kodriver.feature.otherlist
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.unit.dp
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -194,6 +203,79 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `デバッグ状態項目をクリックすると項目クリックコールバックを呼ぶ`() {
+        var clickedItem: OtherListItemType? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = listOf(OtherListItemType.DebugState),
+                ),
+                onItemClick = { clickedItem = it },
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("デバッグ状態")).performClick()
+
+        assertEquals(OtherListItemType.DebugState, clickedItem)
+    }
+
+    @Test
+    fun `アプリバージョンを5回連続タップするとコールバックを呼ぶ`() {
+        var tappedCount = 0
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = emptyList(),
+                    appVersionLabel = "Android版KoDriverバージョン",
+                    appVersion = "1.2.3",
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+                onAppVersionTapped = { tappedCount++ },
+            )
+        }
+
+        repeat(5) {
+            rule.onNode(hasText("Android版KoDriverバージョン")).performClick()
+        }
+
+        assertEquals(1, tappedCount)
+    }
+
+    @Test
+    fun `アプリバージョンを4回タップしてもコールバックを呼ばない`() {
+        var tappedCount = 0
+
+        rule.setContent {
+            OtherListPane(
+                uiState = OtherListUiState(
+                    items = emptyList(),
+                    appVersionLabel = "Android版KoDriverバージョン",
+                    appVersion = "1.2.3",
+                ),
+                onItemClick = {},
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+                onAppVersionTapped = { tappedCount++ },
+            )
+        }
+
+        repeat(4) {
+            rule.onNode(hasText("Android版KoDriverバージョン")).performClick()
+        }
+
+        assertEquals(0, tappedCount)
+    }
+
+    @Test
     fun `表示項目に応じたセクション見出しを表示する`() {
         rule.setContent {
             OtherListPane(
@@ -254,5 +336,42 @@ class OtherListPaneTest {
 
         rule.onAllNodesWithText("アプリ設定").assertCountEquals(1)
         rule.onAllNodesWithText("テーマ").assertCountEquals(1)
+    }
+
+    @Test
+    fun `scrollToTopRequestが増えるとリストを先頭へ戻す`() {
+        var scrollToTopRequest by mutableStateOf(0)
+
+        rule.setContent {
+            Box(modifier = Modifier.height(160.dp)) {
+                OtherListPane(
+                    uiState = OtherListUiState(
+                        items = listOf(
+                            OtherListItemType.ConsoleIp,
+                            OtherListItemType.Volume,
+                            OtherListItemType.ReadoutStartSound,
+                            OtherListItemType.ExitConfirmation,
+                            OtherListItemType.Theme,
+                            OtherListItemType.DynamicColor,
+                            OtherListItemType.GitHubRepository,
+                            OtherListItemType.ReleasePage,
+                            OtherListItemType.License,
+                        ),
+                    ),
+                    onItemClick = {},
+                    onKeepScreenOnChange = {},
+                    onExitConfirmationEnabledChange = {},
+                    onDynamicColorEnabledChange = {},
+                    scrollToTopRequest = scrollToTopRequest,
+                )
+            }
+        }
+
+        rule.onNode(hasScrollAction()).performScrollToNode(hasText("ライセンス"))
+        rule.runOnIdle { scrollToTopRequest++ }
+
+        rule.waitUntil {
+            rule.onAllNodesWithText("ゲーム機・SimHubへ接続するIPアドレス").fetchSemanticsNodes().isNotEmpty()
+        }
     }
 }

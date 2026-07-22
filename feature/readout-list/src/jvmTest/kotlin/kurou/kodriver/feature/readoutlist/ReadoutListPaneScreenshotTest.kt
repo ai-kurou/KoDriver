@@ -20,9 +20,9 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.BeforeTest
 
 class ReadoutListPaneScreenshotTest {
 
@@ -32,7 +32,7 @@ class ReadoutListPaneScreenshotTest {
     @get:Rule
     val rule = createComposeRule()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
     }

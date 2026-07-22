@@ -21,8 +21,8 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
-import org.junit.Before
 import org.junit.Test
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,7 +34,7 @@ class LmuServerBannerConnectionCheckerTest {
     @MockK
     private lateinit var versionRepository: ServerVersionRepository
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
     }

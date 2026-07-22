@@ -41,6 +41,7 @@ fun OtherContent(
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
@@ -63,10 +64,12 @@ fun OtherContent(
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
         onExitConfirmationEnabledChange = viewModel::onExitConfirmationEnabledChange,
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
+        onAppVersionTapped = { viewModel.selectItem(OtherListItemType.DebugState) },
         onClearSelectedItem = viewModel::clearSelectedItem,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
+        scrollToTopRequest = scrollToTopRequest,
         detailContent = detailContent,
     )
 }
@@ -91,6 +94,7 @@ private fun handleOtherItemClick(
         OtherListItemType.ExitConfirmation,
         OtherListItemType.DynamicColor,
         OtherListItemType.License,
+        OtherListItemType.DebugState,
         -> onItemSelected(itemType)
     }
 }
@@ -107,11 +111,13 @@ internal fun OtherContent(
     onKeepScreenOnChange: (Boolean) -> Unit = {},
     onExitConfirmationEnabledChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
+    onAppVersionTapped: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
+    scrollToTopRequest: Int = 0,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -171,6 +177,7 @@ internal fun OtherContent(
                 onKeepScreenOnChange = onKeepScreenOnChange,
                 onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
                 onDynamicColorEnabledChange = onDynamicColorEnabledChange,
+                onAppVersionTapped = onAppVersionTapped,
                 onItemClick = { itemType ->
                     handleOtherItemClick(
                         itemType = itemType,
@@ -181,6 +188,7 @@ internal fun OtherContent(
                         onOpenThemeDialog = onOpenThemeDialog,
                     )
                 },
+                scrollToTopRequest = scrollToTopRequest,
             )
         },
         detailPane = {

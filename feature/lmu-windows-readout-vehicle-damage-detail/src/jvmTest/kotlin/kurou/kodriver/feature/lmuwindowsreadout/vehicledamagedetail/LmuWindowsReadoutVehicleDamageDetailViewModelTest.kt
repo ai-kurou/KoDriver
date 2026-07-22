@@ -25,8 +25,8 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleDamageEnabledStateUseCase
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -41,13 +41,13 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     @MockK
     private lateinit var ttsEngine: TextToSpeechEngine
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }

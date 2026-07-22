@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -33,7 +34,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -41,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.otherlist.generated.resources.Res
 import kodriver.feature.otherlist.generated.resources.item_console_ip
+import kodriver.feature.otherlist.generated.resources.item_debug_state
 import kodriver.feature.otherlist.generated.resources.item_dynamic_color
 import kodriver.feature.otherlist.generated.resources.item_exit_confirmation
 import kodriver.feature.otherlist.generated.resources.item_github_repository
@@ -56,6 +63,9 @@ import kodriver.feature.otherlist.generated.resources.section_connection_setting
 import kodriver.feature.otherlist.generated.resources.section_information
 import kodriver.feature.otherlist.generated.resources.section_readout_settings
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 private enum class OtherListSection {
     ConnectionSettings,
@@ -87,6 +97,7 @@ private fun OtherListItemType.section(): OtherListSection = when (this) {
     OtherListItemType.ReleasePage,
     OtherListItemType.License,
     -> OtherListSection.Information
+    OtherListItemType.DebugState -> OtherListSection.Information
 }
 
 @Composable
@@ -102,6 +113,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
     OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
     OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
     OtherListItemType.License -> stringResource(Res.string.item_license)
+    OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
 }
 
 @Composable
@@ -128,6 +140,7 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: 
             Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
         }
         OtherListItemType.License -> Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
+        OtherListItemType.DebugState -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
     }
 }
 
@@ -138,6 +151,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         OtherListItemType.License,
+        OtherListItemType.DebugState,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
@@ -159,9 +173,18 @@ fun OtherListPane(
     onKeepScreenOnChange: (Boolean) -> Unit,
     onExitConfirmationEnabledChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
+    onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
+    scrollToTopRequest: Int = 0,
 ) {
+    val listState = rememberLazyListState()
+
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+    }
+
     LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxSize()
             .padding(vertical = 8.dp),
@@ -192,9 +215,22 @@ fun OtherListPane(
                 OtherAppVersionListItem(
                     appVersionLabel = uiState.appVersionLabel,
                     appVersion = uiState.appVersion,
+                    onAppVersionTapped = onAppVersionTapped,
                 )
                 HorizontalDivider()
             }
+        }
+    }
+}
+
+@Composable
+private fun ScrollToTopEffect(
+    scrollToTopRequest: Int,
+    scrollToTop: suspend () -> Unit,
+) {
+    LaunchedEffect(scrollToTopRequest) {
+        if (scrollToTopRequest > 0) {
+            scrollToTop()
         }
     }
 }
@@ -274,6 +310,7 @@ private fun OtherListItem(
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 OtherListItemType.License,
+                OtherListItemType.DebugState,
                 -> OtherListItemTrailingIcon(item)
             }
         },
@@ -301,18 +338,26 @@ private fun OtherListItem(
                     OtherListItemType.GitHubRepository,
                     OtherListItemType.ReleasePage,
                     OtherListItemType.License,
+                    OtherListItemType.DebugState,
                     -> onItemClick(item)
                 }
             },
     )
 }
 
+private const val DEBUG_STATE_TAP_THRESHOLD = 5
+private val DEBUG_STATE_TAP_TIMEOUT = 1.seconds
+
 @Composable
 private fun OtherAppVersionListItem(
     appVersionLabel: String,
     appVersion: String,
+    onAppVersionTapped: () -> Unit,
 ) {
     if (appVersionLabel.isBlank() || appVersion.isBlank()) return
+
+    var tapCount by remember { mutableIntStateOf(0) }
+    var lastTapMark by remember { mutableStateOf<TimeMark?>(null) }
 
     ListItem(
         headlineContent = { Text(appVersionLabel) },
@@ -334,7 +379,22 @@ private fun OtherAppVersionListItem(
             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                val now = TimeSource.Monotonic.markNow()
+                val elapsedSinceLastTap = lastTapMark?.elapsedNow()
+                tapCount = if (elapsedSinceLastTap != null && elapsedSinceLastTap < DEBUG_STATE_TAP_TIMEOUT) {
+                    tapCount + 1
+                } else {
+                    1
+                }
+                lastTapMark = now
+                if (tapCount >= DEBUG_STATE_TAP_THRESHOLD) {
+                    tapCount = 0
+                    onAppVersionTapped()
+                }
+            },
     )
 }
 

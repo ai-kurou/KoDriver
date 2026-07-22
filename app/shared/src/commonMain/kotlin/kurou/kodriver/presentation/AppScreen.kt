@@ -2,8 +2,11 @@ package kurou.kodriver.presentation
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -57,6 +60,7 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
@@ -163,6 +167,7 @@ private fun AppNavIcon(
 @Composable
 private fun DefaultOtherContent(
     backHandler: AppBackHandler,
+    scrollToTopRequest: Int,
 ) {
     var showReadoutStartSoundDialog by rememberSaveable { mutableStateOf(false) }
     var showThemeDialog by rememberSaveable { mutableStateOf(false) }
@@ -174,6 +179,7 @@ private fun DefaultOtherContent(
     }
     OtherContent(
         backHandler = backHandler,
+        scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
@@ -182,6 +188,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.ConsoleIp -> OtherConsoleIpDetailPane(canNavigateBack, onBack)
                 OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
                 OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
+                OtherListItemType.DebugState -> DebugStateDetailPane(canNavigateBack, onBack)
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.ExitConfirmation,
@@ -206,30 +213,41 @@ fun AppScreen(
     exitRequested: Boolean = false,
     onExitRequestConsumed: () -> Unit = {},
     onDarkThemeChanged: (Boolean) -> Unit = {},
-    readoutContent: @Composable () -> Unit = {
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         ReadoutContent(
             backHandler = backHandler,
+            scrollToTopRequest = scrollToTopRequest,
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
-    telemetryLogContent: @Composable () -> Unit = {
+    telemetryLogContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         TelemetryLogContent(
             backHandler = backHandler,
+            scrollToTopRequest = scrollToTopRequest,
             detailContent = { id ->
                 TelemetryLogDetailContent(id = id)
             },
         )
     },
-    otherContent: @Composable () -> Unit = {
-        DefaultOtherContent(backHandler = backHandler)
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
+        DefaultOtherContent(
+            backHandler = backHandler,
+            scrollToTopRequest = scrollToTopRequest,
+        )
     },
 ) {
     val darkTheme = rememberAppDarkTheme()
     val bannerUiState = rememberConnectionBannerUiState()
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsState()
+    val readoutListUiState by readoutListViewModel.uiState.collectAsState()
+    val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
+    val otherListUiState by otherListViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     var showExitConfirmationDialog by rememberSaveable { mutableStateOf(false) }
+    var readoutListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
+    var telemetryLogListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
+    var otherListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
 
     val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
         {
@@ -300,10 +318,31 @@ fun AppScreen(
         hasAppUpdate = uiState.hasAppUpdate,
         keepScreenOn = uiState.keepScreenOn,
         onBannerTap = onBannerTap,
-        onReadoutTabReselected = readoutListViewModel::clearSelectedItem,
-        onLogTabReselected = telemetryLogListViewModel::clearSelectedLog,
-        onOtherTabReselected = otherListViewModel::clearSelectedItem,
+        onReadoutTabReselected = {
+            if (readoutListUiState.selectedItem != null) {
+                readoutListViewModel.clearSelectedItem()
+            } else {
+                readoutListScrollToTopRequest++
+            }
+        },
+        onLogTabReselected = {
+            if (telemetryLogListUiState.selectedLogId != null) {
+                telemetryLogListViewModel.clearSelectedLog()
+            } else {
+                telemetryLogListScrollToTopRequest++
+            }
+        },
+        onOtherTabReselected = {
+            if (otherListUiState.selectedItem != null) {
+                otherListViewModel.clearSelectedItem()
+            } else {
+                otherListScrollToTopRequest++
+            }
+        },
         readoutContent = readoutContent,
+        readoutListScrollToTopRequest = readoutListScrollToTopRequest,
+        telemetryLogListScrollToTopRequest = telemetryLogListScrollToTopRequest,
+        otherListScrollToTopRequest = otherListScrollToTopRequest,
         telemetryLogContent = telemetryLogContent,
         otherContent = otherContent,
     )
@@ -358,9 +397,12 @@ internal fun AppScreenContent(
     onReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
-    readoutContent: @Composable () -> Unit = {},
-    telemetryLogContent: @Composable () -> Unit = {},
-    otherContent: @Composable () -> Unit = {},
+    readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    readoutListScrollToTopRequest: Int = 0,
+    telemetryLogContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    telemetryLogListScrollToTopRequest: Int = 0,
+    otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    otherListScrollToTopRequest: Int = 0,
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
     val onBannerTapWithTabSwitch = bannerTapWithTabSwitch(onBannerTap) {
@@ -454,7 +496,17 @@ internal fun AppScreenContent(
                         },
                     )
                 Column(modifier = contentModifier) {
-                    AnimatedVisibility(visible = bannerUiState.isVisible) {
+                    AnimatedVisibility(
+                        visible = bannerUiState.isVisible,
+                        enter = slideInVertically(
+                            initialOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 300),
+                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                        exit = slideOutVertically(
+                            targetOffsetY = { -it },
+                            animationSpec = tween(durationMillis = 200),
+                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                    ) {
                         ConnectionBannerContent(
                             uiState = bannerUiState,
                             onClick = onBannerTapWithTabSwitch,
@@ -467,9 +519,9 @@ internal fun AppScreenContent(
                     ) { destination ->
                         AppDestinationContent(
                             destination = destination,
-                            readoutContent = readoutContent,
-                            telemetryLogContent = telemetryLogContent,
-                            otherContent = otherContent,
+                            readoutContent = { readoutContent(readoutListScrollToTopRequest) },
+                            telemetryLogContent = { telemetryLogContent(telemetryLogListScrollToTopRequest) },
+                            otherContent = { otherContent(otherListScrollToTopRequest) },
                         )
                     }
                 }

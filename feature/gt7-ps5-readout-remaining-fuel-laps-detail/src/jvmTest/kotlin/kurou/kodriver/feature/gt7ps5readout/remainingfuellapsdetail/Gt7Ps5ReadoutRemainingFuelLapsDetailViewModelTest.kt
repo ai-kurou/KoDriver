@@ -24,8 +24,8 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesReposi
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -42,13 +42,13 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
     private val remainingFuelLapsFlow = MutableStateFlow(3)
 
-    @Before
+    @BeforeTest
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }

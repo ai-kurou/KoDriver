@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.telemetryloglist
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -27,6 +28,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -84,6 +86,7 @@ internal fun TelemetryLogListPane(
     modifier: Modifier = Modifier,
     onLogClick: (Long) -> Unit = {},
     onResetClick: () -> Unit = {},
+    scrollToTopRequest: Int = 0,
 ) {
     if (uiState.logs.isEmpty()) {
         TelemetryLogEmptyState(
@@ -115,6 +118,11 @@ internal fun TelemetryLogListPane(
             }
             previousFirstLogId = firstLogId
         }
+    }
+
+    ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
+        listState.animateScrollToItem(0)
+        showNewLogsButton = false
     }
 
     LaunchedEffect(isAtTop) {
@@ -151,6 +159,7 @@ internal fun TelemetryLogListPane(
                 ) { log ->
                     TelemetryLogListItem(
                         log = log,
+                        isSelected = log.id == uiState.selectedLogId,
                         raceStartedAt = raceStartedAt,
                         onClick = { onLogClick(log.id) },
                     )
@@ -181,6 +190,18 @@ internal fun TelemetryLogListPane(
                     },
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ScrollToTopEffect(
+    scrollToTopRequest: Int,
+    scrollToTop: suspend () -> Unit,
+) {
+    LaunchedEffect(scrollToTopRequest) {
+        if (scrollToTopRequest > 0) {
+            scrollToTop()
         }
     }
 }
@@ -268,14 +289,44 @@ private fun TelemetryLogEmptyState(
 @Composable
 private fun TelemetryLogListItem(
     log: TelemetryLog,
+    isSelected: Boolean,
     raceStartedAt: Long,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
+    val containerColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.secondaryContainer
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        animationSpec = tween(durationMillis = 500),
+        label = "telemetryLogListItemContainerColor",
+    )
+    val headlineColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        animationSpec = tween(durationMillis = 500),
+        label = "telemetryLogListItemHeadlineColor",
+    )
+    val supportingColor by animateColorAsState(
+        targetValue = if (isSelected) {
+            MaterialTheme.colorScheme.onSecondaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(durationMillis = 500),
+        label = "telemetryLogListItemSupportingColor",
+    )
+
     ListItem(
         headlineContent = {
             Text(
                 text = readoutItemDisplayName(log.readoutItemKey),
+                color = headlineColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -286,6 +337,7 @@ private fun TelemetryLogListItem(
                     createdAt = log.createdAt,
                     raceElapsedMs = (log.createdAt - raceStartedAt).coerceAtLeast(0),
                 ),
+                color = supportingColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -306,6 +358,7 @@ private fun TelemetryLogListItem(
                 }
             }
         },
+        colors = ListItemDefaults.colors(containerColor = containerColor),
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
