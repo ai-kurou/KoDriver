@@ -17,14 +17,17 @@ import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import org.junit.After
 import org.junit.Before
@@ -42,6 +45,9 @@ class DebugStateDetailViewModelTest {
     @MockK
     private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
 
+    @MockK
+    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
@@ -56,13 +62,17 @@ class DebugStateDetailViewModelTest {
     private fun createViewModel() = DebugStateDetailViewModel(
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
         observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+        observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
     )
+
+    private fun sampleVirtualEnergy(session: Int) = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session)
 
     @Test
     fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() = runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -70,7 +80,8 @@ class DebugStateDetailViewModelTest {
         assertEquals(SessionPhase.UNKNOWN, state.raceFlags?.gamePhase)
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
-        confirmVerified(simulatorPreferencesRepository, flagRepository)
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository, virtualEnergyRepository)
     }
 
     @Test
@@ -78,6 +89,7 @@ class DebugStateDetailViewModelTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
         every { flagRepository.flagStream() } returns flagsFlow
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         val viewModel = createViewModel()
 
         flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
@@ -86,7 +98,8 @@ class DebugStateDetailViewModelTest {
         assertEquals(SessionPhase.GREEN_FLAG, state.raceFlags?.gamePhase)
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
-        confirmVerified(simulatorPreferencesRepository, flagRepository)
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository, virtualEnergyRepository)
     }
 
     @Test
@@ -94,6 +107,7 @@ class DebugStateDetailViewModelTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
@@ -101,7 +115,25 @@ class DebugStateDetailViewModelTest {
         assertEquals(Simulator.LmuWindows, state.selectedSimulator)
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
-        confirmVerified(simulatorPreferencesRepository, flagRepository)
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository, virtualEnergyRepository)
+    }
+
+    @Test
+    fun `バーチャルエナジー情報を購読すると uiState に反映される`() = runTest {
+        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+        every { flagRepository.flagStream() } returns
+            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
+        val viewModel = createViewModel()
+
+        val state = viewModel.uiState.first()
+
+        assertEquals(10, state.virtualEnergy?.session)
+        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+        verify(exactly = 1) { flagRepository.flagStream() }
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository, virtualEnergyRepository)
     }
 
     @Test
@@ -109,17 +141,24 @@ class DebugStateDetailViewModelTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         val viewModel = createViewModel()
 
         val state = viewModel.uiState.first()
 
         assertEquals(
-            listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.FLAG_INFO, DebugStateCardKey.GAME_PHASE),
+            listOf(
+                DebugStateCardKey.SIMULATOR,
+                DebugStateCardKey.FLAG_INFO,
+                DebugStateCardKey.GAME_PHASE,
+                DebugStateCardKey.SESSION,
+            ),
             state.cardOrder,
         )
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
-        confirmVerified(simulatorPreferencesRepository, flagRepository)
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository, virtualEnergyRepository)
     }
 
     @Test
@@ -127,18 +166,25 @@ class DebugStateDetailViewModelTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
         val viewModel = createViewModel()
 
         viewModel.moveCard(0, 1)
         val state = viewModel.uiState.first()
 
         assertEquals(
-            listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR, DebugStateCardKey.GAME_PHASE),
+            listOf(
+                DebugStateCardKey.FLAG_INFO,
+                DebugStateCardKey.SIMULATOR,
+                DebugStateCardKey.GAME_PHASE,
+                DebugStateCardKey.SESSION,
+            ),
             state.cardOrder,
         )
         verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
         verify(exactly = 1) { flagRepository.flagStream() }
-        confirmVerified(simulatorPreferencesRepository, flagRepository)
+        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+        confirmVerified(simulatorPreferencesRepository, flagRepository, virtualEnergyRepository)
     }
 
     private fun sampleRaceFlags(gamePhase: SessionPhase) = LmuWindowsRaceFlagsData(

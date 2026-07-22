@@ -4,4 +4,5 @@ enum class DebugStateCardKey {
     SIMULATOR,
     FLAG_INFO,
     GAME_PHASE,
+    SESSION,
 }

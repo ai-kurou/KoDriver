@@ -24,4 +24,11 @@
     <string name="debug_state_game_phase_session_over">SessionOver（セッション終了）</string>
     <string name="debug_state_game_phase_paused">Paused（ポーズ中。プラグインへのハートビート呼び出し）</string>
     <string name="debug_state_game_phase_unknown">不明</string>
+    <string name="debug_state_session_title">mSession</string>
+    <string name="debug_state_session_test_day">Test Day（テスト走行）</string>
+    <string name="debug_state_session_practice">Practice（練習走行）</string>
+    <string name="debug_state_session_qualifying">Qualifying（予選）</string>
+    <string name="debug_state_session_warmup">Warmup（ウォームアップ）</string>
+    <string name="debug_state_session_race">Race（決勝）</string>
+    <string name="debug_state_session_unknown">不明</string>
 </resources>

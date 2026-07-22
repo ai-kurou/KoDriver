@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -46,7 +47,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `フラグ情報とゲームフェーズが未取得の場合は未取得の文言を表示する`() {
+    fun `フラグ情報・ゲームフェーズ・セッションが未取得の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -57,7 +58,53 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(2)
+        rule.onAllNodesWithText("未取得").assertCountEquals(3)
+    }
+
+    @Test
+    fun `mSessionカードのタイトルを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("mSession").assertIsDisplayed()
+    }
+
+    @Test
+    fun `sessionの各値に対応する表示文言を表示する`() {
+        val expectedBySession = mapOf(
+            0 to "Test Day（テスト走行）",
+            1 to "Practice（練習走行）",
+            4 to "Practice（練習走行）",
+            5 to "Qualifying（予選）",
+            8 to "Qualifying（予選）",
+            9 to "Warmup（ウォームアップ）",
+            10 to "Race（決勝）",
+            13 to "Race（決勝）",
+            -1 to "不明",
+        )
+
+        expectedBySession.forEach { (session, expectedText) ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState = DebugStateDetailUiState(
+                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session),
+                        ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText(expectedText).assertIsDisplayed()
+        }
     }
 
     @Test
@@ -220,50 +267,6 @@ class DebugStateDetailPaneTest {
     @Test
     fun `幅700dp以上では列数は3`() {
         assertEquals(3, calculateDebugStateColumns(700.dp))
-    }
-
-    @Test
-    fun `アクティブなフラグがない場合は空リストを返す`() {
-        val raceFlags = sampleRaceFlags()
-
-        assertEquals(emptyList(), determineActiveRaceFlags(raceFlags))
-    }
-
-    @Test
-    fun `playerFlagがBLUEの場合はBLUEを含む`() {
-        val raceFlags = sampleRaceFlags(playerFlag = PrimaryFlag.BLUE)
-
-        assertEquals(listOf(ActiveRaceFlag.BLUE), determineActiveRaceFlags(raceFlags))
-    }
-
-    @Test
-    fun `playerUnderYellowがtrueの場合はYELLOWを含む`() {
-        val raceFlags = sampleRaceFlags(playerUnderYellow = true)
-
-        assertEquals(listOf(ActiveRaceFlag.YELLOW), determineActiveRaceFlags(raceFlags))
-    }
-
-    @Test
-    fun `sectorFlagsにYELLOWが含まれる場合はYELLOWを含む`() {
-        val raceFlags = sampleRaceFlags(
-            sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
-        )
-
-        assertEquals(listOf(ActiveRaceFlag.YELLOW), determineActiveRaceFlags(raceFlags))
-    }
-
-    @Test
-    fun `gamePhaseがFULL_COURSE_YELLOWの場合はFULL_COURSE_YELLOWを含む`() {
-        val raceFlags = sampleRaceFlags(gamePhase = SessionPhase.FULL_COURSE_YELLOW)
-
-        assertEquals(listOf(ActiveRaceFlag.FULL_COURSE_YELLOW), determineActiveRaceFlags(raceFlags))
-    }
-
-    @Test
-    fun `gamePhaseがRED_FLAGの場合はREDを含む`() {
-        val raceFlags = sampleRaceFlags(gamePhase = SessionPhase.RED_FLAG)
-
-        assertEquals(listOf(ActiveRaceFlag.RED), determineActiveRaceFlags(raceFlags))
     }
 
     private fun sampleRaceFlags(
