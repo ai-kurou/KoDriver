@@ -149,11 +149,17 @@ private fun tyreTemperatureItemDisplayName(tyreTemperature: ReadoutItemKey.LmuWi
     }
 
 @Composable
+private fun vehicleDamageItemDisplayName(vehicleDamage: ReadoutItemKey.LmuWindows.VehicleDamage): String =
+    when (vehicleDamage) {
+        is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.item_vehicle_damage)
+        is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.item_overheat)
+    }
+
+@Composable
 private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.VehicleApproach -> vehicleApproachItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.Flag -> flagItemDisplayName(itemId)
-    is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.item_vehicle_damage)
-    is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.item_overheat)
+    is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
         stringResource(Res.string.item_remaining_virtual_energy_laps)
