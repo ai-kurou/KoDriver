@@ -58,7 +58,54 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(3)
+        rule.onAllNodesWithText("未取得").assertCountEquals(4)
+    }
+
+    @Test
+    fun `mYellowFlagStateカードのタイトルを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("mYellowFlagState").assertIsDisplayed()
+    }
+
+    @Test
+    fun `yellowFlagStateの各値に対応する表示文言を表示する`() {
+        val expectedByYellowFlagState = mapOf(
+            SessionYellowFlagState.INVALID to "Invalid",
+            SessionYellowFlagState.NONE to "None（グリーン）",
+            SessionYellowFlagState.PENDING to "Pending（FCY 発動保留）",
+            SessionYellowFlagState.PIT_CLOSED to "PitClosed（ピットクローズ）",
+            SessionYellowFlagState.PIT_LEAD_LAP to "PitLeadLap（先頭周回のみピット可）",
+            SessionYellowFlagState.PIT_OPEN to "PitOpen（ピットオープン）",
+            SessionYellowFlagState.LAST_LAP to "LastLap（最終周）",
+            SessionYellowFlagState.RESUME to "Resume（リスタート）",
+            SessionYellowFlagState.RACE_HALT to "RaceHalt（レース中断、現在未使用）",
+            SessionYellowFlagState.UNKNOWN to "不明",
+        )
+
+        expectedByYellowFlagState.forEach { (yellowFlagState, expectedText) ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState = DebugStateDetailUiState(
+                            raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
+                        ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText(expectedText).assertIsDisplayed()
+        }
     }
 
     @Test
@@ -271,6 +318,7 @@ class DebugStateDetailPaneTest {
 
     private fun sampleRaceFlags(
         gamePhase: SessionPhase = SessionPhase.GREEN_FLAG,
+        yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags: List<SectorFlagState> = listOf(
             SectorFlagState.CLEAR,
             SectorFlagState.CLEAR,
@@ -280,7 +328,7 @@ class DebugStateDetailPaneTest {
         playerUnderYellow: Boolean = false,
     ) = LmuWindowsRaceFlagsData(
         gamePhase = gamePhase,
-        yellowFlagState = SessionYellowFlagState.NONE,
+        yellowFlagState = yellowFlagState,
         sectorFlags = sectorFlags,
         startLight = 0,
         numRedLights = 0,

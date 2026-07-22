@@ -152,6 +152,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.FLAG_INFO,
                 DebugStateCardKey.GAME_PHASE,
                 DebugStateCardKey.SESSION,
+                DebugStateCardKey.YELLOW_FLAG_STATE,
             ),
             state.cardOrder,
         )
@@ -178,6 +179,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.SIMULATOR,
                 DebugStateCardKey.GAME_PHASE,
                 DebugStateCardKey.SESSION,
+                DebugStateCardKey.YELLOW_FLAG_STATE,
             ),
             state.cardOrder,
         )

@@ -45,6 +45,17 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_session
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_last_lap
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_none
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_pending
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_pit_closed
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_pit_lead_lap
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_pit_open
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_race_halt
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_resume
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_unknown
 import kodriver.feature.debugstatedetail.generated.resources.navigate_back
 import kodriver.feature.debugstatedetail.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.debugstatedetail.generated.resources.simulator_name_lmu
@@ -56,6 +67,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -160,6 +172,13 @@ private fun DebugStateCard(
                 SessionContent(uiState.virtualEnergy)
             },
         )
+        DebugStateCardKey.YELLOW_FLAG_STATE -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_yellow_flag_state_title),
+            modifier = modifier,
+            bottomContent = {
+                YellowFlagStateContent(uiState.raceFlags)
+            },
+        )
     }
 }
 
@@ -253,6 +272,29 @@ private fun SessionContent(virtualEnergy: LmuWindowsVirtualEnergyData?) {
         return
     }
     Text(text = sessionDisplayName(virtualEnergy.session))
+}
+
+@Composable
+private fun yellowFlagStateDisplayName(yellowFlagState: SessionYellowFlagState): String = when (yellowFlagState) {
+    SessionYellowFlagState.INVALID -> stringResource(Res.string.debug_state_yellow_flag_state_invalid)
+    SessionYellowFlagState.NONE -> stringResource(Res.string.debug_state_yellow_flag_state_none)
+    SessionYellowFlagState.PENDING -> stringResource(Res.string.debug_state_yellow_flag_state_pending)
+    SessionYellowFlagState.PIT_CLOSED -> stringResource(Res.string.debug_state_yellow_flag_state_pit_closed)
+    SessionYellowFlagState.PIT_LEAD_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_pit_lead_lap)
+    SessionYellowFlagState.PIT_OPEN -> stringResource(Res.string.debug_state_yellow_flag_state_pit_open)
+    SessionYellowFlagState.LAST_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_last_lap)
+    SessionYellowFlagState.RESUME -> stringResource(Res.string.debug_state_yellow_flag_state_resume)
+    SessionYellowFlagState.RACE_HALT -> stringResource(Res.string.debug_state_yellow_flag_state_race_halt)
+    SessionYellowFlagState.UNKNOWN -> stringResource(Res.string.debug_state_yellow_flag_state_unknown)
+}
+
+@Composable
+private fun YellowFlagStateContent(raceFlags: LmuWindowsRaceFlagsData?) {
+    if (raceFlags == null) {
+        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        return
+    }
+    Text(text = yellowFlagStateDisplayName(raceFlags.yellowFlagState))
 }
 
 @Preview(showBackground = true)

@@ -10,6 +10,7 @@ internal val defaultDebugStateCardOrder = listOf(
     DebugStateCardKey.FLAG_INFO,
     DebugStateCardKey.GAME_PHASE,
     DebugStateCardKey.SESSION,
+    DebugStateCardKey.YELLOW_FLAG_STATE,
 )
 
 internal data class DebugStateDetailUiState(

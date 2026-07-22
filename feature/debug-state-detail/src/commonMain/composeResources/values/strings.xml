@@ -31,4 +31,15 @@
     <string name="debug_state_session_warmup">Warmup（ウォームアップ）</string>
     <string name="debug_state_session_race">Race（決勝）</string>
     <string name="debug_state_session_unknown">不明</string>
+    <string name="debug_state_yellow_flag_state_title">mYellowFlagState</string>
+    <string name="debug_state_yellow_flag_state_invalid">Invalid</string>
+    <string name="debug_state_yellow_flag_state_none">None（グリーン）</string>
+    <string name="debug_state_yellow_flag_state_pending">Pending（FCY 発動保留）</string>
+    <string name="debug_state_yellow_flag_state_pit_closed">PitClosed（ピットクローズ）</string>
+    <string name="debug_state_yellow_flag_state_pit_lead_lap">PitLeadLap（先頭周回のみピット可）</string>
+    <string name="debug_state_yellow_flag_state_pit_open">PitOpen（ピットオープン）</string>
+    <string name="debug_state_yellow_flag_state_last_lap">LastLap（最終周）</string>
+    <string name="debug_state_yellow_flag_state_resume">Resume（リスタート）</string>
+    <string name="debug_state_yellow_flag_state_race_halt">RaceHalt（レース中断、現在未使用）</string>
+    <string name="debug_state_yellow_flag_state_unknown">不明</string>
 </resources>
