@@ -6,13 +6,14 @@ import kotlin.test.assertEquals
 class DebugStateCardKeyTest {
 
     @Test
-    fun `SIMULATOR・FLAG_INFO・GAME_PHASE・SESSIONの4種類が定義されている`() {
+    fun `SIMULATOR・FLAG_INFO・GAME_PHASE・SESSION・YELLOW_FLAG_STATEの5種類が定義されている`() {
         assertEquals(
             listOf(
                 DebugStateCardKey.SIMULATOR,
                 DebugStateCardKey.FLAG_INFO,
                 DebugStateCardKey.GAME_PHASE,
                 DebugStateCardKey.SESSION,
+                DebugStateCardKey.YELLOW_FLAG_STATE,
             ),
             DebugStateCardKey.entries,
         )
