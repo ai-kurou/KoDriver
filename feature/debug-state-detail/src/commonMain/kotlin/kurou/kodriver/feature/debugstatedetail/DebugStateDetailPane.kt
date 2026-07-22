@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.debugstatedetail.generated.resources.Res
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_current_lap_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_blue
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_full_course_yellow
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_title
@@ -62,7 +63,9 @@ import kodriver.feature.debugstatedetail.generated.resources.simulator_name_lmu
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SectorFlagState
@@ -177,6 +180,13 @@ private fun DebugStateCard(
             modifier = modifier,
             bottomContent = {
                 YellowFlagStateContent(uiState.raceFlags)
+            },
+        )
+        DebugStateCardKey.CURRENT_LAP -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_current_lap_title),
+            modifier = modifier,
+            bottomContent = {
+                CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
             },
         )
     }
@@ -295,6 +305,22 @@ private fun YellowFlagStateContent(raceFlags: LmuWindowsRaceFlagsData?) {
         return
     }
     Text(text = yellowFlagStateDisplayName(raceFlags.yellowFlagState))
+}
+
+@Composable
+private fun CurrentLapContent(
+    selectedSimulator: Simulator?,
+    lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+    gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
+) {
+    val currentLap = when (selectedSimulator) {
+        is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.currentLap
+        is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.lapCount
+        null -> null
+    }
+    Text(
+        text = currentLap?.toString() ?: stringResource(Res.string.debug_state_flag_info_unavailable),
+    )
 }
 
 @Preview(showBackground = true)

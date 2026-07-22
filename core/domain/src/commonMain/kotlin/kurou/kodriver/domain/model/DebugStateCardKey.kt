@@ -6,4 +6,5 @@ enum class DebugStateCardKey {
     GAME_PHASE,
     SESSION,
     YELLOW_FLAG_STATE,
+    CURRENT_LAP,
 }
