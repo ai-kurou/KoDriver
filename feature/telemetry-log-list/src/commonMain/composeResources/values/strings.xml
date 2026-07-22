@@ -18,6 +18,7 @@
     <string name="readout_item_my_best_lap">自己ベストラップ</string>
     <string name="readout_item_remaining_fuel_laps">燃料残り周回数</string>
     <string name="readout_item_remaining_virtual_energy_laps">バーチャルエナジー残り周回数</string>
+    <string name="readout_item_tyre_wear">タイヤ摩耗</string>
     <string name="telemetry_log_reset_item">データベースをリセット</string>
     <string name="telemetry_log_reset_confirm_title">データベースをリセットしますか？</string>
     <string name="telemetry_log_reset_confirm_body">保存されているすべてのテレメトリログが削除されます。この操作は元に戻せません。</string>

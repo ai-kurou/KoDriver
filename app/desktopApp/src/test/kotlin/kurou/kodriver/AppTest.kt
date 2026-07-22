@@ -106,6 +106,7 @@ class AppTest {
         dismissBottomSheet()
         clickContentDescription("低温警告の対象フェーズの説明を表示")
         dismissBottomSheet()
+        rule.onAllNodes(hasScrollAction()).get(0).performScrollToNode(hasText("自己ベストラップ"))
         clickItem("自己ベストラップ")
         waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
     }
