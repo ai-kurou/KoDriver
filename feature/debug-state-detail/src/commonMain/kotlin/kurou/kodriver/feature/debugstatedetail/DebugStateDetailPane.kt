@@ -25,6 +25,7 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_in
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_none
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_red
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_yellow
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_countdown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_formation
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_full_course_yellow
@@ -216,6 +217,18 @@ private fun DebugStateCard(
             modifier = modifier,
             bottomContent = {
                 TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
+            },
+        )
+        DebugStateCardKey.FUEL_CONSUMPTION -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_fuel_consumption_title),
+            modifier = modifier,
+            bottomContent = {
+                FuelConsumptionContent(
+                    uiState.selectedSimulator,
+                    uiState.virtualEnergy,
+                    uiState.lmuWindowsTelemetry,
+                    uiState.gt7Ps5Telemetry,
+                )
             },
         )
     }
