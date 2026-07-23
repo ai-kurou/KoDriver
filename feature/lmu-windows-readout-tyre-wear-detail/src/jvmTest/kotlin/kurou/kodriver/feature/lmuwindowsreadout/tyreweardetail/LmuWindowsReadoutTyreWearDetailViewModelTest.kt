@@ -48,4 +48,14 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
         assertEquals(30, viewModel.uiState.value.thresholdPercentage)
     }
+
+    @Test
+    fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値の50に戻る`() {
+        val viewModel = LmuWindowsReadoutTyreWearDetailViewModel(PlaySpeechEventUseCase(ttsEngine))
+        viewModel.onThresholdChanged(30)
+
+        viewModel.onThresholdReset()
+
+        assertEquals(50, viewModel.uiState.value.thresholdPercentage)
+    }
 }

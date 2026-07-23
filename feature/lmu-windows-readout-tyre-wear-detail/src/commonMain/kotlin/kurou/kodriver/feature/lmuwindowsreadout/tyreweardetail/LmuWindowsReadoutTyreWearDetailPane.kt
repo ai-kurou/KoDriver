@@ -17,6 +17,7 @@ import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_description
 import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_threshold_description
 import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_threshold_label
+import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_threshold_reset
 import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_threshold_subtitle
 import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_warning_chip
 import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_warning_title
@@ -42,6 +43,7 @@ fun LmuWindowsReadoutTyreWearDetailPane(
         uiState = uiState,
         onWarningChipClicked = viewModel::onWarningChipClicked,
         onThresholdChanged = viewModel::onThresholdChanged,
+        onThresholdReset = viewModel::onThresholdReset,
         modifier = modifier,
     )
 }
@@ -51,6 +53,7 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
     uiState: LmuWindowsReadoutTyreWearDetailUiState = LmuWindowsReadoutTyreWearDetailUiState(),
     onWarningChipClicked: () -> Unit = {},
     onThresholdChanged: (Int) -> Unit = {},
+    onThresholdReset: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -84,6 +87,9 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.format(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
+                        defaultValue = LmuWindowsReadoutTyreWearDetailViewModel.DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
+                        onResetToDefault = onThresholdReset,
+                        resetContentDescription = stringResource(Res.string.tyre_wear_threshold_reset),
                     )
                 }
             },

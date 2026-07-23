@@ -23,6 +23,10 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
         _uiState.update { it.copy(thresholdPercentage = percentage) }
     }
 
+    fun onThresholdReset() {
+        _uiState.update { it.copy(thresholdPercentage = DEFAULT_THRESHOLD_PERCENTAGE) }
+    }
+
     companion object {
         const val DEFAULT_THRESHOLD_PERCENTAGE = 50
     }
