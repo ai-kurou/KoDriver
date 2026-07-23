@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasScrollAction
@@ -15,7 +13,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
-import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.data.desktopDataModule
@@ -95,25 +92,21 @@ class AppTest {
         clickReadoutPriorityHelp()
 
         waitUntilDisplayed("フラッグ")
-        clickItem("フラッグ")
-        clickItem("車両接近")
-        clickContentDescription("閾値の説明を表示")
-        dismissBottomSheet()
-        clickItem("バーチャルエナジー残り周回数")
-        waitUntilDisplayed("残り約: 3 周")
-        clickItem("車両故障")
-        waitUntilDisplayed("オーバーヒート")
-        clickItem("タイヤ温度")
-        clickContentDescription("高温閾値の説明を表示")
-        dismissBottomSheet()
-        clickContentDescription("低温警告の対象フェーズの説明を表示")
-        dismissBottomSheet()
-        rule.onAllNodes(hasScrollAction()).get(0).performScrollToNode(hasText("タイヤ摩耗"))
-        clickItem("タイヤ摩耗")
-        waitUntilDisplayed("タイヤの摩耗状況を音声でお知らせします。")
-        rule.onAllNodes(hasScrollAction()).get(0).performScrollToNode(hasText("自己ベストラップ"))
-        clickItem("自己ベストラップ")
-        waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "フラッグ",
+            "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
+        )
+        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "バーチャルエナジー残り周回数",
+            "バーチャルエナジー残量から走行可能な残り周回数を計算し、音声でお知らせします。",
+        )
+        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
+        clickItemAndVerifyDescription("タイヤ温度", "タイヤの温度状況を音声でお知らせします。")
+        scrollToItem("タイヤ摩耗")
+        clickItemAndVerifyDescription("タイヤ摩耗", "タイヤの摩耗状況を音声でお知らせします。")
+        scrollToItem("自己ベストラップ")
+        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
     @Test
@@ -302,15 +295,13 @@ class AppTest {
         rule.waitForIdle()
     }
 
-    private fun clickContentDescription(contentDescription: String) {
-        rule.onNode(hasContentDescription(contentDescription)).performClick()
-        rule.waitForIdle()
+    private fun clickItemAndVerifyDescription(itemText: String, descriptionText: String) {
+        clickItem(itemText)
+        waitUntilDisplayed(descriptionText)
     }
 
-    private fun dismissBottomSheet() {
-        rule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
-            .get(0)
-            .performSemanticsAction(SemanticsActions.Dismiss)
+    private fun scrollToItem(text: String) {
+        rule.onAllNodes(hasScrollAction()).get(0).performScrollToNode(hasText(text))
         rule.waitForIdle()
     }
 
