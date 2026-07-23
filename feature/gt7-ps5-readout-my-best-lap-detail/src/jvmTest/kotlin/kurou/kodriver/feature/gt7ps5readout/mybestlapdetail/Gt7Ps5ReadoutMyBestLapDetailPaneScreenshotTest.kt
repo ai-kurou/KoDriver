@@ -31,7 +31,7 @@ class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         Gt7Ps5ReadoutMyBestLapDetailPaneContent(uiState = uiState)
                     }
                 }
