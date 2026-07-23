@@ -37,7 +37,7 @@ class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         LmuWindowsReadoutMyBestLapDetailPaneContent(uiState = uiState)
                     }
                 }
