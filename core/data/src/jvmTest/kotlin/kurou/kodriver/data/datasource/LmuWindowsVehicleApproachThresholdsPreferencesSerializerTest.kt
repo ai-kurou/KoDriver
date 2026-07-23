@@ -3,8 +3,8 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.LmuWindowsVehicleApproachThresholdsPreferences
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -17,8 +17,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesSerializerTest {
     @Test
     fun `デフォルト値は縦方向5m・横方向5m・継続時間7秒`() {
         val expected = LmuWindowsVehicleApproachThresholdsPreferences(
-            longitudinalThresholdMeters = LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
-            lateralThresholdMeters = LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS,
+            longitudinalThresholdMeters = LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
+            lateralThresholdMeters = LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
             sustainedApproachDurationSeconds = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
         )
         assertEquals(expected, LmuWindowsVehicleApproachThresholdsPreferencesSerializer.defaultValue)

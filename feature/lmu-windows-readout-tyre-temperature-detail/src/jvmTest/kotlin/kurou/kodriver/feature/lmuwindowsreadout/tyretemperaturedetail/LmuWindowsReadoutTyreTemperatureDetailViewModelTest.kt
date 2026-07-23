@@ -20,7 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -137,9 +137,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
         coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
         coEvery {
-            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS)
+            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
         } answers {
-            highThresholdFlow.update { LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS }
+            highThresholdFlow.update { LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT }
         }
         val viewModel = createViewModel()
 
@@ -147,7 +147,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         viewModel.onHighThresholdReset()
 
         assertEquals(
-            LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS,
+            LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
             viewModel.uiState.first().highThresholdCelsius,
         )
         verify(exactly = 1) { repository.observeHighThresholdCelsius() }
@@ -155,7 +155,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         verify(exactly = 1) { repository.observeLowWarningPhases() }
         coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
         coVerify(exactly = 1) {
-            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS)
+            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
         }
         confirmVerified(repository)
     }

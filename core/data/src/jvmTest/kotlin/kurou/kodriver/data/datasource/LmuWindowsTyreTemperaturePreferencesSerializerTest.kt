@@ -5,7 +5,7 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.LmuWindowsTyreTemperaturePreferences
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -18,7 +18,7 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
     fun `デフォルト値は highThresholdCelsius が 95、enabledStates が空Map`() {
         assertEquals(
             LmuWindowsTyreTemperaturePreferences(
-                highThresholdCelsius = LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS,
+                highThresholdCelsius = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
                 enabledStates = emptyMap(),
             ),
             LmuWindowsTyreTemperaturePreferencesSerializer.defaultValue,

@@ -96,6 +96,8 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:data` から参照できず同じ値を重複定義することになるため避ける。Preview やテストデータだけで完結する表示用の値は feature 内に置いてよい。
 
+定数名は `XXX_DEFAULT` のように末尾に `DEFAULT` を付けて統一すること（例: `LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT`）。
+
 ---
 
 ## テスト方針

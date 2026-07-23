@@ -59,8 +59,8 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
@@ -143,8 +143,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
             },
         )
         val defaultLongitudinal =
-            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS.toFloat()
-        val defaultLateral = LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS.toFloat()
+            LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT.toFloat()
+        val defaultLateral = LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT.toFloat()
         val defaultSustainedDuration =
             LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT.toFloat()
         val resetToDefaultLabel = stringResource(Res.string.vehicle_approach_threshold_reset_to_default)

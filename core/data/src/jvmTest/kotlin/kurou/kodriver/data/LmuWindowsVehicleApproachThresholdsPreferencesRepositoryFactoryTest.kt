@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -30,11 +30,11 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
         assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+            LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
             repository.observeLongitudinalThresholdMeters().first(),
         )
         assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS,
+            LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
             repository.observeLateralThresholdMeters().first(),
         )
     }

@@ -7,8 +7,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsVehicleApproachThresholdsPreferencesSerializer
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
-import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
@@ -37,7 +37,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     @Test
     fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+            LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
             repository.observeLongitudinalThresholdMeters().first(),
         )
 
@@ -51,7 +51,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     @Test
     fun `横方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
         assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS,
+            LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
             repository.observeLateralThresholdMeters().first(),
         )
 
