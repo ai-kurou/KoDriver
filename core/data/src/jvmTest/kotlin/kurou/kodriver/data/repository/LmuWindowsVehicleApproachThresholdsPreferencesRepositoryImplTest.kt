@@ -7,6 +7,9 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsVehicleApproachThresholdsPreferencesSerializer
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -33,7 +36,10 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(5.0, repository.observeLongitudinalThresholdMeters().first())
+        assertEquals(
+            LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
+            repository.observeLongitudinalThresholdMeters().first(),
+        )
 
         repository.saveLongitudinalThresholdMeters(50.0)
         assertEquals(50.0, repository.observeLongitudinalThresholdMeters().first())
@@ -44,7 +50,10 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `横方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(5.0, repository.observeLateralThresholdMeters().first())
+        assertEquals(
+            LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
+            repository.observeLateralThresholdMeters().first(),
+        )
 
         repository.saveLateralThresholdMeters(3.5)
         assertEquals(3.5, repository.observeLateralThresholdMeters().first())
@@ -64,7 +73,10 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
     @Test
     fun `継続時間閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(7, repository.observeSustainedApproachDurationSeconds().first())
+        assertEquals(
+            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
+            repository.observeSustainedApproachDurationSeconds().first(),
+        )
 
         repository.saveSustainedApproachDurationSeconds(8)
         assertEquals(8, repository.observeSustainedApproachDurationSeconds().first())

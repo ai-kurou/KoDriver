@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -135,18 +136,27 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
         coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
-        coEvery { repository.saveHighThresholdCelsius(95) } answers { highThresholdFlow.update { 95 } }
+        coEvery {
+            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+        } answers {
+            highThresholdFlow.update { LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT }
+        }
         val viewModel = createViewModel()
 
         viewModel.onHighThresholdChanged(100)
         viewModel.onHighThresholdReset()
 
-        assertEquals(95, viewModel.uiState.first().highThresholdCelsius)
+        assertEquals(
+            LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+            viewModel.uiState.first().highThresholdCelsius,
+        )
         verify(exactly = 1) { repository.observeHighThresholdCelsius() }
         verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { repository.observeLowWarningPhases() }
         coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(95) }
+        coVerify(exactly = 1) {
+            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+        }
         confirmVerified(repository)
     }
 

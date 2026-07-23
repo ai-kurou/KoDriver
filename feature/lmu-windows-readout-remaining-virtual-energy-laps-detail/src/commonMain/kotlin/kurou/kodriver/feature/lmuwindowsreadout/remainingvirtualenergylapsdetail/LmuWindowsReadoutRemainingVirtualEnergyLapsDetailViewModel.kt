@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyLapsUseCase
 
@@ -31,6 +32,6 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyLapsDetailViewModel(
     }
 
     fun onResetRemainingVirtualEnergyLaps() {
-        onRemainingVirtualEnergyLapsChanged(DEFAULT_REMAINING_VIRTUAL_ENERGY_LAPS)
+        onRemainingVirtualEnergyLapsChanged(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT)
     }
 }

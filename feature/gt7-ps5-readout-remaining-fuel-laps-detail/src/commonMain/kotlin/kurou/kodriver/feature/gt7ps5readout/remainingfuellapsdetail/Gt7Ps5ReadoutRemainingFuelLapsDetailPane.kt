@@ -23,13 +23,13 @@ import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
 private const val MINIMUM_REMAINING_FUEL_LAPS = 1f
 private const val MAXIMUM_REMAINING_FUEL_LAPS = 5f
-internal const val DEFAULT_REMAINING_FUEL_LAPS = 3
 
 @Composable
 fun Gt7Ps5ReadoutRemainingFuelLapsDetailPane(
@@ -88,7 +88,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                         labelFormatter = { sliderLabel.format(it.roundToInt()) },
                         onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
                         steps = 3,
-                        defaultValue = DEFAULT_REMAINING_FUEL_LAPS.toFloat(),
+                        defaultValue = GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT.toFloat(),
                         onResetToDefault = onResetRemainingFuelLaps,
                         resetContentDescription = resetToDefaultLabel,
                     )
