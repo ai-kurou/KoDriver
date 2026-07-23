@@ -44,13 +44,7 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
     onPreviewClicked: (MyBestLapVoiceType) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val formalLabel = stringResource(Res.string.my_best_lap_voice_type_formal)
-    val casualLabel = stringResource(Res.string.my_best_lap_voice_type_casual)
-    val chipLabels = listOf(formalLabel, casualLabel)
-    val selectedLabel = when (uiState.voiceType) {
-        MyBestLapVoiceType.FORMAL -> formalLabel
-        MyBestLapVoiceType.CASUAL -> casualLabel
-    }
+    val voiceTypeLabels = MyBestLapVoiceType.entries.map { type -> type to type.displayName() }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -65,14 +59,14 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 DetailPaneCardChips(
-                    chipLabels = chipLabels,
-                    selectedChipLabels = setOf(selectedLabel),
+                    chipLabels = voiceTypeLabels.map { (_, label) -> label },
+                    selectedChipLabels = voiceTypeLabels
+                        .filter { (type, _) -> type == uiState.voiceType }
+                        .map { (_, label) -> label }
+                        .toSet(),
                     chipEnabled = true,
                     onChipClick = { label ->
-                        val type = when (label) {
-                            casualLabel -> MyBestLapVoiceType.CASUAL
-                            else -> MyBestLapVoiceType.FORMAL
-                        }
+                        val type = voiceTypeLabels.first { (_, typeLabel) -> typeLabel == label }.first
                         onVoiceTypeChanged(type)
                         onPreviewClicked(type)
                     },
@@ -88,4 +82,10 @@ private fun LmuWindowsReadoutMyBestLapDetailPanePreview() {
     LmuWindowsReadoutMyBestLapDetailPaneContent(
         uiState = LmuWindowsReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.FORMAL),
     )
+}
+
+@Composable
+private fun MyBestLapVoiceType.displayName(): String = when (this) {
+    MyBestLapVoiceType.FORMAL -> stringResource(Res.string.my_best_lap_voice_type_formal)
+    MyBestLapVoiceType.CASUAL -> stringResource(Res.string.my_best_lap_voice_type_casual)
 }
