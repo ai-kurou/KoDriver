@@ -18,6 +18,7 @@ internal val defaultDebugStateCardOrder = listOf(
     DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
     DebugStateCardKey.BEST_LAP,
     DebugStateCardKey.TYRE_TEMPERATURE,
+    DebugStateCardKey.TYRE_WEAR,
     DebugStateCardKey.FUEL_CONSUMPTION,
 )
 
