@@ -22,7 +22,7 @@ class LmuWindowsReadoutTyreWearDetailPaneScreenshotTest {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 280.dp)) {
-                        LmuWindowsReadoutTyreWearDetailPane()
+                        LmuWindowsReadoutTyreWearDetailPaneContent()
                     }
                 }
             }

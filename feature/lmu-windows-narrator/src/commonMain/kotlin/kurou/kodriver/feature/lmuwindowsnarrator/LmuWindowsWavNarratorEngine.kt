@@ -70,6 +70,7 @@ internal class LmuWindowsWavNarratorEngine(
         put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
         put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
+        put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         for (laps in 0..MAX_REMAINING_VIRTUAL_ENERGY_LAPS) {
             put(SpeechEvent.RemainingVirtualEnergyLapsWarning(laps), "files/remaining_virtual_energy_laps_$laps.wav")
         }
