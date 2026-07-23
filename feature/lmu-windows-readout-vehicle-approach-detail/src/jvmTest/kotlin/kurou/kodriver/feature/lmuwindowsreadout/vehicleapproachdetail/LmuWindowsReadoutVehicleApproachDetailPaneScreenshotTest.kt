@@ -37,7 +37,7 @@ class LmuWindowsReadoutVehicleApproachDetailPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 200.dp)) {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         VehicleApproachHelpSheetContent()
                     }
                 }
