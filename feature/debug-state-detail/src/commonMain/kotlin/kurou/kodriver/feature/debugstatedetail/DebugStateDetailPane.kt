@@ -56,6 +56,7 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulat
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_title
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_last_lap
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_none
@@ -226,6 +227,13 @@ private fun DebugStateCard(
             modifier = modifier,
             bottomContent = {
                 TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
+            },
+        )
+        DebugStateCardKey.TYRE_WEAR -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_tyre_wear_title),
+            modifier = modifier,
+            bottomContent = {
+                TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
             },
         )
         DebugStateCardKey.FUEL_CONSUMPTION -> DetailPaneCard(
