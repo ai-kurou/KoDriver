@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -39,11 +40,13 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
@@ -71,6 +74,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -92,6 +96,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -114,6 +119,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -149,6 +155,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -182,6 +189,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -211,6 +219,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -245,6 +254,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -278,6 +288,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -311,6 +322,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -342,6 +354,7 @@ class ApplicationTest {
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -370,6 +383,7 @@ class ApplicationTest {
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -392,6 +406,71 @@ class ApplicationTest {
     }
 
     @Test
+    fun `摩耗情報をJSONでWebSocketへ送信する`() = testApplication {
+        val repository = FakeLmuWindowsTyreWearRepository()
+        application {
+            module(
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                ),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/tyre_wear") {
+            repository.emit(tyreWearData1)
+
+            val message = withTimeout(1_000) {
+                (incoming.receive() as Frame.Text).readText()
+            }
+            assertEquals(tyreWearJson1, message)
+        }
+    }
+
+    @Test
+    fun `摩耗情報の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeLmuWindowsTyreWearRepository()
+        application {
+            module(
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                ),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/lmu_windows/tyre_wear") {
+            repository.emit(tyreWearData1)
+            repository.emit(tyreWearData1)
+            repository.emit(tyreWearData2)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(tyreWearJson1, first)
+            assertEquals(tyreWearJson2, second)
+        }
+    }
+
+    @Test
     fun `バーチャルエナジー残量をJSONでWebSocketへ送信する`() = testApplication {
         val repository = FakeLmuWindowsVirtualEnergyRepository()
         application {
@@ -403,6 +482,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                 ),
@@ -433,6 +513,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                 ),
@@ -465,6 +546,7 @@ class ApplicationTest {
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyTyreCarcassTemperatureRepository,
                 ),
+                observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                 observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
             ),
@@ -493,6 +575,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -523,6 +606,7 @@ class ApplicationTest {
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyTyreCarcassTemperatureRepository,
                     ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
                 ),
@@ -553,6 +637,7 @@ class ApplicationTest {
                     single<LmuWindowsVehicleApproachRepository> { EmptyVehicleApproachRepository }
                     single<LmuWindowsVehicleDamageRepository> { EmptyVehicleDamageRepository }
                     single<LmuWindowsTyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
+                    single<LmuWindowsTyreWearRepository> { EmptyTyreWearRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
                     single<LmuWindowsVirtualEnergyRepository> { EmptyVirtualEnergyRepository }
                 },
@@ -665,6 +750,30 @@ private const val tyreCarcassTemperatureJson1 =
 private const val tyreCarcassTemperatureJson2 =
     """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
 
+private val tyreWearData1 = LmuWindowsTyreWearData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to 0.8,
+        WheelIndex.FRONT_RIGHT to 0.82,
+        WheelIndex.REAR_LEFT to 0.85,
+        WheelIndex.REAR_RIGHT to 0.87,
+    ),
+)
+
+private val tyreWearData2 = LmuWindowsTyreWearData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to 0.5,
+        WheelIndex.FRONT_RIGHT to 0.51,
+        WheelIndex.REAR_LEFT to 0.52,
+        WheelIndex.REAR_RIGHT to 0.53,
+    ),
+)
+
+private const val tyreWearJson1 =
+    """{"wheels":{"FRONT_LEFT":0.8,"FRONT_RIGHT":0.82,"REAR_LEFT":0.85,"REAR_RIGHT":0.87}}"""
+
+private const val tyreWearJson2 =
+    """{"wheels":{"FRONT_LEFT":0.5,"FRONT_RIGHT":0.51,"REAR_LEFT":0.52,"REAR_RIGHT":0.53}}"""
+
 // --- Fake リポジトリ ---
 
 private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
@@ -727,6 +836,20 @@ private class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCar
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = channel.receiveAsFlow()
 
     fun emit(data: LmuWindowsTyreCarcassTemperatureData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private object EmptyTyreWearRepository : LmuWindowsTyreWearRepository {
+    override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> = emptyFlow()
+}
+
+private class FakeLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
+    private val channel = Channel<LmuWindowsTyreWearData>(capacity = Channel.UNLIMITED)
+
+    override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> = channel.receiveAsFlow()
+
+    fun emit(data: LmuWindowsTyreWearData) {
         channel.trySend(data).getOrThrow()
     }
 }
