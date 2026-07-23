@@ -3,6 +3,7 @@ package kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -54,5 +55,35 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
         rule.onNodeWithText("タイヤ摩耗警告").performClick()
 
         assertEquals(true, clicked)
+    }
+
+    @Test
+    fun `摩耗閾値のサブタイトルと説明とデフォルト値のスライダーラベルが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("摩耗閾値").assertIsDisplayed()
+        rule.onNodeWithText("この閾値になると警告を読み上げます").assertIsDisplayed()
+        rule.onNodeWithText("50%").assertIsDisplayed()
+    }
+
+    @Test
+    fun `デフォルト値から変更している場合にリセットボタンをタップするとonThresholdResetが呼ばれる`() {
+        var resetCalled = false
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPaneContent(
+                    uiState = LmuWindowsReadoutTyreWearDetailUiState(thresholdPercentage = 30),
+                    onThresholdReset = { resetCalled = true },
+                )
+            }
+        }
+
+        rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
+
+        assertEquals(true, resetCalled)
     }
 }

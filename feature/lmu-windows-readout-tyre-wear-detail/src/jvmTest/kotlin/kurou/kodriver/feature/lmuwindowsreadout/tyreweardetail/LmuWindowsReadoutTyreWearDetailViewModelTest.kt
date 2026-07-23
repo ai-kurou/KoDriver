@@ -10,6 +10,7 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
@@ -30,5 +31,31 @@ class LmuWindowsReadoutTyreWearDetailViewModelTest {
 
         verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning, false) }
         confirmVerified(ttsEngine)
+    }
+
+    @Test
+    fun `初期状態のthresholdPercentageはデフォルト値の50`() {
+        val viewModel = LmuWindowsReadoutTyreWearDetailViewModel(PlaySpeechEventUseCase(ttsEngine))
+
+        assertEquals(50, viewModel.uiState.value.thresholdPercentage)
+    }
+
+    @Test
+    fun `onThresholdChangedを呼ぶとthresholdPercentageが更新される`() {
+        val viewModel = LmuWindowsReadoutTyreWearDetailViewModel(PlaySpeechEventUseCase(ttsEngine))
+
+        viewModel.onThresholdChanged(30)
+
+        assertEquals(30, viewModel.uiState.value.thresholdPercentage)
+    }
+
+    @Test
+    fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値の50に戻る`() {
+        val viewModel = LmuWindowsReadoutTyreWearDetailViewModel(PlaySpeechEventUseCase(ttsEngine))
+        viewModel.onThresholdChanged(30)
+
+        viewModel.onThresholdReset()
+
+        assertEquals(50, viewModel.uiState.value.thresholdPercentage)
     }
 }
