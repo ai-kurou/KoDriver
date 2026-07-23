@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreWearThresholdPercentageUseCase
@@ -39,6 +40,6 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
     }
 
     companion object {
-        const val DEFAULT_THRESHOLD_PERCENTAGE = 50
+        const val DEFAULT_THRESHOLD_PERCENTAGE = LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
     }
 }
