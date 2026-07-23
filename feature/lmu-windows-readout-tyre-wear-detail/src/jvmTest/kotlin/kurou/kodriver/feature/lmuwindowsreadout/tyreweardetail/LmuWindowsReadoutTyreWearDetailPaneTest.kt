@@ -22,4 +22,15 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
 
         rule.onNodeWithText("タイヤの摩耗状況を音声でお知らせします。").assertIsDisplayed()
     }
+
+    @Test
+    fun `摩耗警告カードが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPane()
+            }
+        }
+
+        rule.onNodeWithText("摩耗警告").assertIsDisplayed()
+    }
 }
