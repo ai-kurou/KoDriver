@@ -1,4 +1,5 @@
 <resources>
     <string name="tyre_wear_description">タイヤの摩耗状況を音声でお知らせします。</string>
     <string name="tyre_wear_warning_title">摩耗警告</string>
+    <string name="tyre_wear_warning_chip">タイヤ摩耗警告</string>
 </resources>
