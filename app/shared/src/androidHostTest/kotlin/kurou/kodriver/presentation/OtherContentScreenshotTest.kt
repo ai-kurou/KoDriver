@@ -25,7 +25,7 @@ import org.robolectric.annotation.GraphicsMode
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "w840dp-h640dp")
+@Config(sdk = [36], qualifiers = "w840dp-h640dp")
 class OtherContentScreenshotTest {
 
     @Test

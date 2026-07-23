@@ -16,7 +16,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [35], qualifiers = "w480dp-h640dp")
+@Config(sdk = [36], qualifiers = "w480dp-h640dp")
 class OtherVolumeDetailPaneScreenshotTest {
 
     @Test
