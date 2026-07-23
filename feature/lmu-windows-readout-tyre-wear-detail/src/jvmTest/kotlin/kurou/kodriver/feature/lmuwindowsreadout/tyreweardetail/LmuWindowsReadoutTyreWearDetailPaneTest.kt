@@ -55,4 +55,17 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
 
         assertEquals(true, clicked)
     }
+
+    @Test
+    fun `摩耗閾値のサブタイトルと説明とデフォルト値のスライダーラベルが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreWearDetailPaneContent()
+            }
+        }
+
+        rule.onNodeWithText("摩耗閾値").assertIsDisplayed()
+        rule.onNodeWithText("この閾値になると警告を読み上げます").assertIsDisplayed()
+        rule.onNodeWithText("50%").assertIsDisplayed()
+    }
 }
