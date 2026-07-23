@@ -10,6 +10,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLaps
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase
@@ -38,7 +40,7 @@ import org.koin.dsl.module
  *
  * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
- *   ReadoutListUseCases / TyreTemperatureUseCases）、それらが束ねる各ドメイン UseCase、
+ *   ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases）、それらが束ねる各ドメイン UseCase、
  *   および named("lmu_windows") の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
@@ -46,7 +48,7 @@ import org.koin.dsl.module
  */
 val lmuWindowsNarratorModule: Module = module {
     // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
     factory { NarratorUseCases(get(), get(), get(), get(), get()) }
@@ -55,6 +57,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { VehicleDamageUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get(), get()) }
     factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
+    factory { TyreWearUseCases(get(), get()) }
     factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
 
     // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
@@ -79,6 +82,8 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
     factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
+    factory { ObserveLmuWindowsTyreWearUseCase(get()) }
+    factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
     factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
     factory { ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase(get()) }
     factory { ObserveQueueEnabledStatesUseCase(get()) }

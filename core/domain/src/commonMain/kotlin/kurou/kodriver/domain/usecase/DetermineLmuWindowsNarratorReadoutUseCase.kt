@@ -4,6 +4,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -23,6 +24,7 @@ data class LmuWindowsNarratorState(
     val personalBestMs: Long = Long.MAX_VALUE,
     val previousBestLapTimeMs: Long? = null,
     val tyreOverheating: Boolean = false,
+    val tyreWearWarned: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
     val lastAnnouncedRemainingVirtualEnergyLaps: Int = -1,
     val lastVirtualEnergyEvaluationLap: Int = -1,
@@ -72,6 +74,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val vehicleApproachSustainedReadoutType: VehicleApproachSustainedReadoutType,
     val tyreTemperatureHighThresholdCelsius: Int,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
+    val tyreWearThresholdPercentage: Int,
     val remainingVirtualEnergyLapsThreshold: Int,
     val remainingVirtualEnergyLapsEnabled: Boolean,
 )
@@ -242,6 +245,22 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousGamePhaseForTyreLowWarning = raceFlags.gamePhase),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreCold) else emptyList(),
+        )
+    }
+
+    fun determineTyreWear(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsTyreWearData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val anyWorn = data.wheels.values.any { remainingRatio ->
+            (1.0 - remainingRatio) * PERCENTAGE_SCALE >= settings.tyreWearThresholdPercentage
+        }
+        val shouldAnnounce = !state.tyreWearWarned && anyWorn &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreWear.Root)
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(tyreWearWarned = anyWorn),
+            events = if (shouldAnnounce) listOf(SpeechEvent.TyreWearWarning) else emptyList(),
         )
     }
 
@@ -528,6 +547,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val MILLIS_PER_SECOND = 1_000L
         const val TYRE_LOW_WARNING_THRESHOLD_CELSIUS = 60.0
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
+        const val PERCENTAGE_SCALE = 100.0
         const val REMAINING_VIRTUAL_ENERGY_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000L
 
         /** これ未満の残量増加はジッタとみなし、給油として扱わない（割合 0.0〜1.0 に対する値）。 */

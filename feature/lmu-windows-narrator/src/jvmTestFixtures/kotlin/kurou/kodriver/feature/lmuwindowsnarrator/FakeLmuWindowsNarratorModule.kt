@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -20,6 +21,8 @@ import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
@@ -43,6 +46,8 @@ val fakeLmuWindowsNarratorModule = module {
     single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
     single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
     single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
+    single<LmuWindowsTyreWearRepository> { FakeLmuWindowsTyreWearRepository() }
+    single<LmuWindowsTyreWearPreferencesRepository> { FakeLmuWindowsTyreWearPreferencesRepository() }
     single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
     single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
 }
@@ -120,6 +125,16 @@ class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTempera
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
         lowWarningPhasesFlow.update { phases.associateWith { true } }
     }
+}
+
+class FakeLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
+    override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> = emptyFlow()
+}
+
+class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreferencesRepository {
+    private val flow = MutableStateFlow(50)
+    override fun observeThresholdPercentage(): Flow<Int> = flow
+    override suspend fun saveThresholdPercentage(percentage: Int) { flow.update { percentage } }
 }
 
 class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferencesRepository {
