@@ -109,6 +109,25 @@ class DebugStateTyreWearCardTest {
     }
 
     @Test
+    fun `selectedSimulatorがLMUでもlmuWindowsTelemetryがnullの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.LmuWindows,
+                        lmuWindowsTelemetry = null,
+                        cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
     fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
         rule.setContent {
             MaterialTheme {
