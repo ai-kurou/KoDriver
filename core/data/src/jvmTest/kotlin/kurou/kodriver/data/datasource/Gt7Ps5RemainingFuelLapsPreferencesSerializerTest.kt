@@ -3,6 +3,7 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.Gt7Ps5RemainingFuelLapsPreferences
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -14,7 +15,7 @@ class Gt7Ps5RemainingFuelLapsPreferencesSerializerTest {
     @Test
     fun `デフォルト値は3周`() {
         assertEquals(
-            Gt7Ps5RemainingFuelLapsPreferences(remainingFuelLaps = 3),
+            Gt7Ps5RemainingFuelLapsPreferences(remainingFuelLaps = GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT),
             Gt7Ps5RemainingFuelLapsPreferencesSerializer.defaultValue,
         )
     }

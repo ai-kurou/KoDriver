@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
@@ -50,7 +51,7 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     }
 
     fun onHighThresholdReset() {
-        viewModelScope.launch { saveHighThreshold(DEFAULT_HIGH_THRESHOLD_CELSIUS) }
+        viewModelScope.launch { saveHighThreshold(LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS) }
     }
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
@@ -77,9 +78,5 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
         val currentPhases = uiState.value.lowWarningPhases
         val updatedPhases = if (phase in currentPhases) currentPhases - phase else currentPhases + phase
         viewModelScope.launch { saveLowWarningPhases(updatedPhases) }
-    }
-
-    companion object {
-        const val DEFAULT_HIGH_THRESHOLD_CELSIUS = 95
     }
 }

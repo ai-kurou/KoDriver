@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelLapsUseCase
@@ -34,7 +35,7 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
     }
 
     fun onResetRemainingFuelLaps() {
-        onRemainingFuelLapsChanged(DEFAULT_REMAINING_FUEL_LAPS)
+        onRemainingFuelLapsChanged(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT)
     }
 
     fun onPreviewClicked() {

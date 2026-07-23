@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
@@ -40,7 +41,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
     @MockK(relaxUnitFun = true)
     private lateinit var ttsEngine: TextToSpeechEngine
 
-    private val remainingFuelLapsFlow = MutableStateFlow(3)
+    private val remainingFuelLapsFlow = MutableStateFlow(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT)
 
     @BeforeTest
     fun setUp() {
@@ -64,7 +65,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
         every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
         val viewModel = createViewModel()
 
-        assertEquals(3, viewModel.uiState.first().remainingFuelLaps)
+        assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
         verify(exactly = 1) { repository.observeRemainingFuelLaps() }
         confirmVerified(repository)
     }
@@ -87,14 +88,16 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
     fun `onResetRemainingFuelLapsを呼ぶと燃料残り周回数が3になる`() = runTest {
         remainingFuelLapsFlow.update { 5 }
         every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
-        coEvery { repository.saveRemainingFuelLaps(3) } answers { remainingFuelLapsFlow.update { 3 } }
+        coEvery { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) } answers {
+            remainingFuelLapsFlow.update { GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT }
+        }
         val viewModel = createViewModel()
 
         viewModel.onResetRemainingFuelLaps()
 
-        assertEquals(3, viewModel.uiState.first().remainingFuelLaps)
+        assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
         verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-        coVerify(exactly = 1) { repository.saveRemainingFuelLaps(3) }
+        coVerify(exactly = 1) { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) }
         confirmVerified(repository)
     }
 

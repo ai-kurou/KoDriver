@@ -20,13 +20,13 @@ import kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.gener
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
 private const val MINIMUM_REMAINING_VIRTUAL_ENERGY_LAPS = 1f
 private const val MAXIMUM_REMAINING_VIRTUAL_ENERGY_LAPS = 5f
-internal const val DEFAULT_REMAINING_VIRTUAL_ENERGY_LAPS = 3
 
 @Composable
 fun LmuWindowsReadoutRemainingVirtualEnergyLapsDetailPane(
@@ -73,7 +73,7 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyLapsDetailPaneContent(
                         labelFormatter = { sliderLabel.format(it.roundToInt()) },
                         onValueChangeFinished = { onRemainingVirtualEnergyLapsChanged(it.roundToInt()) },
                         steps = 3,
-                        defaultValue = DEFAULT_REMAINING_VIRTUAL_ENERGY_LAPS.toFloat(),
+                        defaultValue = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT.toFloat(),
                         onResetToDefault = onResetRemainingVirtualEnergyLaps,
                         resetContentDescription = resetToDefaultLabel,
                     )

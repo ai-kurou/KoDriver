@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -59,11 +61,17 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     }
 
     fun onResetLongitudinalThreshold() {
-        viewModelScope.launch { thresholds.saveLongitudinalThresholdMeters(DEFAULT_LONGITUDINAL_THRESHOLD_METERS) }
+        viewModelScope.launch {
+            thresholds.saveLongitudinalThresholdMeters(
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+            )
+        }
     }
 
     fun onResetLateralThreshold() {
-        viewModelScope.launch { thresholds.saveLateralThresholdMeters(DEFAULT_LATERAL_THRESHOLD_METERS) }
+        viewModelScope.launch {
+            thresholds.saveLateralThresholdMeters(LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS)
+        }
     }
 
     fun onSustainedApproachDurationSecondsChanged(seconds: Int) {
@@ -125,10 +133,5 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
         }
         playSpeechEvent(events.first)
         playSpeechEvent(events.second, queue = true)
-    }
-
-    companion object {
-        const val DEFAULT_LONGITUDINAL_THRESHOLD_METERS = 5.0
-        const val DEFAULT_LATERAL_THRESHOLD_METERS = 5.0
     }
 }

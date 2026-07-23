@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsRemainingVirtualEnergyLapsUseCase
@@ -34,7 +35,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyLapsDetailViewModelTest {
     @MockK
     private lateinit var repository: LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 
-    private val remainingVirtualEnergyLapsFlow = MutableStateFlow(3)
+    private val remainingVirtualEnergyLapsFlow = MutableStateFlow(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT)
 
     @BeforeTest
     fun setUp() {
@@ -57,7 +58,10 @@ class LmuWindowsReadoutRemainingVirtualEnergyLapsDetailViewModelTest {
         every { repository.observeRemainingVirtualEnergyLaps() } returns remainingVirtualEnergyLapsFlow
         val viewModel = createViewModel()
 
-        assertEquals(3, viewModel.uiState.first().remainingVirtualEnergyLaps)
+        assertEquals(
+            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+            viewModel.uiState.first().remainingVirtualEnergyLaps,
+        )
         verify(exactly = 1) { repository.observeRemainingVirtualEnergyLaps() }
         confirmVerified(repository)
     }
@@ -82,16 +86,23 @@ class LmuWindowsReadoutRemainingVirtualEnergyLapsDetailViewModelTest {
     fun `onResetRemainingVirtualEnergyLapsを呼ぶとバーチャルエナジー残り周回数が3になる`() = runTest {
         remainingVirtualEnergyLapsFlow.update { 5 }
         every { repository.observeRemainingVirtualEnergyLaps() } returns remainingVirtualEnergyLapsFlow
-        coEvery { repository.saveRemainingVirtualEnergyLaps(3) } answers {
-            remainingVirtualEnergyLapsFlow.update { 3 }
+        coEvery {
+            repository.saveRemainingVirtualEnergyLaps(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT)
+        } answers {
+            remainingVirtualEnergyLapsFlow.update { LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT }
         }
         val viewModel = createViewModel()
 
         viewModel.onResetRemainingVirtualEnergyLaps()
 
-        assertEquals(3, viewModel.uiState.first().remainingVirtualEnergyLaps)
+        assertEquals(
+            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+            viewModel.uiState.first().remainingVirtualEnergyLaps,
+        )
         verify(exactly = 1) { repository.observeRemainingVirtualEnergyLaps() }
-        coVerify(exactly = 1) { repository.saveRemainingVirtualEnergyLaps(3) }
+        coVerify(exactly = 1) {
+            repository.saveRemainingVirtualEnergyLaps(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT)
+        }
         confirmVerified(repository)
     }
 }

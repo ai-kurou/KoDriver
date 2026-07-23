@@ -3,6 +3,7 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.LmuWindowsRemainingVirtualEnergyLapsPreferences
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -14,7 +15,9 @@ class LmuWindowsRemainingVirtualEnergyLapsPreferencesSerializerTest {
     @Test
     fun `デフォルト値は3周`() {
         assertEquals(
-            LmuWindowsRemainingVirtualEnergyLapsPreferences(remainingVirtualEnergyLaps = 3),
+            LmuWindowsRemainingVirtualEnergyLapsPreferences(
+                remainingVirtualEnergyLaps = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+            ),
             LmuWindowsRemainingVirtualEnergyLapsPreferencesSerializer.defaultValue,
         )
     }

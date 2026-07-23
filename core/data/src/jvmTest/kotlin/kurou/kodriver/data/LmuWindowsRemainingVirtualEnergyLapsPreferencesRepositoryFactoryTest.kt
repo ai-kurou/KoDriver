@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -30,7 +31,10 @@ class LmuWindowsRemainingVirtualEnergyLapsPreferencesRepositoryFactoryTest {
             directory = tempDir.absolutePath,
         )
 
-        assertEquals(3, repository.observeRemainingVirtualEnergyLaps().first())
+        assertEquals(
+            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+            repository.observeRemainingVirtualEnergyLaps().first(),
+        )
     }
 
     @Test

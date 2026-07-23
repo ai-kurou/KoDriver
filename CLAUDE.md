@@ -90,6 +90,12 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 新しい `ReadoutItemKey` を読み上げ判定ロジックに追加する場合は、対応する `Determine*NarratorReadoutUseCase` のテストに「その項目を無効にした場合は読み上げられない」ケースを必ず追加すること。
 
+### ユーザー設定のデフォルト値
+
+ユーザー設定として永続化され、DataStore の初期値・詳細設定画面のリセット値・UiState の初期値・Narrator / UseCase の初期値で共有されるデフォルト値は、仕様値として `:core:domain` の `domain/model/*Defaults.kt` に定義すること。`:core:data` の `*Preferences` や feature の ViewModel / Pane / UiState は、その定数を参照する。
+
+feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:data` から参照できず同じ値を重複定義することになるため避ける。Preview やテストデータだけで完結する表示用の値は feature 内に置いてよい。
+
 ---
 
 ## テスト方針

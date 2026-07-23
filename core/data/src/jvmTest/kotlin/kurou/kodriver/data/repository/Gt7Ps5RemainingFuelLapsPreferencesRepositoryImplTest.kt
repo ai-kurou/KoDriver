@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.Gt7Ps5RemainingFuelLapsPreferencesSerializer
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -33,7 +34,7 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryImplTest {
 
     @Test
     fun `初期値は3周`() = testScope.runTest {
-        assertEquals(3, repository.observeRemainingFuelLaps().first())
+        assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, repository.observeRemainingFuelLaps().first())
     }
 
     @Test

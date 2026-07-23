@@ -21,6 +21,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
@@ -436,11 +438,11 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
         coEvery {
             thresholdsRepository.saveLongitudinalThresholdMeters(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
             )
         } answers {
             longitudinalFlow.update {
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS
             }
         }
         val viewModel = createViewModel()
@@ -448,12 +450,12 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         viewModel.onResetLongitudinalThreshold()
 
         assertEquals(
-            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
             viewModel.uiState.first().longitudinalThresholdMeters,
         )
         coVerify(exactly = 1) {
             thresholdsRepository.saveLongitudinalThresholdMeters(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LONGITUDINAL_THRESHOLD_METERS,
             )
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }
@@ -482,11 +484,11 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
             MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
         coEvery {
             thresholdsRepository.saveLateralThresholdMeters(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS,
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS,
             )
         } answers {
             lateralFlow.update {
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS
             }
         }
         val viewModel = createViewModel()
@@ -494,12 +496,12 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
         viewModel.onResetLateralThreshold()
 
         assertEquals(
-            LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS,
+            LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS,
             viewModel.uiState.first().lateralThresholdMeters,
         )
         coVerify(exactly = 1) {
             thresholdsRepository.saveLateralThresholdMeters(
-                LmuWindowsReadoutVehicleApproachDetailViewModel.DEFAULT_LATERAL_THRESHOLD_METERS,
+                LMU_WINDOWS_VEHICLE_APPROACH_DEFAULT_LATERAL_THRESHOLD_METERS,
             )
         }
         verify(exactly = 1) { thresholdsRepository.observeLateralThresholdMeters() }

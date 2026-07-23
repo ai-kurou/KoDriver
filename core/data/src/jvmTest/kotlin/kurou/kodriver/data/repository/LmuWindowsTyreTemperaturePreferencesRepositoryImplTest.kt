@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsTyreTemperaturePreferencesSerializer
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
@@ -36,7 +37,10 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryImplTest {
 
     @Test
     fun `highThresholdCelsius の初期値は 95`() = testScope.runTest {
-        assertEquals(95, repository.observeHighThresholdCelsius().first())
+        assertEquals(
+            LMU_WINDOWS_TYRE_TEMPERATURE_DEFAULT_HIGH_THRESHOLD_CELSIUS,
+            repository.observeHighThresholdCelsius().first(),
+        )
     }
 
     @Test
