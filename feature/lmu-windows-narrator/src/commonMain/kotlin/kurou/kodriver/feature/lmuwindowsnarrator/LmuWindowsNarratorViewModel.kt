@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -179,7 +180,7 @@ internal class LmuWindowsNarratorViewModel(
         .stateIn(viewModelScope, SharingStarted.Eagerly, lmuWindowsTyreTemperatureLowWarningDefaultPhases)
 
     private val tyreWearThresholdPercentage = tyreWearUseCases.observeThresholdPercentage()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 50)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
