@@ -1,6 +1,13 @@
 name: _E2E Android Maestro
 
 on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'テスト対象のブランチ・タグ・コミットSHA'
+        type: string
+        required: true
+        default: main
   workflow_call:
     inputs:
       ref:

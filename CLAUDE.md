@@ -172,7 +172,7 @@ GitHub Actions ワークフロー:
 - `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
 - `build-apps.yml`: `workflow_dispatch` で起動し、Android APK と Windows MSI を並列にビルドする。Android APK のビルドは `_build-android-release.yml` を呼び出す
 - `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。Android APK のビルドは `_build-android-release.yml` を呼び出す
-- `_e2e-android-maestro.yml`: `_build-android-release.yml` で署名付き APK をビルドし、Android エミュレータ上で Maestro（`.maestro/tap-bottom-tabs.yaml`）を実行してボトムナビゲーションの各タブ（読み上げ・ログ・その他）をタップする E2E テスト。`workflow_call` 専用で単体実行不可。`release-apps.yml` から呼び出される
+- `_e2e-android-maestro.yml`: `_build-android-release.yml` で署名付き APK をビルドし、Android エミュレータ上で Maestro（`.maestro/tap-bottom-tabs.yaml`）を実行してボトムナビゲーションの各タブ（読み上げ・ログ・その他）をタップする E2E テスト。`release-apps.yml` から呼び出されるほか、Actions の画面から `ref` を指定して手動実行できる
 - `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする。同一ブランチで新しい実行が開始された場合は、実行中の古い記録処理をキャンセルする
 
 ---
