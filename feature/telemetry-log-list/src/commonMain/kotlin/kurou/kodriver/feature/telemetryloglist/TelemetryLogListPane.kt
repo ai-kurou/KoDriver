@@ -399,12 +399,18 @@ private fun tyreTemperatureDisplayName(tyreTemperature: ReadoutItemKey.LmuWindow
     }
 
 @Composable
+private fun vehicleDamageDisplayName(vehicleDamage: ReadoutItemKey.LmuWindows.VehicleDamage): String =
+    when (vehicleDamage) {
+        is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
+        is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
+    }
+
+@Composable
 internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
     when (readoutItemKey) {
         is ReadoutItemKey.LmuWindows.VehicleApproach -> vehicleApproachDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(readoutItemKey)
-        is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
-        is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
+        is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
             stringResource(Res.string.readout_item_remaining_virtual_energy_laps)
@@ -429,14 +435,12 @@ private fun formatDuration(milliseconds: Long): String {
     val seconds = milliseconds % MILLISECONDS_PER_MINUTE / MILLISECONDS_PER_SECOND
     val millis = milliseconds % MILLISECONDS_PER_SECOND
 
-    return "${hours.pad2()}:${minutes.pad2()}:${seconds.pad2()}.${millis.pad3()}"
+    return "${hours.pad(2)}:${minutes.pad(2)}:${seconds.pad(2)}.${millis.pad(3)}"
 }
 
 private fun Long.floorMod(other: Long): Long = ((this % other) + other) % other
 
-private fun Long.pad2(): String = toString().padStart(2, '0')
-
-private fun Long.pad3(): String = toString().padStart(3, '0')
+private fun Long.pad(length: Int): String = toString().padStart(length, '0')
 
 private const val FIRST_VISIBLE_ITEM_INDEX_FOR_AUTO_SCROLL = 1
 private const val RESET_ITEM_KEY = "telemetry_log_reset_item"
