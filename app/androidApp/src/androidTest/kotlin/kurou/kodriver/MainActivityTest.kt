@@ -68,6 +68,7 @@ class MainActivityTest {
         clickContentDescription("低温警告の対象フェーズの説明を表示")
         dismissBottomSheet()
         navigateBack()
+        clickItemAndNavigateBack("タイヤ摩耗")
         scrollToItem("自己ベストラップ")
         clickItem("自己ベストラップ")
         waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")

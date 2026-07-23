@@ -11,6 +11,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
         data object RemainingVirtualEnergyLaps :
             LmuWindows(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root)
+        data object TyreWear : LmuWindows(ReadoutItemKey.LmuWindows.TyreWear.Root)
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
@@ -28,6 +29,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
                     LmuWindows.RemainingVirtualEnergyLaps
+                ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
             }
