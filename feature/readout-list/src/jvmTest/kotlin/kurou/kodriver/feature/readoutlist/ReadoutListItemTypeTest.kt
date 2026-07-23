@@ -99,9 +99,18 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+        )
+    }
+
+    @Test
+    fun `lmu_windows の tyre_wear は LmuWindows_TyreWear を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.TyreWear,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreWear.Root),
         )
     }
 

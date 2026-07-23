@@ -284,6 +284,7 @@ private fun logContext() = LmuWindowsTelemetryLogContext(
         vehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
         tyreTemperatureHighThresholdCelsius = 95,
         tyreTemperatureLowWarningPhases = emptySet(),
+        tyreWearThresholdPercentage = 50,
         remainingVirtualEnergyLapsThreshold = 3,
         remainingVirtualEnergyLapsEnabled = false,
     ),

@@ -10,6 +10,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
@@ -1002,6 +1003,70 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `いずれかのタイヤの摩耗率が閾値以上になると TyreWearWarning を返す`() {
+        val decision = useCase.determineTyreWear(
+            state = LmuWindowsNarratorState(),
+            data = tyreWear(fl = 0.4),
+            settings = settings(tyreWearThresholdPercentage = 50),
+        )
+
+        assertEquals(listOf(SpeechEvent.TyreWearWarning), decision.events)
+        assertEquals(true, decision.state.tyreWearWarned)
+    }
+
+    @Test
+    fun `摩耗警告状態が継続しても再度読み上げない`() {
+        val state = LmuWindowsNarratorState(tyreWearWarned = true)
+        val decision = useCase.determineTyreWear(
+            state = state,
+            data = tyreWear(fl = 0.4),
+            settings = settings(tyreWearThresholdPercentage = 50),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreWearWarned)
+    }
+
+    @Test
+    fun `全タイヤが閾値未満に戻ると再度読み上げ可能になる`() {
+        val warnedState = useCase.determineTyreWear(
+            state = LmuWindowsNarratorState(),
+            data = tyreWear(fl = 0.4),
+            settings = settings(tyreWearThresholdPercentage = 50),
+        ).state
+
+        val recoveredState = useCase.determineTyreWear(
+            state = warnedState,
+            data = tyreWear(fl = 0.6),
+            settings = settings(tyreWearThresholdPercentage = 50),
+        ).state
+
+        val rewarnedDecision = useCase.determineTyreWear(
+            state = recoveredState,
+            data = tyreWear(fl = 0.4),
+            settings = settings(tyreWearThresholdPercentage = 50),
+        )
+
+        assertEquals(false, recoveredState.tyreWearWarned)
+        assertEquals(listOf(SpeechEvent.TyreWearWarning), rewarnedDecision.events)
+    }
+
+    @Test
+    fun `タイヤ摩耗項目が無効なら読み上げない`() {
+        val decision = useCase.determineTyreWear(
+            state = LmuWindowsNarratorState(),
+            data = tyreWear(fl = 0.4),
+            settings = settings(
+                tyreWearThresholdPercentage = 50,
+                enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to false),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.tyreWearWarned)
+    }
+
+    @Test
     fun `タイヤ温度項目が無効なら過熱警告スイッチがONでも読み上げない`() {
         val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
@@ -1207,6 +1272,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+    ReadoutItemKey.LmuWindows.TyreWear.Root to true,
     ReadoutItemKey.LmuWindows.Flag.Root to true,
     ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
@@ -1226,6 +1292,7 @@ private fun settings(
     sustainedApproachDurationSeconds: Int = 7,
     sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
+    tyreWearThresholdPercentage: Int = 50,
     remainingVirtualEnergyLapsThreshold: Int = 3,
     remainingVirtualEnergyLapsEnabled: Boolean = true,
 ) = LmuWindowsNarratorReadoutSettings(
@@ -1244,6 +1311,7 @@ private fun settings(
         SessionPhase.GRID_WALK,
         SessionPhase.FORMATION,
     ),
+    tyreWearThresholdPercentage = tyreWearThresholdPercentage,
     remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold,
     remainingVirtualEnergyLapsEnabled = remainingVirtualEnergyLapsEnabled,
 )
@@ -1351,6 +1419,20 @@ private fun tyreTemperature(
     rl: Double = 20.0,
     rr: Double = 20.0,
 ) = LmuWindowsTyreCarcassTemperatureData(
+    wheels = mapOf(
+        WheelIndex.FRONT_LEFT to fl,
+        WheelIndex.FRONT_RIGHT to fr,
+        WheelIndex.REAR_LEFT to rl,
+        WheelIndex.REAR_RIGHT to rr,
+    ),
+)
+
+private fun tyreWear(
+    fl: Double = 1.0,
+    fr: Double = 1.0,
+    rl: Double = 1.0,
+    rr: Double = 1.0,
+) = LmuWindowsTyreWearData(
     wheels = mapOf(
         WheelIndex.FRONT_LEFT to fl,
         WheelIndex.FRONT_RIGHT to fr,

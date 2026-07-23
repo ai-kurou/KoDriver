@@ -41,6 +41,9 @@ sealed interface SpeechEvent {
     data object TyreCold : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
     }
+    data object TyreWearWarning : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root
+    }
     data object LmuWindowsMyBestLapFormal : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.MyBestLap.Root
     }

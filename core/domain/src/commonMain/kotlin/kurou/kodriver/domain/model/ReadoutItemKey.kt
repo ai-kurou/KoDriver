@@ -72,6 +72,13 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
         }
+
+        sealed interface TyreWear : LmuWindows {
+            data object Root : TyreWear, TopLevel {
+                override val value = "lmu_windows_tyre_wear"
+                override val supportsQueue = true
+            }
+        }
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
@@ -109,6 +116,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.TyreTemperature.OverheatWarning,
                 LmuWindows.TyreTemperature.LowWarning,
                 LmuWindows.RemainingVirtualEnergyLaps.Root,
+                LmuWindows.TyreWear.Root,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,

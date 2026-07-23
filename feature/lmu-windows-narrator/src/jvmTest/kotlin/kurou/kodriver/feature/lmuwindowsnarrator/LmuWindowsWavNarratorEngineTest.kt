@@ -424,6 +424,40 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
+    fun `TyreWearWarning はリソースから読み込んだ音声を再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == TYRE_WEAR_WARNING_PATH) TYRE_WEAR_WARNING_SOUND else EVENT_SOUND
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.TyreWearWarning)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(TYRE_WEAR_WARNING_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `TyreWearWarning のリソースが未ロードなら何も再生しない`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { error("load failed") },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.TyreWearWarning)
+        runCurrent()
+
+        assertEquals(emptyList(), player.playedSounds)
+    }
+
+    @Test
     fun `KeepLeft はキープレフト音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
@@ -496,6 +530,7 @@ class LmuWindowsWavNarratorEngineTest {
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         const val TYRE_OVERHEAT_PATH = "files/tyre_overheat.wav"
         const val TYRE_COLD_PATH = "files/tyre_cold.wav"
+        const val TYRE_WEAR_WARNING_PATH = "files/tyre_wear_caution.wav"
         const val KEEP_LEFT_PATH = "files/keep_left.wav"
         const val LEFT_SUSTAINED_PATH = "files/left_sustained.wav"
         const val REMAINING_VIRTUAL_ENERGY_LAPS_2_PATH = "files/remaining_virtual_energy_laps_2.wav"
@@ -508,6 +543,7 @@ class LmuWindowsWavNarratorEngineTest {
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
         val TYRE_OVERHEAT_SOUND = byteArrayOf(8)
         val TYRE_COLD_SOUND = byteArrayOf(9)
+        val TYRE_WEAR_WARNING_SOUND = byteArrayOf(13)
         val LEFT_APPROACH_SOUND = byteArrayOf(4)
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(6)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(7)

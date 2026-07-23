@@ -8,7 +8,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.core.app.ActivityScenario
@@ -50,28 +49,15 @@ class MainActivityTest {
         clickReadoutPriorityHelp()
 
         waitUntilDisplayed("フラッグ")
-        clickItemAndNavigateBack("フラッグ")
-        clickItem("車両接近")
-        clickContentDescription("閾値の説明を表示")
-        navigateBack()
-        clickItemAndNavigateBack("車両故障")
-        scrollToItem("タイヤ温度")
-        clickItemByOnClickAction("タイヤ温度")
-        waitUntilDisplayed("高温閾値設定")
-        composeTestRule.onNodeWithText("高温閾値設定").performScrollTo()
-        composeTestRule.waitForIdle()
-        clickContentDescription("高温閾値の説明を表示")
-        dismissBottomSheet()
-        waitUntilDisplayed("低温警告の対象フェーズ")
-        composeTestRule.onNodeWithText("低温警告の対象フェーズ").performScrollTo()
-        composeTestRule.waitForIdle()
-        clickContentDescription("低温警告の対象フェーズの説明を表示")
-        dismissBottomSheet()
-        navigateBack()
-        scrollToItem("自己ベストラップ")
-        clickItem("自己ベストラップ")
-        waitUntilDisplayed("自己ベストラップを更新したときに音声でお知らせします。")
-        navigateBack()
+        clickItemAndVerifyDescription(
+            "フラッグ",
+            "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
+        )
+        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
+        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
+        clickItemAndVerifyDescription("タイヤ温度", "タイヤの温度状況を音声でお知らせします。")
+        clickItemAndVerifyDescription("タイヤ摩耗", "タイヤの摩耗状況を音声でお知らせします。")
+        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
     @Test
@@ -193,6 +179,13 @@ class MainActivityTest {
         navigateBack()
     }
 
+    private fun clickItemAndVerifyDescription(itemText: String, descriptionText: String) {
+        scrollToItem(itemText)
+        clickItem(itemText)
+        waitUntilDisplayed(descriptionText)
+        navigateBack()
+    }
+
     private fun clickScrollableItem(text: String) {
         scrollToItem(text)
         clickItem(text)
@@ -216,15 +209,6 @@ class MainActivityTest {
 
     private fun clickItem(text: String) {
         composeTestRule.onNodeWithText(text).performClick()
-        composeTestRule.waitForIdle()
-    }
-
-    // クリック可能なのは項目カード自身であり、内部の Text ノードはクリックアクションを持たないため、
-    // performClick()(座標タップ)ではなく OnClick セマンティクスアクションを直接実行する場合は
-    // カード自身を contentDescription で特定する必要がある。
-    private fun clickItemByOnClickAction(contentDescription: String) {
-        composeTestRule.onNode(hasContentDescription(contentDescription))
-            .performSemanticsAction(SemanticsActions.OnClick)
         composeTestRule.waitForIdle()
     }
 
