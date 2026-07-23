@@ -31,9 +31,10 @@ internal fun FuelConsumptionContent(
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
-    val perLapTextRes = when (selectedSimulator) {
+    val simulator = selectedSimulator ?: return
+    val perLapTextRes = when (simulator) {
         is Simulator.LmuWindows -> Res.string.debug_state_fuel_consumption_per_lap_ratio
-        else -> Res.string.debug_state_fuel_consumption_per_lap_liters
+        is Simulator.Gt7Ps5 -> Res.string.debug_state_fuel_consumption_per_lap_liters
     }
     Column {
         Text(text = stringResource(perLapTextRes, formatOneDecimal(result.consumptionPerLap)))
