@@ -1,4 +1,6 @@
 <resources>
     <string name="remaining_virtual_energy_description">バーチャルエナジー残量に関する情報を音声でお知らせします。</string>
     <string name="remaining_virtual_energy_warning_title">残量警告</string>
+    <string name="remaining_virtual_energy_threshold_label">%1$s%%</string>
+    <string name="remaining_virtual_energy_threshold_reset">デフォルトに戻す</string>
 </resources>
