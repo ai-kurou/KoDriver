@@ -28,7 +28,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -44,7 +43,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -93,8 +91,6 @@ internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
     val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
-    val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
-    val observeRemainingVirtualEnergyLapsThreshold: ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -197,16 +193,6 @@ internal class LmuWindowsNarratorViewModel(
 
     private val sustainedReadoutType = vehicleApproachUseCases.observeSustainedReadoutType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
-
-    private val remainingVirtualEnergyLapsThreshold = narratorUseCases.observeRemainingVirtualEnergyLapsThreshold()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
-
-    private val virtualEnergyFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) emptyFlow()
-            else narratorUseCases.observeVirtualEnergy()
-        }
-        .shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob = lmuTelemetryFlow
@@ -399,39 +385,6 @@ internal class LmuWindowsNarratorViewModel(
         }
         .launchIn(viewModelScope)
 
-    @Suppress("UnusedPrivateProperty")
-    private val remainingVirtualEnergyLapsJob = combine(
-        lmuTelemetryFlow,
-        virtualEnergyFlow,
-    ) { telemetry, virtualEnergy -> telemetry to virtualEnergy }
-        .onEach { (telemetry, virtualEnergy) ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineRemainingVirtualEnergyLaps(
-                state = state,
-                telemetry = telemetry,
-                virtualEnergy = virtualEnergy,
-                settings = settings,
-                observedAtMs = observedAtMs,
-            )
-            narratorState = decision.state
-            eventProcessor.processVirtualEnergy(
-                telemetry = telemetry,
-                virtualEnergy = virtualEnergy,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsVirtualEnergyLogContext(
-                    state = state,
-                    settings = settings,
-                    trackingState = decision.state.virtualEnergyTrackingState,
-                ),
-            )
-        }
-        .launchIn(viewModelScope)
-
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = mergedEnabledStates.value,
@@ -445,10 +398,5 @@ internal class LmuWindowsNarratorViewModel(
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
-            remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold.value,
-            remainingVirtualEnergyLapsEnabled = mergedEnabledStates.value.getOrDefault(
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
-                defaultValue = false,
-            ),
         )
 }

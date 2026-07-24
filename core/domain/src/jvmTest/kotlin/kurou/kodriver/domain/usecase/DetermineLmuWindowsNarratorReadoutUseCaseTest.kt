@@ -14,7 +14,6 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -28,7 +27,6 @@ import kurou.kodriver.domain.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @Suppress("TooManyFunctions")
 class DetermineLmuWindowsNarratorReadoutUseCaseTest {
@@ -83,365 +81,6 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         )
 
         assertEquals(emptyList<SpeechEvent>(), second.events)
-    }
-
-    @Test
-    fun `バーチャルエナジー残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-        val midLap1Decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.9),
-            settings = settings(),
-            observedAtMs = 45_000L,
-        )
-        // ラップ1完走時の消費率(0.1)が、ラップ2開始時に次回以降の推定基準として採用される。
-        val lapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = midLap1Decision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.8),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 3),
-            observedAtMs = 90_000L,
-        )
-        val decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = lapStartDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 3),
-            observedAtMs = 150_000L,
-        )
-
-        assertEquals(
-            0.1,
-            lapStartDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
-            1e-9,
-        )
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), decision.events)
-        assertEquals(2, decision.state.lastVirtualEnergyEvaluationLap)
-        assertEquals(0, decision.state.lastAnnouncedRemainingVirtualEnergyLaps)
-    }
-
-    @Test
-    fun `読み上げタイミング直後に閾値未達でも同一ラップ内で燃料が減って閾値に達したら読み上げる`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-        val midLap1Decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.9),
-            settings = settings(),
-            observedAtMs = 45_000L,
-        )
-        // ラップ2開始。ラップ1の消費率(0.1)が基準として採用される。
-        val lapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = midLap1Decision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.8),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 5),
-            observedAtMs = 90_000L,
-        )
-        // 読み上げタイミング(ベストラップ90秒-30秒=60秒経過時点)。残り0.62/0.1=6周分でまだ閾値5を超えている。
-        val gateJustPassedDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = lapStartDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.62),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 5),
-            observedAtMs = 150_000L,
-        )
-        // 同一ラップ内でさらに燃料が減り、残り0.45/0.1=4周分まで下がったタイミング。
-        val laterInSameLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = gateJustPassedDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.45),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 5),
-            observedAtMs = 155_000L,
-        )
-
-        assertTrue(gateJustPassedDecision.events.isEmpty())
-        assertEquals(-1, gateJustPassedDecision.state.lastVirtualEnergyEvaluationLap)
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(4)), laterInSameLapDecision.events)
-        assertEquals(2, laterInSameLapDecision.state.lastVirtualEnergyEvaluationLap)
-    }
-
-    @Test
-    fun `バーチャルエナジー残り周回数は読み上げタイミング前なら読み上げない`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-        val nextLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
-            settings = settings(),
-            observedAtMs = 100_000L,
-        )
-        val decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = nextLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
-            settings = settings(),
-            observedAtMs = 159_999L,
-        )
-
-        assertTrue(decision.events.isEmpty())
-        assertEquals(-1, decision.state.lastVirtualEnergyEvaluationLap)
-    }
-
-    @Test
-    fun `バーチャルエナジー残り周回数が無効なら読み上げない`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(remainingVirtualEnergyLapsEnabled = false),
-            observedAtMs = 0L,
-        )
-        val nextLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
-            settings = settings(remainingVirtualEnergyLapsEnabled = false),
-            observedAtMs = 100_000L,
-        )
-        val decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = nextLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.1),
-            settings = settings(remainingVirtualEnergyLapsEnabled = false),
-            observedAtMs = 160_000L,
-        )
-
-        assertTrue(decision.events.isEmpty())
-        assertEquals(-1, decision.state.lastVirtualEnergyEvaluationLap)
-    }
-
-    @Test
-    fun `無効判定は評価ロックしないため設定を有効化すると同じラップ内でも読み上げる`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-        val midLap1Decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.9),
-            settings = settings(),
-            observedAtMs = 45_000L,
-        )
-        val lapStartDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = midLap1Decision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.8),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 3),
-            observedAtMs = 90_000L,
-        )
-        // 読み上げタイミングを過ぎた時点では設定が無効なため読み上げない。評価ロックはかからない。
-        val disabledDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = lapStartDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 3, remainingVirtualEnergyLapsEnabled = false),
-            observedAtMs = 150_000L,
-        )
-        // 同じラップ内で設定を有効化すると、ロックされていないため直後の判定で読み上げられる。
-        val enabledDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = disabledDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
-            settings = settings(remainingVirtualEnergyLapsThreshold = 3),
-            observedAtMs = 151_000L,
-        )
-
-        assertTrue(disabledDecision.events.isEmpty())
-        assertEquals(-1, disabledDecision.state.lastVirtualEnergyEvaluationLap)
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), enabledDecision.events)
-        assertEquals(2, enabledDecision.state.lastVirtualEnergyEvaluationLap)
-    }
-
-    @Test
-    fun `給油した周は次回以降の推定基準として採用されず補充直後は同じ残り周回数でも再度読み上げる`() {
-        val firstLapDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-        val midLap1Decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstLapDecision.state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.9),
-            settings = settings(),
-            observedAtMs = 50_000L,
-        )
-        // ラップ1完走時の消費率(0.1)が採用される。
-        val lap2StartDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = midLap1Decision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.85),
-            settings = settings(),
-            observedAtMs = 100_000L,
-        )
-        val firstWarningDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = lap2StartDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
-            settings = settings(),
-            observedAtMs = 170_000L,
-        )
-        // ラップ2の途中で給油。この周は次回以降の推定基準として採用されなくなる。
-        val refilledDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstWarningDecision.state,
-            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.9),
-            settings = settings(),
-            observedAtMs = 175_000L,
-        )
-        // ラップ2は給油済みのため除外され、ラップ1由来の消費率(0.1)がそのまま使われ続ける。
-        val lap3StartDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = refilledDecision.state,
-            telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.88),
-            settings = settings(),
-            observedAtMs = 280_000L,
-        )
-        val secondWarningDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = lap3StartDecision.state,
-            telemetry = lapTelemetry(currentLap = 3, bestLapTimeMs = 100_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.05),
-            settings = settings(),
-            observedAtMs = 350_000L,
-        )
-
-        assertEquals(0.1, lap2StartDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), firstWarningDecision.events)
-        assertTrue(refilledDecision.events.isEmpty())
-        assertEquals(-1, refilledDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
-        assertEquals(true, refilledDecision.state.virtualEnergyTrackingState.currentLapHasRefilled)
-        assertEquals(0.1, refilledDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
-        assertEquals(0.1, lap3StartDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0, 1e-9)
-        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), secondWarningDecision.events)
-        assertEquals(
-            0.1,
-            secondWarningDecision.state.virtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
-            1e-9,
-        )
-    }
-
-    @Test
-    fun `ラップ数が戻ったらバーチャルエナジー残り周回数の読み上げ履歴をリセットする`() {
-        val state = LmuWindowsNarratorState(
-            lastAnnouncedRemainingVirtualEnergyLaps = 2,
-            lastVirtualEnergyEvaluationLap = 5,
-            virtualEnergyTrackingState = LmuWindowsVirtualEnergyTrackingState(
-                session = 0,
-                currentLap = 5,
-                currentLapStartedAtMs = 100_000L,
-                currentLapStartRemainingRatio = 0.4,
-                currentRemainingRatio = 0.2,
-                bestLapTimeMs = 90_000L,
-                observedAtMs = 150_000L,
-            ),
-        )
-
-        val decision = useCase.determineRemainingVirtualEnergyLaps(
-            state = state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0, session = 0),
-            settings = settings(),
-            observedAtMs = 200_000L,
-        )
-
-        assertTrue(decision.events.isEmpty())
-        assertEquals(-1, decision.state.lastAnnouncedRemainingVirtualEnergyLaps)
-        assertEquals(-1, decision.state.lastVirtualEnergyEvaluationLap)
-        assertEquals(1, decision.state.virtualEnergyTrackingState.currentLap)
-        assertEquals(1.0, decision.state.virtualEnergyTrackingState.currentLapStartRemainingRatio)
-    }
-
-    @Test
-    fun `セッションが変わったらラップ数が戻らなくてもバーチャルエナジーの基準値をリセットする`() {
-        // 予選（session=5）でラップ 0 のまま残量 16% まで消費した状態から、
-        // ラップ番号が減少しないままレース（session=10）へ切り替わるケース。
-        val qualifyingDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 0, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.16, session = 5),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-
-        val raceDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = qualifyingDecision.state,
-            telemetry = lapTelemetry(currentLap = 0, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 1.0, session = 10),
-            settings = settings(),
-            observedAtMs = 10_000L,
-        )
-
-        val trackingState = raceDecision.state.virtualEnergyTrackingState
-        assertTrue(raceDecision.events.isEmpty())
-        assertEquals(10, trackingState.session)
-        assertEquals(1.0, trackingState.currentLapStartRemainingRatio)
-        assertEquals(10_000L, trackingState.currentLapStartedAtMs)
-        assertEquals(-1, raceDecision.state.lastAnnouncedRemainingVirtualEnergyLaps)
-        assertEquals(-1, raceDecision.state.lastVirtualEnergyEvaluationLap)
-    }
-
-    @Test
-    fun `しきい値未満の残量増加は補充とみなさず消費量の推定に含めない`() {
-        val firstDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = LmuWindowsNarratorState(),
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.5),
-            settings = settings(),
-            observedAtMs = 0L,
-        )
-
-        // ジッタによる 0.4% の上振れ（しきい値 0.5% 未満）
-        val jitterDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = firstDecision.state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.504),
-            settings = settings(),
-            observedAtMs = 1_000L,
-        )
-
-        val jitterTrackingState = jitterDecision.state.virtualEnergyTrackingState
-        assertEquals(false, jitterTrackingState.currentLapHasRefilled)
-        assertEquals(false, jitterTrackingState.hasRefilled)
-
-        // ピット補給による 10% の増加（しきい値以上）は補充として扱う
-        val refillDecision = useCase.determineRemainingVirtualEnergyLaps(
-            state = jitterDecision.state,
-            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
-            virtualEnergy = virtualEnergy(remainingRatio = 0.604),
-            settings = settings(),
-            observedAtMs = 2_000L,
-        )
-
-        // 給油を検知すると、そのラップは次回以降の消費率推定の基準として採用されなくなる。
-        val refillTrackingState = refillDecision.state.virtualEnergyTrackingState
-        assertEquals(true, refillTrackingState.currentLapHasRefilled)
-        assertEquals(true, refillTrackingState.hasRefilled)
     }
 
     @Test
@@ -1278,7 +917,6 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
     ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
     ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-    ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to true,
 )
 
 @Suppress("LongParameterList")
@@ -1293,8 +931,6 @@ private fun settings(
     sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
     tyreWearThresholdPercentage: Int = 50,
-    remainingVirtualEnergyLapsThreshold: Int = 3,
-    remainingVirtualEnergyLapsEnabled: Boolean = true,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
@@ -1312,8 +948,6 @@ private fun settings(
         SessionPhase.FORMATION,
     ),
     tyreWearThresholdPercentage = tyreWearThresholdPercentage,
-    remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold,
-    remainingVirtualEnergyLapsEnabled = remainingVirtualEnergyLapsEnabled,
 )
 
 private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
@@ -1364,11 +998,6 @@ private fun lapTelemetry(currentLap: Int, bestLapTimeMs: Long) = LmuWindowsTelem
         positionY = 0.0,
         positionZ = 0.0,
     ),
-)
-
-private fun virtualEnergy(remainingRatio: Double, session: Int = 0) = LmuWindowsVirtualEnergyData(
-    remainingRatio = remainingRatio,
-    session = session,
 )
 
 private fun leftVehicleApproach(vehicleId: Int) = LmuWindowsVehicleApproachData(
