@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,11 +16,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.Res
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_description
+import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_description
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_label
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_reset
+import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_subtitle
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_warning_title
+import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -57,16 +62,20 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
             title = stringResource(Res.string.remaining_virtual_energy_warning_title),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
-                ThresholdSlider(
-                    value = thresholdPercentage,
-                    valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
-                    steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
-                    labelFormatter = { thresholdLabelTemplate.format(it.roundToInt()) },
-                    onValueChangeFinished = { thresholdPercentage = it },
-                    defaultValue = THRESHOLD_DEFAULT,
-                    onResetToDefault = { thresholdPercentage = THRESHOLD_DEFAULT },
-                    resetContentDescription = stringResource(Res.string.remaining_virtual_energy_threshold_reset),
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneSubtitle(text = stringResource(Res.string.remaining_virtual_energy_threshold_subtitle))
+                    DetailPaneBodyText(text = stringResource(Res.string.remaining_virtual_energy_threshold_description))
+                    ThresholdSlider(
+                        value = thresholdPercentage,
+                        valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
+                        steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
+                        labelFormatter = { thresholdLabelTemplate.format(it.roundToInt()) },
+                        onValueChangeFinished = { thresholdPercentage = it },
+                        defaultValue = THRESHOLD_DEFAULT,
+                        onResetToDefault = { thresholdPercentage = THRESHOLD_DEFAULT },
+                        resetContentDescription = stringResource(Res.string.remaining_virtual_energy_threshold_reset),
+                    )
+                }
             },
         )
     }
