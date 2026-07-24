@@ -106,6 +106,9 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.testJunit)
                 implementation(libs.junit)
+                implementation(libs.kotlinx.coroutinesTest)
+                implementation(libs.compose.uiTestJunit4)
+                implementation(libs.androidx.activity.compose)
                 implementation(libs.roborazzi.compose)
                 implementation(libs.compose.material3.adaptive.layout)
                 implementation(libs.robolectric)
@@ -125,6 +128,7 @@ dependencies {
     add("jvmTestImplementation", testFixtures(projects.feature.otherThemeDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherReadoutStartSoundDetail))
     add("jvmTestImplementation", testFixtures(projects.feature.otherConsoleIpDetail))
+    add("androidHostTestImplementation", testFixtures(projects.feature.otherThemeDetail))
     testFixturesApi(testFixtures(projects.feature.lmuWindowsNarrator))
     testFixturesApi(testFixtures(projects.feature.gt7Ps5Narrator))
     testFixturesApi(testFixtures(projects.feature.readoutList))
