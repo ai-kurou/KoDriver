@@ -39,10 +39,6 @@ class ReadoutItemKeyTest {
         )
         assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, ReadoutItemKey.fromValue("lmu_windows_my_best_lap"))
         assertEquals(
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root,
-            ReadoutItemKey.fromValue("lmu_windows_remaining_virtual_energy_laps"),
-        )
-        assertEquals(
             ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.fromValue("lmu_windows_tyre_wear"),
         )
@@ -68,7 +64,6 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.LmuWindows.Flag.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.VehicleDamage.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.Root.supportsQueue)
-        assertEquals(true, ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.TyreWear.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.MyBestLap.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.Gt7Ps5.MyBestLap.Root.supportsQueue)

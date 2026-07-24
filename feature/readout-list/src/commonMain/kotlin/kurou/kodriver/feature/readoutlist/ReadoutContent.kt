@@ -27,7 +27,6 @@ import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
-import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy_laps
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_tyre_wear
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
@@ -164,8 +163,6 @@ private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when 
     ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
     ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
     ReadoutListItemType.LmuWindows.TyreTemperature -> stringResource(Res.string.item_tyre_temperature)
-    ReadoutListItemType.LmuWindows.RemainingVirtualEnergyLaps ->
-        stringResource(Res.string.item_remaining_virtual_energy_laps)
     ReadoutListItemType.LmuWindows.TyreWear -> stringResource(Res.string.item_tyre_wear)
     ReadoutListItemType.LmuWindows.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     ReadoutListItemType.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)

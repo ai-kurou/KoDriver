@@ -18,7 +18,6 @@
     <string name="item_tyre_low_warning">低温警告</string>
     <string name="item_my_best_lap">自己ベストラップ</string>
     <string name="item_remaining_fuel_laps">燃料残り周回数</string>
-    <string name="item_remaining_virtual_energy_laps">バーチャルエナジー残り周回数</string>
     <string name="item_tyre_wear">タイヤ摩耗</string>
     <string name="drag_handle">ドラッグして並び替え</string>
     <string name="priority_hint_label">読み上げ優先度</string>
