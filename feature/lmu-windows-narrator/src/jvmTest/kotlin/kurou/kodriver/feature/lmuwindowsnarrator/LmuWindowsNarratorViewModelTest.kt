@@ -34,7 +34,6 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -51,7 +50,6 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
-import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -62,7 +60,6 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
-import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -72,7 +69,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -88,7 +84,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -158,13 +153,6 @@ class LmuWindowsNarratorViewModelTest {
     private lateinit var telemetryLogRepository: TelemetryLogRepository
 
     @MockK
-    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
-
-    @MockK
-    private lateinit var remainingVirtualEnergyLapsPreferencesRepository:
-        LmuWindowsRemainingVirtualEnergyLapsPreferencesRepository
-
-    @MockK
     private lateinit var queuePreferencesRepository: QueuePreferencesRepository
 
     @MockK
@@ -192,7 +180,6 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel: Channel<LmuWindowsTelemetryData>,
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData>,
         tyreWearChannel: Channel<LmuWindowsTyreWearData>,
-        virtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData>,
         enabledOverrides: Map<ReadoutItemKey, Boolean>,
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean>,
@@ -210,7 +197,6 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningEnabled: Boolean,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
         tyreWearThresholdPercentage: Int,
-        remainingVirtualEnergyLapsThreshold: Int,
         simulator: Simulator?,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
@@ -256,9 +242,6 @@ class LmuWindowsNarratorViewModelTest {
             MutableStateFlow(tyreWearThresholdPercentage)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
-        every { virtualEnergyRepository.virtualEnergyStream() } returns virtualEnergyChannel.receiveAsFlow()
-        every { remainingVirtualEnergyLapsPreferencesRepository.observeRemainingVirtualEnergyLaps() } returns
-            MutableStateFlow(remainingVirtualEnergyLapsThreshold)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
             MutableStateFlow(queueEnabledOverrides)
     }
@@ -271,7 +254,6 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         tyreWearChannel: Channel<LmuWindowsTyreWearData> = Channel(Channel.UNLIMITED),
-        virtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -293,7 +275,6 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         tyreWearThresholdPercentage: Int = 50,
-        remainingVirtualEnergyLapsThreshold: Int = 3,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -305,7 +286,6 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             tyreTemperatureChannel = tyreTemperatureChannel,
             tyreWearChannel = tyreWearChannel,
-            virtualEnergyChannel = virtualEnergyChannel,
             enabledOverrides = enabledOverrides,
             flagEnabledOverrides = flagEnabledOverrides,
             vehicleDamageEnabledOverrides = vehicleDamageEnabledOverrides,
@@ -323,7 +303,6 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureLowWarningEnabled = tyreTemperatureLowWarningEnabled,
             tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage,
-            remainingVirtualEnergyLapsThreshold = remainingVirtualEnergyLapsThreshold,
             simulator = simulator,
             queueEnabledOverrides = queueEnabledOverrides,
         )
@@ -392,10 +371,6 @@ class LmuWindowsNarratorViewModelTest {
                 determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
                 observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
                 observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagPreferencesRepository),
-                observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
-                observeRemainingVirtualEnergyLapsThreshold = ObserveLmuWindowsRemainingVirtualEnergyLapsUseCase(
-                    remainingVirtualEnergyLapsPreferencesRepository,
-                ),
             ),
             currentTimeMs = currentTimeMs,
         )
@@ -1427,137 +1402,6 @@ class LmuWindowsNarratorViewModelTest {
         assertContains(log.telemetryJson, """"observedAtMs":123""")
         assertContains(log.telemetryJson, """"overheatState":{"raw":"""")
         assertContains(log.telemetryJson, """"finalState":{"raw":"""")
-    }
-
-    // --- バーチャルエナジー残り周回数 ---
-
-    @Test
-    fun `最速ラップの30秒前を過ぎて閾値以下になったら読み上げる`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val tts = mockTts(spokenTexts)
-        createViewModel(
-            telemetryChannel = telemetryChannel,
-            virtualEnergyChannel = virtualEnergyChannel,
-            ttsEngine = tts,
-            remainingVirtualEnergyLapsThreshold = 3,
-            currentTimeMs = { fakeTime },
-        )
-
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
-        fakeTime = 50_000L
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.9))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
-        fakeTime = 100_000L
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.8))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-        fakeTime = 160_000L
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.05))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyLapsWarning(0)), spokenTexts)
-    }
-
-    @Test
-    fun `バーチャルエナジー残り周回数項目が無効なら読み上げない`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val tts = mockTts(spokenTexts)
-        createViewModel(
-            telemetryChannel = telemetryChannel,
-            virtualEnergyChannel = virtualEnergyChannel,
-            ttsEngine = tts,
-            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to false),
-            remainingVirtualEnergyLapsThreshold = 3,
-            currentTimeMs = { fakeTime },
-        )
-
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
-        fakeTime = 100_000L
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
-        fakeTime = 160_000L
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
-
-    @Test
-    fun `バーチャルエナジー残り周回数読み上げが発生したらテレメトリを保存する`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
-        val logs = mutableListOf<TelemetryLog>()
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val tts = mockTts(spokenTexts)
-        createViewModel(
-            telemetryChannel = telemetryChannel,
-            virtualEnergyChannel = virtualEnergyChannel,
-            ttsEngine = tts,
-            remainingVirtualEnergyLapsThreshold = 3,
-            currentTimeMs = { fakeTime },
-        )
-        stubTelemetryLogSave(logs, createdAt = 160_000L, ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root)
-
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
-        fakeTime = 50_000L
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.9))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
-        fakeTime = 100_000L
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.8))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-        fakeTime = 160_000L
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.05))
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-
-        assertEquals(1, logs.size)
-        val log = logs.first()
-        assertEquals(160_000L, log.createdAt)
-        assertEquals(Simulator.LmuWindows, log.simulator)
-        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root, log.readoutItemKey)
-        assertContains(
-            log.telemetryJson,
-            """"telemetry":{"currentLapTimeMs":0,"lastLapTimeMs":0,"bestLapTimeMs":90000""",
-        )
-        assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.05,"session":-1}""")
-        assertContains(log.telemetryJson, """"observedAtMs":160000""")
-        assertContains(log.telemetryJson, """"settings":{"raw":"LmuWindowsNarratorReadoutSettings(""")
-        assertContains(log.telemetryJson, """"state":{"raw":"LmuWindowsNarratorState(""")
-        assertContains(log.telemetryJson, """"trackingState":{"raw":"LmuWindowsVirtualEnergyTrackingState(""")
-    }
-
-    @Test
-    fun `LMU非選択時はバーチャルエナジー残り周回数を読み上げない`() = runTest(testDispatcher) {
-        var fakeTime = 0L
-        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
-        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val tts = mockTts(spokenTexts)
-        createViewModel(
-            telemetryChannel = telemetryChannel,
-            virtualEnergyChannel = virtualEnergyChannel,
-            ttsEngine = tts,
-            simulator = null,
-            remainingVirtualEnergyLapsThreshold = 3,
-            currentTimeMs = { fakeTime },
-        )
-
-        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 1.0))
-        fakeTime = 100_000L
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-        virtualEnergyChannel.send(LmuWindowsVirtualEnergyData(remainingRatio = 0.1))
-        fakeTime = 160_000L
-        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
-
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
     }
 }
 

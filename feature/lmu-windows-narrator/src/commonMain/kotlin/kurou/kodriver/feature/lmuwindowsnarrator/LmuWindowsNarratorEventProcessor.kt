@@ -9,12 +9,10 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
-import kurou.kodriver.domain.usecase.LmuWindowsVirtualEnergyTrackingState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
 
 internal data class LmuWindowsTelemetryLogContext(
@@ -28,12 +26,6 @@ internal data class LmuWindowsTyreTemperatureLogContext(
     val settings: LmuWindowsNarratorReadoutSettings,
     val overheatState: LmuWindowsNarratorState,
     val finalState: LmuWindowsNarratorState,
-)
-
-internal data class LmuWindowsVirtualEnergyLogContext(
-    val state: LmuWindowsNarratorState,
-    val settings: LmuWindowsNarratorReadoutSettings,
-    val trackingState: LmuWindowsVirtualEnergyTrackingState,
 )
 
 internal class LmuWindowsNarratorEventProcessor(
@@ -214,33 +206,6 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
-    suspend fun processVirtualEnergy(
-        telemetry: LmuWindowsTelemetryData,
-        virtualEnergy: LmuWindowsVirtualEnergyData,
-        events: List<SpeechEvent>,
-        readoutOrder: List<ReadoutItemKey>,
-        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-        observedAtMs: Long,
-        logContext: LmuWindowsVirtualEnergyLogContext,
-    ) {
-        events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
-                        state = logContext.state,
-                        telemetry = telemetry,
-                        virtualEnergy = virtualEnergy,
-                        settings = logContext.settings,
-                        observedAtMs = observedAtMs,
-                        trackingState = logContext.trackingState,
-                    ),
-                )
-            }
-        }
-    }
-
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
@@ -315,33 +280,10 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private fun buildTelemetryLogJson(
-    state: LmuWindowsNarratorState,
-    telemetry: LmuWindowsTelemetryData,
-    virtualEnergy: LmuWindowsVirtualEnergyData,
-    settings: LmuWindowsNarratorReadoutSettings,
-    observedAtMs: Long,
-    trackingState: LmuWindowsVirtualEnergyTrackingState,
-): String =
-    "{" +
-        """"state":${state.toJsonString()},""" +
-        """"telemetry":${telemetry.toJson()},""" +
-        """"virtualEnergy":${virtualEnergy.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
-        """"observedAtMs":$observedAtMs,""" +
-        """"trackingState":${trackingState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsVirtualEnergyData.toJson(): String =
-    """{"remainingRatio":$remainingRatio,"session":$session}"""
-
 private fun LmuWindowsNarratorReadoutSettings.toJsonString(): String =
     """{"raw":${toString().toJsonStringLiteral()}}"""
 
 private fun LmuWindowsNarratorState.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun LmuWindowsVirtualEnergyTrackingState.toJsonString(): String =
     """{"raw":${toString().toJsonStringLiteral()}}"""
 
 private fun LmuWindowsTelemetryData.toJson(): String =
