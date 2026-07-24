@@ -34,7 +34,7 @@ fun DetailPaneDescription(
 ) {
     DetailPaneBodyText(
         text = text,
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
     )
 }
 
