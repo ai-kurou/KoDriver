@@ -54,6 +54,7 @@ import kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resour
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
@@ -125,9 +126,8 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(
+        DetailPaneDescription(
             text = stringResource(Res.string.tyre_temperature_description),
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
         val helpIconContentDescription =
             stringResource(Res.string.tyre_temperature_threshold_help_icon_content_description)

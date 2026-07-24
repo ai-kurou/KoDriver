@@ -17,8 +17,8 @@ import kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.gener
 import kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.generated.resources.remaining_virtual_energy_laps_enabled
 import kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.generated.resources.remaining_virtual_energy_laps_reset_to_default
 import kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail.generated.resources.remaining_virtual_energy_laps_slider_label
-import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import org.jetbrains.compose.resources.stringResource
@@ -58,9 +58,8 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyLapsDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(
+        DetailPaneDescription(
             text = stringResource(Res.string.remaining_virtual_energy_laps_description),
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
         DetailPaneCard(
             title = stringResource(Res.string.remaining_virtual_energy_laps_enabled),
