@@ -11,6 +11,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
@@ -100,6 +101,9 @@ val desktopDataModule = module {
     }
     single<LmuWindowsTyreWearPreferencesRepository> {
         createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
+        createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)
     }
     // テレメトリログ（Room データベース）
     single<TelemetryLogRepository> {
