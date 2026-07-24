@@ -14,6 +14,7 @@ digraph G {
   ":feature:lmu-windows-narrator" -> ":core:domain"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-tyre-wear-detail" -> ":core:domain"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"

@@ -181,19 +181,6 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
 }
 
-// 詳細画面（detailPane）を持たない項目はタップしても遷移させない。
-// バーチャルエナジー残量は listPane のスイッチ／キュー操作のみで、詳細設定を持たない。
-private fun ReadoutItemKey.hasDetailPane(): Boolean =
-    this !is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy
-
-// 詳細画面を持つ項目だけタップで遷移させる onClick を返す。持たない項目は何もしない。
-private fun itemClickHandler(item: ReadoutItemKey, onItemClick: (ReadoutItemKey) -> Unit): () -> Unit =
-    if (item.hasDetailPane()) {
-        { onItemClick(item) }
-    } else {
-        {}
-    }
-
 private fun readoutItemIndex(
     lazyListIndex: Int,
     readoutItemStartIndex: Int,
@@ -366,7 +353,7 @@ internal fun ReadoutListPane(
                         val itemName = itemDisplayName(item)
                         val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
                         ListPaneCard(
-                            onClick = itemClickHandler(item, onItemClick),
+                            onClick = { onItemClick(item) },
                             // クリック可能なのはこの Card 自身であり、内部の headlineContent の Text 自体は
                             // クリックアクションを持たない。Compose UI Test で座標タップ(performClick)ではなく
                             // OnClick セマンティクスアクションを直接実行してクリックすると、
