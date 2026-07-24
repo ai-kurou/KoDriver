@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -20,9 +21,11 @@ import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.gene
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_label
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_reset
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_threshold_subtitle
+import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_warning_chip
 import kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources.remaining_virtual_energy_warning_title
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -38,18 +41,22 @@ private const val THRESHOLD_DEFAULT = 50f
 fun LmuWindowsReadoutRemainingVirtualEnergyDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    // 現時点では設定項目を持たない空の detailPane。将来の設定項目追加に備えて ViewModel を配線しておく。
-    koinViewModel<LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel>()
-    LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(modifier = modifier)
+    val viewModel: LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel = koinViewModel()
+    LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+        onWarningChipClicked = viewModel::onWarningChipClicked,
+        modifier = modifier,
+    )
 }
 
 @Composable
 internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
+    onWarningChipClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    // TODO: 永続化は未実装。設定保存が必要になった時点で ViewModel/UiState/PreferencesRepository へ移行する。
+    // TODO: 閾値の永続化は未実装。設定保存が必要になった時点で ViewModel/UiState/PreferencesRepository へ移行する。
     var thresholdPercentage by remember { mutableFloatStateOf(THRESHOLD_DEFAULT) }
     val thresholdLabelTemplate = stringResource(Res.string.remaining_virtual_energy_threshold_label)
+    val warningChipLabel = stringResource(Res.string.remaining_virtual_energy_warning_chip)
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -63,6 +70,13 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneCardChips(
+                        chipLabels = listOf(warningChipLabel),
+                        selectedChipLabels = setOf(warningChipLabel),
+                        chipEnabled = true,
+                        onChipClick = { onWarningChipClicked() },
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
                     DetailPaneSubtitle(text = stringResource(Res.string.remaining_virtual_energy_threshold_subtitle))
                     DetailPaneBodyText(text = stringResource(Res.string.remaining_virtual_energy_threshold_description))
                     ThresholdSlider(
