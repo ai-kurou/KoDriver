@@ -6,6 +6,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -20,6 +21,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -38,15 +40,16 @@ import org.koin.dsl.module
  *
  * 提供: LmuWindowsNarratorViewModel、LmuWindowsNarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
- *   ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases）、それらが束ねる各ドメイン UseCase、
- *   および named("lmu_windows") の音声再生系（PlaySpeechEventUseCase・TextToSpeechEngine）。
+ *   ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases / RemainingVirtualEnergyUseCases）、
+ *   それらが束ねる各ドメイン UseCase、および named("lmu_windows") の音声再生系
+ *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は GT7 と区別するため named("lmu_windows") で登録している。
  */
 val lmuWindowsNarratorModule: Module = module {
     // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
     factory { NarratorUseCases(get(), get(), get()) }
@@ -56,6 +59,7 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ReadoutListUseCases(get(), get(), get(), get()) }
     factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
     factory { TyreWearUseCases(get(), get()) }
+    factory { RemainingVirtualEnergyUseCases(get(), get()) }
     factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
 
     // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
@@ -82,6 +86,8 @@ val lmuWindowsNarratorModule: Module = module {
     factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
     factory { ObserveLmuWindowsTyreWearUseCase(get()) }
     factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
+    factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
+    factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
     factory { ObserveQueueEnabledStatesUseCase(get()) }
 
     // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）

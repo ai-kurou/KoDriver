@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -28,6 +29,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -43,6 +45,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -87,6 +90,11 @@ internal data class TyreWearUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsTyreWearThresholdPercentageUseCase,
 )
 
+internal data class RemainingVirtualEnergyUseCases(
+    val observeRemainingVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+    val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
+)
+
 internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
@@ -102,6 +110,7 @@ internal class LmuWindowsNarratorViewModel(
     flagUseCases: FlagUseCases,
     tyreTemperatureUseCases: TyreTemperatureUseCases,
     tyreWearUseCases: TyreWearUseCases,
+    remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
     private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
@@ -177,6 +186,13 @@ internal class LmuWindowsNarratorViewModel(
 
     private val tyreWearThresholdPercentage = tyreWearUseCases.observeThresholdPercentage()
         .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE)
+
+    private val remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyUseCases.observeThresholdPercentage()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE,
+        )
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -385,6 +401,37 @@ internal class LmuWindowsNarratorViewModel(
         }
         .launchIn(viewModelScope)
 
+    @Suppress("UnusedPrivateProperty")
+    private val remainingVirtualEnergyJob = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+            remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
+        }
+        .onEach { remainingVirtualEnergy ->
+            val observedAtMs = currentTimeMs()
+            val state = narratorState
+            val settings = currentSettings
+            val decision = narratorUseCases.determineReadout.determineRemainingVirtualEnergy(
+                state = state,
+                data = remainingVirtualEnergy,
+                settings = settings,
+            )
+            narratorState = decision.state
+            eventProcessor.processRemainingVirtualEnergy(
+                remainingVirtualEnergy = remainingVirtualEnergy,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+            )
+        }
+        .launchIn(viewModelScope)
+
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = mergedEnabledStates.value,
@@ -398,5 +445,6 @@ internal class LmuWindowsNarratorViewModel(
             tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
+            remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
         )
 }

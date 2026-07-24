@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
@@ -37,6 +38,7 @@ internal class LmuWindowsNarratorEventProcessor(
     private var previousVehicleDamage: LmuWindowsVehicleDamageData? = null
     private var previousRaceFlags: LmuWindowsRaceFlagsData? = null
     private var previousTyreWear: LmuWindowsTyreWearData? = null
+    private var previousRemainingVirtualEnergy: LmuWindowsVirtualEnergyData? = null
 
     suspend fun processTelemetry(
         telemetry: LmuWindowsTelemetryData,
@@ -176,6 +178,34 @@ internal class LmuWindowsNarratorEventProcessor(
             }
         }
         previousTyreWear = tyreWear
+    }
+
+    suspend fun processRemainingVirtualEnergy(
+        remainingVirtualEnergy: LmuWindowsVirtualEnergyData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsTelemetryLogContext,
+    ) {
+        val previous = previousRemainingVirtualEnergy
+        events.forEach { event ->
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                saveTelemetryLogSafely(
+                    createdAt = observedAtMs,
+                    readoutItemKey = event.readoutItemKey,
+                    telemetryJson = buildTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = remainingVirtualEnergy,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+                )
+            }
+        }
+        previousRemainingVirtualEnergy = remainingVirtualEnergy
     }
 
     suspend fun processTyreTemperature(
@@ -339,6 +369,29 @@ private fun buildTelemetryLogJson(
 
 private fun LmuWindowsTyreWearData.toJson(): String =
     """{"wheels":{${wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
+
+private fun buildTelemetryLogJson(
+    state: LmuWindowsNarratorState,
+    previous: LmuWindowsVirtualEnergyData?,
+    current: LmuWindowsVirtualEnergyData,
+    settings: LmuWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: LmuWindowsNarratorState,
+): String =
+    "{" +
+        """"state":${state.toJsonString()},""" +
+        """"previousRemainingVirtualEnergy":${previous?.toJson() ?: "null"},""" +
+        """"remainingVirtualEnergy":${current.toJson()},""" +
+        """"settings":${settings.toJsonString()},""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"finalState":${finalState.toJsonString()}""" +
+        "}"
+
+private fun LmuWindowsVirtualEnergyData.toJson(): String =
+    "{" +
+        """"remainingRatio":$remainingRatio,""" +
+        """"session":$session""" +
+        "}"
 
 private fun LmuWindowsVehicleDamageData.toJson(): String =
     "{" +

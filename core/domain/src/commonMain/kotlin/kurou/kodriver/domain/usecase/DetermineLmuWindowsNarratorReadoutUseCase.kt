@@ -7,6 +7,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -25,6 +26,7 @@ data class LmuWindowsNarratorState(
     val tyreOverheating: Boolean = false,
     val tyreWearWarned: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
+    val remainingVirtualEnergyWarned: Boolean = false,
 )
 
 data class LmuWindowsVehicleApproachState(
@@ -56,6 +58,7 @@ data class LmuWindowsNarratorReadoutSettings(
     val tyreTemperatureHighThresholdCelsius: Int,
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
+    val remainingVirtualEnergyThresholdPercentage: Int,
 )
 
 data class LmuWindowsNarratorReadoutDecision(
@@ -240,6 +243,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreWearWarned = anyWorn),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreWearWarning) else emptyList(),
+        )
+    }
+
+    fun determineRemainingVirtualEnergy(
+        state: LmuWindowsNarratorState,
+        data: LmuWindowsVirtualEnergyData,
+        settings: LmuWindowsNarratorReadoutSettings,
+    ): LmuWindowsNarratorReadoutDecision {
+        val isLow = data.remainingRatio * PERCENTAGE_SCALE <= settings.remainingVirtualEnergyThresholdPercentage
+        val shouldAnnounce = !state.remainingVirtualEnergyWarned && isLow &&
+            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+        return LmuWindowsNarratorReadoutDecision(
+            state = state.copy(remainingVirtualEnergyWarned = isLow),
+            events = if (shouldAnnounce) listOf(SpeechEvent.RemainingVirtualEnergyWarning) else emptyList(),
         )
     }
 
