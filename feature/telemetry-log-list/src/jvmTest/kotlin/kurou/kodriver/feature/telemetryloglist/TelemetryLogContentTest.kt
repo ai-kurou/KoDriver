@@ -137,7 +137,6 @@ class TelemetryLogContentTest {
             ReadoutItemKey.LmuWindows.VehicleDamage.Root to "車両故障",
             ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to "オーバーヒート",
             ReadoutItemKey.LmuWindows.TyreTemperature.Root to "タイヤ温度",
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root to "バーチャルエナジー残り周回数",
             ReadoutItemKey.LmuWindows.TyreWear.Root to "タイヤ摩耗",
             ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
@@ -290,7 +289,7 @@ class TelemetryLogContentTest {
         rule.runOnIdle { scrollToTopRequest++ }
 
         rule.waitUntil {
-            rule.onAllNodesWithText("バーチャルエナジー残り周回数").fetchSemanticsNodes().isNotEmpty()
+            rule.onAllNodesWithText("タイヤ摩耗").fetchSemanticsNodes().isNotEmpty()
         }
     }
 }
@@ -299,7 +298,7 @@ private fun createTelemetryLogs(): List<TelemetryLog> = (30 downTo 1).map { id -
     createTelemetryLog(
         id = id.toLong(),
         readoutItemKey = when (id) {
-            30 -> ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root
+            30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
             20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
             else -> ReadoutItemKey.LmuWindows.Flag.Root
         },

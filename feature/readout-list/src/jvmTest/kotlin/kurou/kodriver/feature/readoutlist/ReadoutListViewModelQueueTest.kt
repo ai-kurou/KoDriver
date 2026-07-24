@@ -85,7 +85,7 @@ class ReadoutListViewModelQueueTest {
 
         val state = viewModel.uiState.first()
         assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.Flag.Root])
-        assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root])
+        assertEquals(true, state.queueEnabledStates[ReadoutItemKey.LmuWindows.TyreWear.Root])
         verify(exactly = 1) { simulatorRepository.selectedSimulator() }
         verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
         confirmVerified(simulatorRepository, readoutRepository, queueRepository)

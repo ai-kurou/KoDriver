@@ -66,13 +66,6 @@ sealed interface ReadoutItemKey {
             }
         }
 
-        sealed interface RemainingVirtualEnergyLaps : LmuWindows {
-            data object Root : RemainingVirtualEnergyLaps, TopLevel {
-                override val value = "lmu_windows_remaining_virtual_energy_laps"
-                override val supportsQueue = true
-            }
-        }
-
         sealed interface TyreWear : LmuWindows {
             data object Root : TyreWear, TopLevel {
                 override val value = "lmu_windows_tyre_wear"
@@ -115,7 +108,6 @@ sealed interface ReadoutItemKey {
                 LmuWindows.TyreTemperature.Root,
                 LmuWindows.TyreTemperature.OverheatWarning,
                 LmuWindows.TyreTemperature.LowWarning,
-                LmuWindows.RemainingVirtualEnergyLaps.Root,
                 LmuWindows.TyreWear.Root,
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
