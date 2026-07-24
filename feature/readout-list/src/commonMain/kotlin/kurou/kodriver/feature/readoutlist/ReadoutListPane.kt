@@ -77,7 +77,6 @@ import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_overheat
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
-import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy_laps
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
 import kodriver.feature.readoutlist.generated.resources.item_tyre_low_warning
 import kodriver.feature.readoutlist.generated.resources.item_tyre_overheat_warning
@@ -161,8 +160,6 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag -> flagItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureItemDisplayName(itemId)
-    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root ->
-        stringResource(Res.string.item_remaining_virtual_energy_laps)
     is ReadoutItemKey.LmuWindows.TyreWear.Root -> stringResource(Res.string.item_tyre_wear)
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
@@ -174,7 +171,6 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
     is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
     is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
-    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root -> Icons.Filled.LocalGasStation
     is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer

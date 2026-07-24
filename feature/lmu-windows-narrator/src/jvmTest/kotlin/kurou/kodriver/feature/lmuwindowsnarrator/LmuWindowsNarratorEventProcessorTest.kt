@@ -160,7 +160,7 @@ class LmuWindowsNarratorEventProcessorTest {
 
     @Test
     fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
-        val currentKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergyLaps.Root
+        val currentKey = ReadoutItemKey.LmuWindows.TyreWear.Root
         val newEvent = SpeechEvent.CarLeft
         every { ttsEngine.currentReadoutItemKey } returns currentKey
         every { ttsEngine.stop() } just Runs
@@ -285,8 +285,6 @@ private fun logContext() = LmuWindowsTelemetryLogContext(
         tyreTemperatureHighThresholdCelsius = 95,
         tyreTemperatureLowWarningPhases = emptySet(),
         tyreWearThresholdPercentage = 50,
-        remainingVirtualEnergyLapsThreshold = 3,
-        remainingVirtualEnergyLapsEnabled = false,
     ),
     finalState = LmuWindowsNarratorState(),
 )

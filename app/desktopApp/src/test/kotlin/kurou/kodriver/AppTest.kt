@@ -97,10 +97,6 @@ class AppTest {
             "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
         )
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
-        clickItemAndVerifyDescription(
-            "バーチャルエナジー残り周回数",
-            "バーチャルエナジー残量から走行可能な残り周回数を計算し、ベストラップの30秒前に判定して条件を満たした場合に音声でお知らせします。判定には直近に完走した補給なしラップの消費量を使います。",
-        )
         clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         clickItemAndVerifyDescription(
             "タイヤ温度",

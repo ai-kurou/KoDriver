@@ -1,7 +1,0 @@
-package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergylapsdetail
-
-import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT
-
-internal data class LmuWindowsReadoutRemainingVirtualEnergyLapsDetailUiState(
-    val remainingVirtualEnergyLaps: Int = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_LAPS_DEFAULT,
-)
