@@ -26,6 +26,7 @@ import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
+import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
 import kodriver.feature.readoutlist.generated.resources.item_tyre_wear
 import kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -138,6 +140,48 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(tyreWearText).assertExists()
+    }
+
+    @Test
+    fun `バーチャルエナジー残量はタップしても選択されず・タイヤ摩耗はタップで選択される`() {
+        var veText by mutableStateOf("")
+        var tyreWearText by mutableStateOf("")
+        val selected = mutableListOf<ReadoutItemKey>()
+
+        rule.setContent {
+            veText = stringResource(Res.string.item_remaining_virtual_energy)
+            tyreWearText = stringResource(Res.string.item_tyre_wear)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.LmuWindows),
+                    selectedSimulator = Simulator.LmuWindows,
+                    items = listOf(
+                        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                        ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    ),
+                    readoutEnabledStates = mapOf(
+                        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
+                        ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+                    ),
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onItemSelected = { selected.add(it) },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText(veText).performClick()
+        rule.waitForIdle()
+        assertTrue(selected.isEmpty())
+
+        rule.onNodeWithText(tyreWearText).performClick()
+        rule.waitForIdle()
+        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.LmuWindows.TyreWear.Root), selected)
     }
 
     @Test

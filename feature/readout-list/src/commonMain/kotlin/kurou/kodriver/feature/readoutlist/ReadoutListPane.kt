@@ -77,6 +77,7 @@ import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_overheat
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
+import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
 import kodriver.feature.readoutlist.generated.resources.item_tyre_low_warning
 import kodriver.feature.readoutlist.generated.resources.item_tyre_overheat_warning
@@ -160,6 +161,8 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag -> flagItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureItemDisplayName(itemId)
+    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root ->
+        stringResource(Res.string.item_remaining_virtual_energy)
     is ReadoutItemKey.LmuWindows.TyreWear.Root -> stringResource(Res.string.item_tyre_wear)
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
@@ -171,11 +174,25 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
     is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
     is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
     is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
 }
+
+// 詳細画面（detailPane）を持たない項目はタップしても遷移させない。
+// バーチャルエナジー残量は listPane のスイッチ／キュー操作のみで、詳細設定を持たない。
+private fun ReadoutItemKey.hasDetailPane(): Boolean =
+    this !is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy
+
+// 詳細画面を持つ項目だけタップで遷移させる onClick を返す。持たない項目は何もしない。
+private fun itemClickHandler(item: ReadoutItemKey, onItemClick: (ReadoutItemKey) -> Unit): () -> Unit =
+    if (item.hasDetailPane()) {
+        { onItemClick(item) }
+    } else {
+        {}
+    }
 
 private fun readoutItemIndex(
     lazyListIndex: Int,
@@ -349,7 +366,7 @@ internal fun ReadoutListPane(
                         val itemName = itemDisplayName(item)
                         val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
                         ListPaneCard(
-                            onClick = { onItemClick(item) },
+                            onClick = itemClickHandler(item, onItemClick),
                             // クリック可能なのはこの Card 自身であり、内部の headlineContent の Text 自体は
                             // クリックアクションを持たない。Compose UI Test で座標タップ(performClick)ではなく
                             // OnClick セマンティクスアクションを直接実行してクリックすると、

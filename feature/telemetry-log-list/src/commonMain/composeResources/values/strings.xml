@@ -17,6 +17,7 @@
     <string name="readout_item_tyre_low_warning">低温警告</string>
     <string name="readout_item_my_best_lap">自己ベストラップ</string>
     <string name="readout_item_remaining_fuel_laps">燃料残り周回数</string>
+    <string name="readout_item_remaining_virtual_energy">バーチャルエナジー残量</string>
     <string name="readout_item_tyre_wear">タイヤ摩耗</string>
     <string name="telemetry_log_reset_item">データベースをリセット</string>
     <string name="telemetry_log_reset_confirm_title">データベースをリセットしますか？</string>
