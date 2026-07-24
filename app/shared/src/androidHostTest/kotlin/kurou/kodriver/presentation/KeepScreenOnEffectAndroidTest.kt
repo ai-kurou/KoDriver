@@ -38,11 +38,11 @@ class KeepScreenOnEffectAndroidTest {
     }
 
     @Test
-    fun `enabledがtrueからfalseに変わるとViewのkeepScreenOnをfalseに戻す`() {
-        val enabled = mutableStateOf(true)
-        val view = setKeepScreenOnContent(enabled)
+    fun `compositionから外れるとViewのkeepScreenOnをfalseに戻す`() {
+        val included = mutableStateOf(true)
+        val view = setDisposableKeepScreenOnContent(included)
 
-        enabled.value = false
+        included.value = false
         composeRule.waitForIdle()
 
         assertFalse(view.keepScreenOn)
@@ -53,6 +53,18 @@ class KeepScreenOnEffectAndroidTest {
         composeRule.setContent {
             view = LocalView.current
             KeepScreenOnEffect(enabled = enabled.value)
+        }
+        composeRule.waitForIdle()
+        return view ?: error("LocalView was not captured.")
+    }
+
+    private fun setDisposableKeepScreenOnContent(included: androidx.compose.runtime.State<Boolean>): View {
+        var view: View? = null
+        composeRule.setContent {
+            view = LocalView.current
+            if (included.value) {
+                KeepScreenOnEffect(enabled = true)
+            }
         }
         composeRule.waitForIdle()
         return view ?: error("LocalView was not captured.")
