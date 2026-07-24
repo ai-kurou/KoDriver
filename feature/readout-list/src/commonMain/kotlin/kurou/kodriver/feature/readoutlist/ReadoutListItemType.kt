@@ -9,6 +9,8 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage.Root)
         data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+        data object RemainingVirtualEnergy :
+            LmuWindows(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
         data object TyreWear : LmuWindows(ReadoutItemKey.LmuWindows.TyreWear.Root)
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
@@ -25,6 +27,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
                 ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
                 ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
                 else -> null
@@ -55,9 +58,10 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
             ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
-            ReadoutItemKey.LmuWindows.TyreWear.Root -> 3
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 4
-            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 5
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 3
+            ReadoutItemKey.LmuWindows.TyreWear.Root -> 4
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 5
+            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 6
         }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int = when (key) {

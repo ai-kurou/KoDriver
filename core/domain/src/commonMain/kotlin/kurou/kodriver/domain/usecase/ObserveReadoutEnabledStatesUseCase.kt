@@ -15,6 +15,7 @@ private val readoutEnabledStateDefaults: Map<Simulator, Map<ReadoutItemKey, Bool
         ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
         ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
         ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
         ReadoutItemKey.LmuWindows.TyreWear.Root to true,
         ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
     ),

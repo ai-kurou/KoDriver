@@ -11,6 +11,7 @@ private val queueEnabledStateDefaults: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.Flag.Root to false,
     ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
     ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
     ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
     ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
