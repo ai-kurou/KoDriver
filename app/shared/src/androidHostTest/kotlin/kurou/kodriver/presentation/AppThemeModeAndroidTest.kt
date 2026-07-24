@@ -76,6 +76,14 @@ class AppThemeModeAndroidTest {
         assertTrue(captureAppDarkTheme())
     }
 
+    @Test
+    @Config(sdk = [36], qualifiers = "notnight")
+    fun `SYSTEM設定ではAndroidのシステムライト状態を使う`() = runTest {
+        repository.saveThemeMode(ThemeMode.SYSTEM)
+
+        assertFalse(captureAppDarkTheme())
+    }
+
     private val repository: FakeThemePreferencesRepository
         get() = GlobalContext.get().get<ThemePreferencesRepository>() as FakeThemePreferencesRepository
 
