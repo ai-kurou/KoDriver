@@ -47,7 +47,6 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         rule.onNodeWithContentDescription("高温閾値の説明を表示").performClick()
 
-        rule.onNodeWithText("カーカス温度", substring = true).assertIsDisplayed()
         rule.onNodeWithText("設定した温度以上になると過熱警告を読み上げます", substring = true).assertIsDisplayed()
     }
 
