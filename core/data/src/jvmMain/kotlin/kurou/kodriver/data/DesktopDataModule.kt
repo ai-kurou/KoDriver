@@ -2,6 +2,7 @@ package kurou.kodriver.data
 
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -51,6 +52,9 @@ val desktopDataModule = module {
     }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<DebugStateCardOrderPreferencesRepository> {
+        createDebugStateCardOrderPreferencesRepository(directory = kodriverDirectory)
     }
     single<LmuWindowsFlagPreferencesRepository> {
         createLmuWindowsFlagPreferencesRepository(directory = kodriverDirectory)

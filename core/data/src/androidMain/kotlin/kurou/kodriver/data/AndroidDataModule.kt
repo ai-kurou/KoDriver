@@ -5,6 +5,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
+import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -90,6 +91,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
         createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<DebugStateCardOrderPreferencesRepository> {
+        createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath)
     }
     single<LmuWindowsFlagPreferencesRepository> {
         createLmuWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
