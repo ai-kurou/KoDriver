@@ -71,6 +71,7 @@ internal class LmuWindowsWavNarratorEngine(
         put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
+        put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
     }
 
     private val startSoundTypeToFile = mapOf(
