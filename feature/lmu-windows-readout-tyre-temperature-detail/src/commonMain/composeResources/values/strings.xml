@@ -2,7 +2,6 @@
     <string name="tyre_temperature_title">タイヤ温度</string>
     <string name="tyre_temperature_description">タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。</string>
     <string name="tyre_temperature_high_threshold_subtitle">高温閾値設定</string>
-    <string name="tyre_temperature_high_threshold_description">この温度以上になると読み上げます。</string>
     <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
     <string name="tyre_temperature_high_threshold_reset">デフォルトに戻す</string>
     <string name="tyre_temperature_threshold_help_icon_content_description">高温閾値の説明を表示</string>
@@ -12,7 +11,6 @@
     <string name="tyre_temperature_low_warning_card_title">低温警告</string>
     <string name="tyre_temperature_low_warning_chip">タイヤ低温警告</string>
     <string name="tyre_temperature_low_warning_phases_subtitle">低温警告の対象フェーズ</string>
-    <string name="tyre_temperature_low_warning_phases_description">選択したフェーズに切り替わった瞬間、1輪でも60°C以下なら読み上げます。</string>
     <string name="tyre_temperature_low_warning_phases_help_icon_content_description">低温警告の対象フェーズの説明を表示</string>
     <string name="tyre_temperature_low_warning_phases_help_description">ガレージ・ウォームアップラップ・グリッドウォーク・フォーメーションラップのうち、選択したフェーズに切り替わった瞬間に、4輪のうち1輪でも60°C以下であれば低温警告を読み上げます。フェーズが変わらない間や、切り替わった時点で全輪が60°Cを超えている場合は読み上げません。</string>
     <string name="tyre_temperature_low_warning_phase_garage">ガレージ</string>
