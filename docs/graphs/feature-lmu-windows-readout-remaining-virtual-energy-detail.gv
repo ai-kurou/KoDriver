@@ -1,0 +1,6 @@
+digraph G {
+  rankdir=TB
+  ":app:shared" -> ":feature:lmu-windows-readout-remaining-virtual-energy-detail"
+  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" -> ":core:designsystem"
+}
