@@ -74,7 +74,10 @@ subprojects {
                 filters {
                     excludes {
                         annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+                        classes("*ComposableSingletons\$*")
                         classes("*Empty*")
+                        classes("*PreviewKt")
+                        classes("*PreviewKt\$*")
                         classes("*PreviewParameterProvider")
                     }
                 }
@@ -338,7 +341,10 @@ kover {
         filters {
             excludes {
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+                classes("*ComposableSingletons\$*")
                 classes("*Empty*")
+                classes("*PreviewKt")
+                classes("*PreviewKt\$*")
                 classes("*PreviewParameterProvider")
             }
         }
