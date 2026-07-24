@@ -66,18 +66,11 @@ fun OtherVolumeDetailPaneContent(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            DetailPaneBodyText(
-                text = stringResource(Res.string.volume_description),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            DetailPaneBodyText(
-                text = stringResource(Res.string.volume_formula),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-            DetailPaneBodyText(
-                text = stringResource(Res.string.volume_low_warning),
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                DetailPaneBodyText(text = stringResource(Res.string.volume_description))
+                DetailPaneBodyText(text = stringResource(Res.string.volume_formula))
+                DetailPaneBodyText(text = stringResource(Res.string.volume_low_warning))
+            }
             DetailPaneSubtitle(
                 text = stringResource(Res.string.volume_subtitle),
                 modifier = Modifier.padding(horizontal = 16.dp),

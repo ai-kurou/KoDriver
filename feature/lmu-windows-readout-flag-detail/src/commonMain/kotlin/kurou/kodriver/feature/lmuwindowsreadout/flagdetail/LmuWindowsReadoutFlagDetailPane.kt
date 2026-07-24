@@ -15,9 +15,9 @@ import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
 import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
-import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import org.jetbrains.compose.resources.stringResource
@@ -56,9 +56,8 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(
+        DetailPaneDescription(
             text = stringResource(Res.string.flag_description),
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
         FlagReadoutItem.entries.forEach { item ->
             val chipLabel = stringResource(item.chipLabelRes)

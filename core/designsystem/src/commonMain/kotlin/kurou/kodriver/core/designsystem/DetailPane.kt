@@ -28,6 +28,17 @@ fun DetailPaneBodyText(
 }
 
 @Composable
+fun DetailPaneDescription(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    DetailPaneBodyText(
+        text = text,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+    )
+}
+
+@Composable
 fun DetailPaneSubtitle(
     text: String,
     modifier: Modifier = Modifier,

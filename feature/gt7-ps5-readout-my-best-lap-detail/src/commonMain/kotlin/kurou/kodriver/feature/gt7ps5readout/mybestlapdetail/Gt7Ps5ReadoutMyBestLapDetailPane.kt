@@ -16,9 +16,9 @@ import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_bes
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_enabled
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
 import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
-import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -50,9 +50,8 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(
+        DetailPaneDescription(
             text = stringResource(Res.string.my_best_lap_description),
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
         DetailPaneCard(
             title = stringResource(Res.string.my_best_lap_enabled),

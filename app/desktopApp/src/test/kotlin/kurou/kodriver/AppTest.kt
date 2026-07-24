@@ -99,12 +99,18 @@ class AppTest {
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
         clickItemAndVerifyDescription(
             "バーチャルエナジー残り周回数",
-            "バーチャルエナジー残量から走行可能な残り周回数を計算し、音声でお知らせします。",
+            "バーチャルエナジー残量から走行可能な残り周回数を計算し、ベストラップの30秒前に判定して条件を満たした場合に音声でお知らせします。判定には直近に完走した補給なしラップの消費量を使います。",
         )
         clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
-        clickItemAndVerifyDescription("タイヤ温度", "タイヤの温度状況を音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "タイヤ温度",
+            "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
+        )
         scrollToItem("タイヤ摩耗")
-        clickItemAndVerifyDescription("タイヤ摩耗", "タイヤの摩耗状況を音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "タイヤ摩耗",
+            "タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。",
+        )
         scrollToItem("自己ベストラップ")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }

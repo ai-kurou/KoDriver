@@ -24,6 +24,7 @@ import kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyr
 import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
+import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import org.jetbrains.compose.resources.stringResource
@@ -61,9 +62,8 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        DetailPaneBodyText(
+        DetailPaneDescription(
             text = stringResource(Res.string.tyre_wear_description),
-            modifier = Modifier.padding(horizontal = 16.dp),
         )
         val warningChipLabel = stringResource(Res.string.tyre_wear_warning_chip)
         val thresholdLabelTemplate = stringResource(Res.string.tyre_wear_threshold_label)
