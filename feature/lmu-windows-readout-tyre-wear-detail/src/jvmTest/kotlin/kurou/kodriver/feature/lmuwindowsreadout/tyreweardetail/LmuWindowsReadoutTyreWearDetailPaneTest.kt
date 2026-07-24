@@ -24,7 +24,8 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("タイヤの摩耗状況を音声でお知らせします。").assertIsDisplayed()
+        rule.onNodeWithText("タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします", substring = true)
+            .assertIsDisplayed()
     }
 
     @Test

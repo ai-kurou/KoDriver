@@ -1,5 +1,5 @@
 <resources>
-    <string name="tyre_wear_description">タイヤの摩耗状況を音声でお知らせします。</string>
+    <string name="tyre_wear_description">タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。</string>
     <string name="tyre_wear_warning_title">摩耗警告</string>
     <string name="tyre_wear_warning_chip">タイヤ摩耗警告</string>
     <string name="tyre_wear_threshold_subtitle">摩耗閾値</string>
