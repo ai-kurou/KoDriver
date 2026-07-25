@@ -1,9 +1,12 @@
 package kurou.kodriver.data
 
 import kotlinx.coroutines.runBlocking
+import java.net.URI
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class GitHubAppReleaseRepositoryTest {
 
@@ -39,5 +42,26 @@ class GitHubAppReleaseRepositoryTest {
         val repository = GitHubAppReleaseRepository(fetch = { error("network error") })
 
         assertNull(repository.getLatestRelease())
+    }
+
+    @Test
+    fun `GitHubの最新リリースURLは許可する`() {
+        val uri = URI("https://api.github.com/repos/ai-kurou/KoDriver/releases/latest")
+
+        assertTrue(uri.isAllowedGitHubLatestReleaseUri())
+    }
+
+    @Test
+    fun `GitHubの最新リリースURL以外は許可しない`() {
+        val uris = listOf(
+            URI("http://api.github.com/repos/ai-kurou/KoDriver/releases/latest"),
+            URI("https://example.com/repos/ai-kurou/KoDriver/releases/latest"),
+            URI("https://api.github.com/repos/ai-kurou/KoDriver/releases/latest?redirect=https://example.com"),
+            URI("https://api.github.com/repos/ai-kurou/KoDriver/releases/latest#fragment"),
+        )
+
+        uris.forEach { uri ->
+            assertFalse(uri.isAllowedGitHubLatestReleaseUri())
+        }
     }
 }
