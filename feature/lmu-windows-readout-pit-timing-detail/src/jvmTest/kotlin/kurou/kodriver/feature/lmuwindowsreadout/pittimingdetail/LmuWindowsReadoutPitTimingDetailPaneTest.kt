@@ -39,23 +39,6 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     }
 
     @Test
-    fun `バーチャルエナジーのスイッチをタップするとコールバックが呼ばれる`() {
-        var virtualEnergyEnabled = true
-        rule.setContent {
-            KoDriverTheme {
-                LmuWindowsReadoutPitTimingDetailPaneContent(
-                    uiState = LmuWindowsReadoutPitTimingDetailUiState(virtualEnergyEnabled = virtualEnergyEnabled),
-                    onVirtualEnergyEnabledChanged = { virtualEnergyEnabled = it },
-                )
-            }
-        }
-
-        rule.onNodeWithText("予想残り周回数").performClick()
-
-        assert(!virtualEnergyEnabled)
-    }
-
-    @Test
     fun `バーチャルエナジーのスライダーを動かすとコールバックが呼ばれる`() {
         var virtualEnergyLaps = 3
         rule.setContent {

@@ -65,23 +65,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
         val uiState = viewModel.uiState.first()
 
-        assertEquals(true, uiState.virtualEnergyEnabled)
         assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, uiState.virtualEnergyLaps)
         assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, uiState.tyreWearLaps)
-        verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
-        verify(exactly = 1) { repository.observeTyreWearLaps() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `onVirtualEnergyEnabledChangedを呼ぶとvirtualEnergyEnabledが更新される`() = runTest {
-        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
-        val viewModel = createViewModel()
-
-        viewModel.onVirtualEnergyEnabledChanged(false)
-
-        assertEquals(false, viewModel.uiState.first().virtualEnergyEnabled)
         verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
         verify(exactly = 1) { repository.observeTyreWearLaps() }
         confirmVerified(repository)

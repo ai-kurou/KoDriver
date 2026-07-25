@@ -57,7 +57,6 @@ fun LmuWindowsReadoutPitTimingDetailPane(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutPitTimingDetailPaneContent(
         uiState = uiState,
-        onVirtualEnergyEnabledChanged = viewModel::onVirtualEnergyEnabledChanged,
         onVirtualEnergyLapsChanged = viewModel::onVirtualEnergyLapsChanged,
         onTyreWearLapsChanged = viewModel::onTyreWearLapsChanged,
         modifier = modifier,
@@ -68,7 +67,6 @@ fun LmuWindowsReadoutPitTimingDetailPane(
 @Composable
 internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     uiState: LmuWindowsReadoutPitTimingDetailUiState = LmuWindowsReadoutPitTimingDetailUiState(),
-    onVirtualEnergyEnabledChanged: (Boolean) -> Unit = {},
     onVirtualEnergyLapsChanged: (Int) -> Unit = {},
     onTyreWearLapsChanged: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
@@ -93,8 +91,6 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.pit_timing_virtual_energy_title),
-            checked = uiState.virtualEnergyEnabled,
-            onCheckedChange = onVirtualEnergyEnabledChanged,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
