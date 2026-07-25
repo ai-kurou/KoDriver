@@ -6,6 +6,7 @@ import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -13,11 +14,12 @@ import org.koin.dsl.module
  *
  * 提供: LmuWindowsReadoutPitTimingDetailViewModel と、予想残り周回数の Observe/Save UseCase。
  * UseCase が依存する LmuWindowsPitTimingPreferencesRepository は :core:data の
- * desktopDataModule / androidDataModule で束ねられる。
+ * desktopDataModule / androidDataModule で束ねられる。試聴用の named("lmu_windows") の
+ * PlaySpeechEventUseCase は :feature:lmu-windows-narrator で登録される。
  */
 val lmuWindowsReadoutPitTimingDetailModule = module {
     viewModel {
-        LmuWindowsReadoutPitTimingDetailViewModel(get(), get(), get(), get())
+        LmuWindowsReadoutPitTimingDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
     }
     factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
     factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)

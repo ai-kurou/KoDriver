@@ -11,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +37,9 @@ import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pi
 import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_help_icon_content_description
 import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_laps_subtitle
 import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_title
+import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_voice_type
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
@@ -59,6 +62,7 @@ fun LmuWindowsReadoutPitTimingDetailPane(
         uiState = uiState,
         onVirtualEnergyLapsChanged = viewModel::onVirtualEnergyLapsChanged,
         onTyreWearLapsChanged = viewModel::onTyreWearLapsChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -69,10 +73,12 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     uiState: LmuWindowsReadoutPitTimingDetailUiState = LmuWindowsReadoutPitTimingDetailUiState(),
     onVirtualEnergyLapsChanged: (Int) -> Unit = {},
     onTyreWearLapsChanged: (Int) -> Unit = {},
+    onPreviewClicked: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val sliderLabel = stringResource(Res.string.pit_timing_laps_slider_label)
     val resetToDefaultLabel = stringResource(Res.string.pit_timing_laps_reset_to_default)
+    val voiceTypeLabel = stringResource(Res.string.pit_timing_voice_type)
     val virtualEnergyHelpIconContentDescription =
         stringResource(Res.string.pit_timing_virtual_energy_laps_help_icon_content_description)
     val tyreWearHelpIconContentDescription =
@@ -94,6 +100,13 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    DetailPaneCardChips(
+                        chipLabels = listOf(voiceTypeLabel),
+                        selectedChipLabels = setOf(voiceTypeLabel),
+                        chipEnabled = true,
+                        onChipClick = { onPreviewClicked() },
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
                     DetailPaneSubtitle(
                         text = stringResource(Res.string.pit_timing_virtual_energy_laps_subtitle),
                         trailingContent = {
