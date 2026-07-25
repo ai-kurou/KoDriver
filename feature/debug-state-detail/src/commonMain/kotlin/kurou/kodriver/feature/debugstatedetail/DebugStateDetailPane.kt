@@ -41,6 +41,7 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_ph
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_unknown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_warm_up
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_practice
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_qualifying
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_session_race
@@ -245,6 +246,17 @@ private fun DebugStateCard(
                     uiState.virtualEnergy,
                     uiState.lmuWindowsTelemetry,
                     uiState.gt7Ps5Telemetry,
+                )
+            },
+        )
+        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> DetailPaneCard(
+            title = stringResource(Res.string.debug_state_pit_timing_title),
+            modifier = modifier,
+            bottomContent = {
+                PitTimingRemainingLapsContent(
+                    uiState.selectedSimulator,
+                    uiState.virtualEnergy,
+                    uiState.lmuWindowsTelemetry,
                 )
             },
         )
