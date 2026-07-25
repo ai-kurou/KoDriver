@@ -56,6 +56,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_full_course_yellow
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_my_best_lap
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_overheat
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_pit_timing
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_virtual_energy
@@ -413,6 +414,7 @@ internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
         is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageDisplayName(readoutItemKey)
         is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureDisplayName(readoutItemKey)
+        is ReadoutItemKey.LmuWindows.PitTiming.Root -> stringResource(Res.string.readout_item_pit_timing)
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root ->
             stringResource(Res.string.readout_item_remaining_virtual_energy)
         is ReadoutItemKey.LmuWindows.TyreWear.Root -> stringResource(Res.string.readout_item_tyre_wear)

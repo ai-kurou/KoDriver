@@ -408,6 +408,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.TYRE_TEMPERATURE,
                 DebugStateCardKey.TYRE_WEAR,
                 DebugStateCardKey.FUEL_CONSUMPTION,
+                DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
             ),
             state.cardOrder,
         )
@@ -458,6 +459,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.BEST_LAP,
                 DebugStateCardKey.TYRE_TEMPERATURE,
                 DebugStateCardKey.TYRE_WEAR,
+                DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
             ),
             state.cardOrder,
         )
@@ -508,6 +510,7 @@ class DebugStateDetailViewModelTest {
                 DebugStateCardKey.TYRE_TEMPERATURE,
                 DebugStateCardKey.TYRE_WEAR,
                 DebugStateCardKey.FUEL_CONSUMPTION,
+                DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
             ),
             state.cardOrder,
         )
@@ -532,6 +535,7 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.TYRE_TEMPERATURE,
                     DebugStateCardKey.TYRE_WEAR,
                     DebugStateCardKey.FUEL_CONSUMPTION,
+                    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                 ),
             )
         }

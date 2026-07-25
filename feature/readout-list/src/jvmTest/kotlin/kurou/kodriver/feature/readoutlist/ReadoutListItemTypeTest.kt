@@ -86,6 +86,7 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.PitTiming.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                 ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
@@ -111,6 +112,14 @@ class ReadoutListItemTypeTest {
         assertEquals(
             ReadoutListItemType.LmuWindows.TyreWear,
             ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreWear.Root),
+        )
+    }
+
+    @Test
+    fun `lmu_windows の pit_timing は LmuWindows_PitTiming を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.PitTiming,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.PitTiming.Root),
         )
     }
 

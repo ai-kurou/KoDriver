@@ -286,6 +286,8 @@ private fun logContext() = LmuWindowsTelemetryLogContext(
         tyreTemperatureLowWarningPhases = emptySet(),
         tyreWearThresholdPercentage = 50,
         remainingVirtualEnergyThresholdPercentage = 50,
+        pitTimingVirtualEnergyLapsThreshold = 3,
+        pitTimingTyreWearLapsThreshold = 3,
     ),
     finalState = LmuWindowsNarratorState(),
 )

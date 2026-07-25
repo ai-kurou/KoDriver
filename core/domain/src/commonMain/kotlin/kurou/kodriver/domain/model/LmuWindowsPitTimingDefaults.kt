@@ -1,0 +1,4 @@
+package kurou.kodriver.domain.model
+
+const val LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT = 3
+const val LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT = 3

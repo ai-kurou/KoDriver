@@ -41,3 +41,17 @@ internal fun calculateGt7FuelConsumption(telemetry: Gt7Ps5TelemetryData?): FuelC
     val remainingLaps = (telemetry.gasLevel / avgConsumptionPerLap).toInt()
     return FuelConsumptionResult(avgConsumptionPerLap.toDouble(), remainingLaps)
 }
+
+/**
+ * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、レース開始からの平均摩耗量で近似する簡易計算。
+ * 直近のタイヤ交換は考慮しない。
+ */
+internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryData?): Int? {
+    val currentLap = telemetry?.timing?.currentLap ?: return null
+    if (currentLap <= 0) return null
+    val worstRemainingRatio = telemetry.tyres.wheels.values.minOfOrNull { it.wear } ?: return null
+    val consumedRatio = 1.0 - worstRemainingRatio
+    if (consumedRatio <= 0.0) return null
+    val avgConsumptionPerLap = consumedRatio / currentLap
+    return (worstRemainingRatio / avgConsumptionPerLap).toInt()
+}

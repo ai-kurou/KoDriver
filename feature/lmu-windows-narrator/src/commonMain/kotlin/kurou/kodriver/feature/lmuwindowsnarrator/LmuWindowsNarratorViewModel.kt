@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
@@ -27,6 +30,8 @@ import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
@@ -95,6 +100,11 @@ internal data class RemainingVirtualEnergyUseCases(
     val observeThresholdPercentage: ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
 )
 
+internal data class PitTimingUseCases(
+    val observeVirtualEnergyLapsThreshold: ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase,
+    val observeTyreWearLapsThreshold: ObserveLmuWindowsPitTimingTyreWearLapsUseCase,
+)
+
 internal data class NarratorUseCases(
     val determineReadout: DetermineLmuWindowsNarratorReadoutUseCase,
     val observeMyBestLapVoiceType: ObserveLmuWindowsMyBestLapVoiceTypeUseCase,
@@ -111,12 +121,17 @@ internal class LmuWindowsNarratorViewModel(
     tyreTemperatureUseCases: TyreTemperatureUseCases,
     tyreWearUseCases: TyreWearUseCases,
     remainingVirtualEnergyUseCases: RemainingVirtualEnergyUseCases,
+    pitTimingUseCases: PitTimingUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
     private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
 ) : ViewModel() {
 
     private var narratorState = LmuWindowsNarratorState()
+
+    // バーチャルエナジー・タイヤ摩耗のピットタイミング警告は同一ラップ内で1回だけ読み上げる。
+    // 別tickで各々が閾値を跨いで先着した場合も、後着の警告で二重読み上げしないようにラップ単位でロックする。
+    private var lastAnnouncedPitTimingLap: Int = -1
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -193,6 +208,12 @@ internal class LmuWindowsNarratorViewModel(
             SharingStarted.Eagerly,
             LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE,
         )
+
+    private val pitTimingVirtualEnergyLapsThreshold = pitTimingUseCases.observeVirtualEnergyLapsThreshold()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
+
+    private val pitTimingTyreWearLapsThreshold = pitTimingUseCases.observeTyreWearLapsThreshold()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
 
     private val skipFirstLap = vehicleApproachUseCases.observeSkipFirstLap()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -370,12 +391,22 @@ internal class LmuWindowsNarratorViewModel(
         }
         .launchIn(viewModelScope)
 
-    @Suppress("UnusedPrivateProperty")
-    private val tyreWearJob = selectedSimulator
+    private val tyreWearFlow = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
             tyreWearUseCases.observeTyreWear()
         }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val virtualEnergyFlow = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+            remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
+        }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val tyreWearJob = tyreWearFlow
         .onEach { tyreWear ->
             val observedAtMs = currentTimeMs()
             val state = narratorState
@@ -402,11 +433,7 @@ internal class LmuWindowsNarratorViewModel(
         .launchIn(viewModelScope)
 
     @Suppress("UnusedPrivateProperty")
-    private val remainingVirtualEnergyJob = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
-        }
+    private val remainingVirtualEnergyJob = virtualEnergyFlow
         .onEach { remainingVirtualEnergy ->
             val observedAtMs = currentTimeMs()
             val state = narratorState
@@ -432,6 +459,59 @@ internal class LmuWindowsNarratorViewModel(
         }
         .launchIn(viewModelScope)
 
+    @Suppress("UnusedPrivateProperty")
+    private val pitTimingJob = combine(
+        lmuTelemetryFlow,
+        virtualEnergyFlow,
+        tyreWearFlow,
+    ) { telemetry, virtualEnergy, tyreWear -> Triple(telemetry, virtualEnergy, tyreWear) }
+        .onEach { (telemetry, virtualEnergy, tyreWear) ->
+            val observedAtMs = currentTimeMs()
+            val state = narratorState
+            val settings = currentSettings
+            val virtualEnergyDecision = narratorUseCases.determineReadout.determinePitTimingVirtualEnergy(
+                state = state,
+                telemetry = telemetry,
+                virtualEnergy = virtualEnergy,
+                settings = settings,
+                observedAtMs = observedAtMs,
+            )
+            narratorState = virtualEnergyDecision.state
+            val tyreWearDecision = narratorUseCases.determineReadout.determinePitTimingTyreWear(
+                state = virtualEnergyDecision.state,
+                telemetry = telemetry,
+                tyreWear = tyreWear,
+                settings = settings,
+                observedAtMs = observedAtMs,
+            )
+            narratorState = tyreWearDecision.state
+            val pitTimingEvents = if (telemetry.timing.currentLap == lastAnnouncedPitTimingLap) {
+                emptyList()
+            } else {
+                selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events)
+            }
+            if (pitTimingEvents.isNotEmpty()) {
+                lastAnnouncedPitTimingLap = telemetry.timing.currentLap
+            }
+            eventProcessor.processPitTiming(
+                snapshot = LmuWindowsPitTimingSnapshot(
+                    telemetry = telemetry,
+                    virtualEnergy = virtualEnergy,
+                    tyreWear = tyreWear,
+                ),
+                events = pitTimingEvents,
+                readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
+                observedAtMs = observedAtMs,
+                logContext = LmuWindowsPitTimingLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = tyreWearDecision.state,
+                ),
+            )
+        }
+        .launchIn(viewModelScope)
+
     private val currentSettings: LmuWindowsNarratorReadoutSettings
         get() = LmuWindowsNarratorReadoutSettings(
             enabledStates = mergedEnabledStates.value,
@@ -446,5 +526,26 @@ internal class LmuWindowsNarratorViewModel(
             tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
             remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
+            pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
+            pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
         )
+}
+
+/**
+ * バーチャルエナジー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、
+ * 予想残り周回数が低い方（＝ピット作業がより緊急な方）のみを1回読み上げる。
+ */
+private fun selectLowerPitTimingEvent(
+    virtualEnergyEvents: List<SpeechEvent>,
+    tyreWearEvents: List<SpeechEvent>,
+): List<SpeechEvent> {
+    val virtualEnergyEvent = virtualEnergyEvents.filterIsInstance<SpeechEvent.PitTimingWarning>().firstOrNull()
+    val tyreWearEvent = tyreWearEvents.filterIsInstance<SpeechEvent.PitTimingWarning>().firstOrNull()
+    return when {
+        virtualEnergyEvent != null && tyreWearEvent != null ->
+            if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)
+        virtualEnergyEvent != null -> listOf(virtualEnergyEvent)
+        tyreWearEvent != null -> listOf(tyreWearEvent)
+        else -> emptyList()
+    }
 }

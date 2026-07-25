@@ -46,6 +46,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.LmuWindows.TyreWear.Root,
             ReadoutItemKey.fromValue("lmu_windows_tyre_wear"),
         )
+        assertEquals(
+            ReadoutItemKey.LmuWindows.PitTiming.Root,
+            ReadoutItemKey.fromValue("lmu_windows_pit_timing"),
+        )
         assertEquals(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.fromValue("gt7_ps5_my_best_lap"))
         assertEquals(
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
@@ -70,6 +74,7 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.LmuWindows.TyreTemperature.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.TyreWear.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.LmuWindows.PitTiming.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.LmuWindows.MyBestLap.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.Gt7Ps5.MyBestLap.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.supportsQueue)
