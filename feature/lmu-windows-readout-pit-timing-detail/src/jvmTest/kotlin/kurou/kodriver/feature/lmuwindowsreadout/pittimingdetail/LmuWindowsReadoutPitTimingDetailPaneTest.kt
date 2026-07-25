@@ -107,6 +107,6 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
 
         rule.onNodeWithContentDescription("バーチャルエナジー予想残り周回数の計算方法の説明を表示").performClick()
 
-        rule.onNodeWithText("レース開始からの平均消費量", substring = true).assertIsDisplayed()
+        rule.onNodeWithText("直近1周分の消費量", substring = true).assertIsDisplayed()
     }
 }
