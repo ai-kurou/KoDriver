@@ -3,8 +3,8 @@ package kurou.kodriver.data
 import kotlinx.coroutines.runBlocking
 import java.net.URI
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 

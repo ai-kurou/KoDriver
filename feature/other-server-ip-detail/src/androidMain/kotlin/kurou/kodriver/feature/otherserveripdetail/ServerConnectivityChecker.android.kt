@@ -2,8 +2,8 @@ package kurou.kodriver.feature.otherserveripdetail
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.net.InetSocketAddress
 import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Socket
 
 private const val DEFAULT_PORT = 8080
