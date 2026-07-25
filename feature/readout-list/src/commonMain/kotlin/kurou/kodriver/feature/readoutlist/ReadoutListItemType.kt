@@ -9,6 +9,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
         data object VehicleDamage : LmuWindows(ReadoutItemKey.LmuWindows.VehicleDamage.Root)
         data object TyreTemperature : LmuWindows(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+        data object PitTiming : LmuWindows(ReadoutItemKey.LmuWindows.PitTiming.Root)
         data object RemainingVirtualEnergy :
             LmuWindows(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
         data object TyreWear : LmuWindows(ReadoutItemKey.LmuWindows.TyreWear.Root)
@@ -22,21 +23,26 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
 
     companion object {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
-            is Simulator.LmuWindows -> when (id) {
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
-                ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
-                ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
-                ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
-                else -> null
-            }
-            is Simulator.Gt7Ps5 -> when (id) {
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
-                else -> null
-            }
+            is Simulator.LmuWindows -> lmuWindowsFromId(id)
+            is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
+        }
+
+        private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? = when (id) {
+            ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
+            ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
+            ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
+            ReadoutItemKey.LmuWindows.PitTiming.Root -> LmuWindows.PitTiming
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
+            ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
+            ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
+            else -> null
+        }
+
+        private fun gt7Ps5FromId(id: ReadoutItemKey): Gt7Ps5? = when (id) {
+            ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
+            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
+            else -> null
         }
 
         fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = when (simulator) {
