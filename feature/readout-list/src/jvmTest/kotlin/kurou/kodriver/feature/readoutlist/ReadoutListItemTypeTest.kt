@@ -116,8 +116,11 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
-    fun `lmu_windows の pit_timing は detailPane を持たないため null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.PitTiming.Root))
+    fun `lmu_windows の pit_timing は LmuWindows_PitTiming を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.PitTiming,
+            ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.PitTiming.Root),
+        )
     }
 
     @Test

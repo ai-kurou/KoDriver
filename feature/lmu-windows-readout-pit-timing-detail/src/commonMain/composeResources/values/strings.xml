@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pit_timing_description">ピットインの最適なタイミングが近づいたときに音声でお知らせします。</string>
+</resources>
