@@ -28,8 +28,10 @@ class TcpServerConnectivityCheckerTest {
 
     @Test
     fun `IPv4アドレスではない接続先はfalseを返す`() = runTest {
-        val checker = TcpServerConnectivityChecker()
-        assertFalse(checker.isReachable("localhost"))
+        ServerSocket(0).use { server ->
+            val checker = TcpServerConnectivityChecker(port = server.localPort)
+            assertFalse(checker.isReachable("localhost"))
+        }
     }
 
     @Test
