@@ -14,8 +14,4 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel : ViewModel() {
     fun onVirtualEnergyEnabledChanged(enabled: Boolean) {
         _uiState.update { it.copy(virtualEnergyEnabled = enabled) }
     }
-
-    fun onTyreWearEnabledChanged(enabled: Boolean) {
-        _uiState.update { it.copy(tyreWearEnabled = enabled) }
-    }
 }

@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
     @Test
-    fun `初期状態は両方のスイッチがONのUiStateを返す`() = runTest {
+    fun `初期状態はスイッチがONのUiStateを返す`() = runTest {
         val viewModel = LmuWindowsReadoutPitTimingDetailViewModel()
 
         assertEquals(LmuWindowsReadoutPitTimingDetailUiState(), viewModel.uiState.value)
@@ -20,14 +20,5 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         viewModel.onVirtualEnergyEnabledChanged(false)
 
         assertEquals(false, viewModel.uiState.value.virtualEnergyEnabled)
-    }
-
-    @Test
-    fun `onTyreWearEnabledChangedを呼ぶとtyreWearEnabledが更新される`() = runTest {
-        val viewModel = LmuWindowsReadoutPitTimingDetailViewModel()
-
-        viewModel.onTyreWearEnabledChanged(false)
-
-        assertEquals(false, viewModel.uiState.value.tyreWearEnabled)
     }
 }

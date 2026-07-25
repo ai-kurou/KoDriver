@@ -23,10 +23,9 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
 
         rule.onNodeWithText(
             "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
-                "ベストラップの30秒前になった時点で燃料残量・タイヤ摩耗の予想周回数を判定し、いずれかが閾値以下であれば読み上げます。",
+                "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば読み上げます。",
         ).assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー残り予想周回数").assertIsDisplayed()
-        rule.onNodeWithText("タイヤ摩耗残り予想周回数").assertIsDisplayed()
+        rule.onNodeWithText("予想残り周回数").assertIsDisplayed()
     }
 
     @Test
@@ -41,25 +40,8 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("バーチャルエナジー残り予想周回数").performClick()
+        rule.onNodeWithText("予想残り周回数").performClick()
 
         assert(!virtualEnergyEnabled)
-    }
-
-    @Test
-    fun `タイヤ摩耗のスイッチをタップするとコールバックが呼ばれる`() {
-        var tyreWearEnabled = true
-        rule.setContent {
-            MaterialTheme {
-                LmuWindowsReadoutPitTimingDetailPaneContent(
-                    uiState = LmuWindowsReadoutPitTimingDetailUiState(tyreWearEnabled = tyreWearEnabled),
-                    onTyreWearEnabledChanged = { tyreWearEnabled = it },
-                )
-            }
-        }
-
-        rule.onNodeWithText("タイヤ摩耗残り予想周回数").performClick()
-
-        assert(!tyreWearEnabled)
     }
 }

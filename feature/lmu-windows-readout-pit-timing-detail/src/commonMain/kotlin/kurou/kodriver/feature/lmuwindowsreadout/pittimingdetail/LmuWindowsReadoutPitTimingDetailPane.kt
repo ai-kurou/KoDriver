@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.Res
 import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_description
-import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_tyre_wear_title
 import kodriver.feature.lmuwindowsreadout.pittimingdetail.generated.resources.pit_timing_virtual_energy_title
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
@@ -29,7 +28,6 @@ fun LmuWindowsReadoutPitTimingDetailPane(
     LmuWindowsReadoutPitTimingDetailPaneContent(
         uiState = uiState,
         onVirtualEnergyEnabledChanged = viewModel::onVirtualEnergyEnabledChanged,
-        onTyreWearEnabledChanged = viewModel::onTyreWearEnabledChanged,
         modifier = modifier,
     )
 }
@@ -38,7 +36,6 @@ fun LmuWindowsReadoutPitTimingDetailPane(
 internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     uiState: LmuWindowsReadoutPitTimingDetailUiState = LmuWindowsReadoutPitTimingDetailUiState(),
     onVirtualEnergyEnabledChanged: (Boolean) -> Unit = {},
-    onTyreWearEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -53,13 +50,6 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
             title = stringResource(Res.string.pit_timing_virtual_energy_title),
             checked = uiState.virtualEnergyEnabled,
             onCheckedChange = onVirtualEnergyEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            bottomContent = {},
-        )
-        DetailPaneCard(
-            title = stringResource(Res.string.pit_timing_tyre_wear_title),
-            checked = uiState.tyreWearEnabled,
-            onCheckedChange = onTyreWearEnabledChanged,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {},
         )
