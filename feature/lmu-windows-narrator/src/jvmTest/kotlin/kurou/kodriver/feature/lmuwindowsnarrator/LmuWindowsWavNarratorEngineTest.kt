@@ -482,8 +482,8 @@ class LmuWindowsWavNarratorEngineTest {
         val engine = createEngine(
             player = player,
             resourceLoader = { path ->
-                if (path == PIT_TIMING_VIRTUAL_ENERGY_WARNING_2_PATH) {
-                    PIT_TIMING_VIRTUAL_ENERGY_WARNING_2_SOUND
+                if (path == PIT_TIMING_LAPS_2_PATH) {
+                    PIT_TIMING_LAPS_2_SOUND
                 } else {
                     EVENT_SOUND
                 }
@@ -496,19 +496,30 @@ class LmuWindowsWavNarratorEngineTest {
 
         assertEquals(2, player.playedSounds.size)
         assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
-        assertContentEquals(PIT_TIMING_VIRTUAL_ENERGY_WARNING_2_SOUND, player.playedSounds[1])
+        assertContentEquals(PIT_TIMING_LAPS_2_SOUND, player.playedSounds[1])
     }
 
     @Test
-    fun `PitTimingTyreWearWarning は音声アセット未整備のため何も再生しない`() = runTest {
+    fun `PitTimingTyreWearWarning はバーチャルエナジーと共通の音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(player = player)
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                if (path == PIT_TIMING_LAPS_2_PATH) {
+                    PIT_TIMING_LAPS_2_SOUND
+                } else {
+                    EVENT_SOUND
+                }
+            },
+        )
         runCurrent()
 
         engine.speak(SpeechEvent.PitTimingTyreWearWarning(2))
         runCurrent()
 
-        assertEquals(emptyList(), player.playedSounds)
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(PIT_TIMING_LAPS_2_SOUND, player.playedSounds[1])
     }
 
     @Test
@@ -586,7 +597,7 @@ class LmuWindowsWavNarratorEngineTest {
         const val TYRE_COLD_PATH = "files/tyre_cold.wav"
         const val TYRE_WEAR_WARNING_PATH = "files/tyre_wear_caution.wav"
         const val REMAINING_VIRTUAL_ENERGY_WARNING_PATH = "files/remaining_virtual_energy_caution.wav"
-        const val PIT_TIMING_VIRTUAL_ENERGY_WARNING_2_PATH = "files/remaining_virtual_energy_laps_2.wav"
+        const val PIT_TIMING_LAPS_2_PATH = "files/pit_timing_laps_2.wav"
         const val KEEP_LEFT_PATH = "files/keep_left.wav"
         const val LEFT_SUSTAINED_PATH = "files/left_sustained.wav"
         val KEEP_LEFT_SOUND = byteArrayOf(10)
@@ -599,7 +610,7 @@ class LmuWindowsWavNarratorEngineTest {
         val TYRE_COLD_SOUND = byteArrayOf(9)
         val TYRE_WEAR_WARNING_SOUND = byteArrayOf(13)
         val REMAINING_VIRTUAL_ENERGY_WARNING_SOUND = byteArrayOf(14)
-        val PIT_TIMING_VIRTUAL_ENERGY_WARNING_2_SOUND = byteArrayOf(15)
+        val PIT_TIMING_LAPS_2_SOUND = byteArrayOf(15)
         val LEFT_APPROACH_SOUND = byteArrayOf(4)
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(6)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(7)

@@ -16,8 +16,3 @@
   **改善案**: <どう変えたいか>
 ```
 
-## 音声アセット
-
-- **対象**: `feature/lmu-windows-narrator/src/commonMain/kotlin/kurou/kodriver/feature/lmuwindowsnarrator/LmuWindowsWavNarratorEngine.kt`（`SpeechEvent.PitTimingTyreWearWarning`）
-  **課題**: ピットタイミングのタイヤ摩耗予想残り周回数読み上げ用のWAVアセット（`files/tyre_wear_laps_0.wav`〜`files/tyre_wear_laps_5.wav`）が未整備。バーチャルエナジー分は既存の`remaining_virtual_energy_laps_*.wav`を流用してマッピング済みだが、タイヤ摩耗分は`eventToFile`にマッピングしていないため、`SpeechEvent.PitTimingTyreWearWarning`が発生しても無音のまま（`sounds[event]`が存在せず`speak()`が何もしない）。
-  **改善案**: 「タイヤは残り約N周」のようなWAVファイルを`files/tyre_wear_laps_0.wav`〜`_5.wav`として用意し、`LmuWindowsWavNarratorEngine.eventToFile`に`SpeechEvent.PitTimingTyreWearWarning(laps)`のマッピングを追加する（GT7の`remaining_fuel_laps_N.wav`をVE分に流用した`d100a7ee`のパターンを参照）。
