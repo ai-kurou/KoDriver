@@ -97,7 +97,6 @@ class AppTest {
             "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
         )
         clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
-        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         clickItemAndVerifyDescription(
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
@@ -106,6 +105,8 @@ class AppTest {
             "バーチャルエナジー残量",
             "バーチャルエナジー残量が設定した閾値以下になった場合に音声でお知らせします。",
         )
+        scrollToItem("車両故障")
+        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         scrollToItem("タイヤ摩耗")
         clickItemAndVerifyDescription(
             "タイヤ摩耗",
