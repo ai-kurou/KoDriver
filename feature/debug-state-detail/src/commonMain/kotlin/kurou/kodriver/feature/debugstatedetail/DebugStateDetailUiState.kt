@@ -20,6 +20,7 @@ internal val defaultDebugStateCardOrder = listOf(
     DebugStateCardKey.TYRE_TEMPERATURE,
     DebugStateCardKey.TYRE_WEAR,
     DebugStateCardKey.FUEL_CONSUMPTION,
+    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
 )
 
 internal data class DebugStateDetailUiState(
