@@ -34,7 +34,9 @@ internal class GitHubAppReleaseRepository(
 @Suppress("UNENCRYPTED_SOCKET")
 private fun fetchLatestReleaseBody(): String? {
     return try {
-        val connection = URI(LATEST_RELEASE_URL).toURL().openConnection() as HttpURLConnection
+        val releaseUri = URI(LATEST_RELEASE_URL)
+        if (!releaseUri.isAllowedGitHubLatestReleaseUri()) return null
+        val connection = releaseUri.toURL().openConnection() as HttpURLConnection
         connection.setRequestProperty("Accept", "application/vnd.github+json")
         connection.connectTimeout = TIMEOUT_MS
         connection.readTimeout = TIMEOUT_MS
@@ -44,3 +46,10 @@ private fun fetchLatestReleaseBody(): String? {
         null
     }
 }
+
+internal fun URI.isAllowedGitHubLatestReleaseUri(): Boolean =
+    scheme == "https" &&
+        host == "api.github.com" &&
+        rawPath == "/repos/ai-kurou/KoDriver/releases/latest" &&
+        rawQuery == null &&
+        rawFragment == null
