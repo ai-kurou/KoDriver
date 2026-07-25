@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 
@@ -13,13 +14,52 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `説明文を表示する`() {
+    fun `説明文とカードタイトルを表示する`() {
         rule.setContent {
             MaterialTheme {
-                LmuWindowsReadoutPitTimingDetailPane()
+                LmuWindowsReadoutPitTimingDetailPaneContent()
             }
         }
 
-        rule.onNodeWithText("ピットインの最適なタイミングが近づいたときに音声でお知らせします。").assertIsDisplayed()
+        rule.onNodeWithText(
+            "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
+                "ベストラップの30秒前になった時点で燃料残量・タイヤ摩耗の予想周回数を判定し、いずれかが閾値以下であれば読み上げます。",
+        ).assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエナジー残り予想周回数").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗残り予想周回数").assertIsDisplayed()
+    }
+
+    @Test
+    fun `バーチャルエナジーのスイッチをタップするとコールバックが呼ばれる`() {
+        var virtualEnergyEnabled = true
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsReadoutPitTimingDetailUiState(virtualEnergyEnabled = virtualEnergyEnabled),
+                    onVirtualEnergyEnabledChanged = { virtualEnergyEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("バーチャルエナジー残り予想周回数").performClick()
+
+        assert(!virtualEnergyEnabled)
+    }
+
+    @Test
+    fun `タイヤ摩耗のスイッチをタップするとコールバックが呼ばれる`() {
+        var tyreWearEnabled = true
+        rule.setContent {
+            MaterialTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    uiState = LmuWindowsReadoutPitTimingDetailUiState(tyreWearEnabled = tyreWearEnabled),
+                    onTyreWearEnabledChanged = { tyreWearEnabled = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗残り予想周回数").performClick()
+
+        assert(!tyreWearEnabled)
     }
 }

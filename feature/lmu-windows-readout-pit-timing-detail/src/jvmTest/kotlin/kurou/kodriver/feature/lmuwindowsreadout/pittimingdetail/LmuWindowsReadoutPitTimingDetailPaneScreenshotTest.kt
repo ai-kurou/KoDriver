@@ -22,7 +22,7 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        LmuWindowsReadoutPitTimingDetailPane()
+                        LmuWindowsReadoutPitTimingDetailPaneContent()
                     }
                 }
             }
