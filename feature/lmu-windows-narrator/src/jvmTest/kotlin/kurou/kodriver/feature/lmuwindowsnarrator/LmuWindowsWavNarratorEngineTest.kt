@@ -477,7 +477,7 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `PitTimingVirtualEnergyWarning は周回数ごとのリソースから読み込んだ音声を再生する`() = runTest {
+    fun `PitTimingWarning は周回数ごとのリソースから読み込んだ音声を再生する`() = runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(
             player = player,
@@ -491,30 +491,7 @@ class LmuWindowsWavNarratorEngineTest {
         )
         runCurrent()
 
-        engine.speak(SpeechEvent.PitTimingVirtualEnergyWarning(2))
-        runCurrent()
-
-        assertEquals(2, player.playedSounds.size)
-        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
-        assertContentEquals(PIT_TIMING_LAPS_2_SOUND, player.playedSounds[1])
-    }
-
-    @Test
-    fun `PitTimingTyreWearWarning はバーチャルエナジーと共通の音声を再生する`() = runTest {
-        val player = FakeSoundPlayer()
-        val engine = createEngine(
-            player = player,
-            resourceLoader = { path ->
-                if (path == PIT_TIMING_LAPS_2_PATH) {
-                    PIT_TIMING_LAPS_2_SOUND
-                } else {
-                    EVENT_SOUND
-                }
-            },
-        )
-        runCurrent()
-
-        engine.speak(SpeechEvent.PitTimingTyreWearWarning(2))
+        engine.speak(SpeechEvent.PitTimingWarning(2))
         runCurrent()
 
         assertEquals(2, player.playedSounds.size)

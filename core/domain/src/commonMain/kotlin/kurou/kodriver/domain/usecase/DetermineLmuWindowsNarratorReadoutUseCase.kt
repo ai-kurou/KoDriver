@@ -330,7 +330,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedPitTimingVirtualEnergyLaps = remainingLaps),
-            events = listOf(SpeechEvent.PitTimingVirtualEnergyWarning(remainingLaps)),
+            events = listOf(SpeechEvent.PitTimingWarning(remainingLaps)),
         )
     }
 
@@ -378,7 +378,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedPitTimingTyreWearLaps = remainingLaps),
-            events = listOf(SpeechEvent.PitTimingTyreWearWarning(remainingLaps)),
+            events = listOf(SpeechEvent.PitTimingWarning(remainingLaps)),
         )
     }
 

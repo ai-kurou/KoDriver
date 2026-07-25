@@ -72,11 +72,8 @@ internal class LmuWindowsWavNarratorEngine(
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
-        // バーチャルエナジー・タイヤ摩耗のピットタイミング警告は同一内容（「N周以内にピットイン」）の
-        // ため、WAVアセットを共有する。
         for (laps in 0..MAX_PIT_TIMING_LAPS) {
-            put(SpeechEvent.PitTimingVirtualEnergyWarning(laps), "files/pit_timing_laps_$laps.wav")
-            put(SpeechEvent.PitTimingTyreWearWarning(laps), "files/pit_timing_laps_$laps.wav")
+            put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
         }
     }
 

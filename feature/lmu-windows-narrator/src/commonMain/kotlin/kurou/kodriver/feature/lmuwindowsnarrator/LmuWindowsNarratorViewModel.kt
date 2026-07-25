@@ -539,12 +539,8 @@ private fun selectLowerPitTimingEvent(
     virtualEnergyEvents: List<SpeechEvent>,
     tyreWearEvents: List<SpeechEvent>,
 ): List<SpeechEvent> {
-    val virtualEnergyEvent = virtualEnergyEvents
-        .filterIsInstance<SpeechEvent.PitTimingVirtualEnergyWarning>()
-        .firstOrNull()
-    val tyreWearEvent = tyreWearEvents
-        .filterIsInstance<SpeechEvent.PitTimingTyreWearWarning>()
-        .firstOrNull()
+    val virtualEnergyEvent = virtualEnergyEvents.filterIsInstance<SpeechEvent.PitTimingWarning>().firstOrNull()
+    val tyreWearEvent = tyreWearEvents.filterIsInstance<SpeechEvent.PitTimingWarning>().firstOrNull()
     return when {
         virtualEnergyEvent != null && tyreWearEvent != null ->
             if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)

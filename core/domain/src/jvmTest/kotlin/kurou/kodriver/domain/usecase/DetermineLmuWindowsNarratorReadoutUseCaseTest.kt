@@ -1003,7 +1003,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             lapStartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
             1e-9,
         )
-        assertEquals(listOf(SpeechEvent.PitTimingVirtualEnergyWarning(0)), decision.events)
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), decision.events)
         assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
     }
@@ -1108,7 +1108,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             lap2StartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
             1e-9,
         )
-        assertEquals(listOf(SpeechEvent.PitTimingVirtualEnergyWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), firstWarningDecision.events)
         assertEquals(emptyList<SpeechEvent>(), refilledDecision.events)
         assertEquals(-1, refilledDecision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
         assertEquals(true, refilledDecision.state.pitTimingVirtualEnergyTrackingState.currentLapHasRefilled)
@@ -1223,7 +1223,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             observedAtMs = 150_000L,
         )
 
-        assertEquals(listOf(SpeechEvent.PitTimingTyreWearWarning(0)), decision.events)
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), decision.events)
         assertEquals(2, decision.state.lastPitTimingTyreWearEvaluationLap)
         assertEquals(0, decision.state.lastAnnouncedPitTimingTyreWearLaps)
     }
@@ -1295,7 +1295,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             observedAtMs = 175_000L,
         )
 
-        assertEquals(listOf(SpeechEvent.PitTimingTyreWearWarning(0)), firstWarningDecision.events)
+        assertEquals(listOf(SpeechEvent.PitTimingWarning(0)), firstWarningDecision.events)
         assertEquals(emptyList<SpeechEvent>(), tyreChangedDecision.events)
         assertEquals(-1, tyreChangedDecision.state.lastAnnouncedPitTimingTyreWearLaps)
         assertEquals(true, tyreChangedDecision.state.pitTimingTyreWearTrackingState.currentLapHasRefilled)

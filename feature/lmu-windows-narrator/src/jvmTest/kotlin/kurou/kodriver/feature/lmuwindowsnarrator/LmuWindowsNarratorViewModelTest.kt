@@ -1423,7 +1423,7 @@ class LmuWindowsNarratorViewModelTest {
     // --- ピットタイミング ---
 
     @Test
-    fun `最速ラップの30秒前を過ぎて閾値以下になるとPitTimingVirtualEnergyWarningを読み上げる`() = runTest(testDispatcher) {
+    fun `最速ラップの30秒前を過ぎて閾値以下になるとPitTimingWarningを読み上げる`() = runTest(testDispatcher) {
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
         val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
@@ -1451,11 +1451,11 @@ class LmuWindowsNarratorViewModelTest {
         currentTime = 150_000L
         virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingVirtualEnergyWarning(0)), spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
     }
 
     @Test
-    fun `ピットタイミング項目が無効ならPitTimingVirtualEnergyWarningを読み上げない`() = runTest(testDispatcher) {
+    fun `ピットタイミング項目が無効ならPitTimingWarningを読み上げない`() = runTest(testDispatcher) {
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
         val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
@@ -1487,7 +1487,7 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `最も摩耗した車輪を基準に閾値以下になるとPitTimingTyreWearWarningを読み上げる`() = runTest(testDispatcher) {
+    fun `最も摩耗した車輪を基準に閾値以下になるとPitTimingWarningを読み上げる`() = runTest(testDispatcher) {
         val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
         val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
         val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
@@ -1515,7 +1515,7 @@ class LmuWindowsNarratorViewModelTest {
         currentTime = 150_000L
         tyreWearChannel.send(tyreWear(fl = 0.05))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingTyreWearWarning(0)), spokenTexts)
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
     }
 
     @Test
@@ -1553,7 +1553,7 @@ class LmuWindowsNarratorViewModelTest {
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
             tyreWearChannel.send(tyreWear(fl = 0.25))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingVirtualEnergyWarning(0)), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
         }
 
     @Test
@@ -1590,7 +1590,7 @@ class LmuWindowsNarratorViewModelTest {
             virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
             tyreWearChannel.send(tyreWear(fl = 0.05))
 
-            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingVirtualEnergyWarning(0)), spokenTexts)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingWarning(0)), spokenTexts)
         }
 
     @Test
