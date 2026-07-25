@@ -72,6 +72,9 @@ internal class LmuWindowsWavNarratorEngine(
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
+        for (laps in 0..MAX_PIT_TIMING_LAPS) {
+            put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
+        }
     }
 
     private val startSoundTypeToFile = mapOf(
@@ -146,5 +149,9 @@ internal class LmuWindowsWavNarratorEngine(
         startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         soundPlayer.play(mainSound, vol)
         _currentReadoutItemKey = null
+    }
+
+    internal companion object {
+        const val MAX_PIT_TIMING_LAPS = 5
     }
 }

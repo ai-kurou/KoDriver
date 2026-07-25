@@ -29,6 +29,18 @@ internal data class LmuWindowsTyreTemperatureLogContext(
     val finalState: LmuWindowsNarratorState,
 )
 
+internal data class LmuWindowsPitTimingLogContext(
+    val state: LmuWindowsNarratorState,
+    val settings: LmuWindowsNarratorReadoutSettings,
+    val finalState: LmuWindowsNarratorState,
+)
+
+internal data class LmuWindowsPitTimingSnapshot(
+    val telemetry: LmuWindowsTelemetryData,
+    val virtualEnergy: LmuWindowsVirtualEnergyData,
+    val tyreWear: LmuWindowsTyreWearData,
+)
+
 internal class LmuWindowsNarratorEventProcessor(
     private val ttsEngine: TextToSpeechEngine,
     private val saveTelemetryLog: SaveTelemetryLogUseCase,
@@ -236,6 +248,33 @@ internal class LmuWindowsNarratorEventProcessor(
         }
     }
 
+    suspend fun processPitTiming(
+        snapshot: LmuWindowsPitTimingSnapshot,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: LmuWindowsPitTimingLogContext,
+    ) {
+        events.forEach { event ->
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                saveTelemetryLogSafely(
+                    createdAt = observedAtMs,
+                    readoutItemKey = event.readoutItemKey,
+                    telemetryJson = buildPitTimingTelemetryLogJson(
+                        state = logContext.state,
+                        telemetry = snapshot.telemetry,
+                        virtualEnergy = snapshot.virtualEnergy,
+                        tyreWear = snapshot.tyreWear,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+                )
+            }
+        }
+    }
+
     private fun speakWithPriority(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
@@ -391,6 +430,25 @@ private fun LmuWindowsVirtualEnergyData.toJson(): String =
     "{" +
         """"remainingRatio":$remainingRatio,""" +
         """"session":$session""" +
+        "}"
+
+private fun buildPitTimingTelemetryLogJson(
+    state: LmuWindowsNarratorState,
+    telemetry: LmuWindowsTelemetryData,
+    virtualEnergy: LmuWindowsVirtualEnergyData,
+    tyreWear: LmuWindowsTyreWearData,
+    settings: LmuWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: LmuWindowsNarratorState,
+): String =
+    "{" +
+        """"state":${state.toJsonString()},""" +
+        """"telemetry":${telemetry.toJson()},""" +
+        """"virtualEnergy":${virtualEnergy.toJson()},""" +
+        """"tyreWear":${tyreWear.toJson()},""" +
+        """"settings":${settings.toJsonString()},""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"finalState":${finalState.toJsonString()}""" +
         "}"
 
 private fun LmuWindowsVehicleDamageData.toJson(): String =

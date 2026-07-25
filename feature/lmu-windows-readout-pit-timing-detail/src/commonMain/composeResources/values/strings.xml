@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pit_timing_description">ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば読み上げます。</string>
+    <string name="pit_timing_description">ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。</string>
     <string name="pit_timing_virtual_energy_title">予想残り周回数</string>
     <string name="pit_timing_virtual_energy_laps_subtitle">バーチャルエナジー予想残り周回数</string>
     <string name="pit_timing_virtual_energy_laps_help_icon_content_description">バーチャルエナジー予想残り周回数の計算方法の説明を表示</string>
