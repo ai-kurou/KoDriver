@@ -34,6 +34,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -50,6 +51,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -60,6 +62,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
+import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -69,6 +72,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
@@ -84,6 +88,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedRe
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -144,6 +149,13 @@ class LmuWindowsNarratorViewModelTest {
     private lateinit var tyreWearPreferencesRepository: LmuWindowsTyreWearPreferencesRepository
 
     @MockK
+    private lateinit var virtualEnergyRepository: LmuWindowsVirtualEnergyRepository
+
+    @MockK
+    private lateinit var remainingVirtualEnergyPreferencesRepository:
+        LmuWindowsRemainingVirtualEnergyPreferencesRepository
+
+    @MockK
     private lateinit var myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository
 
     @MockK
@@ -180,6 +192,7 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel: Channel<LmuWindowsTelemetryData>,
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData>,
         tyreWearChannel: Channel<LmuWindowsTyreWearData>,
+        remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData>,
         enabledOverrides: Map<ReadoutItemKey, Boolean>,
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean>,
         vehicleDamageEnabledOverrides: Map<ReadoutItemKey, Boolean>,
@@ -197,6 +210,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningEnabled: Boolean,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
         tyreWearThresholdPercentage: Int,
+        remainingVirtualEnergyThresholdPercentage: Int,
         simulator: Simulator?,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
@@ -240,6 +254,10 @@ class LmuWindowsNarratorViewModelTest {
         every { tyreWearRepository.tyreWearStream() } returns tyreWearChannel.receiveAsFlow()
         every { tyreWearPreferencesRepository.observeThresholdPercentage() } returns
             MutableStateFlow(tyreWearThresholdPercentage)
+        every { virtualEnergyRepository.virtualEnergyStream() } returns
+            remainingVirtualEnergyChannel.receiveAsFlow()
+        every { remainingVirtualEnergyPreferencesRepository.observeThresholdPercentage() } returns
+            MutableStateFlow(remainingVirtualEnergyThresholdPercentage)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
@@ -254,6 +272,7 @@ class LmuWindowsNarratorViewModelTest {
         telemetryChannel: Channel<LmuWindowsTelemetryData> = Channel(Channel.UNLIMITED),
         tyreTemperatureChannel: Channel<LmuWindowsTyreCarcassTemperatureData> = Channel(Channel.UNLIMITED),
         tyreWearChannel: Channel<LmuWindowsTyreWearData> = Channel(Channel.UNLIMITED),
+        remainingVirtualEnergyChannel: Channel<LmuWindowsVirtualEnergyData> = Channel(Channel.UNLIMITED),
         ttsEngine: TextToSpeechEngine,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -275,6 +294,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         tyreWearThresholdPercentage: Int = 50,
+        remainingVirtualEnergyThresholdPercentage: Int = 50,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -286,6 +306,7 @@ class LmuWindowsNarratorViewModelTest {
             telemetryChannel = telemetryChannel,
             tyreTemperatureChannel = tyreTemperatureChannel,
             tyreWearChannel = tyreWearChannel,
+            remainingVirtualEnergyChannel = remainingVirtualEnergyChannel,
             enabledOverrides = enabledOverrides,
             flagEnabledOverrides = flagEnabledOverrides,
             vehicleDamageEnabledOverrides = vehicleDamageEnabledOverrides,
@@ -303,6 +324,7 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureLowWarningEnabled = tyreTemperatureLowWarningEnabled,
             tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage,
+            remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
             simulator = simulator,
             queueEnabledOverrides = queueEnabledOverrides,
         )
@@ -361,6 +383,12 @@ class LmuWindowsNarratorViewModelTest {
                 observeTyreWear = ObserveLmuWindowsTyreWearUseCase(tyreWearRepository),
                 observeThresholdPercentage = ObserveLmuWindowsTyreWearThresholdPercentageUseCase(
                     tyreWearPreferencesRepository,
+                ),
+            ),
+            remainingVirtualEnergyUseCases = RemainingVirtualEnergyUseCases(
+                observeRemainingVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
+                observeThresholdPercentage = ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(
+                    remainingVirtualEnergyPreferencesRepository,
                 ),
             ),
             eventProcessor = LmuWindowsNarratorEventProcessor(
@@ -1284,6 +1312,90 @@ class LmuWindowsNarratorViewModelTest {
         assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 
+    // --- バーチャルエナジー残量 ---
+
+    @Test
+    fun `閾値以下のバーチャルエナジー残量が来ると RemainingVirtualEnergyWarning を読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            remainingVirtualEnergyChannel = channel,
+            ttsEngine = tts,
+            remainingVirtualEnergyThresholdPercentage = 50,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true),
+        )
+
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+    }
+
+    @Test
+    fun `残量警告状態が継続しても2回目は読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            remainingVirtualEnergyChannel = channel,
+            ttsEngine = tts,
+            remainingVirtualEnergyThresholdPercentage = 50,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true),
+        )
+
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+    }
+
+    @Test
+    fun `バーチャルエナジー残量項目が無効なら読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            remainingVirtualEnergyChannel = channel,
+            ttsEngine = tts,
+            remainingVirtualEnergyThresholdPercentage = 50,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false),
+        )
+
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    @Test
+    fun `バーチャルエナジー残量の読み上げでテレメトリログを保存する`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val logs = mutableListOf<TelemetryLog>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            remainingVirtualEnergyChannel = channel,
+            ttsEngine = tts,
+            remainingVirtualEnergyThresholdPercentage = 50,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true),
+            currentTimeMs = { 123L },
+        )
+        stubTelemetryLogSave(logs, createdAt = 123L, ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+
+        assertEquals(1, logs.size)
+        val log = logs.first()
+        assertEquals(123L, log.createdAt)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"previousRemainingVirtualEnergy":null""")
+        assertContains(log.telemetryJson, """"remainingVirtualEnergy":{"remainingRatio":0.4""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":123""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+    }
+
     // --- タイヤ低温警告 ---
 
     @Test
@@ -1498,4 +1610,9 @@ private fun tyreWear(
         WheelIndex.REAR_LEFT to rl,
         WheelIndex.REAR_RIGHT to rr,
     ),
+)
+
+private fun remainingVirtualEnergy(remainingRatio: Double = 1.0, session: Int = 0) = LmuWindowsVirtualEnergyData(
+    remainingRatio = remainingRatio,
+    session = session,
 )

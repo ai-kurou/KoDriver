@@ -14,6 +14,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -706,6 +707,71 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `残量が閾値以下になると RemainingVirtualEnergyWarning を返す`() {
+        val decision = useCase.determineRemainingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            data = remainingVirtualEnergy(remainingRatio = 0.4),
+            settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+        )
+
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning), decision.events)
+        assertEquals(true, decision.state.remainingVirtualEnergyWarned)
+    }
+
+    @Test
+    fun `残量警告状態が継続しても再度読み上げない`() {
+        val state = LmuWindowsNarratorState(remainingVirtualEnergyWarned = true)
+        val decision = useCase.determineRemainingVirtualEnergy(
+            state = state,
+            data = remainingVirtualEnergy(remainingRatio = 0.4),
+            settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.remainingVirtualEnergyWarned)
+    }
+
+    @Test
+    fun `残量が閾値より上に戻ると再度読み上げ可能になる`() {
+        val warnedState = useCase.determineRemainingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            data = remainingVirtualEnergy(remainingRatio = 0.4),
+            settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+        ).state
+
+        val recoveredState = useCase.determineRemainingVirtualEnergy(
+            state = warnedState,
+            data = remainingVirtualEnergy(remainingRatio = 0.6),
+            settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+        ).state
+
+        val rewarnedDecision = useCase.determineRemainingVirtualEnergy(
+            state = recoveredState,
+            data = remainingVirtualEnergy(remainingRatio = 0.4),
+            settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
+        )
+
+        assertEquals(false, recoveredState.remainingVirtualEnergyWarned)
+        assertEquals(listOf(SpeechEvent.RemainingVirtualEnergyWarning), rewarnedDecision.events)
+    }
+
+    @Test
+    fun `バーチャルエナジー残量項目が無効なら読み上げない`() {
+        val decision = useCase.determineRemainingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            data = remainingVirtualEnergy(remainingRatio = 0.4),
+            settings = settings(
+                remainingVirtualEnergyThresholdPercentage = 50,
+                enabledStates = allEnabledStates +
+                    mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false),
+            ),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(true, decision.state.remainingVirtualEnergyWarned)
+    }
+
+    @Test
     fun `タイヤ温度項目が無効なら過熱警告スイッチがONでも読み上げない`() {
         val decision = useCase.determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
@@ -912,6 +978,7 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
     ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
     ReadoutItemKey.LmuWindows.Flag.Root to true,
     ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
@@ -931,6 +998,7 @@ private fun settings(
     sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
     tyreWearThresholdPercentage: Int = 50,
+    remainingVirtualEnergyThresholdPercentage: Int = 50,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
@@ -948,6 +1016,7 @@ private fun settings(
         SessionPhase.FORMATION,
     ),
     tyreWearThresholdPercentage = tyreWearThresholdPercentage,
+    remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
 )
 
 private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
@@ -1068,4 +1137,9 @@ private fun tyreWear(
         WheelIndex.REAR_LEFT to rl,
         WheelIndex.REAR_RIGHT to rr,
     ),
+)
+
+private fun remainingVirtualEnergy(remainingRatio: Double = 1.0, session: Int = 0) = LmuWindowsVirtualEnergyData(
+    remainingRatio = remainingRatio,
+    session = session,
 )
