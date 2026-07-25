@@ -17,7 +17,7 @@ private val readoutEnabledStateDefaults: Map<Simulator, Map<ReadoutItemKey, Bool
         ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
         ReadoutItemKey.LmuWindows.PitTiming.Root to true,
         ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
-        ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+        ReadoutItemKey.LmuWindows.TyreWear.Root to false,
         ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
     ),
     Simulator.Gt7Ps5 to mapOf(
