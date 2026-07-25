@@ -14,6 +14,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -150,6 +151,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
         createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<LmuWindowsPitTimingPreferencesRepository> {
+        createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)
     }
     // テレメトリログ（Room データベース）
     single<TelemetryLogRepository> {

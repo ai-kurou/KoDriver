@@ -40,6 +40,8 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -55,7 +57,6 @@ fun LmuWindowsReadoutPitTimingDetailPane(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutPitTimingDetailPaneContent(
         uiState = uiState,
-        onVirtualEnergyEnabledChanged = viewModel::onVirtualEnergyEnabledChanged,
         onVirtualEnergyLapsChanged = viewModel::onVirtualEnergyLapsChanged,
         onTyreWearLapsChanged = viewModel::onTyreWearLapsChanged,
         modifier = modifier,
@@ -66,7 +67,6 @@ fun LmuWindowsReadoutPitTimingDetailPane(
 @Composable
 internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     uiState: LmuWindowsReadoutPitTimingDetailUiState = LmuWindowsReadoutPitTimingDetailUiState(),
-    onVirtualEnergyEnabledChanged: (Boolean) -> Unit = {},
     onVirtualEnergyLapsChanged: (Int) -> Unit = {},
     onTyreWearLapsChanged: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
@@ -80,7 +80,6 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
 
     var showLapsHelpSheet by remember { mutableStateOf(false) }
     val lapsHelpSheetState = rememberModalBottomSheetState()
-    val defaultLaps = LmuWindowsReadoutPitTimingDetailViewModel.DEFAULT_LAPS
 
     Column(
         modifier = modifier
@@ -92,8 +91,6 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
         )
         DetailPaneCard(
             title = stringResource(Res.string.pit_timing_virtual_energy_title),
-            checked = uiState.virtualEnergyEnabled,
-            onCheckedChange = onVirtualEnergyEnabledChanged,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             bottomContent = {
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -115,8 +112,10 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         labelFormatter = { sliderLabel.format(it.roundToInt()) },
                         onValueChangeFinished = { onVirtualEnergyLapsChanged(it.roundToInt()) },
                         steps = 3,
-                        defaultValue = defaultLaps.toFloat(),
-                        onResetToDefault = { onVirtualEnergyLapsChanged(defaultLaps) },
+                        defaultValue = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT.toFloat(),
+                        onResetToDefault = {
+                            onVirtualEnergyLapsChanged(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
+                        },
                         resetContentDescription = resetToDefaultLabel,
                     )
                     DetailPaneSubtitle(
@@ -137,8 +136,10 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                         labelFormatter = { sliderLabel.format(it.roundToInt()) },
                         onValueChangeFinished = { onTyreWearLapsChanged(it.roundToInt()) },
                         steps = 3,
-                        defaultValue = defaultLaps.toFloat(),
-                        onResetToDefault = { onTyreWearLapsChanged(defaultLaps) },
+                        defaultValue = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT.toFloat(),
+                        onResetToDefault = {
+                            onTyreWearLapsChanged(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
+                        },
                         resetContentDescription = resetToDefaultLabel,
                     )
                 }
