@@ -965,6 +965,341 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
     }
+
+    @Test
+    fun `バーチャルエナジー予想残り周回数は直近に完走したラップの消費率を使って最速ラップの30秒前を過ぎたら読み上げる`() {
+        val firstLapDecision = useCase.determinePitTimingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val midLap1Decision = useCase.determinePitTimingVirtualEnergy(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
+            settings = settings(),
+            observedAtMs = 45_000L,
+        )
+        // ラップ1完走時の消費率(0.1)が、ラップ2開始時に次回以降の推定基準として採用される。
+        val lapStartDecision = useCase.determinePitTimingVirtualEnergy(
+            state = midLap1Decision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.8),
+            settings = settings(pitTimingVirtualEnergyLapsThreshold = 3),
+            observedAtMs = 90_000L,
+        )
+        val decision = useCase.determinePitTimingVirtualEnergy(
+            state = lapStartDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
+            settings = settings(pitTimingVirtualEnergyLapsThreshold = 3),
+            observedAtMs = 150_000L,
+        )
+
+        assertEquals(
+            0.1,
+            lapStartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
+            1e-9,
+        )
+        assertEquals(listOf(SpeechEvent.PitTimingVirtualEnergyWarning(0)), decision.events)
+        assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
+        assertEquals(0, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+    }
+
+    @Test
+    fun `バーチャルエナジー予想残り周回数は読み上げタイミング前なら読み上げない`() {
+        val firstLapDecision = useCase.determinePitTimingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val nextLapDecision = useCase.determinePitTimingVirtualEnergy(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.1),
+            settings = settings(),
+            observedAtMs = 100_000L,
+        )
+        val decision = useCase.determinePitTimingVirtualEnergy(
+            state = nextLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.1),
+            settings = settings(),
+            observedAtMs = 159_999L,
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(-1, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
+    }
+
+    @Test
+    fun `ピットタイミング項目が無効ならバーチャルエナジー予想残り周回数を読み上げない`() {
+        val firstLapDecision = useCase.determinePitTimingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+            settings = settings(enabledStates = pitTimingDisabledStates),
+            observedAtMs = 0L,
+        )
+        val nextLapDecision = useCase.determinePitTimingVirtualEnergy(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.1),
+            settings = settings(enabledStates = pitTimingDisabledStates),
+            observedAtMs = 100_000L,
+        )
+        val decision = useCase.determinePitTimingVirtualEnergy(
+            state = nextLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.1),
+            settings = settings(enabledStates = pitTimingDisabledStates),
+            observedAtMs = 160_000L,
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(-1, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
+    }
+
+    @Test
+    fun `給油した周は推定基準から除外され補充直後は再度読み上げる`() {
+        val firstLapDecision = useCase.determinePitTimingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val midLap1Decision = useCase.determinePitTimingVirtualEnergy(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
+            settings = settings(),
+            observedAtMs = 50_000L,
+        )
+        val lap2StartDecision = useCase.determinePitTimingVirtualEnergy(
+            state = midLap1Decision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.85),
+            settings = settings(),
+            observedAtMs = 100_000L,
+        )
+        val firstWarningDecision = useCase.determinePitTimingVirtualEnergy(
+            state = lap2StartDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
+            settings = settings(),
+            observedAtMs = 170_000L,
+        )
+        // ラップ2の途中で給油。この周は次回以降の推定基準として採用されなくなる。
+        val refilledDecision = useCase.determinePitTimingVirtualEnergy(
+            state = firstWarningDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
+            settings = settings(),
+            observedAtMs = 175_000L,
+        )
+
+        assertEquals(
+            0.1,
+            lap2StartDecision.state.pitTimingVirtualEnergyTrackingState.lastValidLapConsumption ?: 0.0,
+            1e-9,
+        )
+        assertEquals(listOf(SpeechEvent.PitTimingVirtualEnergyWarning(0)), firstWarningDecision.events)
+        assertEquals(emptyList<SpeechEvent>(), refilledDecision.events)
+        assertEquals(-1, refilledDecision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        assertEquals(true, refilledDecision.state.pitTimingVirtualEnergyTrackingState.currentLapHasRefilled)
+    }
+
+    @Test
+    fun `ラップ数が戻ったらバーチャルエナジー予想残り周回数の読み上げ履歴をリセットする`() {
+        val state = LmuWindowsNarratorState(
+            lastAnnouncedPitTimingVirtualEnergyLaps = 2,
+            lastPitTimingVirtualEnergyEvaluationLap = 5,
+            pitTimingVirtualEnergyTrackingState = LmuWindowsPitTimingTrackingState(
+                session = 0,
+                currentLap = 5,
+                currentLapStartedAtMs = 100_000L,
+                currentLapStartValue = 0.4,
+                currentValue = 0.2,
+                bestLapTimeMs = 90_000L,
+                observedAtMs = 150_000L,
+            ),
+        )
+
+        val decision = useCase.determinePitTimingVirtualEnergy(
+            state = state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0, session = 0),
+            settings = settings(),
+            observedAtMs = 200_000L,
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(-1, decision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        assertEquals(-1, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
+        assertEquals(1, decision.state.pitTimingVirtualEnergyTrackingState.currentLap)
+    }
+
+    @Test
+    fun `セッションが変わったらラップ数が戻らなくてもバーチャルエナジーの基準値をリセットする`() {
+        val qualifyingDecision = useCase.determinePitTimingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 0, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.16, session = 5),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+
+        val raceDecision = useCase.determinePitTimingVirtualEnergy(
+            state = qualifyingDecision.state,
+            telemetry = lapTelemetry(currentLap = 0, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0, session = 10),
+            settings = settings(),
+            observedAtMs = 10_000L,
+        )
+
+        val trackingState = raceDecision.state.pitTimingVirtualEnergyTrackingState
+        assertEquals(emptyList<SpeechEvent>(), raceDecision.events)
+        assertEquals(10, trackingState.session)
+        assertEquals(1.0, trackingState.currentLapStartValue)
+        assertEquals(-1, raceDecision.state.lastAnnouncedPitTimingVirtualEnergyLaps)
+        assertEquals(-1, raceDecision.state.lastPitTimingVirtualEnergyEvaluationLap)
+    }
+
+    @Test
+    fun `しきい値未満のバーチャルエナジー残量増加は補充とみなさず消費量の推定に含めない`() {
+        val firstDecision = useCase.determinePitTimingVirtualEnergy(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.5),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+
+        // ジッタによる 0.4% の上振れ（しきい値 0.5% 未満）
+        val jitterDecision = useCase.determinePitTimingVirtualEnergy(
+            state = firstDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.504),
+            settings = settings(),
+            observedAtMs = 1_000L,
+        )
+
+        assertEquals(false, jitterDecision.state.pitTimingVirtualEnergyTrackingState.currentLapHasRefilled)
+    }
+
+    @Test
+    fun `タイヤ摩耗予想残り周回数は最も摩耗した車輪を基準に最速ラップの30秒前を過ぎたら読み上げる`() {
+        val firstLapDecision = useCase.determinePitTimingTyreWear(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 1.0, fr = 1.0, rl = 1.0, rr = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val midLap1Decision = useCase.determinePitTimingTyreWear(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 0.9, fr = 1.0, rl = 1.0, rr = 1.0),
+            settings = settings(),
+            observedAtMs = 45_000L,
+        )
+        val lapStartDecision = useCase.determinePitTimingTyreWear(
+            state = midLap1Decision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 0.8, fr = 1.0, rl = 1.0, rr = 1.0),
+            settings = settings(pitTimingTyreWearLapsThreshold = 3),
+            observedAtMs = 90_000L,
+        )
+        val decision = useCase.determinePitTimingTyreWear(
+            state = lapStartDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 0.05, fr = 1.0, rl = 1.0, rr = 1.0),
+            settings = settings(pitTimingTyreWearLapsThreshold = 3),
+            observedAtMs = 150_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.PitTimingTyreWearWarning(0)), decision.events)
+        assertEquals(2, decision.state.lastPitTimingTyreWearEvaluationLap)
+        assertEquals(0, decision.state.lastAnnouncedPitTimingTyreWearLaps)
+    }
+
+    @Test
+    fun `ピットタイミング項目が無効ならタイヤ摩耗予想残り周回数を読み上げない`() {
+        val firstLapDecision = useCase.determinePitTimingTyreWear(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 1.0),
+            settings = settings(enabledStates = pitTimingDisabledStates),
+            observedAtMs = 0L,
+        )
+        val nextLapDecision = useCase.determinePitTimingTyreWear(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 0.1),
+            settings = settings(enabledStates = pitTimingDisabledStates),
+            observedAtMs = 100_000L,
+        )
+        val decision = useCase.determinePitTimingTyreWear(
+            state = nextLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+            tyreWear = tyreWear(fl = 0.1),
+            settings = settings(enabledStates = pitTimingDisabledStates),
+            observedAtMs = 160_000L,
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(-1, decision.state.lastPitTimingTyreWearEvaluationLap)
+    }
+
+    @Test
+    fun `タイヤ交換した周は次回以降の推定基準として採用されずタイヤ摩耗の残り周回数の読み上げ履歴をリセットする`() {
+        val firstLapDecision = useCase.determinePitTimingTyreWear(
+            state = LmuWindowsNarratorState(),
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
+            tyreWear = tyreWear(fl = 1.0),
+            settings = settings(),
+            observedAtMs = 0L,
+        )
+        val midLap1Decision = useCase.determinePitTimingTyreWear(
+            state = firstLapDecision.state,
+            telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 100_000L),
+            tyreWear = tyreWear(fl = 0.9),
+            settings = settings(),
+            observedAtMs = 50_000L,
+        )
+        val lap2StartDecision = useCase.determinePitTimingTyreWear(
+            state = midLap1Decision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+            tyreWear = tyreWear(fl = 0.85),
+            settings = settings(),
+            observedAtMs = 100_000L,
+        )
+        val firstWarningDecision = useCase.determinePitTimingTyreWear(
+            state = lap2StartDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+            tyreWear = tyreWear(fl = 0.05),
+            settings = settings(),
+            observedAtMs = 170_000L,
+        )
+        // ラップ2の途中でタイヤ交換。この周は次回以降の推定基準として採用されなくなる。
+        val tyreChangedDecision = useCase.determinePitTimingTyreWear(
+            state = firstWarningDecision.state,
+            telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 100_000L),
+            tyreWear = tyreWear(fl = 1.0),
+            settings = settings(),
+            observedAtMs = 175_000L,
+        )
+
+        assertEquals(listOf(SpeechEvent.PitTimingTyreWearWarning(0)), firstWarningDecision.events)
+        assertEquals(emptyList<SpeechEvent>(), tyreChangedDecision.events)
+        assertEquals(-1, tyreChangedDecision.state.lastAnnouncedPitTimingTyreWearLaps)
+        assertEquals(true, tyreChangedDecision.state.pitTimingTyreWearTrackingState.currentLapHasRefilled)
+    }
 }
 
 private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
@@ -979,12 +1314,16 @@ private val allEnabledStates: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
     ReadoutItemKey.LmuWindows.TyreWear.Root to true,
     ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+    ReadoutItemKey.LmuWindows.PitTiming.Root to true,
     ReadoutItemKey.LmuWindows.Flag.Root to true,
     ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
     ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
     ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
 )
+
+private val pitTimingDisabledStates: Map<ReadoutItemKey, Boolean> =
+    allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to false)
 
 @Suppress("LongParameterList")
 private fun settings(
@@ -999,6 +1338,8 @@ private fun settings(
     tyreTemperatureHighThresholdCelsius: Int = 90,
     tyreWearThresholdPercentage: Int = 50,
     remainingVirtualEnergyThresholdPercentage: Int = 50,
+    pitTimingVirtualEnergyLapsThreshold: Int = 3,
+    pitTimingTyreWearLapsThreshold: Int = 3,
 ) = LmuWindowsNarratorReadoutSettings(
     enabledStates = enabledStates,
     myBestLapVoiceType = myBestLapVoiceType,
@@ -1017,6 +1358,8 @@ private fun settings(
     ),
     tyreWearThresholdPercentage = tyreWearThresholdPercentage,
     remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
+    pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold,
+    pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold,
 )
 
 private fun telemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(

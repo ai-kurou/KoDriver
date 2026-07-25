@@ -27,6 +27,32 @@ data class LmuWindowsNarratorState(
     val tyreWearWarned: Boolean = false,
     val previousGamePhaseForTyreLowWarning: SessionPhase? = null,
     val remainingVirtualEnergyWarned: Boolean = false,
+    val lastAnnouncedPitTimingVirtualEnergyLaps: Int = -1,
+    val lastPitTimingVirtualEnergyEvaluationLap: Int = -1,
+    val pitTimingVirtualEnergyTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
+    val lastAnnouncedPitTimingTyreWearLaps: Int = -1,
+    val lastPitTimingTyreWearEvaluationLap: Int = -1,
+    val pitTimingTyreWearTrackingState: LmuWindowsPitTimingTrackingState = LmuWindowsPitTimingTrackingState(),
+)
+
+/**
+ * ピットタイミング（バーチャルエナジー・タイヤ摩耗の予想残り周回数）の推定に使う追跡状態。
+ * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
+ * （TinyPedal の直近完走ラップ基準の方式に合わせている）。
+ */
+data class LmuWindowsPitTimingTrackingState(
+    val session: Int? = null,
+    val currentLap: Int = -1,
+    val currentLapStartedAtMs: Long = 0L,
+    val currentLapStartValue: Double = 0.0,
+    val currentLapHasRefilled: Boolean = false,
+    val currentValue: Double = 0.0,
+    /** 直近に完走した（給油・タイヤ交換なしの）ラップの消費量。まだ存在しなければ null。 */
+    val lastValidLapConsumption: Double? = null,
+    val bestLapTimeMs: Long = -1L,
+    val hasRefilled: Boolean = false,
+    val isNewSession: Boolean = false,
+    val observedAtMs: Long = 0L,
 )
 
 data class LmuWindowsVehicleApproachState(
@@ -59,6 +85,8 @@ data class LmuWindowsNarratorReadoutSettings(
     val tyreTemperatureLowWarningPhases: Set<SessionPhase>,
     val tyreWearThresholdPercentage: Int,
     val remainingVirtualEnergyThresholdPercentage: Int,
+    val pitTimingVirtualEnergyLapsThreshold: Int,
+    val pitTimingTyreWearLapsThreshold: Int,
 )
 
 data class LmuWindowsNarratorReadoutDecision(
@@ -260,6 +288,100 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         )
     }
 
+    fun determinePitTimingVirtualEnergy(
+        state: LmuWindowsNarratorState,
+        telemetry: LmuWindowsTelemetryData,
+        virtualEnergy: LmuWindowsVirtualEnergyData,
+        settings: LmuWindowsNarratorReadoutSettings,
+        observedAtMs: Long,
+    ): LmuWindowsNarratorReadoutDecision {
+        val trackingState = trackPitTimingValue(
+            state = state.pitTimingVirtualEnergyTrackingState,
+            currentLap = telemetry.timing.currentLap,
+            bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+            currentValue = virtualEnergy.remainingRatio,
+            session = virtualEnergy.session,
+            observedAtMs = observedAtMs,
+        )
+        val stateAfterTracking = when {
+            trackingState.isNewSession -> state.copy(
+                lastAnnouncedPitTimingVirtualEnergyLaps = -1,
+                lastPitTimingVirtualEnergyEvaluationLap = -1,
+                pitTimingVirtualEnergyTrackingState = trackingState,
+            )
+            trackingState.hasRefilled -> state.copy(
+                lastAnnouncedPitTimingVirtualEnergyLaps = -1,
+                pitTimingVirtualEnergyTrackingState = trackingState,
+            )
+            else -> state.copy(pitTimingVirtualEnergyTrackingState = trackingState)
+        }
+        val evaluation = calculatePitTimingRemainingLaps(
+            trackingState = trackingState,
+            lastEvaluationLap = stateAfterTracking.lastPitTimingVirtualEnergyEvaluationLap,
+            lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingVirtualEnergyLaps,
+            threshold = settings.pitTimingVirtualEnergyLapsThreshold,
+            enabled = settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.Root),
+        )
+        val stateAfterEvaluation =
+            stateAfterTracking.copy(lastPitTimingVirtualEnergyEvaluationLap = evaluation.evaluatedLap)
+        val remainingLaps = evaluation.remainingLaps ?: return LmuWindowsNarratorReadoutDecision(
+            stateAfterEvaluation,
+            emptyList(),
+        )
+        return LmuWindowsNarratorReadoutDecision(
+            state = stateAfterEvaluation.copy(lastAnnouncedPitTimingVirtualEnergyLaps = remainingLaps),
+            events = listOf(SpeechEvent.PitTimingVirtualEnergyWarning(remainingLaps)),
+        )
+    }
+
+    fun determinePitTimingTyreWear(
+        state: LmuWindowsNarratorState,
+        telemetry: LmuWindowsTelemetryData,
+        tyreWear: LmuWindowsTyreWearData,
+        settings: LmuWindowsNarratorReadoutSettings,
+        observedAtMs: Long,
+    ): LmuWindowsNarratorReadoutDecision {
+        val worstRemainingRatio = tyreWear.wheels.values.minOrNull()
+            ?: return LmuWindowsNarratorReadoutDecision(state, emptyList())
+        val trackingState = trackPitTimingValue(
+            state = state.pitTimingTyreWearTrackingState,
+            currentLap = telemetry.timing.currentLap,
+            bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+            currentValue = worstRemainingRatio,
+            session = null,
+            observedAtMs = observedAtMs,
+        )
+        val stateAfterTracking = when {
+            trackingState.isNewSession -> state.copy(
+                lastAnnouncedPitTimingTyreWearLaps = -1,
+                lastPitTimingTyreWearEvaluationLap = -1,
+                pitTimingTyreWearTrackingState = trackingState,
+            )
+            trackingState.hasRefilled -> state.copy(
+                lastAnnouncedPitTimingTyreWearLaps = -1,
+                pitTimingTyreWearTrackingState = trackingState,
+            )
+            else -> state.copy(pitTimingTyreWearTrackingState = trackingState)
+        }
+        val evaluation = calculatePitTimingRemainingLaps(
+            trackingState = trackingState,
+            lastEvaluationLap = stateAfterTracking.lastPitTimingTyreWearEvaluationLap,
+            lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingTyreWearLaps,
+            threshold = settings.pitTimingTyreWearLapsThreshold,
+            enabled = settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.Root),
+        )
+        val stateAfterEvaluation =
+            stateAfterTracking.copy(lastPitTimingTyreWearEvaluationLap = evaluation.evaluatedLap)
+        val remainingLaps = evaluation.remainingLaps ?: return LmuWindowsNarratorReadoutDecision(
+            stateAfterEvaluation,
+            emptyList(),
+        )
+        return LmuWindowsNarratorReadoutDecision(
+            state = stateAfterEvaluation.copy(lastAnnouncedPitTimingTyreWearLaps = remainingLaps),
+            events = listOf(SpeechEvent.PitTimingTyreWearWarning(remainingLaps)),
+        )
+    }
+
     fun determineRaceFlags(
         state: LmuWindowsNarratorState,
         raceFlags: LmuWindowsRaceFlagsData,
@@ -393,6 +515,124 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5.0
         const val PERCENTAGE_SCALE = 100.0
     }
+}
+
+private const val PIT_TIMING_READOUT_BEFORE_BEST_LAP_MS = 30_000L
+
+/** これ未満の残量増加はジッタとみなし、給油・タイヤ交換として扱わない（割合 0.0〜1.0 に対する値）。 */
+private const val PIT_TIMING_REFILL_DETECTION_MIN_RATIO = 0.005
+
+private data class PitTimingRemainingLapsEvaluation(
+    val evaluatedLap: Int,
+    val remainingLaps: Int?,
+)
+
+/**
+ * ピットタイミング（バーチャルエナジー・タイヤ摩耗）共通の追跡状態更新。
+ * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う。
+ */
+private fun trackPitTimingValue(
+    state: LmuWindowsPitTimingTrackingState,
+    currentLap: Int,
+    bestLapTimeMs: Long,
+    currentValue: Double,
+    session: Int?,
+    observedAtMs: Long,
+): LmuWindowsPitTimingTrackingState =
+    when {
+        state.currentLap == -1 -> LmuWindowsPitTimingTrackingState(
+            session = session,
+            currentLap = currentLap,
+            currentLapStartedAtMs = observedAtMs,
+            currentLapStartValue = currentValue,
+            currentLapHasRefilled = false,
+            currentValue = currentValue,
+            lastValidLapConsumption = null,
+            bestLapTimeMs = bestLapTimeMs,
+            hasRefilled = false,
+            isNewSession = false,
+            observedAtMs = observedAtMs,
+        )
+        (session != null && session != state.session) || currentLap < state.currentLap ->
+            LmuWindowsPitTimingTrackingState(
+                session = session,
+                currentLap = currentLap,
+                currentLapStartedAtMs = observedAtMs,
+                currentLapStartValue = currentValue,
+                currentLapHasRefilled = false,
+                currentValue = currentValue,
+                lastValidLapConsumption = null,
+                bestLapTimeMs = bestLapTimeMs,
+                hasRefilled = false,
+                isNewSession = true,
+                observedAtMs = observedAtMs,
+            )
+        else -> {
+            // 共有メモリの値は微小な上振れ（ジッタ・torn read）を含みうるため、
+            // しきい値未満の増加は給油・タイヤ交換とみなさず消費量の推定から除外する。
+            val delta = currentValue - state.currentValue
+            val refilled = if (delta >= PIT_TIMING_REFILL_DETECTION_MIN_RATIO) delta else 0.0
+            if (currentLap != state.currentLap) {
+                // ラップが変わるタイミングで、直前のラップが給油・タイヤ交換なしで完走していれば
+                // その消費量を今後の残り周回数推定の基準として採用する（TinyPedal同様の方式）。
+                val completedLapConsumption = state.currentLapStartValue - state.currentValue
+                val lastValidLapConsumption = if (!state.currentLapHasRefilled && completedLapConsumption > 0.0) {
+                    completedLapConsumption
+                } else {
+                    state.lastValidLapConsumption
+                }
+                state.copy(
+                    session = session,
+                    currentLap = currentLap,
+                    currentLapStartedAtMs = observedAtMs,
+                    currentLapStartValue = currentValue,
+                    currentLapHasRefilled = false,
+                    currentValue = currentValue,
+                    lastValidLapConsumption = lastValidLapConsumption,
+                    bestLapTimeMs = bestLapTimeMs,
+                    hasRefilled = refilled > 0.0,
+                    isNewSession = false,
+                    observedAtMs = observedAtMs,
+                )
+            } else {
+                state.copy(
+                    session = session,
+                    currentLapHasRefilled = state.currentLapHasRefilled || refilled > 0.0,
+                    currentValue = currentValue,
+                    bestLapTimeMs = bestLapTimeMs,
+                    hasRefilled = refilled > 0.0,
+                    isNewSession = false,
+                    observedAtMs = observedAtMs,
+                )
+            }
+        }
+    }
+
+private fun calculatePitTimingRemainingLaps(
+    trackingState: LmuWindowsPitTimingTrackingState,
+    lastEvaluationLap: Int,
+    lastAnnouncedLaps: Int,
+    threshold: Int,
+    enabled: Boolean,
+): PitTimingRemainingLapsEvaluation {
+    if (trackingState.currentLap == lastEvaluationLap) {
+        return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    }
+    val bestLapTimeMs = trackingState.bestLapTimeMs
+    if (bestLapTimeMs <= 0L) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    val readoutTimingMs = (bestLapTimeMs - PIT_TIMING_READOUT_BEFORE_BEST_LAP_MS).coerceAtLeast(0L)
+    val currentLapElapsedMs = trackingState.observedAtMs - trackingState.currentLapStartedAtMs
+    if (currentLapElapsedMs < readoutTimingMs) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    val avgConsumption = trackingState.lastValidLapConsumption
+        ?: return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    if (avgConsumption <= 0.0) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    val remainingLapsFloor = (trackingState.currentValue / avgConsumption).toInt()
+    if (remainingLapsFloor < 0 || remainingLapsFloor > threshold) {
+        return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    }
+    if (remainingLapsFloor == lastAnnouncedLaps) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    if (!enabled) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    return PitTimingRemainingLapsEvaluation(trackingState.currentLap, remainingLapsFloor)
 }
 
 private enum class ApproachSide {

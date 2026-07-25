@@ -50,6 +50,7 @@ import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
@@ -70,6 +71,8 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
@@ -156,6 +159,9 @@ class LmuWindowsNarratorViewModelTest {
         LmuWindowsRemainingVirtualEnergyPreferencesRepository
 
     @MockK
+    private lateinit var pitTimingPreferencesRepository: LmuWindowsPitTimingPreferencesRepository
+
+    @MockK
     private lateinit var myBestLapPreferencesRepository: LmuWindowsMyBestLapPreferencesRepository
 
     @MockK
@@ -211,6 +217,8 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
         tyreWearThresholdPercentage: Int,
         remainingVirtualEnergyThresholdPercentage: Int,
+        pitTimingVirtualEnergyLapsThreshold: Int,
+        pitTimingTyreWearLapsThreshold: Int,
         simulator: Simulator?,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
@@ -258,6 +266,10 @@ class LmuWindowsNarratorViewModelTest {
             remainingVirtualEnergyChannel.receiveAsFlow()
         every { remainingVirtualEnergyPreferencesRepository.observeThresholdPercentage() } returns
             MutableStateFlow(remainingVirtualEnergyThresholdPercentage)
+        every { pitTimingPreferencesRepository.observeVirtualEnergyLaps() } returns
+            MutableStateFlow(pitTimingVirtualEnergyLapsThreshold)
+        every { pitTimingPreferencesRepository.observeTyreWearLaps() } returns
+            MutableStateFlow(pitTimingTyreWearLapsThreshold)
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(voiceType)
         every { redFlagPreferencesRepository.observeVoiceType() } returns MutableStateFlow(redFlagVoiceType)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns
@@ -295,6 +307,8 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         tyreWearThresholdPercentage: Int = 50,
         remainingVirtualEnergyThresholdPercentage: Int = 50,
+        pitTimingVirtualEnergyLapsThreshold: Int = 3,
+        pitTimingTyreWearLapsThreshold: Int = 3,
         simulator: Simulator? = Simulator.LmuWindows,
         currentTimeMs: () -> Long = { 0L },
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
@@ -325,6 +339,8 @@ class LmuWindowsNarratorViewModelTest {
             tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
             tyreWearThresholdPercentage = tyreWearThresholdPercentage,
             remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage,
+            pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold,
+            pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold,
             simulator = simulator,
             queueEnabledOverrides = queueEnabledOverrides,
         )
@@ -389,6 +405,14 @@ class LmuWindowsNarratorViewModelTest {
                 observeRemainingVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
                 observeThresholdPercentage = ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(
                     remainingVirtualEnergyPreferencesRepository,
+                ),
+            ),
+            pitTimingUseCases = PitTimingUseCases(
+                observeVirtualEnergyLapsThreshold = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
+                    pitTimingPreferencesRepository,
+                ),
+                observeTyreWearLapsThreshold = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(
+                    pitTimingPreferencesRepository,
                 ),
             ),
             eventProcessor = LmuWindowsNarratorEventProcessor(
@@ -1393,6 +1417,149 @@ class LmuWindowsNarratorViewModelTest {
         assertContains(log.telemetryJson, """"remainingVirtualEnergy":{"remainingRatio":0.4""")
         assertContains(log.telemetryJson, """"settings":{"raw":"""")
         assertContains(log.telemetryJson, """"observedAtMs":123""")
+        assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+    }
+
+    // --- ピットタイミング ---
+
+    @Test
+    fun `最速ラップの30秒前を過ぎて閾値以下になるとPitTimingVirtualEnergyWarningを読み上げる`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        var currentTime = 0L
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            remainingVirtualEnergyChannel = virtualEnergyChannel,
+            tyreWearChannel = tyreWearChannel,
+            ttsEngine = tts,
+            pitTimingVirtualEnergyLapsThreshold = 3,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+            currentTimeMs = { currentTime },
+        )
+
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+        tyreWearChannel.send(tyreWear())
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        currentTime = 45_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+        currentTime = 90_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        currentTime = 150_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingVirtualEnergyWarning(0)), spokenTexts)
+    }
+
+    @Test
+    fun `ピットタイミング項目が無効ならPitTimingVirtualEnergyWarningを読み上げない`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        var currentTime = 0L
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            remainingVirtualEnergyChannel = virtualEnergyChannel,
+            tyreWearChannel = tyreWearChannel,
+            ttsEngine = tts,
+            pitTimingVirtualEnergyLapsThreshold = 3,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to false),
+            currentTimeMs = { currentTime },
+        )
+
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+        tyreWearChannel.send(tyreWear())
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        currentTime = 45_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+        currentTime = 90_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        currentTime = 150_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    @Test
+    fun `最も摩耗した車輪を基準に閾値以下になるとPitTimingTyreWearWarningを読み上げる`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        var currentTime = 0L
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            remainingVirtualEnergyChannel = virtualEnergyChannel,
+            tyreWearChannel = tyreWearChannel,
+            ttsEngine = tts,
+            pitTimingTyreWearLapsThreshold = 3,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+            currentTimeMs = { currentTime },
+        )
+
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+        tyreWearChannel.send(tyreWear(fl = 1.0))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        currentTime = 45_000L
+        tyreWearChannel.send(tyreWear(fl = 0.9))
+        currentTime = 90_000L
+        tyreWearChannel.send(tyreWear(fl = 0.8))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        currentTime = 150_000L
+        tyreWearChannel.send(tyreWear(fl = 0.05))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.PitTimingTyreWearWarning(0)), spokenTexts)
+    }
+
+    @Test
+    fun `ピットタイミングの読み上げでテレメトリログを保存する`() = runTest(testDispatcher) {
+        val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+        val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val logs = mutableListOf<TelemetryLog>()
+        val tts = mockTts(spokenTexts)
+        var currentTime = 0L
+        createViewModel(
+            telemetryChannel = telemetryChannel,
+            remainingVirtualEnergyChannel = virtualEnergyChannel,
+            tyreWearChannel = tyreWearChannel,
+            ttsEngine = tts,
+            pitTimingVirtualEnergyLapsThreshold = 3,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+            currentTimeMs = { currentTime },
+        )
+        stubTelemetryLogSave(logs, createdAt = 150_000L, ReadoutItemKey.LmuWindows.PitTiming.Root)
+
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+        tyreWearChannel.send(tyreWear())
+        telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+        currentTime = 45_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+        currentTime = 90_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+        telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+        currentTime = 150_000L
+        virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+
+        assertEquals(1, logs.size)
+        val log = logs.first()
+        assertEquals(150_000L, log.createdAt)
+        assertEquals(Simulator.LmuWindows, log.simulator)
+        assertEquals(ReadoutItemKey.LmuWindows.PitTiming.Root, log.readoutItemKey)
+        assertContains(log.telemetryJson, """"state":{"raw":"""")
+        assertContains(log.telemetryJson, """"telemetry":{"currentLapTimeMs":0""")
+        assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.05""")
+        assertContains(log.telemetryJson, """"tyreWear":{"wheels":{"FRONT_LEFT":1.0""")
+        assertContains(log.telemetryJson, """"settings":{"raw":"""")
+        assertContains(log.telemetryJson, """"observedAtMs":150000""")
         assertContains(log.telemetryJson, """"finalState":{"raw":"""")
     }
 

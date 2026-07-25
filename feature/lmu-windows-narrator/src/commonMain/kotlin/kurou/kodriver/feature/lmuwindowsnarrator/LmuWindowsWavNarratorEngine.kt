@@ -72,6 +72,12 @@ internal class LmuWindowsWavNarratorEngine(
         put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
         put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
         put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
+        // タイヤ摩耗の予想残り周回数（PitTimingTyreWearWarning）用のWAVアセットは未整備のため、
+        // アセット追加まではマッピングしない（マッピングすると存在しないファイルの読み込みで
+        // 起動のたびにエラーが記録されてしまう）。docs/improvement-ideas.md に記録済み。
+        for (laps in 0..MAX_PIT_TIMING_LAPS) {
+            put(SpeechEvent.PitTimingVirtualEnergyWarning(laps), "files/remaining_virtual_energy_laps_$laps.wav")
+        }
     }
 
     private val startSoundTypeToFile = mapOf(
@@ -146,5 +152,9 @@ internal class LmuWindowsWavNarratorEngine(
         startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
         soundPlayer.play(mainSound, vol)
         _currentReadoutItemKey = null
+    }
+
+    internal companion object {
+        const val MAX_PIT_TIMING_LAPS = 5
     }
 }
