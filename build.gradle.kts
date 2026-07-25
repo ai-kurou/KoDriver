@@ -21,6 +21,7 @@ plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
         resolution("serialize-javascript", "7.0.5")
         resolution("uuid", "11.1.1")
+        resolution("webpack-dev-server", "5.2.5")
     }
 }
 
