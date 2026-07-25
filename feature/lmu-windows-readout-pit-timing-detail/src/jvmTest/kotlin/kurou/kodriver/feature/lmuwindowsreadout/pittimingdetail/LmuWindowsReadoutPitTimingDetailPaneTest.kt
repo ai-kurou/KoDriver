@@ -30,7 +30,8 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
 
         rule.onNodeWithText(
             "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
-                "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば読み上げます。",
+                "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
+                "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
         ).assertIsDisplayed()
         rule.onNodeWithText("予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー予想残り周回数").assertIsDisplayed()

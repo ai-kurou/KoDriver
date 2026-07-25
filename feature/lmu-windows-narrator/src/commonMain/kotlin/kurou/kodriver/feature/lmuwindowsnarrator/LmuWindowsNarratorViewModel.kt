@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
@@ -127,6 +128,10 @@ internal class LmuWindowsNarratorViewModel(
 ) : ViewModel() {
 
     private var narratorState = LmuWindowsNarratorState()
+
+    // バーチャルエナジー・タイヤ摩耗のピットタイミング警告は同一ラップ内で1回だけ読み上げる。
+    // 別tickで各々が閾値を跨いで先着した場合も、後着の警告で二重読み上げしないようにラップ単位でロックする。
+    private var lastAnnouncedPitTimingLap: Int = -1
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -480,13 +485,21 @@ internal class LmuWindowsNarratorViewModel(
                 observedAtMs = observedAtMs,
             )
             narratorState = tyreWearDecision.state
+            val pitTimingEvents = if (telemetry.timing.currentLap == lastAnnouncedPitTimingLap) {
+                emptyList()
+            } else {
+                selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events)
+            }
+            if (pitTimingEvents.isNotEmpty()) {
+                lastAnnouncedPitTimingLap = telemetry.timing.currentLap
+            }
             eventProcessor.processPitTiming(
                 snapshot = LmuWindowsPitTimingSnapshot(
                     telemetry = telemetry,
                     virtualEnergy = virtualEnergy,
                     tyreWear = tyreWear,
                 ),
-                events = virtualEnergyDecision.events + tyreWearDecision.events,
+                events = pitTimingEvents,
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
@@ -516,4 +529,27 @@ internal class LmuWindowsNarratorViewModel(
             pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
             pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
         )
+}
+
+/**
+ * バーチャルエナジー・タイヤ摩耗のピットタイミング警告が同一tickで両方発火した場合、
+ * 予想残り周回数が低い方（＝ピット作業がより緊急な方）のみを1回読み上げる。
+ */
+private fun selectLowerPitTimingEvent(
+    virtualEnergyEvents: List<SpeechEvent>,
+    tyreWearEvents: List<SpeechEvent>,
+): List<SpeechEvent> {
+    val virtualEnergyEvent = virtualEnergyEvents
+        .filterIsInstance<SpeechEvent.PitTimingVirtualEnergyWarning>()
+        .firstOrNull()
+    val tyreWearEvent = tyreWearEvents
+        .filterIsInstance<SpeechEvent.PitTimingTyreWearWarning>()
+        .firstOrNull()
+    return when {
+        virtualEnergyEvent != null && tyreWearEvent != null ->
+            if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)
+        virtualEnergyEvent != null -> listOf(virtualEnergyEvent)
+        tyreWearEvent != null -> listOf(tyreWearEvent)
+        else -> emptyList()
+    }
 }
