@@ -164,7 +164,6 @@ private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when 
     ReadoutListItemType.LmuWindows.Flag -> stringResource(Res.string.item_flag)
     ReadoutListItemType.LmuWindows.VehicleDamage -> stringResource(Res.string.item_vehicle_damage)
     ReadoutListItemType.LmuWindows.TyreTemperature -> stringResource(Res.string.item_tyre_temperature)
-    // 詳細画面を持たないため実際には選択されないが、when の網羅性のため表示名を返す。
     ReadoutListItemType.LmuWindows.RemainingVirtualEnergy ->
         stringResource(Res.string.item_remaining_virtual_energy)
     ReadoutListItemType.LmuWindows.TyreWear -> stringResource(Res.string.item_tyre_wear)
