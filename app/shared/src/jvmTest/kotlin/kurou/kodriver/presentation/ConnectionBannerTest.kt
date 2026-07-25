@@ -143,4 +143,16 @@ class ConnectionBannerTest {
 
         composeRule.onNodeWithText("確認中").assertHasNoClickAction()
     }
+
+    @Test
+    fun `pulseScaleはprogress0で最小値progress1で1になる`() {
+        assertEquals(0.85f, pulseScale(0f))
+        assertEquals(1f, pulseScale(1f))
+    }
+
+    @Test
+    fun `pulseAlphaはprogress0で最小値progress1で1になる`() {
+        assertEquals(0.45f, pulseAlpha(0f))
+        assertEquals(1f, pulseAlpha(1f))
+    }
 }
