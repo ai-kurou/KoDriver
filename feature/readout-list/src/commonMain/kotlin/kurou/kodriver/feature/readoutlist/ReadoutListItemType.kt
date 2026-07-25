@@ -58,10 +58,11 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
             ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 3
-            ReadoutItemKey.LmuWindows.TyreWear.Root -> 4
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 5
-            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 6
+            ReadoutItemKey.LmuWindows.PitTiming.Root -> 3
+            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 4
+            ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
+            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 6
+            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 7
         }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int = when (key) {

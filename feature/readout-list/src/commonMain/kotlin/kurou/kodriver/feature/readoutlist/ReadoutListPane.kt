@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -75,6 +76,7 @@ import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_full_course_yellow
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_overheat
+import kodriver.feature.readoutlist.generated.resources.item_pit_timing
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
@@ -161,6 +163,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag -> flagItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageItemDisplayName(itemId)
     is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureItemDisplayName(itemId)
+    is ReadoutItemKey.LmuWindows.PitTiming.Root -> stringResource(Res.string.item_pit_timing)
     is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root ->
         stringResource(Res.string.item_remaining_virtual_energy)
     is ReadoutItemKey.LmuWindows.TyreWear.Root -> stringResource(Res.string.item_tyre_wear)
@@ -174,6 +177,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
     is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
     is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.PitTiming.Root -> Icons.Filled.AccessTime
     is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
     is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer

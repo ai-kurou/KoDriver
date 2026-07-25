@@ -86,6 +86,7 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.PitTiming.Root,
                 ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                 ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
@@ -112,6 +113,11 @@ class ReadoutListItemTypeTest {
             ReadoutListItemType.LmuWindows.TyreWear,
             ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.TyreWear.Root),
         )
+    }
+
+    @Test
+    fun `lmu_windows の pit_timing は detailPane を持たないため null を返す`() {
+        assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.LmuWindows.PitTiming.Root))
     }
 
     @Test
