@@ -202,7 +202,9 @@ class ApplicationTest {
             close()
         }
 
-        withTimeout(1_000) {
+        // クライアント切断からサーバー側の送信Flowキャンセルまでは実際のネットワーク往復を伴うため、
+        // CI環境の負荷変動を考慮して他のテストより長めのタイムアウトを設定する。
+        withTimeout(5_000) {
             repository.cancelled.await()
         }
     }
