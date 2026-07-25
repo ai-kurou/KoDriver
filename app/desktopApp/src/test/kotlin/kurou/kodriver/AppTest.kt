@@ -102,6 +102,10 @@ class AppTest {
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
         )
+        clickItemAndVerifyDescription(
+            "バーチャルエナジー残量",
+            "バーチャルエナジー残量が設定した閾値以下になった場合に音声でお知らせします。",
+        )
         scrollToItem("タイヤ摩耗")
         clickItemAndVerifyDescription(
             "タイヤ摩耗",

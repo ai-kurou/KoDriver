@@ -15,6 +15,7 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -146,6 +147,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsTyreWearPreferencesRepository> {
         createLmuWindowsTyreWearPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
+        createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)
     }
     // テレメトリログ（Room データベース）
     single<TelemetryLogRepository> {

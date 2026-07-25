@@ -86,11 +86,23 @@ class ReadoutListItemTypeTest {
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
                 ReadoutItemKey.LmuWindows.TyreWear.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+        )
+    }
+
+    @Test
+    fun `lmu_windows の remaining_virtual_energy は LmuWindows_RemainingVirtualEnergy を返す`() {
+        assertEquals(
+            ReadoutListItemType.LmuWindows.RemainingVirtualEnergy,
+            ReadoutListItemType.fromId(
+                Simulator.LmuWindows,
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+            ),
         )
     }
 

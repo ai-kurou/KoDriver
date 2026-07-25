@@ -8,6 +8,7 @@ digraph G {
   ":feature:lmu-windows-narrator" -> ":core:designsystem"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:designsystem"
+  ":feature:lmu-windows-readout-remaining-virtual-energy-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-tyre-temperature-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-tyre-wear-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
