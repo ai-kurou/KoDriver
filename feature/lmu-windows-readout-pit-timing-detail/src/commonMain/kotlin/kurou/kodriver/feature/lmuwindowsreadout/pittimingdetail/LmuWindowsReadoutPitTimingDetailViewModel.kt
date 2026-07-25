@@ -14,4 +14,16 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel : ViewModel() {
     fun onVirtualEnergyEnabledChanged(enabled: Boolean) {
         _uiState.update { it.copy(virtualEnergyEnabled = enabled) }
     }
+
+    fun onVirtualEnergyLapsChanged(laps: Int) {
+        _uiState.update { it.copy(virtualEnergyLaps = laps) }
+    }
+
+    fun onTyreWearLapsChanged(laps: Int) {
+        _uiState.update { it.copy(tyreWearLaps = laps) }
+    }
+
+    companion object {
+        const val DEFAULT_LAPS = 3
+    }
 }

@@ -21,4 +21,22 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
         assertEquals(false, viewModel.uiState.value.virtualEnergyEnabled)
     }
+
+    @Test
+    fun `onVirtualEnergyLapsChangedを呼ぶとvirtualEnergyLapsが更新される`() = runTest {
+        val viewModel = LmuWindowsReadoutPitTimingDetailViewModel()
+
+        viewModel.onVirtualEnergyLapsChanged(5)
+
+        assertEquals(5, viewModel.uiState.value.virtualEnergyLaps)
+    }
+
+    @Test
+    fun `onTyreWearLapsChangedを呼ぶとtyreWearLapsが更新される`() = runTest {
+        val viewModel = LmuWindowsReadoutPitTimingDetailViewModel()
+
+        viewModel.onTyreWearLapsChanged(1)
+
+        assertEquals(1, viewModel.uiState.value.tyreWearLaps)
+    }
 }

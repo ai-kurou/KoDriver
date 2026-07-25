@@ -2,4 +2,11 @@
 <resources>
     <string name="pit_timing_description">ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、いずれかが閾値以下であれば読み上げます。</string>
     <string name="pit_timing_virtual_energy_title">予想残り周回数</string>
+    <string name="pit_timing_virtual_energy_laps_subtitle">バーチャルエナジー予想残り周回数</string>
+    <string name="pit_timing_virtual_energy_laps_help_icon_content_description">バーチャルエナジー予想残り周回数の計算方法の説明を表示</string>
+    <string name="pit_timing_tyre_wear_laps_subtitle">タイヤ摩耗予想残り周回数</string>
+    <string name="pit_timing_tyre_wear_laps_help_icon_content_description">タイヤ摩耗予想残り周回数の計算方法の説明を表示</string>
+    <string name="pit_timing_laps_slider_label">残り約: %1$d 周</string>
+    <string name="pit_timing_laps_reset_to_default">デフォルト値にリセット</string>
+    <string name="pit_timing_laps_help_description">レース開始からの平均消費量（1周あたりの燃料・タイヤ摩耗の消費量）をもとに、現在の残量から走行可能な周回数を算出します。直近の給油やタイヤ交換は考慮せず、レース開始時点からの平均値で近似する簡易計算です。</string>
 </resources>

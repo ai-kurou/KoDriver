@@ -29,4 +29,18 @@ class LmuWindowsReadoutPitTimingDetailPaneScreenshotTest {
         }
         rule.onRoot().captureRoboImage()
     }
+
+    @Test
+    fun `予想残り周回数のヘルプボトムシート`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        PitTimingLapsHelpSheetContent()
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
 }
