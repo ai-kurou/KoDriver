@@ -36,7 +36,24 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
         rule.onNodeWithText("予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").assertIsDisplayed()
+        rule.onNodeWithText("N周以内にピットイン・必ずピットイン").assertIsDisplayed()
         rule.onAllNodesWithText("残り約: 3 周").assertCountEquals(2)
+    }
+
+    @Test
+    fun `チップをタップするとコールバックが呼ばれる`() {
+        var previewClicked = false
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutPitTimingDetailPaneContent(
+                    onPreviewClicked = { previewClicked = true },
+                )
+            }
+        }
+
+        rule.onNodeWithText("N周以内にピットイン・必ずピットイン").performClick()
+
+        assert(previewClicked)
     }
 
     @Test

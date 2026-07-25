@@ -16,11 +16,14 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingTyreWearLapsUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase
 import kotlin.test.AfterTest
@@ -35,6 +38,9 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
     @MockK
     private lateinit var repository: LmuWindowsPitTimingPreferencesRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
 
     private val virtualEnergyLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
     private val tyreWearLapsFlow = MutableStateFlow(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
@@ -55,6 +61,7 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
         saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
         saveLmuWindowsPitTimingTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
@@ -102,5 +109,22 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         verify(exactly = 1) { repository.observeTyreWearLaps() }
         coVerify(exactly = 1) { repository.saveTyreWearLaps(1) }
         confirmVerified(repository)
+    }
+
+    @Test
+    fun `onPreviewClickedを呼ぶと5周と0周のPitTimingWarningイベントが再生される`() {
+        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
+        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+        every { ttsEngine.speak(SpeechEvent.PitTimingWarning(5), false) } returns Unit
+        every { ttsEngine.speak(SpeechEvent.PitTimingWarning(0), true) } returns Unit
+        val viewModel = createViewModel()
+
+        viewModel.onPreviewClicked()
+
+        verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+        verify(exactly = 1) { repository.observeTyreWearLaps() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(5), false) }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(0), true) }
+        confirmVerified(repository, ttsEngine)
     }
 }
