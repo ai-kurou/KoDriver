@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DeviceThermostat
 import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.DonutLarge
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
@@ -179,7 +180,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
     is ReadoutItemKey.LmuWindows.PitTiming.Root -> Icons.Filled.AccessTime
     is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
-    is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DeviceThermostat
+    is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DonutLarge
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
