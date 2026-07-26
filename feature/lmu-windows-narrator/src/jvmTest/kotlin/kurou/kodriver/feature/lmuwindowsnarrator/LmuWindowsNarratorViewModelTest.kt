@@ -1290,6 +1290,31 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `全タイヤが閾値未満に戻るとタイヤ摩耗を再度読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            tyreWearChannel = channel,
+            ttsEngine = tts,
+            tyreWearThresholdPercentage = 50,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+        )
+
+        channel.send(tyreWear(fl = 0.4))
+        channel.send(tyreWear(fl = 0.6))
+        channel.send(tyreWear(fl = 0.4))
+
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.TyreWearWarning,
+                SpeechEvent.TyreWearWarning,
+            ),
+            spokenTexts,
+        )
+    }
+
+    @Test
     fun `タイヤ摩耗項目が無効なら読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -1371,6 +1396,31 @@ class LmuWindowsNarratorViewModelTest {
         channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
 
         assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingVirtualEnergyWarning), spokenTexts)
+    }
+
+    @Test
+    fun `残量が閾値より上に戻るとバーチャルエナジー残量を再度読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val tts = mockTts(spokenTexts)
+        createViewModel(
+            remainingVirtualEnergyChannel = channel,
+            ttsEngine = tts,
+            remainingVirtualEnergyThresholdPercentage = 50,
+            enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true),
+        )
+
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.6))
+        channel.send(remainingVirtualEnergy(remainingRatio = 0.4))
+
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.RemainingVirtualEnergyWarning,
+                SpeechEvent.RemainingVirtualEnergyWarning,
+            ),
+            spokenTexts,
+        )
     }
 
     @Test
