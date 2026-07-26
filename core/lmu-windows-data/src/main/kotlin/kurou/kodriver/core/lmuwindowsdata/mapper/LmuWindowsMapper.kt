@@ -15,8 +15,8 @@ import kotlin.math.roundToLong
 /**
  * LMU 共有メモリ (LMU_WINDOWS_Data) の ByteBuffer を LmuWindowsTelemetryData に変換する。
  *
- * オフセットは pyLMUSharedMemory (TinyPedal/pyLMUSharedMemory) の
- * lmu_data.py に定義された ctypes 構造体レイアウト (_pack_=4) から算出。
+ * オフセットは LMU 共有メモリの Python ctypes 移植である
+ * lmu_data.py の構造体レイアウト (_pack_=4) から算出。
  *
  * LMUObjectOut レイアウト:
  *   generic  (LMUGeneric)      : 332 bytes  → 先頭オフセット 0

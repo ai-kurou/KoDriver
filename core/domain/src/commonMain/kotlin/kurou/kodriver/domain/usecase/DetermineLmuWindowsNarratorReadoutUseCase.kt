@@ -38,7 +38,7 @@ data class LmuWindowsNarratorState(
 /**
  * ピットタイミング（バーチャルエナジー・タイヤ摩耗の予想残り周回数）の推定に使う追跡状態。
  * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
- * （TinyPedal の直近完走ラップ基準の方式に合わせている）。
+ * 直近完走ラップ基準の方式。
  */
 data class LmuWindowsPitTimingTrackingState(
     val session: Int? = null,
@@ -574,7 +574,7 @@ private fun trackPitTimingValue(
             val refilled = if (delta >= PIT_TIMING_REFILL_DETECTION_MIN_RATIO) delta else 0.0
             if (currentLap != state.currentLap) {
                 // ラップが変わるタイミングで、直前のラップが給油・タイヤ交換なしで完走していれば
-                // その消費量を今後の残り周回数推定の基準として採用する（TinyPedal同様の方式）。
+                // その消費量を今後の残り周回数推定の基準として採用する。
                 val completedLapConsumption = state.currentLapStartValue - state.currentValue
                 val lastValidLapConsumption = if (!state.currentLapHasRefilled && completedLapConsumption > 0.0) {
                     completedLapConsumption
