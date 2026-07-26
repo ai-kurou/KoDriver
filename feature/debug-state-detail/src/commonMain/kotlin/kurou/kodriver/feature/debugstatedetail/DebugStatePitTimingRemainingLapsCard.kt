@@ -11,6 +11,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.round
 
 @Composable
 internal fun PitTimingRemainingLapsContent(
@@ -23,22 +24,27 @@ internal fun PitTimingRemainingLapsContent(
         return
     }
     val virtualEnergyRemainingLaps = calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
-        ?.remainingLaps
+        ?.preciseRemainingLaps
     val tyreWearRemainingLaps = calculateLmuTyreWearRemainingLaps(lmuWindowsTelemetry)
     Column {
         Text(
             text = stringResource(
                 Res.string.debug_state_pit_timing_virtual_energy_remaining_laps,
-                virtualEnergyRemainingLaps?.toString() ?: UNKNOWN_REMAINING_LAPS_TEXT,
+                virtualEnergyRemainingLaps?.let { formatOneDecimal(it) } ?: UNKNOWN_REMAINING_LAPS_TEXT,
             ),
         )
         Text(
             text = stringResource(
                 Res.string.debug_state_pit_timing_tyre_wear_remaining_laps,
-                tyreWearRemainingLaps?.toString() ?: UNKNOWN_REMAINING_LAPS_TEXT,
+                tyreWearRemainingLaps?.let { formatOneDecimal(it) } ?: UNKNOWN_REMAINING_LAPS_TEXT,
             ),
         )
     }
+}
+
+private fun formatOneDecimal(value: Double): String {
+    val rounded = round(value * 10) / 10
+    return rounded.toString()
 }
 
 private const val UNKNOWN_REMAINING_LAPS_TEXT = "-"

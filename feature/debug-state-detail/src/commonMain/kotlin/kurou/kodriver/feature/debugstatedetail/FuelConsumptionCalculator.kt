@@ -9,6 +9,7 @@ private const val PERCENT_MULTIPLIER = 100.0
 internal data class FuelConsumptionResult(
     val consumptionPerLap: Double,
     val remainingLaps: Int,
+    val preciseRemainingLaps: Double,
 )
 
 /**
@@ -26,8 +27,12 @@ internal fun calculateLmuVirtualEnergyConsumption(
     val consumedRatio = 1.0 - remainingRatio
     if (consumedRatio <= 0.0) return null
     val avgConsumptionPerLap = consumedRatio / currentLap
-    val remainingLaps = (remainingRatio / avgConsumptionPerLap).toInt()
-    return FuelConsumptionResult(avgConsumptionPerLap * PERCENT_MULTIPLIER, remainingLaps)
+    val preciseRemainingLaps = remainingRatio / avgConsumptionPerLap
+    return FuelConsumptionResult(
+        consumptionPerLap = avgConsumptionPerLap * PERCENT_MULTIPLIER,
+        remainingLaps = preciseRemainingLaps.toInt(),
+        preciseRemainingLaps = preciseRemainingLaps,
+    )
 }
 
 /**
@@ -38,20 +43,24 @@ internal fun calculateGt7FuelConsumption(telemetry: Gt7Ps5TelemetryData?): FuelC
     val consumedFuel = telemetry.gasCapacity - telemetry.gasLevel
     if (consumedFuel <= 0f) return null
     val avgConsumptionPerLap = consumedFuel / telemetry.lapCount
-    val remainingLaps = (telemetry.gasLevel / avgConsumptionPerLap).toInt()
-    return FuelConsumptionResult(avgConsumptionPerLap.toDouble(), remainingLaps)
+    val preciseRemainingLaps = telemetry.gasLevel / avgConsumptionPerLap
+    return FuelConsumptionResult(
+        consumptionPerLap = avgConsumptionPerLap.toDouble(),
+        remainingLaps = preciseRemainingLaps.toInt(),
+        preciseRemainingLaps = preciseRemainingLaps.toDouble(),
+    )
 }
 
 /**
  * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、レース開始からの平均摩耗量で近似する簡易計算。
  * 直近のタイヤ交換は考慮しない。
  */
-internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryData?): Int? {
+internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryData?): Double? {
     val currentLap = telemetry?.timing?.currentLap ?: return null
     if (currentLap <= 0) return null
     val worstRemainingRatio = telemetry.tyres.wheels.values.minOfOrNull { it.wear } ?: return null
     val consumedRatio = 1.0 - worstRemainingRatio
     if (consumedRatio <= 0.0) return null
     val avgConsumptionPerLap = consumedRatio / currentLap
-    return (worstRemainingRatio / avgConsumptionPerLap).toInt()
+    return worstRemainingRatio / avgConsumptionPerLap
 }
