@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -79,13 +78,6 @@ internal class Gt7Ps5NarratorViewModel(
 
     private var narratorState = Gt7Ps5NarratorState()
 
-    private val gt7TelemetryFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.Gt7Ps5) emptyFlow()
-            else myBestLapUseCases.observeGt7Ps5()
-        }
-        .shareIn(viewModelScope, SharingStarted.Eagerly)
-
     private val currentSettings: Gt7Ps5NarratorReadoutSettings
         get() = Gt7Ps5NarratorReadoutSettings(
             enabledStates = listEnabledStates.value,
@@ -95,57 +87,51 @@ internal class Gt7Ps5NarratorViewModel(
         )
 
     @Suppress("UnusedPrivateProperty")
-    private val myBestLapJob = gt7TelemetryFlow
+    private val readoutJob = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.Gt7Ps5) emptyFlow()
+            else myBestLapUseCases.observeGt7Ps5()
+        }
         .onEach { telemetry ->
             val observedAtMs = currentTimeMs()
-            val state = narratorState
             val settings = currentSettings
-            val decision = determineGt7Ps5NarratorReadout.determineMyBestLap(
-                state = state,
+            val initialState = narratorState
+            val myBestLapDecision = determineGt7Ps5NarratorReadout.determineMyBestLap(
+                state = initialState,
                 telemetry = telemetry,
                 settings = settings,
             )
-            narratorState = decision.state
             eventProcessor.process(
                 sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 telemetry = telemetry,
-                events = decision.events,
+                events = myBestLapDecision.events,
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = Gt7Ps5TelemetryLogContext(
-                    state = state,
+                    state = initialState,
                     settings = settings,
-                    finalState = decision.state,
+                    finalState = myBestLapDecision.state,
                 ),
             )
-        }
-        .launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val remainingFuelLapsJob = gt7TelemetryFlow
-        .onEach { telemetry ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
-                state = state,
+            val remainingFuelLapsDecision = determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
+                state = myBestLapDecision.state,
                 telemetry = telemetry,
                 settings = settings,
                 observedAtMs = observedAtMs,
             )
-            narratorState = decision.state
+            narratorState = remainingFuelLapsDecision.state
             eventProcessor.process(
                 sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 telemetry = telemetry,
-                events = decision.events,
+                events = remainingFuelLapsDecision.events,
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
                 logContext = Gt7Ps5TelemetryLogContext(
-                    state = state,
+                    state = myBestLapDecision.state,
                     settings = settings,
-                    finalState = decision.state,
+                    finalState = remainingFuelLapsDecision.state,
                 ),
             )
         }
