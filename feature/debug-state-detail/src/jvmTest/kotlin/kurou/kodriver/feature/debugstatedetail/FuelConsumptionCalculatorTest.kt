@@ -26,6 +26,7 @@ class FuelConsumptionCalculatorTest {
 
         assertEquals(10.0, result?.consumptionPerLap)
         assertEquals(5, result?.remainingLaps)
+        assertEquals(5.0, result?.preciseRemainingLaps)
     }
 
     @Test
@@ -73,6 +74,7 @@ class FuelConsumptionCalculatorTest {
 
         assertEquals(10.0, result?.consumptionPerLap)
         assertEquals(4, result?.remainingLaps)
+        assertEquals(4.0, result?.preciseRemainingLaps)
     }
 
     @Test
@@ -99,7 +101,7 @@ class FuelConsumptionCalculatorTest {
             ),
         )
 
-        assertEquals(5, result)
+        assertEquals(5.0, result)
     }
 
     @Test

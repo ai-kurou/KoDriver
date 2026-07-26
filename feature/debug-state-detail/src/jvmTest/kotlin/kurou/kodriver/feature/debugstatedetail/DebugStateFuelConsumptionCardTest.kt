@@ -56,7 +56,7 @@ class DebugStateFuelConsumptionCardTest {
         }
 
         rule.onNodeWithText("消費 10.0%/周").assertIsDisplayed()
-        rule.onNodeWithText("残り 5周").assertIsDisplayed()
+        rule.onNodeWithText("残り 5.0周").assertIsDisplayed()
     }
 
     @Test
@@ -76,7 +76,7 @@ class DebugStateFuelConsumptionCardTest {
         }
 
         rule.onNodeWithText("消費 10.0L/周").assertIsDisplayed()
-        rule.onNodeWithText("残り 4周").assertIsDisplayed()
+        rule.onNodeWithText("残り 4.0周").assertIsDisplayed()
     }
 
     @Test

@@ -41,7 +41,7 @@ internal fun FuelConsumptionContent(
         Text(
             text = stringResource(
                 Res.string.debug_state_fuel_consumption_remaining_laps,
-                result.remainingLaps.toString(),
+                formatOneDecimal(result.preciseRemainingLaps),
             ),
         )
     }

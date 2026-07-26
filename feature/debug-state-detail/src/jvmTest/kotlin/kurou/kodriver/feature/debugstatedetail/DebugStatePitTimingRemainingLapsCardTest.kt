@@ -59,8 +59,8 @@ class DebugStatePitTimingRemainingLapsCardTest {
             }
         }
 
-        rule.onNodeWithText("バーチャルエナジー: 残り 5周").assertIsDisplayed()
-        rule.onNodeWithText("タイヤ摩耗: 残り 7周").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
     }
 
     @Test
