@@ -115,6 +115,40 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
     }
 
     @Test
+    fun `1周目の読み上げスキップスイッチをタップするとonSkipFirstLapChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(skipFirstLap = true),
+                    onSkipFirstLapChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNode(hasContentDescription("フォーメーションラップ・1周目スキップ")).performClick()
+
+        assertEquals(false, changedEnabled)
+    }
+
+    @Test
+    fun `接近開始時の読み上げスイッチをタップするとonStartReadoutEnabledChangedが呼ばれる`() {
+        var changedEnabled: Boolean? = null
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(startReadoutEnabled = false),
+                    onStartReadoutEnabledChanged = { changedEnabled = it },
+                )
+            }
+        }
+
+        rule.onNode(hasText("接近開始時の読み上げ")).performClick()
+
+        assertEquals(true, changedEnabled)
+    }
+
+    @Test
     fun `接近継続時の読み上げスイッチをタップするとonSustainedReadoutEnabledChangedが呼ばれる`() {
         var changedEnabled: Boolean? = null
         rule.setContent {
@@ -149,5 +183,56 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.onNode(hasText("左側維持・右側維持")).performClick()
 
         assertEquals(VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED, changedType)
+    }
+
+    @Test
+    fun `縦方向閾値のリセットボタンをタップするとonResetLongitudinalThresholdが呼ばれる`() {
+        var resetCalled = false
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(longitudinalThresholdMeters = 8.0),
+                    onResetLongitudinalThreshold = { resetCalled = true },
+                )
+            }
+        }
+
+        rule.onAllNodes(hasContentDescription("デフォルト値にリセット"))[0].performClick()
+
+        assertEquals(true, resetCalled)
+    }
+
+    @Test
+    fun `横方向閾値のリセットボタンをタップするとonResetLateralThresholdが呼ばれる`() {
+        var resetCalled = false
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(lateralThresholdMeters = 7.0),
+                    onResetLateralThreshold = { resetCalled = true },
+                )
+            }
+        }
+
+        rule.onAllNodes(hasContentDescription("デフォルト値にリセット"))[1].performClick()
+
+        assertEquals(true, resetCalled)
+    }
+
+    @Test
+    fun `継続接近時間のリセットボタンをタップするとonResetSustainedApproachDurationSecondsが呼ばれる`() {
+        var resetCalled = false
+        rule.setContent {
+            MaterialTheme(colorScheme = lightColorScheme()) {
+                LmuWindowsReadoutVehicleApproachDetailPaneContent(
+                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(sustainedApproachDurationSeconds = 8),
+                    onResetSustainedApproachDurationSeconds = { resetCalled = true },
+                )
+            }
+        }
+
+        rule.onAllNodes(hasContentDescription("デフォルト値にリセット"))[2].performClick()
+
+        assertEquals(true, resetCalled)
     }
 }
