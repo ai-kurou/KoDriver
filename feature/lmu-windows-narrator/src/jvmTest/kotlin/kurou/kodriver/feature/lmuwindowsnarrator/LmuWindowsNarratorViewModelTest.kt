@@ -1569,6 +1569,114 @@ class LmuWindowsNarratorViewModelTest {
     }
 
     @Test
+    fun `給油後はピットタイミングのバーチャルエナジー予想残り周回数を再度読み上げる`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingVirtualEnergyLapsThreshold = 3,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                currentTimeMs = { currentTime },
+            )
+            stubTelemetryLogSave(logs, createdAt = 150_000L, ReadoutItemKey.LmuWindows.PitTiming.Root)
+            stubTelemetryLogSave(logs, createdAt = 330_000L, ReadoutItemKey.LmuWindows.PitTiming.Root)
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear())
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+            currentTime = 90_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            currentTime = 150_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+            currentTime = 155_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            currentTime = 180_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 3, bestLapTimeMs = 90_000L))
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.9))
+            currentTime = 225_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.8))
+            currentTime = 270_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 4, bestLapTimeMs = 90_000L))
+            currentTime = 330_000L
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 0.05))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.PitTimingWarning(0),
+                    SpeechEvent.PitTimingWarning(0),
+                ),
+                spokenTexts,
+            )
+            assertEquals(2, logs.size)
+        }
+
+    @Test
+    fun `タイヤ交換後はピットタイミングのタイヤ摩耗予想残り周回数を再度読み上げる`() =
+        runTest(testDispatcher) {
+            val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
+            val virtualEnergyChannel = Channel<LmuWindowsVirtualEnergyData>(Channel.UNLIMITED)
+            val tyreWearChannel = Channel<LmuWindowsTyreWearData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val logs = mutableListOf<TelemetryLog>()
+            val tts = mockTts(spokenTexts)
+            var currentTime = 0L
+            createViewModel(
+                telemetryChannel = telemetryChannel,
+                remainingVirtualEnergyChannel = virtualEnergyChannel,
+                tyreWearChannel = tyreWearChannel,
+                ttsEngine = tts,
+                pitTimingTyreWearLapsThreshold = 3,
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                currentTimeMs = { currentTime },
+            )
+            stubTelemetryLogSave(logs, createdAt = 150_000L, ReadoutItemKey.LmuWindows.PitTiming.Root)
+            stubTelemetryLogSave(logs, createdAt = 330_000L, ReadoutItemKey.LmuWindows.PitTiming.Root)
+
+            virtualEnergyChannel.send(remainingVirtualEnergy(remainingRatio = 1.0))
+            tyreWearChannel.send(tyreWear(fl = 1.0))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 1, bestLapTimeMs = 90_000L))
+            currentTime = 45_000L
+            tyreWearChannel.send(tyreWear(fl = 0.9))
+            currentTime = 90_000L
+            tyreWearChannel.send(tyreWear(fl = 0.8))
+            telemetryChannel.send(fakeTelemetryData(currentLap = 2, bestLapTimeMs = 90_000L))
+            currentTime = 150_000L
+            tyreWearChannel.send(tyreWear(fl = 0.05))
+            currentTime = 155_000L
+            tyreWearChannel.send(tyreWear(fl = 1.0))
+            currentTime = 180_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 3, bestLapTimeMs = 90_000L))
+            tyreWearChannel.send(tyreWear(fl = 0.9))
+            currentTime = 225_000L
+            tyreWearChannel.send(tyreWear(fl = 0.8))
+            currentTime = 270_000L
+            telemetryChannel.send(fakeTelemetryData(currentLap = 4, bestLapTimeMs = 90_000L))
+            currentTime = 330_000L
+            tyreWearChannel.send(tyreWear(fl = 0.05))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.PitTimingWarning(0),
+                    SpeechEvent.PitTimingWarning(0),
+                ),
+                spokenTexts,
+            )
+            assertEquals(2, logs.size)
+        }
+
+    @Test
     fun `バーチャルエナジーとタイヤ摩耗が同時に閾値以下になった場合は予想残り周回数が低い方のみ読み上げる`() =
         runTest(testDispatcher) {
             val telemetryChannel = Channel<LmuWindowsTelemetryData>(Channel.UNLIMITED)
