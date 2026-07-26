@@ -16,11 +16,8 @@ dependencies {
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
-    implementation(libs.androidx.lifecycle.viewmodelCompose)
     implementation(libs.koin.core)
-    implementation(libs.koin.compose)
     implementation(libs.sentry)
-    implementation(libs.koin.compose.viewmodel)
 
     testImplementation(libs.kotlin.testJunit)
     testImplementation(libs.junit)
@@ -31,12 +28,7 @@ dependencies {
     testImplementation(testFixtures(projects.app.shared))
 
     implementation(libs.compose.runtime)
-    implementation(libs.compose.foundation)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.material3.adaptive.navigation.suite)
-    implementation(compose.materialIconsExtended)
     implementation(libs.compose.ui)
-    implementation(libs.compose.uiToolingPreview)
 }
 
 val generateAppVersion by tasks.registering {

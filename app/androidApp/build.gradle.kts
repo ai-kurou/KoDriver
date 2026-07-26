@@ -24,7 +24,6 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.sentry.android)
 
-    implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
 
     androidTestImplementation(libs.androidx.testExt.junit)
