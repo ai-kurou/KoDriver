@@ -328,105 +328,105 @@ Windows のみ対応(Linux 非対応)。ゲームにフォーカスがあって�
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-deltabest.svg" width="230"> | Deltabest | ベストラップとのリアルタイムタイム差(デルタバー) |
-| <img src="images/tinypedal/widget-deltabest-extended.svg" width="230"> | Deltabest extended | 複数のラップタイムソース(セッションベスト・オールタイムベスト等)に対するデルタ表示 |
-| <img src="images/tinypedal/widget-lap-time-history.svg" width="230"> | Lap time history | 過去のラップタイム履歴一覧 |
-| <img src="images/tinypedal/widget-laps-and-position.svg" width="230"> | Laps and position | ラップ数、総合順位、クラス内順位 |
-| <img src="images/tinypedal/widget-sectors.svg" width="230"> | Sectors | セクタータイム(現在/ベスト比較) |
-| <img src="images/tinypedal/widget-session.svg" width="230"> | Session | システム時計、セッション名、残り時間、ラップ数、総合順位 |
-| <img src="images/tinypedal/widget-timing.svg" width="230"> | Timing | ラップタイム情報(現在・ベスト・前ラップ等) |
-| <img src="images/tinypedal/widget-relative.svg" width="230"> | Relative | 前後の車両との相対順位・ギャップ一覧(いわゆるリラティブ表示) |
-| <img src="images/tinypedal/widget-relative-finish-order.svg" width="230"> | Relative finish order | リーダーと自車の推定フィニッシュ順序と必要給油量をテーブル表示。レース終盤の「追加最終ラップ」発生予測に使う(詳細は[相対給油と絶対給油](#相対給油と絶対給油)) |
-| <img src="images/tinypedal/widget-rivals.svg" width="230"> | Rivals | 同クラスの前後ライバルとの順位・比較情報 |
-| <img src="images/tinypedal/widget-standings.svg" width="230"> | Standings | 全体順位表(ブランドロゴ表示対応) |
-| <img src="images/tinypedal/widget-traffic.svg" width="230"> | Traffic | 周回遅れ・接近車両などのトラフィック情報 |
-| <img src="images/tinypedal/widget-track-map.svg" width="230"> | Track map | 記録済みトラックマップ上に順位・位置を表示(有効な1周の走行記録が必要。未記録時は円形マップ) |
-| <img src="images/tinypedal/widget-navigation.svg" width="230"> | Navigation | 自車中心のズームナビゲーションマップ(有効な1周の走行記録が必要) |
-| <img src="images/tinypedal/widget-elevation.svg" width="230"> | Elevation | 標高プロット(トラックマップと同時に記録) |
-| <img src="images/tinypedal/widget-track-clock.svg" width="230"> | Track clock | ゲーム内時刻、タイムスケール、日照フェーズ |
-| <img src="images/tinypedal/widget-weather.svg" width="230"> | Weather | 現在の天候情報 |
-| <img src="images/tinypedal/widget-weather-forecast.svg" width="230"> | Weather forecast | 天候予報(REST API 接続が必要) |
-| <img src="images/tinypedal/widget-flag.svg" width="230"> | Flag | 旗(イエロー/ブルー等)、ピット状態、警告、スタートシグナル |
-| <img src="images/tinypedal/widget-track-notes.svg" width="230"> | Track notes | トラックノート(コメント・デバッグ情報) |
-| <img src="images/tinypedal/widget-pace-notes.svg" width="230"> | Pace notes | ペースノートの表示(音声再生と連動) |
+| <img src="images/tinypedal/widget-deltabest.svg" width="400"> | Deltabest | ベストラップとのリアルタイムタイム差(デルタバー) |
+| <img src="images/tinypedal/widget-deltabest-extended.svg" width="400"> | Deltabest extended | 複数のラップタイムソース(セッションベスト・オールタイムベスト等)に対するデルタ表示 |
+| <img src="images/tinypedal/widget-lap-time-history.svg" width="400"> | Lap time history | 過去のラップタイム履歴一覧 |
+| <img src="images/tinypedal/widget-laps-and-position.svg" width="400"> | Laps and position | ラップ数、総合順位、クラス内順位 |
+| <img src="images/tinypedal/widget-sectors.svg" width="400"> | Sectors | セクタータイム(現在/ベスト比較) |
+| <img src="images/tinypedal/widget-session.svg" width="400"> | Session | システム時計、セッション名、残り時間、ラップ数、総合順位 |
+| <img src="images/tinypedal/widget-timing.svg" width="400"> | Timing | ラップタイム情報(現在・ベスト・前ラップ等) |
+| <img src="images/tinypedal/widget-relative.svg" width="400"> | Relative | 前後の車両との相対順位・ギャップ一覧(いわゆるリラティブ表示) |
+| <img src="images/tinypedal/widget-relative-finish-order.svg" width="400"> | Relative finish order | リーダーと自車の推定フィニッシュ順序と必要給油量をテーブル表示。レース終盤の「追加最終ラップ」発生予測に使う(詳細は[相対給油と絶対給油](#相対給油と絶対給油)) |
+| <img src="images/tinypedal/widget-rivals.svg" width="400"> | Rivals | 同クラスの前後ライバルとの順位・比較情報 |
+| <img src="images/tinypedal/widget-standings.svg" width="400"> | Standings | 全体順位表(ブランドロゴ表示対応) |
+| <img src="images/tinypedal/widget-traffic.svg" width="400"> | Traffic | 周回遅れ・接近車両などのトラフィック情報 |
+| <img src="images/tinypedal/widget-track-map.svg" width="400"> | Track map | 記録済みトラックマップ上に順位・位置を表示(有効な1周の走行記録が必要。未記録時は円形マップ) |
+| <img src="images/tinypedal/widget-navigation.svg" width="400"> | Navigation | 自車中心のズームナビゲーションマップ(有効な1周の走行記録が必要) |
+| <img src="images/tinypedal/widget-elevation.svg" width="400"> | Elevation | 標高プロット(トラックマップと同時に記録) |
+| <img src="images/tinypedal/widget-track-clock.svg" width="400"> | Track clock | ゲーム内時刻、タイムスケール、日照フェーズ |
+| <img src="images/tinypedal/widget-weather.svg" width="400"> | Weather | 現在の天候情報 |
+| <img src="images/tinypedal/widget-weather-forecast.svg" width="400"> | Weather forecast | 天候予報(REST API 接続が必要) |
+| <img src="images/tinypedal/widget-flag.svg" width="400"> | Flag | 旗(イエロー/ブルー等)、ピット状態、警告、スタートシグナル |
+| <img src="images/tinypedal/widget-track-notes.svg" width="400"> | Track notes | トラックノート(コメント・デバッグ情報) |
+| <img src="images/tinypedal/widget-pace-notes.svg" width="400"> | Pace notes | ペースノートの表示(音声再生と連動) |
 
 ### 燃料・エネルギー系
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-fuel.svg" width="230"> | Fuel | 燃料使用量・残量・必要給油量・必要ピット回数(`pits` / `early` 列) |
-| <img src="images/tinypedal/widget-virtual-energy.svg" width="230"> | Virtual energy | バーチャルエナジー(LMU のハイパーカー等)の使用量・残量・補給量 |
-| <img src="images/tinypedal/widget-fuel-energy-saver.svg" width="230"> | Fuel energy saver | 燃料またはバーチャルエナジーの節約目標情報 |
-| <img src="images/tinypedal/widget-battery.svg" width="230"> | Battery | バッテリー使用量 |
-| <img src="images/tinypedal/widget-electric-motor.svg" width="230"> | Electric motor | 電動モーターの使用状況 |
-| <img src="images/tinypedal/widget-pit-stop-estimate.svg" width="230"> | Pit stop estimate | 推定ピットストップ所要時間と補給量 |
-| <img src="images/tinypedal/widget-push-to-pass.svg" width="230"> | Push to pass | P2P(プッシュ・トゥ・パス)の使用状況 |
-| <img src="images/tinypedal/widget-drs.svg" width="230"> | DRS | DRS(リアフラップ)の使用状況 |
+| <img src="images/tinypedal/widget-fuel.svg" width="400"> | Fuel | 燃料使用量・残量・必要給油量・必要ピット回数(`pits` / `early` 列) |
+| <img src="images/tinypedal/widget-virtual-energy.svg" width="400"> | Virtual energy | バーチャルエナジー(LMU のハイパーカー等)の使用量・残量・補給量 |
+| <img src="images/tinypedal/widget-fuel-energy-saver.svg" width="400"> | Fuel energy saver | 燃料またはバーチャルエナジーの節約目標情報 |
+| <img src="images/tinypedal/widget-battery.svg" width="400"> | Battery | バッテリー使用量 |
+| <img src="images/tinypedal/widget-electric-motor.svg" width="400"> | Electric motor | 電動モーターの使用状況 |
+| <img src="images/tinypedal/widget-pit-stop-estimate.svg" width="400"> | Pit stop estimate | 推定ピットストップ所要時間と補給量 |
+| <img src="images/tinypedal/widget-push-to-pass.svg" width="400"> | Push to pass | P2P(プッシュ・トゥ・パス)の使用状況 |
+| <img src="images/tinypedal/widget-drs.svg" width="400"> | DRS | DRS(リアフラップ)の使用状況 |
 
 ### 車両状態・ダメージ系
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-damage.svg" width="230"> | Damage | 車体ダメージの視覚化(RF2 API の制約で「どのパーツが脱落したか」までは表示不可) |
-| <img src="images/tinypedal/widget-damage-stats.svg" width="230"> | Damage stats | ダメージ統計 |
-| <img src="images/tinypedal/widget-engine.svg" width="230"> | Engine | エンジン使用状況(回転数・温度など) |
-| <img src="images/tinypedal/widget-engine-temperature.svg" width="230"> | Engine temperature | 追加のエンジン温度情報(油温・水温) |
-| <img src="images/tinypedal/widget-instrument.svg" width="230"> | Instrument | 車両計器情報(ヘッドライト、イグニッション、クラッチ、ホイールロック/スリップ等) |
-| <img src="images/tinypedal/widget-onboard-setting.svg" width="230"> | Onboard setting | 車載設定(ブレーキバイアス等の現在値) |
-| <img src="images/tinypedal/widget-differential.svg" width="230"> | Differential | デフのロック状態 |
-| <img src="images/tinypedal/widget-steering.svg" width="230"> | Steering | ステアリング入力 |
-| <img src="images/tinypedal/widget-steering-wheel.svg" width="230"> | Steering wheel | バーチャルステアリングホイール表示 |
-| <img src="images/tinypedal/widget-pedal.svg" width="230"> | Pedal | ペダル入力と FFB(フォースフィードバック)情報 |
-| <img src="images/tinypedal/widget-trailing.svg" width="230"> | Trailing | ペダル・ステアリング入力・FFB の時系列プロット(トレース表示) |
-| <img src="images/tinypedal/widget-gear.svg" width="230"> | Gear | ギア、RPM、速度、バッテリー |
-| <img src="images/tinypedal/widget-rpm-led.svg" width="230"> | RPM LED | RPM に連動する LED バー |
-| <img src="images/tinypedal/widget-lift-and-coast-led.svg" width="230"> | Lift and coast LED | リフト&コースト、TC/ABS 作動、ホイールスリップ/ロックの LED 表示 |
-| <img src="images/tinypedal/widget-speedometer.svg" width="230"> | Speedometer | 条件付き速度表示(ピットレーン速度等) |
-| <img src="images/tinypedal/widget-cruise.svg" width="230"> | Cruise | コンパス、標高、オドメーター |
-| <img src="images/tinypedal/widget-heading.svg" width="230"> | Heading | ヨー角、スリップアングル、進行方位 |
-| <img src="images/tinypedal/widget-system-performance.svg" width="230"> | System performance | TinyPedal 自身と OS の CPU・メモリ使用率(パフォーマンス問題の切り分けに使う) |
+| <img src="images/tinypedal/widget-damage.svg" width="400"> | Damage | 車体ダメージの視覚化(RF2 API の制約で「どのパーツが脱落したか」までは表示不可) |
+| <img src="images/tinypedal/widget-damage-stats.svg" width="400"> | Damage stats | ダメージ統計 |
+| <img src="images/tinypedal/widget-engine.svg" width="400"> | Engine | エンジン使用状況(回転数・温度など) |
+| <img src="images/tinypedal/widget-engine-temperature.svg" width="400"> | Engine temperature | 追加のエンジン温度情報(油温・水温) |
+| <img src="images/tinypedal/widget-instrument.svg" width="400"> | Instrument | 車両計器情報(ヘッドライト、イグニッション、クラッチ、ホイールロック/スリップ等) |
+| <img src="images/tinypedal/widget-onboard-setting.svg" width="400"> | Onboard setting | 車載設定(ブレーキバイアス等の現在値) |
+| <img src="images/tinypedal/widget-differential.svg" width="400"> | Differential | デフのロック状態 |
+| <img src="images/tinypedal/widget-steering.svg" width="400"> | Steering | ステアリング入力 |
+| <img src="images/tinypedal/widget-steering-wheel.svg" width="400"> | Steering wheel | バーチャルステアリングホイール表示 |
+| <img src="images/tinypedal/widget-pedal.svg" width="400"> | Pedal | ペダル入力と FFB(フォースフィードバック)情報 |
+| <img src="images/tinypedal/widget-trailing.svg" width="400"> | Trailing | ペダル・ステアリング入力・FFB の時系列プロット(トレース表示) |
+| <img src="images/tinypedal/widget-gear.svg" width="400"> | Gear | ギア、RPM、速度、バッテリー |
+| <img src="images/tinypedal/widget-rpm-led.svg" width="400"> | RPM LED | RPM に連動する LED バー |
+| <img src="images/tinypedal/widget-lift-and-coast-led.svg" width="400"> | Lift and coast LED | リフト&コースト、TC/ABS 作動、ホイールスリップ/ロックの LED 表示 |
+| <img src="images/tinypedal/widget-speedometer.svg" width="400"> | Speedometer | 条件付き速度表示(ピットレーン速度等) |
+| <img src="images/tinypedal/widget-cruise.svg" width="400"> | Cruise | コンパス、標高、オドメーター |
+| <img src="images/tinypedal/widget-heading.svg" width="400"> | Heading | ヨー角、スリップアングル、進行方位 |
+| <img src="images/tinypedal/widget-system-performance.svg" width="400"> | System performance | TinyPedal 自身と OS の CPU・メモリ使用率(パフォーマンス問題の切り分けに使う) |
 
 ### 力学・セットアップ系
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-force.svg" width="230"> | Force | G フォースとダウンフォース |
-| <img src="images/tinypedal/widget-friction-circle.svg" width="230"> | Friction circle | G フォースの円形ダイアグラム(フリクションサークル) |
-| <img src="images/tinypedal/widget-acceleration.svg" width="230"> | Acceleration | 指定した速度区間の加速タイム計測 |
-| <img src="images/tinypedal/widget-rake-angle.svg" width="230"> | Rake angle | レーキ角 |
-| <img src="images/tinypedal/widget-roll-angle.svg" width="230"> | Roll angle | 前後のロール角 |
-| <img src="images/tinypedal/widget-ride-height.svg" width="230"> | Ride height | 車高の視覚化 |
-| <img src="images/tinypedal/widget-suspension-force.svg" width="230"> | Suspension force | サスペンション荷重と比率の視覚化 |
-| <img src="images/tinypedal/widget-suspension-position.svg" width="230"> | Suspension position | サスペンションポジションの視覚化 |
-| <img src="images/tinypedal/widget-suspension-travel.svg" width="230"> | Suspension travel | サスペンショントラベル |
-| <img src="images/tinypedal/widget-weight-distribution.svg" width="230"> | Weight distribution | 重量配分 |
-| <img src="images/tinypedal/widget-wheel-camber.svg" width="230"> | Wheel camber | キャンバー角 |
-| <img src="images/tinypedal/widget-wheel-toe.svg" width="230"> | Wheel toe | トー角 |
+| <img src="images/tinypedal/widget-force.svg" width="400"> | Force | G フォースとダウンフォース |
+| <img src="images/tinypedal/widget-friction-circle.svg" width="400"> | Friction circle | G フォースの円形ダイアグラム(フリクションサークル) |
+| <img src="images/tinypedal/widget-acceleration.svg" width="400"> | Acceleration | 指定した速度区間の加速タイム計測 |
+| <img src="images/tinypedal/widget-rake-angle.svg" width="400"> | Rake angle | レーキ角 |
+| <img src="images/tinypedal/widget-roll-angle.svg" width="400"> | Roll angle | 前後のロール角 |
+| <img src="images/tinypedal/widget-ride-height.svg" width="400"> | Ride height | 車高の視覚化 |
+| <img src="images/tinypedal/widget-suspension-force.svg" width="400"> | Suspension force | サスペンション荷重と比率の視覚化 |
+| <img src="images/tinypedal/widget-suspension-position.svg" width="400"> | Suspension position | サスペンションポジションの視覚化 |
+| <img src="images/tinypedal/widget-suspension-travel.svg" width="400"> | Suspension travel | サスペンショントラベル |
+| <img src="images/tinypedal/widget-weight-distribution.svg" width="400"> | Weight distribution | 重量配分 |
+| <img src="images/tinypedal/widget-wheel-camber.svg" width="400"> | Wheel camber | キャンバー角 |
+| <img src="images/tinypedal/widget-wheel-toe.svg" width="400"> | Wheel toe | トー角 |
 
 ### タイヤ・ブレーキ系
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-tyre-temperature.svg" width="230"> | Tyre temperature | タイヤ表面温度(内側・中央・外側。ヒートマップ表示対応) |
-| <img src="images/tinypedal/widget-tyre-inner-layer.svg" width="230"> | Tyre inner layer | タイヤ内層温度 |
-| <img src="images/tinypedal/widget-tyre-carcass.svg" width="230"> | Tyre carcass temperature | タイヤカーカス温度(LMU の MFD 表示値は表面と内層の中間値のためカーカス温度とは一致しない) |
-| <img src="images/tinypedal/widget-tyre-pressure.svg" width="230"> | Tyre pressure | タイヤ空気圧 |
-| <img src="images/tinypedal/widget-tyre-load.svg" width="230"> | Tyre load | タイヤ荷重と比率の視覚化 |
-| <img src="images/tinypedal/widget-tyre-wear.svg" width="230"> | Tyre wear | タイヤ摩耗率・残り寿命 |
-| <img src="images/tinypedal/widget-tyre-deflection.svg" width="230"> | Tyre deflection | タイヤの垂直たわみの視覚化 |
-| <img src="images/tinypedal/widget-slip-ratio.svg" width="230"> | Slip ratio | スリップ率の視覚化 |
-| <img src="images/tinypedal/widget-brake-bias.svg" width="230"> | Brake bias | ブレーキバイアス |
-| <img src="images/tinypedal/widget-brake-pressure.svg" width="230"> | Brake pressure | ブレーキ圧の視覚化(パーセンテージ) |
-| <img src="images/tinypedal/widget-brake-temperature.svg" width="230"> | Brake temperature | ブレーキ温度(ヒートマップ表示対応) |
-| <img src="images/tinypedal/widget-brake-wear.svg" width="230"> | Brake wear | ブレーキ摩耗(brakes.json の故障閾値との比較) |
-| <img src="images/tinypedal/widget-brake-performance.svg" width="230"> | Brake performance | ブレーキ性能情報(制動 G 等) |
+| <img src="images/tinypedal/widget-tyre-temperature.svg" width="400"> | Tyre temperature | タイヤ表面温度(内側・中央・外側。ヒートマップ表示対応) |
+| <img src="images/tinypedal/widget-tyre-inner-layer.svg" width="400"> | Tyre inner layer | タイヤ内層温度 |
+| <img src="images/tinypedal/widget-tyre-carcass.svg" width="400"> | Tyre carcass temperature | タイヤカーカス温度(LMU の MFD 表示値は表面と内層の中間値のためカーカス温度とは一致しない) |
+| <img src="images/tinypedal/widget-tyre-pressure.svg" width="400"> | Tyre pressure | タイヤ空気圧 |
+| <img src="images/tinypedal/widget-tyre-load.svg" width="400"> | Tyre load | タイヤ荷重と比率の視覚化 |
+| <img src="images/tinypedal/widget-tyre-wear.svg" width="400"> | Tyre wear | タイヤ摩耗率・残り寿命 |
+| <img src="images/tinypedal/widget-tyre-deflection.svg" width="400"> | Tyre deflection | タイヤの垂直たわみの視覚化 |
+| <img src="images/tinypedal/widget-slip-ratio.svg" width="400"> | Slip ratio | スリップ率の視覚化 |
+| <img src="images/tinypedal/widget-brake-bias.svg" width="400"> | Brake bias | ブレーキバイアス |
+| <img src="images/tinypedal/widget-brake-pressure.svg" width="400"> | Brake pressure | ブレーキ圧の視覚化(パーセンテージ) |
+| <img src="images/tinypedal/widget-brake-temperature.svg" width="400"> | Brake temperature | ブレーキ温度(ヒートマップ表示対応) |
+| <img src="images/tinypedal/widget-brake-wear.svg" width="400"> | Brake wear | ブレーキ摩耗(brakes.json の故障閾値との比較) |
+| <img src="images/tinypedal/widget-brake-performance.svg" width="400"> | Brake performance | ブレーキ性能情報(制動 G 等) |
 
 ### レーダー・履歴系
 
 | 図解 | ウィジェット | 表示内容 |
 |:--|:--|:--|
-| <img src="images/tinypedal/widget-radar.svg" width="230"> | Radar | 周囲の車両レーダー(接近警告。サイズは専用の scale オプションで調整) |
-| <img src="images/tinypedal/widget-stint-history.svg" width="230"> | Stint history | スティント履歴(タイヤ・燃料・ラップ数など) |
+| <img src="images/tinypedal/widget-radar.svg" width="400"> | Radar | 周囲の車両レーダー(接近警告。サイズは専用の scale オプションで調整) |
+| <img src="images/tinypedal/widget-stint-history.svg" width="400"> | Stint history | スティント履歴(タイヤ・燃料・ラップ数など) |
 
 > 注: ウィジェット名は画面上の表示順ではなくカテゴリ別に整理した。ソースコード上のモジュール名は 74 個(`acceleration`〜`wheel_toe`)。各ウィジェットの全設定項目は公式 User Guide の該当セクションを参照。
 
