@@ -47,9 +47,6 @@ kotlin {
         jsMain.get().dependsOn(nonAndroidMain)
         wasmJsMain.get().dependsOn(nonAndroidMain)
 
-        androidMain.dependencies {
-            implementation(libs.compose.uiToolingPreview)
-        }
         jvmMain.dependencies {
             implementation(libs.compose.uiTooling)
         }
