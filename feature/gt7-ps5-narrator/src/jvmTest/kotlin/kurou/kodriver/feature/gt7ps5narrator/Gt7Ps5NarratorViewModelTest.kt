@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TooManyFunctions")
 
 package kurou.kodriver.feature.gt7ps5narrator
 
@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
@@ -251,6 +252,68 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `給油やラップ数戻り後は燃料残り周回数を再度読み上げる`() = runTest(testDispatcher) {
+        suspend fun runRemainingFuelLapsSequence(
+            spokenTexts: MutableList<SpeechEvent>,
+            telemetry: List<Gt7Ps5TelemetryData>,
+        ) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val ttsEngine = mockTts(spokenTexts)
+            val currentTimeMsQueue = mutableListOf(0L, 100_000L, 160_000L, 200_000L, 300_000L, 360_000L)
+            stubReadoutDefaults(fuelThreshold = 3)
+            createViewModel(
+                telemetryChannel = channel,
+                ttsEngine = ttsEngine,
+                currentTimeMs = { currentTimeMsQueue.removeAt(0) },
+            )
+            runCurrent()
+
+            telemetry.forEach { channel.send(it) }
+            runCurrent()
+        }
+
+        val refuelSpokenTexts = mutableListOf<SpeechEvent>()
+        runRemainingFuelLapsSequence(
+            spokenTexts = refuelSpokenTexts,
+            telemetry = listOf(
+                gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 3, gasLevel = 80f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+            ),
+        )
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.RemainingFuelLapsWarning(0),
+                SpeechEvent.RemainingFuelLapsWarning(0),
+            ),
+            refuelSpokenTexts,
+        )
+
+        val lapResetSpokenTexts = mutableListOf<SpeechEvent>()
+        runRemainingFuelLapsSequence(
+            spokenTexts = lapResetSpokenTexts,
+            telemetry = listOf(
+                gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+            ),
+        )
+        assertEquals(
+            listOf<SpeechEvent>(
+                SpeechEvent.RemainingFuelLapsWarning(0),
+                SpeechEvent.RemainingFuelLapsWarning(0),
+            ),
+            lapResetSpokenTexts,
+        )
+    }
+
+    @Test
     fun `燃料残り周回数が無効のときは読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -417,7 +480,7 @@ class Gt7Ps5NarratorViewModelTest {
         val telemetryJsons = mutableListOf<String>()
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
-                0L,
+                any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 capture(telemetryJsons),
@@ -425,7 +488,7 @@ class Gt7Ps5NarratorViewModelTest {
         } just Runs
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
-                0L,
+                any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 capture(telemetryJsons),
