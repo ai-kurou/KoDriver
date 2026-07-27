@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.data.model.ReadoutStartSoundPreferences
+import kurou.kodriver.domain.model.READOUT_START_SOUND_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -46,6 +47,6 @@ class ReadoutStartSoundPreferencesSerializerTest {
 
     @Test
     fun `デフォルト値は formula_radio`() {
-        assertEquals("formula_radio", ReadoutStartSoundPreferencesSerializer.defaultValue.type)
+        assertEquals(READOUT_START_SOUND_TYPE_DEFAULT.id, ReadoutStartSoundPreferencesSerializer.defaultValue.type)
     }
 }

@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.domain.model.EXIT_CONFIRMATION_ENABLED_DEFAULT
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import java.io.File
 
@@ -17,7 +18,8 @@ internal class JvmExitConfirmationEnabledRepository(
     private val exitConfirmationEnabledKey = booleanPreferencesKey("exit_confirmation_enabled")
 
     override fun exitConfirmationEnabled(): Flow<Boolean> =
-        dataStore.data.map { it[exitConfirmationEnabledKey] ?: true }.catch { emit(true) }
+        dataStore.data.map { it[exitConfirmationEnabledKey] ?: EXIT_CONFIRMATION_ENABLED_DEFAULT }
+            .catch { emit(EXIT_CONFIRMATION_ENABLED_DEFAULT) }
 
     override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
         dataStore.edit { it[exitConfirmationEnabledKey] = enabled }

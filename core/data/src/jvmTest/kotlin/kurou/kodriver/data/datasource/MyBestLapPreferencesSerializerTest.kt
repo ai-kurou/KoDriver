@@ -3,6 +3,7 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.MyBestLapPreferences
+import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -14,7 +15,7 @@ class MyBestLapPreferencesSerializerTest {
     @Test
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            MyBestLapPreferences(voiceType = "formal"),
+            MyBestLapPreferences(voiceType = MY_BEST_LAP_VOICE_TYPE_DEFAULT.id),
             MyBestLapPreferencesSerializer.defaultValue,
         )
     }

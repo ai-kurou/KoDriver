@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.EXIT_CONFIRMATION_ENABLED_DEFAULT
+import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
@@ -55,7 +58,7 @@ class AppScreenViewModel(
 
 data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
-    val keepScreenOn: Boolean = true,
-    val exitConfirmationEnabled: Boolean = true,
-    val dynamicColorEnabled: Boolean = false,
+    val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
+    val exitConfirmationEnabled: Boolean = EXIT_CONFIRMATION_ENABLED_DEFAULT,
+    val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
 )

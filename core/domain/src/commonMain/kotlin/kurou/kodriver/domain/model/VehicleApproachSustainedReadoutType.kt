@@ -9,6 +9,6 @@ enum class VehicleApproachSustainedReadoutType(
 
     companion object {
         fun fromId(id: String): VehicleApproachSustainedReadoutType =
-            entries.firstOrNull { it.id == id } ?: KEEP_LEFT_RIGHT
+            entries.firstOrNull { it.id == id } ?: LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT
     }
 }
