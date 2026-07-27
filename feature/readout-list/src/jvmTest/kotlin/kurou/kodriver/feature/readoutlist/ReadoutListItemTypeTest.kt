@@ -133,4 +133,14 @@ class ReadoutListItemTypeTest {
             ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
         )
     }
+
+    @Test
+    fun `ace_windows はどのキーを渡しても null を返す`() {
+        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.LmuWindows.Flag.Root))
+    }
+
+    @Test
+    fun `ace_windows のデフォルト並び順は空を返す`() {
+        assertEquals(emptyList(), ReadoutListItemType.defaultOrder(Simulator.AceWindows))
+    }
 }

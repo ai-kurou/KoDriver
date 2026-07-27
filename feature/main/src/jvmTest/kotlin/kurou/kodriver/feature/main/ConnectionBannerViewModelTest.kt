@@ -72,6 +72,18 @@ class ConnectionBannerViewModelTest {
     }
 
     @Test
+    fun `ACE_WINDOWS選択時は未確認状態とする`() = runTest {
+        val simulatorRepository = FakeSimulatorPreferencesRepository(initial = Simulator.AceWindows)
+        val viewModel = createViewModel(simulatorRepository = simulatorRepository)
+        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+        dispatcher.scheduler.runCurrent()
+
+        assertEquals(ConnectionBannerVmStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+        collectionJob.cancelAndJoin()
+    }
+
+    @Test
     fun `シミュレータ未選択時は未確認状態とする`() = runTest {
         val simulatorRepository = FakeSimulatorPreferencesRepository(initial = null)
         val viewModel = createViewModel(simulatorRepository = simulatorRepository)

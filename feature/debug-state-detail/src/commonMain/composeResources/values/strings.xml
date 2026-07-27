@@ -10,8 +10,9 @@
     <string name="debug_state_flag_none">フラッグなし</string>
     <string name="debug_state_simulator_info_title">選択中のシミュレータ</string>
     <string name="debug_state_simulator_info_unselected">未選択</string>
-    <string name="simulator_name_lmu">Le Mans Ultimate（Windows版）</string>
+    <string name="simulator_name_lmu_windows">Le Mans Ultimate（Windows版）</string>
     <string name="simulator_name_gt7_ps5">GranTurismo 7（PS5）</string>
+    <string name="simulator_name_ace_windows">Assetto Corsa EVO（Windows版）</string>
     <string name="debug_state_game_phase_title">mGamePhase</string>
     <string name="debug_state_game_phase_garage">セッション開始前</string>
     <string name="debug_state_game_phase_warm_up">Reconnaissance laps（レースのみ）</string>

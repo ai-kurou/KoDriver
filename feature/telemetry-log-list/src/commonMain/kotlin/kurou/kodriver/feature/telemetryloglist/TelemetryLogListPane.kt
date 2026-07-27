@@ -73,6 +73,7 @@ import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.generated.resources.ace
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -369,6 +370,7 @@ private fun TelemetryLogListItem(
 private fun simulatorIcon(simulator: Simulator): Painter = when (simulator) {
     Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
     Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
+    Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
 }
 
 @Composable
