@@ -3,6 +3,7 @@
     <string name="select_simulator_hint">シミュレータを選択</string>
     <string name="simulator_name_lmu">Le Mans Ultimate（Windows版）</string>
     <string name="simulator_name_gt7_ps5">GranTurismo 7（PS5）</string>
+    <string name="simulator_name_ace">Assetto Corsa EVO（Windows版）</string>
     <string name="item_vehicle_approach">車両接近</string>
     <string name="item_vehicle_approach_sustained">接近継続</string>
     <string name="item_vehicle_approach_start_readout">接近開始時の読み上げ</string>

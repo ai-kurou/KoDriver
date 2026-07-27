@@ -25,6 +25,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
             is Simulator.LmuWindows -> lmuWindowsFromId(id)
             is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
+            is Simulator.AceWindows -> null
         }
 
         private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? = when (id) {
@@ -56,6 +57,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                     .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
                     .sortedBy { key -> gt7Ps5OrderIndex(key) }
             }
+            is Simulator.AceWindows -> emptyList()
         }
 
         // listPane のトップレベル項目のみ並び順を持つ。
