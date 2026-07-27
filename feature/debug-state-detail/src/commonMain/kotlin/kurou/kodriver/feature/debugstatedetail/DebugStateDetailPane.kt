@@ -247,6 +247,7 @@ private fun DebugStateCard(
                     uiState.virtualEnergy,
                     uiState.lmuWindowsTelemetry,
                     uiState.gt7Ps5Telemetry,
+                    uiState.aceWindowsFuel,
                 )
             },
         )

@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -17,18 +18,19 @@ import org.koin.dsl.module
  *
  * 提供: DebugStateDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: LmuWindowsFlagRepository・SimulatorPreferencesRepository・
- * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・
+ * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * LmuWindowsVehicleApproachRepository・DebugStateCardOrderPreferencesRepository
- * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:data）。
+ * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
 val debugStateDetailModule = module {
-    viewModel { DebugStateDetailViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { DebugStateDetailViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
     factory { ObserveSelectedSimulatorUseCase(get()) }
     factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
     factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
     factory { ObserveLmuWindowsUseCase(get()) }
     factory { ObserveGt7Ps5UseCase(get()) }
+    factory { ObserveAceWindowsFuelUseCase(get()) }
     factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
     factory { ObserveDebugStateCardOrderUseCase(get()) }
     factory { ResolveDebugStateCardOrderUseCase() }
