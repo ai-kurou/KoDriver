@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class AceWindowsReadoutRemainingFuelDetailPaneTest {
 
@@ -33,10 +34,13 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
     }
 
     @Test
-    fun `スライダーの値を確定すると表示ラベルが更新される`() {
+    fun `スライダーの値を確定するとonThresholdChangedが呼ばれる`() {
+        var changedPercentage: Int? = null
         rule.setContent {
             KoDriverTheme {
-                AceWindowsReadoutRemainingFuelDetailPaneContent()
+                AceWindowsReadoutRemainingFuelDetailPaneContent(
+                    onThresholdChanged = { changedPercentage = it },
+                )
             }
         }
 
@@ -46,24 +50,23 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
             it(60f)
         }
 
-        rule.onNodeWithText("60%").assertIsDisplayed()
+        assertEquals(60, changedPercentage)
     }
 
     @Test
-    fun `デフォルト値から変更している場合にリセットボタンをタップするとデフォルト値に戻る`() {
+    fun `デフォルト値から変更している場合にリセットボタンをタップするとonThresholdResetが呼ばれる`() {
+        var resetCalled = false
         rule.setContent {
             KoDriverTheme {
-                AceWindowsReadoutRemainingFuelDetailPaneContent()
+                AceWindowsReadoutRemainingFuelDetailPaneContent(
+                    uiState = AceWindowsReadoutRemainingFuelDetailUiState(thresholdPercentage = 60),
+                    onThresholdReset = { resetCalled = true },
+                )
             }
         }
 
-        rule.onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 30f, range = 5f..90f, steps = 84)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) {
-            it(60f)
-        }
         rule.onNode(hasContentDescription("デフォルト値にリセット")).performClick()
 
-        rule.onNodeWithText("30%").assertIsDisplayed()
+        assertEquals(true, resetCalled)
     }
 }
