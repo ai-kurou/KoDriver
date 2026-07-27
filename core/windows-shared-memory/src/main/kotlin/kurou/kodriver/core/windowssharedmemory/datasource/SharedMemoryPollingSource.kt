@@ -2,6 +2,7 @@ package kurou.kodriver.core.windowssharedmemory.datasource
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -53,7 +54,9 @@ class SharedMemoryPollingSource(
                 }
             }
         } finally {
-            readerMutex.withLock { reader.close() }
+            withContext(NonCancellable) {
+                readerMutex.withLock { reader.close() }
+            }
         }
     }
         .flowOn(Dispatchers.IO)
