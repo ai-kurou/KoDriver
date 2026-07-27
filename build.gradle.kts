@@ -20,6 +20,9 @@ plugins {
 plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
         resolution("serialize-javascript", "7.0.5")
+        resolution("fast-uri", "3.1.4")
+        resolution("js-yaml", "4.3.0")
+        resolution("shell-quote", "1.10.0")
         resolution("uuid", "11.1.1")
         resolution("webpack-dev-server", "5.2.5")
         resolution("webpack", "5.104.1")
