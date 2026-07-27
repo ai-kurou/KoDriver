@@ -1,8 +1,8 @@
-package kurou.kodriver.core.acewindowsdata.datasource
+package kurou.kodriver.core.windowssharedmemory.datasource
 
 import java.nio.ByteBuffer
 
-internal interface SharedMemoryReader {
+interface SharedMemoryReader {
     fun open(): Boolean
     fun readBuffer(): ByteBuffer?
     fun isOpen(): Boolean

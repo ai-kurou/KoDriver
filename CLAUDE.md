@@ -15,6 +15,8 @@ KoDriver/
 │   ├── data/          DataStore・HTTP/WebSocketクライアント・リポジトリ実装
 │   ├── lmu-windows-data/ LMU Windows共有メモリ読み取り・リポジトリ実装
 │   ├── gt7-ps5-data/  GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装
+│   ├── ace-windows-data/ Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装
+│   ├── windows-shared-memory/ Windows共有メモリI/Oの汎用基盤（lmu-windows-data / ace-windows-data が共通利用）
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
 │   ├── desktop-splash/           デスクトップ起動中スプラッシュの初期化進捗管理・画面表示
@@ -58,7 +60,7 @@ KoDriver/
 ## 重要な制約・注意事項
 
 ### 共有メモリ読み取りは Windows 専用
-`:core:lmu-windows-data` の `SharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。
+`:core:windows-shared-memory` の `SharedMemoryReader` / `WindowsSharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。`:core:lmu-windows-data` と `:core:ace-windows-data` はこの共通基盤に依存し、それぞれのシム固有の構造体パースのみを実装する。
 
 ### Ktor サーバー
 `:server` は Windows 版デスクトップアプリと同一プロセスで起動し、`0.0.0.0:8080` で待ち受ける。WebSocket エンドポイントは `/ws/<Simulator.id>/<feature>` のパターンに従う（例: `/ws/lmu_windows/flags`）。`/ws/<Simulator.id>/flags` は `ObserveLmuWindowsRaceFlagsUseCase` を通じて `LmuWindowsFlagRepository` を購読し、`LmuWindowsRaceFlagsData` を JSON として送信する。同一内容の連続値は送信しない。
