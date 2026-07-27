@@ -7,6 +7,8 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.gt7ps5data.datasource.Gt7Ps5UdpPortPreferencesSerializer
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -30,13 +32,13 @@ class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は33740・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(33740, repository.port().first())
+    fun `初期値はデフォルトポート・保存した値を返す・上書きで更新される`() = testScope.runTest {
+        assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
 
-        repository.savePort(33741)
-        assertEquals(33741, repository.port().first())
+        repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE)
+        assertEquals(GT7_PS5_UDP_PORT_ALTERNATE, repository.port().first())
 
-        repository.savePort(33740)
-        assertEquals(33740, repository.port().first())
+        repository.savePort(GT7_PS5_UDP_PORT_DEFAULT)
+        assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
     }
 }
