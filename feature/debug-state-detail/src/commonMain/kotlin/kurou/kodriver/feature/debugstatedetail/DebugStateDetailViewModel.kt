@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -16,6 +17,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
@@ -35,6 +37,7 @@ private data class RaceState(
 private data class OptionalTelemetry(
     val lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     val gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
+    val aceWindowsFuel: AceWindowsFuelData?,
 )
 
 @Suppress("LongParameterList")
@@ -44,6 +47,7 @@ internal class DebugStateDetailViewModel(
     observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     observeLmuWindowsTelemetry: ObserveLmuWindowsUseCase,
     observeGt7Ps5Telemetry: ObserveGt7Ps5UseCase,
+    observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     observeCardOrder: ObserveDebugStateCardOrderUseCase,
     private val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
@@ -74,8 +78,9 @@ internal class DebugStateDetailViewModel(
     private val _optionalTelemetry: StateFlow<OptionalTelemetry> = combine(
         observeLmuWindowsTelemetry().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
         observeGt7Ps5Telemetry().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
-    ) { lmu, gt7 -> OptionalTelemetry(lmu, gt7) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null))
+        observeAceWindowsFuel().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
+    ) { lmu, gt7, aceWindowsFuel -> OptionalTelemetry(lmu, gt7, aceWindowsFuel) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null))
 
     val uiState: StateFlow<DebugStateDetailUiState> = combine(
         _selectedSimulator,
@@ -89,6 +94,7 @@ internal class DebugStateDetailViewModel(
             virtualEnergy = raceState.virtualEnergy,
             lmuWindowsTelemetry = optionalTelemetry.lmuWindowsTelemetry,
             gt7Ps5Telemetry = optionalTelemetry.gt7Ps5Telemetry,
+            aceWindowsFuel = optionalTelemetry.aceWindowsFuel,
             vehicleApproach = raceState.vehicleApproach,
             cardOrder = cardOrder,
         )

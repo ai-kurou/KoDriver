@@ -8,6 +8,8 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_in
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_liters
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_ratio
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_laps
+import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_percent
+import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -21,7 +23,12 @@ internal fun FuelConsumptionContent(
     virtualEnergy: LmuWindowsVirtualEnergyData?,
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
+    aceWindowsFuel: AceWindowsFuelData?,
 ) {
+    if (selectedSimulator is Simulator.AceWindows) {
+        AceWindowsFuelContent(aceWindowsFuel)
+        return
+    }
     val (result, perLapTextRes) = when (selectedSimulator) {
         is Simulator.LmuWindows ->
             calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
@@ -29,8 +36,7 @@ internal fun FuelConsumptionContent(
         is Simulator.Gt7Ps5 ->
             calculateGt7FuelConsumption(gt7Ps5Telemetry) to
                 Res.string.debug_state_fuel_consumption_per_lap_liters
-        is Simulator.AceWindows -> null to Res.string.debug_state_fuel_consumption_per_lap_liters
-        null -> null to Res.string.debug_state_fuel_consumption_per_lap_liters
+        is Simulator.AceWindows, null -> null to Res.string.debug_state_fuel_consumption_per_lap_liters
     }
     if (result == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
@@ -45,6 +51,20 @@ internal fun FuelConsumptionContent(
             ),
         )
     }
+}
+
+@Composable
+private fun AceWindowsFuelContent(aceWindowsFuel: AceWindowsFuelData?) {
+    if (aceWindowsFuel == null) {
+        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        return
+    }
+    Text(
+        text = stringResource(
+            Res.string.debug_state_fuel_consumption_remaining_percent,
+            formatOneDecimal(aceWindowsFuel.remainingPercent),
+        ),
+    )
 }
 
 private fun formatOneDecimal(value: Double): String {
