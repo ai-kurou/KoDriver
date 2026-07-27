@@ -386,7 +386,6 @@ dependencies {
     kover(project(":feature:gt7-ps5-readout-my-best-lap-detail"))
     kover(project(":feature:gt7-ps5-readout-remaining-fuel-laps-detail"))
     kover(project(":feature:gt7-ps5-narrator"))
-    kover(project(":feature:ace-windows-readout-remaining-fuel-detail"))
     kover(project(":feature:telemetry-log-list"))
     kover(project(":feature:telemetry-log-detail"))
     kover(project(":feature:debug-state-detail"))
