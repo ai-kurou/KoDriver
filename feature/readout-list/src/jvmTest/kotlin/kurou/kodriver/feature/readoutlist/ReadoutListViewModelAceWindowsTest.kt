@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -60,7 +61,7 @@ class ReadoutListViewModelAceWindowsTest {
     }
 
     @Test
-    fun `ace_windowsは選択できるがlistPaneの読み上げアイテムは表示されない`() = runTest {
+    fun `ace_windowsを選択するとlistPaneに燃料残量アイテムが表示される`() = runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) } answers {
@@ -90,7 +91,9 @@ class ReadoutListViewModelAceWindowsTest {
 
         val state = viewModel.uiState.first()
         assertEquals(Simulator.AceWindows, state.selectedSimulator)
-        assertEquals(emptyList(), state.items)
+        assertEquals(listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root), state.items)
+        assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
+        assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
         verify(exactly = 1) { simulatorRepository.selectedSimulator() }
         coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
         confirmVerified(simulatorRepository)

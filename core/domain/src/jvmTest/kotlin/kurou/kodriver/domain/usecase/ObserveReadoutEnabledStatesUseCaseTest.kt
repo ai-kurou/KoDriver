@@ -24,7 +24,7 @@ private fun createReadoutPreferencesRepository(
 ): ReadoutPreferencesRepository {
     val enabledStates = MutableStateFlow<Map<String, Map<ReadoutItemKey, Boolean>>>(emptyMap())
     val order = MutableStateFlow<Map<String, List<ReadoutItemKey>>>(emptyMap())
-    listOf("lmu_windows", "gt7_ps5", "rFactor 2").forEach { simulator ->
+    listOf("lmu_windows", "gt7_ps5", "ace_windows", "rFactor 2").forEach { simulator ->
         every { repository.observeReadoutEnabledStates(simulator) } answers {
             enabledStates.map { it[simulator] ?: emptyMap() }
         }
@@ -116,6 +116,21 @@ class ObserveReadoutEnabledStatesUseCaseTest {
             useCase("gt7_ps5").first(),
         )
         verify(exactly = 1) { repo.observeReadoutEnabledStates("gt7_ps5") }
+        confirmVerified(repo)
+    }
+
+    @Test
+    fun `ace_windowsは保存済みの値がなくてもデフォルトのtrueが反映される`() = runBlocking {
+        val repo = createReadoutPreferencesRepository(repository)
+        val useCase = ObserveReadoutEnabledStatesUseCase(repo)
+
+        assertEquals(
+            mapOf<ReadoutItemKey, Boolean>(
+                ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+            ),
+            useCase("ace_windows").first(),
+        )
+        verify(exactly = 1) { repo.observeReadoutEnabledStates("ace_windows") }
         confirmVerified(repo)
     }
 

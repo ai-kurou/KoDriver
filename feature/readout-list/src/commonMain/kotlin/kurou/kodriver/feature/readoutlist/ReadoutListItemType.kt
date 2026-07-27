@@ -25,6 +25,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
             is Simulator.LmuWindows -> lmuWindowsFromId(id)
             is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
+            // ACEの燃料残量はlistPaneの読み上げ設定行のみを提供し、専用のdetailPaneは持たない。
             is Simulator.AceWindows -> null
         }
 
@@ -57,7 +58,9 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                     .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
                     .sortedBy { key -> gt7Ps5OrderIndex(key) }
             }
-            is Simulator.AceWindows -> emptyList()
+            is Simulator.AceWindows -> {
+                ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()
+            }
         }
 
         // listPane のトップレベル項目のみ並び順を持つ。

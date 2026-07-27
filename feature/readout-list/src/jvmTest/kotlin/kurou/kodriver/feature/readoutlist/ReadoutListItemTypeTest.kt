@@ -136,11 +136,14 @@ class ReadoutListItemTypeTest {
 
     @Test
     fun `ace_windows はどのキーを渡しても null を返す`() {
-        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.LmuWindows.Flag.Root))
+        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.RemainingFuel.Root))
     }
 
     @Test
-    fun `ace_windows のデフォルト並び順は空を返す`() {
-        assertEquals(emptyList(), ReadoutListItemType.defaultOrder(Simulator.AceWindows))
+    fun `ace_windows のデフォルト並び順は燃料残量のみを含む`() {
+        assertEquals(
+            listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
+            ReadoutListItemType.defaultOrder(Simulator.AceWindows),
+        )
     }
 }
