@@ -9,6 +9,6 @@ enum class RedFlagVoiceType(
 
     companion object {
         fun fromId(id: String): RedFlagVoiceType =
-            entries.firstOrNull { it.id == id } ?: SESSION_STOP
+            entries.firstOrNull { it.id == id } ?: RED_FLAG_VOICE_TYPE_DEFAULT
     }
 }

@@ -3,6 +3,7 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.RedFlagPreferences
+import kurou.kodriver.domain.model.RED_FLAG_VOICE_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -14,7 +15,7 @@ class RedFlagPreferencesSerializerTest {
     @Test
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
-            RedFlagPreferences(voiceType = "session_stop"),
+            RedFlagPreferences(voiceType = RED_FLAG_VOICE_TYPE_DEFAULT.id),
             RedFlagPreferencesSerializer.defaultValue,
         )
     }
