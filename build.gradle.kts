@@ -26,7 +26,7 @@ plugins.withType<YarnPlugin> {
         resolution("js-yaml", "4.3.0")
         resolution("shell-quote", "1.10.0")
         resolution("uuid", "11.1.1")
-        resolution("webpack-dev-server", "5.2.5")
+        resolution("webpack-dev-server", "5.2.6")
         resolution("webpack", "5.104.1")
         resolution("ws", "8.21.0")
     }
