@@ -24,6 +24,9 @@ private val readoutEnabledStateDefaults: Map<Simulator, Map<ReadoutItemKey, Bool
         ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
         ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
     ),
+    Simulator.AceWindows to mapOf(
+        ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+    ),
 )
 
 class ObserveReadoutEnabledStatesUseCase(private val repository: ReadoutPreferencesRepository) {

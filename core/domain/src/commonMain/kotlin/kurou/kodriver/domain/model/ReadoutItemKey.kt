@@ -106,6 +106,17 @@ sealed interface ReadoutItemKey {
         }
     }
 
+    sealed interface AceWindows : ReadoutItemKey {
+        sealed interface TopLevel : AceWindows, ReadoutItemKey.TopLevel
+
+        sealed interface RemainingFuel : AceWindows {
+            data object Root : RemainingFuel, TopLevel {
+                override val value = "ace_windows_remaining_fuel"
+                override val supportsQueue = true
+            }
+        }
+    }
+
     companion object {
         val entries by lazy {
             listOf(
@@ -128,6 +139,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,
+                AceWindows.RemainingFuel.Root,
             )
         }
 
