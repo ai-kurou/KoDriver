@@ -1,4 +1,4 @@
-package kurou.kodriver.core.lmuwindowsdata.datasource
+package kurou.kodriver.core.windowssharedmemory.datasource
 
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
@@ -6,7 +6,7 @@ import io.sentry.Sentry
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-internal class WindowsSharedMemoryReader(
+class WindowsSharedMemoryReader(
     private val segmentName: String,
     private val sizeBytes: Int,
     private val isWindows: Boolean = System.getProperty("os.name").contains("Windows", ignoreCase = true),

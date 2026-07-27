@@ -1,6 +1,6 @@
 package kurou.kodriver.core.acewindowsdata.repository
 
-import kurou.kodriver.core.acewindowsdata.datasource.SharedMemoryReader
+import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 

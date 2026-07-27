@@ -1,4 +1,4 @@
-package kurou.kodriver.core.acewindowsdata.datasource
+package kurou.kodriver.core.windowssharedmemory.datasource
 
 import com.sun.jna.Library
 import com.sun.jna.Native
@@ -6,7 +6,7 @@ import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
 
 @Suppress("FunctionNaming")
-internal interface Kernel32FileMapping : Library {
+interface Kernel32FileMapping : Library {
     companion object {
         val INSTANCE: Kernel32FileMapping by lazy {
             Native.load("kernel32", Kernel32FileMapping::class.java)

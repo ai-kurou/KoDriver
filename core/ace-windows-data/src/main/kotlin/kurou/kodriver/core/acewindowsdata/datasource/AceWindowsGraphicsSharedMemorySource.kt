@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
+import kurou.kodriver.core.windowssharedmemory.datasource.WindowsSharedMemoryReader
 import java.nio.ByteBuffer
 
 /**

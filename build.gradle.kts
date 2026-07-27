@@ -148,6 +148,8 @@ moduleGraphAssert {
         ":feature:.* -> :core:designsystem",
         // core:data 系 → core:domain（.*data にマッチ: core:data, core:*-data。core:designsystem は除外される）
         ":core:.*data -> :core:domain",
+        // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
+        ":core:.*windows.*data -> :core:windows-shared-memory",
         ":server -> :core:domain",
     )
     restricted = arrayOf(
@@ -361,6 +363,7 @@ dependencies {
     kover(project(":core:lmu-windows-data"))
     kover(project(":core:gt7-ps5-data"))
     kover(project(":core:ace-windows-data"))
+    kover(project(":core:windows-shared-memory"))
     kover(project(":core:designsystem"))
     kover(project(":feature:desktop-splash"))
     kover(project(":feature:lmu-windows-connection"))
