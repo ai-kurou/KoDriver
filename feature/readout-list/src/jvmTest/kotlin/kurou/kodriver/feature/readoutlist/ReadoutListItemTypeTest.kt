@@ -124,10 +124,11 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
-    fun `gt7_ps5 のデフォルト並び順は燃料残り周回数を先頭に自己ベストラップが続く`() {
+    fun `gt7_ps5 のデフォルト並び順は燃料残り周回数と残り燃料と自己ベストラップの順`() {
         assertEquals(
             listOf(
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),

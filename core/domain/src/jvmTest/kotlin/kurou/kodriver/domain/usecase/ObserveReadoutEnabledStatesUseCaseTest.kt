@@ -104,13 +104,14 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() = runBlocking {
+    fun `gt7_ps5は保存済みの値がなくてもデフォルト値が反映される`() = runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
         assertEquals(
             mapOf<ReadoutItemKey, Boolean>(
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
             ),
             useCase("gt7_ps5").first(),

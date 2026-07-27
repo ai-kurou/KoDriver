@@ -58,6 +58,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_my_bes
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_overheat
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_pit_timing
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_virtual_energy
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
@@ -421,6 +422,7 @@ internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)
+        is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> stringResource(Res.string.readout_item_remaining_fuel)
     }
 
 internal fun formatTelemetryLogTime(
