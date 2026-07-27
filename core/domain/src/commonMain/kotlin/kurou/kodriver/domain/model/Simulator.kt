@@ -6,7 +6,7 @@ sealed class Simulator(
 ) {
     data object LmuWindows : Simulator(id = "lmu_windows", requiresKoDriverServer = true)
     data object Gt7Ps5 : Simulator(id = "gt7_ps5", requiresKoDriverServer = false)
-    data object AceWindows : Simulator(id = "ace_windows", requiresKoDriverServer = false)
+    data object AceWindows : Simulator(id = "ace_windows", requiresKoDriverServer = true)
 
     companion object {
         private val entries by lazy { listOf(LmuWindows, Gt7Ps5, AceWindows) }

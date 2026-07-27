@@ -2,8 +2,11 @@ package kurou.kodriver.feature.readoutlist
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,5 +91,8 @@ class ReadoutListViewModelAceWindowsTest {
         val state = viewModel.uiState.first()
         assertEquals(Simulator.AceWindows, state.selectedSimulator)
         assertEquals(emptyList(), state.items)
+        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+        coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
+        confirmVerified(simulatorRepository)
     }
 }
