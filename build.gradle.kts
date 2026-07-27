@@ -19,6 +19,8 @@ plugins {
 
 plugins.withType<YarnPlugin> {
     extensions.configure<YarnRootExtension> {
+        resolution("body-parser", "1.20.6")
+        resolution("diff", "8.0.3")
         resolution("serialize-javascript", "7.0.5")
         resolution("fast-uri", "3.1.4")
         resolution("js-yaml", "4.3.0")
