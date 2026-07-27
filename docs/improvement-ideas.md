@@ -22,3 +22,9 @@
   **課題**: `Simulator` の表示名（`simulatorDisplayName`）とアイコン（`simulatorIcon`）を返す `when` 式が3モジュールにほぼ同一の内容で重複定義されている。文字列リソースも `feature:readout-list` と `feature:debug-state-detail` の `strings.xml` に同じキー（`simulator_name_lmu` など）が重複している。新しい `Simulator` を追加するたびに同じ分岐を複数箇所へ手作業で追加する必要があり、追加漏れがコンパイルエラーで検出される（網羅的 `when` のため）ものの、手間と重複が大きい。
   **改善案**: `Simulator` の表示名・アイコンを `core:designsystem` または `core:domain` に集約したユーティリティ（例: `Simulator.displayNameRes()` 拡張、共通の `SimulatorIconRepository` 的な仕組み）としてまとめ、各 feature モジュールから参照する形に統一する。ただし `core:designsystem` は Compose リソースを持つが `core:domain` は持たない現状の依存方向を踏まえた設計検討が必要。
 
+
+## ACE残り燃料detailPaneの閾値スライダーが未永続化
+
+- **対象**: `feature:ace-windows-readout-remaining-fuel-detail`（`AceWindowsReadoutRemainingFuelDetailPane.kt`）
+  **課題**: 現状は `remember` によるComposable内のローカル状態のみで閾値スライダー（5〜90%、デフォルト30%）を保持しており、画面を離れると値が破棄される。ACE用のDataStore・Repository・UseCase・ViewModelがまだ存在しないため、依頼範囲をGUIのみに限定した結果。
+  **改善案**: LMUのバーチャルエナジー残量detail（`AceWindowsRemainingFuelPreferencesRepository` 相当）と同じ構造で、`core:domain` にDefaults定数・Repositoryインターフェース・Observe/SaveUseCaseを追加し、`core:data` にDataStore実装を追加した上で、ViewModelから購読・保存する形に置き換える。
