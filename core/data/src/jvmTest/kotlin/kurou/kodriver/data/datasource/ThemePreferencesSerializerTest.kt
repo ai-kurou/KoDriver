@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.data.model.ThemePreferences
+import kurou.kodriver.domain.model.THEME_MODE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -46,6 +47,6 @@ class ThemePreferencesSerializerTest {
 
     @Test
     fun `デフォルト値はsystem`() {
-        assertEquals("system", ThemePreferencesSerializer.defaultValue.mode)
+        assertEquals(THEME_MODE_DEFAULT.id, ThemePreferencesSerializer.defaultValue.mode)
     }
 }

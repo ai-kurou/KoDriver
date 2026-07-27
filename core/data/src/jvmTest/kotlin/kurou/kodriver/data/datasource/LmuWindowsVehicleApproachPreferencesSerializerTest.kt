@@ -3,6 +3,8 @@ package kurou.kodriver.data.datasource
 import androidx.datastore.core.CorruptionException
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.model.LmuWindowsVehicleApproachPreferences
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -15,8 +17,8 @@ class LmuWindowsVehicleApproachPreferencesSerializerTest {
     fun `デフォルト値は初期設定を返す`() {
         assertEquals(
             LmuWindowsVehicleApproachPreferences(
-                skipFirstLap = true,
-                startReadoutType = "car_left_right",
+                skipFirstLap = LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT,
+                startReadoutType = LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT.id,
             ),
             LmuWindowsVehicleApproachPreferencesSerializer.defaultValue,
         )

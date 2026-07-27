@@ -3,12 +3,15 @@ package kurou.kodriver.data.model
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable
 internal data class LmuWindowsVehicleApproachPreferences(
-    @ProtoNumber(1) val skipFirstLap: Boolean = true,
-    @ProtoNumber(3) val startReadoutType: String = "car_left_right",
+    @ProtoNumber(1) val skipFirstLap: Boolean = LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT,
+    @ProtoNumber(3) val startReadoutType: String = LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT.id,
     @ProtoNumber(4) val enabledStates: Map<String, Boolean> = emptyMap(),
-    @ProtoNumber(5) val sustainedReadoutType: String = "keep_left_right",
+    @ProtoNumber(5) val sustainedReadoutType: String = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT.id,
 )

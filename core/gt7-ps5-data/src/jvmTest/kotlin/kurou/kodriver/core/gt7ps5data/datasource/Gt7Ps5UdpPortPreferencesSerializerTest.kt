@@ -5,6 +5,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.protobuf.ProtoBuf
 import kurou.kodriver.core.gt7ps5data.model.Gt7Ps5UdpPortPreferences
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
@@ -16,7 +18,7 @@ class Gt7Ps5UdpPortPreferencesSerializerTest {
 
     @Test
     fun `正常なバイト列をデシリアライズできる`() = runTest {
-        val original = Gt7Ps5UdpPortPreferences(port = 33741)
+        val original = Gt7Ps5UdpPortPreferences(port = GT7_PS5_UDP_PORT_ALTERNATE)
         val bytes = ProtoBuf.encodeToByteArray(Gt7Ps5UdpPortPreferences.serializer(), original)
 
         val result = Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
@@ -35,7 +37,7 @@ class Gt7Ps5UdpPortPreferencesSerializerTest {
 
     @Test
     fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
-        val original = Gt7Ps5UdpPortPreferences(port = 33740)
+        val original = Gt7Ps5UdpPortPreferences(port = GT7_PS5_UDP_PORT_DEFAULT)
         val output = ByteArrayOutputStream()
         Gt7Ps5UdpPortPreferencesSerializer.writeTo(original, output)
 

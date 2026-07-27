@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.yield
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import java.net.DatagramPacket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -112,7 +113,7 @@ internal class Gt7Ps5UdpSource(
     }
 
     companion object {
-        const val LISTEN_PORT = 33740
+        const val LISTEN_PORT = GT7_PS5_UDP_PORT_DEFAULT
         const val SEND_PORT = 33739
         const val PACKET_MIN_SIZE = 0x170 // 368 bytes
         const val MAGIC_OFFSET = 0
