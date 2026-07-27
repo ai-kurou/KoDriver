@@ -122,6 +122,31 @@ class ReadoutListPaneScreenshotTest {
         confirmVerified(repository)
     }
 
+    @Test
+    fun `ace_windows選択`() {
+        rule.setContent {
+            KoDriverTheme {
+                Surface {
+                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                        ReadoutListPane(
+                            uiState = ReadoutListUiState(
+                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
+                                selectedSimulator = Simulator.AceWindows,
+                                items = ReadoutListItemType.defaultOrder(Simulator.AceWindows),
+                            ),
+                            onSimulatorSelected = {},
+                            onMove = { _, _ -> },
+                            onReadoutEnabledChanged = { _, _ -> },
+                            onQueueEnabledChanged = { _, _ -> },
+                            onItemClick = { _ -> },
+                        )
+                    }
+                }
+            }
+        }
+        rule.onRoot().captureRoboImage()
+    }
+
     private fun observeReadoutEnabledStates(simulator: String): Map<ReadoutItemKey, Boolean> =
         runBlocking { ObserveReadoutEnabledStatesUseCase(repository)(simulator).first() }
 }
