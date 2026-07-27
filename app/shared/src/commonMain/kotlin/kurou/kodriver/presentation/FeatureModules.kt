@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import kurou.kodriver.feature.acewindowsconnection.aceWindowsConnectionModule
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.aceWindowsReadoutRemainingFuelDetailModule
 import kurou.kodriver.feature.debugstatedetail.debugStateDetailModule
 import kurou.kodriver.feature.gt7ps5connection.gt7Ps5ConnectionModule
@@ -43,6 +44,7 @@ val featureModules: List<Module> = listOf(
     mainPlatformModule,
     lmuWindowsConnectionModule,
     gt7Ps5ConnectionModule,
+    aceWindowsConnectionModule,
     serverConnectionModule,
     lmuWindowsNarratorModule,
     gt7Ps5NarratorModule,
