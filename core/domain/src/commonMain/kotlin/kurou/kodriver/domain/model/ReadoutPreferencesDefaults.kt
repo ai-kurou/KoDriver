@@ -16,6 +16,7 @@ val READOUT_ENABLED_STATE_DEFAULT: Map<Simulator, Map<ReadoutItemKey, Boolean>> 
     ),
     Simulator.Gt7Ps5 to mapOf(
         ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+        ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false,
         ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
     ),
 )

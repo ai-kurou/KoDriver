@@ -73,7 +73,8 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int = when (key) {
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
-            ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 1
+            ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> 1
+            ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 2
         }
     }
 }

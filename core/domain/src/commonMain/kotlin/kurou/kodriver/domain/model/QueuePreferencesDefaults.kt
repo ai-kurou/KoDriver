@@ -12,4 +12,5 @@ val QUEUE_ENABLED_STATE_DEFAULT: Map<ReadoutItemKey, Boolean> = mapOf(
     ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
     ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
 )
