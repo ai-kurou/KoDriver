@@ -1,0 +1,5 @@
+digraph G {
+  rankdir=TB
+  ":app:shared" -> ":feature:ace-windows-connection"
+  ":feature:ace-windows-connection" -> ":core:domain"
+}

@@ -43,6 +43,7 @@ KoDriver/
 │   ├── gt7-ps5-narrator/                GT7 PS5 WAV 音声再生とアナウンス制御
 │   ├── gt7-ps5-readout-my-best-lap-detail/      GT7自己ベストラップアナウンスの詳細設定
 │   ├── gt7-ps5-readout-remaining-fuel-laps-detail/ GT7燃料残り周回数アナウンスの詳細設定
+│   ├── ace-windows-connection/           ACE (Assetto Corsa EVO) 接続状態の監視
 │   ├── telemetry-log-list/              テレメトリログの一覧表示
 │   └── telemetry-log-detail/            テレメトリログの詳細表示
 ├── app/
