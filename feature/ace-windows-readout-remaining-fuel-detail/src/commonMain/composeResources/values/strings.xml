@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remaining_fuel_title">残り燃料</string>
+    <string name="remaining_fuel_description">残り燃料が設定した閾値を下回った場合に、音声でお知らせします。</string>
+</resources>

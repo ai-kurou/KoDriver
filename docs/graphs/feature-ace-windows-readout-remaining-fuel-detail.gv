@@ -1,0 +1,5 @@
+digraph G {
+  rankdir=TB
+  ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:domain"
+  ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:designsystem"
+}
