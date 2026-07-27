@@ -3,6 +3,7 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -143,6 +144,13 @@ fun androidDataModule(context: Context) = module {
     single<DynamicColorEnabledRepository> {
         AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
     }
+    includes(androidDataModuleThresholdPreferences(context))
+}
+
+/**
+ * androidDataModule から分離した閾値系 DataStore バインドと TelemetryLog（LongMethod 対策）。
+ */
+private fun androidDataModuleThresholdPreferences(context: Context) = module {
     single<LmuWindowsTyreTemperaturePreferencesRepository> {
         createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
     }
@@ -151,6 +159,9 @@ fun androidDataModule(context: Context) = module {
     }
     single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
         createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<AceWindowsRemainingFuelPreferencesRepository> {
+        createAceWindowsRemainingFuelPreferencesRepository(context.filesDir.absolutePath)
     }
     single<LmuWindowsPitTimingPreferencesRepository> {
         createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)

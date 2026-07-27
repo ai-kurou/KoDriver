@@ -30,5 +30,6 @@ digraph G {
   ":app:shared" -> ":feature:lmu-windows-readout-tyre-wear-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-my-best-lap-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-remaining-fuel-laps-detail"
+  ":app:shared" -> ":feature:ace-windows-readout-remaining-fuel-detail"
   ":app:webApp" -> ":app:shared"
 }

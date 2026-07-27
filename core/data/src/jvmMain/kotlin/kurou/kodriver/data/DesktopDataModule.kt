@@ -1,5 +1,6 @@
 package kurou.kodriver.data
 
+import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -105,6 +106,9 @@ val desktopDataModule = module {
     }
     single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
         createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)
+    }
+    single<AceWindowsRemainingFuelPreferencesRepository> {
+        createAceWindowsRemainingFuelPreferencesRepository(directory = kodriverDirectory)
     }
     single<LmuWindowsPitTimingPreferencesRepository> {
         createLmuWindowsPitTimingPreferencesRepository(directory = kodriverDirectory)
