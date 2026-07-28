@@ -30,4 +30,5 @@ val aceWindowsDataModule = module {
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
+    override suspend fun isConnected(): Boolean = false
 }

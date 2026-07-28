@@ -13,4 +13,6 @@ internal class AceWindowsFuelRepositoryImpl(
 
     override fun fuelStream(): Flow<AceWindowsFuelData> =
         source.bufferFlow.map { AceWindowsMapper.map(it) }
+
+    override suspend fun isConnected(): Boolean = source.isConnected()
 }
