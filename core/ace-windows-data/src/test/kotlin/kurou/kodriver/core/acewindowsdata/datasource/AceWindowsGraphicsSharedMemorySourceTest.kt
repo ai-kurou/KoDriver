@@ -11,6 +11,7 @@ import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AceWindowsGraphicsSharedMemorySourceTest {
@@ -19,12 +20,18 @@ class AceWindowsGraphicsSharedMemorySourceTest {
         reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
         reconnectIntervalMs: Long = 1L,
+        currentTimeMs: () -> Long = System::currentTimeMillis,
     ) = AceWindowsGraphicsSharedMemorySource(
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
         reader = reader,
+        currentTimeMs = currentTimeMs,
         scope = CoroutineScope(SupervisorJob()),
     )
+
+    // -------------------------------------------------------------------------
+    // bufferFlow
+    // -------------------------------------------------------------------------
 
     @Test
     fun `open 成功後に bufferFlow がバッファを emit する`() = runBlocking<Unit> {
@@ -60,12 +67,81 @@ class AceWindowsGraphicsSharedMemorySourceTest {
 
         assertTrue(reader.closeCalled)
     }
+
+    // -------------------------------------------------------------------------
+    // isConnected
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun `open に成功しバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
+        val source = makeSource(reader = FakeSharedMemoryReader(openResult = true))
+
+        assertTrue(source.isConnected())
+    }
+
+    @Test
+    fun `open に失敗するとき isConnected は false を返す`() = runBlocking {
+        val source = makeSource(reader = FakeSharedMemoryReader(openResult = false))
+
+        assertFalse(source.isConnected())
+    }
+
+    @Test
+    fun `isConnected は reader を close してから open する`() = runBlocking {
+        val reader = FakeSharedMemoryReader(openResult = true)
+        val source = makeSource(reader = reader)
+
+        source.isConnected()
+
+        assertTrue(reader.closeCalled)
+    }
+
+    @Test
+    fun `バッファを読み取れないとき isConnected は false を返す`() = runBlocking {
+        val source = makeSource(reader = FakeSharedMemoryReader(openResult = true, returnNullBuffer = true))
+
+        assertFalse(source.isConnected())
+    }
+
+    @Test
+    fun `packetId が閾値以内に変化し続けるとき isConnected は true を返す`() = runBlocking {
+        var fakeTime = 0L
+        val reader = FakeSharedMemoryReader(openResult = true, packetId = 1)
+        val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
+
+        fakeTime = 0L
+        reader.packetId = 1
+        assertTrue(source.isConnected())
+        fakeTime = 1_000L
+        reader.packetId = 2
+        assertTrue(source.isConnected())
+        fakeTime = 2_000L
+        reader.packetId = 3
+        assertTrue(source.isConnected())
+    }
+
+    @Test
+    fun `packetId が閾値以上変化しないとき isConnected は false を返す`() = runBlocking {
+        var fakeTime = 0L
+        val reader = FakeSharedMemoryReader(openResult = true, packetId = 500)
+        val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
+
+        fakeTime = 0L
+        source.isConnected() // 初回: タイムスタンプ = 0
+        fakeTime = 3_000L
+        assertFalse(source.isConnected())
+    }
 }
+
+// -----------------------------------------------------------------------------
+// ヘルパー
+// -----------------------------------------------------------------------------
 
 private class FakeSharedMemoryReader(
     initialOpen: Boolean = false,
     private val openResult: Boolean = true,
     private val returnNullBuffer: Boolean = false,
+    var packetId: Int = 0,
 ) : SharedMemoryReader {
 
     private var opened = initialOpen
@@ -78,7 +154,9 @@ private class FakeSharedMemoryReader(
 
     override fun readBuffer(): ByteBuffer? =
         if (opened && !returnNullBuffer) {
-            ByteBuffer.allocate(8_192).order(ByteOrder.LITTLE_ENDIAN)
+            ByteBuffer.allocate(8_192).order(ByteOrder.LITTLE_ENDIAN).also { buf ->
+                buf.putInt(0, packetId)
+            }
         } else {
             null
         }

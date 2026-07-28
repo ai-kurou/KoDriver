@@ -34,6 +34,7 @@ enum class ConnectionBannerVmStatus {
 
 class ConnectionBannerViewModel(
     private val checkLmuConnection: LmuBannerConnectionChecker,
+    private val checkAceConnection: AceBannerConnectionChecker,
     private val checkGt7Ps5Connection: CheckGt7Ps5ConnectionUseCase,
     private val observeConsoleAddress: ObserveConsoleAddressUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
@@ -46,8 +47,8 @@ class ConnectionBannerViewModel(
                 is Simulator.LmuWindows -> checkLmuConnection.statusFlow()
                     .map { ConnectionBannerVmUiState(it, simulator) }
                 is Simulator.Gt7Ps5 -> gt7ConnectionFlow(simulator)
-                is Simulator.AceWindows ->
-                    flowOf(ConnectionBannerVmUiState(ConnectionBannerVmStatus.UNCHECKED, simulator))
+                is Simulator.AceWindows -> checkAceConnection.statusFlow()
+                    .map { ConnectionBannerVmUiState(it, simulator) }
                 null -> flowOf(ConnectionBannerVmUiState())
             }
         }
