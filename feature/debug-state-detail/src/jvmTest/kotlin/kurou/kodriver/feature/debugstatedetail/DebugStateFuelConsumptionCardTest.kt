@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -77,6 +78,44 @@ class DebugStateFuelConsumptionCardTest {
 
         rule.onNodeWithText("消費 10.0L/周").assertIsDisplayed()
         rule.onNodeWithText("残り 4.0周").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsの場合は残り燃料の割合を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.AceWindows,
+                        aceWindowsFuel = AceWindowsFuelData(remainingPercent = 42.0),
+                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("残量 42.0%").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsでデータ未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.AceWindows,
+                        aceWindowsFuel = null,
+                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test

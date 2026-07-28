@@ -24,7 +24,8 @@ import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 
-private val simulators: List<Simulator> = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5)
+private val simulators: List<Simulator> =
+    listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows)
 
 private data class LocalOrderState(
     val simulator: Simulator?,

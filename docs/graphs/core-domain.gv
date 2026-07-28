@@ -1,9 +1,13 @@
 digraph G {
   rankdir=TB
   ":server" -> ":core:domain"
+  ":core:ace-windows-data" -> ":core:domain"
   ":core:data" -> ":core:domain"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
+  ":feature:ace-windows-connection" -> ":core:domain"
+  ":feature:ace-windows-narrator" -> ":core:domain"
+  ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:domain"
   ":feature:debug-state-detail" -> ":core:domain"
   ":feature:desktop-splash" -> ":core:domain"
   ":feature:gt7-ps5-connection" -> ":core:domain"

@@ -15,6 +15,7 @@ import io.sentry.Sentry
 import io.sentry.protocol.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
 import kurou.kodriver.core.gt7ps5data.gt7Ps5DataModule
 import kurou.kodriver.core.lmuwindowsdata.lmuWindowsDataModule
 import kurou.kodriver.data.AnonymousUserId
@@ -63,7 +64,12 @@ fun main() {
                                 // （featureModules）＋ アプリバージョン定数（named("appVersion")。server-connection 等が
                                 // get で解決）を束ねる。
                                 modules(
-                                    listOf(desktopDataModule, lmuWindowsDataModule, gt7Ps5DataModule) +
+                                    listOf(
+                                        desktopDataModule,
+                                        lmuWindowsDataModule,
+                                        gt7Ps5DataModule,
+                                        aceWindowsDataModule,
+                                    ) +
                                         featureModules +
                                         listOf(module { single(named("appVersion")) { APP_VERSION } }),
                                 )

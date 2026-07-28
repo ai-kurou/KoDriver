@@ -21,10 +21,15 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
     }
 
+    sealed class AceWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
+        data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+    }
+
     companion object {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
             is Simulator.LmuWindows -> lmuWindowsFromId(id)
             is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
+            is Simulator.AceWindows -> aceWindowsFromId(id)
         }
 
         private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? = when (id) {
@@ -45,6 +50,11 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             else -> null
         }
 
+        private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? = when (id) {
+            ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
+            else -> null
+        }
+
         fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = when (simulator) {
             is Simulator.LmuWindows -> {
                 ReadoutItemKey.entries
@@ -55,6 +65,9 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                 ReadoutItemKey.entries
                     .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
                     .sortedBy { key -> gt7Ps5OrderIndex(key) }
+            }
+            is Simulator.AceWindows -> {
+                ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()
             }
         }
 

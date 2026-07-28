@@ -61,6 +61,27 @@ class TelemetryLogContentTest {
     }
 
     @Test
+    fun `ace_windowsのログもアイコン付きで一覧に表示する`() {
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState = TelemetryLogListUiState(
+                    logs = listOf(
+                        TelemetryLog(
+                            id = 1,
+                            createdAt = 1_800_000,
+                            simulator = Simulator.AceWindows,
+                            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                            telemetryJson = """{"flag":"green"}""",
+                        ),
+                    ),
+                ),
+            )
+        }
+
+        rule.onNodeWithText("フラッグ").assertExists()
+    }
+
+    @Test
     fun `ログが0件の場合は空状態を表示する`() {
         rule.setContent {
             TelemetryLogContentScaffold()
@@ -143,6 +164,7 @@ class TelemetryLogContentTest {
             ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
+            ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
         )
 
         rule.setContent {

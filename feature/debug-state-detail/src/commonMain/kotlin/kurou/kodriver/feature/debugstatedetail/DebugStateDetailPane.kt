@@ -70,8 +70,9 @@ import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_unknown
 import kodriver.feature.debugstatedetail.generated.resources.navigate_back
+import kodriver.feature.debugstatedetail.generated.resources.simulator_name_ace_windows
 import kodriver.feature.debugstatedetail.generated.resources.simulator_name_gt7_ps5
-import kodriver.feature.debugstatedetail.generated.resources.simulator_name_lmu
+import kodriver.feature.debugstatedetail.generated.resources.simulator_name_lmu_windows
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.DebugStateCardKey
@@ -246,6 +247,7 @@ private fun DebugStateCard(
                     uiState.virtualEnergy,
                     uiState.lmuWindowsTelemetry,
                     uiState.gt7Ps5Telemetry,
+                    uiState.aceWindowsFuel,
                 )
             },
         )
@@ -265,8 +267,9 @@ private fun DebugStateCard(
 
 @Composable
 private fun simulatorDisplayName(simulator: Simulator): String = when (simulator) {
-    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu)
+    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu_windows)
     is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
+    is Simulator.AceWindows -> stringResource(Res.string.simulator_name_ace_windows)
 }
 
 @Composable
@@ -387,6 +390,7 @@ private fun CurrentLapContent(
     val currentLap = when (selectedSimulator) {
         is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.currentLap
         is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.lapCount
+        is Simulator.AceWindows -> null
         null -> null
     }
     Text(
@@ -403,6 +407,7 @@ private fun BestLapContent(
     val bestLapTimeMs = when (selectedSimulator) {
         is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.bestLapTimeMs
         is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.bestLapTimeMs?.toLong()
+        is Simulator.AceWindows -> null
         null -> null
     }
     Text(

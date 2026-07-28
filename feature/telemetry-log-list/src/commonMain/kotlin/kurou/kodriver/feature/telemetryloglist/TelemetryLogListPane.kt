@@ -58,6 +58,7 @@ import kodriver.feature.telemetryloglist.generated.resources.readout_item_my_bes
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_overheat
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_pit_timing
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
+import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_virtual_energy
 import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
@@ -73,6 +74,7 @@ import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.generated.resources.ace
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -369,6 +371,7 @@ private fun TelemetryLogListItem(
 private fun simulatorIcon(simulator: Simulator): Painter = when (simulator) {
     Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
     Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
+    Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
 }
 
 @Composable
@@ -421,6 +424,7 @@ internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)
+        is ReadoutItemKey.AceWindows.RemainingFuel.Root -> stringResource(Res.string.readout_item_remaining_fuel)
     }
 
 internal fun formatTelemetryLogTime(

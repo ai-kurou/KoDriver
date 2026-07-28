@@ -4,5 +4,6 @@ digraph G {
   ":app:desktopApp" -> ":core:data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":core:gt7-ps5-data"
+  ":app:desktopApp" -> ":core:ace-windows-data"
   ":app:desktopApp" -> ":server"
 }

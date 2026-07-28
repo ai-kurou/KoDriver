@@ -20,6 +20,7 @@
     <string name="readout_item_pit_timing">ピットタイミング</string>
     <string name="readout_item_remaining_virtual_energy">バーチャルエナジー残量</string>
     <string name="readout_item_tyre_wear">タイヤ摩耗</string>
+    <string name="readout_item_remaining_fuel">燃料残量</string>
     <string name="telemetry_log_reset_item">データベースをリセット</string>
     <string name="telemetry_log_reset_confirm_title">データベースをリセットしますか？</string>
     <string name="telemetry_log_reset_confirm_body">保存されているすべてのテレメトリログが削除されます。この操作は元に戻せません。</string>

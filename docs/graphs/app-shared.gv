@@ -6,9 +6,11 @@ digraph G {
   ":app:shared" -> ":feature:main"
   ":app:shared" -> ":feature:lmu-windows-connection"
   ":app:shared" -> ":feature:gt7-ps5-connection"
+  ":app:shared" -> ":feature:ace-windows-connection"
   ":app:shared" -> ":feature:server-connection"
   ":app:shared" -> ":feature:lmu-windows-narrator"
   ":app:shared" -> ":feature:gt7-ps5-narrator"
+  ":app:shared" -> ":feature:ace-windows-narrator"
   ":app:shared" -> ":feature:debug-state-detail"
   ":app:shared" -> ":feature:other-license-detail"
   ":app:shared" -> ":feature:other-list"
@@ -30,5 +32,6 @@ digraph G {
   ":app:shared" -> ":feature:lmu-windows-readout-tyre-wear-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-my-best-lap-detail"
   ":app:shared" -> ":feature:gt7-ps5-readout-remaining-fuel-laps-detail"
+  ":app:shared" -> ":feature:ace-windows-readout-remaining-fuel-detail"
   ":app:webApp" -> ":app:shared"
 }

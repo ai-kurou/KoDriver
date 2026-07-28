@@ -133,4 +133,25 @@ class ReadoutListItemTypeTest {
             ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
         )
     }
+
+    @Test
+    fun `ace_windows の remaining_fuel は AceWindows_RemainingFuel を返す`() {
+        assertEquals(
+            ReadoutListItemType.AceWindows.RemainingFuel,
+            ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.AceWindows.RemainingFuel.Root),
+        )
+    }
+
+    @Test
+    fun `ace_windows でシミュレータに属さないキーは null を返す`() {
+        assertNull(ReadoutListItemType.fromId(Simulator.AceWindows, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root))
+    }
+
+    @Test
+    fun `ace_windows のデフォルト並び順は燃料残量のみを含む`() {
+        assertEquals(
+            listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
+            ReadoutListItemType.defaultOrder(Simulator.AceWindows),
+        )
+    }
 }

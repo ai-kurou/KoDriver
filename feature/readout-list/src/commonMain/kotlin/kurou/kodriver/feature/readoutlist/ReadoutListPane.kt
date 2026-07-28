@@ -81,6 +81,7 @@ import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_overheat
 import kodriver.feature.readoutlist.generated.resources.item_pit_timing
 import kodriver.feature.readoutlist.generated.resources.item_red_flag
+import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
 import kodriver.feature.readoutlist.generated.resources.item_sector_yellow_flag
@@ -98,10 +99,12 @@ import kodriver.feature.readoutlist.generated.resources.queue_hint_description
 import kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kodriver.feature.readoutlist.generated.resources.select_simulator_hint
 import kodriver.feature.readoutlist.generated.resources.simulator_label
+import kodriver.feature.readoutlist.generated.resources.simulator_name_ace_windows
 import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
-import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu
+import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu_windows
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.ListPaneCard
+import kurou.kodriver.core.designsystem.generated.resources.ace
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -114,14 +117,16 @@ import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemR
 
 @Composable
 private fun simulatorDisplayName(simulator: Simulator): String = when (simulator) {
-    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu)
+    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu_windows)
     is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
+    is Simulator.AceWindows -> stringResource(Res.string.simulator_name_ace_windows)
 }
 
 @Composable
 private fun simulatorIcon(simulator: Simulator) = when (simulator) {
     is Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
     is Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
+    is Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
 }
 
 @Composable
@@ -173,6 +178,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.item_remaining_fuel_laps)
+    is ReadoutItemKey.AceWindows.RemainingFuel.Root -> stringResource(Res.string.item_remaining_fuel)
 }
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
@@ -186,6 +192,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
+    is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
 }
 
 private fun readoutItemIndex(

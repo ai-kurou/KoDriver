@@ -25,6 +25,7 @@ import androidx.window.core.layout.WindowSizeClass
 import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
+import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
@@ -173,6 +174,34 @@ class ReadoutContentTest {
         rule.waitForIdle()
 
         assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root), selected)
+    }
+
+    @Test
+    fun `ace_windowsの燃料残量項目を選択すると詳細ペインのタイトルに燃料残量を表示する`() {
+        var remainingFuelText by mutableStateOf("")
+
+        rule.setContent {
+            remainingFuelText = stringResource(Res.string.item_remaining_fuel)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.AceWindows),
+                    selectedSimulator = Simulator.AceWindows,
+                    items = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
+                    readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to true),
+                    selectedItem = ReadoutListItemType.AceWindows.RemainingFuel,
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText(remainingFuelText).assertExists()
     }
 
     @Test
