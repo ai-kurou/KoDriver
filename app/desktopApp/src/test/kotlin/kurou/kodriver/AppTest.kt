@@ -130,10 +130,33 @@ class AppTest {
     }
 
     @Test
+    fun `ACE選択時に読み上げ項目を順にタップする`() {
+        setContent()
+
+        selectSimulator("Assetto Corsa EVO（Windows版）")
+        clickReadoutPriorityHelp()
+
+        waitUntilDisplayed("燃料残量")
+        clickItemAndVerifyDescription(
+            "燃料残量",
+            "残り燃料が設定した閾値を下回った場合に、音声でお知らせします。",
+        )
+    }
+
+    @Test
     fun `LMU選択時に接続状況バナーが表示される`() {
         setContent()
 
         selectSimulator("Le Mans Ultimate（Windows版）")
+        waitUntilDisplayed("シミュレータ接続待機中")
+        // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
+    }
+
+    @Test
+    fun `ACE選択時に接続状況バナーが表示される`() {
+        setContent()
+
+        selectSimulator("Assetto Corsa EVO（Windows版）")
         waitUntilDisplayed("シミュレータ接続待機中")
         // Desktop ではサーバーIP設定への導線がないため、バナー表示のみ確認する。
     }
