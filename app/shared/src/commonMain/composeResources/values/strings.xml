@@ -6,6 +6,8 @@
     <string name="lmu_disconnected">LMUとの接続を待機しています</string>
     <string name="gt7_connected">GT7に接続しました</string>
     <string name="gt7_disconnected">GT7との接続を待機しています</string>
+    <string name="ace_connected">ACEに接続しました</string>
+    <string name="ace_disconnected">ACEとの接続を待機しています</string>
     <string name="banner_simulator_connected">シミュレータに接続中</string>
     <string name="banner_simulator_disconnected">シミュレータ接続待機中</string>
     <string name="banner_server_connected">Windows版KoDriverに接続中</string>

@@ -23,6 +23,7 @@ data class ConnectionBannerVmUiState(
 ) {
     val isSimulatorSelected: Boolean get() = selectedSimulator != null
     val isGt7Ps5: Boolean get() = selectedSimulator is Simulator.Gt7Ps5
+    val isAceWindows: Boolean get() = selectedSimulator is Simulator.AceWindows
 }
 
 enum class ConnectionBannerVmStatus {
