@@ -14,7 +14,8 @@ Le Mans Ultimate（LMU）、GranTurismo 7（GT7 PS5）、Assetto Corsa EVO（ACE
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
-<img width="1456" height="916" alt="スクリーンショット 2026-07-10 22 55 47" src="https://github.com/user-attachments/assets/5912d901-706a-4446-8600-ace2cfe47335" />
+<img width="1455" height="945" alt="スクリーンショット 2026-07-28 23 29 24" src="https://github.com/user-attachments/assets/a8fad479-8b80-421b-b272-2ae7fc2951f2" />
+
 
 ## 機能
 
