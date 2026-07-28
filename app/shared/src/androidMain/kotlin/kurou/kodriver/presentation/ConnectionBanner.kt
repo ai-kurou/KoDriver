@@ -10,10 +10,6 @@ import kodriver.app.shared.generated.resources.banner_server_disconnected
 import kodriver.app.shared.generated.resources.banner_server_ip_not_configured
 import kodriver.app.shared.generated.resources.banner_simulator_connected
 import kodriver.app.shared.generated.resources.banner_simulator_disconnected
-import kodriver.app.shared.generated.resources.gt7_connected
-import kodriver.app.shared.generated.resources.gt7_disconnected
-import kodriver.app.shared.generated.resources.lmu_connected
-import kodriver.app.shared.generated.resources.lmu_disconnected
 import kurou.kodriver.feature.main.ConnectionBannerViewModel
 import kurou.kodriver.feature.main.ConnectionBannerVmStatus
 import org.jetbrains.compose.resources.stringResource
@@ -35,6 +31,7 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     if (!uiState.isSimulatorSelected) return ConnectionBannerUiState(isVisible = false)
 
     val isGt7 = uiState.isGt7Ps5
+    val isAceWindows = uiState.isAceWindows
 
     val connectedMessage = stringResource(
         if (isGt7) Res.string.banner_simulator_connected else Res.string.banner_server_connected,
@@ -46,10 +43,10 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
         if (isGt7) Res.string.banner_console_ip_not_configured else Res.string.banner_server_ip_not_configured,
     )
     val snackbarConnectedMessage = stringResource(
-        if (isGt7) Res.string.gt7_connected else Res.string.lmu_connected,
+        connectionBannerSnackbarConnectedMessageRes(isGt7, isAceWindows),
     )
     val snackbarDisconnectedMessage = stringResource(
-        if (isGt7) Res.string.gt7_disconnected else Res.string.lmu_disconnected,
+        connectionBannerSnackbarDisconnectedMessageRes(isGt7, isAceWindows),
     )
 
     val vmStatus = uiState.connectionStatus
