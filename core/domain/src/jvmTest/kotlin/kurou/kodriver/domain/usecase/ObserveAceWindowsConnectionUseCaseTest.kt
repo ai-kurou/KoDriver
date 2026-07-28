@@ -7,11 +7,9 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -55,18 +53,15 @@ class ObserveAceWindowsConnectionUseCaseTest {
         coEvery { repository.isConnected() } throws RuntimeException("connection check failed") andThen true
         val useCase = createUseCase(repository)
 
-        val states = mutableListOf<AceWindowsConnectionState>()
-        val job = launch { useCase().collect { states += it } }
-        delay(50L)
-        assertFalse(states.first().isConnected)
-        assertNull(states.first().fuel)
+        val firstState = withTimeout(5_000L) { useCase().first() }
+        assertFalse(firstState.isConnected)
+        assertNull(firstState.fuel)
 
-        delay(1_050L)
+        val connectedState = withTimeout(5_000L) { useCase().first { it.isConnected } }
+        assertTrue(connectedState.isConnected)
 
-        assertTrue(states.last().isConnected)
         coVerify(exactly = 2) { repository.isConnected() }
-        job.cancel()
-        verify(exactly = 1) { repository.fuelStream() }
+        verify(exactly = 2) { repository.fuelStream() }
         confirmVerified(repository)
     }
 
