@@ -21,12 +21,15 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
     }
 
+    sealed class AceWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
+        data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+    }
+
     companion object {
         fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
             is Simulator.LmuWindows -> lmuWindowsFromId(id)
             is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
-            // ACEの燃料残量はlistPaneの読み上げ設定行のみを提供し、専用のdetailPaneは持たない。
-            is Simulator.AceWindows -> null
+            is Simulator.AceWindows -> aceWindowsFromId(id)
         }
 
         private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? = when (id) {
@@ -44,6 +47,11 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         private fun gt7Ps5FromId(id: ReadoutItemKey): Gt7Ps5? = when (id) {
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
+            else -> null
+        }
+
+        private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? = when (id) {
+            ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
             else -> null
         }
 

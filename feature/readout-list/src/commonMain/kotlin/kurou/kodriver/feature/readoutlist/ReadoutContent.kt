@@ -27,6 +27,7 @@ import kodriver.feature.readoutlist.generated.resources.Res
 import kodriver.feature.readoutlist.generated.resources.item_flag
 import kodriver.feature.readoutlist.generated.resources.item_my_best_lap
 import kodriver.feature.readoutlist.generated.resources.item_pit_timing
+import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel
 import kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
 import kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
 import kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
@@ -172,6 +173,7 @@ private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when 
     ReadoutListItemType.LmuWindows.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     ReadoutListItemType.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
+    ReadoutListItemType.AceWindows.RemainingFuel -> stringResource(Res.string.item_remaining_fuel)
 }
 
 @Preview(showBackground = true)
