@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -49,6 +50,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -400,6 +402,7 @@ internal fun ReadoutListPane(
                                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                                     ) {
                                         if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
+                                            ReadoutListQueueDivider()
                                             FilledIconToggleButton(
                                                 checked = uiState.queueEnabledStates[item] ?: false,
                                                 onCheckedChange = { onQueueEnabledChanged(item, it) },
@@ -410,6 +413,7 @@ internal fun ReadoutListPane(
                                                     contentDescription = null,
                                                 )
                                             }
+                                            ReadoutListQueueDivider()
                                         }
                                         Switch(
                                             checked = readoutEnabled,
@@ -447,6 +451,14 @@ internal fun ReadoutListPane(
             )
         }
     }
+}
+
+@Composable
+private fun ReadoutListQueueDivider() {
+    VerticalDivider(
+        modifier = Modifier.height(40.dp),
+        color = MaterialTheme.colorScheme.outlineVariant,
+    )
 }
 
 @Composable
