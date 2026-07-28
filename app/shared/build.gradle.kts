@@ -41,7 +41,7 @@ kotlin {
            warningsAsErrors = false
        }
     }
-    
+
     sourceSets {
         jvmMain.dependencies {
             implementation(libs.compose.uiTooling)

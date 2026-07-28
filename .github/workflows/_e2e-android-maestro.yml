@@ -67,5 +67,12 @@ jobs:
           arch: x86_64
           profile: pixel_6
           script: |
-            adb install "apk/KoDriver-android-${{ needs.build.outputs.version }}.apk"
-            maestro test .maestro/tap-bottom-tabs.yaml
+            .github/scripts/run-maestro-with-artifacts.sh "apk/KoDriver-android-${{ needs.build.outputs.version }}.apk"
+
+      - name: Upload Maestro debug artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: maestro-debug-artifacts
+          path: maestro-artifacts/
+          if-no-files-found: ignore
