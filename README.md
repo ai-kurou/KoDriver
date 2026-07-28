@@ -10,7 +10,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/ai-kurou/KoDriver)](https://github.com/ai-kurou/KoDriver/releases)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.0-7F52FF?logo=kotlin)
 
-Le Mans Ultimate（LMU）および GranTurismo 7（GT7 PS5）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
+Le Mans Ultimate（LMU）、GranTurismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
@@ -21,7 +21,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 - アナウンスする項目の選択・有効/無効の切り替え
 - アナウンス優先度のドラッグ＆ドロップによる並び替え
 - WAV 音声ファイルによるリアルタイムアナウンス
-- LMU 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
+- LMU / ACE 由来の走行情報を WebSocket で配信（Android アプリで受信・表示可能）
 - GT7 PS5 のテレメトリを UDP で直接受信（Android / Windows 対応、SimHub 経由も可）
 - テレメトリログの記録・一覧表示・詳細確認
 - クラッシュが発生した場合、改善のためにクラッシュレポートを Sentry に自動送信
@@ -31,12 +31,12 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 **デスクトップアプリ（Windows）**
 
 - Windows 10 以降
-- Le Mans Ultimate（LMU 使用時）または GranTurismo 7 PS5（GT7 使用時）
+- Le Mans Ultimate（LMU 使用時）、GranTurismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（ACE 使用時）
 
 **Android アプリ**
 
 - Android 9.0 以降
-- LMU 情報を受信する場合: デスクトップアプリと同一 LAN への接続
+- LMU / ACE 情報を受信する場合: デスクトップアプリと同一 LAN への接続
 - GT7 PS5 テレメトリを受信する場合: PS5 または SimHub を実行している PC と同一 LAN への接続
 
 ## インストール
@@ -45,7 +45,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
 [Releases](https://github.com/ai-kurou/KoDriver/releases) から最新の MSI インストーラーをダウンロードして実行してください。
 
-Windows 版 KoDriver をあらかじめ起動しておいてください。LMU が起動すると KoDriver が自動的に接続します。
+Windows 版 KoDriver をあらかじめ起動しておいてください。LMU または ACE が起動すると KoDriver が自動的に接続します。
 
 インストール時に Windows SmartScreen の警告が表示される場合があります。詳しい手順、ファイアウォール設定、既知の制限は [Windows 版のインストール手順](docs/windows-install.md) を参照してください。
 

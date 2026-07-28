@@ -11,7 +11,10 @@ ACE (Assetto Corsa EVO) Windows版の接続状態監視機能。`feature:lmu-win
 接続判定は `:core:ace-windows-data` の `AceWindowsGraphicsSharedMemorySource.isConnected()` が
 共有メモリの `packetId`（フレームごとに増加するカウンタ）の変化を監視し、一定時間変化がなければ
 未接続とみなす（LMU の `mCurrentET` によるstale検知と同じ方式）。Android では共有メモリを
-直接読めないため `AceWindowsFuelRepository` の Android 実装は No-Op（常に `isConnected() = false`）。
+直接読めないため、`AceWindowsFuelRepository` の Android 実装（`WebSocketAceWindowsFuelRepository`）は
+KoDriver サーバー経由の WebSocket で `fuelStream()` を配信する一方、`isConnected()` は常に
+`false` を返す（接続確認バナーは別途 `AceServerBannerConnectionChecker` で疎通確認するため。
+LMU の Android 実装と同じ扱い）。
 
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
