@@ -382,12 +382,6 @@ internal fun ReadoutListPane(
                             containerColor = cardContainerColor,
                         ) {
                             ListItem(
-                                modifier = Modifier.clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null,
-                                ) {
-                                    onItemClick(item)
-                                },
                                 headlineContent = { Text(itemName) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 leadingContent = {

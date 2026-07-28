@@ -211,7 +211,7 @@ class MainActivityTest {
 
     private fun clickItemAndVerifyDescription(itemText: String, descriptionText: String) {
         scrollToItem(itemText)
-        clickItem(itemText)
+        clickReadoutItem(itemText)
         waitUntilDisplayed(descriptionText)
         navigateBack()
     }
@@ -239,6 +239,11 @@ class MainActivityTest {
 
     private fun clickItem(text: String) {
         composeTestRule.onNodeWithText(text).performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    private fun clickReadoutItem(text: String) {
+        composeTestRule.onNode(hasContentDescription(text)).performClick()
         composeTestRule.waitForIdle()
     }
 
