@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.withTimeout
+import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -37,6 +38,7 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -44,6 +46,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
@@ -77,6 +80,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -99,6 +103,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -122,6 +127,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -158,6 +164,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -192,6 +199,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -224,6 +232,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -259,6 +268,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -293,6 +303,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -327,6 +338,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -359,6 +371,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -388,6 +401,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -422,6 +436,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -453,6 +468,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -487,6 +503,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -518,6 +535,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -538,6 +556,73 @@ class ApplicationTest {
     }
 
     @Test
+    fun `ACE燃料残量をJSONでWebSocketへ送信する`() = testApplication {
+        val repository = FakeAceWindowsFuelRepository()
+        application {
+            module(
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
+                ),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/ace_windows/fuel") {
+            repository.emit(aceFuelData1)
+
+            val message = withTimeout(1_000) {
+                (incoming.receive() as Frame.Text).readText()
+            }
+            assertEquals(aceFuelJson1, message)
+        }
+    }
+
+    @Test
+    fun `ACE燃料残量の同一値は重複して送信されない`() = testApplication {
+        val repository = FakeAceWindowsFuelRepository()
+        application {
+            module(
+                KoDriverServerUseCases(
+                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
+                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyTyreCarcassTemperatureRepository,
+                    ),
+                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                    observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
+                ),
+            )
+        }
+
+        client.config {
+            install(WebSockets)
+        }.webSocket("/ws/ace_windows/fuel") {
+            repository.emit(aceFuelData1)
+            repository.emit(aceFuelData1)
+            repository.emit(aceFuelData2)
+
+            val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+            val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+            assertEquals(aceFuelJson1, first)
+            assertEquals(aceFuelJson2, second)
+        }
+    }
+
+    @Test
     fun `KoDriverServerはstartで起動しstopで停止する`() {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
@@ -551,6 +636,7 @@ class ApplicationTest {
                 observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                 observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
             ),
             port = port,
             host = "127.0.0.1",
@@ -580,6 +666,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -611,6 +698,7 @@ class ApplicationTest {
                     observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 ),
             )
         }
@@ -642,6 +730,7 @@ class ApplicationTest {
                     single<LmuWindowsTyreWearRepository> { EmptyTyreWearRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
                     single<LmuWindowsVirtualEnergyRepository> { EmptyVirtualEnergyRepository }
+                    single<AceWindowsFuelRepository> { EmptyAceWindowsFuelRepository }
                 },
             )
         }.koin
@@ -933,6 +1022,28 @@ private class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRep
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = channel.receiveAsFlow()
 
     fun emit(data: LmuWindowsVirtualEnergyData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceFuelData1 = AceWindowsFuelData(remainingPercent = 42.0)
+private val aceFuelData2 = AceWindowsFuelData(remainingPercent = 28.5)
+
+private const val aceFuelJson1 = """{"remainingPercent":42.0}"""
+private const val aceFuelJson2 = """{"remainingPercent":28.5}"""
+
+private object EmptyAceWindowsFuelRepository : AceWindowsFuelRepository {
+    override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
+    override suspend fun isConnected(): Boolean = false
+}
+
+private class FakeAceWindowsFuelRepository : AceWindowsFuelRepository {
+    private val channel = Channel<AceWindowsFuelData>(capacity = Channel.UNLIMITED)
+
+    override fun fuelStream(): Flow<AceWindowsFuelData> = channel.receiveAsFlow()
+    override suspend fun isConnected(): Boolean = false
+
+    fun emit(data: AceWindowsFuelData) {
         channel.trySend(data).getOrThrow()
     }
 }

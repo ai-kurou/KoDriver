@@ -3,9 +3,6 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
@@ -148,15 +145,12 @@ fun androidDataModule(context: Context) = module {
     single<DynamicColorEnabledRepository> {
         AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
     }
-    // ACE (Assetto Corsa EVO) の走行データは Windows 共有メモリ専用実装のみで、
-    // KoDriver サーバー経由の配信（WebSocket）が未実装のため、Android では暫定的に空 Flow を返す。
-    single<AceWindowsFuelRepository> { NoOpAceWindowsFuelRepository() }
+    // ACE (Assetto Corsa EVO) の走行データは Windows 共有メモリ専用実装のみのため、
+    // Android は LMU 系と同様に KoDriver サーバーへの WebSocket クライアント実装を使う。
+    single<AceWindowsFuelRepository> {
+        WebSocketAceWindowsFuelRepository(serverIpRepository = get(), client = get())
+    }
     includes(androidDataModuleThresholdPreferences(context))
-}
-
-private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
-    override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
-    override suspend fun isConnected(): Boolean = false
 }
 
 /**
