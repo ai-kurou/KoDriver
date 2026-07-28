@@ -236,3 +236,9 @@ jobs:
           api-level: 36
           arch: x86_64
           script: ./gradlew connectedDebugAndroidTest
+
+  android-maestro-e2e:
+    uses: ./.github/workflows/_e2e-android-maestro.yml
+    with:
+      ref: ${{ github.head_ref }}
+    secrets: inherit
