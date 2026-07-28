@@ -60,6 +60,7 @@ import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kurou.kodriver.feature.acewindowsnarrator.AceWindowsNarratorEffect
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
@@ -312,6 +313,7 @@ fun AppScreen(
 
     LmuWindowsNarratorEffect()
     Gt7Ps5NarratorEffect()
+    AceWindowsNarratorEffect()
     VersionMismatchBottomSheetEffect()
     AppScreenContent(
         darkTheme = darkTheme,
