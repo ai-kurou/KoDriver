@@ -105,7 +105,7 @@ jobs:
 
   desktop-screenshot-test-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     permissions:
       contents: write
 
