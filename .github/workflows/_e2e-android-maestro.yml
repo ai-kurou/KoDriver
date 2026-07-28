@@ -68,4 +68,22 @@ jobs:
           profile: pixel_6
           script: |
             adb install "apk/KoDriver-android-${{ needs.build.outputs.version }}.apk"
+            mkdir -p maestro-artifacts
+            set +e
             maestro test .maestro/tap-bottom-tabs.yaml
+            MAESTRO_EXIT_CODE=$?
+            set -e
+            cp -R "$HOME/.maestro/tests" maestro-artifacts/maestro-tests || true
+            adb logcat -d > maestro-artifacts/logcat.txt || true
+            adb shell pidof kurou.kodriver > maestro-artifacts/pidof-kodriver.txt || true
+            adb shell dumpsys window > maestro-artifacts/dumpsys-window.txt || true
+            adb exec-out screencap -p > maestro-artifacts/final-screen.png || true
+            exit "$MAESTRO_EXIT_CODE"
+
+      - name: Upload Maestro debug artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: maestro-debug-artifacts
+          path: maestro-artifacts/
+          if-no-files-found: ignore
