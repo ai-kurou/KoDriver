@@ -7,13 +7,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
 
 internal class AceWindowsReadoutRemainingFuelDetailViewModel(
     observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
     private val saveThresholdPercentage: SaveAceWindowsRemainingFuelThresholdPercentageUseCase,
+    private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<AceWindowsReadoutRemainingFuelDetailUiState> = observeThresholdPercentage()
@@ -30,6 +33,10 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
 
     fun onThresholdReset() {
         viewModelScope.launch { saveThresholdPercentage(DEFAULT_THRESHOLD_PERCENTAGE) }
+    }
+
+    fun onPreviewClicked() {
+        playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelWarning)
     }
 
     companion object {

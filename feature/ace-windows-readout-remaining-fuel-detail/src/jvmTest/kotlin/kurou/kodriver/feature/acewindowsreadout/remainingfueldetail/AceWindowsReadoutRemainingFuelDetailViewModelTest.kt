@@ -18,8 +18,11 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -33,6 +36,9 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
 
     @MockK
     private lateinit var repository: AceWindowsRemainingFuelPreferencesRepository
+
+    @MockK(relaxUnitFun = true)
+    private lateinit var ttsEngine: TextToSpeechEngine
 
     @BeforeTest
     fun setUp() {
@@ -48,6 +54,7 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
     private fun createViewModel() = AceWindowsReadoutRemainingFuelDetailViewModel(
         observeThresholdPercentage = ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
         saveThresholdPercentage = SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
+        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
@@ -94,5 +101,17 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
         coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
         coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
         confirmVerified(repository)
+    }
+
+    @Test
+    fun `onPreviewClickedを呼ぶと残り燃料警告イベントが再生される`() = runTest {
+        every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
+        val viewModel = createViewModel()
+
+        viewModel.onPreviewClicked()
+
+        verify(exactly = 1) { repository.observeThresholdPercentage() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+        confirmVerified(repository, ttsEngine)
     }
 }
