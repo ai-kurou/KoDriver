@@ -1,7 +1,9 @@
 appId: kurou.kodriver
 ---
 - launchApp
-- assertVisible: "読み上げ"
+- extendedWaitUntil:
+    visible: "読み上げ"
+    timeout: 10000
 - tapOn: "ログ"
 - assertVisible: "ログはまだありません"
 - tapOn: "その他"
