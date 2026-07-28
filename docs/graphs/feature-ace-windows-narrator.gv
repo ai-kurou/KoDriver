@@ -1,0 +1,6 @@
+digraph G {
+  rankdir=TB
+  ":app:shared" -> ":feature:ace-windows-narrator"
+  ":feature:ace-windows-narrator" -> ":core:domain"
+  ":feature:ace-windows-narrator" -> ":core:designsystem"
+}

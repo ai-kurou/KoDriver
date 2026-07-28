@@ -1,5 +1,6 @@
 digraph G {
   rankdir=TB
+  ":feature:ace-windows-narrator" -> ":core:designsystem"
   ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:designsystem"
   ":feature:debug-state-detail" -> ":core:designsystem"
   ":feature:desktop-splash" -> ":core:designsystem"

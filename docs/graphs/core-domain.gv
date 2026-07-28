@@ -6,6 +6,7 @@ digraph G {
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
   ":feature:ace-windows-connection" -> ":core:domain"
+  ":feature:ace-windows-narrator" -> ":core:domain"
   ":feature:ace-windows-readout-remaining-fuel-detail" -> ":core:domain"
   ":feature:debug-state-detail" -> ":core:domain"
   ":feature:desktop-splash" -> ":core:domain"
