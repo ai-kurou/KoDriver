@@ -8,6 +8,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -65,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -379,6 +382,12 @@ internal fun ReadoutListPane(
                             containerColor = cardContainerColor,
                         ) {
                             ListItem(
+                                modifier = Modifier.clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                ) {
+                                    onItemClick(item)
+                                },
                                 headlineContent = { Text(itemName) },
                                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                                 leadingContent = {
@@ -410,19 +419,16 @@ internal fun ReadoutListPane(
                                     ) {
                                         if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
                                             ReadoutListQueueDivider()
-                                            FilledIconToggleButton(
+                                            ReadoutListQueueToggle(
+                                                item = item,
                                                 checked = uiState.queueEnabledStates[item] ?: false,
-                                                onCheckedChange = { onQueueEnabledChanged(item, it) },
                                                 enabled = readoutEnabled,
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                                                    contentDescription = null,
-                                                )
-                                            }
+                                                onCheckedChange = { onQueueEnabledChanged(item, it) },
+                                            )
                                             ReadoutListQueueDivider()
                                         }
-                                        Switch(
+                                        ReadoutListReadoutSwitch(
+                                            item = item,
                                             checked = readoutEnabled,
                                             onCheckedChange = { onReadoutEnabledChanged(item, it) },
                                         )
@@ -457,6 +463,65 @@ internal fun ReadoutListPane(
                 },
             )
         }
+    }
+}
+
+@Composable
+private fun ReadoutListQueueToggle(
+    item: ReadoutItemKey.TopLevel,
+    checked: Boolean,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(width = 56.dp, height = 56.dp)
+            .testTag("readoutListQueueTouchTarget:${item.value}")
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) {
+                if (enabled) {
+                    onCheckedChange(!checked)
+                }
+            },
+    ) {
+        FilledIconToggleButton(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                contentDescription = null,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReadoutListReadoutSwitch(
+    item: ReadoutItemKey,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(width = 64.dp, height = 56.dp)
+            .testTag("readoutListSwitchTouchTarget:${item.value}")
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) {
+                onCheckedChange(!checked)
+            },
+    ) {
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
     }
 }
 
