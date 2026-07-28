@@ -82,9 +82,29 @@ class MainActivityTest {
     }
 
     @Test
+    fun `ACE選択時に読み上げ項目を順にタップする`() {
+        launchActivity()
+        selectSimulator("Assetto Corsa EVO（Windows版）")
+        clickReadoutPriorityHelp()
+
+        waitUntilDisplayed("燃料残量")
+        clickItemAndNavigateBack("燃料残量")
+    }
+
+    @Test
     fun `LMU選択時に接続状況バナーをタップして戻る`() {
         launchActivity()
         selectSimulator("Le Mans Ultimate（Windows版）")
+        waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
+        clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
+        waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
+        navigateBack()
+    }
+
+    @Test
+    fun `ACE選択時に接続状況バナーをタップして戻る`() {
+        launchActivity()
+        selectSimulator("Assetto Corsa EVO（Windows版）")
         waitUntilDisplayed("Windows版KoDriverへ接続するIPアドレスが未設定です")
         clickItem("Windows版KoDriverへ接続するIPアドレスが未設定です")
         waitUntilDisplayed("Windows版KoDriverが動作しているPCのIPアドレスを入力してください。")
