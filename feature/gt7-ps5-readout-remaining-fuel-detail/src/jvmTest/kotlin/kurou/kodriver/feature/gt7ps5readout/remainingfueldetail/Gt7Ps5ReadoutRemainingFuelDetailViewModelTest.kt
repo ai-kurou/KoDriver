@@ -18,9 +18,12 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -34,6 +37,9 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
 
     @MockK
     private lateinit var repository: Gt7Ps5RemainingFuelPreferencesRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
 
     private val thresholdFlow = MutableStateFlow(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
 
@@ -51,6 +57,7 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
     private fun createViewModel() = Gt7Ps5ReadoutRemainingFuelDetailViewModel(
         observeThresholdPercentage = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
         saveThresholdPercentage = SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
+        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
@@ -96,5 +103,18 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             repository.saveThresholdPercentage(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
         }
         confirmVerified(repository)
+    }
+
+    @Test
+    fun `onPreviewClickedを呼ぶと燃料残量警告を読み上げる`() = runTest {
+        every { repository.observeThresholdPercentage() } returns thresholdFlow
+        every { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning, false) } returns Unit
+        val viewModel = createViewModel()
+
+        viewModel.onPreviewClicked()
+
+        verify(exactly = 1) { repository.observeThresholdPercentage() }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning, false) }
+        confirmVerified(repository, ttsEngine)
     }
 }
