@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remaining_fuel_description">GT7のテレメトリから燃料残量を取得し、音声でお知らせします。</string>
+</resources>
