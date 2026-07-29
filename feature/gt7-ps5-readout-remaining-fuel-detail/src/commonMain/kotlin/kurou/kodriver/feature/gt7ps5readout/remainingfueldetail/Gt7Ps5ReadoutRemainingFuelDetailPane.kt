@@ -45,6 +45,7 @@ fun Gt7Ps5ReadoutRemainingFuelDetailPane(
         uiState = uiState,
         onThresholdChanged = viewModel::onThresholdChanged,
         onThresholdReset = viewModel::onThresholdReset,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
