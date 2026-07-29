@@ -206,16 +206,101 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         assertEquals(1, decision.state.fuelTrackingState.currentLap)
     }
 
+    @Test
+    fun `燃料残量が閾値以下になると読み上げる`() {
+        val decision = useCase.determineRemainingFuel(
+            state = Gt7Ps5NarratorState(),
+            telemetry = telemetry(gasLevel = 30f, gasCapacity = 100f),
+            settings = settings(remainingFuelThresholdPercentage = 30),
+        )
+
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning), decision.events)
+        assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残量が閾値ちょうどなら読み上げる`() {
+        val decision = useCase.determineRemainingFuel(
+            state = Gt7Ps5NarratorState(),
+            telemetry = telemetry(gasLevel = 15f, gasCapacity = 50f),
+            settings = settings(remainingFuelThresholdPercentage = 30),
+        )
+
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning), decision.events)
+    }
+
+    @Test
+    fun `燃料残量の警告状態が継続しても再度読み上げない`() {
+        val decision = useCase.determineRemainingFuel(
+            state = Gt7Ps5NarratorState(remainingFuelWarned = true),
+            telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
+            settings = settings(remainingFuelThresholdPercentage = 30),
+        )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料残量が閾値より上に戻ると再度読み上げ可能になる`() {
+        val warnedState = useCase.determineRemainingFuel(
+            state = Gt7Ps5NarratorState(),
+            telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
+            settings = settings(remainingFuelThresholdPercentage = 30),
+        ).state
+        val recoveredState = useCase.determineRemainingFuel(
+            state = warnedState,
+            telemetry = telemetry(gasLevel = 50f, gasCapacity = 100f),
+            settings = settings(remainingFuelThresholdPercentage = 30),
+        ).state
+        val rewarnedDecision = useCase.determineRemainingFuel(
+            state = recoveredState,
+            telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
+            settings = settings(remainingFuelThresholdPercentage = 30),
+        )
+
+        assertEquals(false, recoveredState.remainingFuelWarned)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning), rewarnedDecision.events)
+    }
+
+    @Test
+    fun `燃料残量が無効なら読み上げない`() {
+        val decision = useCase.determineRemainingFuel(
+            state = Gt7Ps5NarratorState(),
+            telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
+            settings = settings(remainingFuelEnabled = false),
+        )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.remainingFuelWarned)
+    }
+
+    @Test
+    fun `燃料容量が0以下なら燃料残量は読み上げない`() {
+        val decision = useCase.determineRemainingFuel(
+            state = Gt7Ps5NarratorState(),
+            telemetry = telemetry(gasLevel = 0f, gasCapacity = 0f),
+            settings = settings(),
+        )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(false, decision.state.remainingFuelWarned)
+    }
+
     private fun settings(
         enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelLapsEnabled: Boolean = true,
+        remainingFuelThresholdPercentage: Int = 30,
+        remainingFuelEnabled: Boolean = true,
     ) = Gt7Ps5NarratorReadoutSettings(
         enabledStates = enabledStates,
         myBestLapVoiceType = myBestLapVoiceType,
         remainingFuelLapsThreshold = remainingFuelLapsThreshold,
         remainingFuelLapsEnabled = remainingFuelLapsEnabled,
+        remainingFuelThresholdPercentage = remainingFuelThresholdPercentage,
+        remainingFuelEnabled = remainingFuelEnabled,
     )
 
     private fun telemetry(

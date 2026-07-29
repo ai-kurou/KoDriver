@@ -10,6 +10,7 @@ data class Gt7Ps5NarratorState(
     val previousBestLapTimeMs: Int? = null,
     val lastAnnouncedRemainingLaps: Int = -1,
     val lastFuelEvaluationLap: Int = -1,
+    val remainingFuelWarned: Boolean = false,
     val fuelTrackingState: Gt7Ps5FuelTrackingState = Gt7Ps5FuelTrackingState(),
 )
 
@@ -31,6 +32,8 @@ data class Gt7Ps5NarratorReadoutSettings(
     val myBestLapVoiceType: MyBestLapVoiceType,
     val remainingFuelLapsThreshold: Int,
     val remainingFuelLapsEnabled: Boolean,
+    val remainingFuelThresholdPercentage: Int,
+    val remainingFuelEnabled: Boolean,
 )
 
 data class Gt7Ps5NarratorReadoutDecision(
@@ -95,6 +98,19 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         return Gt7Ps5NarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedRemainingLaps = remainingLaps),
             events = listOf(SpeechEvent.RemainingFuelLapsWarning(remainingLaps)),
+        )
+    }
+
+    fun determineRemainingFuel(
+        state: Gt7Ps5NarratorState,
+        telemetry: Gt7Ps5TelemetryData,
+        settings: Gt7Ps5NarratorReadoutSettings,
+    ): Gt7Ps5NarratorReadoutDecision {
+        val isLow = isLowRemainingFuel(telemetry, settings.remainingFuelThresholdPercentage)
+        val shouldAnnounce = !state.remainingFuelWarned && isLow && settings.remainingFuelEnabled
+        return Gt7Ps5NarratorReadoutDecision(
+            state = state.copy(remainingFuelWarned = isLow),
+            events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning) else emptyList(),
         )
     }
 
@@ -179,6 +195,11 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         if (!settings.remainingFuelLapsEnabled) return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         return RemainingFuelLapsEvaluation(fuelState.currentLap, remainingLapsFloor)
     }
+
+    private fun isLowRemainingFuel(telemetry: Gt7Ps5TelemetryData, thresholdPercentage: Int): Boolean =
+        telemetry.gasLevel > 0f &&
+            telemetry.gasCapacity > 0f &&
+            telemetry.gasLevel * 100f <= thresholdPercentage * telemetry.gasCapacity
 
     private companion object {
         const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000

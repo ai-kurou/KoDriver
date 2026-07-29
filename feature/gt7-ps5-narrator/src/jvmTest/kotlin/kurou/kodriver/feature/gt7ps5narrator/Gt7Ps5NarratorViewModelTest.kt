@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -36,6 +37,7 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
@@ -60,6 +62,9 @@ class Gt7Ps5NarratorViewModelTest {
 
     @MockK
     private lateinit var remainingFuelLapsPreferencesRepository: Gt7Ps5RemainingFuelLapsPreferencesRepository
+
+    @MockK
+    private lateinit var remainingFuelPreferencesRepository: Gt7Ps5RemainingFuelPreferencesRepository
 
     @MockK
     private lateinit var simulatorPreferencesRepository: SimulatorPreferencesRepository
@@ -111,6 +116,10 @@ class Gt7Ps5NarratorViewModelTest {
                 observeRemainingFuelLapsThreshold =
                     ObserveGt7Ps5RemainingFuelLapsUseCase(remainingFuelLapsPreferencesRepository),
             ),
+            remainingFuelUseCases = RemainingFuelUseCases(
+                observeRemainingFuelThresholdPercentage =
+                    ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
+            ),
             eventProcessor = Gt7Ps5NarratorEventProcessor(
                 ttsEngine = ttsEngine,
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
@@ -133,6 +142,7 @@ class Gt7Ps5NarratorViewModelTest {
         } returns MutableStateFlow(emptyList())
         every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.FORMAL)
         every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
+        every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -332,6 +342,71 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
+    fun `燃料残量の閾値設定を反映して読み上げる`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val ttsEngine = mockTts(spokenTexts)
+        stubReadoutDefaults(remainingFuelThresholdPercentage = 30)
+        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
+    }
+
+    @Test
+    fun `燃料残量が無効のときは読み上げない`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val ttsEngine = mockTts(spokenTexts)
+        stubReadoutDefaults(
+            enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false),
+            remainingFuelThresholdPercentage = 30,
+        )
+        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    @Test
+    fun `燃料残量の読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val telemetryJsons = mutableListOf<String>()
+        val ttsEngine = mockTts(spokenTexts)
+        stubReadoutDefaults(remainingFuelThresholdPercentage = 30)
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                123_456L,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                capture(telemetryJsons),
+            )
+        } just Runs
+        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
+
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
+        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
+        assertEquals(1, telemetryJsons.size)
+        assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=false"))
+        assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=true"))
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(
+                123_456L,
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                telemetryJsons.single(),
+            )
+        }
+    }
+
+    @Test
     fun `優先度の高いアイテム読み上げ中にベストラップが来ても読み上げない`() = runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -461,6 +536,7 @@ class Gt7Ps5NarratorViewModelTest {
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
         voiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         fuelThreshold: Int = 3,
+        remainingFuelThresholdPercentage: Int = 0,
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
@@ -474,6 +550,9 @@ class Gt7Ps5NarratorViewModelTest {
         every {
             remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps()
         } returns MutableStateFlow(fuelThreshold)
+        every {
+            remainingFuelPreferencesRepository.observeThresholdPercentage()
+        } returns MutableStateFlow(remainingFuelThresholdPercentage)
         every {
             queuePreferencesRepository.observeQueueEnabledStates()
         } returns MutableStateFlow(queueEnabledOverrides)
@@ -491,6 +570,14 @@ class Gt7Ps5NarratorViewModelTest {
                 any(),
                 Simulator.Gt7Ps5,
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                capture(telemetryJsons),
+            )
+        } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(
+                any(),
+                Simulator.Gt7Ps5,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                 capture(telemetryJsons),
             )
         } just Runs
