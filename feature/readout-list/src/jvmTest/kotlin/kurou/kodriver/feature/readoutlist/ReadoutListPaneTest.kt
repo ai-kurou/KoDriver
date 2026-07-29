@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -127,6 +128,42 @@ class ReadoutListPaneTest {
 
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
         assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to false, readoutChanges.single())
+    }
+
+    @Test
+    fun `スイッチとキュー追加トグルの外側タップ領域は項目タップではなくON_OFF変更コールバックを呼ぶ`() {
+        val readoutChanges = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
+        val queueChanges = mutableListOf<Pair<ReadoutItemKey, Boolean>>()
+        val clicked = mutableListOf<ReadoutItemKey>()
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState = ReadoutListUiState(
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                        queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                    ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
+                    onQueueEnabledChanged = { item, enabled -> queueChanges += item to enabled },
+                    onItemClick = { clicked += it },
+                )
+            }
+        }
+
+        rule.onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsEnabled()
+            .performClick()
+        rule.onNodeWithTag("readoutListSwitchTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+            .assertIsEnabled()
+            .performClick()
+
+        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to true, queueChanges.single())
+        assertEquals(ReadoutItemKey.LmuWindows.Flag.Root to false, readoutChanges.single())
+        assertEquals(emptyList(), clicked)
     }
 
     @Test

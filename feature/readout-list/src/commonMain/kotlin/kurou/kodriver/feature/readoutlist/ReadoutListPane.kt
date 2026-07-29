@@ -8,12 +8,15 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -34,15 +37,15 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
@@ -65,6 +68,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -103,7 +107,6 @@ import kodriver.feature.readoutlist.generated.resources.simulator_name_ace_windo
 import kodriver.feature.readoutlist.generated.resources.simulator_name_gt7_ps5
 import kodriver.feature.readoutlist.generated.resources.simulator_name_lmu_windows
 import kotlinx.coroutines.launch
-import kurou.kodriver.core.designsystem.ListPaneCard
 import kurou.kodriver.core.designsystem.generated.resources.ace
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
@@ -366,70 +369,18 @@ internal fun ReadoutListPane(
                         )
                         val itemName = itemDisplayName(item)
                         val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
-                        ListPaneCard(
-                            onClick = { onItemClick(item) },
-                            // クリック可能なのはこの Card 自身であり、内部の headlineContent の Text 自体は
-                            // クリックアクションを持たない。Compose UI Test で座標タップ(performClick)ではなく
-                            // OnClick セマンティクスアクションを直接実行してクリックすると、
-                            // Text ノードを対象にした場合は「ノードが OnClick を持たない」エラーになるため、
-                            // Card 自身を一意に特定できるよう contentDescription を付与する。
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                                .semantics { contentDescription = itemName },
+                        ReadoutListItemCard(
+                            item = item,
+                            index = index,
+                            itemName = itemName,
+                            dragHandleModifier = Modifier.draggableHandle(),
+                            readoutEnabled = readoutEnabled,
+                            queueEnabled = uiState.queueEnabledStates[item] ?: false,
                             containerColor = cardContainerColor,
-                        ) {
-                            ListItem(
-                                headlineContent = { Text(itemName) },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                leadingContent = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.DragIndicator,
-                                            contentDescription = stringResource(Res.string.drag_handle),
-                                            modifier = Modifier.draggableHandle(),
-                                        )
-                                        Text(
-                                            text = "${index + 1}",
-                                            style = MaterialTheme.typography.labelLarge,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.widthIn(min = 20.dp),
-                                        )
-                                        Icon(
-                                            imageVector = itemIcon(item),
-                                            contentDescription = null,
-                                        )
-                                    }
-                                },
-                                trailingContent = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                    ) {
-                                        if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
-                                            ReadoutListQueueDivider()
-                                            FilledIconToggleButton(
-                                                checked = uiState.queueEnabledStates[item] ?: false,
-                                                onCheckedChange = { onQueueEnabledChanged(item, it) },
-                                                enabled = readoutEnabled,
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                                                    contentDescription = null,
-                                                )
-                                            }
-                                            ReadoutListQueueDivider()
-                                        }
-                                        Switch(
-                                            checked = readoutEnabled,
-                                            onCheckedChange = { onReadoutEnabledChanged(item, it) },
-                                        )
-                                    }
-                                },
-                            )
-                        }
+                            onItemClick = onItemClick,
+                            onQueueEnabledChanged = onQueueEnabledChanged,
+                            onReadoutEnabledChanged = onReadoutEnabledChanged,
+                        )
                     }
                 }
             }
@@ -457,6 +408,148 @@ internal fun ReadoutListPane(
                 },
             )
         }
+    }
+}
+
+@Composable
+private fun ReadoutListItemCard(
+    item: ReadoutItemKey,
+    index: Int,
+    itemName: String,
+    dragHandleModifier: Modifier,
+    readoutEnabled: Boolean,
+    queueEnabled: Boolean,
+    containerColor: Color,
+    onItemClick: (ReadoutItemKey) -> Unit,
+    onQueueEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+    onReadoutEnabledChanged: (ReadoutItemKey, Boolean) -> Unit,
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 72.dp)
+                .padding(start = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 72.dp)
+                    .semantics { contentDescription = itemName }
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) {
+                        onItemClick(item)
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.DragIndicator,
+                    contentDescription = stringResource(Res.string.drag_handle),
+                    modifier = dragHandleModifier,
+                )
+                Text(
+                    text = "${index + 1}",
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.widthIn(min = 20.dp),
+                )
+                Icon(
+                    imageVector = itemIcon(item),
+                    contentDescription = null,
+                )
+                Text(
+                    text = itemName,
+                    modifier = Modifier.padding(start = 12.dp),
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                if (item is ReadoutItemKey.TopLevel && item.supportsQueue) {
+                    ReadoutListQueueDivider()
+                    ReadoutListQueueToggle(
+                        item = item,
+                        checked = queueEnabled,
+                        enabled = readoutEnabled,
+                        onCheckedChange = { onQueueEnabledChanged(item, it) },
+                    )
+                    ReadoutListQueueDivider()
+                }
+                ReadoutListReadoutSwitch(
+                    item = item,
+                    checked = readoutEnabled,
+                    onCheckedChange = { onReadoutEnabledChanged(item, it) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReadoutListQueueToggle(
+    item: ReadoutItemKey.TopLevel,
+    checked: Boolean,
+    enabled: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(width = 56.dp, height = 56.dp)
+            .testTag("readoutListQueueTouchTarget:${item.value}")
+            .clickable(
+                enabled = enabled,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) {
+                onCheckedChange(!checked)
+            },
+    ) {
+        FilledIconToggleButton(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            enabled = enabled,
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                contentDescription = null,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReadoutListReadoutSwitch(
+    item: ReadoutItemKey,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(width = 64.dp, height = 56.dp)
+            .testTag("readoutListSwitchTouchTarget:${item.value}")
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+            ) {
+                onCheckedChange(!checked)
+            },
+    ) {
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
     }
 }
 
