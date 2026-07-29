@@ -49,7 +49,7 @@ jobs:
 
   unit-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -58,7 +58,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - run: ./.github/scripts/run-gradle-with-diagnostics.sh 3000 ./gradlew koverXmlReport --info --stacktrace
+      - run: ./gradlew koverXmlReport
 
       - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
@@ -67,7 +67,7 @@ jobs:
 
   desktop-screenshot-test-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -78,11 +78,11 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Verify JVM screenshot tests
-        run: ./.github/scripts/run-gradle-with-diagnostics.sh 1800 ./gradlew verifyRoborazziJvmTests --info --stacktrace
+        run: ./gradlew verifyRoborazziJvmTests
 
   android-screenshot-test-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 35
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -93,7 +93,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Verify Android screenshot tests
-        run: ./.github/scripts/run-gradle-with-diagnostics.sh 1800 ./gradlew verifyRoborazziAndroidHostTests --info --stacktrace
+        run: ./gradlew verifyRoborazziAndroidHostTests
 
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
