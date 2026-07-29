@@ -209,6 +209,7 @@ class ReadoutContentTest {
     fun `gt7_ps5の燃料残量項目を選択すると指定した詳細ペインを表示する`() {
         var remainingFuelText by mutableStateOf("")
         var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
+        var detailItem: ReadoutListItemType? = null
 
         rule.setContent {
             remainingFuelText = stringResource(Res.string.item_remaining_fuel)
@@ -228,14 +229,18 @@ class ReadoutContentTest {
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
-                detailContent = { Text("GT7 remaining fuel detail") },
+                detailContent = { itemType ->
+                    detailItem = itemType
+                    Text("Detail: ${itemType.id.value}")
+                },
             )
         }
 
         rule.onNodeWithText(remainingFuelText).performClick()
         rule.waitForIdle()
 
-        rule.onNodeWithText("GT7 remaining fuel detail").assertExists()
+        rule.onNodeWithText("Detail: gt7_ps5_remaining_fuel").assertExists()
+        assertEquals(ReadoutListItemType.Gt7Ps5.RemainingFuel, detailItem)
     }
 
     @Test
