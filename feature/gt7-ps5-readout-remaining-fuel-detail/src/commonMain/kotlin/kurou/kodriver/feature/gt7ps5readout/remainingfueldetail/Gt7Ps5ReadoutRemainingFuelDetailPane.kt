@@ -8,9 +8,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.gt7ps5readout.remainingfueldetail.generated.resources.Res
 import kodriver.feature.gt7ps5readout.remainingfueldetail.generated.resources.remaining_fuel_description
 import kodriver.feature.gt7ps5readout.remainingfueldetail.generated.resources.remaining_fuel_preview_label
@@ -25,8 +27,9 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
-import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
 private const val THRESHOLD_MIN = 5f
@@ -36,7 +39,14 @@ private const val THRESHOLD_MAX = 90f
 fun Gt7Ps5ReadoutRemainingFuelDetailPane(
     modifier: Modifier = Modifier,
 ) {
-    Gt7Ps5ReadoutRemainingFuelDetailPaneContent(modifier = modifier)
+    val viewModel: Gt7Ps5ReadoutRemainingFuelDetailViewModel = koinViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
+        uiState = uiState,
+        onThresholdChanged = viewModel::onThresholdChanged,
+        onThresholdReset = viewModel::onThresholdReset,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -78,7 +88,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.format(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
-                        defaultValue = GT7_PS5_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
+                        defaultValue = GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT.toFloat(),
                         onResetToDefault = onThresholdReset,
                         resetContentDescription = stringResource(Res.string.remaining_fuel_threshold_reset),
                     )
@@ -89,7 +99,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
 }
 
 internal data class Gt7Ps5ReadoutRemainingFuelDetailUiState(
-    val thresholdPercentage: Int = GT7_PS5_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE,
+    val thresholdPercentage: Int = GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
 )
 
 @Preview(showBackground = true)
