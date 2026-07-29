@@ -568,6 +568,7 @@ private fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
+        ReadoutListItemType.Gt7Ps5.RemainingFuel -> Unit
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
     }
 }
