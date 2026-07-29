@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TooManyFunctions")
 
 package kurou.kodriver.feature.gt7ps5narrator
 
@@ -157,6 +157,28 @@ class Gt7Ps5WavNarratorEngineTest {
         assertEquals(2, player.playedSounds.size)
         assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
         assertContentEquals(REMAINING_FUEL_LAPS_3_SOUND, player.playedSounds[1])
+    }
+
+    @Test
+    fun `Gt7Ps5RemainingFuelWarningを再生する`() = runTest {
+        val player = FakeSoundPlayer()
+        val engine = createEngine(
+            player = player,
+            resourceLoader = { path ->
+                when (path) {
+                    REMAINING_FUEL_CAUTION_PATH -> REMAINING_FUEL_CAUTION_SOUND
+                    else -> EVENT_SOUND
+                }
+            },
+        )
+        runCurrent()
+
+        engine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning)
+        runCurrent()
+
+        assertEquals(2, player.playedSounds.size)
+        assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+        assertContentEquals(REMAINING_FUEL_CAUTION_SOUND, player.playedSounds[1])
     }
 
     @Test
@@ -344,6 +366,7 @@ class Gt7Ps5WavNarratorEngineTest {
         const val ELECTRONIC_NOISE_PATH = "files/electronic_noise.wav"
         const val REMAINING_FUEL_LAPS_0_PATH = "files/remaining_fuel_laps_0.wav"
         const val REMAINING_FUEL_LAPS_3_PATH = "files/remaining_fuel_laps_3.wav"
+        const val REMAINING_FUEL_CAUTION_PATH = "files/remaining_fuel_caution.wav"
         val MY_BEST_LAP_FORMAL_SOUND = byteArrayOf(1)
         val MY_BEST_LAP_CASUAL_SOUND = byteArrayOf(2)
         val EVENT_SOUND = byteArrayOf(3)
@@ -351,6 +374,7 @@ class Gt7Ps5WavNarratorEngineTest {
         val ELECTRONIC_NOISE_SOUND = byteArrayOf(5)
         val REMAINING_FUEL_LAPS_0_SOUND = byteArrayOf(6)
         val REMAINING_FUEL_LAPS_3_SOUND = byteArrayOf(7)
+        val REMAINING_FUEL_CAUTION_SOUND = byteArrayOf(8)
     }
 }
 
