@@ -557,7 +557,10 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 }
 
 @Composable
-internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
+internal fun ReadoutItemDetailContent(
+    itemType: ReadoutListItemType,
+    gt7Ps5RemainingFuelContent: @Composable () -> Unit = { Gt7Ps5ReadoutRemainingFuelDetailPane() },
+) {
     when (itemType) {
         ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
         ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
@@ -569,7 +572,7 @@ internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
-        ReadoutListItemType.Gt7Ps5.RemainingFuel -> Gt7Ps5ReadoutRemainingFuelDetailPane()
+        ReadoutListItemType.Gt7Ps5.RemainingFuel -> gt7Ps5RemainingFuelContent()
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
     }
 }
