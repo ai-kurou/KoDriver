@@ -124,7 +124,7 @@ jobs:
 
       - name: Record JVM golden images
         if: steps.verify.outcome == 'failure'
-        run: ./gradlew recordRoborazziJvmTests
+        run: ./.github/scripts/run-gradle-with-diagnostics.sh 600 ./gradlew recordRoborazziJvmTests
 
       - name: Commit updated JVM golden images
         if: steps.verify.outcome == 'failure'
@@ -173,7 +173,7 @@ jobs:
 
       - name: Record Android golden images
         if: steps.verify.outcome == 'failure'
-        run: ./gradlew recordRoborazziAndroidHostTests
+        run: ./.github/scripts/run-gradle-with-diagnostics.sh 600 ./gradlew recordRoborazziAndroidHostTests
 
       - name: Commit updated Android golden images
         if: steps.verify.outcome == 'failure'
