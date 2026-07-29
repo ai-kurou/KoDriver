@@ -61,7 +61,7 @@ class DebugStateFuelConsumptionCardTest {
     }
 
     @Test
-    fun `selectedSimulatorがGT7の場合は燃料消費量Lと残り周数を表示する`() {
+    fun `selectedSimulatorがGT7の場合は燃料残量と燃料消費量Lと残り周数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -76,8 +76,47 @@ class DebugStateFuelConsumptionCardTest {
             }
         }
 
+        rule.onNodeWithText("残量 57.1%").assertIsDisplayed()
         rule.onNodeWithText("消費 10.0L/周").assertIsDisplayed()
         rule.onNodeWithText("残り 4.0周").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合は燃費計算できなくても燃料残量を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.Gt7Ps5,
+                        gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
+                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7でデータ未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.Gt7Ps5,
+                        gt7Ps5Telemetry = null,
+                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                    ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test

@@ -51,6 +51,11 @@ internal fun calculateGt7FuelConsumption(telemetry: Gt7Ps5TelemetryData?): FuelC
     )
 }
 
+internal fun calculateGt7FuelRemainingPercent(telemetry: Gt7Ps5TelemetryData?): Double? {
+    if (telemetry == null || telemetry.gasCapacity <= 0f) return null
+    return telemetry.gasLevel * PERCENT_MULTIPLIER / telemetry.gasCapacity
+}
+
 /**
  * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、レース開始からの平均摩耗量で近似する簡易計算。
  * 直近のタイヤ交換は考慮しない。

@@ -78,6 +78,28 @@ class FuelConsumptionCalculatorTest {
     }
 
     @Test
+    fun `GT7 燃料残量を割合で返す`() {
+        assertEquals(
+            25.0,
+            calculateGt7FuelRemainingPercent(sampleGt7Telemetry(lapCount = 0, gasLevel = 17.5f, gasCapacity = 70f)),
+        )
+    }
+
+    @Test
+    fun `GT7 燃料容量が0以下の場合は残量割合を返さない`() {
+        assertNull(
+            calculateGt7FuelRemainingPercent(
+                sampleGt7Telemetry(lapCount = 0, gasLevel = 17.5f, gasCapacity = 0f),
+            ),
+        )
+    }
+
+    @Test
+    fun `GT7 telemetryがnullの場合は残量割合を返さない`() {
+        assertNull(calculateGt7FuelRemainingPercent(null))
+    }
+
+    @Test
     fun `GT7 telemetryがnullの場合はnullを返す`() {
         assertNull(calculateGt7FuelConsumption(null))
     }
