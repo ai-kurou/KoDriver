@@ -104,6 +104,13 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
         }
+
+        sealed interface RemainingFuel : Gt7Ps5 {
+            data object Root : RemainingFuel, TopLevel {
+                override val value = "gt7_ps5_remaining_fuel"
+                override val supportsQueue = true
+            }
+        }
     }
 
     sealed interface AceWindows : ReadoutItemKey {
@@ -139,6 +146,7 @@ sealed interface ReadoutItemKey {
                 LmuWindows.MyBestLap.Root,
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,
+                Gt7Ps5.RemainingFuel.Root,
                 AceWindows.RemainingFuel.Root,
             )
         }
