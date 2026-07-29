@@ -12,6 +12,9 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
         }
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+        }
     }
 }
 
