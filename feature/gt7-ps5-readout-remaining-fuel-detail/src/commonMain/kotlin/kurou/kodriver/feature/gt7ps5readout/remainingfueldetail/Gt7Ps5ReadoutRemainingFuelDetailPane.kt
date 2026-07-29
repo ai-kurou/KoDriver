@@ -25,12 +25,12 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
 private const val THRESHOLD_MIN = 5f
 private const val THRESHOLD_MAX = 90f
-private const val DEFAULT_THRESHOLD_PERCENTAGE = 30
 
 @Composable
 fun Gt7Ps5ReadoutRemainingFuelDetailPane(
@@ -78,7 +78,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.format(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
-                        defaultValue = DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
+                        defaultValue = GT7_PS5_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
                         onResetToDefault = onThresholdReset,
                         resetContentDescription = stringResource(Res.string.remaining_fuel_threshold_reset),
                     )
@@ -89,7 +89,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
 }
 
 internal data class Gt7Ps5ReadoutRemainingFuelDetailUiState(
-    val thresholdPercentage: Int = DEFAULT_THRESHOLD_PERCENTAGE,
+    val thresholdPercentage: Int = GT7_PS5_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE,
 )
 
 @Preview(showBackground = true)
