@@ -96,7 +96,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - run: ./.github/scripts/run-gradle-with-diagnostics.sh 3300 ./gradlew koverXmlReport --info --stacktrace
+      - run: ./.github/scripts/run-gradle-with-diagnostics.sh 3000 ./gradlew koverXmlReport --info --stacktrace
 
       - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
@@ -120,7 +120,7 @@ jobs:
       - name: Verify JVM screenshot tests
         id: verify
         continue-on-error: true
-        run: ./.github/scripts/run-gradle-with-diagnostics.sh 2100 ./gradlew verifyRoborazziJvmTests --info --stacktrace
+        run: ./.github/scripts/run-gradle-with-diagnostics.sh 1800 ./gradlew verifyRoborazziJvmTests --info --stacktrace
 
       - name: Record JVM golden images
         if: steps.verify.outcome == 'failure'
@@ -169,7 +169,7 @@ jobs:
       - name: Verify Android screenshot tests
         id: verify
         continue-on-error: true
-        run: ./.github/scripts/run-gradle-with-diagnostics.sh 2100 ./gradlew verifyRoborazziAndroidHostTests --info --stacktrace
+        run: ./.github/scripts/run-gradle-with-diagnostics.sh 1800 ./gradlew verifyRoborazziAndroidHostTests --info --stacktrace
 
       - name: Record Android golden images
         if: steps.verify.outcome == 'failure'
