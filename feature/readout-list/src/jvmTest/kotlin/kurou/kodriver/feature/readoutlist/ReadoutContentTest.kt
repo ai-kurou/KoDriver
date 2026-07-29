@@ -2,7 +2,6 @@ package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
@@ -206,10 +205,9 @@ class ReadoutContentTest {
     }
 
     @Test
-    fun `gt7_ps5の燃料残量項目を選択すると指定した詳細ペインを表示する`() {
+    fun `gt7_ps5の燃料残量をタップすると選択コールバックを呼ぶ`() {
         var remainingFuelText by mutableStateOf("")
-        var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
-        var detailItem: ReadoutListItemType? = null
+        val selected = mutableListOf<ReadoutItemKey>()
 
         rule.setContent {
             remainingFuelText = stringResource(Res.string.item_remaining_fuel)
@@ -219,28 +217,22 @@ class ReadoutContentTest {
                     selectedSimulator = Simulator.Gt7Ps5,
                     items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
                     readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true),
-                    selectedItem = selectedItem,
                 ),
                 onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
-                onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.Gt7Ps5, it) },
+                onItemSelected = { selected.add(it) },
                 onClearSelectedItem = {},
                 scaffoldDirective = singlePaneDirective,
                 windowSizeClass = compactWindowSizeClass,
-                detailContent = { itemType ->
-                    detailItem = itemType
-                    Text("Detail: ${itemType.id.value}")
-                },
             )
         }
 
         rule.onNodeWithText(remainingFuelText).performClick()
         rule.waitForIdle()
 
-        rule.onNodeWithText("Detail: gt7_ps5_remaining_fuel").assertExists()
-        assertEquals(ReadoutListItemType.Gt7Ps5.RemainingFuel, detailItem)
+        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root), selected)
     }
 
     @Test
