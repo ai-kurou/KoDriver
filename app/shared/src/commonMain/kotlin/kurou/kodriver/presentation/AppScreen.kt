@@ -557,7 +557,7 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 }
 
 @Composable
-private fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
+internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
     when (itemType) {
         ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
         ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
