@@ -58,7 +58,7 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - run: ./gradlew koverXmlReport
+      - run: ./.github/scripts/run-gradle-with-diagnostics.sh 3300 ./gradlew koverXmlReport --info --stacktrace
 
       - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
@@ -78,7 +78,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Verify JVM screenshot tests
-        run: ./gradlew verifyRoborazziJvmTests
+        run: ./.github/scripts/run-gradle-with-diagnostics.sh 2100 ./gradlew verifyRoborazziJvmTests --info --stacktrace
 
   android-screenshot-test-verify:
     runs-on: ubuntu-latest
@@ -93,7 +93,7 @@ jobs:
       - uses: ./.github/actions/setup-screenshot
 
       - name: Verify Android screenshot tests
-        run: ./gradlew verifyRoborazziAndroidHostTests
+        run: ./.github/scripts/run-gradle-with-diagnostics.sh 2100 ./gradlew verifyRoborazziAndroidHostTests --info --stacktrace
 
   # koverXmlReport はデスクトップの JAR を生成するが、Android の APK は生成しない。
   android-build:
