@@ -508,12 +508,11 @@ private fun ReadoutListQueueToggle(
             .size(width = 56.dp, height = 56.dp)
             .testTag("readoutListQueueTouchTarget:${item.value}")
             .clickable(
+                enabled = enabled,
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
             ) {
-                if (enabled) {
-                    onCheckedChange(!checked)
-                }
+                onCheckedChange(!checked)
             },
     ) {
         FilledIconToggleButton(
