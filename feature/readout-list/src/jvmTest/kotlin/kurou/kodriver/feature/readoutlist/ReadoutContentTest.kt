@@ -2,6 +2,7 @@ package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
 import androidx.compose.runtime.getValue
@@ -202,6 +203,39 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(remainingFuelText).assertExists()
+    }
+
+    @Test
+    fun `gt7_ps5の燃料残量項目を選択すると指定した詳細ペインを表示する`() {
+        var remainingFuelText by mutableStateOf("")
+        var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
+
+        rule.setContent {
+            remainingFuelText = stringResource(Res.string.item_remaining_fuel)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.Gt7Ps5),
+                    selectedSimulator = Simulator.Gt7Ps5,
+                    items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
+                    readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true),
+                    selectedItem = selectedItem,
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onItemSelected = { selectedItem = ReadoutListItemType.fromId(Simulator.Gt7Ps5, it) },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+                detailContent = { Text("GT7 remaining fuel detail") },
+            )
+        }
+
+        rule.onNodeWithText(remainingFuelText).performClick()
+        rule.waitForIdle()
+
+        rule.onNodeWithText("GT7 remaining fuel detail").assertExists()
     }
 
     @Test
