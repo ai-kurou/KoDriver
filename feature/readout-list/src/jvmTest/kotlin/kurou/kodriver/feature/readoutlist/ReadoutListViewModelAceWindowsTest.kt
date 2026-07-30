@@ -101,6 +101,9 @@ class ReadoutListViewModelAceWindowsTest {
         assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
         verify(exactly = 1) { simulatorRepository.selectedSimulator() }
         coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
-        confirmVerified(simulatorRepository)
+        verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
+        verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
+        verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+        confirmVerified(simulatorRepository, readoutRepository, queueRepository)
     }
 }
