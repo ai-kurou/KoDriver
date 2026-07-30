@@ -36,10 +36,8 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch { saveThresholdPercentage(DEFAULT_THRESHOLD_PERCENTAGE) }
-    }
-
-    companion object {
-        const val DEFAULT_THRESHOLD_PERCENTAGE = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
+        viewModelScope.launch {
+            saveThresholdPercentage(LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE)
+        }
     }
 }

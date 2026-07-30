@@ -32,14 +32,10 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch { saveThresholdPercentage(DEFAULT_THRESHOLD_PERCENTAGE) }
+        viewModelScope.launch { saveThresholdPercentage(ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE) }
     }
 
     fun onPreviewClicked() {
         playSpeechEvent(SpeechEvent.AceWindowsRemainingFuelWarning)
-    }
-
-    companion object {
-        const val DEFAULT_THRESHOLD_PERCENTAGE = ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
     }
 }
