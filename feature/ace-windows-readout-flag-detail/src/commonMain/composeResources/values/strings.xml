@@ -1,0 +1,4 @@
+<resources>
+    <string name="flag_title">フラッグ</string>
+    <string name="flag_description">ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。</string>
+</resources>
