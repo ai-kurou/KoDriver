@@ -39,10 +39,27 @@ class AceWindowsMapperTest {
     }
 
     @Test
-    fun `flag が4のとき BLUE_FLAG として取得する`() {
-        val result = AceWindowsMapper.mapFlag(flagBuffer(4))
+    fun `flag は全てのACEVO_FLAG_TYPEの値を取得できる`() {
+        val expected =
+            mapOf(
+                0 to AceWindowsFlagType.NO_FLAG,
+                1 to AceWindowsFlagType.WHITE_FLAG,
+                2 to AceWindowsFlagType.GREEN_FLAG,
+                3 to AceWindowsFlagType.RED_FLAG,
+                4 to AceWindowsFlagType.BLUE_FLAG,
+                5 to AceWindowsFlagType.YELLOW_FLAG,
+                6 to AceWindowsFlagType.BLACK_FLAG,
+                7 to AceWindowsFlagType.BLACK_WHITE_FLAG,
+                8 to AceWindowsFlagType.CHECKERED_FLAG,
+                9 to AceWindowsFlagType.ORANGE_CIRCLE_FLAG,
+                10 to AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG,
+            )
 
-        assertEquals(AceWindowsFlagType.BLUE_FLAG, result.flag)
+        expected.forEach { (rawValue, flagType) ->
+            val result = AceWindowsMapper.mapFlag(flagBuffer(rawValue))
+
+            assertEquals(flagType, result.flag, "rawValue=$rawValue")
+        }
     }
 
     @Test
