@@ -51,25 +51,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kodriver.feature.telemetryloglist.generated.resources.Res
 import kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_blue_flag
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_flag
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_full_course_yellow
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_my_best_lap
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_overheat
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_pit_timing
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_red_flag
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_fuel_laps
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_remaining_virtual_energy
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_sector_yellow_flag
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_low_warning
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_overheat_warning
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_temperature
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_tyre_wear
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach_start_readout
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_approach_sustained
-import kodriver.feature.telemetryloglist.generated.resources.readout_item_vehicle_damage
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
@@ -77,7 +58,6 @@ import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.generated.resources.ace
 import kurou.kodriver.core.designsystem.generated.resources.gt7
 import kurou.kodriver.core.designsystem.generated.resources.lmu
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.jetbrains.compose.resources.painterResource
@@ -373,61 +353,6 @@ private fun simulatorIcon(simulator: Simulator): Painter = when (simulator) {
     Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
     Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
 }
-
-@Composable
-private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when (flag) {
-    is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
-    is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
-    is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
-    is ReadoutItemKey.LmuWindows.Flag.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
-    is ReadoutItemKey.LmuWindows.Flag.RedFlag -> stringResource(Res.string.readout_item_red_flag)
-}
-
-@Composable
-private fun vehicleApproachDisplayName(vehicleApproach: ReadoutItemKey.LmuWindows.VehicleApproach): String =
-    when (vehicleApproach) {
-        is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> stringResource(Res.string.readout_item_vehicle_approach)
-        is ReadoutItemKey.LmuWindows.VehicleApproach.Sustained ->
-            stringResource(Res.string.readout_item_vehicle_approach_sustained)
-        is ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout ->
-            stringResource(Res.string.readout_item_vehicle_approach_start_readout)
-    }
-
-@Composable
-private fun tyreTemperatureDisplayName(tyreTemperature: ReadoutItemKey.LmuWindows.TyreTemperature): String =
-    when (tyreTemperature) {
-        is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> stringResource(Res.string.readout_item_tyre_temperature)
-        is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning ->
-            stringResource(Res.string.readout_item_tyre_overheat_warning)
-        is ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning ->
-            stringResource(Res.string.readout_item_tyre_low_warning)
-    }
-
-@Composable
-private fun vehicleDamageDisplayName(vehicleDamage: ReadoutItemKey.LmuWindows.VehicleDamage): String =
-    when (vehicleDamage) {
-        is ReadoutItemKey.LmuWindows.VehicleDamage.Root -> stringResource(Res.string.readout_item_vehicle_damage)
-        is ReadoutItemKey.LmuWindows.VehicleDamage.Overheat -> stringResource(Res.string.readout_item_overheat)
-    }
-
-@Composable
-internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
-    when (readoutItemKey) {
-        is ReadoutItemKey.LmuWindows.VehicleApproach -> vehicleApproachDisplayName(readoutItemKey)
-        is ReadoutItemKey.LmuWindows.Flag -> flagDisplayName(readoutItemKey)
-        is ReadoutItemKey.LmuWindows.VehicleDamage -> vehicleDamageDisplayName(readoutItemKey)
-        is ReadoutItemKey.LmuWindows.TyreTemperature -> tyreTemperatureDisplayName(readoutItemKey)
-        is ReadoutItemKey.LmuWindows.PitTiming.Root -> stringResource(Res.string.readout_item_pit_timing)
-        is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root ->
-            stringResource(Res.string.readout_item_remaining_virtual_energy)
-        is ReadoutItemKey.LmuWindows.TyreWear.Root -> stringResource(Res.string.readout_item_tyre_wear)
-        is ReadoutItemKey.LmuWindows.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
-        is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
-        is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)
-        is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> stringResource(Res.string.readout_item_remaining_fuel)
-        is ReadoutItemKey.AceWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
-        is ReadoutItemKey.AceWindows.RemainingFuel.Root -> stringResource(Res.string.readout_item_remaining_fuel)
-    }
 
 internal fun formatTelemetryLogTime(
     createdAt: Long,

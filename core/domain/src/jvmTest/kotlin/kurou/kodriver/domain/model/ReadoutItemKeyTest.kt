@@ -67,6 +67,28 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.Flag.Root,
             ReadoutItemKey.fromValue("ace_windows_flag"),
         )
+        assertEquals(ReadoutItemKey.AceWindows.Flag.WhiteFlag, ReadoutItemKey.fromValue("ace_windows_white_flag"))
+        assertEquals(ReadoutItemKey.AceWindows.Flag.GreenFlag, ReadoutItemKey.fromValue("ace_windows_green_flag"))
+        assertEquals(ReadoutItemKey.AceWindows.Flag.RedFlag, ReadoutItemKey.fromValue("ace_windows_red_flag"))
+        assertEquals(ReadoutItemKey.AceWindows.Flag.BlueFlag, ReadoutItemKey.fromValue("ace_windows_blue_flag"))
+        assertEquals(ReadoutItemKey.AceWindows.Flag.YellowFlag, ReadoutItemKey.fromValue("ace_windows_yellow_flag"))
+        assertEquals(ReadoutItemKey.AceWindows.Flag.BlackFlag, ReadoutItemKey.fromValue("ace_windows_black_flag"))
+        assertEquals(
+            ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag,
+            ReadoutItemKey.fromValue("ace_windows_black_white_flag"),
+        )
+        assertEquals(
+            ReadoutItemKey.AceWindows.Flag.CheckeredFlag,
+            ReadoutItemKey.fromValue("ace_windows_checkered_flag"),
+        )
+        assertEquals(
+            ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag,
+            ReadoutItemKey.fromValue("ace_windows_orange_circle_flag"),
+        )
+        assertEquals(
+            ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag,
+            ReadoutItemKey.fromValue("ace_windows_red_yellow_stripes_flag"),
+        )
     }
 
     @Test
