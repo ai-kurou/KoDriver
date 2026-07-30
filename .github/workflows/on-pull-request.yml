@@ -244,4 +244,7 @@ jobs:
     secrets: inherit
 
   codeql-analyze:
+    permissions:
+      contents: read
+      security-events: write
     uses: ./.github/workflows/_codeql-analyze.yml
