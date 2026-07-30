@@ -242,3 +242,9 @@ jobs:
     with:
       ref: ${{ github.head_ref }}
     secrets: inherit
+
+  codeql-analyze:
+    permissions:
+      contents: read
+      security-events: write
+    uses: ./.github/workflows/_codeql-analyze.yml
