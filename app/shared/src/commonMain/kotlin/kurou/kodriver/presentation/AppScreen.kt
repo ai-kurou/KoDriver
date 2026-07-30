@@ -65,6 +65,7 @@ import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsRe
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
+import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
@@ -556,7 +557,7 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 }
 
 @Composable
-private fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
+internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
     when (itemType) {
         ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
         ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
@@ -568,6 +569,7 @@ private fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
         ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
+        ReadoutListItemType.Gt7Ps5.RemainingFuel -> Gt7Ps5ReadoutRemainingFuelDetailPane()
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
     }
 }

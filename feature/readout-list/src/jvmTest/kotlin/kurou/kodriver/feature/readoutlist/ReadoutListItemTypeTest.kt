@@ -62,6 +62,14 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
+    fun `gt7_ps5 の remaining_fuel は Gt7Ps5_RemainingFuel を返す`() {
+        assertEquals(
+            ReadoutListItemType.Gt7Ps5.RemainingFuel,
+            ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
+        )
+    }
+
+    @Test
     fun `lmu_windows でシミュレータに属さないキーは null を返す`() {
         assertNull(ReadoutListItemType.fromId(Simulator.LmuWindows, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root))
     }
@@ -124,10 +132,11 @@ class ReadoutListItemTypeTest {
     }
 
     @Test
-    fun `gt7_ps5 のデフォルト並び順は燃料残り周回数を先頭に自己ベストラップが続く`() {
+    fun `gt7_ps5 のデフォルト並び順は2番目に燃料残量を含む`() {
         assertEquals(
             listOf(
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),

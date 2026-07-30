@@ -36,6 +36,8 @@ internal class Gt7Ps5NarratorEventProcessor(
                 myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
                 remainingFuelLapsThreshold = 0,
                 remainingFuelLapsEnabled = false,
+                remainingFuelThresholdPercentage = 0,
+                remainingFuelEnabled = false,
             ),
             finalState = Gt7Ps5NarratorState(),
         ),

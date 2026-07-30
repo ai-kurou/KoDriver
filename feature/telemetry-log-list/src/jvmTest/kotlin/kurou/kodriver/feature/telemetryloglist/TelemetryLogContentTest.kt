@@ -164,6 +164,7 @@ class TelemetryLogContentTest {
             ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
+            ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
             ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
         )
 

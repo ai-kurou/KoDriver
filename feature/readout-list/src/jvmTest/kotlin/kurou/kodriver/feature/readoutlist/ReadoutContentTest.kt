@@ -205,6 +205,37 @@ class ReadoutContentTest {
     }
 
     @Test
+    fun `gt7_ps5の燃料残量をタップすると選択コールバックを呼ぶ`() {
+        var remainingFuelText by mutableStateOf("")
+        val selected = mutableListOf<ReadoutItemKey>()
+
+        rule.setContent {
+            remainingFuelText = stringResource(Res.string.item_remaining_fuel)
+            ReadoutContent(
+                uiState = ReadoutListUiState(
+                    simulators = listOf(Simulator.Gt7Ps5),
+                    selectedSimulator = Simulator.Gt7Ps5,
+                    items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
+                    readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true),
+                ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onItemSelected = { selected.add(it) },
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onNodeWithText(remainingFuelText).performClick()
+        rule.waitForIdle()
+
+        assertEquals(listOf<ReadoutItemKey>(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root), selected)
+    }
+
+    @Test
     fun `gt7_ps5の詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
         var backEnabled = false
         var capturedOnBack: (() -> Unit)? = null
@@ -214,15 +245,21 @@ class ReadoutContentTest {
         rule.setContent {
             itemTexts = listOf(
                 stringResource(Res.string.item_remaining_fuel_laps),
+                stringResource(Res.string.item_remaining_fuel),
                 stringResource(Res.string.item_my_best_lap),
             )
             ReadoutContent(
                 uiState = ReadoutListUiState(
                     simulators = listOf(Simulator.Gt7Ps5),
                     selectedSimulator = Simulator.Gt7Ps5,
-                    items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                    items = listOf(
+                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                        ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                        ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    ),
                     readoutEnabledStates = mapOf(
                         ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                        ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
                         ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
                     ),
                     selectedItem = selectedItem,
