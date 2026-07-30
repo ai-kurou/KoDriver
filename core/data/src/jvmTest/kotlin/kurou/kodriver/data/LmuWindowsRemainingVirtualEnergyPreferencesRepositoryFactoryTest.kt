@@ -24,18 +24,18 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は thresholdPercentage が 50`() = testScope.runTest {
+    fun `デフォルト値は thresholdPercentage が 30`() = testScope.runTest {
         val repository = createLmuWindowsRemainingVirtualEnergyPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(50, repository.observeThresholdPercentage().first())
+        assertEquals(30, repository.observeThresholdPercentage().first())
     }
 
     @Test
     fun `保存した thresholdPercentage を読み出せる`() = testScope.runTest {
         val repository = createLmuWindowsRemainingVirtualEnergyPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveThresholdPercentage(30)
+        repository.saveThresholdPercentage(50)
 
-        assertEquals(30, repository.observeThresholdPercentage().first())
+        assertEquals(50, repository.observeThresholdPercentage().first())
     }
 }

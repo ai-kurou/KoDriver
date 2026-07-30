@@ -306,7 +306,7 @@ class LmuWindowsNarratorViewModelTest {
         tyreTemperatureLowWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
         tyreWearThresholdPercentage: Int = 50,
-        remainingVirtualEnergyThresholdPercentage: Int = 50,
+        remainingVirtualEnergyThresholdPercentage: Int = 30,
         pitTimingVirtualEnergyLapsThreshold: Int = 3,
         pitTimingTyreWearLapsThreshold: Int = 3,
         simulator: Simulator? = Simulator.LmuWindows,
