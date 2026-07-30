@@ -12,6 +12,8 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsFlagData
+import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -201,6 +203,76 @@ class AceWindowsNarratorEventProcessorTest {
         coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any()) }
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
+
+    @Test
+    fun `直前のフラグデータがないイベントはnullとして保存する`() = runTest {
+        val telemetryJsons = mutableListOf<String>()
+        every { ttsEngine.currentReadoutItemKey } returns null
+        val key = ReadoutItemKey.AceWindows.Flag.Root
+        every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+        } just Runs
+
+        createProcessor().processFlag(
+            flag = flag(AceWindowsFlagType.BLUE_FLAG),
+            events = listOf(SpeechEvent.AceWindowsBlueFlag),
+            readoutOrder = listOf(key),
+            queueEnabledStates = emptyMap(),
+            observedAtMs = 0L,
+            logContext = logContext(),
+        )
+
+        assertEquals(true, telemetryJsons.single().contains("\"previousFlag\":null"))
+        assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+        }
+        confirmVerified(telemetryLogRepository, ttsEngine)
+    }
+
+    @Test
+    fun `読み上げたフラグイベントを直前と現在のフラグデータとともに保存する`() = runTest {
+        val telemetryJsons = mutableListOf<String>()
+        every { ttsEngine.currentReadoutItemKey } returns null
+        val processor = createProcessor()
+        val key = ReadoutItemKey.AceWindows.Flag.Root
+        every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
+        coEvery {
+            telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+        } just Runs
+
+        processor.processFlag(
+            flag(AceWindowsFlagType.NO_FLAG),
+            emptyList(),
+            emptyList(),
+            emptyMap(),
+            100L,
+            logContext(),
+        )
+        processor.processFlag(
+            flag(AceWindowsFlagType.BLUE_FLAG),
+            listOf(SpeechEvent.AceWindowsBlueFlag),
+            listOf(key),
+            emptyMap(),
+            200L,
+            logContext(),
+        )
+
+        assertEquals(1, telemetryJsons.size)
+        assertEquals(true, telemetryJsons.single().contains(""""previousFlag":{"flag":"NO_FLAG"}"""))
+        assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
+        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
+        coVerify(exactly = 1) {
+            telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+        }
+        confirmVerified(telemetryLogRepository, ttsEngine)
+    }
+
+    private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
     private fun createProcessor() = AceWindowsNarratorEventProcessor(
         ttsEngine = ttsEngine,
