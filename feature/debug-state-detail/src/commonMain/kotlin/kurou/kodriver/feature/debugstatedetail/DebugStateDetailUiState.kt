@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
+import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -31,6 +32,7 @@ internal data class DebugStateDetailUiState(
     val lmuWindowsTelemetry: LmuWindowsTelemetryData? = null,
     val gt7Ps5Telemetry: Gt7Ps5TelemetryData? = null,
     val aceWindowsFuel: AceWindowsFuelData? = null,
+    val aceWindowsFlag: AceWindowsFlagData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )
