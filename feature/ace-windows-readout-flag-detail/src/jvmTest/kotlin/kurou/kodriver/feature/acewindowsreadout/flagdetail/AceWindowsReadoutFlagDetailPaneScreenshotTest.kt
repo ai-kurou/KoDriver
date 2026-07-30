@@ -21,7 +21,7 @@ class AceWindowsReadoutFlagDetailPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(480.dp, 800.dp)) {
                         AceWindowsReadoutFlagDetailPaneContent()
                     }
                 }
