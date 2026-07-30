@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UdpPortUseCase
 import kurou.kodriver.domain.usecase.SaveConsoleAddressUseCase
@@ -35,7 +36,7 @@ internal class OtherConsoleIpDetailViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
     private val savedPort: StateFlow<Int> = observeGt7Ps5UdpPort()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 33740)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GT7_PS5_UDP_PORT_DEFAULT)
 
     private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
 

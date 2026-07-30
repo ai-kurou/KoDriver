@@ -36,10 +36,6 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
     }
 
     fun onThresholdReset() {
-        viewModelScope.launch { saveThresholdPercentage(DEFAULT_THRESHOLD_PERCENTAGE) }
-    }
-
-    companion object {
-        const val DEFAULT_THRESHOLD_PERCENTAGE = LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
+        viewModelScope.launch { saveThresholdPercentage(LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE) }
     }
 }
