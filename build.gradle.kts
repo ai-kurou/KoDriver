@@ -224,30 +224,16 @@ tasks.register("generateModuleGraphImages") {
 
         val allModules = (parsedEdges.map { it.first } + parsedEdges.map { it.second }).toSet()
 
-        fun moduleGroup(module: String): String = when {
-            module.startsWith(":app:") -> "app"
-            module.startsWith(":feature:") -> "feature"
-            module.startsWith(":core:") -> "core"
-            module == ":server" -> "server"
-            else -> "other"
-        }
-
-        fun groupDisplayName(group: String): String = when (group) {
-            "app" -> "app"
-            "feature" -> "feature"
-            "core" -> "core"
-            "server" -> "server"
-            else -> group
-        }
-
         fun moduleCountLabel(count: Int): String = if (count == 1) "1 module" else "$count modules"
 
-        val groupLabels = allModules
-            .groupBy(::moduleGroup)
-            .mapValues { (group, modules) -> "${groupDisplayName(group)}\\n${moduleCountLabel(modules.size)}" }
+        val featureGroup = "feature"
+        val featureModuleCount = allModules.count { it.startsWith(":feature:") }
+
+        fun overviewNode(module: String): String =
+            if (module.startsWith(":feature:")) featureGroup else module
 
         val overviewEdges = parsedEdges
-            .map { (from, to, _) -> moduleGroup(from) to moduleGroup(to) }
+            .map { (from, to, _) -> overviewNode(from) to overviewNode(to) }
             .filter { (from, to) -> from != to }
             .toSet()
             .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
@@ -259,9 +245,7 @@ tasks.register("generateModuleGraphImages") {
                 appendLine("  rankdir=TB")
                 appendLine("  graph [ranksep=1.2, nodesep=0.6]")
                 appendLine("  node [shape=box, style=rounded]")
-                groupLabels.toSortedMap().forEach { (group, label) ->
-                    appendLine("  \"$group\" [label=\"$label\"]")
-                }
+                appendLine("  \"$featureGroup\" [label=\"feature\\n${moduleCountLabel(featureModuleCount)}\"]")
                 overviewEdges.forEach { (from, to) ->
                     appendLine("  \"$from\" -> \"$to\"")
                 }
