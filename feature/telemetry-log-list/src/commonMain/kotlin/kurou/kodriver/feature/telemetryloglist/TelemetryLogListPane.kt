@@ -425,6 +425,7 @@ internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.readout_item_my_best_lap)
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.readout_item_remaining_fuel_laps)
         is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> stringResource(Res.string.readout_item_remaining_fuel)
+        is ReadoutItemKey.AceWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
         is ReadoutItemKey.AceWindows.RemainingFuel.Root -> stringResource(Res.string.readout_item_remaining_fuel)
     }
 

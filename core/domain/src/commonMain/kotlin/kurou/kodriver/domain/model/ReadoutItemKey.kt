@@ -116,6 +116,13 @@ sealed interface ReadoutItemKey {
     sealed interface AceWindows : ReadoutItemKey {
         sealed interface TopLevel : AceWindows, ReadoutItemKey.TopLevel
 
+        sealed interface Flag : AceWindows {
+            data object Root : Flag, TopLevel {
+                override val value = "ace_windows_flag"
+                override val supportsQueue = true
+            }
+        }
+
         sealed interface RemainingFuel : AceWindows {
             data object Root : RemainingFuel, TopLevel {
                 override val value = "ace_windows_remaining_fuel"
@@ -147,6 +154,7 @@ sealed interface ReadoutItemKey {
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,
                 Gt7Ps5.RemainingFuel.Root,
+                AceWindows.Flag.Root,
                 AceWindows.RemainingFuel.Root,
             )
         }
