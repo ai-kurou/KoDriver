@@ -1,0 +1,8 @@
+package kurou.kodriver.data
+
+import kurou.kodriver.data.datasource.createAceWindowsFlagPreferencesDataStore
+import kurou.kodriver.data.repository.AceWindowsFlagPreferencesRepositoryImpl
+import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
+
+fun createAceWindowsFlagPreferencesRepository(directory: String): AceWindowsFlagPreferencesRepository =
+    AceWindowsFlagPreferencesRepositoryImpl(createAceWindowsFlagPreferencesDataStore(directory))

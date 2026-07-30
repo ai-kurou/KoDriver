@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -16,6 +17,8 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.AceWindowsNarratorState
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -26,6 +29,11 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 internal data class RemainingFuelUseCases(
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     val observeThresholdPercentage: ObserveAceWindowsRemainingFuelThresholdPercentageUseCase,
+)
+
+internal data class FlagUseCases(
+    val observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
+    val observeFlagEnabledStates: ObserveAceWindowsFlagEnabledStatesUseCase,
 )
 
 internal data class ReadoutListUseCases(
@@ -39,6 +47,7 @@ internal data class ReadoutListUseCases(
 internal class AceWindowsNarratorViewModel(
     remainingFuelUseCases: RemainingFuelUseCases,
     readoutListUseCases: ReadoutListUseCases,
+    flagUseCases: FlagUseCases,
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
@@ -48,12 +57,19 @@ internal class AceWindowsNarratorViewModel(
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    // ACEにはdetailPaneのサブトグルが存在しないため、listPaneの状態のみで完結する。
     private val listEnabledStates = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    // listPane（listEnabledStates）とdetailPane（flagEnabledStates）を統合した、
+    // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
+    private val mergedEnabledStates = combine(
+        listEnabledStates,
+        flagUseCases.observeFlagEnabledStates(),
+    ) { readoutStates, flagStates -> readoutStates + flagStates }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     private val readoutOrder = selectedSimulator
         .flatMapLatest { simulator ->
@@ -72,13 +88,19 @@ internal class AceWindowsNarratorViewModel(
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
         get() = AceWindowsNarratorReadoutSettings(
-            enabledStates = listEnabledStates.value,
+            enabledStates = mergedEnabledStates.value,
             remainingFuelThresholdPercentage = remainingFuelThreshold.value,
         )
 
     private val fuelFlow = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.AceWindows) emptyFlow() else remainingFuelUseCases.observeAceWindowsFuel()
+        }
+        .shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val flagFlow = selectedSimulator
+        .flatMapLatest { simulator ->
+            if (simulator !is Simulator.AceWindows) emptyFlow() else flagUseCases.observeAceWindowsFlag()
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly)
 
@@ -96,6 +118,33 @@ internal class AceWindowsNarratorViewModel(
             narratorState = decision.state
             eventProcessor.processRemainingFuel(
                 fuel = fuel,
+                events = decision.events,
+                readoutOrder = readoutOrder.value,
+                queueEnabledStates = queueEnabledStates.value,
+                observedAtMs = observedAtMs,
+                logContext = AceWindowsTelemetryLogContext(
+                    state = state,
+                    settings = settings,
+                    finalState = decision.state,
+                ),
+            )
+        }
+        .launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val flagJob = flagFlow
+        .onEach { flag ->
+            val observedAtMs = currentTimeMs()
+            val state = narratorState
+            val settings = currentSettings
+            val decision = determineAceWindowsNarratorReadout.determineFlag(
+                state = state,
+                data = flag,
+                settings = settings,
+            )
+            narratorState = decision.state
+            eventProcessor.processFlag(
+                flag = flag,
                 events = decision.events,
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,

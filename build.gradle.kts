@@ -418,6 +418,7 @@ dependencies {
     kover(project(":feature:ace-windows-connection"))
     kover(project(":feature:ace-windows-narrator"))
     kover(project(":feature:ace-windows-readout-remaining-fuel-detail"))
+    kover(project(":feature:ace-windows-readout-flag-detail"))
     kover(project(":feature:telemetry-log-list"))
     kover(project(":feature:telemetry-log-detail"))
     kover(project(":feature:debug-state-detail"))

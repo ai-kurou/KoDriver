@@ -3,6 +3,8 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
+import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
@@ -154,6 +156,9 @@ fun androidDataModule(context: Context) = module {
     single<AceWindowsFuelRepository> {
         WebSocketAceWindowsFuelRepository(serverIpRepository = get(), client = get())
     }
+    single<AceWindowsFlagRepository> {
+        WebSocketAceWindowsFlagRepository(serverIpRepository = get(), client = get())
+    }
     includes(androidDataModuleThresholdPreferences(context))
 }
 
@@ -172,6 +177,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) = module {
     }
     single<AceWindowsRemainingFuelPreferencesRepository> {
         createAceWindowsRemainingFuelPreferencesRepository(context.filesDir.absolutePath)
+    }
+    single<AceWindowsFlagPreferencesRepository> {
+        createAceWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
     }
     single<LmuWindowsPitTimingPreferencesRepository> {
         createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)

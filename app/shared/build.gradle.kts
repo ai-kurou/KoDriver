@@ -79,6 +79,7 @@ kotlin {
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelLapsDetail)
             implementation(projects.feature.aceWindowsReadoutRemainingFuelDetail)
+            implementation(projects.feature.aceWindowsReadoutFlagDetail)
             implementation(libs.koin.core)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

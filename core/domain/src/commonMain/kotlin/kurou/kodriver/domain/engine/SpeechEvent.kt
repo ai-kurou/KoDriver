@@ -71,4 +71,24 @@ sealed interface SpeechEvent {
     data object AceWindowsRemainingFuelWarning : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
     }
+    data object AceWindowsWhiteFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsGreenFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsRedFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsBlueFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsYellowFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
+    data object AceWindowsBlackFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsBlackWhiteFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
+    data object AceWindowsCheckeredFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
+    data object AceWindowsOrangeCircleFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
+    data object AceWindowsRedYellowStripesFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
 }

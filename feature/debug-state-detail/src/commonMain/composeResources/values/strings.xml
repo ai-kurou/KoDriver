@@ -8,6 +8,13 @@
     <string name="debug_state_flag_full_course_yellow">フルコースイエロー</string>
     <string name="debug_state_flag_red">レッドフラッグ</string>
     <string name="debug_state_flag_none">フラッグなし</string>
+    <string name="debug_state_flag_white">ホワイトフラッグ</string>
+    <string name="debug_state_flag_green">グリーンフラッグ</string>
+    <string name="debug_state_flag_black">ブラックフラッグ</string>
+    <string name="debug_state_flag_black_white">ブラック・ホワイトフラッグ</string>
+    <string name="debug_state_flag_checkered">チェッカーフラッグ</string>
+    <string name="debug_state_flag_orange_circle">オレンジボールフラッグ</string>
+    <string name="debug_state_flag_red_yellow_stripes">レッド・イエローストライプフラッグ</string>
     <string name="debug_state_simulator_info_title">選択中のシミュレータ</string>
     <string name="debug_state_simulator_info_unselected">未選択</string>
     <string name="simulator_name_lmu_windows">Le Mans Ultimate（Windows版）</string>

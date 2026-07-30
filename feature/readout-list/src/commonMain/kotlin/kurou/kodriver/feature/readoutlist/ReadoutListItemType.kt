@@ -23,6 +23,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
     }
 
     sealed class AceWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
+        data object Flag : AceWindows(ReadoutItemKey.AceWindows.Flag.Root)
         data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
     }
 
@@ -53,6 +54,7 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         }
 
         private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? = when (id) {
+            ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
             ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
             else -> null
         }
@@ -69,7 +71,9 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
                     .sortedBy { key -> gt7Ps5OrderIndex(key) }
             }
             is Simulator.AceWindows -> {
-                ReadoutItemKey.entries.filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()
+                ReadoutItemKey.entries
+                    .filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()
+                    .sortedBy { key -> aceWindowsOrderIndex(key) }
             }
         }
 
@@ -90,6 +94,11 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
             ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> 1
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 2
+        }
+
+        private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int = when (key) {
+            ReadoutItemKey.AceWindows.Flag.Root -> 0
+            ReadoutItemKey.AceWindows.RemainingFuel.Root -> 1
         }
     }
 }

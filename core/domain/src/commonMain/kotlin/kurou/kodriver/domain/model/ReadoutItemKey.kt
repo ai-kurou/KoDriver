@@ -116,6 +116,23 @@ sealed interface ReadoutItemKey {
     sealed interface AceWindows : ReadoutItemKey {
         sealed interface TopLevel : AceWindows, ReadoutItemKey.TopLevel
 
+        sealed interface Flag : AceWindows {
+            data object Root : Flag, TopLevel {
+                override val value = "ace_windows_flag"
+                override val supportsQueue = true
+            }
+            data object WhiteFlag : Flag { override val value = "ace_windows_white_flag" }
+            data object GreenFlag : Flag { override val value = "ace_windows_green_flag" }
+            data object RedFlag : Flag { override val value = "ace_windows_red_flag" }
+            data object BlueFlag : Flag { override val value = "ace_windows_blue_flag" }
+            data object YellowFlag : Flag { override val value = "ace_windows_yellow_flag" }
+            data object BlackFlag : Flag { override val value = "ace_windows_black_flag" }
+            data object BlackWhiteFlag : Flag { override val value = "ace_windows_black_white_flag" }
+            data object CheckeredFlag : Flag { override val value = "ace_windows_checkered_flag" }
+            data object OrangeCircleFlag : Flag { override val value = "ace_windows_orange_circle_flag" }
+            data object RedYellowStripesFlag : Flag { override val value = "ace_windows_red_yellow_stripes_flag" }
+        }
+
         sealed interface RemainingFuel : AceWindows {
             data object Root : RemainingFuel, TopLevel {
                 override val value = "ace_windows_remaining_fuel"
@@ -147,6 +164,17 @@ sealed interface ReadoutItemKey {
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,
                 Gt7Ps5.RemainingFuel.Root,
+                AceWindows.Flag.Root,
+                AceWindows.Flag.WhiteFlag,
+                AceWindows.Flag.GreenFlag,
+                AceWindows.Flag.RedFlag,
+                AceWindows.Flag.BlueFlag,
+                AceWindows.Flag.YellowFlag,
+                AceWindows.Flag.BlackFlag,
+                AceWindows.Flag.BlackWhiteFlag,
+                AceWindows.Flag.CheckeredFlag,
+                AceWindows.Flag.OrangeCircleFlag,
+                AceWindows.Flag.RedYellowStripesFlag,
                 AceWindows.RemainingFuel.Root,
             )
         }

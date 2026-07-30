@@ -2,6 +2,8 @@ package kurou.kodriver.feature.acewindowsnarrator
 
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -30,11 +32,12 @@ import org.koin.dsl.module
  */
 val aceWindowsNarratorModule: Module = module {
     // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-    viewModel { AceWindowsNarratorViewModel(get(), get(), get()) }
+    viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get()) }
 
     // この feature 固有の UseCase 集約 data class（本モジュールで定義）
     factory { RemainingFuelUseCases(get(), get()) }
     factory { ReadoutListUseCases(get(), get(), get(), get()) }
+    factory { FlagUseCases(get(), get()) }
     factory { AceWindowsNarratorEventProcessor(get(named("ace_windows")), get()) }
 
     // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
@@ -42,6 +45,8 @@ val aceWindowsNarratorModule: Module = module {
     factory { SaveTelemetryLogUseCase(get()) }
     factory { ObserveAceWindowsFuelUseCase(get()) }
     factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
+    factory { ObserveAceWindowsFlagUseCase(get()) }
+    factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
     factory { ObserveReadoutEnabledStatesUseCase(get()) }
     factory { ObserveReadoutOrderUseCase(get()) }
     factory { ObserveSelectedSimulatorUseCase(get()) }

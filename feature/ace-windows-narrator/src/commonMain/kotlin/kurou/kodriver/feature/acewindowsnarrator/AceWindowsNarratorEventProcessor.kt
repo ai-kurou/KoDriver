@@ -3,6 +3,7 @@ package kurou.kodriver.feature.acewindowsnarrator
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -21,6 +22,35 @@ internal class AceWindowsNarratorEventProcessor(
     private val saveTelemetryLog: SaveTelemetryLogUseCase,
 ) {
     private var previousFuel: AceWindowsFuelData? = null
+    private var previousFlag: AceWindowsFlagData? = null
+
+    suspend fun processFlag(
+        flag: AceWindowsFlagData,
+        events: List<SpeechEvent>,
+        readoutOrder: List<ReadoutItemKey>,
+        queueEnabledStates: Map<ReadoutItemKey, Boolean>,
+        observedAtMs: Long,
+        logContext: AceWindowsTelemetryLogContext,
+    ) {
+        val previous = previousFlag
+        events.forEach { event ->
+            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                saveTelemetryLogSafely(
+                    createdAt = observedAtMs,
+                    readoutItemKey = event.readoutItemKey,
+                    telemetryJson = buildFlagTelemetryLogJson(
+                        state = logContext.state,
+                        previous = previous,
+                        current = flag,
+                        settings = logContext.settings,
+                        observedAtMs = observedAtMs,
+                        finalState = logContext.finalState,
+                    ),
+                )
+            }
+        }
+        previousFlag = flag
+    }
 
     suspend fun processRemainingFuel(
         fuel: AceWindowsFuelData,
@@ -115,6 +145,26 @@ private fun AceWindowsNarratorState.toJsonString(): String =
 
 private fun AceWindowsFuelData.toJson(): String =
     """{"remainingPercent":$remainingPercent}"""
+
+private fun buildFlagTelemetryLogJson(
+    state: AceWindowsNarratorState,
+    previous: AceWindowsFlagData?,
+    current: AceWindowsFlagData,
+    settings: AceWindowsNarratorReadoutSettings,
+    observedAtMs: Long,
+    finalState: AceWindowsNarratorState,
+): String =
+    "{" +
+        """"state":${state.toJsonString()},""" +
+        """"previousFlag":${previous?.toJson() ?: "null"},""" +
+        """"flag":${current.toJson()},""" +
+        """"settings":${settings.toJsonString()},""" +
+        """"observedAtMs":$observedAtMs,""" +
+        """"finalState":${finalState.toJsonString()}""" +
+        "}"
+
+private fun AceWindowsFlagData.toJson(): String =
+    """{"flag":"${flag.name}"}"""
 
 private fun String.toJsonStringLiteral(): String =
     buildString {

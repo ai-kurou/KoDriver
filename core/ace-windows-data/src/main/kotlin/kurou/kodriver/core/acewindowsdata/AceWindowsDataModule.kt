@@ -5,8 +5,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
+import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import org.koin.dsl.module
 
@@ -26,9 +29,16 @@ val aceWindowsDataModule = module {
     single<AceWindowsFuelRepository> {
         if (isWindows) AceWindowsFuelRepositoryImpl(source = get()) else NoOpAceWindowsFuelRepository()
     }
+    single<AceWindowsFlagRepository> {
+        if (isWindows) AceWindowsFlagRepositoryImpl(source = get()) else NoOpAceWindowsFlagRepository()
+    }
 }
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
     override suspend fun isConnected(): Boolean = false
+}
+
+private class NoOpAceWindowsFlagRepository : AceWindowsFlagRepository {
+    override fun flagStream(): Flow<AceWindowsFlagData> = emptyFlow()
 }

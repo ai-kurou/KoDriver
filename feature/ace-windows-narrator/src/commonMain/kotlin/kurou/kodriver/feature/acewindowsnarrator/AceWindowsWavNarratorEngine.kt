@@ -53,6 +53,16 @@ internal class AceWindowsWavNarratorEngine(
 
     private val eventToFile: Map<SpeechEvent, String> = mapOf(
         SpeechEvent.AceWindowsRemainingFuelWarning to "files/remaining_fuel_caution.wav",
+        SpeechEvent.AceWindowsWhiteFlag to "files/white_flag.wav",
+        SpeechEvent.AceWindowsGreenFlag to "files/green_flag.wav",
+        SpeechEvent.AceWindowsRedFlag to "files/red_flag.wav",
+        SpeechEvent.AceWindowsBlueFlag to "files/blue_flag.wav",
+        SpeechEvent.AceWindowsYellowFlag to "files/yellow_flag.wav",
+        SpeechEvent.AceWindowsBlackFlag to "files/black_flag.wav",
+        SpeechEvent.AceWindowsBlackWhiteFlag to "files/black_white_flag.wav",
+        SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
+        SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
+        SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
     )
 
     private val startSoundTypeToFile = mapOf(

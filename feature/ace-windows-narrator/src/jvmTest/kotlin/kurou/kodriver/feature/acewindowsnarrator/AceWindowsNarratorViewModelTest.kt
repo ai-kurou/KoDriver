@@ -21,15 +21,21 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsFlagData
+import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -66,6 +72,12 @@ class AceWindowsNarratorViewModelTest {
     private lateinit var queuePreferencesRepository: QueuePreferencesRepository
 
     @MockK
+    private lateinit var flagRepository: AceWindowsFlagRepository
+
+    @MockK
+    private lateinit var flagPreferencesRepository: AceWindowsFlagPreferencesRepository
+
+    @MockK
     private lateinit var ttsEngine: TextToSpeechEngine
 
     @BeforeTest
@@ -82,9 +94,11 @@ class AceWindowsNarratorViewModelTest {
     private fun createViewModel(
         fuelChannel: Channel<AceWindowsFuelData>,
         ttsEngine: TextToSpeechEngine,
+        flagChannel: Channel<AceWindowsFlagData> = Channel(Channel.UNLIMITED),
         currentTimeMs: () -> Long = { 0L },
     ): AceWindowsNarratorViewModel {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
+        every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
         return AceWindowsNarratorViewModel(
             remainingFuelUseCases = RemainingFuelUseCases(
                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
@@ -96,6 +110,10 @@ class AceWindowsNarratorViewModelTest {
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                 observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
+            ),
+            flagUseCases = FlagUseCases(
+                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(flagRepository),
+                observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
             ),
             eventProcessor = AceWindowsNarratorEventProcessor(
                 ttsEngine = ttsEngine,
@@ -121,6 +139,7 @@ class AceWindowsNarratorViewModelTest {
             remainingFuelPreferencesRepository.observeThresholdPercentage()
         } returns MutableStateFlow(30)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
         channel.send(fuel(20.0))
@@ -215,6 +234,7 @@ class AceWindowsNarratorViewModelTest {
         thresholdPercentage: Int,
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
+        flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -227,6 +247,7 @@ class AceWindowsNarratorViewModelTest {
             remainingFuelPreferencesRepository.observeThresholdPercentage()
         } returns MutableStateFlow(thresholdPercentage)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+        every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
@@ -236,6 +257,59 @@ class AceWindowsNarratorViewModelTest {
             )
         } just Runs
     }
+
+    @Test
+    fun `フラグが変化すると読み上げる`() = runTest(testDispatcher) {
+        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+        val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val ttsEngine = mockTts(spokenTexts)
+        stubReadoutDefaults(thresholdPercentage = 30)
+        createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+
+        flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+        flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+
+        assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsBlueFlag), spokenTexts)
+    }
+
+    @Test
+    fun `フラグ項目が無効のときは読み上げない`() = runTest(testDispatcher) {
+        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+        val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val ttsEngine = mockTts(spokenTexts)
+        stubReadoutDefaults(
+            thresholdPercentage = 30,
+            enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false),
+        )
+        createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+
+        flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+        flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    @Test
+    fun `個別のフラグ項目が無効のときは読み上げない`() = runTest(testDispatcher) {
+        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+        val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+        val spokenTexts = mutableListOf<SpeechEvent>()
+        val ttsEngine = mockTts(spokenTexts)
+        stubReadoutDefaults(
+            thresholdPercentage = 30,
+            flagEnabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
+        )
+        createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+
+        flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+        flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+
+        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+    }
+
+    private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
     private fun mockTts(spokenTexts: MutableList<SpeechEvent>): TextToSpeechEngine {
         every { ttsEngine.currentReadoutItemKey } returns null

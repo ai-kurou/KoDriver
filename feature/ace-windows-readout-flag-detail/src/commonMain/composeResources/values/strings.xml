@@ -1,0 +1,13 @@
+<resources>
+    <string name="flag_description">ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。</string>
+    <string name="flag_white">ホワイトフラッグ</string>
+    <string name="flag_green">グリーンフラッグ</string>
+    <string name="flag_red">レッドフラッグ</string>
+    <string name="flag_blue">ブルーフラッグ</string>
+    <string name="flag_yellow">イエローフラッグ</string>
+    <string name="flag_black">ブラックフラッグ</string>
+    <string name="flag_black_white">ブラック・ホワイトフラッグ</string>
+    <string name="flag_checkered">チェッカーフラッグ</string>
+    <string name="flag_orange_circle">オレンジボールフラッグ</string>
+    <string name="flag_red_yellow_stripes">レッド・イエローストライプフラッグ</string>
+</resources>

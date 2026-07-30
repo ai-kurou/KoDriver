@@ -174,6 +174,7 @@ private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when 
     ReadoutListItemType.Gt7Ps5.MyBestLap -> stringResource(Res.string.item_my_best_lap)
     ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> stringResource(Res.string.item_remaining_fuel_laps)
     ReadoutListItemType.Gt7Ps5.RemainingFuel -> stringResource(Res.string.item_remaining_fuel)
+    ReadoutListItemType.AceWindows.Flag -> stringResource(Res.string.item_flag)
     ReadoutListItemType.AceWindows.RemainingFuel -> stringResource(Res.string.item_remaining_fuel)
 }
 

@@ -9,6 +9,8 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.domain.model.AceWindowsFlagData
+import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -236,6 +238,7 @@ class DebugStateDetailPaneTest {
             MaterialTheme {
                 DebugStateDetailPaneContent(
                     uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.LmuWindows,
                         raceFlags = LmuWindowsRaceFlagsData(
                             gamePhase = SessionPhase.GREEN_FLAG,
                             yellowFlagState = SessionYellowFlagState.NONE,
@@ -262,6 +265,7 @@ class DebugStateDetailPaneTest {
             MaterialTheme {
                 DebugStateDetailPaneContent(
                     uiState = DebugStateDetailUiState(
+                        selectedSimulator = Simulator.LmuWindows,
                         raceFlags = LmuWindowsRaceFlagsData(
                             gamePhase = SessionPhase.GREEN_FLAG,
                             yellowFlagState = SessionYellowFlagState.NONE,
@@ -280,6 +284,60 @@ class DebugStateDetailPaneTest {
         }
 
         rule.onNodeWithText("ブルーフラッグ").assertIsDisplayed()
+    }
+
+    @Test
+    fun `選択中のシミュレータがACEの場合はACEフラッグ種別ごとの表示文言を表示する`() {
+        val expectedByAceFlag = mapOf(
+            AceWindowsFlagType.NO_FLAG to "フラッグなし",
+            AceWindowsFlagType.WHITE_FLAG to "ホワイトフラッグ",
+            AceWindowsFlagType.GREEN_FLAG to "グリーンフラッグ",
+            AceWindowsFlagType.RED_FLAG to "レッドフラッグ",
+            AceWindowsFlagType.BLUE_FLAG to "ブルーフラッグ",
+            AceWindowsFlagType.YELLOW_FLAG to "イエローフラッグ",
+            AceWindowsFlagType.BLACK_FLAG to "ブラックフラッグ",
+            AceWindowsFlagType.BLACK_WHITE_FLAG to "ブラック・ホワイトフラッグ",
+            AceWindowsFlagType.CHECKERED_FLAG to "チェッカーフラッグ",
+            AceWindowsFlagType.ORANGE_CIRCLE_FLAG to "オレンジボールフラッグ",
+            AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to "レッド・イエローストライプフラッグ",
+        )
+
+        expectedByAceFlag.forEach { (flag, expectedText) ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState = DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFlag = AceWindowsFlagData(flag = flag),
+                        ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText(expectedText).assertIsDisplayed()
+        }
+    }
+
+    @Test
+    fun `選択中のシミュレータがACEでフラッグ情報が未取得またはUNKNOWNの場合は未取得の文言を表示する`() {
+        listOf(null, AceWindowsFlagData(flag = AceWindowsFlagType.UNKNOWN)).forEach { aceWindowsFlag ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState = DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFlag = aceWindowsFlag,
+                        ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onAllNodesWithText("未取得").assertCountEquals(11)
+        }
     }
 
     @Test

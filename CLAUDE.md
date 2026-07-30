@@ -49,6 +49,7 @@ KoDriver/
 │   ├── ace-windows-connection/           ACE (Assetto Corsa EVO) 接続状態の監視
 │   ├── ace-windows-narrator/             ACE (Assetto Corsa EVO) WAV 音声再生とアナウンス制御
 │   ├── ace-windows-readout-remaining-fuel-detail/ ACE燃料残量アナウンスの詳細設定
+│   ├── ace-windows-readout-flag-detail/  ACEフラッグアナウンスの詳細設定
 │   ├── telemetry-log-list/              テレメトリログの一覧表示
 │   └── telemetry-log-detail/            テレメトリログの詳細表示
 ├── app/
