@@ -195,6 +195,8 @@ class AppTest {
         clickItem("キャンセル")
         // 「画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
         clickItem("終了確認を表示")
+        clickItem("テーマ")
+        clickItem("キャンセル")
         clickItem("ライセンス")
     }
 
