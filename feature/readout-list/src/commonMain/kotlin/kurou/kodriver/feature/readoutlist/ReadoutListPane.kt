@@ -75,6 +75,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -145,6 +146,7 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
     modifier: Modifier = Modifier,
 ) {
     val hint = stringResource(Res.string.select_simulator_hint)
+    val selectedSimulatorName = selectedSimulator?.let { simulatorDisplayName(it) } ?: hint
     val shape = RoundedCornerShape(4.dp)
     Row(
         modifier = modifier
@@ -157,7 +159,10 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
                 shape = shape,
             )
             .clip(shape)
-            .semantics { contentDescription = hint }
+            .semantics {
+                contentDescription = hint
+                stateDescription = selectedSimulatorName
+            }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -178,7 +183,7 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = selectedSimulator?.let { simulatorDisplayName(it) } ?: hint,
+                text = selectedSimulatorName,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
