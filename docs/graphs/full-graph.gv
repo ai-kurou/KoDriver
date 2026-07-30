@@ -2,13 +2,25 @@ digraph G {
   rankdir=TB
   graph [ranksep=1.2, nodesep=0.6]
   node [shape=box, style=rounded]
-  "app" [label="app\n4 modules"]
-  "core" [label="core\n7 modules"]
   "feature" [label="feature\n32 modules"]
-  "server" [label="server\n1 module"]
-  "app" -> "core"
-  "app" -> "feature"
-  "app" -> "server"
-  "feature" -> "core"
-  "server" -> "core"
+  ":app:androidApp" -> ":app:shared"
+  ":app:androidApp" -> ":core:data"
+  ":app:androidApp" -> ":core:gt7-ps5-data"
+  ":app:desktopApp" -> ":app:shared"
+  ":app:desktopApp" -> ":core:ace-windows-data"
+  ":app:desktopApp" -> ":core:data"
+  ":app:desktopApp" -> ":core:gt7-ps5-data"
+  ":app:desktopApp" -> ":core:lmu-windows-data"
+  ":app:desktopApp" -> ":server"
+  ":app:shared" -> "feature"
+  ":app:webApp" -> ":app:shared"
+  ":core:ace-windows-data" -> ":core:domain"
+  ":core:ace-windows-data" -> ":core:windows-shared-memory"
+  ":core:data" -> ":core:domain"
+  ":core:gt7-ps5-data" -> ":core:domain"
+  ":core:lmu-windows-data" -> ":core:domain"
+  ":core:lmu-windows-data" -> ":core:windows-shared-memory"
+  ":server" -> ":core:domain"
+  "feature" -> ":core:designsystem"
+  "feature" -> ":core:domain"
 }
