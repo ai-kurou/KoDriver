@@ -14,16 +14,16 @@ import kotlin.test.assertFailsWith
 class LmuWindowsRemainingVirtualEnergyPreferencesSerializerTest {
 
     @Test
-    fun `デフォルト値は thresholdPercentage が 50`() {
+    fun `デフォルト値は thresholdPercentage が 30`() {
         assertEquals(
-            LmuWindowsRemainingVirtualEnergyPreferences(thresholdPercentage = 50),
+            LmuWindowsRemainingVirtualEnergyPreferences(thresholdPercentage = 30),
             LmuWindowsRemainingVirtualEnergyPreferencesSerializer.defaultValue,
         )
     }
 
     @Test
     fun `書き込んだ値を読み出せる`() = runTest {
-        val original = LmuWindowsRemainingVirtualEnergyPreferences(thresholdPercentage = 30)
+        val original = LmuWindowsRemainingVirtualEnergyPreferences(thresholdPercentage = 50)
         val output = ByteArrayOutputStream()
         LmuWindowsRemainingVirtualEnergyPreferencesSerializer.writeTo(original, output)
 

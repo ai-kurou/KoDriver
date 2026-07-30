@@ -33,14 +33,14 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `thresholdPercentage の初期値は 50`() = testScope.runTest {
-        assertEquals(50, repository.observeThresholdPercentage().first())
+    fun `thresholdPercentage の初期値は 30`() = testScope.runTest {
+        assertEquals(30, repository.observeThresholdPercentage().first())
     }
 
     @Test
     fun `saveThresholdPercentage で保存した値を observeThresholdPercentage で取得できる`() = testScope.runTest {
-        repository.saveThresholdPercentage(30)
-        assertEquals(30, repository.observeThresholdPercentage().first())
+        repository.saveThresholdPercentage(50)
+        assertEquals(50, repository.observeThresholdPercentage().first())
     }
 
     @Test

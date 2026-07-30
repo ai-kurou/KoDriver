@@ -67,7 +67,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
 
         rule.onNodeWithText("残量閾値").assertIsDisplayed()
         rule.onNodeWithText("この閾値になると警告を読み上げます").assertIsDisplayed()
-        rule.onNodeWithText("50%").assertIsDisplayed()
+        rule.onNodeWithText("30%").assertIsDisplayed()
     }
 
     @Test
@@ -76,7 +76,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
-                    uiState = LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = 30),
+                    uiState = LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = 50),
                     onThresholdReset = { resetCalled = true },
                 )
             }

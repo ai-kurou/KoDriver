@@ -1337,7 +1337,7 @@ private fun settings(
     sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
     tyreTemperatureHighThresholdCelsius: Int = 90,
     tyreWearThresholdPercentage: Int = 50,
-    remainingVirtualEnergyThresholdPercentage: Int = 50,
+    remainingVirtualEnergyThresholdPercentage: Int = 30,
     pitTimingVirtualEnergyLapsThreshold: Int = 3,
     pitTimingTyreWearLapsThreshold: Int = 3,
 ) = LmuWindowsNarratorReadoutSettings(

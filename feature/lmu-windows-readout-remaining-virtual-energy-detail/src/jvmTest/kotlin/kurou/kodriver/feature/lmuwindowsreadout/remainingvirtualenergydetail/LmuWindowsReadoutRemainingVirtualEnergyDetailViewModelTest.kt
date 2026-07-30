@@ -59,11 +59,11 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
 
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() = runTest {
-        every { repository.observeThresholdPercentage() } returns MutableStateFlow(50)
+        every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
         val viewModel = createViewModel()
 
         assertEquals(
-            LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = 50),
+            LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = 30),
             viewModel.uiState.first(),
         )
         verify(exactly = 1) { repository.observeThresholdPercentage() }
@@ -86,20 +86,17 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModelTest {
     }
 
     @Test
-    fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値50に戻る`() = runTest {
+    fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値30に戻る`() = runTest {
         val thresholdFlow = MutableStateFlow(50)
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         coEvery { repository.saveThresholdPercentage(30) } answers { thresholdFlow.update { 30 } }
-        coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
         val viewModel = createViewModel()
 
-        viewModel.onThresholdChanged(30)
         viewModel.onThresholdReset()
 
-        assertEquals(50, viewModel.uiState.first().thresholdPercentage)
+        assertEquals(30, viewModel.uiState.first().thresholdPercentage)
         verify(exactly = 1) { repository.observeThresholdPercentage() }
         coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
         confirmVerified(repository)
     }
 
