@@ -97,22 +97,30 @@ class AppTest {
             "フラッグ",
             "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
         )
-        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
         clickItemAndVerifyDescription(
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
         )
+        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
+        scrollToItem("ピットタイミング")
+        clickItemAndVerifyDescription(
+            "ピットタイミング",
+            "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
+                "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
+                "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
+        )
+        scrollToItem("バーチャルエナジー残量")
         clickItemAndVerifyDescription(
             "バーチャルエナジー残量",
             "バーチャルエナジー残量が設定した閾値以下になった場合に音声でお知らせします。",
         )
-        scrollToItem("車両故障")
-        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         scrollToItem("タイヤ摩耗")
         clickItemAndVerifyDescription(
             "タイヤ摩耗",
             "タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。",
         )
+        scrollToItem("車両故障")
+        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         scrollToItem("自己ベストラップ")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
