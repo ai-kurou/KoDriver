@@ -22,6 +22,6 @@ jobs:
         with:
           languages: java-kotlin
 
-      - run: ./gradlew :app:androidApp:assembleDebug
+      - run: ./gradlew --no-build-cache --rerun-tasks :app:androidApp:assembleDebug
 
       - uses: github/codeql-action/analyze@c54b30b7df092240050e69945842bc67aee0f0f4 # v4.37.3

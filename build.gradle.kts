@@ -222,12 +222,31 @@ tasks.register("generateModuleGraphImages") {
             }
         }
 
+        val allModules = (parsedEdges.map { it.first } + parsedEdges.map { it.second }).toSet()
+
+        fun moduleCountLabel(count: Int): String = if (count == 1) "1 module" else "$count modules"
+
+        val featureGroup = "feature"
+        val featureModuleCount = allModules.count { it.startsWith(":feature:") }
+
+        fun overviewNode(module: String): String =
+            if (module.startsWith(":feature:")) featureGroup else module
+
+        val overviewEdges = parsedEdges
+            .map { (from, to, _) -> overviewNode(from) to overviewNode(to) }
+            .filter { (from, to) -> from != to }
+            .toSet()
+            .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
+
         val fullGvFile = file("$graphsDir/full-graph.gv")
         fullGvFile.writeText(
             buildString {
                 appendLine("digraph G {")
                 appendLine("  rankdir=TB")
-                parsedEdges.forEach { (from, to, _) ->
+                appendLine("  graph [ranksep=1.2, nodesep=0.6]")
+                appendLine("  node [shape=box, style=rounded]")
+                appendLine("  \"$featureGroup\" [label=\"feature\\n${moduleCountLabel(featureModuleCount)}\"]")
+                overviewEdges.forEach { (from, to) ->
                     appendLine("  \"$from\" -> \"$to\"")
                 }
                 append("}")
@@ -237,7 +256,6 @@ tasks.register("generateModuleGraphImages") {
         runCommand(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg")
         println("Generated: docs/graphs/full-graph.svg")
 
-        val allModules = (parsedEdges.map { it.first } + parsedEdges.map { it.second }).toSet()
         allModules.forEach { module ->
             val neighborhood = parsedEdges
                 .filter { (f, t, _) -> f == module || t == module }

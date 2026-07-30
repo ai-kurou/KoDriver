@@ -42,6 +42,8 @@ import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_save
 import kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_title
 import kodriver.feature.otherconsoleipdetail.generated.resources.navigate_back
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
+import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -131,12 +133,12 @@ fun OtherConsoleIpDetailPaneContent(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 RadioButton(
-                    selected = uiState.selectedPort == 33740,
-                    onClick = { onPortSelected(33740) },
+                    selected = uiState.selectedPort == GT7_PS5_UDP_PORT_DEFAULT,
+                    onClick = { onPortSelected(GT7_PS5_UDP_PORT_DEFAULT) },
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33740_label),
-                    modifier = Modifier.clickable { onPortSelected(33740) },
+                    modifier = Modifier.clickable { onPortSelected(GT7_PS5_UDP_PORT_DEFAULT) },
                 )
             }
             Row(
@@ -144,12 +146,12 @@ fun OtherConsoleIpDetailPaneContent(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 RadioButton(
-                    selected = uiState.selectedPort == 33741,
-                    onClick = { onPortSelected(33741) },
+                    selected = uiState.selectedPort == GT7_PS5_UDP_PORT_ALTERNATE,
+                    onClick = { onPortSelected(GT7_PS5_UDP_PORT_ALTERNATE) },
                 )
                 Text(
                     text = stringResource(Res.string.console_ip_port_33741_label),
-                    modifier = Modifier.clickable { onPortSelected(33741) },
+                    modifier = Modifier.clickable { onPortSelected(GT7_PS5_UDP_PORT_ALTERNATE) },
                 )
             }
             if (uiState.saveFailed) {
