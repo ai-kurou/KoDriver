@@ -20,6 +20,7 @@ KoDriver/
 │   └── designsystem/  共通 Composable コンポーネント
 ├── feature/
 │   ├── desktop-splash/           デスクトップ起動中スプラッシュの初期化進捗管理・画面表示
+│   ├── debug-state-detail/       走行データのデバッグ表示（燃料消費・タイヤ摩耗・タイヤ温度・ピットタイミング等）
 │   ├── lmu-windows-connection/   LMU 接続状態の監視
 │   ├── main/                     アプリ全体のメイン画面状態管理
 │   ├── server-connection/        KoDriver サーバーへの接続状態確認
@@ -39,12 +40,15 @@ KoDriver/
 │   ├── lmu-windows-readout-tyre-temperature-detail/ タイヤ温度アナウンスの詳細設定
 │   ├── lmu-windows-readout-remaining-virtual-energy-detail/ バーチャルエナジー残量アナウンスの詳細設定
 │   ├── lmu-windows-readout-tyre-wear-detail/     タイヤ摩耗アナウンスの詳細設定
+│   ├── lmu-windows-readout-pit-timing-detail/    ピットタイミングアナウンスの詳細設定
 │   ├── gt7-ps5-connection/              GT7 PS5 接続状態の監視
 │   ├── gt7-ps5-narrator/                GT7 PS5 WAV 音声再生とアナウンス制御
 │   ├── gt7-ps5-readout-my-best-lap-detail/      GT7自己ベストラップアナウンスの詳細設定
+│   ├── gt7-ps5-readout-remaining-fuel-detail/      GT7燃料残量アナウンスの詳細設定
 │   ├── gt7-ps5-readout-remaining-fuel-laps-detail/ GT7燃料残り周回数アナウンスの詳細設定
 │   ├── ace-windows-connection/           ACE (Assetto Corsa EVO) 接続状態の監視
 │   ├── ace-windows-narrator/             ACE (Assetto Corsa EVO) WAV 音声再生とアナウンス制御
+│   ├── ace-windows-readout-remaining-fuel-detail/ ACE燃料残量アナウンスの詳細設定
 │   ├── telemetry-log-list/              テレメトリログの一覧表示
 │   └── telemetry-log-detail/            テレメトリログの詳細表示
 ├── app/
