@@ -64,7 +64,6 @@ GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub �
 
 このアプリは音声合成ソフトウェア `VOICEVOX` を利用しています。
 
-- VOICEVOX:剣崎雌雄
 - VOICEVOX 公式サイト: <https://voicevox.hiroshiba.jp/>
 - VOICEVOX ソフトウェア利用規約: <https://voicevox.hiroshiba.jp/term/>
 - 剣崎雌雄 利用規約: <https://voicevox.hiroshiba.jp/product/kenzaki_mesuo/>
