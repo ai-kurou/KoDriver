@@ -59,6 +59,7 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
         val result = useCase().first()
 
         assertEquals(false, result.getValue(ReadoutItemKey.AceWindows.Flag.BlueFlag))
+        assertEquals(true, result.getValue(ReadoutItemKey.AceWindows.Flag.WhiteFlag))
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         confirmVerified(repository)
     }
