@@ -53,11 +53,16 @@ class MainActivityTest {
             "フラッグ",
             "ブルーフラッグ・イエローフラッグ・レッドフラッグ・フルコースイエローなどのフラッグ状況を音声でお知らせします。",
         )
-        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
-        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         clickItemAndVerifyDescription(
             "タイヤ温度",
             "タイヤの温度状況を音声でお知らせします。判定にはカーカス温度を使用するため、ゲーム上に表示されるタイヤ温度とは若干の温度差が生じる場合があります。",
+        )
+        clickItemAndVerifyDescription("車両接近", "周囲の車両が接近した際に音声でお知らせします。")
+        clickItemAndVerifyDescription(
+            "ピットタイミング",
+            "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
+                "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
+                "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
         )
         clickItemAndVerifyDescription(
             "バーチャルエナジー残量",
@@ -67,6 +72,7 @@ class MainActivityTest {
             "タイヤ摩耗",
             "タイヤの摩耗率が設定した閾値以上になった場合に音声でお知らせします。いずれかのタイヤが条件を満たすと読み上げ、全タイヤが閾値未満に戻るまでは再度読み上げません。",
         )
+        clickItemAndVerifyDescription("車両故障", "車両の故障状況を音声でお知らせします。")
         clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
@@ -77,8 +83,13 @@ class MainActivityTest {
         clickReadoutPriorityHelp()
 
         waitUntilDisplayed("燃料残り周回数")
-        clickItemAndNavigateBack("燃料残り周回数")
-        clickItemAndNavigateBack("自己ベストラップ")
+        clickItemAndVerifyDescription(
+            "燃料残り周回数",
+            "各ラップごとに燃料と走行可能な残り周回数を計算します。現在の最速ラップの30秒前にあたるタイミングで判定し、" +
+                "設定した周回数以下になると音声でお知らせします。",
+        )
+        clickItemAndVerifyDescription("燃料残量", "燃料残量が設定した閾値を下回った場合に、音声でお知らせします。")
+        clickItemAndVerifyDescription("自己ベストラップ", "自己ベストラップを更新したときに音声でお知らせします。")
     }
 
     @Test
@@ -132,6 +143,8 @@ class MainActivityTest {
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
         clickScrollableItem("終了確認を表示")
+        clickScrollableItem("テーマ")
+        clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")
         clickItemAndNavigateBack("ライセンス")
     }
