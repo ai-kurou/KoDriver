@@ -244,7 +244,7 @@ private fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> stringResource(Res.string.item_my_best_lap)
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> stringResource(Res.string.item_remaining_fuel_laps)
     is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> stringResource(Res.string.item_remaining_fuel)
-    is ReadoutItemKey.AceWindows.Flag.Root -> stringResource(Res.string.item_flag)
+    is ReadoutItemKey.AceWindows.Flag -> stringResource(Res.string.item_flag)
     is ReadoutItemKey.AceWindows.RemainingFuel.Root -> stringResource(Res.string.item_remaining_fuel)
 }
 
@@ -260,7 +260,7 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector = when (itemId) {
     is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
     is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
     is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Icons.Filled.LocalGasStation
-    is ReadoutItemKey.AceWindows.Flag.Root -> Icons.Filled.Flag
+    is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
     is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
 }
 
