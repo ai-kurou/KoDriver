@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kodriver.feature.debugstatedetail.generated.resources.Res
@@ -52,23 +53,32 @@ internal fun FlagInfoContent(
     when (selectedSimulator) {
         is Simulator.LmuWindows -> LmuFlagInfoContent(raceFlags)
         is Simulator.AceWindows -> AceFlagInfoContent(aceWindowsFlag)
-        is Simulator.Gt7Ps5, null -> Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        is Simulator.Gt7Ps5, null -> Text(
+            text = stringResource(Res.string.debug_state_flag_info_unavailable),
+            style = MaterialTheme.typography.bodyMedium,
+        )
     }
 }
 
 @Composable
 private fun LmuFlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
     if (raceFlags == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        Text(
+            text = stringResource(Res.string.debug_state_flag_info_unavailable),
+            style = MaterialTheme.typography.bodyMedium,
+        )
         return
     }
     val activeFlags = determineActiveRaceFlags(raceFlags)
     Column {
         if (activeFlags.isEmpty()) {
-            Text(text = stringResource(Res.string.debug_state_flag_none))
+            Text(
+                text = stringResource(Res.string.debug_state_flag_none),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         } else {
             activeFlags.forEach { flag ->
-                Text(text = stringResource(flag.labelRes))
+                Text(text = stringResource(flag.labelRes), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -93,8 +103,11 @@ private fun aceFlagDisplayName(flag: AceWindowsFlagType): String = when (flag) {
 @Composable
 private fun AceFlagInfoContent(aceWindowsFlag: AceWindowsFlagData?) {
     if (aceWindowsFlag == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+        Text(
+            text = stringResource(Res.string.debug_state_flag_info_unavailable),
+            style = MaterialTheme.typography.bodyMedium,
+        )
         return
     }
-    Text(text = aceFlagDisplayName(aceWindowsFlag.flag))
+    Text(text = aceFlagDisplayName(aceWindowsFlag.flag), style = MaterialTheme.typography.bodyMedium)
 }
