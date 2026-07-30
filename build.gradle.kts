@@ -222,12 +222,47 @@ tasks.register("generateModuleGraphImages") {
             }
         }
 
+        val allModules = (parsedEdges.map { it.first } + parsedEdges.map { it.second }).toSet()
+
+        fun moduleGroup(module: String): String = when {
+            module.startsWith(":app:") -> "app"
+            module.startsWith(":feature:") -> "feature"
+            module.startsWith(":core:") -> "core"
+            module == ":server" -> "server"
+            else -> "other"
+        }
+
+        fun groupDisplayName(group: String): String = when (group) {
+            "app" -> "app"
+            "feature" -> "feature"
+            "core" -> "core"
+            "server" -> "server"
+            else -> group
+        }
+
+        fun moduleCountLabel(count: Int): String = if (count == 1) "1 module" else "$count modules"
+
+        val groupLabels = allModules
+            .groupBy(::moduleGroup)
+            .mapValues { (group, modules) -> "${groupDisplayName(group)}\\n${moduleCountLabel(modules.size)}" }
+
+        val overviewEdges = parsedEdges
+            .map { (from, to, _) -> moduleGroup(from) to moduleGroup(to) }
+            .filter { (from, to) -> from != to }
+            .toSet()
+            .sortedWith(compareBy<Pair<String, String>> { it.first }.thenBy { it.second })
+
         val fullGvFile = file("$graphsDir/full-graph.gv")
         fullGvFile.writeText(
             buildString {
                 appendLine("digraph G {")
                 appendLine("  rankdir=TB")
-                parsedEdges.forEach { (from, to, _) ->
+                appendLine("  graph [ranksep=1.2, nodesep=0.6]")
+                appendLine("  node [shape=box, style=rounded]")
+                groupLabels.toSortedMap().forEach { (group, label) ->
+                    appendLine("  \"$group\" [label=\"$label\"]")
+                }
+                overviewEdges.forEach { (from, to) ->
                     appendLine("  \"$from\" -> \"$to\"")
                 }
                 append("}")
@@ -237,7 +272,6 @@ tasks.register("generateModuleGraphImages") {
         runCommand(dotBinary, "-Tsvg", fullGvFile.absolutePath, "-o", "$graphsDir/full-graph.svg")
         println("Generated: docs/graphs/full-graph.svg")
 
-        val allModules = (parsedEdges.map { it.first } + parsedEdges.map { it.second }).toSet()
         allModules.forEach { module ->
             val neighborhood = parsedEdges
                 .filter { (f, t, _) -> f == module || t == module }
