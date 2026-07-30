@@ -7,7 +7,6 @@ import kodriver.feature.readoutlist.generated.resources.item_ace_black_white_fla
 import kodriver.feature.readoutlist.generated.resources.item_ace_blue_flag
 import kodriver.feature.readoutlist.generated.resources.item_ace_checkered_flag
 import kodriver.feature.readoutlist.generated.resources.item_ace_green_flag
-import kodriver.feature.readoutlist.generated.resources.item_ace_no_flag
 import kodriver.feature.readoutlist.generated.resources.item_ace_orange_circle_flag
 import kodriver.feature.readoutlist.generated.resources.item_ace_red_flag
 import kodriver.feature.readoutlist.generated.resources.item_ace_red_yellow_stripes_flag
@@ -47,7 +46,6 @@ private fun flagItemDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = 
 @Composable
 private fun aceFlagItemDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String = when (flag) {
     is ReadoutItemKey.AceWindows.Flag.Root -> stringResource(Res.string.item_flag)
-    is ReadoutItemKey.AceWindows.Flag.NoFlag -> stringResource(Res.string.item_ace_no_flag)
     is ReadoutItemKey.AceWindows.Flag.WhiteFlag -> stringResource(Res.string.item_ace_white_flag)
     is ReadoutItemKey.AceWindows.Flag.GreenFlag -> stringResource(Res.string.item_ace_green_flag)
     is ReadoutItemKey.AceWindows.Flag.RedFlag -> stringResource(Res.string.item_ace_red_flag)

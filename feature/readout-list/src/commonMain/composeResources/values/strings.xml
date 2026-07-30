@@ -23,7 +23,6 @@
     <string name="item_remaining_virtual_energy">バーチャルエナジー残量</string>
     <string name="item_tyre_wear">タイヤ摩耗</string>
     <string name="item_remaining_fuel">燃料残量</string>
-    <string name="item_ace_no_flag">フラッグなし</string>
     <string name="item_ace_white_flag">ホワイトフラッグ</string>
     <string name="item_ace_green_flag">グリーンフラッグ</string>
     <string name="item_ace_red_flag">レッドフラッグ</string>

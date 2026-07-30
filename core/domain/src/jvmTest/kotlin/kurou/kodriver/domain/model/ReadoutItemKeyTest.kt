@@ -67,7 +67,6 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.AceWindows.Flag.Root,
             ReadoutItemKey.fromValue("ace_windows_flag"),
         )
-        assertEquals(ReadoutItemKey.AceWindows.Flag.NoFlag, ReadoutItemKey.fromValue("ace_windows_no_flag"))
         assertEquals(ReadoutItemKey.AceWindows.Flag.WhiteFlag, ReadoutItemKey.fromValue("ace_windows_white_flag"))
         assertEquals(ReadoutItemKey.AceWindows.Flag.GreenFlag, ReadoutItemKey.fromValue("ace_windows_green_flag"))
         assertEquals(ReadoutItemKey.AceWindows.Flag.RedFlag, ReadoutItemKey.fromValue("ace_windows_red_flag"))

@@ -34,7 +34,6 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
         val result: Map<ReadoutItemKey, Boolean> = useCase().first()
 
         val expected: Map<ReadoutItemKey, Boolean> = mapOf(
-            ReadoutItemKey.AceWindows.Flag.NoFlag to true,
             ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
             ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
             ReadoutItemKey.AceWindows.Flag.RedFlag to true,

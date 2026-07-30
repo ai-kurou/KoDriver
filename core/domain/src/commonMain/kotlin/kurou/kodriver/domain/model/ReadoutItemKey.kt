@@ -121,7 +121,6 @@ sealed interface ReadoutItemKey {
                 override val value = "ace_windows_flag"
                 override val supportsQueue = true
             }
-            data object NoFlag : Flag { override val value = "ace_windows_no_flag" }
             data object WhiteFlag : Flag { override val value = "ace_windows_white_flag" }
             data object GreenFlag : Flag { override val value = "ace_windows_green_flag" }
             data object RedFlag : Flag { override val value = "ace_windows_red_flag" }
@@ -166,7 +165,6 @@ sealed interface ReadoutItemKey {
                 Gt7Ps5.RemainingFuelLaps.Root,
                 Gt7Ps5.RemainingFuel.Root,
                 AceWindows.Flag.Root,
-                AceWindows.Flag.NoFlag,
                 AceWindows.Flag.WhiteFlag,
                 AceWindows.Flag.GreenFlag,
                 AceWindows.Flag.RedFlag,
