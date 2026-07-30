@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_description
 import kurou.kodriver.core.designsystem.DetailPaneCard
+import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -27,6 +28,7 @@ fun AceWindowsReadoutFlagDetailPane(
     AceWindowsReadoutFlagDetailPaneContent(
         uiState = uiState,
         onFlagEnabledChanged = viewModel::onFlagEnabledChanged,
+        onPreviewClicked = viewModel::onPreviewClicked,
         modifier = modifier,
     )
 }
@@ -35,6 +37,7 @@ fun AceWindowsReadoutFlagDetailPane(
 internal fun AceWindowsReadoutFlagDetailPaneContent(
     uiState: AceWindowsReadoutFlagDetailUiState = AceWindowsReadoutFlagDetailUiState(),
     onFlagEnabledChanged: (FlagReadoutItem, Boolean) -> Unit = { _, _ -> },
+    onPreviewClicked: (FlagReadoutItem) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -46,13 +49,21 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
             text = stringResource(Res.string.flag_description),
         )
         FlagReadoutItem.entries.forEach { item ->
+            val chipLabel = stringResource(item.labelRes)
             val checked = uiState.enabledStates[item.key] ?: true
             DetailPaneCard(
-                title = stringResource(item.labelRes),
+                title = chipLabel,
                 checked = checked,
                 onCheckedChange = { enabled -> onFlagEnabledChanged(item, enabled) },
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                bottomContent = {},
+                bottomContent = {
+                    DetailPaneCardChips(
+                        chipLabels = listOf(chipLabel),
+                        selectedChipLabels = setOf(chipLabel),
+                        chipEnabled = checked,
+                        onChipClick = { onPreviewClicked(item) },
+                    )
+                },
             )
         }
     }

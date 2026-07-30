@@ -16,9 +16,12 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
+import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsFlagEnabledStateUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -32,6 +35,9 @@ class AceWindowsReadoutFlagDetailViewModelTest {
 
     @MockK
     private lateinit var repository: AceWindowsFlagPreferencesRepository
+
+    @MockK
+    private lateinit var ttsEngine: TextToSpeechEngine
 
     @BeforeTest
     fun setUp() {
@@ -47,6 +53,7 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     private fun createViewModel() = AceWindowsReadoutFlagDetailViewModel(
         observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(repository),
         saveFlagEnabledState = SaveAceWindowsFlagEnabledStateUseCase(repository),
+        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
@@ -78,5 +85,31 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) }
         verify(exactly = 1) { repository.observeFlagEnabledStates() }
         confirmVerified(repository)
+    }
+
+    @Test
+    fun `onPreviewClicked を呼ぶと各フラグに対応する SpeechEvent が再生される`() {
+        every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+        val eventByItem = mapOf(
+            FlagReadoutItem.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag,
+            FlagReadoutItem.GreenFlag to SpeechEvent.AceWindowsGreenFlag,
+            FlagReadoutItem.RedFlag to SpeechEvent.AceWindowsRedFlag,
+            FlagReadoutItem.BlueFlag to SpeechEvent.AceWindowsBlueFlag,
+            FlagReadoutItem.YellowFlag to SpeechEvent.AceWindowsYellowFlag,
+            FlagReadoutItem.BlackFlag to SpeechEvent.AceWindowsBlackFlag,
+            FlagReadoutItem.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag,
+            FlagReadoutItem.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag,
+            FlagReadoutItem.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag,
+            FlagReadoutItem.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag,
+        )
+        assertEquals(FlagReadoutItem.entries.toSet(), eventByItem.keys)
+        eventByItem.forEach { (_, event) -> every { ttsEngine.speak(event, false) } returns Unit }
+        val viewModel = createViewModel()
+
+        eventByItem.forEach { (item, _) -> viewModel.onPreviewClicked(item) }
+
+        eventByItem.forEach { (_, event) -> verify(exactly = 1) { ttsEngine.speak(event, false) } }
+        verify(exactly = 1) { repository.observeFlagEnabledStates() }
+        confirmVerified(ttsEngine, repository)
     }
 }

@@ -3,6 +3,7 @@ package kurou.kodriver.feature.acewindowsreadout.flagdetail
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kurou.kodriver.core.designsystem.KoDriverTheme
@@ -26,7 +27,7 @@ class AceWindowsReadoutFlagDetailPaneTest {
         rule.onNodeWithText(
             "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
         ).assertIsDisplayed()
-        rule.onNodeWithText("ブルーフラッグ").assertIsDisplayed()
+        rule.onAllNodesWithText("ブルーフラッグ")[0].assertIsDisplayed()
     }
 
     @Test
@@ -41,13 +42,32 @@ class AceWindowsReadoutFlagDetailPaneTest {
                         changedItem = item
                         changedEnabled = enabled
                     },
+                    onPreviewClicked = {},
                 )
             }
         }
 
-        rule.onNodeWithText("ブルーフラッグ").assertIsDisplayed().performClick()
+        rule.onAllNodesWithText("ブルーフラッグ")[0].assertIsDisplayed().performClick()
 
         assertEquals(FlagReadoutItem.BlueFlag, changedItem)
         assertEquals(false, changedEnabled)
+    }
+
+    @Test
+    fun `フラッグチップをタップするとonPreviewClickedが呼ばれる`() {
+        var previewedItem: FlagReadoutItem? = null
+        rule.setContent {
+            MaterialTheme {
+                AceWindowsReadoutFlagDetailPaneContent(
+                    uiState = AceWindowsReadoutFlagDetailUiState(),
+                    onFlagEnabledChanged = { _, _ -> },
+                    onPreviewClicked = { previewedItem = it },
+                )
+            }
+        }
+
+        rule.onAllNodesWithText("ブルーフラッグ")[1].performClick()
+
+        assertEquals(FlagReadoutItem.BlueFlag, previewedItem)
     }
 }
