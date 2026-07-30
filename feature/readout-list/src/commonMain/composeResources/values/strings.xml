@@ -23,6 +23,17 @@
     <string name="item_remaining_virtual_energy">バーチャルエナジー残量</string>
     <string name="item_tyre_wear">タイヤ摩耗</string>
     <string name="item_remaining_fuel">燃料残量</string>
+    <string name="item_ace_no_flag">フラッグなし</string>
+    <string name="item_ace_white_flag">ホワイトフラッグ</string>
+    <string name="item_ace_green_flag">グリーンフラッグ</string>
+    <string name="item_ace_red_flag">レッドフラッグ</string>
+    <string name="item_ace_blue_flag">ブルーフラッグ</string>
+    <string name="item_ace_yellow_flag">イエローフラッグ</string>
+    <string name="item_ace_black_flag">ブラックフラッグ</string>
+    <string name="item_ace_black_white_flag">ブラック・ホワイトフラッグ</string>
+    <string name="item_ace_checkered_flag">チェッカーフラッグ</string>
+    <string name="item_ace_orange_circle_flag">オレンジボールフラッグ</string>
+    <string name="item_ace_red_yellow_stripes_flag">レッド・イエローストライプフラッグ</string>
     <string name="drag_handle">ドラッグして並び替え</string>
     <string name="priority_hint_label">読み上げ優先度</string>
     <string name="priority_hint_description">上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます</string>
