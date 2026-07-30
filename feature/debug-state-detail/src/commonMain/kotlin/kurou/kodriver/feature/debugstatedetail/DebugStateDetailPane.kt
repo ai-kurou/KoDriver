@@ -1,7 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,13 +20,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.debugstatedetail.generated.resources.Res
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_best_lap_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_current_lap_title
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_blue
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_full_course_yellow
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_none
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_red
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_yellow
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_title
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_countdown
 import kodriver.feature.debugstatedetail.generated.resources.debug_state_game_phase_formation
@@ -81,12 +75,9 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.Simulator
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
@@ -179,7 +170,7 @@ private fun DebugStateCard(
             title = stringResource(Res.string.debug_state_flag_info_title),
             modifier = modifier,
             bottomContent = {
-                FlagInfoContent(uiState.raceFlags)
+                FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag)
             },
         )
         DebugStateCardKey.GAME_PHASE -> DetailPaneCard(
@@ -279,40 +270,6 @@ private fun SimulatorInfoContent(selectedSimulator: Simulator?) {
             ?.let { simulatorDisplayName(it) }
             ?: stringResource(Res.string.debug_state_simulator_info_unselected),
     )
-}
-
-internal enum class ActiveRaceFlag(val labelRes: StringResource) {
-    BLUE(Res.string.debug_state_flag_blue),
-    YELLOW(Res.string.debug_state_flag_yellow),
-    FULL_COURSE_YELLOW(Res.string.debug_state_flag_full_course_yellow),
-    RED(Res.string.debug_state_flag_red),
-}
-
-internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<ActiveRaceFlag> = buildList {
-    if (raceFlags.playerFlag == PrimaryFlag.BLUE) add(ActiveRaceFlag.BLUE)
-    if (raceFlags.playerUnderYellow || raceFlags.sectorFlags.any { it == SectorFlagState.YELLOW }) {
-        add(ActiveRaceFlag.YELLOW)
-    }
-    if (raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW) add(ActiveRaceFlag.FULL_COURSE_YELLOW)
-    if (raceFlags.gamePhase == SessionPhase.RED_FLAG) add(ActiveRaceFlag.RED)
-}
-
-@Composable
-private fun FlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
-    if (raceFlags == null) {
-        Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
-        return
-    }
-    val activeFlags = determineActiveRaceFlags(raceFlags)
-    Column {
-        if (activeFlags.isEmpty()) {
-            Text(text = stringResource(Res.string.debug_state_flag_none))
-        } else {
-            activeFlags.forEach { flag ->
-                Text(text = stringResource(flag.labelRes))
-            }
-        }
-    }
 }
 
 @Composable
