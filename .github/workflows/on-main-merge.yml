@@ -124,3 +124,6 @@ jobs:
       - uses: ./.github/actions/setup
 
       - run: ./gradlew :app:desktopApp:jar
+
+  codeql-analyze:
+    uses: ./.github/workflows/_codeql-analyze.yml
