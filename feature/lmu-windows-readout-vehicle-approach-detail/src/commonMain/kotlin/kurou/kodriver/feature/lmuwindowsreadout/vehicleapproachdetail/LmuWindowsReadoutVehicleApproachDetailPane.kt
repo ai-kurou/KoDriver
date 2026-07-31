@@ -245,7 +245,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                         value = uiState.sustainedApproachDurationSeconds.toFloat(),
                         valueRange = 4f..10f,
                         steps = 5,
-                        labelFormatter = { sustainedDurationLabel.formatSliderLabel(it) },
+                        labelFormatter = { sustainedDurationLabel.formatSliderLabel(it.roundToInt().toFloat()) },
                         onValueChangeFinished = { onSustainedApproachDurationSecondsChanged(it.roundToInt()) },
                         defaultValue = defaultSustainedDuration,
                         onResetToDefault = onResetSustainedApproachDurationSeconds,
