@@ -23,6 +23,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -84,7 +85,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
                     ThresholdSlider(
                         value = uiState.remainingFuelLaps.toFloat(),
                         valueRange = MINIMUM_REMAINING_FUEL_LAPS..MAXIMUM_REMAINING_FUEL_LAPS,
-                        labelFormatter = { sliderLabel.format(it.roundToInt()) },
+                        labelFormatter = { sliderLabel.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onRemainingFuelLapsChanged(it.roundToInt()) },
                         steps = 3,
                         defaultValue = GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT.toFloat(),

@@ -59,6 +59,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
@@ -150,7 +151,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         ThresholdSlider(
             value = uiState.longitudinalThresholdMeters.toFloat(),
             valueRange = 0.1f..10f,
-            labelFormatter = { longitudinalLabel.format(it) },
+            labelFormatter = { longitudinalLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLongitudinalThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = 16.dp),
             defaultValue = defaultLongitudinal,
@@ -160,7 +161,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         ThresholdSlider(
             value = uiState.lateralThresholdMeters.toFloat(),
             valueRange = 2f..8f,
-            labelFormatter = { lateralLabel.format(it) },
+            labelFormatter = { lateralLabel.formatSliderLabel(it) },
             onValueChangeFinished = { onLateralThresholdChanged(it.toDouble()) },
             modifier = Modifier.padding(horizontal = 16.dp),
             defaultValue = defaultLateral,
@@ -244,7 +245,7 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
                         value = uiState.sustainedApproachDurationSeconds.toFloat(),
                         valueRange = 4f..10f,
                         steps = 5,
-                        labelFormatter = { sustainedDurationLabel.format(it) },
+                        labelFormatter = { sustainedDurationLabel.formatSliderLabel(it) },
                         onValueChangeFinished = { onSustainedApproachDurationSecondsChanged(it.roundToInt()) },
                         defaultValue = defaultSustainedDuration,
                         onResetToDefault = onResetSustainedApproachDurationSeconds,
