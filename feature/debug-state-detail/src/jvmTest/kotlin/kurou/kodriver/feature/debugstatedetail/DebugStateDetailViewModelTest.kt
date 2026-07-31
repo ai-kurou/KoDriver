@@ -106,13 +106,13 @@ class DebugStateDetailViewModelTest {
 
     private fun createViewModel() = DebugStateDetailViewModel(
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
-        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
-        observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
+        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+        observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
         observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
         observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(aceWindowsFuelRepository),
         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(aceWindowsFlagRepository),
-        observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+        observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
         observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
         resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
         saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),

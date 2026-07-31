@@ -24,6 +24,8 @@ import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 internal data class MyBestLapUseCases(
     val observeGt7Ps5: ObserveGt7Ps5UseCase,
@@ -45,7 +47,7 @@ internal data class RemainingFuelUseCases(
     val observeRemainingFuelThresholdPercentage: ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase,
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 internal class Gt7Ps5NarratorViewModel(
     myBestLapUseCases: MyBestLapUseCases,
     readoutListUseCases: ReadoutListUseCases,
@@ -54,7 +56,7 @@ internal class Gt7Ps5NarratorViewModel(
     private val eventProcessor: Gt7Ps5NarratorEventProcessor,
     private val determineGt7Ps5NarratorReadout: DetermineGt7Ps5NarratorReadoutUseCase =
         DetermineGt7Ps5NarratorReadoutUseCase(),
-    private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
+    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()

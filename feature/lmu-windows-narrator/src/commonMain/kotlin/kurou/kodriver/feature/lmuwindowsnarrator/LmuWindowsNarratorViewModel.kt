@@ -55,6 +55,8 @@ import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 internal data class VehicleApproachUseCases(
     val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
@@ -111,7 +113,7 @@ internal data class NarratorUseCases(
     val observeRedFlagVoiceType: ObserveLmuWindowsRedFlagVoiceTypeUseCase,
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 @Suppress("LongParameterList")
 internal class LmuWindowsNarratorViewModel(
     vehicleApproachUseCases: VehicleApproachUseCases,
@@ -124,7 +126,7 @@ internal class LmuWindowsNarratorViewModel(
     pitTimingUseCases: PitTimingUseCases,
     private val eventProcessor: LmuWindowsNarratorEventProcessor,
     private val narratorUseCases: NarratorUseCases,
-    private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
+    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
 
     private var narratorState = LmuWindowsNarratorState()

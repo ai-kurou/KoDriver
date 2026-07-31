@@ -22,16 +22,15 @@
   **課題**: `Simulator` の表示名（`simulatorDisplayName`）とアイコン（`simulatorIcon`）を返す `when` 式が3モジュールにほぼ同一の内容で重複定義されている。文字列リソースも `feature:readout-list` と `feature:debug-state-detail` の `strings.xml` に同じキー（`simulator_name_lmu` など）が重複している。新しい `Simulator` を追加するたびに同じ分岐を複数箇所へ手作業で追加する必要があり、追加漏れがコンパイルエラーで検出される（網羅的 `when` のため）ものの、手間と重複が大きい。
   **改善案**: `Simulator` の表示名・アイコンを `core:designsystem` または `core:domain` に集約したユーティリティ（例: `Simulator.displayNameRes()` 拡張、共通の `SimulatorIconRepository` 的な仕組み）としてまとめ、各 feature モジュールから参照する形に統一する。ただし `core:designsystem` は Compose リソースを持つが `core:domain` は持たない現状の依存方向を踏まえた設計検討が必要。
 
-## 多数の feature モジュールの commonMain が js/wasmJs ターゲットでコンパイルできない
-
-- **対象**（`System.currentTimeMillis()` / `@Volatile` を直接参照）: `feature:lmu-windows-narrator`・`feature:gt7-ps5-narrator`・`feature:ace-windows-narrator`
-  **対象**（`String.format`/`"%.1f".format(...)` 等 JVM 専用の `format` 拡張を直接参照）: `feature:ace-windows-readout-remaining-fuel-detail`・`feature:gt7-ps5-readout-remaining-fuel-detail`・`feature:gt7-ps5-readout-remaining-fuel-laps-detail`・`feature:lmu-windows-readout-pit-timing-detail`・`feature:lmu-windows-readout-remaining-virtual-energy-detail`・`feature:lmu-windows-readout-tyre-temperature-detail`・`feature:lmu-windows-readout-tyre-wear-detail`・`feature:lmu-windows-readout-vehicle-approach-detail`・`feature:other-volume-detail`
-- **課題**: `System.currentTimeMillis()` は `java.lang.System` の呼び出しであり、`@Volatile`（`kotlin.jvm.Volatile`）・`String.format` 系 API も JVM/Android 専用のため、どちらも commonMain からは js/wasmJs ターゲット向けにコンパイルできない（`compileKotlinJs`/`compileKotlinWasmJs`、および `compileCommonMainKotlinMetadata` が `Unresolved reference` で失敗する）。この問題は `:app:webApp` がビルド設定のみで未実装のため `preMergeCheck` では検出されず、CIも通ってしまっている。Dokka 導入（on-main-merge.yml での API ドキュメント生成）は `compileCommonMainKotlinMetadata` をトリガーするため、上記12モジュールは現状 Dokka 集約対象（ルート `build.gradle.kts` の `dependencies { dokka(project(...)) }`）からコメントアウトで一時的に除外している。
-- **改善案**: `System.currentTimeMillis()` は `kotlinx.datetime.Clock.System.now()` 等のマルチプラットフォーム対応APIに置き換える。`@Volatile` は `kotlin.concurrent.Volatile`（Kotlin 1.9+ のマルチプラットフォーム版アノテーション）に置き換える。`String.format`/`"%.1f".format(...)` は `kotlin.text` 側の書式化や自前実装に置き換える。対応後は除外していた各モジュールを Dokka 集約対象に戻す（コメントアウトを解除する）。
-
 ## 共有メモリのMapper層で「有効なテレメトリが書き込まれたか」を判定していない
 
 - **対象**: `core:ace-windows-data`（`AceWindowsMapper`）、`core:lmu-windows-data`
 - **課題**: 起動直後など、ゲーム側がまだ共有メモリにテレメトリを書き込んでいない区間はゼロクリアされた値になりうるが、Mapper はそれをそのまま有効な値として返している（ACEの残燃料が起動直後に `0.0%` になり誤読み上げが発生した不具合はこれが原因の一つ）。
   **改善案**: `AceWindowsMapper` / `LmuWindowsMapper` 側で `status` 等の「有効なテレメトリが書き込まれたか」を示すフィールドを見て、無効なテレメトリをフィルタする仕組みの導入を検討する。
+
+## `String.formatSliderLabel` は printf 形式のサブセットのみサポートする簡易実装
+
+- **対象**: `core:designsystem`（`SliderLabelFormat.kt`）
+- **課題**: commonMain からは `java.util.Formatter`（`String.format`）を利用できないため、スライダーラベル表示用に `%1$d`・`%1$s`・`%1$.Nf`・エスケープされた `%%` のみをサポートする自前の簡易フォーマッタを実装した。将来 strings.xml 側で複数引数（`%2$d` など）や他の書式指定子を使うテンプレートを追加すると、無言で正しく置換されない（プレースホルダーがそのまま残る）。
+  **改善案**: 新しいプレースホルダーパターンを追加する際は `SliderLabelFormatTest` にケースを追加して検証すること。多様な書式が必要になった場合は `kotlinx-datetime` のような専用ライブラリの採用や、strings.xml 側のテンプレートをプレースホルダーなしの分割文字列（prefix/suffix）に変更する設計も検討する。
 

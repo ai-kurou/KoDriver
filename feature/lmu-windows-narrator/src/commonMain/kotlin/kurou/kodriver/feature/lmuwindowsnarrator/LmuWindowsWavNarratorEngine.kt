@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kotlin.concurrent.Volatile
 
 @OptIn(ExperimentalResourceApi::class)
 internal class LmuWindowsWavNarratorEngine(

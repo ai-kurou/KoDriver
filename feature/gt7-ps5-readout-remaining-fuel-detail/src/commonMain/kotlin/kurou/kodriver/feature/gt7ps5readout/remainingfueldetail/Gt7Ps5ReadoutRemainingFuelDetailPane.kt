@@ -27,6 +27,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -87,7 +88,7 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
                         value = uiState.thresholdPercentage.toFloat(),
                         valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
-                        labelFormatter = { thresholdLabelTemplate.format(it.roundToInt()) },
+                        labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
                         defaultValue = GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT.toFloat(),
                         onResetToDefault = onThresholdReset,
