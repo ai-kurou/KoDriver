@@ -79,7 +79,7 @@ internal data class ReadoutListUseCases(
 )
 
 internal data class FlagUseCases(
-    val observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
+    val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
     val observeFlagEnabledStates: ObserveLmuWindowsFlagEnabledStatesUseCase,
 )
 
@@ -179,7 +179,7 @@ internal class LmuWindowsNarratorViewModel(
     private val raceFlagsFlow = selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            flagUseCases.observeLmuWindowsRaceFlags()
+            flagUseCases.observeRaceFlags()
         }
         .shareIn(viewModelScope, SharingStarted.Eagerly)
 

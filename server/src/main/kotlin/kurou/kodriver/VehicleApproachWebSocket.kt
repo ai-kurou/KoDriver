@@ -7,11 +7,9 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 
-internal fun Route.lmuWindowsVehicleApproachWebSocket(
-    observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
-) {
+internal fun Route.vehicleApproachWebSocket(observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase) {
     webSocket(KoDriverServerFeature.VEHICLE_APPROACH.webSocketPath(Simulator.LmuWindows)) {
-        observeLmuWindowsVehicleApproach()
+        observeVehicleApproach()
             .distinctUntilChanged()
             .let { sendJsonMessages(it) }
     }

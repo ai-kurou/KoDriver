@@ -79,11 +79,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -107,11 +109,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -136,11 +140,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -178,11 +184,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -218,11 +226,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -254,11 +264,13 @@ class ApplicationTest {
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -293,11 +305,13 @@ class ApplicationTest {
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -333,11 +347,11 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -373,11 +387,11 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -413,9 +427,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
+                    ),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        repository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -448,9 +466,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
+                    ),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        repository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -486,11 +508,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -523,11 +547,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -563,11 +589,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                     observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
@@ -598,11 +626,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                     observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
@@ -636,11 +666,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -673,11 +705,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -713,11 +747,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -750,11 +786,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -789,11 +827,13 @@ class ApplicationTest {
                 observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                     EmptyLmuWindowsVehicleApproachRepository,
                 ),
-                observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                    EmptyTyreCarcassTemperatureRepository,
+                observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                    EmptyLmuWindowsVehicleDamageRepository,
                 ),
-                observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                    EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                ),
+                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                 observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                     EmptyLmuWindowsVirtualEnergyRepository,
@@ -824,11 +864,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -861,11 +903,13 @@ class ApplicationTest {
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
-                    observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                        EmptyTyreCarcassTemperatureRepository,
+                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
+                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
@@ -898,9 +942,11 @@ class ApplicationTest {
                 module {
                     single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
                     single<LmuWindowsVehicleApproachRepository> { EmptyLmuWindowsVehicleApproachRepository }
-                    single<LmuWindowsVehicleDamageRepository> { EmptyVehicleDamageRepository }
-                    single<LmuWindowsTyreCarcassTemperatureRepository> { EmptyTyreCarcassTemperatureRepository }
-                    single<LmuWindowsTyreWearRepository> { EmptyTyreWearRepository }
+                    single<LmuWindowsVehicleDamageRepository> { EmptyLmuWindowsVehicleDamageRepository }
+                    single<LmuWindowsTyreCarcassTemperatureRepository> {
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository
+                    }
+                    single<LmuWindowsTyreWearRepository> { EmptyLmuWindowsTyreWearRepository }
                     single<LmuWindowsRepository> { EmptyLmuWindowsRepository }
                     single<LmuWindowsVirtualEnergyRepository> { EmptyLmuWindowsVirtualEnergyRepository }
                     single<AceWindowsFuelRepository> { EmptyAceWindowsFuelRepository }
@@ -1077,7 +1123,7 @@ private object EmptyLmuWindowsVehicleApproachRepository : LmuWindowsVehicleAppro
     override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
 }
 
-private object EmptyVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
+private object EmptyLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
     override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = emptyFlow()
 }
 
@@ -1091,7 +1137,7 @@ private class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRep
     }
 }
 
-private object EmptyTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
+private object EmptyLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
 }
 
@@ -1105,7 +1151,7 @@ private class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCar
     }
 }
 
-private object EmptyTyreWearRepository : LmuWindowsTyreWearRepository {
+private object EmptyLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
     override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> = emptyFlow()
 }
 

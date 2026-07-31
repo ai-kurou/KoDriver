@@ -5,11 +5,11 @@ import io.ktor.server.websocket.webSocket
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 
-internal fun Route.lmuWindowsFlagWebSocket(observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase) {
-    webSocket(KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows)) {
-        observeLmuWindowsRaceFlags()
+internal fun Route.virtualEnergyWebSocket(observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase) {
+    webSocket(KoDriverServerFeature.VIRTUAL_ENERGY.webSocketPath(Simulator.LmuWindows)) {
+        observeVirtualEnergy()
             .distinctUntilChanged()
             .let { sendJsonMessages(it) }
     }
