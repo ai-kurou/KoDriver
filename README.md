@@ -12,8 +12,6 @@
 
 Le Mans Ultimate（LMU）、GranTurismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
-[API ドキュメント（Dokka）](https://ai-kurou.github.io/KoDriver/)
-
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
 <img width="1455" height="945" alt="スクリーンショット 2026-07-28 23 29 24" src="https://github.com/user-attachments/assets/a8fad479-8b80-421b-b272-2ae7fc2951f2" />
@@ -87,3 +85,7 @@ GT7 (PS5) と接続する場合は、PS5 へ直接接続する構成と SimHub �
 ## アーキテクチャ
 
 Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。モジュール構成とモジュールグラフの詳細は [アーキテクチャドキュメント](docs/architecture.md) を参照してください。
+
+## API ドキュメント
+
+[API ドキュメント（Dokka）](https://ai-kurou.github.io/KoDriver/)
