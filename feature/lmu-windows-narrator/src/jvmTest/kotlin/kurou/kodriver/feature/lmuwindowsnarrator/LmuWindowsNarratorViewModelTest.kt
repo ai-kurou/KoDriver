@@ -378,7 +378,7 @@ class LmuWindowsNarratorViewModelTest {
                 observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
             ),
             flagUseCases = FlagUseCases(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+                observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
                 observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
             ),
             tyreTemperatureUseCases = TyreTemperatureUseCases(

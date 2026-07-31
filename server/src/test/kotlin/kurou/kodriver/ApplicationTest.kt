@@ -75,7 +75,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -99,7 +99,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -124,7 +124,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -162,7 +162,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -198,7 +198,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -232,7 +232,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -269,7 +269,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -305,7 +305,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -341,7 +341,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -377,7 +377,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
@@ -408,7 +408,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repository),
@@ -442,7 +442,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -475,7 +475,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -511,7 +511,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -544,7 +544,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -580,7 +580,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -613,7 +613,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -649,7 +649,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -682,7 +682,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -717,7 +717,7 @@ class ApplicationTest {
         val port = ServerSocket(0).use { it.localPort }
         val server = KoDriverServer(
             useCases = KoDriverServerUseCases(
-                observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                 observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                 observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                 observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -748,7 +748,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -781,7 +781,7 @@ class ApplicationTest {
         application {
             module(
                 KoDriverServerUseCases(
-                    observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                    observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
                     observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
                     observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(

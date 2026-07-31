@@ -7,9 +7,9 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 
-internal fun Route.flagWebSocket(observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase) {
+internal fun Route.lmuWindowsFlagWebSocket(observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase) {
     webSocket(KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows)) {
-        observeRaceFlags()
+        observeLmuWindowsRaceFlags()
             .distinctUntilChanged()
             .let { sendJsonMessages(it) }
     }

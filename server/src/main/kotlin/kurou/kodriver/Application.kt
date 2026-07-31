@@ -47,7 +47,7 @@ import org.koin.core.Koin
  * LongParameterList 閾値内に収めるため、個別のコンストラクタ引数ではなくこのデータクラスで受け渡す。
  */
 data class KoDriverServerUseCases(
-    val observeRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
+    val observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
     val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
@@ -61,7 +61,7 @@ data class KoDriverServerUseCases(
 fun main() {
     KoDriverServer(
         useCases = KoDriverServerUseCases(
-            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyFlagRepository),
+            observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyLmuWindowsFlagRepository),
             observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
             observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
             observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
@@ -110,7 +110,7 @@ class KoDriverServer(
 fun createKoDriverServer(koin: Koin): KoDriverServer {
     return KoDriverServer(
         useCases = KoDriverServerUseCases(
-            observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
+            observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
             observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                 koin.get<LmuWindowsVehicleApproachRepository>(),
             ),
@@ -151,7 +151,7 @@ fun Application.module(useCases: KoDriverServerUseCases) {
                 ContentType.Application.Json,
             )
         }
-        flagWebSocket(useCases.observeRaceFlags)
+        lmuWindowsFlagWebSocket(useCases.observeLmuWindowsRaceFlags)
         vehicleApproachWebSocket(useCases.observeVehicleApproach)
         vehicleDamageWebSocket(useCases.observeVehicleDamage)
         tyreCarcassTemperatureWebSocket(useCases.observeTyreCarcassTemperature)
@@ -163,7 +163,7 @@ fun Application.module(useCases: KoDriverServerUseCases) {
     }
 }
 
-private object EmptyFlagRepository : LmuWindowsFlagRepository {
+private object EmptyLmuWindowsFlagRepository : LmuWindowsFlagRepository {
     override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
 }
 

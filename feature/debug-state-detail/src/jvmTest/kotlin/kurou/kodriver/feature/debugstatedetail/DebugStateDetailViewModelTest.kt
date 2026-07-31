@@ -106,7 +106,7 @@ class DebugStateDetailViewModelTest {
 
     private fun createViewModel() = DebugStateDetailViewModel(
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
-        observeRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
         observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
         observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
         observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
