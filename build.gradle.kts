@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.detekt)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.kotlinJvm) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kover)
@@ -60,6 +61,7 @@ subprojects {
         jvmArgs("-Dapple.awt.UIElement=true")
     }
     apply(plugin = "io.gitlab.arturbosch.detekt")
+    apply(plugin = "org.jetbrains.dokka")
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         autoCorrect = !isCI
     }
@@ -366,6 +368,13 @@ gradle.projectsEvaluated {
     }
 }
 
+dokka {
+    moduleName.set("KoDriver")
+    dokkaPublications.html {
+        outputDirectory.set(rootDir.resolve("docs/api"))
+    }
+}
+
 kover {
     reports {
         filters {
@@ -426,4 +435,55 @@ dependencies {
     kover(project(":app:shared"))
     kover(project(":app:desktopApp"))
     kover(project(":server"))
+    dokka(project(":core:domain"))
+    dokka(project(":core:data"))
+    dokka(project(":core:lmu-windows-data"))
+    dokka(project(":core:gt7-ps5-data"))
+    dokka(project(":core:ace-windows-data"))
+    dokka(project(":core:windows-shared-memory"))
+    dokka(project(":core:designsystem"))
+    dokka(project(":feature:desktop-splash"))
+    dokka(project(":feature:lmu-windows-connection"))
+    dokka(project(":feature:main"))
+    dokka(project(":feature:server-connection"))
+    // 以下の feature モジュールは commonMain から JVM 専用 API
+    // （System.currentTimeMillis, @Volatile, String.format）を直接参照しており
+    // compileCommonMainKotlinMetadata が失敗するため、Dokka 集約から一時的に除外する。
+    // docs/improvement-ideas.md に expect/actual 化の改善案を記録済み。
+    // dokka(project(":feature:lmu-windows-narrator"))
+    dokka(project(":feature:other-license-detail"))
+    dokka(project(":feature:other-list"))
+    dokka(project(":feature:other-server-ip-detail"))
+    dokka(project(":feature:other-console-ip-detail"))
+    dokka(project(":feature:other-readout-start-sound-detail"))
+    dokka(project(":feature:other-theme-detail"))
+    // dokka(project(":feature:other-volume-detail"))
+    dokka(project(":feature:readout-list"))
+    // dokka(project(":feature:lmu-windows-readout-vehicle-approach-detail"))
+    dokka(project(":feature:lmu-windows-readout-flag-detail"))
+    dokka(project(":feature:lmu-windows-readout-my-best-lap-detail"))
+    // dokka(project(":feature:lmu-windows-readout-pit-timing-detail"))
+    dokka(project(":feature:lmu-windows-readout-vehicle-damage-detail"))
+    // dokka(project(":feature:lmu-windows-readout-tyre-temperature-detail"))
+    // dokka(project(":feature:lmu-windows-readout-remaining-virtual-energy-detail"))
+    // dokka(project(":feature:lmu-windows-readout-tyre-wear-detail"))
+    dokka(project(":feature:gt7-ps5-connection"))
+    dokka(project(":feature:gt7-ps5-readout-my-best-lap-detail"))
+    // dokka(project(":feature:gt7-ps5-readout-remaining-fuel-detail"))
+    // dokka(project(":feature:gt7-ps5-readout-remaining-fuel-laps-detail"))
+    // dokka(project(":feature:gt7-ps5-narrator"))
+    dokka(project(":feature:ace-windows-connection"))
+    // dokka(project(":feature:ace-windows-narrator"))
+    // dokka(project(":feature:ace-windows-readout-remaining-fuel-detail"))
+    dokka(project(":feature:ace-windows-readout-flag-detail"))
+    dokka(project(":feature:telemetry-log-list"))
+    dokka(project(":feature:telemetry-log-detail"))
+    dokka(project(":feature:debug-state-detail"))
+    // app:shared は commonMain から narrator 系モジュール（Dokka 集約から除外中）へ依存しており、
+    // 依存関係のクラスパス解決のため compileCommonMainKotlinMetadata が失敗する。
+    // app:shared に依存する app:androidApp / app:desktopApp も合わせて除外する。
+    // dokka(project(":app:androidApp"))
+    // dokka(project(":app:shared"))
+    // dokka(project(":app:desktopApp"))
+    dokka(project(":server"))
 }

@@ -34,6 +34,7 @@ compose-material-icons-extended = "1.7.3"
 reorderable = "3.1.0"
 aboutLibraries = "14.2.1"
 sentry = "8.44.0"
+dokka = "2.2.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -111,3 +112,4 @@ modulesGraphAssert = { id = "com.jraska.module.graph.assertion", version.ref = "
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
