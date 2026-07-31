@@ -25,6 +25,8 @@ import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 internal data class RemainingFuelUseCases(
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
@@ -43,7 +45,7 @@ internal data class ReadoutListUseCases(
     val observeQueueEnabledStates: ObserveQueueEnabledStatesUseCase,
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 internal class AceWindowsNarratorViewModel(
     remainingFuelUseCases: RemainingFuelUseCases,
     readoutListUseCases: ReadoutListUseCases,
@@ -51,7 +53,7 @@ internal class AceWindowsNarratorViewModel(
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
-    private val currentTimeMs: () -> Long = { System.currentTimeMillis() },
+    private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
 
     private val selectedSimulator = readoutListUseCases.observeSelectedSimulator()

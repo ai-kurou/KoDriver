@@ -54,6 +54,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.SessionPhase
 import org.jetbrains.compose.resources.stringResource
@@ -174,7 +175,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         value = uiState.highThresholdCelsius.toFloat(),
                         valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
                         steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
-                        labelFormatter = { labelTemplate.format(it.roundToInt()) },
+                        labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
                         defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
                         onResetToDefault = onHighThresholdReset,

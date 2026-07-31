@@ -23,6 +23,7 @@ import kurou.kodriver.core.designsystem.DetailPaneBodyText
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.core.designsystem.formatSliderLabel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -78,7 +79,7 @@ fun OtherVolumeDetailPaneContent(
             ThresholdSlider(
                 value = uiState.volume.toFloat(),
                 valueRange = 0f..100f,
-                labelFormatter = { volumeLabel.format(it.roundToInt()) },
+                labelFormatter = { volumeLabel.formatSliderLabel(it.roundToInt()) },
                 onValueChangeFinished = { onVolumeChanged(it.roundToInt()) },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 steps = 99,

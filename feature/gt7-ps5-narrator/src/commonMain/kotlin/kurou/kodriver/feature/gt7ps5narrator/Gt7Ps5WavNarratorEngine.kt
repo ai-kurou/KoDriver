@@ -15,6 +15,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.feature.gt7ps5narrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kotlin.concurrent.Volatile
 
 @OptIn(ExperimentalResourceApi::class)
 internal class Gt7Ps5WavNarratorEngine(

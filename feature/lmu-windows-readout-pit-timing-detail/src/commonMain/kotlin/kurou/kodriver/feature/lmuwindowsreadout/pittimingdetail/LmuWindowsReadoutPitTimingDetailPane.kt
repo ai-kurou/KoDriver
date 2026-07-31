@@ -43,6 +43,7 @@ import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
+import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import org.jetbrains.compose.resources.stringResource
@@ -122,7 +123,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                     ThresholdSlider(
                         value = uiState.virtualEnergyLaps.toFloat(),
                         valueRange = MINIMUM_PIT_TIMING_LAPS..MAXIMUM_PIT_TIMING_LAPS,
-                        labelFormatter = { sliderLabel.format(it.roundToInt()) },
+                        labelFormatter = { sliderLabel.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onVirtualEnergyLapsChanged(it.roundToInt()) },
                         steps = 3,
                         defaultValue = LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT.toFloat(),
@@ -146,7 +147,7 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
                     ThresholdSlider(
                         value = uiState.tyreWearLaps.toFloat(),
                         valueRange = MINIMUM_PIT_TIMING_LAPS..MAXIMUM_PIT_TIMING_LAPS,
-                        labelFormatter = { sliderLabel.format(it.roundToInt()) },
+                        labelFormatter = { sliderLabel.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onTyreWearLapsChanged(it.roundToInt()) },
                         steps = 3,
                         defaultValue = LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT.toFloat(),
