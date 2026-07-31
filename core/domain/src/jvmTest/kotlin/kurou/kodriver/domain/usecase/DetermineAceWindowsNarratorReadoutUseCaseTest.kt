@@ -74,6 +74,18 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `残量が0パーセントの未初期化値では読み上げない`() {
+        val decision = useCase.determineRemainingFuel(
+            state = AceWindowsNarratorState(),
+            data = fuel(remainingPercent = 0.0),
+            settings = settings(thresholdPercentage = 30),
+        )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(false, decision.state.remainingFuelWarned)
+    }
+
+    @Test
     fun `残り燃料項目が無効なら読み上げない`() {
         val decision = useCase.determineRemainingFuel(
             state = AceWindowsNarratorState(),
