@@ -7,9 +7,11 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 
-internal fun Route.virtualEnergyWebSocket(observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase) {
+internal fun Route.lmuWindowsVirtualEnergyWebSocket(
+    observeLmuWindowsVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+) {
     webSocket(KoDriverServerFeature.VIRTUAL_ENERGY.webSocketPath(Simulator.LmuWindows)) {
-        observeVirtualEnergy()
+        observeLmuWindowsVirtualEnergy()
             .distinctUntilChanged()
             .let { sendJsonMessages(it) }
     }

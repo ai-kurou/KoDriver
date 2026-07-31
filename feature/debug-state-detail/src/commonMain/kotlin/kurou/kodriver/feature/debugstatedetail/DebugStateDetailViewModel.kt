@@ -47,12 +47,12 @@ private data class OptionalTelemetry(
 internal class DebugStateDetailViewModel(
     observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
     observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+    observeLmuWindowsVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     observeLmuWindowsTelemetry: ObserveLmuWindowsUseCase,
     observeGt7Ps5Telemetry: ObserveGt7Ps5UseCase,
     observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
-    observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
+    observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     observeCardOrder: ObserveDebugStateCardOrderUseCase,
     private val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
     private val saveCardOrder: SaveDebugStateCardOrderUseCase,
@@ -63,8 +63,8 @@ internal class DebugStateDetailViewModel(
 
     private val _raceState: StateFlow<RaceState> = combine(
         observeLmuWindowsRaceFlags(),
-        observeVirtualEnergy(),
-        observeVehicleApproach(),
+        observeLmuWindowsVirtualEnergy(),
+        observeLmuWindowsVehicleApproach(),
     ) { raceFlags, virtualEnergy, vehicleApproach -> RaceState(raceFlags, virtualEnergy, vehicleApproach) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null))
 

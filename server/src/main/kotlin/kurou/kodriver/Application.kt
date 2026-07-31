@@ -48,12 +48,12 @@ import org.koin.core.Koin
  */
 data class KoDriverServerUseCases(
     val observeLmuWindowsRaceFlags: ObserveLmuWindowsRaceFlagsUseCase,
-    val observeVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
+    val observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
     val observeTyreWear: ObserveLmuWindowsTyreWearUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
-    val observeVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
+    val observeLmuWindowsVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     val observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
 )
@@ -62,14 +62,18 @@ fun main() {
     KoDriverServer(
         useCases = KoDriverServerUseCases(
             observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyLmuWindowsFlagRepository),
-            observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(EmptyVehicleApproachRepository),
+            observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                EmptyLmuWindowsVehicleApproachRepository,
+            ),
             observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(EmptyVehicleDamageRepository),
             observeTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                 EmptyTyreCarcassTemperatureRepository,
             ),
             observeTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyTyreWearRepository),
             observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-            observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(EmptyVirtualEnergyRepository),
+            observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                EmptyLmuWindowsVirtualEnergyRepository,
+            ),
             observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
             observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
         ),
@@ -111,7 +115,7 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
     return KoDriverServer(
         useCases = KoDriverServerUseCases(
             observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
-            observeVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+            observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
                 koin.get<LmuWindowsVehicleApproachRepository>(),
             ),
             observeVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
@@ -122,7 +126,7 @@ fun createKoDriverServer(koin: Koin): KoDriverServer {
             ),
             observeTyreWear = ObserveLmuWindowsTyreWearUseCase(koin.get<LmuWindowsTyreWearRepository>()),
             observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
-            observeVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+            observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
                 koin.get<LmuWindowsVirtualEnergyRepository>(),
             ),
             observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(koin.get<AceWindowsFuelRepository>()),
@@ -152,12 +156,12 @@ fun Application.module(useCases: KoDriverServerUseCases) {
             )
         }
         lmuWindowsFlagWebSocket(useCases.observeLmuWindowsRaceFlags)
-        vehicleApproachWebSocket(useCases.observeVehicleApproach)
+        lmuWindowsVehicleApproachWebSocket(useCases.observeLmuWindowsVehicleApproach)
         vehicleDamageWebSocket(useCases.observeVehicleDamage)
         tyreCarcassTemperatureWebSocket(useCases.observeTyreCarcassTemperature)
         tyreWearWebSocket(useCases.observeTyreWear)
         timingWebSocket(useCases.observeLmuWindows)
-        virtualEnergyWebSocket(useCases.observeVirtualEnergy)
+        lmuWindowsVirtualEnergyWebSocket(useCases.observeLmuWindowsVirtualEnergy)
         aceWindowsFuelWebSocket(useCases.observeAceWindowsFuel)
         aceWindowsFlagWebSocket(useCases.observeAceWindowsFlag)
     }
@@ -167,7 +171,7 @@ private object EmptyLmuWindowsFlagRepository : LmuWindowsFlagRepository {
     override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
 }
 
-private object EmptyVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
+private object EmptyLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
     override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
 }
 
@@ -189,7 +193,7 @@ private object EmptyLmuWindowsRepository : LmuWindowsRepository {
     override suspend fun disconnect() = Unit
 }
 
-private object EmptyVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
+private object EmptyLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
 }
 
