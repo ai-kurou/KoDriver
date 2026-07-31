@@ -28,3 +28,9 @@
 - **課題**: `System.currentTimeMillis()` は `java.lang.System` の呼び出しであり、`@Volatile`（`kotlin.jvm.Volatile`）も JVM/Android 専用アノテーションのため、どちらも commonMain からは js/wasmJs ターゲット向けにコンパイルできない（`compileKotlinJs`/`compileKotlinWasmJs` が `Unresolved reference` で失敗する）。この問題は ACE 追加以前から LMU/GT7 の narrator モジュールに存在する既存のバグで、`:app:webApp` がビルド設定のみで未実装のため `preMergeCheck` では検出されず、CIも通ってしまっている。
 - **改善案**: `System.currentTimeMillis()` は `kotlinx.datetime.Clock.System.now()` 等のマルチプラットフォーム対応APIに置き換える。`@Volatile` は `kotlin.concurrent.Volatile`（Kotlin 1.9+ のマルチプラットフォーム版アノテーション）に置き換える。3モジュールまとめて対応するのが望ましい。
 
+## 共有メモリのMapper層で「有効なテレメトリが書き込まれたか」を判定していない
+
+- **対象**: `core:ace-windows-data`（`AceWindowsMapper`）、`core:lmu-windows-data`
+- **課題**: 起動直後など、ゲーム側がまだ共有メモリにテレメトリを書き込んでいない区間はゼロクリアされた値になりうるが、Mapper はそれをそのまま有効な値として返している（ACEの残燃料が起動直後に `0.0%` になり誤読み上げが発生した不具合はこれが原因の一つ）。
+  **改善案**: `AceWindowsMapper` / `LmuWindowsMapper` 側で `status` 等の「有効なテレメトリが書き込まれたか」を示すフィールドを見て、無効なテレメトリをフィルタする仕組みの導入を検討する。
+

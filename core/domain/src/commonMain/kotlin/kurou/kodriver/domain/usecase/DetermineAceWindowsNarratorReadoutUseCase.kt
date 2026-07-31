@@ -27,7 +27,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         data: AceWindowsFuelData,
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
-        val isLow = data.remainingPercent <= settings.remainingFuelThresholdPercentage
+        val isLow = data.remainingPercent > 0.0 && data.remainingPercent <= settings.remainingFuelThresholdPercentage
         val shouldAnnounce = !state.remainingFuelWarned && isLow &&
             settings.enabledStates.getValue(ReadoutItemKey.AceWindows.RemainingFuel.Root)
         return AceWindowsNarratorReadoutDecision(
