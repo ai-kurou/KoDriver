@@ -106,8 +106,10 @@ internal class Gt7Ps5NarratorViewModel(
     @Suppress("UnusedPrivateProperty")
     private val readoutJob = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator !is Simulator.Gt7Ps5) emptyFlow()
-            else myBestLapUseCases.observeGt7Ps5()
+            if (simulator !is Simulator.Gt7Ps5)
+                emptyFlow()
+            else
+                myBestLapUseCases.observeGt7Ps5()
         }.onEach { telemetry ->
             val observedAtMs = currentTimeMs()
             val settings = currentSettings

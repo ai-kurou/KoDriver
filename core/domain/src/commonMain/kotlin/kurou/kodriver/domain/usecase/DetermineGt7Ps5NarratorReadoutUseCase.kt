@@ -186,10 +186,12 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         settings: Gt7Ps5NarratorReadoutSettings,
     ): RemainingFuelLapsEvaluation {
         val fuelState = state.fuelTrackingState
-        if (fuelState.currentLap == state.lastFuelEvaluationLap) return RemainingFuelLapsEvaluation(
-            evaluatedLap = state.lastFuelEvaluationLap,
-            remainingLaps = null,
-        )
+        if (fuelState.currentLap == state.lastFuelEvaluationLap) {
+            return RemainingFuelLapsEvaluation(
+                evaluatedLap = state.lastFuelEvaluationLap,
+                remainingLaps = null,
+            )
+        }
         val bestLapTimeMs = fuelState.bestLapTimeMs
         if (bestLapTimeMs <= 0) return RemainingFuelLapsEvaluation(state.lastFuelEvaluationLap, null)
         val readoutTimingMs = (bestLapTimeMs - REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS).coerceAtLeast(0)
