@@ -3,8 +3,12 @@ package kurou.kodriver.feature.readoutlist
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
-sealed class ReadoutListItemType(val id: ReadoutItemKey) {
-    sealed class LmuWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
+sealed class ReadoutListItemType(
+    val id: ReadoutItemKey,
+) {
+    sealed class LmuWindows(
+        id: ReadoutItemKey,
+    ) : ReadoutListItemType(id) {
         data object VehicleApproach : LmuWindows(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
 
         data object Flag : LmuWindows(ReadoutItemKey.LmuWindows.Flag.Root)
@@ -23,7 +27,9 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object MyBestLap : LmuWindows(ReadoutItemKey.LmuWindows.MyBestLap.Root)
     }
 
-    sealed class Gt7Ps5(id: ReadoutItemKey) : ReadoutListItemType(id) {
+    sealed class Gt7Ps5(
+        id: ReadoutItemKey,
+    ) : ReadoutListItemType(id) {
         data object MyBestLap : Gt7Ps5(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)
 
         data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
@@ -31,7 +37,9 @@ sealed class ReadoutListItemType(val id: ReadoutItemKey) {
         data object RemainingFuel : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
     }
 
-    sealed class AceWindows(id: ReadoutItemKey) : ReadoutListItemType(id) {
+    sealed class AceWindows(
+        id: ReadoutItemKey,
+    ) : ReadoutListItemType(id) {
         data object Flag : AceWindows(ReadoutItemKey.AceWindows.Flag.Root)
 
         data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)

@@ -23,7 +23,9 @@ sealed interface ReadoutItemKey {
     }
 
     sealed interface LmuWindows : ReadoutItemKey {
-        sealed interface TopLevel : LmuWindows, ReadoutItemKey.TopLevel
+        sealed interface TopLevel :
+            LmuWindows,
+            ReadoutItemKey.TopLevel
 
         sealed interface VehicleApproach : LmuWindows {
             data object Root : VehicleApproach, TopLevel {
@@ -119,7 +121,9 @@ sealed interface ReadoutItemKey {
     }
 
     sealed interface Gt7Ps5 : ReadoutItemKey {
-        sealed interface TopLevel : Gt7Ps5, ReadoutItemKey.TopLevel
+        sealed interface TopLevel :
+            Gt7Ps5,
+            ReadoutItemKey.TopLevel
 
         sealed interface MyBestLap : Gt7Ps5 {
             data object Root : MyBestLap, TopLevel {
@@ -144,7 +148,9 @@ sealed interface ReadoutItemKey {
     }
 
     sealed interface AceWindows : ReadoutItemKey {
-        sealed interface TopLevel : AceWindows, ReadoutItemKey.TopLevel
+        sealed interface TopLevel :
+            AceWindows,
+            ReadoutItemKey.TopLevel
 
         sealed interface Flag : AceWindows {
             data object Root : Flag, TopLevel {

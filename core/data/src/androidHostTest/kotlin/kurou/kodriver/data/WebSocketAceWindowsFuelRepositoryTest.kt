@@ -150,7 +150,9 @@ class WebSocketAceWindowsFuelRepositoryTest {
     }
 }
 
-private class FakeAceServerIpPreferencesRepository(initialIp: String?) : ServerIpPreferencesRepository {
+private class FakeAceServerIpPreferencesRepository(
+    initialIp: String?,
+) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {

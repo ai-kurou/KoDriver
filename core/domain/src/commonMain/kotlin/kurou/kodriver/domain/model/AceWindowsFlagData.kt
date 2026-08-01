@@ -10,7 +10,9 @@ data class AceWindowsFlagData(
 // ACE shared memory の graphics.flag（自車提示フラッグ）に対応する ACEVO_FLAG_TYPE の値。
 // docs/ace-windows-telemetry.md の ACEVO_FLAG_TYPE 一覧に基づく。
 @Serializable
-enum class AceWindowsFlagType(val rawValue: Int) {
+enum class AceWindowsFlagType(
+    val rawValue: Int,
+) {
     NO_FLAG(0),
     WHITE_FLAG(1),
     GREEN_FLAG(2),

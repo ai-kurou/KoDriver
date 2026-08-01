@@ -7,7 +7,9 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 
-class ObserveReadoutEnabledStatesUseCase(private val repository: ReadoutPreferencesRepository) {
+class ObserveReadoutEnabledStatesUseCase(
+    private val repository: ReadoutPreferencesRepository,
+) {
     operator fun invoke(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         repository.observeReadoutEnabledStates(simulator).map { persisted ->
             val defaults = Simulator.fromId(simulator)?.let { READOUT_ENABLED_STATE_DEFAULT[it] }.orEmpty()

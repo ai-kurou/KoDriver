@@ -10,7 +10,10 @@ internal interface UdpSocket : AutoCloseable {
     fun send(data: ByteArray, address: String, port: Int)
 }
 
-internal class RealUdpSocket(listenPort: Int, timeoutMs: Int) : UdpSocket {
+internal class RealUdpSocket(
+    listenPort: Int,
+    timeoutMs: Int,
+) : UdpSocket {
     private val socket = DatagramSocket(null).apply {
         reuseAddress = true
         bind(java.net.InetSocketAddress(listenPort))

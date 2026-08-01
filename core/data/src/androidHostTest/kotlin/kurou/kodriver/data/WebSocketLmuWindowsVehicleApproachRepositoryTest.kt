@@ -123,7 +123,9 @@ class WebSocketVehicleApproachRepositoryTest {
     }
 }
 
-private class FakeServerIpPreferencesRepositoryForVehicleApproach(initialIp: String?) : ServerIpPreferencesRepository {
+private class FakeServerIpPreferencesRepositoryForVehicleApproach(
+    initialIp: String?,
+) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {

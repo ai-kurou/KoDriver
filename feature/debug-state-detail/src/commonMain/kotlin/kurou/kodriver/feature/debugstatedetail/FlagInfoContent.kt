@@ -28,7 +28,9 @@ import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-internal enum class ActiveRaceFlag(val labelRes: StringResource) {
+internal enum class ActiveRaceFlag(
+    val labelRes: StringResource,
+) {
     BLUE(Res.string.debug_state_flag_blue),
     YELLOW(Res.string.debug_state_flag_yellow),
     FULL_COURSE_YELLOW(Res.string.debug_state_flag_full_course_yellow),
