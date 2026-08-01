@@ -512,6 +512,15 @@ class ReadoutListViewModelTest {
             viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
 
             assertNull(viewModel.uiState.first().selectedItem)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
+            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) }
+            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("gt7_ps5") }
+            verify(exactly = 1) { readoutRepository.observeReadoutOrder("lmu_windows") }
+            verify(exactly = 1) { readoutRepository.observeReadoutOrder("gt7_ps5") }
+            verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+            confirmVerified(simulatorRepository, readoutRepository, queueRepository)
         }
 
     @Test
