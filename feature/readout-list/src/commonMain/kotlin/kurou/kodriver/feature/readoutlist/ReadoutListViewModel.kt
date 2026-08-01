@@ -107,7 +107,7 @@ class ReadoutListViewModel(
                 items = items,
                 readoutEnabledStates = readoutEnabledStates,
                 queueEnabledStates = queueEnabledStates,
-                selectedItem = selectedItem,
+                selectedItem = selectedItem?.takeIf { selected != null && it.belongsTo(selected) },
             )
         }.stateIn(
             viewModelScope,

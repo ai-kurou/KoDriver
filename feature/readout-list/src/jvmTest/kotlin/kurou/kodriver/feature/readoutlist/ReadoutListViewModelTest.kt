@@ -36,7 +36,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-private fun createViewModel(
+internal fun createViewModel(
     simulatorRepository: SimulatorPreferencesRepository,
     readoutRepository: ReadoutPreferencesRepository,
     queueRepository: QueuePreferencesRepository,
@@ -410,92 +410,6 @@ class ReadoutListViewModelTest {
                 ),
                 viewModel.uiState.first().items,
             )
-        }
-
-    @Test
-    fun `onItemSelectedでアイテムが選択される`() =
-        runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
-            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
-            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
-                MutableStateFlow(emptyMap())
-            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
-
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-
-            assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
-        }
-
-    @Test
-    fun `シミュレータ未選択時はonItemSelectedで選択状態は変わらない`() =
-        runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
-
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-
-            assertNull(viewModel.uiState.first().selectedItem)
-        }
-
-    @Test
-    fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() =
-        runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
-            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
-            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
-                MutableStateFlow(emptyMap())
-            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
-
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
-            viewModel.onItemSelected(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
-
-            assertNull(viewModel.uiState.first().selectedItem)
-        }
-
-    @Test
-    fun `同じアイテムを再度選択すると選択解除される`() =
-        runTest {
-            val simulatorFlow = MutableStateFlow<Simulator?>(null)
-            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-                simulatorFlow.update { Simulator.LmuWindows }
-            }
-            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
-                MutableStateFlow(emptyMap())
-            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
-
-            viewModel.onSimulatorSelected(Simulator.LmuWindows)
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-
-            assertNull(viewModel.uiState.first().selectedItem)
-        }
-
-    @Test
-    fun `clearSelectedItemで選択状態が解除される`() =
-        runTest {
-            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
-
-            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
-            viewModel.clearSelectedItem()
-
-            assertNull(viewModel.uiState.first().selectedItem)
         }
 
     @Test

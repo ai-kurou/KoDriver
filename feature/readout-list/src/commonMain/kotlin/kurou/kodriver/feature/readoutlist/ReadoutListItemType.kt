@@ -45,6 +45,13 @@ sealed class ReadoutListItemType(
         data object RemainingFuel : AceWindows(ReadoutItemKey.AceWindows.RemainingFuel.Root)
     }
 
+    fun belongsTo(simulator: Simulator): Boolean =
+        when (simulator) {
+            is Simulator.LmuWindows -> this is LmuWindows
+            is Simulator.Gt7Ps5 -> this is Gt7Ps5
+            is Simulator.AceWindows -> this is AceWindows
+        }
+
     companion object {
         fun fromId(
             simulator: Simulator,

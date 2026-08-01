@@ -21,35 +21,10 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
-import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
-import kurou.kodriver.domain.usecase.ResolveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.SaveQueueEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveReadoutOrderUseCase
-import kurou.kodriver.domain.usecase.SaveSelectedSimulatorUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-
-private fun createViewModel(
-    simulatorRepository: SimulatorPreferencesRepository,
-    readoutRepository: ReadoutPreferencesRepository,
-    queueRepository: QueuePreferencesRepository,
-) = ReadoutListViewModel(
-    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-    saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
-    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
-    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
-    resolveReadoutOrder = ResolveReadoutOrderUseCase(),
-    saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
-    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
-    saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
-)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutListViewModelQueueTest {
