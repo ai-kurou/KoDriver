@@ -27,3 +27,9 @@
 - **対象**: `core:ace-windows-data`（`AceWindowsMapper`）、`core:lmu-windows-data`
 - **課題**: 起動直後など、ゲーム側がまだ共有メモリにテレメトリを書き込んでいない区間はゼロクリアされた値になりうるが、Mapper はそれをそのまま有効な値として返している（ACEの残燃料が起動直後に `0.0%` になり誤読み上げが発生した不具合はこれが原因の一つ）。
   **改善案**: `AceWindowsMapper` / `LmuWindowsMapper` 側で `status` 等の「有効なテレメトリが書き込まれたか」を示すフィールドを見て、無効なテレメトリをフィルタする仕組みの導入を検討する。
+
+## Narrator の読み上げ判定入力とテレメトリログ記録内容が別々にハードコードされている
+
+- **対象**: `feature:lmu-windows-narrator`（`DetermineLmuWindowsNarratorReadoutUseCase.kt`, `LmuWindowsNarratorEventProcessor.kt` の各 `buildTelemetryLogJson`/`buildPitTimingTelemetryLogJson`）
+  **課題**: `TelemetryLog`（`core:domain`）は `telemetryJson: String` という単一フィールドしか持たず、各読み上げイベント種別ごとに `buildTelemetryLogJson` が個別に組み立てている。例えばタイヤ温度低下判定（`determineTyreTemperatureLow`）は `tyreCarcassTemperature` と `raceFlags` の複数ソースを使い、対応する記録処理も両方を含めているが、判定側（Determine）と記録側（build*TelemetryLogJson）は同期する仕組みがなく別々にハードコードされている。今後、判定ロジックに新しい共有メモリセグメント由来の入力を追加した際、対応する記録処理の更新を忘れると、判定には使われているのにログJSONには含まれない「抜け漏れ」が構造的に起こりうる。また `LmuWindowsNarratorState.toJsonString()` は生の `toString()` を `{"raw":"..."}` に包むだけで、他セグメント由来の値が混ざっていても構造化JSONとしては見えない。
+  **改善案**: イベント種別ごとに、判定に使う入力データをまとめた1つの入力データクラス（例: `TyreTemperatureReadoutInput` のような型）を定義し、`determine()` と `buildTelemetryLogJson()` の両方にその型を渡す形に統一する。新しいソースを追加する際に入力データクラス1箇所を変更するだけで判定・記録の両方に反映されるようにし、同期漏れを構造的に防ぐ。ただし `Determine*UseCase` はログ出力という副作用を持たない純粋な判定ロジックのままにすること（副作用は `LmuWindowsNarratorEventProcessor` 側に置く）。
