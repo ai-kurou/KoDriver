@@ -313,8 +313,16 @@ class ReadoutContentTest {
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
         rule.onAllNodes(hasSwitchRole()).assertCountEquals(2)
-        rule.onAllNodes(hasSwitchRole()).get(0).assertIsEnabled().performClick()
-        rule.onAllNodes(hasSwitchRole()).get(1).assertIsEnabled().performClick()
+        rule
+            .onAllNodes(hasSwitchRole())
+            .get(0)
+            .assertIsEnabled()
+            .performClick()
+        rule
+            .onAllNodes(hasSwitchRole())
+            .get(1)
+            .assertIsEnabled()
+            .performClick()
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to false))
@@ -355,8 +363,16 @@ class ReadoutContentTest {
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
         rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
-        rule.onAllNodes(hasQueueToggleRole()).get(0).assertIsEnabled().performClick()
-        rule.onAllNodes(hasQueueToggleRole()).get(1).assertIsEnabled().performClick()
+        rule
+            .onAllNodes(hasQueueToggleRole())
+            .get(0)
+            .assertIsEnabled()
+            .performClick()
+        rule
+            .onAllNodes(hasQueueToggleRole())
+            .get(1)
+            .assertIsEnabled()
+            .performClick()
 
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
@@ -397,8 +413,16 @@ class ReadoutContentTest {
 
         rule.onNodeWithText(tyreTemperatureText).assertExists()
         rule.onAllNodes(hasQueueToggleRole()).assertCountEquals(2)
-        rule.onAllNodes(hasQueueToggleRole()).get(0).assertIsNotEnabled().performClick()
-        rule.onAllNodes(hasQueueToggleRole()).get(1).assertIsEnabled().performClick()
+        rule
+            .onAllNodes(hasQueueToggleRole())
+            .get(0)
+            .assertIsNotEnabled()
+            .performClick()
+        rule
+            .onAllNodes(hasQueueToggleRole())
+            .get(1)
+            .assertIsEnabled()
+            .performClick()
 
         assertFalse(changedItems.contains(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true))
         assertTrue(changedItems.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))

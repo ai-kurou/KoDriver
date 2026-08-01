@@ -138,13 +138,11 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outline,
                 shape = shape,
-            )
-            .clip(shape)
+            ).clip(shape)
             .semantics {
                 contentDescription = hint
                 stateDescription = selectedSimulatorName
-            }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            }.padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (selectedSimulator != null) {

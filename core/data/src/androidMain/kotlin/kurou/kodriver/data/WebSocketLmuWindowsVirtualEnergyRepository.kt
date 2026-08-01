@@ -26,7 +26,8 @@ internal class WebSocketLmuWindowsVirtualEnergyRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

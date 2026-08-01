@@ -13,11 +13,11 @@ import java.io.File
  */
 fun createTelemetryLogRepository(directory: String): TelemetryLogRepository {
     File(directory).mkdirs()
-    val database = Room.databaseBuilder<TelemetryLogDatabase>(
+    val database = Room
+        .databaseBuilder<TelemetryLogDatabase>(
         name = File(directory, "telemetry_logs.db").absolutePath,
         factory = { TelemetryLogDatabaseConstructor.initialize() },
-    )
-        .setDriver(BundledSQLiteDriver())
+    ).setDriver(BundledSQLiteDriver())
         .build()
     return TelemetryLogRepositoryImpl(database.telemetryLogDao())
 }

@@ -58,8 +58,7 @@ class SharedMemoryPollingSource(
                 readerMutex.withLock { reader.close() }
             }
         }
-    }
-        .flowOn(Dispatchers.IO)
+    }.flowOn(Dispatchers.IO)
         .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     /**

@@ -49,7 +49,8 @@ class WebSocketFlowFactoryTest {
         )
         val client = createWebSocketHttpClient()
 
-        val result = client.webSocketFlow(
+        val result = client
+            .webSocketFlow(
             host = "127.0.0.1",
             port = server.port,
             path = "/ws/test",
@@ -76,7 +77,8 @@ class WebSocketFlowFactoryTest {
         )
         val client = createWebSocketHttpClient()
 
-        val result = client.webSocketFlow(
+        val result = client
+            .webSocketFlow(
             host = "127.0.0.1",
             port = server.port,
             path = "/ws/test",
@@ -111,7 +113,8 @@ class WebSocketFlowFactoryTest {
         )
         val client = createWebSocketHttpClient()
 
-        val result = client.webSocketFlow(
+        val result = client
+            .webSocketFlow(
             host = "127.0.0.1",
             port = server.port,
             path = "/ws/test",
@@ -131,7 +134,8 @@ class WebSocketFlowFactoryTest {
         var emitted = false
 
         val job = launch {
-            client.webSocketFlow(
+            client
+                .webSocketFlow(
                 host = "127.0.0.1",
                 port = unusedPort,
                 path = "/ws/test",

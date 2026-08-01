@@ -69,7 +69,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onNode(
+        rule
+            .onNode(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 1.0f, range = 0.1f..10f, steps = 98)),
         ).performSemanticsAction(SemanticsActions.SetProgress) { it(5f) }
 
@@ -88,7 +89,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onNode(
+        rule
+            .onNode(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5.0f, range = 2f..8f, steps = 59)),
         ).performSemanticsAction(SemanticsActions.SetProgress) { it(4f) }
 
@@ -107,7 +109,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
             }
         }
 
-        rule.onNode(
+        rule
+            .onNode(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 4.0f, range = 4f..10f, steps = 5)),
         ).performSemanticsAction(SemanticsActions.SetProgress) { it(8f) }
 

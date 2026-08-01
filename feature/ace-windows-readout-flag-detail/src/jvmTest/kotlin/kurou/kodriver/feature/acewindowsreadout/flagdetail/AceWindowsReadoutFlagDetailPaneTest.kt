@@ -24,7 +24,8 @@ class AceWindowsReadoutFlagDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText(
+        rule
+            .onNodeWithText(
             "ホワイトフラッグ・グリーンフラッグ・レッドフラッグ・イエローフラッグなどのフラッグ状況を音声でお知らせします。",
         ).assertIsDisplayed()
         rule.onAllNodesWithText("ブルーフラッグ")[0].assertIsDisplayed()

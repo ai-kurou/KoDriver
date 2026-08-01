@@ -44,8 +44,7 @@ internal class LmuWindowsConnectionViewModel(
             } else {
                 flowOf(LmuWindowsConnectionUiState())
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = LmuWindowsConnectionUiState(),

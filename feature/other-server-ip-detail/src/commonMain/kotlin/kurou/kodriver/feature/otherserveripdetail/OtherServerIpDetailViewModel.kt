@@ -35,7 +35,8 @@ internal class OtherServerIpDetailViewModel(
 
     // pane が画面に表示されている間だけ購読され、mDNS 検出が開始・停止する
     // （アプリ起動時ではなく WhileSubscribed により uiState の収集タイミングに連動する）
-    private val discoveredServers: StateFlow<List<DiscoveredServer>> = windowsServerDiscovery.discover()
+    private val discoveredServers: StateFlow<List<DiscoveredServer>> = windowsServerDiscovery
+        .discover()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())

@@ -51,13 +51,15 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `残量が閾値より上に戻ると再度読み上げ可能になる`() {
-        val warnedState = useCase.determineRemainingFuel(
+        val warnedState = useCase
+            .determineRemainingFuel(
             state = AceWindowsNarratorState(),
             data = fuel(remainingPercent = 20.0),
             settings = settings(thresholdPercentage = 30),
         ).state
 
-        val recoveredState = useCase.determineRemainingFuel(
+        val recoveredState = useCase
+            .determineRemainingFuel(
             state = warnedState,
             data = fuel(remainingPercent = 50.0),
             settings = settings(thresholdPercentage = 30),

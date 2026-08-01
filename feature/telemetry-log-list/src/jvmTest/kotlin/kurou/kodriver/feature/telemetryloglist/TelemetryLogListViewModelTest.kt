@@ -63,7 +63,13 @@ class TelemetryLogListViewModelTest {
         val viewModel = createViewModel()
 
         logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        assertEquals(listOf(1L), viewModel.uiState.first { it.logs.isNotEmpty() }.logs.map { it.id })
+        assertEquals(
+            listOf(1L),
+            viewModel.uiState
+                .first { it.logs.isNotEmpty() }
+                .logs
+                .map { it.id },
+        )
 
         logsFlow.update {
             listOf(
@@ -71,7 +77,13 @@ class TelemetryLogListViewModelTest {
                 telemetryLog(id = 2, createdAt = 300),
             )
         }
-        assertEquals(listOf(2L, 1L), viewModel.uiState.first { it.logs.firstOrNull()?.id == 2L }.logs.map { it.id })
+        assertEquals(
+            listOf(2L, 1L),
+            viewModel.uiState
+                .first { it.logs.firstOrNull()?.id == 2L }
+                .logs
+                .map { it.id },
+        )
         verify(exactly = 1) { repository.observeTelemetryLogs() }
         confirmVerified(repository)
     }

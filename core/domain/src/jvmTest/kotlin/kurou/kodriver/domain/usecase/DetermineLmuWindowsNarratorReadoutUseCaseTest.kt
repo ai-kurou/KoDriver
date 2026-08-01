@@ -568,13 +568,15 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `全タイヤが閾値以下に戻ると再度読み上げ可能になる`() {
-        val overheatState = useCase.determineTyreTemperatureOverheat(
+        val overheatState = useCase
+            .determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
         ).state
 
-        val cooledState = useCase.determineTyreTemperatureOverheat(
+        val cooledState = useCase
+            .determineTyreTemperatureOverheat(
             state = overheatState,
             data = tyreTemperature(fl = 85.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
@@ -607,7 +609,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `無効中に過熱した状態で再有効化しても読み上げない`() {
-        val disabledState = useCase.determineTyreTemperatureOverheat(
+        val disabledState = useCase
+            .determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(
@@ -669,13 +672,15 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `全タイヤが閾値未満に戻ると再度読み上げ可能になる`() {
-        val warnedState = useCase.determineTyreWear(
+        val warnedState = useCase
+            .determineTyreWear(
             state = LmuWindowsNarratorState(),
             data = tyreWear(fl = 0.4),
             settings = settings(tyreWearThresholdPercentage = 50),
         ).state
 
-        val recoveredState = useCase.determineTyreWear(
+        val recoveredState = useCase
+            .determineTyreWear(
             state = warnedState,
             data = tyreWear(fl = 0.6),
             settings = settings(tyreWearThresholdPercentage = 50),
@@ -733,13 +738,15 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `残量が閾値より上に戻ると再度読み上げ可能になる`() {
-        val warnedState = useCase.determineRemainingVirtualEnergy(
+        val warnedState = useCase
+            .determineRemainingVirtualEnergy(
             state = LmuWindowsNarratorState(),
             data = remainingVirtualEnergy(remainingRatio = 0.4),
             settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
         ).state
 
-        val recoveredState = useCase.determineRemainingVirtualEnergy(
+        val recoveredState = useCase
+            .determineRemainingVirtualEnergy(
             state = warnedState,
             data = remainingVirtualEnergy(remainingRatio = 0.6),
             settings = settings(remainingVirtualEnergyThresholdPercentage = 50),
@@ -802,7 +809,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `ヒステリシス範囲内に下がっただけでは過熱状態を維持し再度読み上げない`() {
-        val overheatState = useCase.determineTyreTemperatureOverheat(
+        val overheatState = useCase
+            .determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),
@@ -827,7 +835,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
 
     @Test
     fun `ヒステリシス下限まで下がると再度読み上げ可能になる`() {
-        val overheatState = useCase.determineTyreTemperatureOverheat(
+        val overheatState = useCase
+            .determineTyreTemperatureOverheat(
             state = LmuWindowsNarratorState(),
             data = tyreTemperature(fl = 95.0),
             settings = settings(tyreTemperatureHighThresholdCelsius = 90),

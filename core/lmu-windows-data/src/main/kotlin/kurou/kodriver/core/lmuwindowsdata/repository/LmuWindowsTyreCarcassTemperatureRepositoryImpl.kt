@@ -17,7 +17,8 @@ internal class LmuWindowsTyreCarcassTemperatureRepositoryImpl(
 
     private fun readTyreCarcassTemperature(buffer: ByteBuffer): LmuWindowsTyreCarcassTemperatureData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
-        val wheels = LmuWindowsMapper.readCarcassTemperaturesK(buffer, vehicleBase)
+        val wheels = LmuWindowsMapper
+            .readCarcassTemperaturesK(buffer, vehicleBase)
             .mapValues { (_, kelvin) -> kelvin - KELVIN_OFFSET }
         return LmuWindowsTyreCarcassTemperatureData(wheels)
     }

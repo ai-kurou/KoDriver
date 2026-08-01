@@ -18,7 +18,8 @@ internal class JvmExitConfirmationEnabledRepository(
     private val exitConfirmationEnabledKey = booleanPreferencesKey("exit_confirmation_enabled")
 
     override fun exitConfirmationEnabled(): Flow<Boolean> =
-        dataStore.data.map { it[exitConfirmationEnabledKey] ?: EXIT_CONFIRMATION_ENABLED_DEFAULT }
+        dataStore.data
+            .map { it[exitConfirmationEnabledKey] ?: EXIT_CONFIRMATION_ENABLED_DEFAULT }
             .catch { emit(EXIT_CONFIRMATION_ENABLED_DEFAULT) }
 
     override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {

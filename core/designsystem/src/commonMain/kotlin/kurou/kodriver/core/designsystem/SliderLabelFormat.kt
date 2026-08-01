@@ -19,7 +19,8 @@ fun String.formatSliderLabel(value: Int): String =
  * strings.xml の printf 形式プレースホルダー（`%1$.1f` 相当）を含むテンプレート文字列へ小数値を埋め込む。
  */
 fun String.formatSliderLabel(value: Float): String =
-    DECIMAL_PLACEHOLDER_REGEX.replace(this) { match ->
+    DECIMAL_PLACEHOLDER_REGEX
+        .replace(this) { match ->
         formatFixedPoint(value, decimals = match.groupValues[1].toInt())
     }.unescapePercent()
 

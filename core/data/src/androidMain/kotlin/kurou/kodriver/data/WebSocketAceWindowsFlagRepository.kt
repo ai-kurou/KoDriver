@@ -26,7 +26,8 @@ internal class WebSocketAceWindowsFlagRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun flagStream(): Flow<AceWindowsFlagData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

@@ -48,7 +48,8 @@ internal class WebSocketLmuWindowsRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()
@@ -61,8 +62,7 @@ internal class WebSocketLmuWindowsRepository(
                         decode = { json.decodeFromString<LmuWindowsTimingData>(it) },
                     )
                 }
-            }
-            .map { timing ->
+            }.map { timing ->
                 LmuWindowsTelemetryData(
                     timestampMs = 0L,
                     engine = emptyEngine,

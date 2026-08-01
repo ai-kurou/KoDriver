@@ -14,7 +14,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files.createTempDirectory(
+    private val tempDir = Files
+        .createTempDirectory(
         "kodriver_lmu_windows_tyre_temperature_preferences_repository_factory_test",
     ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())

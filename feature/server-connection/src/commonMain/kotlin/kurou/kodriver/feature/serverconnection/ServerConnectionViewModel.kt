@@ -55,8 +55,7 @@ class ServerConnectionViewModel(
                 versionMismatchWarningShown = true
                 showVersionMismatchBottomSheetFlow.update { true }
             }
-        }
-        .shareIn(
+        }.shareIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             replay = 1,

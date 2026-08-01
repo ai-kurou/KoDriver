@@ -26,7 +26,8 @@ internal class TelemetryLogRepositoryImpl(
             if (current == null) {
                 flowOf(null)
             } else {
-                dao.observePreviousTelemetryLog(
+                dao
+                    .observePreviousTelemetryLog(
                     createdAt = current.createdAt,
                     id = current.id,
                 ).map { previous ->

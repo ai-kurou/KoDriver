@@ -13,10 +13,10 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files.createTempDirectory(
+    private val tempDir = Files
+        .createTempDirectory(
         "kodriver_lmu_windows_vehicle_approach_preferences_repository_factory_test",
-    )
-        .toFile()
+    ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest

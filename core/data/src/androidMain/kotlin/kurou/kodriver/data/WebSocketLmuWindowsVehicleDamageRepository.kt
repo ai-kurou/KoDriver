@@ -26,7 +26,8 @@ internal class WebSocketLmuWindowsVehicleDamageRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

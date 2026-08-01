@@ -26,7 +26,8 @@ internal class WebSocketAceWindowsFuelRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun fuelStream(): Flow<AceWindowsFuelData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

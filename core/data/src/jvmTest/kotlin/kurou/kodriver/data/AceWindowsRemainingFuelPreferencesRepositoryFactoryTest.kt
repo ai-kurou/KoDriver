@@ -13,7 +13,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsRemainingFuelPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files.createTempDirectory(
+    private val tempDir = Files
+        .createTempDirectory(
         "kodriver_ace_windows_remaining_fuel_preferences_repository_factory_test",
     ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())

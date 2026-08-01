@@ -23,7 +23,11 @@ internal class GitHubAppReleaseRepository(
     override suspend fun getLatestRelease(): AppUpdate? = withContext(Dispatchers.IO) {
         try {
             val body = fetch() ?: return@withContext null
-            val tagName = json.parseToJsonElement(body).jsonObject["tag_name"]?.jsonPrimitive?.content
+            val tagName = json
+                .parseToJsonElement(body)
+                .jsonObject["tag_name"]
+                ?.jsonPrimitive
+                ?.content
             tagName?.let { AppUpdate(it) }
         } catch (_: Exception) {
             null
