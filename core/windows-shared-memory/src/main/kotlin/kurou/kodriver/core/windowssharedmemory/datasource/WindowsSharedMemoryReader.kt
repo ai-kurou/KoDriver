@@ -31,7 +31,8 @@ class WindowsSharedMemoryReader(
         val ptr = kernel32.MapViewOfFile(
             h,
             Kernel32FileMapping.FILE_MAP_READ,
-            0, 0,
+            0,
+            0,
             sizeBytes,
         )
         if (ptr == null) {
