@@ -59,16 +59,12 @@ import kodriver.app.shared.generated.resources.nav_log
 import kodriver.app.shared.generated.resources.nav_more
 import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.launch
-import kurou.kodriver.feature.acewindowsnarrator.AceWindowsNarratorEffect
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
-import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
-import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.LmuWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.LmuWindowsReadoutPitTimingDetailPane
@@ -108,7 +104,7 @@ private fun bannerTapWithTabSwitch(
         null
     }
 
-private fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType =
+internal fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType =
     when (this) {
         ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
         ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
@@ -276,56 +272,23 @@ fun AppScreen(
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
 
-    val onBannerTap =
-        if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
-            {
-                otherListViewModel.selectItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
-                Unit
-            }
-        } else {
-            null
-        }
-
-    LaunchedEffect(Unit) {
-        viewModel.checkUpdate()
-    }
-
-    LaunchedEffect(darkTheme) {
-        onDarkThemeChanged(darkTheme)
-    }
-
-    LaunchedEffect(exitRequested) {
-        if (exitRequested) {
-            onExitRequestConsumed()
-            if (uiState.exitConfirmationEnabled) {
-                showExitConfirmationDialog = true
-            } else {
-                onExit()
-            }
-        }
-    }
-
     backHandler(uiState.exitConfirmationEnabled, {}) {
         showExitConfirmationDialog = true
     }
 
-    if (showExitConfirmationDialog) {
-        AppTheme(darkTheme = darkTheme, dynamicColor = uiState.dynamicColorEnabled) {
-            ExitConfirmationDialog(
-                onDismiss = { showExitConfirmationDialog = false },
-                onConfirm = { doNotShowAgain ->
-                    coroutineScope.launch {
-                        saveExitConfirmationPreferenceForExit(
-                            doNotShowAgain = doNotShowAgain,
-                            saveExitConfirmationEnabled = viewModel::saveExitConfirmationEnabled,
-                        )
-                        showExitConfirmationDialog = false
-                        onExit()
-                    }
-                },
-            )
-        }
-    }
+    AppStartupEffects(
+        darkTheme = darkTheme,
+        checkUpdate = viewModel::checkUpdate,
+        onDarkThemeChanged = onDarkThemeChanged,
+    )
+
+    AppExitRequestEffect(
+        exitRequested = exitRequested,
+        exitConfirmationEnabled = uiState.exitConfirmationEnabled,
+        onExitRequestConsumed = onExitRequestConsumed,
+        onShowExitConfirmationDialog = { showExitConfirmationDialog = true },
+        onExit = onExit,
+    )
 
     ConnectionSnackbarEffect(
         isConnectionChecked = bannerUiState.isConnectionChecked,
@@ -335,10 +298,18 @@ fun AppScreen(
         disconnectedMessage = bannerUiState.snackbarDisconnectedMessage,
     )
 
-    LmuWindowsNarratorEffect()
-    Gt7Ps5NarratorEffect()
-    AceWindowsNarratorEffect()
-    VersionMismatchBottomSheetEffect()
+    AppNarratorEffects()
+
+    ExitConfirmationDialogHost(
+        visible = showExitConfirmationDialog,
+        darkTheme = darkTheme,
+        dynamicColorEnabled = uiState.dynamicColorEnabled,
+        coroutineScope = coroutineScope,
+        saveExitConfirmationEnabled = viewModel::saveExitConfirmationEnabled,
+        onDismiss = { showExitConfirmationDialog = false },
+        onExit = onExit,
+    )
+
     AppScreenContent(
         darkTheme = darkTheme,
         dynamicColorEnabled = uiState.dynamicColorEnabled,
@@ -346,27 +317,31 @@ fun AppScreen(
         snackbarHostState = snackbarHostState,
         hasAppUpdate = uiState.hasAppUpdate,
         keepScreenOn = uiState.keepScreenOn,
-        onBannerTap = onBannerTap,
+        onBannerTap =
+            rememberConnectionBannerTap(
+                bannerUiState = bannerUiState,
+                onSelectOtherItem = otherListViewModel::selectItem,
+            ),
         onReadoutTabReselected = {
-            if (readoutListUiState.selectedItem != null) {
-                readoutListViewModel.clearSelectedItem()
-            } else {
-                readoutListScrollToTopRequest++
-            }
+            handleTabReselected(
+                selectedItem = readoutListUiState.selectedItem,
+                clearSelectedItem = readoutListViewModel::clearSelectedItem,
+                requestScrollToTop = { readoutListScrollToTopRequest++ },
+            )
         },
         onLogTabReselected = {
-            if (telemetryLogListUiState.selectedLogId != null) {
-                telemetryLogListViewModel.clearSelectedLog()
-            } else {
-                telemetryLogListScrollToTopRequest++
-            }
+            handleTabReselected(
+                selectedItem = telemetryLogListUiState.selectedLogId,
+                clearSelectedItem = telemetryLogListViewModel::clearSelectedLog,
+                requestScrollToTop = { telemetryLogListScrollToTopRequest++ },
+            )
         },
         onOtherTabReselected = {
-            if (otherListUiState.selectedItem != null) {
-                otherListViewModel.clearSelectedItem()
-            } else {
-                otherListScrollToTopRequest++
-            }
+            handleTabReselected(
+                selectedItem = otherListUiState.selectedItem,
+                clearSelectedItem = otherListViewModel::clearSelectedItem,
+                requestScrollToTop = { otherListScrollToTopRequest++ },
+            )
         },
         readoutContent = readoutContent,
         readoutListScrollToTopRequest = readoutListScrollToTopRequest,
