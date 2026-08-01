@@ -322,10 +322,12 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 lastPitTimingVirtualEnergyEvaluationLap = -1,
                 pitTimingVirtualEnergyTrackingState = trackingState,
             )
+
             trackingState.hasRefilled -> state.copy(
                 lastAnnouncedPitTimingVirtualEnergyLaps = -1,
                 pitTimingVirtualEnergyTrackingState = trackingState,
             )
+
             else -> state.copy(pitTimingVirtualEnergyTrackingState = trackingState)
         }
         val evaluation = calculatePitTimingRemainingLaps(
@@ -370,10 +372,12 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
                 lastPitTimingTyreWearEvaluationLap = -1,
                 pitTimingTyreWearTrackingState = trackingState,
             )
+
             trackingState.hasRefilled -> state.copy(
                 lastAnnouncedPitTimingTyreWearLaps = -1,
                 pitTimingTyreWearTrackingState = trackingState,
             )
+
             else -> state.copy(pitTimingTyreWearTrackingState = trackingState)
         }
         val evaluation = calculatePitTimingRemainingLaps(
@@ -516,9 +520,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
             leftSustainedAnnounce && !rightSustainedAnnounce -> {
                 ApproachSide.LEFT.toSustainedSpeechEvent(settings.vehicleApproachSustainedReadoutType)
             }
+
             rightSustainedAnnounce && !leftSustainedAnnounce -> {
                 ApproachSide.RIGHT.toSustainedSpeechEvent(settings.vehicleApproachSustainedReadoutType)
             }
+
             else -> {
                 null
             }
@@ -572,6 +578,7 @@ private fun trackPitTimingValue(
             observedAtMs = observedAtMs,
         )
         }
+
         (session != null && session != state.session) || currentLap < state.currentLap -> {
             LmuWindowsPitTimingTrackingState(
                 session = session,
@@ -587,6 +594,7 @@ private fun trackPitTimingValue(
                 observedAtMs = observedAtMs,
             )
         }
+
         else -> {
             // 共有メモリの値は微小な上振れ（ジッタ・torn read）を含みうるため、
             // しきい値未満の増加は給油・タイヤ交換とみなさず消費量の推定から除外する。
@@ -666,6 +674,7 @@ private enum class ApproachSide {
                 VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft
                 VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach
             }
+
             RIGHT -> when (readoutType) {
                 VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarRight
                 VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.RightApproach
@@ -678,6 +687,7 @@ private enum class ApproachSide {
                 VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepRight
                 VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.RightSustained
             }
+
             RIGHT -> when (readoutType) {
                 VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft
                 VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.LeftSustained

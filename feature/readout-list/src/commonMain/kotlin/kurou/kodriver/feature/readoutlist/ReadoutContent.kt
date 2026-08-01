@@ -95,10 +95,12 @@ internal fun ReadoutContent(
             uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
             }
+
             uiState.selectedItem != null &&
                 windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
                     scaffoldDirective.copy(maxHorizontalPartitions = 2)
             }
+
             else -> {
                 scaffoldDirective
             }
@@ -172,39 +174,51 @@ private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when 
     ReadoutListItemType.LmuWindows.VehicleApproach -> {
         stringResource(Res.string.item_vehicle_approach)
     }
+
     ReadoutListItemType.LmuWindows.Flag -> {
         stringResource(Res.string.item_flag)
     }
+
     ReadoutListItemType.LmuWindows.VehicleDamage -> {
         stringResource(Res.string.item_vehicle_damage)
     }
+
     ReadoutListItemType.LmuWindows.TyreTemperature -> {
         stringResource(Res.string.item_tyre_temperature)
     }
+
     ReadoutListItemType.LmuWindows.PitTiming -> {
         stringResource(Res.string.item_pit_timing)
     }
+
     ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
         stringResource(Res.string.item_remaining_virtual_energy)
     }
+
     ReadoutListItemType.LmuWindows.TyreWear -> {
         stringResource(Res.string.item_tyre_wear)
     }
+
     ReadoutListItemType.LmuWindows.MyBestLap -> {
         stringResource(Res.string.item_my_best_lap)
     }
+
     ReadoutListItemType.Gt7Ps5.MyBestLap -> {
         stringResource(Res.string.item_my_best_lap)
     }
+
     ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
         stringResource(Res.string.item_remaining_fuel_laps)
     }
+
     ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
         stringResource(Res.string.item_remaining_fuel)
     }
+
     ReadoutListItemType.AceWindows.Flag -> {
         stringResource(Res.string.item_flag)
     }
+
     ReadoutListItemType.AceWindows.RemainingFuel -> {
         stringResource(Res.string.item_remaining_fuel)
     }

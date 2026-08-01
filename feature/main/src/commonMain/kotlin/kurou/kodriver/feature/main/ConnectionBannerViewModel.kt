@@ -59,14 +59,17 @@ class ConnectionBannerViewModel(
                         .statusFlow()
                         .map { ConnectionBannerVmUiState(it, simulator) }
                 }
+
                 is Simulator.Gt7Ps5 -> {
                     gt7ConnectionFlow(simulator)
                 }
+
                 is Simulator.AceWindows -> {
                     checkAceConnection
                         .statusFlow()
                         .map { ConnectionBannerVmUiState(it, simulator) }
                 }
+
                 null -> {
                     flowOf(ConnectionBannerVmUiState())
                 }

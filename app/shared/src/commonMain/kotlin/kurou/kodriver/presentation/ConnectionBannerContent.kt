@@ -53,10 +53,12 @@ private fun bannerColors(status: ConnectionBannerStatus): BannerColors = when (s
         background = MaterialTheme.colorScheme.secondaryContainer,
         content = MaterialTheme.colorScheme.onSecondaryContainer,
     )
+
     ConnectionBannerStatus.DISCONNECTED -> BannerColors(
         background = Color(0xFFFFF9C4),
         content = Color(0xFF5F4B00),
     )
+
     ConnectionBannerStatus.UNCHECKED -> BannerColors(
         background = MaterialTheme.colorScheme.errorContainer,
         content = MaterialTheme.colorScheme.onErrorContainer,
@@ -68,6 +70,7 @@ private fun bannerIcon(iconType: ConnectionBannerIconType, isConnected: Boolean)
         ConnectionBannerIconType.NETWORK -> {
             if (isConnected) Icons.Default.Wifi else Icons.Default.WifiOff
         }
+
         ConnectionBannerIconType.SIMULATOR -> {
             if (isConnected) Icons.Default.SportsScore else Icons.Default.PowerOff
         }

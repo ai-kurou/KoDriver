@@ -54,7 +54,9 @@ internal fun FlagInfoContent(
 ) {
     when (selectedSimulator) {
         is Simulator.LmuWindows -> LmuFlagInfoContent(raceFlags)
+
         is Simulator.AceWindows -> AceFlagInfoContent(aceWindowsFlag)
+
         is Simulator.Gt7Ps5, null -> Text(
             text = stringResource(Res.string.debug_state_flag_info_unavailable),
             style = MaterialTheme.typography.bodyMedium,

@@ -38,9 +38,11 @@ internal fun FuelConsumptionContent(
             calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
                 Res.string.debug_state_fuel_consumption_per_lap_ratio
         }
+
         is Simulator.AceWindows, null -> {
             null to Res.string.debug_state_fuel_consumption_per_lap_liters
         }
+
         is Simulator.Gt7Ps5 -> {
             error("GT7 fuel is handled before this branch")
         }

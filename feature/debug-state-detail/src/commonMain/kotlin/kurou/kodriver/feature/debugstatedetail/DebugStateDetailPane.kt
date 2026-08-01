@@ -169,6 +169,7 @@ private fun DebugStateCard(
                 SimulatorInfoContent(uiState.selectedSimulator)
             },
         )
+
         DebugStateCardKey.FLAG_INFO -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_flag_info_title),
             modifier = modifier,
@@ -176,6 +177,7 @@ private fun DebugStateCard(
                 FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag)
             },
         )
+
         DebugStateCardKey.GAME_PHASE -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_game_phase_title),
             modifier = modifier,
@@ -183,6 +185,7 @@ private fun DebugStateCard(
                 GamePhaseContent(uiState.raceFlags)
             },
         )
+
         DebugStateCardKey.SESSION -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_session_title),
             modifier = modifier,
@@ -190,6 +193,7 @@ private fun DebugStateCard(
                 SessionContent(uiState.virtualEnergy)
             },
         )
+
         DebugStateCardKey.YELLOW_FLAG_STATE -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_yellow_flag_state_title),
             modifier = modifier,
@@ -197,6 +201,7 @@ private fun DebugStateCard(
                 YellowFlagStateContent(uiState.raceFlags)
             },
         )
+
         DebugStateCardKey.CURRENT_LAP -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_current_lap_title),
             modifier = modifier,
@@ -204,6 +209,7 @@ private fun DebugStateCard(
                 CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
             },
         )
+
         DebugStateCardKey.SIDE_BY_SIDE_VEHICLES -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_side_by_side_title),
             modifier = modifier,
@@ -211,6 +217,7 @@ private fun DebugStateCard(
                 SideBySideVehiclesContent(uiState.vehicleApproach)
             },
         )
+
         DebugStateCardKey.BEST_LAP -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_best_lap_title),
             modifier = modifier,
@@ -218,6 +225,7 @@ private fun DebugStateCard(
                 BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
             },
         )
+
         DebugStateCardKey.TYRE_TEMPERATURE -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_tyre_temperature_title),
             modifier = modifier,
@@ -225,6 +233,7 @@ private fun DebugStateCard(
                 TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
             },
         )
+
         DebugStateCardKey.TYRE_WEAR -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_tyre_wear_title),
             modifier = modifier,
@@ -232,6 +241,7 @@ private fun DebugStateCard(
                 TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
             },
         )
+
         DebugStateCardKey.FUEL_CONSUMPTION -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_fuel_consumption_title),
             modifier = modifier,
@@ -245,6 +255,7 @@ private fun DebugStateCard(
                 )
             },
         )
+
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> DetailPaneCard(
             title = stringResource(Res.string.debug_state_pit_timing_title),
             modifier = modifier,

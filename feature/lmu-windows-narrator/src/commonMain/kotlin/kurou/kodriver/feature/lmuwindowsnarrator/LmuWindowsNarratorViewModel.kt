@@ -549,12 +549,15 @@ private fun selectLowerPitTimingEvent(
         virtualEnergyEvent != null && tyreWearEvent != null -> {
             if (virtualEnergyEvent.laps <= tyreWearEvent.laps) listOf(virtualEnergyEvent) else listOf(tyreWearEvent)
         }
+
         virtualEnergyEvent != null -> {
             listOf(virtualEnergyEvent)
         }
+
         tyreWearEvent != null -> {
             listOf(tyreWearEvent)
         }
+
         else -> {
             emptyList()
         }

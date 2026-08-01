@@ -83,11 +83,13 @@ sealed class ReadoutListItemType(
                     .filterIsInstance<ReadoutItemKey.LmuWindows.TopLevel>()
                     .sortedBy { key -> lmuWindowsOrderIndex(key) }
             }
+
             is Simulator.Gt7Ps5 -> {
                 ReadoutItemKey.entries
                     .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
                     .sortedBy { key -> gt7Ps5OrderIndex(key) }
             }
+
             is Simulator.AceWindows -> {
                 ReadoutItemKey.entries
                     .filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()

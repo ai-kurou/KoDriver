@@ -100,10 +100,12 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 lastFuelEvaluationLap = -1,
                 fuelTrackingState = fuelTrackingState,
             )
+
             fuelTrackingState.hasRefueled -> state.copy(
                 lastAnnouncedRemainingLaps = -1,
                 fuelTrackingState = fuelTrackingState,
             )
+
             else -> state.copy(fuelTrackingState = fuelTrackingState)
         }
         val evaluation = calculateRemainingFuelLaps(stateAfterTracking, settings)
@@ -151,6 +153,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 observedAtMs = observedAtMs,
             )
             }
+
             state.raceStartFuel == null -> {
                 Gt7Ps5FuelTrackingState(
                 raceStartFuel = telemetry.gasLevel,
@@ -165,6 +168,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
                 observedAtMs = observedAtMs,
             )
             }
+
             else -> {
                 val refueled = (telemetry.gasLevel - state.currentGasLevel).coerceAtLeast(0f)
                 val currentLapStartedAtMs = if (telemetry.lapCount != state.currentLap) {

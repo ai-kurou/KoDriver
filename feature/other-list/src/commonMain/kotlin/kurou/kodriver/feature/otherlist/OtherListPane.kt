@@ -85,18 +85,22 @@ private fun OtherListItemType.section(): OtherListSection = when (this) {
     OtherListItemType.ServerIp,
     OtherListItemType.ConsoleIp,
     -> OtherListSection.ConnectionSettings
+
     OtherListItemType.Volume,
     OtherListItemType.ReadoutStartSound,
     -> OtherListSection.ReadoutSettings
+
     OtherListItemType.KeepScreenOn,
     OtherListItemType.ExitConfirmation,
     OtherListItemType.Theme,
     OtherListItemType.DynamicColor,
     -> OtherListSection.AppSettings
+
     OtherListItemType.GitHubRepository,
     OtherListItemType.ReleasePage,
     OtherListItemType.License,
     -> OtherListSection.Information
+
     OtherListItemType.DebugState -> OtherListSection.Information
 }
 
@@ -128,18 +132,29 @@ private fun otherListSectionTitle(section: OtherListSection): String = when (sec
 private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: Boolean) {
     when (itemType) {
         OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Computer, contentDescription = null)
+
         OtherListItemType.ConsoleIp -> Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = null)
+
         OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
+
         OtherListItemType.KeepScreenOn -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
+
         OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
+
         OtherListItemType.ExitConfirmation -> Icon(imageVector = Icons.Outlined.Output, contentDescription = null)
+
         OtherListItemType.Theme -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
+
         OtherListItemType.DynamicColor -> Icon(imageVector = Icons.Outlined.Palette, contentDescription = null)
+
         OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
+
         OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
             Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
         }
+
         OtherListItemType.License -> Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
+
         OtherListItemType.DebugState -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
     }
 }
@@ -153,13 +168,16 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.License,
         OtherListItemType.DebugState,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
+
         OtherListItemType.ReadoutStartSound,
         OtherListItemType.Theme,
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
+
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ExitConfirmation,
         OtherListItemType.DynamicColor,
         -> Unit
+
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
         -> Icon(imageVector = Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null)
@@ -297,14 +315,17 @@ private fun OtherListItem(
                     checked = uiState.keepScreenOn,
                     onCheckedChange = onKeepScreenOnChange,
                 )
+
                 OtherListItemType.ExitConfirmation -> Switch(
                     checked = uiState.exitConfirmationEnabled,
                     onCheckedChange = onExitConfirmationEnabledChange,
                 )
+
                 OtherListItemType.DynamicColor -> Switch(
                     checked = uiState.dynamicColorEnabled,
                     onCheckedChange = onDynamicColorEnabledChange,
                 )
+
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
@@ -331,12 +352,15 @@ private fun OtherListItem(
                     OtherListItemType.KeepScreenOn -> {
                         onKeepScreenOnChange(!uiState.keepScreenOn)
                     }
+
                     OtherListItemType.ExitConfirmation -> {
                         onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
                     }
+
                     OtherListItemType.DynamicColor -> {
                         onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
                     }
+
                     OtherListItemType.ServerIp,
                     OtherListItemType.ConsoleIp,
                     OtherListItemType.Volume,
