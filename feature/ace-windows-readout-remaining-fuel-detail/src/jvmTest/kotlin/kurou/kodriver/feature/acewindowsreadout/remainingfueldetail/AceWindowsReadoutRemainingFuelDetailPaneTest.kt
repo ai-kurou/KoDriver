@@ -61,7 +61,8 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
             }
         }
 
-        rule.onNode(
+        rule
+            .onNode(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 30f, range = 5f..90f, steps = 84)),
         ).performSemanticsAction(SemanticsActions.SetProgress) {
             it(60f)

@@ -63,7 +63,8 @@ internal fun calculateGt7FuelRemainingPercent(telemetry: Gt7Ps5TelemetryData?): 
 internal fun calculateLmuTyreWearRemainingLaps(telemetry: LmuWindowsTelemetryData?): Double? {
     val currentLap = telemetry?.timing?.currentLap ?: return null
     if (currentLap <= 0) return null
-    val worstRemainingRatio = telemetry.tyres.wheels.values.minOfOrNull { it.wear } ?: return null
+    val worstRemainingRatio = telemetry.tyres.wheels.values
+        .minOfOrNull { it.wear } ?: return null
     val consumedRatio = 1.0 - worstRemainingRatio
     if (consumedRatio <= 0.0) return null
     val avgConsumptionPerLap = consumedRatio / currentLap

@@ -154,10 +154,12 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+        rule
+            .onNodeWithTag("readoutListQueueTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
-        rule.onNodeWithTag("readoutListSwitchTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
+        rule
+            .onNodeWithTag("readoutListSwitchTouchTarget:${ReadoutItemKey.LmuWindows.Flag.Root.value}")
             .assertIsEnabled()
             .performClick()
 

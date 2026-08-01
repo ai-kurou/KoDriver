@@ -58,8 +58,7 @@ internal class Gt7Ps5ConnectionViewModel(
             } else {
                 flowOf(Gt7Ps5ConnectionUiState())
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = Gt7Ps5ConnectionUiState(),

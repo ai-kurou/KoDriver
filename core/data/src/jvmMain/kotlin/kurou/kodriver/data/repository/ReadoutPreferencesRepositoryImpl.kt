@@ -14,7 +14,10 @@ internal class ReadoutPreferencesRepositoryImpl(
 
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.map { prefs ->
-            prefs.simulatorStates.getOrElse(simulator) { SimulatorReadoutState() }.enabledStates.toReadoutItemKeyMap()
+            prefs.simulatorStates
+                .getOrElse(simulator) { SimulatorReadoutState() }
+                .enabledStates
+                .toReadoutItemKeyMap()
         }
 
     override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) {
@@ -27,7 +30,8 @@ internal class ReadoutPreferencesRepositoryImpl(
 
     override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
         dataStore.data.map { prefs ->
-            prefs.simulatorStates.getOrElse(simulator) { SimulatorReadoutState() }
+            prefs.simulatorStates
+                .getOrElse(simulator) { SimulatorReadoutState() }
                 .itemOrder
                 .mapNotNull(ReadoutItemKey::fromValue)
         }

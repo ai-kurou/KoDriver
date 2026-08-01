@@ -52,15 +52,13 @@ internal class Gt7Ps5UdpSource(
 
     override val packetFlow: Flow<ByteBuffer> = combine(consoleAddressFlow, listenPortFlow) { address, port ->
         address to port
-    }
-        .flatMapLatest { (address, port) ->
+    }.flatMapLatest { (address, port) ->
             if (address.isNullOrBlank()) {
                 emptyFlow()
             } else {
                 udpPacketFlow(address, port)
             }
-        }
-        .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
+        }.shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     private fun udpPacketFlow(ps5Address: String, listenPort: Int): Flow<ByteBuffer> = flow {
         socketFactory(listenPort).use { socket ->

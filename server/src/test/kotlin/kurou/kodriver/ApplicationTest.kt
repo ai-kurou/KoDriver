@@ -157,7 +157,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/flags") {
             repository.emit(greenFlagData)
@@ -201,7 +202,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/flags") {
             repository.emit(greenFlagData)
@@ -243,7 +245,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/flags") {
             close()
@@ -281,7 +284,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/vehicle_approach") {
             repository.emit(vehicleApproachDataLeft)
@@ -322,7 +326,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/vehicle_approach") {
             repository.emit(vehicleApproachDataLeft)
@@ -362,7 +367,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/damage") {
             repository.emit(overheatingDamage)
@@ -402,7 +408,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/damage") {
             repository.emit(overheatingDamage)
@@ -444,7 +451,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/tyre_carcass_temperature") {
             repository.emit(tyreCarcassTemperatureData1)
@@ -483,7 +491,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/tyre_carcass_temperature") {
             repository.emit(tyreCarcassTemperatureData1)
@@ -525,7 +534,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/tyre_wear") {
             repository.emit(tyreWearData1)
@@ -564,7 +574,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/tyre_wear") {
             repository.emit(tyreWearData1)
@@ -604,7 +615,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/virtual_energy") {
             repository.emit(virtualEnergyData1)
@@ -641,7 +653,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/virtual_energy") {
             repository.emit(virtualEnergyData1)
@@ -683,7 +696,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/ace_windows/fuel") {
             repository.emit(aceFuelData1)
@@ -722,7 +736,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/ace_windows/fuel") {
             repository.emit(aceFuelData1)
@@ -764,7 +779,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/ace_windows/flags") {
             repository.emit(aceFlagData1)
@@ -803,7 +819,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/ace_windows/flags") {
             repository.emit(aceFlagData1)
@@ -881,7 +898,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/my_best_lap") {
             repository.emit(timingTelemetryData1)
@@ -920,7 +938,8 @@ class ApplicationTest {
             )
         }
 
-        client.config {
+        client
+            .config {
             install(WebSockets)
         }.webSocket("/ws/lmu_windows/my_best_lap") {
             repository.emit(timingTelemetryData1)

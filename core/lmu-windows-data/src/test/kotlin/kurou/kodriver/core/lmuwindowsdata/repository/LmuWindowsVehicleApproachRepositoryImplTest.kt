@@ -380,14 +380,14 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
         val firstResultReceived = CompletableDeferred<Unit>()
 
         val job = launch {
-            repo.vehicleApproachStream()
+            repo
+                .vehicleApproachStream()
                 .map { it.isSideBySideRight }
                 .distinctUntilChanged()
                 .onEach {
                     results += it
                     if (results.size == 1) firstResultReceived.complete(Unit)
-                }
-                .take(2)
+                }.take(2)
                 .toList()
         }
         firstResultReceived.await()

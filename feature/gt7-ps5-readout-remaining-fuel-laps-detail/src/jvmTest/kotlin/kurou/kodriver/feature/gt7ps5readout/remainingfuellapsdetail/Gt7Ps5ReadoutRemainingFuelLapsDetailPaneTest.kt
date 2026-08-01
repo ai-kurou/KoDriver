@@ -29,11 +29,13 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("現在の最速ラップの30秒前にあたるタイミングで判定し", substring = true)
+        rule
+            .onNodeWithText("現在の最速ラップの30秒前にあたるタイミングで判定し", substring = true)
             .assertIsDisplayed()
         rule.onNodeWithText("残り約: 3 周").assertIsDisplayed()
         rule.onNodeWithText("燃料残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("燃料は残り約3周・燃料がありません")
+        rule
+            .onNodeWithText("燃料は残り約3周・燃料がありません")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -50,7 +52,8 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
         }
 
         rule.onNodeWithText("残り約: 1 周").assertIsDisplayed()
-        rule.onNodeWithText("燃料は残り約1周・燃料がありません")
+        rule
+            .onNodeWithText("燃料は残り約1周・燃料がありません")
             .assertIsDisplayed()
             .assertIsSelected()
     }
@@ -67,7 +70,8 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
             }
         }
 
-        rule.onNode(
+        rule
+            .onNode(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
         ).performSemanticsAction(SemanticsActions.SetProgress) {
             it(5f)

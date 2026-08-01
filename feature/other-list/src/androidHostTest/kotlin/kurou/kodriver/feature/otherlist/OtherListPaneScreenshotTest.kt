@@ -46,7 +46,8 @@ class OtherListPaneScreenshotTest {
             }
         }
 
-        rule.activity.window.decorView.captureRoboImage(roborazziOptions = defaultRoborazziOptions)
+        rule.activity.window.decorView
+            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
 
     @Test
@@ -68,6 +69,7 @@ class OtherListPaneScreenshotTest {
         }
 
         rule.onNode(hasScrollAction()).performScrollToNode(hasText("リリースページ"))
-        rule.activity.window.decorView.captureRoboImage(roborazziOptions = defaultRoborazziOptions)
+        rule.activity.window.decorView
+            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
 }

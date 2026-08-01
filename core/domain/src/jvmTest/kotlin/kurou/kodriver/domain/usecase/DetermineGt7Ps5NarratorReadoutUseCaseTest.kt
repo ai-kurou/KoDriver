@@ -243,12 +243,14 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残量が閾値より上に戻ると再度読み上げ可能になる`() {
-        val warnedState = useCase.determineRemainingFuel(
+        val warnedState = useCase
+            .determineRemainingFuel(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),
         ).state
-        val recoveredState = useCase.determineRemainingFuel(
+        val recoveredState = useCase
+            .determineRemainingFuel(
             state = warnedState,
             telemetry = telemetry(gasLevel = 50f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),

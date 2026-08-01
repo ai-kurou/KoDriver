@@ -26,7 +26,8 @@ internal class WebSocketLmuWindowsFlagRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun flagStream(): Flow<LmuWindowsRaceFlagsData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

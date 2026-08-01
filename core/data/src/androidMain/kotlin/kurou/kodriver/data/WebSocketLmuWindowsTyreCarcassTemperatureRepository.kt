@@ -26,7 +26,8 @@ internal class WebSocketLmuWindowsTyreCarcassTemperatureRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

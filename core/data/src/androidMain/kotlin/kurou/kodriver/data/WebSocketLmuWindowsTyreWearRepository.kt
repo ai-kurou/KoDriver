@@ -26,7 +26,8 @@ internal class WebSocketLmuWindowsTyreWearRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

@@ -58,7 +58,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         if (data.flag == previous) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
-        val event = flagEvent(data.flag)?.takeIf { (itemKey, _) ->
+        val event = flagEvent(data.flag)
+            ?.takeIf { (itemKey, _) ->
             settings.enabledStates.getValue(itemKey)
         }?.second
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))

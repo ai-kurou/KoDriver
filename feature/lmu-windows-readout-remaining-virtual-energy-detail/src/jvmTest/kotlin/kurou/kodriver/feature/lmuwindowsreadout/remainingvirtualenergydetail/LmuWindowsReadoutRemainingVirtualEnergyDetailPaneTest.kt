@@ -36,7 +36,8 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
         }
 
         rule.onNodeWithText("残量警告").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー残量警告")
+        rule
+            .onNodeWithText("バーチャルエナジー残量警告")
             .assertIsDisplayed()
             .assertIsSelected()
     }

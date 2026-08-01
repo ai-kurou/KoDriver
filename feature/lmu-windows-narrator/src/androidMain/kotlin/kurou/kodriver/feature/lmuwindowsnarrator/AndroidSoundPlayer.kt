@@ -17,15 +17,16 @@ import kotlin.coroutines.resume
  */
 class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
 
-    private val soundPool = SoundPool.Builder()
+    private val soundPool = SoundPool
+        .Builder()
         .setMaxStreams(2)
         .setAudioAttributes(
-            AudioAttributes.Builder()
+            AudioAttributes
+                .Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build(),
-        )
-        .build()
+        ).build()
 
     private var currentStreamId: Int = 0
 

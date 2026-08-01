@@ -24,8 +24,7 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
             LmuWindowsReadoutVehicleDamageDetailUiState(
                 overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),
             )
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleDamageDetailUiState())
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleDamageDetailUiState())
 
     fun onOverheatEnabledChanged(enabled: Boolean) {
         viewModelScope.launch { saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, enabled) }

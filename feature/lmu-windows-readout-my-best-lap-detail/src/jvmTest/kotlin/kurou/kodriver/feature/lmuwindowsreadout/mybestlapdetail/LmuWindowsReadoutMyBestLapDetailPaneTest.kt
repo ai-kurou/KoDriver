@@ -26,7 +26,8 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
         }
 
         rule.onNodeWithText("自己ベストラップを更新したときに音声でお知らせします。").assertIsDisplayed()
-        rule.onAllNodesWithText("自己ベストラップ更新")[1]
+        rule
+            .onAllNodesWithText("自己ベストラップ更新")[1]
             .assertIsDisplayed()
             .assertIsSelected()
         rule.onNodeWithText("ベストラップ").assertIsDisplayed()
@@ -42,7 +43,8 @@ class LmuWindowsReadoutMyBestLapDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("ベストラップ")
+        rule
+            .onNodeWithText("ベストラップ")
             .assertIsDisplayed()
             .assertIsSelected()
     }

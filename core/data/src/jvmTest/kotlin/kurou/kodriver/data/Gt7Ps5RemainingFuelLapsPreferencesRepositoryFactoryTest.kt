@@ -14,10 +14,10 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files.createTempDirectory(
+    private val tempDir = Files
+        .createTempDirectory(
         "kodriver_gt7_remaining_fuel_laps_preferences_repository_factory_test",
-    )
-        .toFile()
+    ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest

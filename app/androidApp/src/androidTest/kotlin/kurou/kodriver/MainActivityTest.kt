@@ -273,11 +273,13 @@ class MainActivityTest {
 
     private fun dismissBottomSheet() {
         composeTestRule.waitUntil(timeoutMillis = 5_000L) {
-            composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+            composeTestRule
+                .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
                 .fetchSemanticsNodes()
                 .isNotEmpty()
         }
-        composeTestRule.onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
+        composeTestRule
+            .onAllNodes(SemanticsMatcher.keyIsDefined(SemanticsActions.Dismiss))
             .get(0)
             .performSemanticsAction(SemanticsActions.Dismiss)
         composeTestRule.waitForIdle()

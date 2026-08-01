@@ -32,8 +32,7 @@ internal class TelemetryLogDetailViewModel(
                     )
                 }
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = TelemetryLogDetailUiState(),

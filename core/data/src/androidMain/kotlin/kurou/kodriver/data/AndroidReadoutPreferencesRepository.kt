@@ -25,7 +25,8 @@ internal class AndroidReadoutPreferencesRepository(
             val prefix = "${simulator}_"
             val suffix = "_enabled"
             @Suppress("UNCHECKED_CAST")
-            prefs.asMap()
+            prefs
+                .asMap()
                 .filterKeys { it.name.startsWith(prefix) && it.name.endsWith(suffix) }
                 .mapKeys { (k, _) -> k.name.removePrefix(prefix).removeSuffix(suffix) }
                 .mapValues { (_, v) -> v as Boolean }

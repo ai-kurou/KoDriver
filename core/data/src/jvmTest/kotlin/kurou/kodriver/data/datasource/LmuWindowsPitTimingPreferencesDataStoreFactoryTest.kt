@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsPitTimingPreferencesDataStoreFactoryTest {
 
-    private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_pit_timing_preferences_factory_test")
+    private val tempDir = Files
+        .createTempDirectory("kodriver_lmu_windows_pit_timing_preferences_factory_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 

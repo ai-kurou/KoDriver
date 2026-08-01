@@ -26,7 +26,8 @@ internal class WebSocketLmuWindowsVehicleApproachRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> =
-        serverIpRepository.serverIp()
+        serverIpRepository
+            .serverIp()
             .flatMapLatest { ip ->
                 if (ip == null) {
                     emptyFlow()

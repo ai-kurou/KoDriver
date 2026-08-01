@@ -59,15 +59,13 @@ class ReadoutListViewModel(
         .flatMapLatest { simulator ->
             if (simulator != null) observeReadoutOrder(simulator.id)
             else flowOf(emptyList())
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != null) observeReadoutEnabledStates(simulator.id) else flowOf(emptyMap())
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = observeQueueEnabledStates()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
@@ -117,7 +115,8 @@ class ReadoutListViewModel(
 
     fun moveItem(fromIndex: Int, toIndex: Int) {
         val selected = _selectedSimulator.value ?: return
-        val newItems = _effectiveOrder.value.toMutableList()
+        val newItems = _effectiveOrder.value
+            .toMutableList()
             .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }
         viewModelScope.launch {

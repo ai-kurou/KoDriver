@@ -64,7 +64,8 @@ class JvmSoundPlayer : SoundPlayer {
         val gainDb = if (volume <= 0) {
             gainControl.minimum
         } else {
-            (20.0 * kotlin.math.log10(volume / 100.0)).toFloat()
+            (20.0 * kotlin.math.log10(volume / 100.0))
+                .toFloat()
                 .coerceIn(gainControl.minimum, gainControl.maximum)
         }
         gainControl.value = gainDb

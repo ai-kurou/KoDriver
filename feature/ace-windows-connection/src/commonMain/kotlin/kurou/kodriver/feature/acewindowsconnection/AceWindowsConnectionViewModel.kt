@@ -52,8 +52,7 @@ internal class AceWindowsConnectionViewModel(
             } else {
                 flowOf(AceWindowsConnectionUiState())
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = AceWindowsConnectionUiState(),

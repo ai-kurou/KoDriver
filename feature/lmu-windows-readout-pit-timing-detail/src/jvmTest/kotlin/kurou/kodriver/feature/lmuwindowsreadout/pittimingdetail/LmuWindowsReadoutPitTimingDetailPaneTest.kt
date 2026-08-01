@@ -28,7 +28,8 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText(
+        rule
+            .onNodeWithText(
             "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
                 "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
                 "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
@@ -68,9 +69,11 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onAllNodes(
+        rule
+            .onAllNodes(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
-        )[0].performSemanticsAction(SemanticsActions.SetProgress) {
+        )[0]
+            .performSemanticsAction(SemanticsActions.SetProgress) {
             it(5f)
         }
 
@@ -89,9 +92,11 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
             }
         }
 
-        rule.onAllNodes(
+        rule
+            .onAllNodes(
             hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
-        )[1].performSemanticsAction(SemanticsActions.SetProgress) {
+        )[1]
+            .performSemanticsAction(SemanticsActions.SetProgress) {
             it(1f)
         }
 

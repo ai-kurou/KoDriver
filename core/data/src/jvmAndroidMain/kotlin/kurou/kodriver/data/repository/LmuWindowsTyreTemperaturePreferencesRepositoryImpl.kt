@@ -36,8 +36,7 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
             prefs.lowWarningPhases
                 .mapNotNull { (raw, enabled) ->
                     SessionPhase.fromRaw(raw).takeIf { it != SessionPhase.UNKNOWN }?.let { it to enabled }
-                }
-                .toMap()
+                }.toMap()
         }
 
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {

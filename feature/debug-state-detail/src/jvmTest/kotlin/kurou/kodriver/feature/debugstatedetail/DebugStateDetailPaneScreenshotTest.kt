@@ -161,7 +161,8 @@ class DebugStateDetailPaneScreenshotTest {
                 }
             }
         }
-        rule.onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
+        rule
+            .onNodeWithTag(DEBUG_STATE_GRID_TEST_TAG)
             .performScrollToIndex(allCardsFilledUiState.cardOrder.lastIndex)
         rule.onRoot().captureRoboImage()
     }

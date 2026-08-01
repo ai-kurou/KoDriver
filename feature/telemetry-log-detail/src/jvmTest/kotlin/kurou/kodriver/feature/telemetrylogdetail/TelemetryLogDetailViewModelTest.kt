@@ -112,7 +112,11 @@ class TelemetryLogDetailViewModelTest {
         viewModel.setLogId(1L)
         assertEquals(
             """{"speed":118}""",
-            viewModel.uiState.first { it.items.isNotEmpty() }.items.single().telemetryJson,
+            viewModel.uiState
+                .first { it.items.isNotEmpty() }
+                .items
+                .single()
+                .telemetryJson,
         )
 
         detailFlow.update {
