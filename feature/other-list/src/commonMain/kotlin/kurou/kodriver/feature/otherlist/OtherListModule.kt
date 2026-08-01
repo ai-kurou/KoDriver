@@ -14,8 +14,15 @@ val otherListModule = module {
     // ViewModel
     viewModel {
         OtherListViewModel(
-            get(), get(), get(), get(), get(), get(), get(),
-            currentAppVersion(), currentAppVersionLabel(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            currentAppVersion(),
+            currentAppVersionLabel(),
         )
     }
 }

@@ -193,8 +193,12 @@ class DebugStateFuelConsumptionCardTest {
             maxLaps = 0,
         ),
         vehicle = LmuWindowsVehicleData(
-            localVelocityX = 0.0, localVelocityY = 0.0, localVelocityZ = 0.0,
-            positionX = 0.0, positionY = 0.0, positionZ = 0.0,
+            localVelocityX = 0.0,
+            localVelocityY = 0.0,
+            localVelocityZ = 0.0,
+            positionX = 0.0,
+            positionY = 0.0,
+            positionZ = 0.0,
         ),
     )
 
