@@ -517,7 +517,15 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private val telemetryLogJson = Json
+/**
+ * ログフォーマットが kotlinx.serialization のデフォルト設定変更に暗黙的に追従しないよう、
+ * テレメトリログ用の設定を明示する。
+ */
+private val telemetryLogJson =
+    Json {
+        encodeDefaults = true
+        explicitNulls = true
+    }
 
 private fun String.toJsonStringLiteral(): String =
     buildString {
