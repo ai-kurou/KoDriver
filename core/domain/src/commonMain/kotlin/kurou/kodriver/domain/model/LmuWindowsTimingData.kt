@@ -16,9 +16,9 @@ data class LmuWindowsTimingData(
     val lastLapTimeMs: Long,
     /** セッション中のベストラップタイム。単位は milliseconds。 */
     val bestLapTimeMs: Long,
-    /** セクター 1 のタイム。単位は milliseconds。 */
+    /** ベストラップのセクター 1 タイム。単位は milliseconds。 */
     val sector1Ms: Long,
-    /** セクター 1 + 2 の合計タイム。単位は milliseconds。 */
+    /** ベストラップのセクター 1 + 2 の合計タイム。単位は milliseconds。 */
     val sector1And2Ms: Long,
     /** 現在の周回番号。LMU shared memory の値をそのまま扱う。 */
     val currentLap: Int,

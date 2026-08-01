@@ -10,8 +10,9 @@ import javax.jmdns.ServiceInfo
 /**
  * KoDriver サーバーを mDNS / DNS-SD で LAN 内へ広告する。
  *
- * 広告名にはホスト名を使う。ホスト名が FQDN として返る環境では、
- * 先頭ラベルだけを使って Android 側の表示名が長くなりすぎないようにする。
+ * 広告名にはホスト名を使い、複数台の Windows PC が同一 LAN 上で起動していても
+ * Android 側がホスト名で区別できるようにする。ホスト名が FQDN（ドット区切り）として
+ * 返る環境向けに、ドット以降を除去してから使用する。
  */
 class KoDriverServiceAdvertiser(
     private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },
