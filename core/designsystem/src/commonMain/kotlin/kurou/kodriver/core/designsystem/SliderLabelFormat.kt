@@ -6,6 +6,10 @@ import kotlin.math.roundToLong
 private val INT_PLACEHOLDER_REGEX = Regex("""%1?\$?[ds]""")
 private val DECIMAL_PLACEHOLDER_REGEX = Regex("""%1?\$?\.(\d+)f""")
 
+// 対応済みのスライダーラベル用プレースホルダーを置換した後に、未処理の printf 風トークンだけを検出する。
+// これは Formatter 互換の検証ではなく、`%2$d` や `%1$02.1f` などを画面表示へ残さないためのガード。
+private val PRINTF_PLACEHOLDER_REGEX = Regex("""%(?!%)(?:\d+\$)?[#+ 0,(<-]*\d*(?:\.\d+)?[a-zA-Z]""")
+
 /**
  * strings.xml の printf 形式プレースホルダー（`%1$d`・`%1$s` 相当）を含むテンプレート文字列へ整数値を埋め込む。
  * commonMain からは `java.util.Formatter` 経由の `String.format` を利用できないため、
@@ -13,18 +17,49 @@ private val DECIMAL_PLACEHOLDER_REGEX = Regex("""%1?\$?\.(\d+)f""")
  * サポートする簡易実装。
  */
 fun String.formatSliderLabel(value: Int): String =
-    INT_PLACEHOLDER_REGEX.replace(this) { value.toString() }.unescapePercent()
+    replaceSupportedPlaceholders(INT_PLACEHOLDER_REGEX) { value.toString() }
 
 /**
  * strings.xml の printf 形式プレースホルダー（`%1$.1f` 相当）を含むテンプレート文字列へ小数値を埋め込む。
  */
 fun String.formatSliderLabel(value: Float): String =
-    DECIMAL_PLACEHOLDER_REGEX
-        .replace(this) { match ->
+    replaceSupportedPlaceholders(DECIMAL_PLACEHOLDER_REGEX) { match ->
         formatFixedPoint(value, decimals = match.groupValues[1].toInt())
-    }.unescapePercent()
+    }
 
-private fun String.unescapePercent(): String = replace("%%", "%")
+private fun String.replaceSupportedPlaceholders(
+    supportedPlaceholderRegex: Regex,
+    replacement: (MatchResult) -> String,
+): String {
+    val template = this
+    val formatted = StringBuilder()
+    var index = 0
+
+    while (index < template.length) {
+        if (template.startsWith("%%", startIndex = index)) {
+            formatted.append('%')
+            index += 2
+            continue
+        }
+
+        val supportedPlaceholder = supportedPlaceholderRegex.matchAt(template, index)
+        if (supportedPlaceholder != null) {
+            formatted.append(replacement(supportedPlaceholder))
+            index = supportedPlaceholder.range.last + 1
+            continue
+        }
+
+        val unsupportedPlaceholder = PRINTF_PLACEHOLDER_REGEX.matchAt(template, index)?.value
+        require(unsupportedPlaceholder == null) {
+            "Unsupported slider label placeholder: $unsupportedPlaceholder in template: $template"
+        }
+
+        formatted.append(template[index])
+        index++
+    }
+
+    return formatted.toString()
+}
 
 /**
  * [value] を四捨五入（half-up、`String.format` の `%f` と同じ丸め方向）して [decimals] 桁の

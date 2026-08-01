@@ -2,6 +2,7 @@ package kurou.kodriver.core.designsystem
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class SliderLabelFormatTest {
 
@@ -45,5 +46,28 @@ class SliderLabelFormatTest {
     @Test
     fun `文字列プレースホルダーとエスケープされたパーセント記号を含むテンプレートへ整数値を埋め込む`() {
         assertEquals("30%", "%1\$s%%".formatSliderLabel(30))
+    }
+
+    @Test
+    fun `エスケープされたパーセント記号に続く文字列は未対応プレースホルダーとして扱わない`() {
+        assertEquals("%2\$d", "%%2\$d".formatSliderLabel(3))
+    }
+
+    @Test
+    fun `未対応の整数プレースホルダーを含むテンプレートは例外になる`() {
+        val exception = assertFailsWith<IllegalArgumentException> {
+            "値: %2\$d".formatSliderLabel(3)
+        }
+
+        assertEquals("Unsupported slider label placeholder: %2\$d in template: 値: %2\$d", exception.message)
+    }
+
+    @Test
+    fun `未対応の小数プレースホルダーを含むテンプレートは例外になる`() {
+        val exception = assertFailsWith<IllegalArgumentException> {
+            "値: %1\$02.1f".formatSliderLabel(1.2f)
+        }
+
+        assertEquals("Unsupported slider label placeholder: %1\$02.1f in template: 値: %1\$02.1f", exception.message)
     }
 }
