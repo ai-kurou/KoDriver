@@ -17,6 +17,12 @@ import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 
+/**
+ * LMU 向け読み上げ判定の継続状態。
+ *
+ * 旗、車両接近、自己ベスト、温度・摩耗・ピットタイミングなどの重複読み上げを避けるため、
+ * 前回までの入力と判定結果を保持する。
+ */
 data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
     val previousRaceFlags: LmuWindowsRaceFlagsData? = null,
@@ -55,11 +61,13 @@ data class LmuWindowsPitTimingTrackingState(
     val observedAtMs: Long = 0L,
 )
 
+/** LMU の車両接近読み上げで、左右それぞれの接近継続状態を保持する。 */
 data class LmuWindowsVehicleApproachState(
     val left: Map<Int, LmuWindowsApproachState> = emptyMap(),
     val right: Map<Int, LmuWindowsApproachState> = emptyMap(),
 )
 
+/** 1 台の周辺車両に対する接近開始時刻と読み上げ済み状態。 */
 data class LmuWindowsApproachState(
     val startedAtMs: Long,
     val announced: Boolean,
@@ -72,6 +80,7 @@ private data class ApproachSideStatesResult(
     val sustainedAnnounce: Boolean,
 )
 
+/** LMU 向け読み上げ判定で参照するユーザー設定と現在周回情報。 */
 data class LmuWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
@@ -89,11 +98,15 @@ data class LmuWindowsNarratorReadoutSettings(
     val pitTimingTyreWearLapsThreshold: Int,
 )
 
+/** LMU 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
 data class LmuWindowsNarratorReadoutDecision(
     val state: LmuWindowsNarratorState,
     val events: List<SpeechEvent>,
 )
 
+/**
+ * LMU の共有メモリ由来データから、今回読み上げるべき音声イベントを決定する UseCase。
+ */
 class DetermineLmuWindowsNarratorReadoutUseCase {
     fun determineMyBestLap(
         state: LmuWindowsNarratorState,

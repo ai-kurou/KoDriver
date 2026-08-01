@@ -1,6 +1,15 @@
 package kurou.kodriver.domain.model
 
+/**
+ * 読み上げ機能を識別する永続化キー。
+ *
+ * [value] は DataStore の設定キー、読み上げ一覧の並び順、キュー可否判定で共有する安定値。
+ * 既存値を変更すると保存済み設定が失われるため、表示文言の変更とは独立して扱う。
+ *
+ * `Root` は一覧画面のトップレベル項目、その他のキーは詳細画面内のサブ項目を表す。
+ */
 sealed interface ReadoutItemKey {
+    /** DataStore に保存する安定識別子。 */
     val value: String
 
     /**
@@ -142,6 +151,7 @@ sealed interface ReadoutItemKey {
     }
 
     companion object {
+        /** 既存保存値の復元対象となる全キー。新しいキーを追加した場合はここにも追加する。 */
         val entries by lazy {
             listOf(
                 LmuWindows.VehicleApproach.Root,
@@ -179,6 +189,7 @@ sealed interface ReadoutItemKey {
             )
         }
 
+        /** DataStore に保存された [value] からキーを復元する。不明な値は null を返す。 */
         fun fromValue(value: String): ReadoutItemKey? = entries.find { it.value == value }
     }
 }

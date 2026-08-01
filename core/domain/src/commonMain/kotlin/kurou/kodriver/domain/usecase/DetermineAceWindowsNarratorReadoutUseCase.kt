@@ -6,21 +6,31 @@ import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.ReadoutItemKey
 
+/**
+ * ACE 向け読み上げ判定の継続状態。
+ *
+ * 同じ低燃料警告や同じ旗状態を連続で読み上げないため、前回の判定結果を保持する。
+ */
 data class AceWindowsNarratorState(
     val remainingFuelWarned: Boolean = false,
     val previousFlag: AceWindowsFlagType? = null,
 )
 
+/** ACE 向け読み上げ判定で参照するユーザー設定。 */
 data class AceWindowsNarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val remainingFuelThresholdPercentage: Int,
 )
 
+/** ACE 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
 data class AceWindowsNarratorReadoutDecision(
     val state: AceWindowsNarratorState,
     val events: List<SpeechEvent>,
 )
 
+/**
+ * ACE の燃料残量・旗状態から、今回読み上げるべき音声イベントを決定する UseCase。
+ */
 class DetermineAceWindowsNarratorReadoutUseCase {
     fun determineRemainingFuel(
         state: AceWindowsNarratorState,

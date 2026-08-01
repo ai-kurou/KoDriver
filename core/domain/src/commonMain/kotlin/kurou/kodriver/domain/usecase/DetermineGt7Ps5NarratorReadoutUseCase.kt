@@ -5,6 +5,12 @@ import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 
+/**
+ * GT7 向け読み上げ判定の継続状態。
+ *
+ * 自己ベスト、燃料警告、残り燃料周回数の重複読み上げを避けるため、
+ * 前回までの判定結果と燃料消費の追跡状態を保持する。
+ */
 data class Gt7Ps5NarratorState(
     val personalBestMs: Int = Int.MAX_VALUE,
     val previousBestLapTimeMs: Int? = null,
@@ -14,6 +20,12 @@ data class Gt7Ps5NarratorState(
     val fuelTrackingState: Gt7Ps5FuelTrackingState = Gt7Ps5FuelTrackingState(),
 )
 
+/**
+ * GT7 の燃料消費量推定に使う追跡状態。
+ *
+ * 燃料残量の増加は給油として扱い、レース開始時燃料・現在ラップ・経過時間から
+ * 残り周回数警告のタイミングを推定する。
+ */
 data class Gt7Ps5FuelTrackingState(
     val raceStartFuel: Float? = null,
     val raceStartLap: Int? = null,
@@ -27,6 +39,7 @@ data class Gt7Ps5FuelTrackingState(
     val observedAtMs: Long = 0L,
 )
 
+/** GT7 向け読み上げ判定で参照するユーザー設定。 */
 data class Gt7Ps5NarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
@@ -36,11 +49,15 @@ data class Gt7Ps5NarratorReadoutSettings(
     val remainingFuelEnabled: Boolean,
 )
 
+/** GT7 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
 data class Gt7Ps5NarratorReadoutDecision(
     val state: Gt7Ps5NarratorState,
     val events: List<SpeechEvent>,
 )
 
+/**
+ * GT7 のテレメトリから、自己ベスト・燃料残量・残り燃料周回数の読み上げを決定する UseCase。
+ */
 class DetermineGt7Ps5NarratorReadoutUseCase {
     fun determineMyBestLap(
         state: Gt7Ps5NarratorState,

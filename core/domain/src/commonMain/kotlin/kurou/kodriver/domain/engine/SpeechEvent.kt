@@ -2,7 +2,15 @@ package kurou.kodriver.domain.engine
 
 import kurou.kodriver.domain.model.ReadoutItemKey
 
+/**
+ * 音声エンジンへ渡す読み上げイベント。
+ *
+ * 各イベントは、実際に再生される WAV ファイルの種類と、読み上げ可否を判定する
+ * [ReadoutItemKey] を結び付ける。キューイング可否はイベント単位ではなく
+ * [readoutItemKey] のトップレベル項目で判定する。
+ */
 sealed interface SpeechEvent {
+    /** このイベントを有効化・キュー可否判定に関連付ける読み上げ項目。 */
     val readoutItemKey: ReadoutItemKey
 
     data object CarLeft : SpeechEvent {
@@ -59,12 +67,14 @@ sealed interface SpeechEvent {
     data object Gt7Ps5MyBestLapCasual : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
     }
+    /** GT7 の燃料残量から推定した残り周回数を読み上げるイベント。 */
     data class RemainingFuelLapsWarning(val laps: Int) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
     }
     data object Gt7Ps5RemainingFuelWarning : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
     }
+    /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。 */
     data class PitTimingWarning(val laps: Int) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
     }
