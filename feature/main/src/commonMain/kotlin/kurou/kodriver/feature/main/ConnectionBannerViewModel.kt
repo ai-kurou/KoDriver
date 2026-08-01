@@ -54,16 +54,22 @@ class ConnectionBannerViewModel(
     val uiState: StateFlow<ConnectionBannerVmUiState> = observeSelectedSimulator()
         .flatMapLatest { simulator ->
             when (simulator) {
-                is Simulator.LmuWindows ->
+                is Simulator.LmuWindows -> {
                     checkLmuConnection
                         .statusFlow()
                         .map { ConnectionBannerVmUiState(it, simulator) }
-                is Simulator.Gt7Ps5 -> gt7ConnectionFlow(simulator)
-                is Simulator.AceWindows ->
+                }
+                is Simulator.Gt7Ps5 -> {
+                    gt7ConnectionFlow(simulator)
+                }
+                is Simulator.AceWindows -> {
                     checkAceConnection
                         .statusFlow()
                         .map { ConnectionBannerVmUiState(it, simulator) }
-                null -> flowOf(ConnectionBannerVmUiState())
+                }
+                null -> {
+                    flowOf(ConnectionBannerVmUiState())
+                }
             }
         }.stateIn(
             scope = viewModelScope,

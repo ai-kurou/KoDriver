@@ -513,11 +513,15 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained)) return null
         if (settings.skipFirstLap && settings.currentLap <= 0) return null
         return when {
-            leftSustainedAnnounce && !rightSustainedAnnounce ->
+            leftSustainedAnnounce && !rightSustainedAnnounce -> {
                 ApproachSide.LEFT.toSustainedSpeechEvent(settings.vehicleApproachSustainedReadoutType)
-            rightSustainedAnnounce && !leftSustainedAnnounce ->
+            }
+            rightSustainedAnnounce && !leftSustainedAnnounce -> {
                 ApproachSide.RIGHT.toSustainedSpeechEvent(settings.vehicleApproachSustainedReadoutType)
-            else -> null
+            }
+            else -> {
+                null
+            }
         }
     }
 
@@ -553,7 +557,8 @@ private fun trackPitTimingValue(
     observedAtMs: Long,
 ): LmuWindowsPitTimingTrackingState =
     when {
-        state.currentLap == -1 -> LmuWindowsPitTimingTrackingState(
+        state.currentLap == -1 -> {
+            LmuWindowsPitTimingTrackingState(
             session = session,
             currentLap = currentLap,
             currentLapStartedAtMs = observedAtMs,
@@ -566,7 +571,8 @@ private fun trackPitTimingValue(
             isNewSession = false,
             observedAtMs = observedAtMs,
         )
-        (session != null && session != state.session) || currentLap < state.currentLap ->
+        }
+        (session != null && session != state.session) || currentLap < state.currentLap -> {
             LmuWindowsPitTimingTrackingState(
                 session = session,
                 currentLap = currentLap,
@@ -580,6 +586,7 @@ private fun trackPitTimingValue(
                 isNewSession = true,
                 observedAtMs = observedAtMs,
             )
+        }
         else -> {
             // 共有メモリの値は微小な上振れ（ジッタ・torn read）を含みうるため、
             // しきい値未満の増加は給油・タイヤ交換とみなさず消費量の推定から除外する。

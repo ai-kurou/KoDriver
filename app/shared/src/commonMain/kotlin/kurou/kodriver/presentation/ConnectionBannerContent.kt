@@ -62,10 +62,12 @@ private fun bannerColors(status: ConnectionBannerStatus): BannerColors = when (s
 
 private fun bannerIcon(iconType: ConnectionBannerIconType, isConnected: Boolean): ImageVector =
     when (iconType) {
-        ConnectionBannerIconType.NETWORK ->
+        ConnectionBannerIconType.NETWORK -> {
             if (isConnected) Icons.Default.Wifi else Icons.Default.WifiOff
-        ConnectionBannerIconType.SIMULATOR ->
+        }
+        ConnectionBannerIconType.SIMULATOR -> {
             if (isConnected) Icons.Default.SportsScore else Icons.Default.PowerOff
+        }
     }
 
 internal fun pulseScale(progress: Float): Float = ICON_PULSE_MIN_SCALE + (1f - ICON_PULSE_MIN_SCALE) * progress

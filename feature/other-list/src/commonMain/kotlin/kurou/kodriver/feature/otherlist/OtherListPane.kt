@@ -328,11 +328,15 @@ private fun OtherListItem(
             .semantics { selected = isSelected }
             .clickable {
                 when (item) {
-                    OtherListItemType.KeepScreenOn -> onKeepScreenOnChange(!uiState.keepScreenOn)
-                    OtherListItemType.ExitConfirmation ->
+                    OtherListItemType.KeepScreenOn -> {
+                        onKeepScreenOnChange(!uiState.keepScreenOn)
+                    }
+                    OtherListItemType.ExitConfirmation -> {
                         onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
-                    OtherListItemType.DynamicColor ->
+                    }
+                    OtherListItemType.DynamicColor -> {
                         onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
+                    }
                     OtherListItemType.ServerIp,
                     OtherListItemType.ConsoleIp,
                     OtherListItemType.Volume,
@@ -342,7 +346,9 @@ private fun OtherListItem(
                     OtherListItemType.ReleasePage,
                     OtherListItemType.License,
                     OtherListItemType.DebugState,
-                    -> onItemClick(item)
+                    -> {
+                        onItemClick(item)
+                    }
                 }
             },
     )

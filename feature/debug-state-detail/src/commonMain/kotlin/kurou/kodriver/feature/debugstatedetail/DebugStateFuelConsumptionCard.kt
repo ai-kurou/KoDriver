@@ -34,11 +34,16 @@ internal fun FuelConsumptionContent(
         return
     }
     val (result, perLapTextRes) = when (selectedSimulator) {
-        is Simulator.LmuWindows ->
+        is Simulator.LmuWindows -> {
             calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
                 Res.string.debug_state_fuel_consumption_per_lap_ratio
-        is Simulator.AceWindows, null -> null to Res.string.debug_state_fuel_consumption_per_lap_liters
-        is Simulator.Gt7Ps5 -> error("GT7 fuel is handled before this branch")
+        }
+        is Simulator.AceWindows, null -> {
+            null to Res.string.debug_state_fuel_consumption_per_lap_liters
+        }
+        is Simulator.Gt7Ps5 -> {
+            error("GT7 fuel is handled before this branch")
+        }
     }
     if (result == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))

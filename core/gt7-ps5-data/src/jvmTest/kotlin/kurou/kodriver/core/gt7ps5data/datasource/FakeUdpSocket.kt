@@ -35,7 +35,9 @@ internal class FakeUdpSocket : UdpSocket {
                 response.data.copyInto(packet.data, 0, 0, copyLength)
                 packet.length = copyLength
             }
-            FakeResponse.Timeout -> throw SocketTimeoutException("FakeUdpSocket: simulated timeout")
+            FakeResponse.Timeout -> {
+                throw SocketTimeoutException("FakeUdpSocket: simulated timeout")
+            }
         }
     }
 

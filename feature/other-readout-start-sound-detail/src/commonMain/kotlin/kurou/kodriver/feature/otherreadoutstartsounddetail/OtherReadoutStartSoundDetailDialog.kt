@@ -68,10 +68,12 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
                 Spacer(modifier = Modifier.height(4.dp))
                 ReadoutStartSoundType.entries.forEach { type ->
                     val label = when (type) {
-                        ReadoutStartSoundType.ELECTRONIC_NOISE ->
+                        ReadoutStartSoundType.ELECTRONIC_NOISE -> {
                             stringResource(Res.string.readout_start_sound_electronic_noise)
-                        ReadoutStartSoundType.FORMULA_RADIO ->
+                        }
+                        ReadoutStartSoundType.FORMULA_RADIO -> {
                             stringResource(Res.string.readout_start_sound_formula_radio)
+                        }
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
