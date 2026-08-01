@@ -34,14 +34,18 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     )
     val status = when (uiState.connectionStatus) {
         ConnectionBannerVmStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
+
         ConnectionBannerVmStatus.DISCONNECTED -> ConnectionBannerStatus.DISCONNECTED
+
         ConnectionBannerVmStatus.UNCHECKED,
         ConnectionBannerVmStatus.IP_NOT_CONFIGURED,
         -> ConnectionBannerStatus.UNCHECKED
     }
     val message = when (uiState.connectionStatus) {
         ConnectionBannerVmStatus.CONNECTED -> connectedMessage
+
         ConnectionBannerVmStatus.IP_NOT_CONFIGURED -> consoleIpNotConfiguredMessage
+
         ConnectionBannerVmStatus.DISCONNECTED,
         ConnectionBannerVmStatus.UNCHECKED,
         -> disconnectedMessage

@@ -130,6 +130,7 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
             VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> {
                 SpeechEvent.KeepLeft to SpeechEvent.KeepRight
             }
+
             VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> {
                 SpeechEvent.LeftSustained to SpeechEvent.RightSustained
             }

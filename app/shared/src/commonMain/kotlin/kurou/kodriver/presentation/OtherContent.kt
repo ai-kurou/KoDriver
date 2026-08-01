@@ -87,9 +87,13 @@ private fun handleOtherItemClick(
 ) {
     when (itemType) {
         OtherListItemType.ReadoutStartSound -> onOpenReadoutStartSoundDialog()
+
         OtherListItemType.Theme -> onOpenThemeDialog()
+
         OtherListItemType.GitHubRepository -> onOpenGitHubRepository()
+
         OtherListItemType.ReleasePage -> onOpenReleasePage()
+
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
@@ -128,10 +132,12 @@ internal fun OtherContent(
             uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
             }
+
             uiState.selectedItem != null &&
                 windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
                     scaffoldDirective.copy(maxHorizontalPartitions = 2)
             }
+
             else -> {
                 scaffoldDirective
             }

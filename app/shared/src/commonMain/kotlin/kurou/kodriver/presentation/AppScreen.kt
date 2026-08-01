@@ -193,18 +193,23 @@ private fun DefaultOtherContent(
                 OtherListItemType.ServerIp -> {
                     OtherServerIpDetailPane(canNavigateBack, onBack)
                 }
+
                 OtherListItemType.ConsoleIp -> {
                     OtherConsoleIpDetailPane(canNavigateBack, onBack)
                 }
+
                 OtherListItemType.Volume -> {
                     OtherVolumeDetailPane(canNavigateBack, onBack)
                 }
+
                 OtherListItemType.License -> {
                     OtherLicenseDetailPane(canNavigateBack, onBack)
                 }
+
                 OtherListItemType.DebugState -> {
                     DebugStateDetailPane(canNavigateBack, onBack)
                 }
+
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.ExitConfirmation,
@@ -568,6 +573,7 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
     isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
         NavigationSuiteType.NavigationRail
     }
+
     else -> {
         NavigationSuiteType.NavigationBar
     }

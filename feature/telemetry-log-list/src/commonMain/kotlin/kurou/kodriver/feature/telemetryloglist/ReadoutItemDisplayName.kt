@@ -48,33 +48,43 @@ private fun aceFlagDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String = w
     is ReadoutItemKey.AceWindows.Flag.Root -> {
         stringResource(Res.string.readout_item_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.WhiteFlag -> {
         stringResource(Res.string.readout_item_ace_white_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.GreenFlag -> {
         stringResource(Res.string.readout_item_ace_green_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.RedFlag -> {
         stringResource(Res.string.readout_item_ace_red_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.BlueFlag -> {
         stringResource(Res.string.readout_item_ace_blue_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.YellowFlag -> {
         stringResource(Res.string.readout_item_ace_yellow_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.BlackFlag -> {
         stringResource(Res.string.readout_item_ace_black_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag -> {
         stringResource(Res.string.readout_item_ace_black_white_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.CheckeredFlag -> {
         stringResource(Res.string.readout_item_ace_checkered_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag -> {
         stringResource(Res.string.readout_item_ace_orange_circle_flag)
     }
+
     is ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag -> {
         stringResource(Res.string.readout_item_ace_red_yellow_stripes_flag)
     }
@@ -86,9 +96,11 @@ private fun vehicleApproachDisplayName(vehicleApproach: ReadoutItemKey.LmuWindow
         is ReadoutItemKey.LmuWindows.VehicleApproach.Root -> {
             stringResource(Res.string.readout_item_vehicle_approach)
         }
+
         is ReadoutItemKey.LmuWindows.VehicleApproach.Sustained -> {
             stringResource(Res.string.readout_item_vehicle_approach_sustained)
         }
+
         is ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout -> {
             stringResource(Res.string.readout_item_vehicle_approach_start_readout)
         }
@@ -100,9 +112,11 @@ private fun tyreTemperatureDisplayName(tyreTemperature: ReadoutItemKey.LmuWindow
         is ReadoutItemKey.LmuWindows.TyreTemperature.Root -> {
             stringResource(Res.string.readout_item_tyre_temperature)
         }
+
         is ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning -> {
             stringResource(Res.string.readout_item_tyre_overheat_warning)
         }
+
         is ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning -> {
             stringResource(Res.string.readout_item_tyre_low_warning)
         }
@@ -121,39 +135,51 @@ internal fun readoutItemDisplayName(readoutItemKey: ReadoutItemKey): String =
         is ReadoutItemKey.LmuWindows.VehicleApproach -> {
             vehicleApproachDisplayName(readoutItemKey)
         }
+
         is ReadoutItemKey.LmuWindows.Flag -> {
             flagDisplayName(readoutItemKey)
         }
+
         is ReadoutItemKey.LmuWindows.VehicleDamage -> {
             vehicleDamageDisplayName(readoutItemKey)
         }
+
         is ReadoutItemKey.LmuWindows.TyreTemperature -> {
             tyreTemperatureDisplayName(readoutItemKey)
         }
+
         is ReadoutItemKey.LmuWindows.PitTiming.Root -> {
             stringResource(Res.string.readout_item_pit_timing)
         }
+
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> {
             stringResource(Res.string.readout_item_remaining_virtual_energy)
         }
+
         is ReadoutItemKey.LmuWindows.TyreWear.Root -> {
             stringResource(Res.string.readout_item_tyre_wear)
         }
+
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> {
             stringResource(Res.string.readout_item_my_best_lap)
         }
+
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> {
             stringResource(Res.string.readout_item_my_best_lap)
         }
+
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> {
             stringResource(Res.string.readout_item_remaining_fuel_laps)
         }
+
         is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> {
             stringResource(Res.string.readout_item_remaining_fuel)
         }
+
         is ReadoutItemKey.AceWindows.Flag -> {
             aceFlagDisplayName(readoutItemKey)
         }
+
         is ReadoutItemKey.AceWindows.RemainingFuel.Root -> {
             stringResource(Res.string.readout_item_remaining_fuel)
         }

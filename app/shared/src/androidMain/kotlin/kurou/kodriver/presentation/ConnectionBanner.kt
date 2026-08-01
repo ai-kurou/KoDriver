@@ -18,7 +18,9 @@ import org.koin.compose.viewmodel.koinViewModel
 private fun vmStatusToBannerStatus(vmStatus: ConnectionBannerVmStatus): ConnectionBannerStatus =
     when (vmStatus) {
         ConnectionBannerVmStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
+
         ConnectionBannerVmStatus.DISCONNECTED -> ConnectionBannerStatus.DISCONNECTED
+
         ConnectionBannerVmStatus.UNCHECKED,
         ConnectionBannerVmStatus.IP_NOT_CONFIGURED,
         -> ConnectionBannerStatus.UNCHECKED
@@ -59,7 +61,9 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     )
     val message = when (vmStatus) {
         ConnectionBannerVmStatus.CONNECTED -> connectedMessage
+
         ConnectionBannerVmStatus.IP_NOT_CONFIGURED -> ipNotConfiguredMessage
+
         ConnectionBannerVmStatus.DISCONNECTED,
         ConnectionBannerVmStatus.UNCHECKED,
         -> disconnectedMessage

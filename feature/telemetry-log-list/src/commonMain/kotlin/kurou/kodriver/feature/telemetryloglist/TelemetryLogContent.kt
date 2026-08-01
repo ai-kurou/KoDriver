@@ -92,10 +92,12 @@ internal fun TelemetryLogContentScaffold(
             uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
             }
+
             uiState.selectedLogId != null &&
                 windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
                     scaffoldDirective.copy(maxHorizontalPartitions = 2)
             }
+
             else -> {
                 scaffoldDirective
             }

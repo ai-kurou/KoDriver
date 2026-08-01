@@ -71,6 +71,7 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
                         ReadoutStartSoundType.ELECTRONIC_NOISE -> {
                             stringResource(Res.string.readout_start_sound_electronic_noise)
                         }
+
                         ReadoutStartSoundType.FORMULA_RADIO -> {
                             stringResource(Res.string.readout_start_sound_formula_radio)
                         }
