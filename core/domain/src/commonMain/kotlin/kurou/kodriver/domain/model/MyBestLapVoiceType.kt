@@ -8,6 +8,7 @@ enum class MyBestLapVoiceType(
     ;
 
     companion object {
-        fun fromId(id: String): MyBestLapVoiceType = entries.firstOrNull { it.id == id } ?: MY_BEST_LAP_VOICE_TYPE_DEFAULT
+        fun fromId(id: String): MyBestLapVoiceType =
+            entries.firstOrNull { it.id == id } ?: MY_BEST_LAP_VOICE_TYPE_DEFAULT
     }
 }

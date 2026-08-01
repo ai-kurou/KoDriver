@@ -5,7 +5,9 @@ import androidx.datastore.core.DataStoreFactory
 import kurou.kodriver.data.model.LmuWindowsVehicleDamagePreferences
 import java.io.File
 
-internal fun createLmuWindowsVehicleDamagePreferencesDataStore(directory: String): DataStore<LmuWindowsVehicleDamagePreferences> =
+internal fun createLmuWindowsVehicleDamagePreferencesDataStore(
+    directory: String,
+): DataStore<LmuWindowsVehicleDamagePreferences> =
     DataStoreFactory.create(
         serializer = LmuWindowsVehicleDamagePreferencesSerializer,
         produceFile = { File("$directory/lmu_windows_vehicle_damage_preferences.pb") },

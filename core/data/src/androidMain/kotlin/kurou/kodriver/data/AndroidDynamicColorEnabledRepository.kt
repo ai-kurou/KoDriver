@@ -14,7 +14,8 @@ internal class AndroidDynamicColorEnabledRepository(
 ) : DynamicColorEnabledRepository {
     private val dynamicColorEnabledKey = booleanPreferencesKey("dynamic_color_enabled")
 
-    override fun dynamicColorEnabled(): Flow<Boolean> = dataStore.data.map { it[dynamicColorEnabledKey] ?: DYNAMIC_COLOR_ENABLED_DEFAULT }
+    override fun dynamicColorEnabled(): Flow<Boolean> =
+        dataStore.data.map { it[dynamicColorEnabledKey] ?: DYNAMIC_COLOR_ENABLED_DEFAULT }
 
     override suspend fun saveDynamicColorEnabled(enabled: Boolean) {
         dataStore.edit { it[dynamicColorEnabledKey] = enabled }

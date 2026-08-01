@@ -9,11 +9,13 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPrefe
 internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleApproachThresholdsPreferences>,
 ) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
-    override fun observeLongitudinalThresholdMeters(): Flow<Double> = dataStore.data.map { it.longitudinalThresholdMeters }
+    override fun observeLongitudinalThresholdMeters(): Flow<Double> =
+        dataStore.data.map { it.longitudinalThresholdMeters }
 
     override fun observeLateralThresholdMeters(): Flow<Double> = dataStore.data.map { it.lateralThresholdMeters }
 
-    override fun observeSustainedApproachDurationSeconds(): Flow<Int> = dataStore.data.map { it.sustainedApproachDurationSeconds }
+    override fun observeSustainedApproachDurationSeconds(): Flow<Int> =
+        dataStore.data.map { it.sustainedApproachDurationSeconds }
 
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
         dataStore.updateData { it.copy(longitudinalThresholdMeters = meters) }

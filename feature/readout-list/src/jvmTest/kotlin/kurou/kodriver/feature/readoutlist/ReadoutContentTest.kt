@@ -585,5 +585,6 @@ class ReadoutContentTest {
 
     private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 
-    private fun hasQueueToggleRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
+    private fun hasQueueToggleRole(): SemanticsMatcher =
+        SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
 }

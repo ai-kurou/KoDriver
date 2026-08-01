@@ -10,7 +10,8 @@ import java.nio.ByteBuffer
 internal class LmuWindowsVehicleDamageRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsVehicleDamageRepository {
-    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> = source.bufferFlow.mapNotNull { readDamage(it) }
+    override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
+        source.bufferFlow.mapNotNull { readDamage(it) }
 
     private fun readDamage(buffer: ByteBuffer): LmuWindowsVehicleDamageData? {
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF

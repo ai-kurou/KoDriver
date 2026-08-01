@@ -16,7 +16,9 @@ class LmuWindowsVehicleApproachPreferencesUseCases(
 
     suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) = repository.saveStartReadoutType(type)
 
-    fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> = repository.observeSustainedReadoutType()
+    fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> =
+        repository.observeSustainedReadoutType()
 
-    suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) = repository.saveSustainedReadoutType(type)
+    suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) =
+        repository.saveSustainedReadoutType(type)
 }

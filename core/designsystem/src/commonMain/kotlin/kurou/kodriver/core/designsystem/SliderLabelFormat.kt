@@ -16,7 +16,8 @@ private val PRINTF_PLACEHOLDER_REGEX = Regex("""%(?!%)(?:\d+\$)?[#+ 0,(<-]*\d*(?
  * 本アプリのスライダーラベルで実際に使用しているプレースホルダー・エスケープ（`%%` → `%`）のみを
  * サポートする簡易実装。
  */
-fun String.formatSliderLabel(value: Int): String = replaceSupportedPlaceholders(INT_PLACEHOLDER_REGEX) { value.toString() }
+fun String.formatSliderLabel(value: Int): String =
+    replaceSupportedPlaceholders(INT_PLACEHOLDER_REGEX) { value.toString() }
 
 /**
  * strings.xml の printf 形式プレースホルダー（`%1$.1f` 相当）を含むテンプレート文字列へ小数値を埋め込む。

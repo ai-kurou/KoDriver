@@ -25,7 +25,9 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneScreenshotTest {
         capturePane(uiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 1))
     }
 
-    private fun capturePane(uiState: Gt7Ps5ReadoutRemainingFuelLapsDetailUiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState()) {
+    private fun capturePane(
+        uiState: Gt7Ps5ReadoutRemainingFuelLapsDetailUiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(),
+    ) {
         rule.setContent {
             KoDriverTheme {
                 Surface {

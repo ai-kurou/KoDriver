@@ -8,6 +8,7 @@ enum class ReadoutStartSoundType(
     ;
 
     companion object {
-        fun fromId(id: String): ReadoutStartSoundType = entries.firstOrNull { it.id == id } ?: READOUT_START_SOUND_TYPE_DEFAULT
+        fun fromId(id: String): ReadoutStartSoundType =
+            entries.firstOrNull { it.id == id } ?: READOUT_START_SOUND_TYPE_DEFAULT
     }
 }
