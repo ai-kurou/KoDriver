@@ -486,6 +486,35 @@ class ReadoutListViewModelTest {
         }
 
     @Test
+    fun `アイテム選択後にシミュレータを切り替えると選択状態が解除される`() =
+        runTest {
+            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
+                simulatorFlow.update { Simulator.LmuWindows }
+            }
+            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
+                simulatorFlow.update { Simulator.Gt7Ps5 }
+            }
+            every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
+                MutableStateFlow(emptyMap())
+            every { readoutRepository.observeReadoutEnabledStates("gt7_ps5") } returns
+                MutableStateFlow(emptyMap())
+            every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
+            every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
+            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
+
+            viewModel.onSimulatorSelected(Simulator.LmuWindows)
+            viewModel.onItemSelected(ReadoutItemKey.LmuWindows.VehicleApproach.Root)
+            assertEquals(ReadoutListItemType.LmuWindows.VehicleApproach, viewModel.uiState.first().selectedItem)
+
+            viewModel.onSimulatorSelected(Simulator.Gt7Ps5)
+
+            assertNull(viewModel.uiState.first().selectedItem)
+        }
+
+    @Test
     fun `clearSelectedItemで選択状態が解除される`() =
         runTest {
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
