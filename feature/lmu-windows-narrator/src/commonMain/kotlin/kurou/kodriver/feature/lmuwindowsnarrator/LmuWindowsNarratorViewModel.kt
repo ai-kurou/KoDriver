@@ -55,6 +55,7 @@ import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
+import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -404,24 +405,23 @@ internal class LmuWindowsNarratorViewModel(
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
+                val input = TyreTemperatureReadoutInput(tyreCarcassTemperature, raceFlags)
                 val overheatDecision =
                     narratorUseCases.determineReadout.determineTyreTemperatureOverheat(
                         state = state,
-                        data = tyreCarcassTemperature,
+                        input = input,
                         settings = settings,
                     )
                 narratorState = overheatDecision.state
                 val lowDecision =
                     narratorUseCases.determineReadout.determineTyreTemperatureLow(
                         state = overheatDecision.state,
-                        data = tyreCarcassTemperature,
-                        raceFlags = raceFlags,
+                        input = input,
                         settings = settings,
                     )
                 narratorState = lowDecision.state
                 eventProcessor.processTyreTemperature(
-                    tyreCarcassTemperature = tyreCarcassTemperature,
-                    raceFlags = raceFlags,
+                    input = input,
                     events = overheatDecision.events + lowDecision.events,
                     readoutOrder = readoutOrder.value,
                     queueEnabledStates = queueEnabledStates.value,

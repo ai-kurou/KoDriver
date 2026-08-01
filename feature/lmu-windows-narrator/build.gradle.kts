@@ -1,5 +1,6 @@
 plugins {
     id("feature-compose")
+    alias(libs.plugins.kotlinxSerialization)
     `java-test-fixtures`
 }
 
@@ -18,6 +19,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.designsystem)
             implementation(libs.kotlinx.coroutinesCore)
+            implementation(libs.kotlinx.serialization.json)
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.testJunit)

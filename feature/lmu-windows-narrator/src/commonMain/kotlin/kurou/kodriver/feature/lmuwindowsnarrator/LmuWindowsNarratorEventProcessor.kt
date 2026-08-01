@@ -1,11 +1,12 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
@@ -15,6 +16,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.domain.usecase.TyreTemperatureReadoutInput
 
 internal data class LmuWindowsTelemetryLogContext(
     val state: LmuWindowsNarratorState,
@@ -227,8 +229,7 @@ internal class LmuWindowsNarratorEventProcessor(
     }
 
     suspend fun processTyreTemperature(
-        tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData,
-        raceFlags: LmuWindowsRaceFlagsData,
+        input: TyreTemperatureReadoutInput,
         events: List<SpeechEvent>,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
@@ -243,8 +244,7 @@ internal class LmuWindowsNarratorEventProcessor(
                     telemetryJson =
                         buildTelemetryLogJson(
                             state = logContext.state,
-                            tyreCarcassTemperature = tyreCarcassTemperature,
-                            raceFlags = raceFlags,
+                            input = input,
                             settings = logContext.settings,
                             observedAtMs = observedAtMs,
                             overheatState = logContext.overheatState,
@@ -493,10 +493,16 @@ private fun LmuWindowsRaceFlagsData.toJson(): String =
         """"playerCountLapFlag":"$playerCountLapFlag"""" +
         "}"
 
+/**
+ * タイヤ温度読み上げの入力は [TyreTemperatureReadoutInput] で判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureOverheat] /
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureLow]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,
-    tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData,
-    raceFlags: LmuWindowsRaceFlagsData,
+    input: TyreTemperatureReadoutInput,
     settings: LmuWindowsNarratorReadoutSettings,
     observedAtMs: Long,
     overheatState: LmuWindowsNarratorState,
@@ -504,16 +510,14 @@ private fun buildTelemetryLogJson(
 ): String =
     "{" +
         """"state":${state.toJsonString()},""" +
-        """"tyreCarcassTemperature":${tyreCarcassTemperature.toJson()},""" +
-        """"raceFlags":${raceFlags.toJson()},""" +
+        """"input":${telemetryLogJson.encodeToString(input)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"overheatState":${overheatState.toJsonString()},""" +
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private fun LmuWindowsTyreCarcassTemperatureData.toJson(): String =
-    """{"wheels":{${wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
+private val telemetryLogJson = Json
 
 private fun String.toJsonStringLiteral(): String =
     buildString {

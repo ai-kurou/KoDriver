@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.usecase
 
+import kotlinx.serialization.Serializable
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -102,6 +103,18 @@ data class LmuWindowsNarratorReadoutSettings(
 data class LmuWindowsNarratorReadoutDecision(
     val state: LmuWindowsNarratorState,
     val events: List<SpeechEvent>,
+)
+
+/**
+ * タイヤ温度読み上げ判定（過熱・低温警告）の入力データ。
+ * [DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureOverheat] /
+ * [DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureLow] とテレメトリログ記録の
+ * 双方でこの型を共有し、判定に使う入力とログに記録する入力がずれないようにする。
+ */
+@Serializable
+data class TyreTemperatureReadoutInput(
+    val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData,
+    val raceFlags: LmuWindowsRaceFlagsData,
 )
 
 /**
@@ -239,9 +252,10 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineTyreTemperatureOverheat(
         state: LmuWindowsNarratorState,
-        data: LmuWindowsTyreCarcassTemperatureData,
+        input: TyreTemperatureReadoutInput,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
+        val data = input.tyreCarcassTemperature
         val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toDouble()
         val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
         val anyHot = data.wheels.values.any { it >= hotThreshold }
@@ -264,10 +278,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
     fun determineTyreTemperatureLow(
         state: LmuWindowsNarratorState,
-        data: LmuWindowsTyreCarcassTemperatureData,
-        raceFlags: LmuWindowsRaceFlagsData,
+        input: TyreTemperatureReadoutInput,
         settings: LmuWindowsNarratorReadoutSettings,
     ): LmuWindowsNarratorReadoutDecision {
+        val data = input.tyreCarcassTemperature
+        val raceFlags = input.raceFlags
         val previousGamePhase = state.previousGamePhaseForTyreLowWarning
         val enteringTargetPhase =
             previousGamePhase != null &&
