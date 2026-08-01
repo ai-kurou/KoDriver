@@ -172,6 +172,10 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 # 静的解析とモジュール依存関係の検証
 ./gradlew detekt assertModuleGraph
 
+# ktlint（コードスタイル）チェック・自動整形
+./gradlew ktlintCheck
+./gradlew ktlintFormat
+
 # Android・デスクトップアプリのビルドと統合テスト
 ./gradlew :app:androidApp:assembleDebug
 ./gradlew :app:desktopApp:jar
@@ -185,8 +189,8 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 GitHub Actions ワークフロー:
 
-- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする
-- `on-main-merge.yml`: main へのマージ時に実行。`dokka-pages` ジョブは Dokka（`./gradlew :dokkaGenerate`）で API ドキュメントを生成し、GitHub Pages（`github-pages` environment）へ自動デプロイする。ドキュメント本体（`docs/api/`）はコミットせず、CI 実行のたびに再生成する
+- `on-pull-request.yml`: PR 作成・更新時に静的解析・テストを実行（`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行）。同一 PR に新しいコミットが追加された場合は、実行中の古い CI をキャンセルする
+- `on-main-merge.yml`: main へのマージ時に実行。`detekt` ジョブとは別に、ktlint（コードスタイル）を検証する `ktlint` ジョブ = `./gradlew ktlintCheck` を実行する。`dokka-pages` ジョブは Dokka（`./gradlew :dokkaGenerate`）で API ドキュメントを生成し、GitHub Pages（`github-pages` environment）へ自動デプロイする。ドキュメント本体（`docs/api/`）はコミットせず、CI 実行のたびに再生成する
 - `_build-android-release.yml`: 署名付き Android APK をビルドする再利用可能ワークフロー（`workflow_call` 専用、単体では実行不可）。ファイル名・表示名を `_` で始め、Actions の実行一覧では手動起動対象として表示されないようにしている。`ref` 入力でビルド対象のブランチ・タグ・コミットを指定する。`build-apps.yml` と `release-apps.yml` の両方から呼び出される
 - `build-apps.yml`: `workflow_dispatch` で起動し、Android APK と Windows MSI を並列にビルドする。Android APK のビルドは `_build-android-release.yml` を呼び出す
 - `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。Android APK のビルドは `_build-android-release.yml` を呼び出す
@@ -206,6 +210,7 @@ GitHub Actions ワークフロー:
 | androidx-lifecycle | 2.10.0 |
 | Ktor | 3.5.0 |
 | Dokka | 2.2.0 |
+| ktlint | 1.8.0 |
 
 ---
 

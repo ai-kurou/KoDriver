@@ -23,8 +23,14 @@ kotlin {
 
     android {
         namespace = "kurou.kodriver.core.designsystem"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
 
         androidResources {
             enable = true
