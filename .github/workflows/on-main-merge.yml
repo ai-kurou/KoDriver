@@ -34,7 +34,7 @@ jobs:
 
       - run: ./gradlew ktlintCheck
 
-  lint:
+  android-lint:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
