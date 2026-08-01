@@ -219,7 +219,9 @@ private object EmptyLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository 
 
 private object EmptyLmuWindowsRepository : LmuWindowsRepository {
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
+
     override suspend fun disconnect() = Unit
 }
 
@@ -229,6 +231,7 @@ private object EmptyLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyR
 
 private object EmptyAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
 }
 

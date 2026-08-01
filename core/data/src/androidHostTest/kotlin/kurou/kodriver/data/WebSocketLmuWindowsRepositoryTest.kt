@@ -158,8 +158,11 @@ class WebSocketLmuWindowsRepositoryTest {
 
 private class FakeServerIpPreferencesRepositoryForMyBestLap(initialIp: String?) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
+
     fun setIp(ip: String?) { _ip.update { ip } }
+
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
+
     override suspend fun saveServerIp(ip: String) { _ip.update { ip } }
 }
 

@@ -17,6 +17,8 @@ val fakeOtherThemeDetailModule = module {
 
 class FakeThemePreferencesRepository : ThemePreferencesRepository {
     private val flow = MutableStateFlow(ThemeMode.SYSTEM)
+
     override fun observeThemeMode(): Flow<ThemeMode> = flow
+
     override suspend fun saveThemeMode(themeMode: ThemeMode) { flow.update { themeMode } }
 }

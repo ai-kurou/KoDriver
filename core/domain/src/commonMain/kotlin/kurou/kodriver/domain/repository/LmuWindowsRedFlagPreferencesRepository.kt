@@ -5,5 +5,6 @@ import kurou.kodriver.domain.model.RedFlagVoiceType
 
 interface LmuWindowsRedFlagPreferencesRepository {
     fun observeVoiceType(): Flow<RedFlagVoiceType>
+
     suspend fun saveVoiceType(type: RedFlagVoiceType)
 }

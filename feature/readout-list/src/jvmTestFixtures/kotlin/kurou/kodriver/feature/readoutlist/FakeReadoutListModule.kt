@@ -29,7 +29,9 @@ val fakeReadoutListModule = module {
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
     private val flow = MutableStateFlow<Simulator?>(null)
+
     override fun selectedSimulator(): Flow<Simulator?> = flow
+
     override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
 }
 
@@ -38,11 +40,17 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
     private val lateral = MutableStateFlow(5.0)
     private val longitudinal = MutableStateFlow(1.0)
     private val sustainedApproachDurationSeconds = MutableStateFlow(4)
+
     override fun observeLateralThresholdMeters(): Flow<Double> = lateral
+
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinal
+
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = sustainedApproachDurationSeconds
+
     override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.update { meters } }
+
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.update { meters } }
+
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
         sustainedApproachDurationSeconds.update { seconds }
     }
@@ -50,7 +58,9 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
 
 private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPreferencesRepository {
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
+
     override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         states.update { it + (key to enabled) }
     }
@@ -58,7 +68,9 @@ private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPrefer
 
 private class FakeQueuePreferencesRepositoryImpl : QueuePreferencesRepository {
     private val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     override fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
+
     override suspend fun saveQueueEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         states.update { it + (key to enabled) }
     }

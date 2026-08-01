@@ -18,6 +18,8 @@ val fakeOtherReadoutStartSoundDetailModule = module {
 
 class FakeReadoutStartSoundPreferencesRepository : ReadoutStartSoundPreferencesRepository {
     private val flow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
+
     override fun observeType(): Flow<ReadoutStartSoundType> = flow
+
     override suspend fun saveType(type: ReadoutStartSoundType) { flow.update { type } }
 }

@@ -34,8 +34,11 @@ internal class NsdWindowsServerDiscovery(
 
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
+
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
+
             override fun onDiscoveryStarted(serviceType: String) = Unit
+
             override fun onDiscoveryStopped(serviceType: String) = Unit
 
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {

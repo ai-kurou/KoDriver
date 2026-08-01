@@ -62,7 +62,9 @@ class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
 
 class FakeLmuWindowsRepository : LmuWindowsRepository {
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
+
     override suspend fun disconnect() = Unit
 }
 
@@ -71,17 +73,25 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
     private val startReadoutTypeFlow = MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
     private val sustainedReadoutTypeFlow = MutableStateFlow(VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
+
     override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
+
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
+
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         startReadoutTypeFlow.update { type }
     }
+
     override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> = sustainedReadoutTypeFlow
+
     override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
         sustainedReadoutTypeFlow.update { type }
     }
+
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
+
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         enabledStatesFlow.update { it + (key to enabled) }
     }
@@ -89,6 +99,7 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
 
 class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamagePreferencesRepository {
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = MutableStateFlow(emptyMap())
+
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
 }
 
@@ -98,12 +109,15 @@ class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository 
 
 class NoOpSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean = false
+
     override suspend fun play(bytes: ByteArray, volume: Int) = Unit
 }
 
 class FakeSoundVolumePreferencesRepository : SoundVolumePreferencesRepository {
     private val flow = MutableStateFlow(100)
+
     override fun volume(): Flow<Int> = flow
+
     override suspend fun saveVolume(volume: Int) { flow.update { volume } }
 }
 
@@ -115,13 +129,19 @@ class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTempera
     private val flow = MutableStateFlow(90)
     private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
     private val lowWarningPhasesFlow = MutableStateFlow<Map<SessionPhase, Boolean>>(emptyMap())
+
     override fun observeHighThresholdCelsius(): Flow<Int> = flow
+
     override suspend fun saveHighThresholdCelsius(celsius: Int) { flow.update { celsius } }
+
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
+
     override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
         enabledStatesFlow.update { it + (key to enabled) }
     }
+
     override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> = lowWarningPhasesFlow
+
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
         lowWarningPhasesFlow.update { phases.associateWith { true } }
     }
@@ -133,13 +153,17 @@ class FakeLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
 
 class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreferencesRepository {
     private val flow = MutableStateFlow(50)
+
     override fun observeThresholdPercentage(): Flow<Int> = flow
+
     override suspend fun saveThresholdPercentage(percentage: Int) { flow.update { percentage } }
 }
 
 class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferencesRepository {
     private val flow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
+
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
+
     override suspend fun saveVoiceType(type: MyBestLapVoiceType) { flow.update { type } }
 }
 

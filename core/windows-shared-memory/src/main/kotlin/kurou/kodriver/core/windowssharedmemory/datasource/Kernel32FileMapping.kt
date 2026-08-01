@@ -28,5 +28,6 @@ interface Kernel32FileMapping : Library {
     ): Pointer?
 
     fun UnmapViewOfFile(lpBaseAddress: Pointer): Boolean
+
     fun CloseHandle(hObject: HANDLE): Boolean
 }

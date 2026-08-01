@@ -34,6 +34,7 @@ data class ConnectionBannerUiState(
  */
 sealed interface ConnectionBannerNavigationTarget {
     data object ConsoleIp : ConnectionBannerNavigationTarget
+
     data object ServerIp : ConnectionBannerNavigationTarget
 }
 
