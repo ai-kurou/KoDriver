@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-private const val DisabledContentAlpha = 0.38f
+private const val DISABLED_CONTENT_ALPHA = 0.38f
 
 /**
  * DetailPaneCard を提供する公開関数。
@@ -39,9 +39,9 @@ fun DetailPaneCard(
     DetailPaneCardLayout(
         title = title,
         modifier = modifier,
-        titleAlpha = if (checked) 1f else DisabledContentAlpha,
-        dividerAlpha = if (checked) 1f else DisabledContentAlpha,
-        bottomContentAlpha = if (checked) 1f else DisabledContentAlpha,
+        titleAlpha = if (checked) 1f else DISABLED_CONTENT_ALPHA,
+        dividerAlpha = if (checked) 1f else DISABLED_CONTENT_ALPHA,
+        bottomContentAlpha = if (checked) 1f else DISABLED_CONTENT_ALPHA,
         headerContent = {
             Switch(
                 checked = checked,

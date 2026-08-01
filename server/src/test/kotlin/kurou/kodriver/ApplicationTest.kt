@@ -213,8 +213,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(greenFlagJson, first)
-            assertEquals(yellowFlagJson, second)
+            assertEquals(GREEN_FLAG_JSON, first)
+            assertEquals(YELLOW_FLAG_JSON, second)
         }
     }
 
@@ -337,8 +337,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(vehicleApproachLeftJson, first)
-            assertEquals(vehicleApproachRightJson, second)
+            assertEquals(VEHICLE_APPROACH_LEFT_JSON, first)
+            assertEquals(VEHICLE_APPROACH_RIGHT_JSON, second)
         }
     }
 
@@ -419,8 +419,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(overheatingDamageJson, first)
-            assertEquals(partDetachedDamageJson, second)
+            assertEquals(OVERHEATING_DAMAGE_JSON, first)
+            assertEquals(PART_DETACHED_DAMAGE_JSON, second)
         }
     }
 
@@ -460,7 +460,7 @@ class ApplicationTest {
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
-            assertEquals(tyreCarcassTemperatureJson1, message)
+            assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, message)
         }
     }
 
@@ -502,8 +502,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(tyreCarcassTemperatureJson1, first)
-            assertEquals(tyreCarcassTemperatureJson2, second)
+            assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, first)
+            assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_2, second)
         }
     }
 
@@ -543,7 +543,7 @@ class ApplicationTest {
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
-            assertEquals(tyreWearJson1, message)
+            assertEquals(TYRE_WEAR_JSON_1, message)
         }
     }
 
@@ -585,8 +585,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(tyreWearJson1, first)
-            assertEquals(tyreWearJson2, second)
+            assertEquals(TYRE_WEAR_JSON_1, first)
+            assertEquals(TYRE_WEAR_JSON_2, second)
         }
     }
 
@@ -624,7 +624,7 @@ class ApplicationTest {
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
-            assertEquals(virtualEnergyJson1, message)
+            assertEquals(VIRTUAL_ENERGY_JSON_1, message)
         }
     }
 
@@ -664,8 +664,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(virtualEnergyJson1, first)
-            assertEquals(virtualEnergyJson2, second)
+            assertEquals(VIRTUAL_ENERGY_JSON_1, first)
+            assertEquals(VIRTUAL_ENERGY_JSON_2, second)
         }
     }
 
@@ -705,7 +705,7 @@ class ApplicationTest {
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
-            assertEquals(aceFuelJson1, message)
+            assertEquals(ACE_FUEL_JSON_1, message)
         }
     }
 
@@ -747,8 +747,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(aceFuelJson1, first)
-            assertEquals(aceFuelJson2, second)
+            assertEquals(ACE_FUEL_JSON_1, first)
+            assertEquals(ACE_FUEL_JSON_2, second)
         }
     }
 
@@ -788,7 +788,7 @@ class ApplicationTest {
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
-            assertEquals(aceFlagJson1, message)
+            assertEquals(ACE_FLAG_JSON_1, message)
         }
     }
 
@@ -830,8 +830,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(aceFlagJson1, first)
-            assertEquals(aceFlagJson2, second)
+            assertEquals(ACE_FLAG_JSON_1, first)
+            assertEquals(ACE_FLAG_JSON_2, second)
         }
     }
 
@@ -907,7 +907,7 @@ class ApplicationTest {
             val message = withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
-            assertEquals(timingJson1, message)
+            assertEquals(TIMING_JSON_1, message)
         }
     }
 
@@ -949,8 +949,8 @@ class ApplicationTest {
             val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
             val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
 
-            assertEquals(timingJson1, first)
-            assertEquals(timingJson2, second)
+            assertEquals(TIMING_JSON_1, first)
+            assertEquals(TIMING_JSON_2, second)
         }
     }
 
@@ -1006,12 +1006,12 @@ private val yellowFlagData = LmuWindowsRaceFlagsData(
     playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
-private const val greenFlagJson =
+private const val GREEN_FLAG_JSON =
     """{"gamePhase":"GREEN_FLAG","yellowFlagState":"NONE","sectorFlags":["CLEAR","YELLOW","CLEAR"],""" +
         """"startLight":4,"numRedLights":2,"playerFlag":"BLUE","playerUnderYellow":true,""" +
         """"playerCountLapFlag":"COUNT_LAP_AND_TIME"}"""
 
-private const val yellowFlagJson =
+private const val YELLOW_FLAG_JSON =
     """{"gamePhase":"FULL_COURSE_YELLOW","yellowFlagState":"PENDING","sectorFlags":["YELLOW","YELLOW","YELLOW"],""" +
         """"startLight":0,"numRedLights":0,"playerFlag":"UNKNOWN","playerUnderYellow":true,""" +
         """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}"""
@@ -1030,11 +1030,11 @@ private val vehicleApproachDataRight = LmuWindowsVehicleApproachData(
     lateralDistanceRightMeters = 2.0,
 )
 
-private const val vehicleApproachLeftJson =
+private const val VEHICLE_APPROACH_LEFT_JSON =
     """{"sideBySideLeftVehicleIds":[3],"sideBySideRightVehicleIds":[],""" +
         """"lateralDistanceLeftMeters":1.5,"lateralDistanceRightMeters":1.7976931348623157E308}"""
 
-private const val vehicleApproachRightJson =
+private const val VEHICLE_APPROACH_RIGHT_JSON =
     """{"sideBySideLeftVehicleIds":[],"sideBySideRightVehicleIds":[5],""" +
         """"lateralDistanceLeftMeters":1.7976931348623157E308,"lateralDistanceRightMeters":2.0}"""
 
@@ -1050,10 +1050,10 @@ private val partDetachedDamage = LmuWindowsVehicleDamageData(
     lastImpactMagnitude = 1.2,
 )
 
-private const val overheatingDamageJson =
+private const val OVERHEATING_DAMAGE_JSON =
     """{"overheating":true,"partDetached":false,"lastImpactMagnitude":0.5}"""
 
-private const val partDetachedDamageJson =
+private const val PART_DETACHED_DAMAGE_JSON =
     """{"overheating":false,"partDetached":true,"lastImpactMagnitude":1.2}"""
 
 private val tyreCarcassTemperatureData1 = LmuWindowsTyreCarcassTemperatureData(
@@ -1074,10 +1074,10 @@ private val tyreCarcassTemperatureData2 = LmuWindowsTyreCarcassTemperatureData(
     ),
 )
 
-private const val tyreCarcassTemperatureJson1 =
+private const val TYRE_CARCASS_TEMPERATURE_JSON_1 =
     """{"wheels":{"FRONT_LEFT":80.0,"FRONT_RIGHT":82.0,"REAR_LEFT":85.0,"REAR_RIGHT":87.0}}"""
 
-private const val tyreCarcassTemperatureJson2 =
+private const val TYRE_CARCASS_TEMPERATURE_JSON_2 =
     """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
 
 private val tyreWearData1 = LmuWindowsTyreWearData(
@@ -1098,10 +1098,10 @@ private val tyreWearData2 = LmuWindowsTyreWearData(
     ),
 )
 
-private const val tyreWearJson1 =
+private const val TYRE_WEAR_JSON_1 =
     """{"wheels":{"FRONT_LEFT":0.8,"FRONT_RIGHT":0.82,"REAR_LEFT":0.85,"REAR_RIGHT":0.87}}"""
 
-private const val tyreWearJson2 =
+private const val TYRE_WEAR_JSON_2 =
     """{"wheels":{"FRONT_LEFT":0.5,"FRONT_RIGHT":0.51,"REAR_LEFT":0.52,"REAR_RIGHT":0.53}}"""
 
 // --- Fake リポジトリ ---
@@ -1245,19 +1245,19 @@ private val timingTelemetryData2 = timingTelemetryData1.copy(
     ),
 )
 
-private const val timingJson1 =
+private const val TIMING_JSON_1 =
     """{"currentLapTimeMs":65000,"lastLapTimeMs":90000,"bestLapTimeMs":88000,""" +
         """"sector1Ms":30000,"sector1And2Ms":28000,"currentLap":3,"maxLaps":10}"""
 
-private const val timingJson2 =
+private const val TIMING_JSON_2 =
     """{"currentLapTimeMs":70000,"lastLapTimeMs":91000,"bestLapTimeMs":88000,""" +
         """"sector1Ms":31000,"sector1And2Ms":29000,"currentLap":4,"maxLaps":10}"""
 
 private val virtualEnergyData1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = 10)
 private val virtualEnergyData2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.3, session = 10)
 
-private const val virtualEnergyJson1 = """{"remainingRatio":0.5,"session":10}"""
-private const val virtualEnergyJson2 = """{"remainingRatio":0.3,"session":10}"""
+private const val VIRTUAL_ENERGY_JSON_1 = """{"remainingRatio":0.5,"session":10}"""
+private const val VIRTUAL_ENERGY_JSON_2 = """{"remainingRatio":0.3,"session":10}"""
 
 private object EmptyLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
@@ -1276,8 +1276,8 @@ private class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRep
 private val aceFuelData1 = AceWindowsFuelData(remainingPercent = 42.0)
 private val aceFuelData2 = AceWindowsFuelData(remainingPercent = 28.5)
 
-private const val aceFuelJson1 = """{"remainingPercent":42.0}"""
-private const val aceFuelJson2 = """{"remainingPercent":28.5}"""
+private const val ACE_FUEL_JSON_1 = """{"remainingPercent":42.0}"""
+private const val ACE_FUEL_JSON_2 = """{"remainingPercent":28.5}"""
 
 private object EmptyAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
@@ -1300,8 +1300,8 @@ private class FakeAceWindowsFuelRepository : AceWindowsFuelRepository {
 private val aceFlagData1 = AceWindowsFlagData(flag = AceWindowsFlagType.BLUE_FLAG)
 private val aceFlagData2 = AceWindowsFlagData(flag = AceWindowsFlagType.YELLOW_FLAG)
 
-private const val aceFlagJson1 = """{"flag":"BLUE_FLAG"}"""
-private const val aceFlagJson2 = """{"flag":"YELLOW_FLAG"}"""
+private const val ACE_FLAG_JSON_1 = """{"flag":"BLUE_FLAG"}"""
+private const val ACE_FLAG_JSON_2 = """{"flag":"YELLOW_FLAG"}"""
 
 private object EmptyAceWindowsFlagRepository : AceWindowsFlagRepository {
     override fun flagStream(): Flow<AceWindowsFlagData> = emptyFlow()
