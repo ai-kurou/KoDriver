@@ -27,7 +27,10 @@ private fun ByteArray.readIntLE(offset: Int): Int =
         ((this[offset + 2].toInt() and 0xFF) shl 16) or
         ((this[offset + 3].toInt() and 0xFF) shl 24)
 
-private fun ByteArray.writeIntLE(offset: Int, value: Int) {
+private fun ByteArray.writeIntLE(
+    offset: Int,
+    value: Int,
+) {
     this[offset] = (value and 0xFF).toByte()
     this[offset + 1] = ((value ushr 8) and 0xFF).toByte()
     this[offset + 2] = ((value ushr 16) and 0xFF).toByte()
@@ -45,14 +48,14 @@ internal class Gt7Ps5UdpSource(
     scope: CoroutineScope,
     private val currentTimeMillis: () -> Long = System::currentTimeMillis,
 ) : Gt7Ps5PacketSource {
-
     private val _lastPacketReceivedAt = AtomicLong(0L)
 
     override fun lastPacketReceivedAt(): Long = _lastPacketReceivedAt.get()
 
-    override val packetFlow: Flow<ByteBuffer> = combine(consoleAddressFlow, listenPortFlow) { address, port ->
-        address to port
-    }.flatMapLatest { (address, port) ->
+    override val packetFlow: Flow<ByteBuffer> =
+        combine(consoleAddressFlow, listenPortFlow) { address, port ->
+            address to port
+        }.flatMapLatest { (address, port) ->
             if (address.isNullOrBlank()) {
                 emptyFlow()
             } else {
@@ -60,45 +63,49 @@ internal class Gt7Ps5UdpSource(
             }
         }.shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
-    private fun udpPacketFlow(ps5Address: String, listenPort: Int): Flow<ByteBuffer> = flow {
-        socketFactory(listenPort).use { socket ->
-            socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
-            var heartbeatCounter = 0
+    private fun udpPacketFlow(
+        ps5Address: String,
+        listenPort: Int,
+    ): Flow<ByteBuffer> =
+        flow {
+            socketFactory(listenPort).use { socket ->
+                socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+                var heartbeatCounter = 0
 
-            val buf = ByteArray(PACKET_MIN_SIZE)
-            val dgram = DatagramPacket(buf, buf.size)
+                val buf = ByteArray(PACKET_MIN_SIZE)
+                val dgram = DatagramPacket(buf, buf.size)
 
-            while (true) {
-                try {
-                    dgram.length = buf.size
-                    socket.receive(dgram)
-                    val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue
-                    val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)
-                    if (bb.getInt(MAGIC_OFFSET) != MAGIC) continue
-                    _lastPacketReceivedAt.set(currentTimeMillis())
-                    emit(bb)
+                while (true) {
+                    try {
+                        dgram.length = buf.size
+                        socket.receive(dgram)
+                        val decrypted = decrypt(buf.copyOf(dgram.length)) ?: continue
+                        val bb = ByteBuffer.wrap(decrypted).order(ByteOrder.LITTLE_ENDIAN)
+                        if (bb.getInt(MAGIC_OFFSET) != MAGIC) continue
+                        _lastPacketReceivedAt.set(currentTimeMillis())
+                        emit(bb)
 
-                    heartbeatCounter++
-                    if (heartbeatCounter >= HEARTBEAT_INTERVAL_PACKETS) {
+                        heartbeatCounter++
+                        if (heartbeatCounter >= HEARTBEAT_INTERVAL_PACKETS) {
+                            socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
+                            heartbeatCounter = 0
+                        }
+                    } catch (_: java.net.SocketTimeoutException) {
+                        yield()
                         socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
-                        heartbeatCounter = 0
                     }
-                } catch (_: java.net.SocketTimeoutException) {
-                    yield()
-                    socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
                 }
             }
-        }
-    }.retryWhen { cause, attempt ->
-        // Wi-Fi切替・スリープ復帰時のsend失敗、ポート競合(BindException)など、
-        // 一時的なネットワーク起因のIOExceptionは再接続を試みる
-        if (cause is java.io.IOException) {
-            delay(BIND_RETRY_DELAY_MS * (attempt + 1))
-            true
-        } else {
-            false
-        }
-    }.flowOn(Dispatchers.IO)
+        }.retryWhen { cause, attempt ->
+            // Wi-Fi切替・スリープ復帰時のsend失敗、ポート競合(BindException)など、
+            // 一時的なネットワーク起因のIOExceptionは再接続を試みる
+            if (cause is java.io.IOException) {
+                delay(BIND_RETRY_DELAY_MS * (attempt + 1))
+                true
+            } else {
+                false
+            }
+        }.flowOn(Dispatchers.IO)
 
     private fun decrypt(data: ByteArray): ByteArray? {
         if (data.size < PACKET_MIN_SIZE) return null

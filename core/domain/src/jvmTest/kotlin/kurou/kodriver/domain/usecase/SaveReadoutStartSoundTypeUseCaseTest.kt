@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveReadoutStartSoundTypeUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: ReadoutStartSoundPreferencesRepository
 
@@ -21,10 +20,11 @@ class SaveReadoutStartSoundTypeUseCaseTest {
     }
 
     @Test
-    fun `読み上げ開始音種別を保存できる`() = runBlocking {
-        SaveReadoutStartSoundTypeUseCase(repository)(ReadoutStartSoundType.FORMULA_RADIO)
+    fun `読み上げ開始音種別を保存できる`() =
+        runBlocking {
+            SaveReadoutStartSoundTypeUseCase(repository)(ReadoutStartSoundType.FORMULA_RADIO)
 
-        coVerify(exactly = 1) { repository.saveType(ReadoutStartSoundType.FORMULA_RADIO) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveType(ReadoutStartSoundType.FORMULA_RADIO) }
+            confirmVerified(repository)
+        }
 }

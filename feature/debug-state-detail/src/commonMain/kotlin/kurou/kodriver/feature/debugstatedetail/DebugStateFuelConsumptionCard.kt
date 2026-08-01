@@ -33,20 +33,21 @@ internal fun FuelConsumptionContent(
         Gt7Ps5FuelContent(gt7Ps5Telemetry)
         return
     }
-    val (result, perLapTextRes) = when (selectedSimulator) {
-        is Simulator.LmuWindows -> {
-            calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
-                Res.string.debug_state_fuel_consumption_per_lap_ratio
-        }
+    val (result, perLapTextRes) =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> {
+                calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
+                    Res.string.debug_state_fuel_consumption_per_lap_ratio
+            }
 
-        is Simulator.AceWindows, null -> {
-            null to Res.string.debug_state_fuel_consumption_per_lap_liters
-        }
+            is Simulator.AceWindows, null -> {
+                null to Res.string.debug_state_fuel_consumption_per_lap_liters
+            }
 
-        is Simulator.Gt7Ps5 -> {
-            error("GT7 fuel is handled before this branch")
+            is Simulator.Gt7Ps5 -> {
+                error("GT7 fuel is handled before this branch")
+            }
         }
-    }
     if (result == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
@@ -54,10 +55,11 @@ internal fun FuelConsumptionContent(
     Column {
         Text(text = stringResource(perLapTextRes, formatOneDecimal(result.consumptionPerLap)))
         Text(
-            text = stringResource(
-                Res.string.debug_state_fuel_consumption_remaining_laps,
-                formatOneDecimal(result.preciseRemainingLaps),
-            ),
+            text =
+                stringResource(
+                    Res.string.debug_state_fuel_consumption_remaining_laps,
+                    formatOneDecimal(result.preciseRemainingLaps),
+                ),
         )
     }
 }
@@ -72,23 +74,26 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
     val fuelConsumption = calculateGt7FuelConsumption(gt7Ps5Telemetry)
     Column {
         Text(
-            text = stringResource(
-                Res.string.debug_state_fuel_consumption_remaining_percent,
-                formatOneDecimal(remainingPercent),
-            ),
+            text =
+                stringResource(
+                    Res.string.debug_state_fuel_consumption_remaining_percent,
+                    formatOneDecimal(remainingPercent),
+                ),
         )
         if (fuelConsumption != null) {
             Text(
-                text = stringResource(
-                    Res.string.debug_state_fuel_consumption_per_lap_liters,
-                    formatOneDecimal(fuelConsumption.consumptionPerLap),
-                ),
+                text =
+                    stringResource(
+                        Res.string.debug_state_fuel_consumption_per_lap_liters,
+                        formatOneDecimal(fuelConsumption.consumptionPerLap),
+                    ),
             )
             Text(
-                text = stringResource(
-                    Res.string.debug_state_fuel_consumption_remaining_laps,
-                    formatOneDecimal(fuelConsumption.preciseRemainingLaps),
-                ),
+                text =
+                    stringResource(
+                        Res.string.debug_state_fuel_consumption_remaining_laps,
+                        formatOneDecimal(fuelConsumption.preciseRemainingLaps),
+                    ),
             )
         }
     }
@@ -101,10 +106,11 @@ private fun AceWindowsFuelContent(aceWindowsFuel: AceWindowsFuelData?) {
         return
     }
     Text(
-        text = stringResource(
-            Res.string.debug_state_fuel_consumption_remaining_percent,
-            formatOneDecimal(aceWindowsFuel.remainingPercent),
-        ),
+        text =
+            stringResource(
+                Res.string.debug_state_fuel_consumption_remaining_percent,
+                formatOneDecimal(aceWindowsFuel.remainingPercent),
+            ),
     )
 }
 

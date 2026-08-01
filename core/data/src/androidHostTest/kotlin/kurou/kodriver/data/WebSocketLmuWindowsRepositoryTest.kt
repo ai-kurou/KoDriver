@@ -22,7 +22,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class WebSocketLmuWindowsRepositoryTest {
-
     private lateinit var server: MockWebServer
     private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForMyBestLap
 
@@ -38,122 +37,146 @@ class WebSocketLmuWindowsRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsRepository(
-        serverIpRepository = fakeIpRepository,
-        port = server.port,
-        retryDelayMs = retryDelayMs,
-    )
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsRepository(
+            serverIpRepository = fakeIpRepository,
+            port = server.port,
+            retryDelayMs = retryDelayMs,
+        )
 
     @Test
-    fun `ipがnullのときtelemetryStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
-            buildRepository().telemetryStream().first()
+    fun `ipがnullのときtelemetryStreamは何もemitしない`() =
+        runTest {
+            val result =
+                withTimeoutOrNull(300) {
+                    buildRepository().telemetryStream().first()
+                }
+            assertNull(result)
         }
-        assertNull(result)
-    }
 
     @Test
-    fun `有効なJSONフレームを受信したときtimingを反映したLmuWindowsTelemetryDataをemitする`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(TIMING_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
+    fun `有効なJSONフレームを受信したときtimingを反映したLmuWindowsTelemetryDataをemitする`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(TIMING_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().telemetryStream().first()
+            val result = buildRepository().telemetryStream().first()
 
-        assertEquals(60_000L, result.timing.bestLapTimeMs)
-        assertEquals(2, result.timing.currentLap)
-        assertEquals("/ws/lmu_windows/my_best_lap", server.takeRequest().path)
-    }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send("invalid json")
-                        webSocket.send(TIMING_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
-
-        val result = buildRepository().telemetryStream().first()
-
-        assertEquals(60_000L, result.timing.bestLapTimeMs)
-    }
+            assertEquals(60_000L, result.timing.bestLapTimeMs)
+            assertEquals(2, result.timing.currentLap)
+            assertEquals("/ws/lmu_windows/my_best_lap", server.takeRequest().path)
+        }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.close(1001, "drop")
-                    }
-                },
-            ),
-        )
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(TIMING_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send("invalid json")
+                            webSocket.send(TIMING_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository(retryDelayMs = 0L).telemetryStream().first()
+            val result = buildRepository().telemetryStream().first()
 
-        assertEquals(60_000L, result.timing.bestLapTimeMs)
-    }
+            assertEquals(60_000L, result.timing.bestLapTimeMs)
+        }
 
     @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(TIMING_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.close(1001, "drop")
+                        }
+                    },
+                ),
+            )
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(TIMING_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        fakeIpRepository.setIp(null)
-        val repository = buildRepository()
+            val result = buildRepository(retryDelayMs = 0L).telemetryStream().first()
 
-        val noEmit = withTimeoutOrNull(300) { repository.telemetryStream().first() }
-        assertNull(noEmit)
-
-        fakeIpRepository.setIp("127.0.0.1")
-        val result = repository.telemetryStream().first()
-        assertEquals(60_000L, result.timing.bestLapTimeMs)
-    }
+            assertEquals(60_000L, result.timing.bestLapTimeMs)
+        }
 
     @Test
-    fun `isConnectedは常にfalseを返す`() = runTest {
-        assertEquals(false, buildRepository().isConnected())
-    }
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(TIMING_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+
+            fakeIpRepository.setIp(null)
+            val repository = buildRepository()
+
+            val noEmit = withTimeoutOrNull(300) { repository.telemetryStream().first() }
+            assertNull(noEmit)
+
+            fakeIpRepository.setIp("127.0.0.1")
+            val result = repository.telemetryStream().first()
+            assertEquals(60_000L, result.timing.bestLapTimeMs)
+        }
 
     @Test
-    fun `disconnectは何もしない`() = runTest {
-        buildRepository().disconnect()
-    }
+    fun `isConnectedは常にfalseを返す`() =
+        runTest {
+            assertEquals(false, buildRepository().isConnected())
+        }
+
+    @Test
+    fun `disconnectは何もしない`() =
+        runTest {
+            buildRepository().disconnect()
+        }
 }
 
 private class FakeServerIpPreferencesRepositoryForMyBestLap(
@@ -172,7 +195,8 @@ private class FakeServerIpPreferencesRepositoryForMyBestLap(
     }
 }
 
-private val TIMING_JSON = """
+private val TIMING_JSON =
+    """
     {
         "currentLapTimeMs": 30000,
         "lastLapTimeMs": 61000,
@@ -182,4 +206,4 @@ private val TIMING_JSON = """
         "currentLap": 2,
         "maxLaps": 10
     }
-""".trimIndent()
+    """.trimIndent()

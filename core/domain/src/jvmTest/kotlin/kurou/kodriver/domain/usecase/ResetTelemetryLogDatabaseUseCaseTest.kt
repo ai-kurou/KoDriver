@@ -55,7 +55,6 @@ private fun createTelemetryLogRepository(
 }
 
 class ResetTelemetryLogDatabaseUseCaseTest {
-
     @MockK
     private lateinit var repository: TelemetryLogRepository
 
@@ -65,27 +64,30 @@ class ResetTelemetryLogDatabaseUseCaseTest {
     }
 
     @Test
-    fun `全てのログを削除する`() = runBlocking {
-        val repository = createTelemetryLogRepository(
-            repository,
-            initialLogs = listOf(
-                TelemetryLog(
-                    id = 1L,
-                    createdAt = 1000L,
-                    simulator = Simulator.Gt7Ps5,
-                    readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                    telemetryJson = """{"lapCount":1}""",
-                ),
-            ),
-        )
-        val resetUseCase = ResetTelemetryLogDatabaseUseCase(repository)
-        val observeUseCase = ObserveTelemetryLogsUseCase(repository)
+    fun `全てのログを削除する`() =
+        runBlocking {
+            val repository =
+                createTelemetryLogRepository(
+                    repository,
+                    initialLogs =
+                        listOf(
+                            TelemetryLog(
+                                id = 1L,
+                                createdAt = 1000L,
+                                simulator = Simulator.Gt7Ps5,
+                                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                                telemetryJson = """{"lapCount":1}""",
+                            ),
+                        ),
+                )
+            val resetUseCase = ResetTelemetryLogDatabaseUseCase(repository)
+            val observeUseCase = ObserveTelemetryLogsUseCase(repository)
 
-        resetUseCase()
+            resetUseCase()
 
-        assertEquals(emptyList(), observeUseCase().first())
-        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            assertEquals(emptyList(), observeUseCase().first())
+            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 }

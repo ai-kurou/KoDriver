@@ -40,7 +40,6 @@ import org.koin.core.context.stopKoin
 import kotlin.test.BeforeTest
 
 class AppTest {
-
     companion object {
         private const val READOUT_PRIORITY_HELP_DESCRIPTION =
             "上位の項目は読み上げ中でも割り込みます。読み上げ中の同順位・下位の項目は無視されます"
@@ -56,16 +55,17 @@ class AppTest {
                 // :core:lmu-windows-data の lmuWindowsDataModule は含めない。LMU/GT7の各Repositoryは
                 // fakeLmuWindowsNarratorModule / fakeGt7Ps5DataModule が最後に上書きするため実質未使用になる。
                 modules(
-                    listOf(desktopDataModule, aceWindowsDataModule) + featureModules + listOf(
-                        fakeGt7Ps5DataModule,
-                        fakeLmuWindowsNarratorModule,
-                        fakeReadoutListModule,
-                        fakeTelemetryLogListModule,
-                        fakeMainModule,
-                        fakeOtherThemeDetailModule,
-                        fakeOtherReadoutStartSoundDetailModule,
-                        fakeOtherConsoleIpDetailModule,
-                    ),
+                    listOf(desktopDataModule, aceWindowsDataModule) + featureModules +
+                        listOf(
+                            fakeGt7Ps5DataModule,
+                            fakeLmuWindowsNarratorModule,
+                            fakeReadoutListModule,
+                            fakeTelemetryLogListModule,
+                            fakeMainModule,
+                            fakeOtherThemeDetailModule,
+                            fakeOtherReadoutStartSoundDetailModule,
+                            fakeOtherConsoleIpDetailModule,
+                        ),
                 )
             }
         }
@@ -345,7 +345,10 @@ class AppTest {
         rule.waitForIdle()
     }
 
-    private fun clickItemAndVerifyDescription(itemText: String, descriptionText: String) {
+    private fun clickItemAndVerifyDescription(
+        itemText: String,
+        descriptionText: String,
+    ) {
         clickItem(itemText)
         waitUntilDisplayed(descriptionText)
     }

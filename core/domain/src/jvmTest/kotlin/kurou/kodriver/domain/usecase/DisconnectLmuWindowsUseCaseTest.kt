@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class DisconnectLmuWindowsUseCaseTest {
-
     @MockK
     private lateinit var repo: LmuWindowsRepository
 
@@ -21,15 +20,16 @@ class DisconnectLmuWindowsUseCaseTest {
     }
 
     @Test
-    fun `invokeはリポジトリのdisconnectを呼ぶ`() = runBlocking {
-        coEvery { repo.disconnect() } returns Unit
-        val useCase = DisconnectLmuWindowsUseCase(repo)
+    fun `invokeはリポジトリのdisconnectを呼ぶ`() =
+        runBlocking {
+            coEvery { repo.disconnect() } returns Unit
+            val useCase = DisconnectLmuWindowsUseCase(repo)
 
-        useCase()
+            useCase()
 
-        coVerify(exactly = 1) { repo.disconnect() }
-        confirmVerified(repo)
-    }
+            coVerify(exactly = 1) { repo.disconnect() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `invokeを呼ぶ前はdisconnectが呼ばれていない`() {

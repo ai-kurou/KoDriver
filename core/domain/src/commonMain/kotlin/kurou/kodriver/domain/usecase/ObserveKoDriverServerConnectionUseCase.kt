@@ -30,29 +30,30 @@ class ObserveKoDriverServerConnectionUseCase(
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(appVersion: String): Flow<KoDriverServerConnectionState> = combine(
-        observeServerIp(),
-        observeSelectedSimulator(),
-    ) { ip, simulator -> ip to simulator }
-        .flatMapLatest { (ip, simulator) ->
-            val requiresServer = simulator?.requiresKoDriverServer == true
-            if (ip != null) {
-                connectionCheckFlow(
-                    ip = ip,
-                    simulator = simulator,
-                    requiresServer = requiresServer,
-                    appVersion = appVersion,
-                )
-            } else {
-                flowOf(
-                    KoDriverServerConnectionState(
-                        connectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
-                        requiresKoDriverServer = requiresServer,
-                        selectedSimulator = simulator,
-                    ),
-                )
+    operator fun invoke(appVersion: String): Flow<KoDriverServerConnectionState> =
+        combine(
+            observeServerIp(),
+            observeSelectedSimulator(),
+        ) { ip, simulator -> ip to simulator }
+            .flatMapLatest { (ip, simulator) ->
+                val requiresServer = simulator?.requiresKoDriverServer == true
+                if (ip != null) {
+                    connectionCheckFlow(
+                        ip = ip,
+                        simulator = simulator,
+                        requiresServer = requiresServer,
+                        appVersion = appVersion,
+                    )
+                } else {
+                    flowOf(
+                        KoDriverServerConnectionState(
+                            connectionStatus = KoDriverServerConnectionStatus.NOT_CONFIGURED,
+                            requiresKoDriverServer = requiresServer,
+                            selectedSimulator = simulator,
+                        ),
+                    )
+                }
             }
-        }
 
     private fun connectionCheckFlow(
         ip: String,
@@ -72,11 +73,12 @@ class ObserveKoDriverServerConnectionUseCase(
             val serverVersion = versionResult.getOrNull()
             emit(
                 KoDriverServerConnectionState(
-                    connectionStatus = if (versionResult.isSuccess) {
-                        KoDriverServerConnectionStatus.CONNECTED
-                    } else {
-                        KoDriverServerConnectionStatus.DISCONNECTED
-                    },
+                    connectionStatus =
+                        if (versionResult.isSuccess) {
+                            KoDriverServerConnectionStatus.CONNECTED
+                        } else {
+                            KoDriverServerConnectionStatus.DISCONNECTED
+                        },
                     requiresKoDriverServer = requiresServer,
                     selectedSimulator = simulator,
                     serverVersion = serverVersion,

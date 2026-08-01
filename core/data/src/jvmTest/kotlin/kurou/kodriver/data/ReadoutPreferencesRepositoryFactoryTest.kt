@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutPreferencesRepositoryFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_readout_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -23,13 +22,14 @@ class ReadoutPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `readout設定が正しいファイルに書き込まれる`() = testScope.runTest {
-        val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
+    fun `readout設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
+            val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
+            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
 
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
-            repository.observeReadoutEnabledStates("lmu_windows").first(),
-        )
-    }
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
+                repository.observeReadoutEnabledStates("lmu_windows").first(),
+            )
+        }
 }

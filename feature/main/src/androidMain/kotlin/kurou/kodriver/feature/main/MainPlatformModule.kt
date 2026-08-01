@@ -9,7 +9,8 @@ import org.koin.dsl.module
  * プラットフォーム別に提供する（JVM=共有メモリ経由、Android=KoDriver サーバーへの疎通確認、
  * js/wasmJs=未提供の空モジュール）。
  */
-actual val mainPlatformModule: Module = module {
-    factory<LmuBannerConnectionChecker> { LmuServerBannerConnectionChecker(get(), get()) }
-    factory<AceBannerConnectionChecker> { AceServerBannerConnectionChecker(get(), get()) }
-}
+actual val mainPlatformModule: Module =
+    module {
+        factory<LmuBannerConnectionChecker> { LmuServerBannerConnectionChecker(get(), get()) }
+        factory<AceBannerConnectionChecker> { AceServerBannerConnectionChecker(get(), get()) }
+    }

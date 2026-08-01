@@ -12,36 +12,38 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class AppScreenContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
     @Test
     fun `expanded幅ではNavigationRailを使用する`() {
-        val layoutType = WindowSizeClass(
-            minWidthDp = WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
-            minHeightDp = 0,
-        ).resolveNavigationSuiteType()
+        val layoutType =
+            WindowSizeClass(
+                minWidthDp = WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
+                minHeightDp = 0,
+            ).resolveNavigationSuiteType()
 
         assertEquals(NavigationSuiteType.NavigationRail, layoutType)
     }
 
     @Test
     fun `medium幅ではNavigationRailを使用する`() {
-        val layoutType = WindowSizeClass(
-            minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND,
-            minHeightDp = 0,
-        ).resolveNavigationSuiteType()
+        val layoutType =
+            WindowSizeClass(
+                minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND,
+                minHeightDp = 0,
+            ).resolveNavigationSuiteType()
 
         assertEquals(NavigationSuiteType.NavigationRail, layoutType)
     }
 
     @Test
     fun `compact幅ではNavigationBarを使用する`() {
-        val layoutType = WindowSizeClass(
-            minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND - 1,
-            minHeightDp = 0,
-        ).resolveNavigationSuiteType()
+        val layoutType =
+            WindowSizeClass(
+                minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND - 1,
+                minHeightDp = 0,
+            ).resolveNavigationSuiteType()
 
         assertEquals(NavigationSuiteType.NavigationBar, layoutType)
     }

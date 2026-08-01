@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveGt7Ps5RemainingFuelThresholdPercentageUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: Gt7Ps5RemainingFuelPreferencesRepository
 
@@ -20,10 +19,11 @@ class SaveGt7Ps5RemainingFuelThresholdPercentageUseCaseTest {
     }
 
     @Test
-    fun `燃料残量閾値を保存する`() = runBlocking {
-        SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository)(45)
+    fun `燃料残量閾値を保存する`() =
+        runBlocking {
+            SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository)(45)
 
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(45) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveThresholdPercentage(45) }
+            confirmVerified(repository)
+        }
 }

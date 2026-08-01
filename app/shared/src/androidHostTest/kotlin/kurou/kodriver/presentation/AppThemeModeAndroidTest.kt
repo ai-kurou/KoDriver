@@ -30,7 +30,6 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [36], qualifiers = "night")
 class AppThemeModeAndroidTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @get:Rule
@@ -56,33 +55,37 @@ class AppThemeModeAndroidTest {
     }
 
     @Test
-    fun `LIGHT設定ではシステムのダーク状態に関係なくfalseを返す`() = runTest {
-        repository.saveThemeMode(ThemeMode.LIGHT)
+    fun `LIGHT設定ではシステムのダーク状態に関係なくfalseを返す`() =
+        runTest {
+            repository.saveThemeMode(ThemeMode.LIGHT)
 
-        assertFalse(captureAppDarkTheme())
-    }
-
-    @Test
-    fun `DARK設定ではシステムのダーク状態に関係なくtrueを返す`() = runTest {
-        repository.saveThemeMode(ThemeMode.DARK)
-
-        assertTrue(captureAppDarkTheme())
-    }
+            assertFalse(captureAppDarkTheme())
+        }
 
     @Test
-    fun `SYSTEM設定ではAndroidのシステムダーク状態を使う`() = runTest {
-        repository.saveThemeMode(ThemeMode.SYSTEM)
+    fun `DARK設定ではシステムのダーク状態に関係なくtrueを返す`() =
+        runTest {
+            repository.saveThemeMode(ThemeMode.DARK)
 
-        assertTrue(captureAppDarkTheme())
-    }
+            assertTrue(captureAppDarkTheme())
+        }
+
+    @Test
+    fun `SYSTEM設定ではAndroidのシステムダーク状態を使う`() =
+        runTest {
+            repository.saveThemeMode(ThemeMode.SYSTEM)
+
+            assertTrue(captureAppDarkTheme())
+        }
 
     @Test
     @Config(sdk = [36], qualifiers = "notnight")
-    fun `SYSTEM設定ではAndroidのシステムライト状態を使う`() = runTest {
-        repository.saveThemeMode(ThemeMode.SYSTEM)
+    fun `SYSTEM設定ではAndroidのシステムライト状態を使う`() =
+        runTest {
+            repository.saveThemeMode(ThemeMode.SYSTEM)
 
-        assertFalse(captureAppDarkTheme())
-    }
+            assertFalse(captureAppDarkTheme())
+        }
 
     private val repository: FakeThemePreferencesRepository
         get() = GlobalContext.get().get<ThemePreferencesRepository>() as FakeThemePreferencesRepository

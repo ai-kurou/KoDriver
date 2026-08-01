@@ -59,133 +59,140 @@ private val Context.dynamicColorDataStore by preferencesDataStore("dynamic_color
  * LMU の走行データを Windows 共有メモリではなく **KoDriver サーバーへの WebSocket** から取得する点。
  * 大半は DataStore バインドで、ServerVersion/AppUpdate はネットワーク、TelemetryLog は Room DB。
  */
-fun androidDataModule(context: Context) = module {
-    single<Context> { context }
+fun androidDataModule(context: Context) =
+    module {
+        single<Context> { context }
 
-    // 設定永続化（DataStore。ファイルは context.filesDir 配下）
-    single<SimulatorPreferencesRepository> {
-        AndroidSimulatorPreferencesRepository(context.simulatorDataStore)
+        // 設定永続化（DataStore。ファイルは context.filesDir 配下）
+        single<SimulatorPreferencesRepository> {
+            AndroidSimulatorPreferencesRepository(context.simulatorDataStore)
+        }
+        single<ReadoutPreferencesRepository> {
+            AndroidReadoutPreferencesRepository(context.readoutDataStore)
+        }
+        single<QueuePreferencesRepository> {
+            createQueuePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
+            createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<Gt7Ps5RemainingFuelPreferencesRepository> {
+            createGt7Ps5RemainingFuelPreferencesRepository(context.filesDir.absolutePath)
+        }
+        // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）。
+        // HttpClient は全リポジトリで単一インスタンスを共有する。
+        single<HttpClient> { createWebSocketHttpClient() }
+        single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
+        single<LmuWindowsFlagRepository> {
+            WebSocketLmuWindowsFlagRepository(
+                serverIpRepository = get(),
+                client = get(),
+            )
+        }
+        single<LmuWindowsVehicleApproachRepository> {
+            WebSocketLmuWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsVehicleDamageRepository> {
+            WebSocketLmuWindowsVehicleDamageRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsTyreCarcassTemperatureRepository> {
+            WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsTyreWearRepository> {
+            WebSocketLmuWindowsTyreWearRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsVirtualEnergyRepository> {
+            WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<DebugStateCardOrderPreferencesRepository> {
+            createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsFlagPreferencesRepository> {
+            createLmuWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsVehicleApproachPreferencesRepository> {
+            createLmuWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsVehicleDamagePreferencesRepository> {
+            createLmuWindowsVehicleDamagePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<SoundVolumePreferencesRepository> {
+            createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<ReadoutStartSoundPreferencesRepository> {
+            createReadoutStartSoundPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<ThemePreferencesRepository> {
+            createThemePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<Gt7Ps5MyBestLapPreferencesRepository> {
+            createGt7Ps5MyBestLapPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsMyBestLapPreferencesRepository> {
+            createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsRedFlagPreferencesRepository> {
+            createLmuWindowsRedFlagPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<ServerIpPreferencesRepository> {
+            AndroidServerIpPreferencesRepository(context.serverIpDataStore)
+        }
+        single<ConsoleAddressPreferencesRepository> {
+            createConsoleAddressPreferencesRepository(context.filesDir.absolutePath)
+        }
+        // ネットワーク（KoDriver サーバーのバージョン取得 / GitHub リリース確認）
+        single<ServerVersionRepository> { HttpServerVersionRepository() }
+        single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+        // 画面スリープ抑止（Android は端末画面を実際に点灯維持）
+        single<KeepScreenOnEnabledRepository> {
+            AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
+        }
+        single<ExitConfirmationEnabledRepository> {
+            AndroidExitConfirmationEnabledRepository(context.exitConfirmationDataStore)
+        }
+        // Dynamic Color（Android 12+ の Material You 配色を使うかどうかの設定）
+        single<DynamicColorEnabledRepository> {
+            AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
+        }
+        // ACE (Assetto Corsa EVO) の走行データは Windows 共有メモリ専用実装のみのため、
+        // Android は LMU 系と同様に KoDriver サーバーへの WebSocket クライアント実装を使う。
+        single<AceWindowsFuelRepository> {
+            WebSocketAceWindowsFuelRepository(serverIpRepository = get(), client = get())
+        }
+        single<AceWindowsFlagRepository> {
+            WebSocketAceWindowsFlagRepository(serverIpRepository = get(), client = get())
+        }
+        includes(androidDataModuleThresholdPreferences(context))
     }
-    single<ReadoutPreferencesRepository> {
-        AndroidReadoutPreferencesRepository(context.readoutDataStore)
-    }
-    single<QueuePreferencesRepository> {
-        createQueuePreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
-        createGt7Ps5RemainingFuelLapsPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<Gt7Ps5RemainingFuelPreferencesRepository> {
-        createGt7Ps5RemainingFuelPreferencesRepository(context.filesDir.absolutePath)
-    }
-    // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）。
-    // HttpClient は全リポジトリで単一インスタンスを共有する。
-    single<HttpClient> { createWebSocketHttpClient() }
-    single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
-    single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(serverIpRepository = get(), client = get()) }
-    single<LmuWindowsVehicleApproachRepository> {
-        WebSocketLmuWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
-    }
-    single<LmuWindowsVehicleDamageRepository> {
-        WebSocketLmuWindowsVehicleDamageRepository(serverIpRepository = get(), client = get())
-    }
-    single<LmuWindowsTyreCarcassTemperatureRepository> {
-        WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
-    }
-    single<LmuWindowsTyreWearRepository> {
-        WebSocketLmuWindowsTyreWearRepository(serverIpRepository = get(), client = get())
-    }
-    single<LmuWindowsVirtualEnergyRepository> {
-        WebSocketLmuWindowsVirtualEnergyRepository(serverIpRepository = get(), client = get())
-    }
-    single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
-        createLmuWindowsVehicleApproachThresholdsPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<DebugStateCardOrderPreferencesRepository> {
-        createDebugStateCardOrderPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsFlagPreferencesRepository> {
-        createLmuWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsVehicleApproachPreferencesRepository> {
-        createLmuWindowsVehicleApproachPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsVehicleDamagePreferencesRepository> {
-        createLmuWindowsVehicleDamagePreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<SoundVolumePreferencesRepository> {
-        createSoundVolumePreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<ReadoutStartSoundPreferencesRepository> {
-        createReadoutStartSoundPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<ThemePreferencesRepository> {
-        createThemePreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<Gt7Ps5MyBestLapPreferencesRepository> {
-        createGt7Ps5MyBestLapPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsMyBestLapPreferencesRepository> {
-        createLmuWindowsMyBestLapPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsRedFlagPreferencesRepository> {
-        createLmuWindowsRedFlagPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<ServerIpPreferencesRepository> {
-        AndroidServerIpPreferencesRepository(context.serverIpDataStore)
-    }
-    single<ConsoleAddressPreferencesRepository> {
-        createConsoleAddressPreferencesRepository(context.filesDir.absolutePath)
-    }
-    // ネットワーク（KoDriver サーバーのバージョン取得 / GitHub リリース確認）
-    single<ServerVersionRepository> { HttpServerVersionRepository() }
-    single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-    // 画面スリープ抑止（Android は端末画面を実際に点灯維持）
-    single<KeepScreenOnEnabledRepository> {
-        AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
-    }
-    single<ExitConfirmationEnabledRepository> {
-        AndroidExitConfirmationEnabledRepository(context.exitConfirmationDataStore)
-    }
-    // Dynamic Color（Android 12+ の Material You 配色を使うかどうかの設定）
-    single<DynamicColorEnabledRepository> {
-        AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
-    }
-    // ACE (Assetto Corsa EVO) の走行データは Windows 共有メモリ専用実装のみのため、
-    // Android は LMU 系と同様に KoDriver サーバーへの WebSocket クライアント実装を使う。
-    single<AceWindowsFuelRepository> {
-        WebSocketAceWindowsFuelRepository(serverIpRepository = get(), client = get())
-    }
-    single<AceWindowsFlagRepository> {
-        WebSocketAceWindowsFlagRepository(serverIpRepository = get(), client = get())
-    }
-    includes(androidDataModuleThresholdPreferences(context))
-}
 
 /**
  * androidDataModule から分離した閾値系 DataStore バインドと TelemetryLog（LongMethod 対策）。
  */
-private fun androidDataModuleThresholdPreferences(context: Context) = module {
-    single<LmuWindowsTyreTemperaturePreferencesRepository> {
-        createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
+private fun androidDataModuleThresholdPreferences(context: Context) =
+    module {
+        single<LmuWindowsTyreTemperaturePreferencesRepository> {
+            createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsTyreWearPreferencesRepository> {
+            createLmuWindowsTyreWearPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
+            createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AceWindowsRemainingFuelPreferencesRepository> {
+            createAceWindowsRemainingFuelPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<AceWindowsFlagPreferencesRepository> {
+            createAceWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsPitTimingPreferencesRepository> {
+            createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)
+        }
+        // テレメトリログ（Room データベース）
+        single<TelemetryLogRepository> {
+            createTelemetryLogRepository(context = context)
+        }
     }
-    single<LmuWindowsTyreWearPreferencesRepository> {
-        createLmuWindowsTyreWearPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
-        createLmuWindowsRemainingVirtualEnergyPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<AceWindowsRemainingFuelPreferencesRepository> {
-        createAceWindowsRemainingFuelPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<AceWindowsFlagPreferencesRepository> {
-        createAceWindowsFlagPreferencesRepository(context.filesDir.absolutePath)
-    }
-    single<LmuWindowsPitTimingPreferencesRepository> {
-        createLmuWindowsPitTimingPreferencesRepository(context.filesDir.absolutePath)
-    }
-    // テレメトリログ（Room データベース）
-    single<TelemetryLogRepository> {
-        createTelemetryLogRepository(context = context)
-    }
-}

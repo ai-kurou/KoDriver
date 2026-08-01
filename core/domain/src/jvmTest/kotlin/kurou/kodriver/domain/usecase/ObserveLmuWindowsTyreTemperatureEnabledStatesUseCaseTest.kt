@@ -46,7 +46,6 @@ private fun createLmuWindowsTyreTemperaturePreferencesRepository(
 }
 
 class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsTyreTemperaturePreferencesRepository
 
@@ -56,57 +55,62 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
+    fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() =
+        runBlocking {
+            val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
-        val expected = mapOf<ReadoutItemKey, Boolean>(
-            ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
-            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
-        )
-        assertEquals(expected, useCase().first())
-        verify(exactly = 1) { repo.observeEnabledStates() }
-        confirmVerified(repo)
-    }
+            val expected =
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+                )
+            assertEquals(expected, useCase().first())
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
+        }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
+            val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
-
-        val expected = mapOf<ReadoutItemKey, Boolean>(
-            ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
-            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
-        )
-        assertEquals(expected, useCase().first())
-        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+
+            val expected =
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+                )
+            assertEquals(expected, useCase().first())
+            coVerify(exactly = 1) {
+                repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            }
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
         }
-        verify(exactly = 1) { repo.observeEnabledStates() }
-        confirmVerified(repo)
-    }
 
     @Test
-    fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
+    fun `デフォルトにないキーを保存した場合そのエントリも返す`() =
+        runBlocking {
+            val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
-
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-            ),
-            useCase().first(),
-        )
-        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                ),
+                useCase().first(),
+            )
+            coVerify(exactly = 1) {
+                repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
+            }
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
         }
-        verify(exactly = 1) { repo.observeEnabledStates() }
-        confirmVerified(repo)
-    }
 }

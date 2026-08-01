@@ -35,22 +35,23 @@ import org.koin.dsl.module
  * テスト用の Fake Koin モジュール（testFixtures）。:core:lmu-windows-data / :core:data の代わりに
  * LMU 系 Repository と SoundPlayer の Fake/No-Op 実装をバインドする。
  */
-val fakeLmuWindowsNarratorModule = module {
-    single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
-    single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
-    single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
-    single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
-    single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
-    single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
-    single<SoundPlayer> { NoOpSoundPlayer() }
-    single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
-    single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
-    single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
-    single<LmuWindowsTyreWearRepository> { FakeLmuWindowsTyreWearRepository() }
-    single<LmuWindowsTyreWearPreferencesRepository> { FakeLmuWindowsTyreWearPreferencesRepository() }
-    single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
-    single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
-}
+val fakeLmuWindowsNarratorModule =
+    module {
+        single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
+        single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
+        single<LmuWindowsRepository> { FakeLmuWindowsRepository() }
+        single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
+        single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
+        single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
+        single<SoundPlayer> { NoOpSoundPlayer() }
+        single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
+        single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
+        single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }
+        single<LmuWindowsTyreWearRepository> { FakeLmuWindowsTyreWearRepository() }
+        single<LmuWindowsTyreWearPreferencesRepository> { FakeLmuWindowsTyreWearPreferencesRepository() }
+        single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
+        single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
+    }
 
 class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
     override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> = emptyFlow()
@@ -94,7 +95,10 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
 
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         enabledStatesFlow.update { it + (key to enabled) }
     }
 }
@@ -102,7 +106,10 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
 class FakeLmuWindowsVehicleDamagePreferencesRepository : LmuWindowsVehicleDamagePreferencesRepository {
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = MutableStateFlow(emptyMap())
 
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) = Unit
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) = Unit
 }
 
 class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
@@ -112,7 +119,10 @@ class FakeLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageRepository 
 class NoOpSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean = false
 
-    override suspend fun play(bytes: ByteArray, volume: Int) = Unit
+    override suspend fun play(
+        bytes: ByteArray,
+        volume: Int,
+    ) = Unit
 }
 
 class FakeSoundVolumePreferencesRepository : SoundVolumePreferencesRepository {
@@ -142,7 +152,10 @@ class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTempera
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
 
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         enabledStatesFlow.update { it + (key to enabled) }
     }
 

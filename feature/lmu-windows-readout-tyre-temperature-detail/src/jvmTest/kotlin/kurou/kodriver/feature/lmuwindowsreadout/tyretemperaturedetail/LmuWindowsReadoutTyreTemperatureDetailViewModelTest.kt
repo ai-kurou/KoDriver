@@ -38,7 +38,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -58,107 +57,112 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutTyreTemperatureDetailViewModel(
-        observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
-        observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
-        observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
-        saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
-        saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
-        saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
-
-    @Test
-    fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() = runTest {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-        val viewModel = createViewModel()
-
-        assertEquals(
-            LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90, overheatWarningEnabled = true),
-            viewModel.uiState.first(),
+    private fun createViewModel() =
+        LmuWindowsReadoutTyreTemperatureDetailViewModel(
+            observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
+            observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
+            observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
+            saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
+            saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
+            saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
         )
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        confirmVerified(repository)
-    }
 
     @Test
-    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() = runTest {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
-        val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-        every { repository.observeEnabledStates() } returns enabledStatesFlow
-        every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-        coEvery {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
-        } answers {
-            enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false) }
-        }
-        val viewModel = createViewModel()
+    fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
+        runTest {
+            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
+            val viewModel = createViewModel()
 
-        viewModel.onOverheatWarningEnabledChanged(false)
-
-        assertEquals(false, viewModel.uiState.first().overheatWarningEnabled)
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        coVerify(exactly = 1) {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            assertEquals(
+                LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90, overheatWarningEnabled = true),
+                viewModel.uiState.first(),
+            )
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
 
     @Test
-    fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() = runTest {
-        val highThresholdFlow = MutableStateFlow(90)
-        every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-        coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
-        val viewModel = createViewModel()
+    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() =
+        runTest {
+            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeEnabledStates() } returns enabledStatesFlow
+            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
+            coEvery {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false) }
+            }
+            val viewModel = createViewModel()
 
-        viewModel.onHighThresholdChanged(100)
+            viewModel.onOverheatWarningEnabledChanged(false)
 
-        assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-        confirmVerified(repository)
-    }
+            assertEquals(false, viewModel.uiState.first().overheatWarningEnabled)
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
+            }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値95に戻る`() = runTest {
-        val highThresholdFlow = MutableStateFlow(90)
-        every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-        coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
-        coEvery {
-            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
-        } answers {
-            highThresholdFlow.update { LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT }
-        }
-        val viewModel = createViewModel()
+    fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() =
+        runTest {
+            val highThresholdFlow = MutableStateFlow(90)
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
+            coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
+            val viewModel = createViewModel()
 
-        viewModel.onHighThresholdChanged(100)
-        viewModel.onHighThresholdReset()
+            viewModel.onHighThresholdChanged(100)
 
-        assertEquals(
-            LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
-            viewModel.uiState.first().highThresholdCelsius,
-        )
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-        coVerify(exactly = 1) {
-            repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+            assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
+
+    @Test
+    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値95に戻る`() =
+        runTest {
+            val highThresholdFlow = MutableStateFlow(90)
+            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
+            coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
+            coEvery {
+                repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+            } answers {
+                highThresholdFlow.update { LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onHighThresholdChanged(100)
+            viewModel.onHighThresholdReset()
+
+            assertEquals(
+                LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                viewModel.uiState.first().highThresholdCelsius,
+            )
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
+            coVerify(exactly = 1) {
+                repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+            }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onPreviewClickedを呼ぶとTyreOverheatイベントが再生される`() {
@@ -195,105 +199,110 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() = runTest {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
-        val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-        every { repository.observeEnabledStates() } returns enabledStatesFlow
-        every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-        coEvery {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
-        } answers {
-            enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to false) }
-        }
-        val viewModel = createViewModel()
-
-        viewModel.onLowWarningEnabledChanged(false)
-
-        assertEquals(false, viewModel.uiState.first().lowWarningEnabled)
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        coVerify(exactly = 1) {
-            repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
-        }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() = runTest {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        val lowWarningPhasesFlow = MutableStateFlow(
-            mapOf(
-                SessionPhase.GARAGE to false,
-                SessionPhase.WARM_UP to false,
-                SessionPhase.GRID_WALK to false,
-                SessionPhase.FORMATION to false,
-            ),
-        )
-        every { repository.observeLowWarningPhases() } returns lowWarningPhasesFlow
-        coEvery { repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) } answers {
-            lowWarningPhasesFlow.update {
-                mapOf(
-                    SessionPhase.GARAGE to true,
-                    SessionPhase.WARM_UP to false,
-                    SessionPhase.GRID_WALK to false,
-                    SessionPhase.FORMATION to false,
-                )
+    fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() =
+        runTest {
+            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
+            val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeEnabledStates() } returns enabledStatesFlow
+            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
+            coEvery {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
+            } answers {
+                enabledStatesFlow.update { it + (ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to false) }
             }
+            val viewModel = createViewModel()
+
+            viewModel.onLowWarningEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().lowWarningEnabled)
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            coVerify(exactly = 1) {
+                repository.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning, false)
+            }
+            confirmVerified(repository)
         }
-        val viewModel = createViewModel()
-        viewModel.uiState.first()
-
-        viewModel.onLowWarningPhaseToggled(SessionPhase.GARAGE)
-
-        assertEquals(setOf(SessionPhase.GARAGE), viewModel.uiState.first().lowWarningPhases)
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        coVerify(exactly = 1) { repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) }
-        confirmVerified(repository)
-    }
 
     @Test
-    fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() = runTest {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
-        every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        val defaultPhases = mapOf(
-            SessionPhase.GARAGE to false,
-            SessionPhase.WARM_UP to true,
-            SessionPhase.GRID_WALK to true,
-            SessionPhase.FORMATION to true,
-        )
-        val lowWarningPhasesFlow = MutableStateFlow(defaultPhases)
-        every { repository.observeLowWarningPhases() } returns lowWarningPhasesFlow
-        coEvery {
-            repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
-        } answers {
-            lowWarningPhasesFlow.update {
+    fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() =
+        runTest {
+            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            val lowWarningPhasesFlow =
+                MutableStateFlow(
+                    mapOf(
+                        SessionPhase.GARAGE to false,
+                        SessionPhase.WARM_UP to false,
+                        SessionPhase.GRID_WALK to false,
+                        SessionPhase.FORMATION to false,
+                    ),
+                )
+            every { repository.observeLowWarningPhases() } returns lowWarningPhasesFlow
+            coEvery { repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) } answers {
+                lowWarningPhasesFlow.update {
+                    mapOf(
+                        SessionPhase.GARAGE to true,
+                        SessionPhase.WARM_UP to false,
+                        SessionPhase.GRID_WALK to false,
+                        SessionPhase.FORMATION to false,
+                    )
+                }
+            }
+            val viewModel = createViewModel()
+            viewModel.uiState.first()
+
+            viewModel.onLowWarningPhaseToggled(SessionPhase.GARAGE)
+
+            assertEquals(setOf(SessionPhase.GARAGE), viewModel.uiState.first().lowWarningPhases)
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            coVerify(exactly = 1) { repository.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() =
+        runTest {
+            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
+            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
+            val defaultPhases =
                 mapOf(
                     SessionPhase.GARAGE to false,
                     SessionPhase.WARM_UP to true,
                     SessionPhase.GRID_WALK to true,
-                    SessionPhase.FORMATION to false,
+                    SessionPhase.FORMATION to true,
                 )
+            val lowWarningPhasesFlow = MutableStateFlow(defaultPhases)
+            every { repository.observeLowWarningPhases() } returns lowWarningPhasesFlow
+            coEvery {
+                repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
+            } answers {
+                lowWarningPhasesFlow.update {
+                    mapOf(
+                        SessionPhase.GARAGE to false,
+                        SessionPhase.WARM_UP to true,
+                        SessionPhase.GRID_WALK to true,
+                        SessionPhase.FORMATION to false,
+                    )
+                }
             }
-        }
-        val viewModel = createViewModel()
-        viewModel.uiState.first()
+            val viewModel = createViewModel()
+            viewModel.uiState.first()
 
-        viewModel.onLowWarningPhaseToggled(SessionPhase.FORMATION)
+            viewModel.onLowWarningPhaseToggled(SessionPhase.FORMATION)
 
-        assertEquals(
-            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK),
-            viewModel.uiState.first().lowWarningPhases,
-        )
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-        verify(exactly = 1) { repository.observeEnabledStates() }
-        verify(exactly = 1) { repository.observeLowWarningPhases() }
-        coVerify(exactly = 1) {
-            repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
+            assertEquals(
+                setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK),
+                viewModel.uiState.first().lowWarningPhases,
+            )
+            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { repository.observeEnabledStates() }
+            verify(exactly = 1) { repository.observeLowWarningPhases() }
+            coVerify(exactly = 1) {
+                repository.saveLowWarningPhases(setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK))
+            }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
 }

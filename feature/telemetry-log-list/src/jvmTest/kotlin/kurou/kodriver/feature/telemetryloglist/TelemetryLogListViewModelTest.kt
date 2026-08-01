@@ -31,7 +31,6 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TelemetryLogListViewModelTest {
-
     private val dispatcher = StandardTestDispatcher()
 
     @MockK
@@ -50,200 +49,213 @@ class TelemetryLogListViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = TelemetryLogListViewModel(
-        observeSortedTelemetryLogs = ObserveSortedTelemetryLogsUseCase(
-            ObserveTelemetryLogsUseCase(repository),
-        ),
-        resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
-    )
-
-    @Test
-    fun `ログの更新を観測する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
-
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        assertEquals(
-            listOf(1L),
-            viewModel.uiState
-                .first { it.logs.isNotEmpty() }
-                .logs
-                .map { it.id },
+    private fun createViewModel() =
+        TelemetryLogListViewModel(
+            observeSortedTelemetryLogs =
+                ObserveSortedTelemetryLogsUseCase(
+                    ObserveTelemetryLogsUseCase(repository),
+                ),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
         )
 
-        logsFlow.update {
-            listOf(
-                telemetryLog(id = 1, createdAt = 100),
-                telemetryLog(id = 2, createdAt = 300),
+    @Test
+    fun `ログの更新を観測する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
+
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            assertEquals(
+                listOf(1L),
+                viewModel.uiState
+                    .first { it.logs.isNotEmpty() }
+                    .logs
+                    .map { it.id },
             )
+
+            logsFlow.update {
+                listOf(
+                    telemetryLog(id = 1, createdAt = 100),
+                    telemetryLog(id = 2, createdAt = 300),
+                )
+            }
+            assertEquals(
+                listOf(2L, 1L),
+                viewModel.uiState
+                    .first { it.logs.firstOrNull()?.id == 2L }
+                    .logs
+                    .map { it.id },
+            )
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
         }
-        assertEquals(
-            listOf(2L, 1L),
-            viewModel.uiState
-                .first { it.logs.firstOrNull()?.id == 2L }
-                .logs
-                .map { it.id },
-        )
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
 
     @Test
-    fun `selectLogで未選択のログIDを選択する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
+    fun `selectLogで未選択のログIDを選択する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
 
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        viewModel.selectLog(1)
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.selectLog(1)
 
-        assertEquals(1L, viewModel.uiState.first { it.selectedLogId == 1L }.selectedLogId)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `selectLogで選択済みのログIDを再選択すると選択状態を解除する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
-
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        viewModel.selectLog(1)
-        viewModel.uiState.first { it.selectedLogId == 1L }
-        viewModel.selectLog(1)
-
-        assertNull(viewModel.uiState.first { it.selectedLogId == null }.selectedLogId)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            assertEquals(1L, viewModel.uiState.first { it.selectedLogId == 1L }.selectedLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `clearSelectedLogで選択状態を解除する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
+    fun `selectLogで選択済みのログIDを再選択すると選択状態を解除する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
 
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        viewModel.selectLog(1)
-        viewModel.uiState.first { it.selectedLogId == 1L }
-        viewModel.clearSelectedLog()
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.selectLog(1)
+            viewModel.uiState.first { it.selectedLogId == 1L }
+            viewModel.selectLog(1)
 
-        assertNull(viewModel.uiState.first { it.selectedLogId == null }.selectedLogId)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `選択中のログが一覧から消えた場合は選択状態を解除する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
-
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        viewModel.selectLog(1)
-        viewModel.uiState.first { it.selectedLogId == 1L }
-        logsFlow.update { emptyList() }
-
-        assertNull(viewModel.uiState.first { it.logs.isEmpty() }.selectedLogId)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            assertNull(viewModel.uiState.first { it.selectedLogId == null }.selectedLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
-        val viewModel = createViewModel()
+    fun `clearSelectedLogで選択状態を解除する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
 
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        viewModel.uiState.first { it.logs.isNotEmpty() }
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.selectLog(1)
+            viewModel.uiState.first { it.selectedLogId == 1L }
+            viewModel.clearSelectedLog()
 
-        viewModel.resetDatabase()
-
-        val state = viewModel.uiState.first { it.resetSucceeded != null && it.logs.isEmpty() }
-        assertEquals(true, state.resetSucceeded)
-        assertFalse(state.isResetting)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            assertNull(viewModel.uiState.first { it.selectedLogId == null }.selectedLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        coEvery { repository.deleteAllTelemetryLogs() } throws IllegalStateException("削除に失敗しました")
-        val viewModel = createViewModel()
+    fun `選択中のログが一覧から消えた場合は選択状態を解除する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
 
-        viewModel.resetDatabase()
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.selectLog(1)
+            viewModel.uiState.first { it.selectedLogId == 1L }
+            logsFlow.update { emptyList() }
 
-        val state = viewModel.uiState.first { it.resetSucceeded != null }
-        assertEquals(false, state.resetSucceeded)
-        assertFalse(state.isResetting)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `onResetClickで確認ダイアログを表示する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
-
-        viewModel.onResetClick()
-
-        assertEquals(true, viewModel.uiState.first { it.showResetConfirmDialog }.showResetConfirmDialog)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            assertNull(viewModel.uiState.first { it.logs.isEmpty() }.selectedLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `onResetDismissで確認ダイアログを閉じる`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        val viewModel = createViewModel()
+    fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
+            val viewModel = createViewModel()
 
-        viewModel.onResetClick()
-        viewModel.uiState.first { it.showResetConfirmDialog }
-        viewModel.onResetDismiss()
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.uiState.first { it.logs.isNotEmpty() }
 
-        assertFalse(viewModel.uiState.first { !it.showResetConfirmDialog }.showResetConfirmDialog)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            viewModel.resetDatabase()
 
-    @Test
-    fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
-        val viewModel = createViewModel()
-
-        logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
-        viewModel.uiState.first { it.logs.isNotEmpty() }
-        viewModel.onResetClick()
-        viewModel.uiState.first { it.showResetConfirmDialog }
-
-        viewModel.onResetConfirm()
-
-        val state = viewModel.uiState.first { it.resetSucceeded != null }
-        assertFalse(state.showResetConfirmDialog)
-        assertEquals(true, state.resetSucceeded)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            val state = viewModel.uiState.first { it.resetSucceeded != null && it.logs.isEmpty() }
+            assertEquals(true, state.resetSucceeded)
+            assertFalse(state.isResetting)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `consumeResetResultでresetSucceededをnullに戻す`() = runTest(dispatcher) {
-        every { repository.observeTelemetryLogs() } returns logsFlow
-        coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
-        val viewModel = createViewModel()
+    fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteAllTelemetryLogs() } throws IllegalStateException("削除に失敗しました")
+            val viewModel = createViewModel()
 
-        viewModel.resetDatabase()
-        viewModel.uiState.first { it.resetSucceeded != null }
+            viewModel.resetDatabase()
 
-        viewModel.consumeResetResult()
+            val state = viewModel.uiState.first { it.resetSucceeded != null }
+            assertEquals(false, state.resetSucceeded)
+            assertFalse(state.isResetting)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
-        assertNull(viewModel.uiState.first { it.resetSucceeded == null && !it.isResetting }.resetSucceeded)
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
-        confirmVerified(repository)
-    }
+    @Test
+    fun `onResetClickで確認ダイアログを表示する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
+
+            viewModel.onResetClick()
+
+            assertEquals(true, viewModel.uiState.first { it.showResetConfirmDialog }.showResetConfirmDialog)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onResetDismissで確認ダイアログを閉じる`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
+
+            viewModel.onResetClick()
+            viewModel.uiState.first { it.showResetConfirmDialog }
+            viewModel.onResetDismiss()
+
+            assertFalse(viewModel.uiState.first { !it.showResetConfirmDialog }.showResetConfirmDialog)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
+            val viewModel = createViewModel()
+
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.uiState.first { it.logs.isNotEmpty() }
+            viewModel.onResetClick()
+            viewModel.uiState.first { it.showResetConfirmDialog }
+
+            viewModel.onResetConfirm()
+
+            val state = viewModel.uiState.first { it.resetSucceeded != null }
+            assertFalse(state.showResetConfirmDialog)
+            assertEquals(true, state.resetSucceeded)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `consumeResetResultでresetSucceededをnullに戻す`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
+            val viewModel = createViewModel()
+
+            viewModel.resetDatabase()
+            viewModel.uiState.first { it.resetSucceeded != null }
+
+            viewModel.consumeResetResult()
+
+            assertNull(viewModel.uiState.first { it.resetSucceeded == null && !it.isResetting }.resetSucceeded)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            confirmVerified(repository)
+        }
 }
 
 private fun telemetryLog(

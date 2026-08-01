@@ -87,34 +87,38 @@ internal fun TelemetryLogContentScaffold(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (Long) -> Unit = {},
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = when {
-            uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
-                scaffoldDirective.copy(maxHorizontalPartitions = 1)
-            }
+    val navigator =
+        rememberListDetailPaneScaffoldNavigator<Nothing>(
+            scaffoldDirective =
+                when {
+                    uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
+                        scaffoldDirective.copy(maxHorizontalPartitions = 1)
+                    }
 
-            uiState.selectedLogId != null &&
-                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
-                    scaffoldDirective.copy(maxHorizontalPartitions = 2)
-            }
+                    uiState.selectedLogId != null &&
+                        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+                        scaffoldDirective.copy(maxHorizontalPartitions = 2)
+                    }
 
-            else -> {
-                scaffoldDirective
-            }
-        },
-        initialDestinationHistory = if (uiState.selectedLogId != null) {
-            listOf(
-                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
-                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
-            )
-        } else {
-            listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
-        },
-    )
-    val paneExpansionState = rememberPaneExpansionState(
-        anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
-        initialAnchoredIndex = 0,
-    )
+                    else -> {
+                        scaffoldDirective
+                    }
+                },
+            initialDestinationHistory =
+                if (uiState.selectedLogId != null) {
+                    listOf(
+                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+                    )
+                } else {
+                    listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+                },
+        )
+    val paneExpansionState =
+        rememberPaneExpansionState(
+            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
+            initialAnchoredIndex = 0,
+        )
     val scope = rememberCoroutineScope()
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
@@ -125,10 +129,11 @@ internal fun TelemetryLogContentScaffold(
 
     LaunchedEffect(uiState.selectedLogId) {
         navigator.navigateTo(
-            if (uiState.selectedLogId != null)
+            if (uiState.selectedLogId != null) {
                 ListDetailPaneScaffoldRole.Detail
-            else
-                ListDetailPaneScaffoldRole.List,
+            } else {
+                ListDetailPaneScaffoldRole.List
+            },
         )
     }
 
@@ -190,21 +195,23 @@ private fun TelemetryLogContentPreview() {
     )
 }
 
-internal val previewTelemetryLogListUiState = TelemetryLogListUiState(
-    logs = listOf(
-        TelemetryLog(
-            id = 2,
-            createdAt = 1_820_000,
-            simulator = Simulator.LmuWindows,
-            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-            telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
-        ),
-        TelemetryLog(
-            id = 1,
-            createdAt = 1_800_000,
-            simulator = Simulator.Gt7Ps5,
-            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-            telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
-        ),
-    ),
-)
+internal val previewTelemetryLogListUiState =
+    TelemetryLogListUiState(
+        logs =
+            listOf(
+                TelemetryLog(
+                    id = 2,
+                    createdAt = 1_820_000,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = """{"flag":"green","sector1":"clear","sector2":"clear","sector3":"clear"}""",
+                ),
+                TelemetryLog(
+                    id = 1,
+                    createdAt = 1_800_000,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
+                ),
+            ),
+    )

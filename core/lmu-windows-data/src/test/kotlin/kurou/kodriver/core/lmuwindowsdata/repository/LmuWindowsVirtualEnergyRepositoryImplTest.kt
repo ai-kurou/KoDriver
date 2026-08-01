@@ -18,7 +18,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsVirtualEnergyRepositoryImplTest {
-
     private fun makeSource(
         reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -31,81 +30,89 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリからバーチャルエナジー残量割合を読み取る`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
-            buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(remainingRatio = 0.75f, session = 10)),
-        )
-        val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
+    fun `共有メモリからバーチャルエナジー残量割合を読み取る`() =
+        runBlocking {
+            val reader =
+                FakeVirtualEnergyMemoryReader(
+                    buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(remainingRatio = 0.75f, session = 10)),
+                )
+            val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.virtualEnergyStream().first()
+            val result = repo.virtualEnergyStream().first()
 
-        assertEquals(0.75, result.remainingRatio, 1e-6)
-        assertEquals(10, result.session)
-    }
-
-    @Test
-    fun `playerIndexに応じた車両スロットからバーチャルエナジー残量割合を読み取る`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
-            buildVirtualEnergyBuffer(
-                VirtualEnergyBufferConfig(activeVehicles = 2, playerIdx = 1, remainingRatio = 0.3f),
-            ),
-        )
-        val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
-
-        val result = repo.virtualEnergyStream().first()
-
-        assertEquals(0.3, result.remainingRatio, 1e-6)
-    }
+            assertEquals(0.75, result.remainingRatio, 1e-6)
+            assertEquals(10, result.session)
+        }
 
     @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
-            buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 0)),
-        )
-        val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+    fun `playerIndexに応じた車両スロットからバーチャルエナジー残量割合を読み取る`() =
+        runBlocking {
+            val reader =
+                FakeVirtualEnergyMemoryReader(
+                    buildVirtualEnergyBuffer(
+                        VirtualEnergyBufferConfig(activeVehicles = 2, playerIdx = 1, remainingRatio = 0.3f),
+                    ),
+                )
+            val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
 
-        val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val result = repo.virtualEnergyStream().first()
 
-        assertEquals(0, emitCount.get())
-    }
-
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
-            buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 1, playerIdx = 1)),
-        )
-        val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
-
-        val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
-
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0.3, result.remainingRatio, 1e-6)
+        }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
-            buffer = buildVirtualEnergyBuffer(),
-            openResult = false,
-        )
-        val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+            val reader =
+                FakeVirtualEnergyMemoryReader(
+                    buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 0)),
+                )
+            val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
-    private fun buildVirtualEnergyBuffer(
-        config: VirtualEnergyBufferConfig = VirtualEnergyBufferConfig(),
-    ): ByteBuffer {
+    @Test
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+            val reader =
+                FakeVirtualEnergyMemoryReader(
+                    buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 1, playerIdx = 1)),
+                )
+            val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
+        }
+
+    @Test
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+            val reader =
+                FakeVirtualEnergyMemoryReader(
+                    buffer = buildVirtualEnergyBuffer(),
+                    openResult = false,
+                )
+            val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.virtualEnergyStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
+        }
+
+    private fun buildVirtualEnergyBuffer(config: VirtualEnergyBufferConfig = VirtualEnergyBufferConfig()): ByteBuffer {
         val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, config.activeVehicles.toByte())
         buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, config.playerIdx.toByte())
@@ -141,7 +148,6 @@ private class FakeVirtualEnergyMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
 ) : SharedMemoryReader {
-
     private var opened = openResult
 
     override fun open(): Boolean {

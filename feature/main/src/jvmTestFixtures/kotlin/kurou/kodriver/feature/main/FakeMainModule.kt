@@ -14,11 +14,12 @@ import org.koin.dsl.module
  * Fake 実装をバインドする。AppUpdateRepository は GitHub への実ネットワークアクセスを、
  * 他の2つは実DataStore（`~/.kodriver`）への書き込みを避けるために用意している。
  */
-val fakeMainModule = module {
-    single<AppUpdateRepository> { FakeAppUpdateRepository() }
-    single<ExitConfirmationEnabledRepository> { FakeExitConfirmationEnabledRepository() }
-    single<KeepScreenOnEnabledRepository> { FakeKeepScreenOnEnabledRepository() }
-}
+val fakeMainModule =
+    module {
+        single<AppUpdateRepository> { FakeAppUpdateRepository() }
+        single<ExitConfirmationEnabledRepository> { FakeExitConfirmationEnabledRepository() }
+        single<KeepScreenOnEnabledRepository> { FakeKeepScreenOnEnabledRepository() }
+    }
 
 class FakeAppUpdateRepository : AppUpdateRepository {
     override suspend fun getLatestRelease(): AppUpdate? = null

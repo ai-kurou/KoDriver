@@ -17,22 +17,23 @@ private const val TIMEOUT_MS = 10_000
 internal class GitHubAppReleaseRepository(
     private val fetch: suspend () -> String? = ::fetchLatestReleaseBody,
 ) : AppUpdateRepository {
-
     private val json = Json { ignoreUnknownKeys = true }
 
-    override suspend fun getLatestRelease(): AppUpdate? = withContext(Dispatchers.IO) {
-        try {
-            val body = fetch() ?: return@withContext null
-            val tagName = json
-                .parseToJsonElement(body)
-                .jsonObject["tag_name"]
-                ?.jsonPrimitive
-                ?.content
-            tagName?.let { AppUpdate(it) }
-        } catch (_: Exception) {
-            null
+    override suspend fun getLatestRelease(): AppUpdate? =
+        withContext(Dispatchers.IO) {
+            try {
+                val body = fetch() ?: return@withContext null
+                val tagName =
+                    json
+                        .parseToJsonElement(body)
+                        .jsonObject["tag_name"]
+                        ?.jsonPrimitive
+                        ?.content
+                tagName?.let { AppUpdate(it) }
+            } catch (_: Exception) {
+                null
+            }
         }
-    }
 }
 
 @Suppress("UNENCRYPTED_SOCKET")

@@ -13,34 +13,36 @@ import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalSerializationApi::class)
 class SimulatorPreferencesSerializerTest {
-
     @Test
-    fun `正常なバイト列をデシリアライズできる`() = runTest {
-        val original = SimulatorPreferences(selectedSimulator = "lmu_windows")
-        val bytes = ProtoBuf.encodeToByteArray(SimulatorPreferences.serializer(), original)
+    fun `正常なバイト列をデシリアライズできる`() =
+        runTest {
+            val original = SimulatorPreferences(selectedSimulator = "lmu_windows")
+            val bytes = ProtoBuf.encodeToByteArray(SimulatorPreferences.serializer(), original)
 
-        val result = SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
+            val result = SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
 
-        assertEquals(original, result)
-    }
-
-    @Test
-    fun `不正なバイト列はCorruptionExceptionをスローする`() = runTest {
-        val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
-
-        assertFailsWith<CorruptionException> {
-            SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
+            assertEquals(original, result)
         }
-    }
 
     @Test
-    fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
-        val original = SimulatorPreferences(selectedSimulator = "rFactor 2")
-        val output = ByteArrayOutputStream()
-        SimulatorPreferencesSerializer.writeTo(original, output)
+    fun `不正なバイト列はCorruptionExceptionをスローする`() =
+        runTest {
+            val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
 
-        val result = SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+            assertFailsWith<CorruptionException> {
+                SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
+            }
+        }
 
-        assertEquals(original, result)
-    }
+    @Test
+    fun `writeToしたバイト列をreadFromで復元できる`() =
+        runTest {
+            val original = SimulatorPreferences(selectedSimulator = "rFactor 2")
+            val output = ByteArrayOutputStream()
+            SimulatorPreferencesSerializer.writeTo(original, output)
+
+            val result = SimulatorPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+
+            assertEquals(original, result)
+        }
 }

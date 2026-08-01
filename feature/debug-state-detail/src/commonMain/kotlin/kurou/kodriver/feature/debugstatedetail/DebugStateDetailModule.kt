@@ -23,20 +23,21 @@ import org.koin.dsl.module
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
-val debugStateDetailModule = module {
-    viewModel {
-        DebugStateDetailViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
-    }
+val debugStateDetailModule =
+    module {
+        viewModel {
+            DebugStateDetailViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        }
 
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
-    factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
-    factory { ObserveLmuWindowsUseCase(get()) }
-    factory { ObserveGt7Ps5UseCase(get()) }
-    factory { ObserveAceWindowsFuelUseCase(get()) }
-    factory { ObserveAceWindowsFlagUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
-    factory { ObserveDebugStateCardOrderUseCase(get()) }
-    factory { ResolveDebugStateCardOrderUseCase() }
-    factory { SaveDebugStateCardOrderUseCase(get()) }
-}
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
+        factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
+        factory { ObserveLmuWindowsUseCase(get()) }
+        factory { ObserveGt7Ps5UseCase(get()) }
+        factory { ObserveAceWindowsFuelUseCase(get()) }
+        factory { ObserveAceWindowsFlagUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
+        factory { ObserveDebugStateCardOrderUseCase(get()) }
+        factory { ResolveDebugStateCardOrderUseCase() }
+        factory { SaveDebugStateCardOrderUseCase(get()) }
+    }

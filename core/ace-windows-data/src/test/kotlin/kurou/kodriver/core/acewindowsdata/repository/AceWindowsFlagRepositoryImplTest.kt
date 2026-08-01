@@ -8,7 +8,6 @@ import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMem
 import kotlin.test.Test
 
 class AceWindowsFlagRepositoryImplTest {
-
     private fun makeSource(
         reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -20,10 +19,11 @@ class AceWindowsFlagRepositoryImplTest {
     )
 
     @Test
-    fun `reader が open 済みのときデータを emit する`() = runBlocking<Unit> {
-        val fake = FakeSharedMemoryReader(initialOpen = true)
-        val repo = AceWindowsFlagRepositoryImpl(source = makeSource(fake))
+    fun `reader が open 済みのときデータを emit する`() =
+        runBlocking<Unit> {
+            val fake = FakeSharedMemoryReader(initialOpen = true)
+            val repo = AceWindowsFlagRepositoryImpl(source = makeSource(fake))
 
-        repo.flagStream().first()
-    }
+            repo.flagStream().first()
+        }
 }

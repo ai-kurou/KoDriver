@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveTelemetryLogUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: TelemetryLogRepository
 
@@ -22,22 +21,23 @@ class SaveTelemetryLogUseCaseTest {
     }
 
     @Test
-    fun `ログを保存する`() = runBlocking {
-        SaveTelemetryLogUseCase(repository)(
-            createdAt = 1000L,
-            simulator = Simulator.Gt7Ps5,
-            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-            telemetryJson = """{"lapCount":1}""",
-        )
-
-        coVerify(exactly = 1) {
-            repository.saveTelemetryLog(
+    fun `ログを保存する`() =
+        runBlocking {
+            SaveTelemetryLogUseCase(repository)(
                 createdAt = 1000L,
                 simulator = Simulator.Gt7Ps5,
                 readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 telemetryJson = """{"lapCount":1}""",
             )
+
+            coVerify(exactly = 1) {
+                repository.saveTelemetryLog(
+                    createdAt = 1000L,
+                    simulator = Simulator.Gt7Ps5,
+                    readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    telemetryJson = """{"lapCount":1}""",
+                )
+            }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
 }

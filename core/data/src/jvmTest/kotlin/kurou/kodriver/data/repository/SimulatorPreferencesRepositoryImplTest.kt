@@ -16,14 +16,14 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SimulatorPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_simulator_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
-        serializer = SimulatorPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("test.pb") },
-    )
+    private val dataStore =
+        DataStoreFactory.create(
+            serializer = SimulatorPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("test.pb") },
+        )
     private val repository = SimulatorPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
@@ -32,13 +32,14 @@ class SimulatorPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値はnull・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertNull(repository.selectedSimulator().first())
+    fun `初期値はnull・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
+            assertNull(repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator(Simulator.LmuWindows)
-        assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
+            repository.saveSelectedSimulator(Simulator.LmuWindows)
+            assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
 
-        repository.saveSelectedSimulator(Simulator.Gt7Ps5)
-        assertEquals(Simulator.Gt7Ps5, repository.selectedSimulator().first())
-    }
+            repository.saveSelectedSimulator(Simulator.Gt7Ps5)
+            assertEquals(Simulator.Gt7Ps5, repository.selectedSimulator().first())
+        }
 }

@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsVehicleApproachPreferencesRepository
 
@@ -20,10 +19,11 @@ class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
     }
 
     @Test
-    fun `スキップ設定を保存できる`() = runBlocking {
-        SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)(false)
+    fun `スキップ設定を保存できる`() =
+        runBlocking {
+            SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)(false)
 
-        coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }
+            confirmVerified(repository)
+        }
 }

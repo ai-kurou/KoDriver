@@ -18,14 +18,14 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     private val saveThresholdPercentage: SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
-    val uiState: StateFlow<LmuWindowsReadoutRemainingVirtualEnergyDetailUiState> = observeThresholdPercentage()
-        .map { LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = it) }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(),
-        )
+    val uiState: StateFlow<LmuWindowsReadoutRemainingVirtualEnergyDetailUiState> =
+        observeThresholdPercentage()
+            .map { LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(),
+            )
 
     fun onWarningChipClicked() {
         playSpeechEvent(SpeechEvent.RemainingVirtualEnergyWarning)

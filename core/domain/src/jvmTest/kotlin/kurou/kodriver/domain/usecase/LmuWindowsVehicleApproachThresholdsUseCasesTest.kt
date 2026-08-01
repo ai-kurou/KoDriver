@@ -44,7 +44,6 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
 }
 
 class LmuWindowsVehicleApproachThresholdsUseCasesTest {
-
     @MockK
     private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -54,80 +53,89 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `observeLongitudinalThresholdMeters はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialLongitudinal = 10.0,
-        )
-        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+    fun `observeLongitudinalThresholdMeters はリポジトリの設定を返す`() =
+        runBlocking {
+            val repository =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialLongitudinal = 10.0,
+                )
+            val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
-        assertEquals(10.0, useCases.observeLongitudinalThresholdMeters().first())
-        verify(exactly = 1) { repository.observeLongitudinalThresholdMeters() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `saveLongitudinalThresholdMeters は縦方向閾値を保存する`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
-        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
-
-        useCases.saveLongitudinalThresholdMeters(50.0)
-
-        assertEquals(50.0, useCases.observeLongitudinalThresholdMeters().first())
-        coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(50.0) }
-        verify(exactly = 1) { repository.observeLongitudinalThresholdMeters() }
-        confirmVerified(repository)
-    }
+            assertEquals(10.0, useCases.observeLongitudinalThresholdMeters().first())
+            verify(exactly = 1) { repository.observeLongitudinalThresholdMeters() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `observeLateralThresholdMeters はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialLateral = 5.0,
-        )
-        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+    fun `saveLongitudinalThresholdMeters は縦方向閾値を保存する`() =
+        runBlocking {
+            val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
+            val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
-        assertEquals(5.0, useCases.observeLateralThresholdMeters().first())
-        verify(exactly = 1) { repository.observeLateralThresholdMeters() }
-        confirmVerified(repository)
-    }
+            useCases.saveLongitudinalThresholdMeters(50.0)
 
-    @Test
-    fun `saveLateralThresholdMeters は横方向閾値を保存する`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
-        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
-
-        useCases.saveLateralThresholdMeters(3.5)
-
-        assertEquals(3.5, useCases.observeLateralThresholdMeters().first())
-        coVerify(exactly = 1) { repository.saveLateralThresholdMeters(3.5) }
-        verify(exactly = 1) { repository.observeLateralThresholdMeters() }
-        confirmVerified(repository)
-    }
+            assertEquals(50.0, useCases.observeLongitudinalThresholdMeters().first())
+            coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(50.0) }
+            verify(exactly = 1) { repository.observeLongitudinalThresholdMeters() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `observeSustainedApproachDurationSeconds はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialSustainedDuration = 4,
-        )
-        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+    fun `observeLateralThresholdMeters はリポジトリの設定を返す`() =
+        runBlocking {
+            val repository =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialLateral = 5.0,
+                )
+            val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
-        assertEquals(4, useCases.observeSustainedApproachDurationSeconds().first())
-        verify(exactly = 1) { repository.observeSustainedApproachDurationSeconds() }
-        confirmVerified(repository)
-    }
+            assertEquals(5.0, useCases.observeLateralThresholdMeters().first())
+            verify(exactly = 1) { repository.observeLateralThresholdMeters() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `saveSustainedApproachDurationSeconds は継続時間閾値を保存する`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
-        val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+    fun `saveLateralThresholdMeters は横方向閾値を保存する`() =
+        runBlocking {
+            val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
+            val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
-        useCases.saveSustainedApproachDurationSeconds(8)
+            useCases.saveLateralThresholdMeters(3.5)
 
-        assertEquals(8, useCases.observeSustainedApproachDurationSeconds().first())
-        coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
-        verify(exactly = 1) { repository.observeSustainedApproachDurationSeconds() }
-        confirmVerified(repository)
-    }
+            assertEquals(3.5, useCases.observeLateralThresholdMeters().first())
+            coVerify(exactly = 1) { repository.saveLateralThresholdMeters(3.5) }
+            verify(exactly = 1) { repository.observeLateralThresholdMeters() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `observeSustainedApproachDurationSeconds はリポジトリの設定を返す`() =
+        runBlocking {
+            val repository =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialSustainedDuration = 4,
+                )
+            val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+
+            assertEquals(4, useCases.observeSustainedApproachDurationSeconds().first())
+            verify(exactly = 1) { repository.observeSustainedApproachDurationSeconds() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `saveSustainedApproachDurationSeconds は継続時間閾値を保存する`() =
+        runBlocking {
+            val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
+            val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
+
+            useCases.saveSustainedApproachDurationSeconds(8)
+
+            assertEquals(8, useCases.observeSustainedApproachDurationSeconds().first())
+            coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
+            verify(exactly = 1) { repository.observeSustainedApproachDurationSeconds() }
+            confirmVerified(repository)
+        }
 }

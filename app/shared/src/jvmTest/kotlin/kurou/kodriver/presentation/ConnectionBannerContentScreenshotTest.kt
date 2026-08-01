@@ -11,7 +11,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class ConnectionBannerContentScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -19,11 +18,12 @@ class ConnectionBannerContentScreenshotTest {
     fun `SIMULATOR接続中`() {
         setThemedContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.CONNECTED,
-                    message = "シミュレータに接続中",
-                    iconType = ConnectionBannerIconType.SIMULATOR,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "シミュレータに接続中",
+                        iconType = ConnectionBannerIconType.SIMULATOR,
+                    ),
                 modifier = Modifier.requiredWidth(360.dp),
             )
         }
@@ -34,11 +34,12 @@ class ConnectionBannerContentScreenshotTest {
     fun `SIMULATOR接続待機中`() {
         setThemedContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "シミュレータ接続待機中",
-                    iconType = ConnectionBannerIconType.SIMULATOR,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "シミュレータ接続待機中",
+                        iconType = ConnectionBannerIconType.SIMULATOR,
+                    ),
                 modifier = Modifier.requiredWidth(360.dp),
             )
         }
@@ -49,11 +50,12 @@ class ConnectionBannerContentScreenshotTest {
     fun `NETWORK接続中`() {
         setThemedContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.CONNECTED,
-                    message = "Windows版KoDriverに接続中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "Windows版KoDriverに接続中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
                 modifier = Modifier.requiredWidth(360.dp),
             )
         }
@@ -64,11 +66,12 @@ class ConnectionBannerContentScreenshotTest {
     fun `NETWORK接続待機中`() {
         setThemedContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "Windows版KoDriver接続待機中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "Windows版KoDriver接続待機中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
                 modifier = Modifier.requiredWidth(360.dp),
             )
         }
@@ -79,11 +82,12 @@ class ConnectionBannerContentScreenshotTest {
     fun `NETWORK IPアドレス未設定`() {
         setThemedContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "接続先IPアドレスが未設定です",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "接続先IPアドレスが未設定です",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
                 modifier = Modifier.requiredWidth(360.dp),
             )
         }
@@ -94,12 +98,13 @@ class ConnectionBannerContentScreenshotTest {
     fun `NETWORK IPアドレス未設定 タップ可能`() {
         setThemedContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "接続先IPアドレスが未設定です",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = true,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "接続先IPアドレスが未設定です",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = true,
+                    ),
                 modifier = Modifier.requiredWidth(360.dp),
                 onClick = {},
             )

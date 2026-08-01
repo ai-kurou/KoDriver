@@ -20,19 +20,20 @@ import org.koin.dsl.module
  *   KeepScreenOnEnabledRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
  */
-val mainModule = module {
-    // ViewModel
-    viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get()) }
-    viewModelOf(::ConnectionBannerViewModel)
+val mainModule =
+    module {
+        // ViewModel
+        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get()) }
+        viewModelOf(::ConnectionBannerViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
-    factory { CheckAppUpdateAvailableUseCase(get()) }
-    factory { ObserveExitConfirmationEnabledUseCase(get()) }
-    factory { ObserveKeepScreenOnEnabledUseCase(get()) }
-    factory { SaveExitConfirmationEnabledUseCase(get()) }
-    factory { SaveKeepScreenOnEnabledUseCase(get()) }
-    factory { ObserveDynamicColorEnabledUseCase(get()) }
-    factory { SaveDynamicColorEnabledUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
+        factory { CheckAppUpdateAvailableUseCase(get()) }
+        factory { ObserveExitConfirmationEnabledUseCase(get()) }
+        factory { ObserveKeepScreenOnEnabledUseCase(get()) }
+        factory { SaveExitConfirmationEnabledUseCase(get()) }
+        factory { SaveKeepScreenOnEnabledUseCase(get()) }
+        factory { ObserveDynamicColorEnabledUseCase(get()) }
+        factory { SaveDynamicColorEnabledUseCase(get()) }
+    }
 
 expect val mainPlatformModule: Module

@@ -37,14 +37,15 @@ internal enum class ActiveRaceFlag(
     RED(Res.string.debug_state_flag_red),
 }
 
-internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<ActiveRaceFlag> = buildList {
-    if (raceFlags.playerFlag == PrimaryFlag.BLUE) add(ActiveRaceFlag.BLUE)
-    if (raceFlags.playerUnderYellow || raceFlags.sectorFlags.any { it == SectorFlagState.YELLOW }) {
-        add(ActiveRaceFlag.YELLOW)
+internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<ActiveRaceFlag> =
+    buildList {
+        if (raceFlags.playerFlag == PrimaryFlag.BLUE) add(ActiveRaceFlag.BLUE)
+        if (raceFlags.playerUnderYellow || raceFlags.sectorFlags.any { it == SectorFlagState.YELLOW }) {
+            add(ActiveRaceFlag.YELLOW)
+        }
+        if (raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW) add(ActiveRaceFlag.FULL_COURSE_YELLOW)
+        if (raceFlags.gamePhase == SessionPhase.RED_FLAG) add(ActiveRaceFlag.RED)
     }
-    if (raceFlags.gamePhase == SessionPhase.FULL_COURSE_YELLOW) add(ActiveRaceFlag.FULL_COURSE_YELLOW)
-    if (raceFlags.gamePhase == SessionPhase.RED_FLAG) add(ActiveRaceFlag.RED)
-}
 
 @Composable
 internal fun FlagInfoContent(
@@ -53,14 +54,20 @@ internal fun FlagInfoContent(
     aceWindowsFlag: AceWindowsFlagData?,
 ) {
     when (selectedSimulator) {
-        is Simulator.LmuWindows -> LmuFlagInfoContent(raceFlags)
+        is Simulator.LmuWindows -> {
+            LmuFlagInfoContent(raceFlags)
+        }
 
-        is Simulator.AceWindows -> AceFlagInfoContent(aceWindowsFlag)
+        is Simulator.AceWindows -> {
+            AceFlagInfoContent(aceWindowsFlag)
+        }
 
-        is Simulator.Gt7Ps5, null -> Text(
-            text = stringResource(Res.string.debug_state_flag_info_unavailable),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        is Simulator.Gt7Ps5, null -> {
+            Text(
+                text = stringResource(Res.string.debug_state_flag_info_unavailable),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
     }
 }
 
@@ -89,20 +96,21 @@ private fun LmuFlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
 }
 
 @Composable
-private fun aceFlagDisplayName(flag: AceWindowsFlagType): String = when (flag) {
-    AceWindowsFlagType.NO_FLAG -> stringResource(Res.string.debug_state_flag_none)
-    AceWindowsFlagType.WHITE_FLAG -> stringResource(Res.string.debug_state_flag_white)
-    AceWindowsFlagType.GREEN_FLAG -> stringResource(Res.string.debug_state_flag_green)
-    AceWindowsFlagType.RED_FLAG -> stringResource(Res.string.debug_state_flag_red)
-    AceWindowsFlagType.BLUE_FLAG -> stringResource(Res.string.debug_state_flag_blue)
-    AceWindowsFlagType.YELLOW_FLAG -> stringResource(Res.string.debug_state_flag_yellow)
-    AceWindowsFlagType.BLACK_FLAG -> stringResource(Res.string.debug_state_flag_black)
-    AceWindowsFlagType.BLACK_WHITE_FLAG -> stringResource(Res.string.debug_state_flag_black_white)
-    AceWindowsFlagType.CHECKERED_FLAG -> stringResource(Res.string.debug_state_flag_checkered)
-    AceWindowsFlagType.ORANGE_CIRCLE_FLAG -> stringResource(Res.string.debug_state_flag_orange_circle)
-    AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG -> stringResource(Res.string.debug_state_flag_red_yellow_stripes)
-    AceWindowsFlagType.UNKNOWN -> stringResource(Res.string.debug_state_flag_info_unavailable)
-}
+private fun aceFlagDisplayName(flag: AceWindowsFlagType): String =
+    when (flag) {
+        AceWindowsFlagType.NO_FLAG -> stringResource(Res.string.debug_state_flag_none)
+        AceWindowsFlagType.WHITE_FLAG -> stringResource(Res.string.debug_state_flag_white)
+        AceWindowsFlagType.GREEN_FLAG -> stringResource(Res.string.debug_state_flag_green)
+        AceWindowsFlagType.RED_FLAG -> stringResource(Res.string.debug_state_flag_red)
+        AceWindowsFlagType.BLUE_FLAG -> stringResource(Res.string.debug_state_flag_blue)
+        AceWindowsFlagType.YELLOW_FLAG -> stringResource(Res.string.debug_state_flag_yellow)
+        AceWindowsFlagType.BLACK_FLAG -> stringResource(Res.string.debug_state_flag_black)
+        AceWindowsFlagType.BLACK_WHITE_FLAG -> stringResource(Res.string.debug_state_flag_black_white)
+        AceWindowsFlagType.CHECKERED_FLAG -> stringResource(Res.string.debug_state_flag_checkered)
+        AceWindowsFlagType.ORANGE_CIRCLE_FLAG -> stringResource(Res.string.debug_state_flag_orange_circle)
+        AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG -> stringResource(Res.string.debug_state_flag_red_yellow_stripes)
+        AceWindowsFlagType.UNKNOWN -> stringResource(Res.string.debug_state_flag_info_unavailable)
+    }
 
 @Composable
 private fun AceFlagInfoContent(aceWindowsFlag: AceWindowsFlagData?) {

@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsRedFlagVoiceTypeUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsRedFlagPreferencesRepository
 
@@ -21,10 +20,11 @@ class SaveLmuWindowsRedFlagVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `赤旗音声タイプを保存する`() = runBlocking {
-        SaveLmuWindowsRedFlagVoiceTypeUseCase(repository)(RedFlagVoiceType.RED_FLAG)
+    fun `赤旗音声タイプを保存する`() =
+        runBlocking {
+            SaveLmuWindowsRedFlagVoiceTypeUseCase(repository)(RedFlagVoiceType.RED_FLAG)
 
-        coVerify(exactly = 1) { repository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
+            confirmVerified(repository)
+        }
 }

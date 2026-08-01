@@ -18,15 +18,15 @@ internal class OtherReadoutStartSoundDetailViewModel(
     private val saveReadoutStartSoundType: SaveReadoutStartSoundTypeUseCase,
     private val previewStartSound: PreviewStartSoundUseCase,
 ) : ViewModel() {
-
     private val pendingType = MutableStateFlow<ReadoutStartSoundType?>(null)
 
-    val uiState = combine(observeReadoutStartSoundType(), pendingType) { saved, pending ->
-        OtherReadoutStartSoundDetailUiState(
-            selectedType = saved,
-            pendingType = pending ?: saved,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherReadoutStartSoundDetailUiState())
+    val uiState =
+        combine(observeReadoutStartSoundType(), pendingType) { saved, pending ->
+            OtherReadoutStartSoundDetailUiState(
+                selectedType = saved,
+                pendingType = pending ?: saved,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherReadoutStartSoundDetailUiState())
 
     fun onPendingTypeSelected(type: ReadoutStartSoundType) {
         pendingType.update { type }

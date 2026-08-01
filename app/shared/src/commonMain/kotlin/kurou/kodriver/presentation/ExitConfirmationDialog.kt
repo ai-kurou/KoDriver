@@ -46,9 +46,10 @@ internal fun ExitConfirmationDialog(
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { doNotShowAgain = !doNotShowAgain },
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { doNotShowAgain = !doNotShowAgain },
                 ) {
                     Checkbox(
                         checked = doNotShowAgain,

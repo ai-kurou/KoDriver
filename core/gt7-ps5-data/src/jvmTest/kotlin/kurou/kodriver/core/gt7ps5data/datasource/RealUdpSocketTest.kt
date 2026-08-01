@@ -10,7 +10,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class RealUdpSocketTest {
-
     @Test
     fun `receiveで送信されたデータを受信できる`() {
         val socket = RealUdpSocket(listenPort = 0, timeoutMs = 1_000)
@@ -31,9 +30,10 @@ class RealUdpSocketTest {
 
     @Test
     fun `sendで指定アドレスとポートへデータを送信できる`() {
-        val receiver = DatagramSocket(0).apply {
-            soTimeout = 1_000
-        }
+        val receiver =
+            DatagramSocket(0).apply {
+                soTimeout = 1_000
+            }
         val receiverPort = receiver.localPort
 
         val socket = RealUdpSocket(listenPort = 0, timeoutMs = 1_000)

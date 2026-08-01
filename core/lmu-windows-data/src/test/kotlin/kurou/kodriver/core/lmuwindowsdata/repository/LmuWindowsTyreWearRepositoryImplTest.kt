@@ -19,7 +19,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsTyreWearRepositoryImplTest {
-
     private fun makeSource(
         reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -32,96 +31,105 @@ class LmuWindowsTyreWearRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから4輪のタイヤ摩耗を読み取る`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
-            buildTyreWearBuffer(
-                TyreWearBufferConfig(
-                    wearFractions = mapOf(
-                        WheelIndex.FRONT_LEFT to 0.95,
-                        WheelIndex.FRONT_RIGHT to 0.94,
-                        WheelIndex.REAR_LEFT to 0.93,
-                        WheelIndex.REAR_RIGHT to 0.92,
+    fun `共有メモリから4輪のタイヤ摩耗を読み取る`() =
+        runBlocking {
+            val reader =
+                FakeTyreWearMemoryReader(
+                    buildTyreWearBuffer(
+                        TyreWearBufferConfig(
+                            wearFractions =
+                                mapOf(
+                                    WheelIndex.FRONT_LEFT to 0.95,
+                                    WheelIndex.FRONT_RIGHT to 0.94,
+                                    WheelIndex.REAR_LEFT to 0.93,
+                                    WheelIndex.REAR_RIGHT to 0.92,
+                                ),
+                        ),
                     ),
-                ),
-            ),
-        )
-        val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
+                )
+            val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.tyreWearStream().first()
+            val result = repo.tyreWearStream().first()
 
-        assertEquals(0.95, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
-        assertEquals(0.94, result.wheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
-        assertEquals(0.93, result.wheels[WheelIndex.REAR_LEFT]!!, 1e-9)
-        assertEquals(0.92, result.wheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
-    }
+            assertEquals(0.95, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+            assertEquals(0.94, result.wheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
+            assertEquals(0.93, result.wheels[WheelIndex.REAR_LEFT]!!, 1e-9)
+            assertEquals(0.92, result.wheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
+        }
 
     @Test
-    fun `playerIndexに応じた車両スロットからタイヤ摩耗を読み取る`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
-            buildTyreWearBuffer(
-                TyreWearBufferConfig(
-                    activeVehicles = 2,
-                    playerIdx = 1,
-                    wearFractions = mapOf(WheelIndex.FRONT_LEFT to 0.8),
-                ),
-            ),
-        )
-        val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
+    fun `playerIndexに応じた車両スロットからタイヤ摩耗を読み取る`() =
+        runBlocking {
+            val reader =
+                FakeTyreWearMemoryReader(
+                    buildTyreWearBuffer(
+                        TyreWearBufferConfig(
+                            activeVehicles = 2,
+                            playerIdx = 1,
+                            wearFractions = mapOf(WheelIndex.FRONT_LEFT to 0.8),
+                        ),
+                    ),
+                )
+            val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.tyreWearStream().first()
+            val result = repo.tyreWearStream().first()
 
-        assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
-    }
-
-    @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
-            buildTyreWearBuffer(TyreWearBufferConfig(activeVehicles = 0)),
-        )
-        val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
-
-        val job = launch { repo.tyreWearStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
-
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0.8, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+        }
 
     @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
-            buildTyreWearBuffer(TyreWearBufferConfig(activeVehicles = 1, playerIdx = 1)),
-        )
-        val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+            val reader =
+                FakeTyreWearMemoryReader(
+                    buildTyreWearBuffer(TyreWearBufferConfig(activeVehicles = 0)),
+                )
+            val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.tyreWearStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.tyreWearStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
-            buffer = buildTyreWearBuffer(),
-            openResult = false,
-        )
-        val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+            val reader =
+                FakeTyreWearMemoryReader(
+                    buildTyreWearBuffer(TyreWearBufferConfig(activeVehicles = 1, playerIdx = 1)),
+                )
+            val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.tyreWearStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.tyreWearStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
-    private fun buildTyreWearBuffer(
-        config: TyreWearBufferConfig = TyreWearBufferConfig(),
-    ): ByteBuffer {
+    @Test
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+            val reader =
+                FakeTyreWearMemoryReader(
+                    buffer = buildTyreWearBuffer(),
+                    openResult = false,
+                )
+            val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.tyreWearStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
+        }
+
+    private fun buildTyreWearBuffer(config: TyreWearBufferConfig = TyreWearBufferConfig()): ByteBuffer {
         val buffer = ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN)
         buffer.put(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES, config.activeVehicles.toByte())
         buffer.put(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX, config.playerIdx.toByte())
@@ -158,7 +166,6 @@ private class FakeTyreWearMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
 ) : SharedMemoryReader {
-
     private var opened = openResult
 
     override fun open(): Boolean {

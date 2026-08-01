@@ -33,8 +33,9 @@ data class ServerConnectionUiState(
 ) {
     val isConnected: Boolean get() = connectionStatus == ServerConnectionStatus.CONNECTED
     val isConnectionChecked: Boolean
-        get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
-            connectionStatus != ServerConnectionStatus.CHECKING
+        get() =
+            connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
+                connectionStatus != ServerConnectionStatus.CHECKING
     val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
 }
 
@@ -45,51 +46,54 @@ class ServerConnectionViewModel(
     observeKoDriverServerConnection: ObserveKoDriverServerConnectionUseCase,
     private val appVersion: String,
 ) : ViewModel() {
-
     private val showVersionMismatchBottomSheetFlow = MutableStateFlow(false)
     private var versionMismatchWarningShown = false
 
-    private val connectionStateFlow = observeKoDriverServerConnection(appVersion)
-        .onEach { state ->
-            if (state.isVersionMismatch && !versionMismatchWarningShown) {
-                versionMismatchWarningShown = true
-                showVersionMismatchBottomSheetFlow.update { true }
+    private val connectionStateFlow =
+        observeKoDriverServerConnection(appVersion)
+            .onEach { state ->
+                if (state.isVersionMismatch && !versionMismatchWarningShown) {
+                    versionMismatchWarningShown = true
+                    showVersionMismatchBottomSheetFlow.update { true }
+                }
+            }.shareIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                replay = 1,
+            )
+
+    private val baseUiStateFlow =
+        connectionStateFlow
+            .map { state ->
+                ServerConnectionUiState(
+                    connectionStatus = state.connectionStatus.toUiStatus(),
+                    requiresKoDriverServer = state.requiresKoDriverServer,
+                    selectedSimulator = state.selectedSimulator,
+                    serverVersion = state.serverVersion,
+                )
             }
-        }.shareIn(
+
+    val uiState: StateFlow<ServerConnectionUiState> =
+        combine(
+            baseUiStateFlow,
+            showVersionMismatchBottomSheetFlow,
+        ) { base, showBottomSheet ->
+            base.copy(showVersionMismatchBottomSheet = showBottomSheet, appVersion = appVersion)
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            replay = 1,
+            initialValue = ServerConnectionUiState(),
         )
-
-    private val baseUiStateFlow = connectionStateFlow
-        .map { state ->
-            ServerConnectionUiState(
-                connectionStatus = state.connectionStatus.toUiStatus(),
-                requiresKoDriverServer = state.requiresKoDriverServer,
-                selectedSimulator = state.selectedSimulator,
-                serverVersion = state.serverVersion,
-            )
-        }
-
-    val uiState: StateFlow<ServerConnectionUiState> = combine(
-        baseUiStateFlow,
-        showVersionMismatchBottomSheetFlow,
-    ) { base, showBottomSheet ->
-        base.copy(showVersionMismatchBottomSheet = showBottomSheet, appVersion = appVersion)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = ServerConnectionUiState(),
-    )
 
     fun dismissVersionMismatchBottomSheet() {
         showVersionMismatchBottomSheetFlow.update { false }
     }
 }
 
-private fun KoDriverServerConnectionStatus.toUiStatus(): ServerConnectionStatus = when (this) {
-    KoDriverServerConnectionStatus.NOT_CONFIGURED -> ServerConnectionStatus.NOT_CONFIGURED
-    KoDriverServerConnectionStatus.CHECKING -> ServerConnectionStatus.CHECKING
-    KoDriverServerConnectionStatus.CONNECTED -> ServerConnectionStatus.CONNECTED
-    KoDriverServerConnectionStatus.DISCONNECTED -> ServerConnectionStatus.DISCONNECTED
-}
+private fun KoDriverServerConnectionStatus.toUiStatus(): ServerConnectionStatus =
+    when (this) {
+        KoDriverServerConnectionStatus.NOT_CONFIGURED -> ServerConnectionStatus.NOT_CONFIGURED
+        KoDriverServerConnectionStatus.CHECKING -> ServerConnectionStatus.CHECKING
+        KoDriverServerConnectionStatus.CONNECTED -> ServerConnectionStatus.CONNECTED
+        KoDriverServerConnectionStatus.DISCONNECTED -> ServerConnectionStatus.DISCONNECTED
+    }

@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class LmuWindowsTyreTemperaturePreferencesSerializerTest {
-
     @Test
     fun `デフォルト値は highThresholdCelsius が 95、enabledStates が空Map`() {
         assertEquals(
@@ -26,27 +25,31 @@ class LmuWindowsTyreTemperaturePreferencesSerializerTest {
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() = runTest {
-        val original = LmuWindowsTyreTemperaturePreferences(
-            highThresholdCelsius = 110,
-            enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
-        )
-        val output = ByteArrayOutputStream()
-        LmuWindowsTyreTemperaturePreferencesSerializer.writeTo(original, output)
+    fun `書き込んだ値を読み出せる`() =
+        runTest {
+            val original =
+                LmuWindowsTyreTemperaturePreferences(
+                    highThresholdCelsius = 110,
+                    enabledStates = mapOf("lmu_windows_tyre_temperature_overheat_warning" to false),
+                )
+            val output = ByteArrayOutputStream()
+            LmuWindowsTyreTemperaturePreferencesSerializer.writeTo(original, output)
 
-        val restored = LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(
-            ByteArrayInputStream(output.toByteArray()),
-        )
+            val restored =
+                LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(
+                    ByteArrayInputStream(output.toByteArray()),
+                )
 
-        assertEquals(original, restored)
-    }
+            assertEquals(original, restored)
+        }
 
     @Test
-    fun `不正なバイト列で CorruptionException が発生する`() = runTest {
-        val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
+    fun `不正なバイト列で CorruptionException が発生する`() =
+        runTest {
+            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
-        assertFailsWith<CorruptionException> {
-            LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(corrupt)
+            assertFailsWith<CorruptionException> {
+                LmuWindowsTyreTemperaturePreferencesSerializer.readFrom(corrupt)
+            }
         }
-    }
 }

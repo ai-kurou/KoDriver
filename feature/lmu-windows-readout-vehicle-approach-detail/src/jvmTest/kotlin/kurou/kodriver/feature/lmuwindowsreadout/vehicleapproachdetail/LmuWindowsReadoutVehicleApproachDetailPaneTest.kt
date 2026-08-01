@@ -18,7 +18,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsReadoutVehicleApproachDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -43,10 +42,11 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(
-                        startReadoutEnabled = true,
-                        startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
-                    ),
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
+                            startReadoutEnabled = true,
+                            startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+                        ),
                     onStartReadoutTypeChanged = { changedType = it },
                 )
             }
@@ -71,8 +71,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
 
         rule
             .onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 1.0f, range = 0.1f..10f, steps = 98)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) { it(5f) }
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 1.0f, range = 0.1f..10f, steps = 98)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) { it(5f) }
 
         assertEquals(5.0, changedValue)
     }
@@ -91,8 +91,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
 
         rule
             .onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5.0f, range = 2f..8f, steps = 59)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) { it(4f) }
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 5.0f, range = 2f..8f, steps = 59)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) { it(4f) }
 
         assertEquals(4.0, changedValue)
     }
@@ -111,8 +111,8 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
 
         rule
             .onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 4.0f, range = 4f..10f, steps = 5)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) { it(8f) }
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 4.0f, range = 4f..10f, steps = 5)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) { it(8f) }
 
         assertEquals(8, changedValue)
     }
@@ -174,10 +174,11 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(
-                        sustainedReadoutEnabled = true,
-                        sustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
-                    ),
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
+                            sustainedReadoutEnabled = true,
+                            sustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+                        ),
                     onSustainedReadoutTypeChanged = { changedType = it },
                 )
             }

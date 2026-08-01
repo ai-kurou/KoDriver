@@ -13,7 +13,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CheckGt7Ps5ConnectionUseCaseTest {
-
     @MockK
     private lateinit var repository: Gt7Ps5Repository
 
@@ -23,22 +22,24 @@ class CheckGt7Ps5ConnectionUseCaseTest {
     }
 
     @Test
-    fun `Repositoryが接続済みならtrueを返す`() = runBlocking {
-        coEvery { repository.isConnected() } returns true
-        val useCase = CheckGt7Ps5ConnectionUseCase(repository)
+    fun `Repositoryが接続済みならtrueを返す`() =
+        runBlocking {
+            coEvery { repository.isConnected() } returns true
+            val useCase = CheckGt7Ps5ConnectionUseCase(repository)
 
-        assertTrue(useCase())
-        coVerify(exactly = 1) { repository.isConnected() }
-        confirmVerified(repository)
-    }
+            assertTrue(useCase())
+            coVerify(exactly = 1) { repository.isConnected() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `Repositoryが未接続ならfalseを返す`() = runBlocking {
-        coEvery { repository.isConnected() } returns false
-        val useCase = CheckGt7Ps5ConnectionUseCase(repository)
+    fun `Repositoryが未接続ならfalseを返す`() =
+        runBlocking {
+            coEvery { repository.isConnected() } returns false
+            val useCase = CheckGt7Ps5ConnectionUseCase(repository)
 
-        assertFalse(useCase())
-        coVerify(exactly = 1) { repository.isConnected() }
-        confirmVerified(repository)
-    }
+            assertFalse(useCase())
+            coVerify(exactly = 1) { repository.isConnected() }
+            confirmVerified(repository)
+        }
 }

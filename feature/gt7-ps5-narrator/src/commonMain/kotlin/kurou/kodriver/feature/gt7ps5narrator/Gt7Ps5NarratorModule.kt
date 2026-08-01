@@ -31,39 +31,40 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU と区別するため named("gt7_ps5") で登録している。
  */
-val gt7Ps5NarratorModule: Module = module {
-    // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-    viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get()) }
+val gt7Ps5NarratorModule: Module =
+    module {
+        // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
+        viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get()) }
 
-    // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-    factory { MyBestLapUseCases(get(), get()) }
-    factory { ReadoutListUseCases(get(), get(), get(), get()) }
-    factory { RemainingFuelLapsUseCases(get()) }
-    factory { RemainingFuelUseCases(get()) }
-    factory { Gt7Ps5NarratorEventProcessor(get(named("gt7_ps5")), get()) }
+        // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { MyBestLapUseCases(get(), get()) }
+        factory { ReadoutListUseCases(get(), get(), get(), get()) }
+        factory { RemainingFuelLapsUseCases(get()) }
+        factory { RemainingFuelUseCases(get()) }
+        factory { Gt7Ps5NarratorEventProcessor(get(named("gt7_ps5")), get()) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:gt7-ps5-data / :core:data の Repository を解決）
-    factory { DetermineGt7Ps5NarratorReadoutUseCase() }
-    factory { SaveTelemetryLogUseCase(get()) }
-    factory { ObserveGt7Ps5UseCase(get()) }
-    factory { ObserveGt7Ps5MyBestLapVoiceTypeUseCase(get()) }
-    factory { ObserveReadoutEnabledStatesUseCase(get()) }
-    factory { ObserveReadoutOrderUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
-    factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }
-    factory { ObserveQueueEnabledStatesUseCase(get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:gt7-ps5-data / :core:data の Repository を解決）
+        factory { DetermineGt7Ps5NarratorReadoutUseCase() }
+        factory { SaveTelemetryLogUseCase(get()) }
+        factory { ObserveGt7Ps5UseCase(get()) }
+        factory { ObserveGt7Ps5MyBestLapVoiceTypeUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
+        factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get()) }
 
-    // 音声再生（named "gt7_ps5" で LMU と分離。SoundPlayer は platformSoundModule が提供）
-    includes(platformSoundModule)
-    single<TextToSpeechEngine>(named("gt7_ps5")) {
-        Gt7Ps5WavNarratorEngine(
-            soundPlayer = get(),
-            volumeFlow = ObserveSoundVolumeUseCase(get())(),
-            startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
-        )
+        // 音声再生（named "gt7_ps5" で LMU と分離。SoundPlayer は platformSoundModule が提供）
+        includes(platformSoundModule)
+        single<TextToSpeechEngine>(named("gt7_ps5")) {
+            Gt7Ps5WavNarratorEngine(
+                soundPlayer = get(),
+                volumeFlow = ObserveSoundVolumeUseCase(get())(),
+                startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+            )
+        }
+        factory(named("gt7_ps5")) { PlaySpeechEventUseCase(get(named("gt7_ps5"))) }
     }
-    factory(named("gt7_ps5")) { PlaySpeechEventUseCase(get(named("gt7_ps5"))) }
-}
 
 internal expect val platformSoundModule: Module

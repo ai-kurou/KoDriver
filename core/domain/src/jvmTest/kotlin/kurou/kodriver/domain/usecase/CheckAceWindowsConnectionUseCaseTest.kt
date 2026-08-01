@@ -13,7 +13,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CheckAceWindowsConnectionUseCaseTest {
-
     @MockK
     private lateinit var repository: AceWindowsFuelRepository
 
@@ -23,22 +22,24 @@ class CheckAceWindowsConnectionUseCaseTest {
     }
 
     @Test
-    fun `Repositoryが接続済みならtrueを返す`() = runBlocking {
-        coEvery { repository.isConnected() } returns true
-        val useCase = CheckAceWindowsConnectionUseCase(repository)
+    fun `Repositoryが接続済みならtrueを返す`() =
+        runBlocking {
+            coEvery { repository.isConnected() } returns true
+            val useCase = CheckAceWindowsConnectionUseCase(repository)
 
-        assertTrue(useCase())
-        coVerify(exactly = 1) { repository.isConnected() }
-        confirmVerified(repository)
-    }
+            assertTrue(useCase())
+            coVerify(exactly = 1) { repository.isConnected() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `Repositoryが未接続ならfalseを返す`() = runBlocking {
-        coEvery { repository.isConnected() } returns false
-        val useCase = CheckAceWindowsConnectionUseCase(repository)
+    fun `Repositoryが未接続ならfalseを返す`() =
+        runBlocking {
+            coEvery { repository.isConnected() } returns false
+            val useCase = CheckAceWindowsConnectionUseCase(repository)
 
-        assertFalse(useCase())
-        coVerify(exactly = 1) { repository.isConnected() }
-        confirmVerified(repository)
-    }
+            assertFalse(useCase())
+            coVerify(exactly = 1) { repository.isConnected() }
+            confirmVerified(repository)
+        }
 }

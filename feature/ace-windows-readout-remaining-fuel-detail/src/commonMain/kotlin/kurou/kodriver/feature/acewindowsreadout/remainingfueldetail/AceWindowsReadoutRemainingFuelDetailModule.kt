@@ -14,12 +14,13 @@ import org.koin.dsl.module
  * 消費（get で解決）: AceWindowsRemainingFuelPreferencesRepository（:core:data）、試聴用の
  *   named("ace_windows") の TextToSpeechEngine（:feature:ace-windows-narrator で登録）。
  */
-val aceWindowsReadoutRemainingFuelDetailModule = module {
-    // ViewModel（get(named "ace_windows") は narrator モジュールの TextToSpeechEngine を解決）
-    viewModel {
-        AceWindowsReadoutRemainingFuelDetailViewModel(get(), get(), get(named("ace_windows")))
-    }
+val aceWindowsReadoutRemainingFuelDetailModule =
+    module {
+        // ViewModel（get(named "ace_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        viewModel {
+            AceWindowsReadoutRemainingFuelDetailViewModel(get(), get(), get(named("ace_windows")))
+        }
 
-    factoryOf(::ObserveAceWindowsRemainingFuelThresholdPercentageUseCase)
-    factoryOf(::SaveAceWindowsRemainingFuelThresholdPercentageUseCase)
-}
+        factoryOf(::ObserveAceWindowsRemainingFuelThresholdPercentageUseCase)
+        factoryOf(::SaveAceWindowsRemainingFuelThresholdPercentageUseCase)
+    }

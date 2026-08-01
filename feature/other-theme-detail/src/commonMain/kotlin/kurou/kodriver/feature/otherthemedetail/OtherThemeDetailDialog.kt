@@ -68,16 +68,18 @@ internal fun OtherThemeDetailDialogContent(
             Column {
                 Spacer(modifier = Modifier.height(4.dp))
                 ThemeMode.entries.forEach { themeMode ->
-                    val label = when (themeMode) {
-                        ThemeMode.SYSTEM -> stringResource(Res.string.theme_system)
-                        ThemeMode.LIGHT -> stringResource(Res.string.theme_light)
-                        ThemeMode.DARK -> stringResource(Res.string.theme_dark)
-                    }
+                    val label =
+                        when (themeMode) {
+                            ThemeMode.SYSTEM -> stringResource(Res.string.theme_system)
+                            ThemeMode.LIGHT -> stringResource(Res.string.theme_light)
+                            ThemeMode.DARK -> stringResource(Res.string.theme_dark)
+                        }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onThemeModeSelected(themeMode) },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onThemeModeSelected(themeMode) },
                     ) {
                         RadioButton(
                             selected = uiState.pendingThemeMode == themeMode,

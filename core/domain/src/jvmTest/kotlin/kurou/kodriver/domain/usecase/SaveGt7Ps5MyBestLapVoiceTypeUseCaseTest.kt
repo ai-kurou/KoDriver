@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveGt7Ps5MyBestLapVoiceTypeUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: Gt7Ps5MyBestLapPreferencesRepository
 
@@ -21,10 +20,11 @@ class SaveGt7Ps5MyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `音声タイプを保存できる`() = runBlocking {
-        SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
+    fun `音声タイプを保存できる`() =
+        runBlocking {
+            SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
 
-        coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
+            confirmVerified(repository)
+        }
 }

@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -20,14 +19,15 @@ class SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
     }
 
     @Test
-    fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
-        val useCase = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repository)
+    fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() =
+        runBlocking {
+            val useCase = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repository)
 
-        useCase(50.0)
-        useCase(30.0)
+            useCase(50.0)
+            useCase(30.0)
 
-        coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(50.0) }
-        coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(30.0) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(50.0) }
+            coVerify(exactly = 1) { repository.saveLongitudinalThresholdMeters(30.0) }
+            confirmVerified(repository)
+        }
 }

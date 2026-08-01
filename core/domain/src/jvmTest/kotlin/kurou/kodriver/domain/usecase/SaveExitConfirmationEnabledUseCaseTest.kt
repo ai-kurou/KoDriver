@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveExitConfirmationEnabledUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: ExitConfirmationEnabledRepository
 
@@ -20,10 +19,11 @@ class SaveExitConfirmationEnabledUseCaseTest {
     }
 
     @Test
-    fun `終了確認の有効状態を保存できる`() = runBlocking {
-        SaveExitConfirmationEnabledUseCase(repository)(false)
+    fun `終了確認の有効状態を保存できる`() =
+        runBlocking {
+            SaveExitConfirmationEnabledUseCase(repository)(false)
 
-        coVerify(exactly = 1) { repository.saveExitConfirmationEnabled(false) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveExitConfirmationEnabled(false) }
+            confirmVerified(repository)
+        }
 }

@@ -25,7 +25,6 @@ import org.junit.Test
 import kotlin.test.BeforeTest
 
 class ReadoutListPaneScreenshotTest {
-
     @MockK
     private lateinit var repository: ReadoutPreferencesRepository
 
@@ -44,9 +43,10 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
-                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                            ),
+                            uiState =
+                                ReadoutListUiState(
+                                    simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                                ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
@@ -70,12 +70,13 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
-                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                                selectedSimulator = Simulator.LmuWindows,
-                                items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
-                                readoutEnabledStates = enabledStates,
-                            ),
+                            uiState =
+                                ReadoutListUiState(
+                                    simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                                    selectedSimulator = Simulator.LmuWindows,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
+                                    readoutEnabledStates = enabledStates,
+                                ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
@@ -101,12 +102,13 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
-                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                                selectedSimulator = Simulator.Gt7Ps5,
-                                items = ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
-                                readoutEnabledStates = enabledStates,
-                            ),
+                            uiState =
+                                ReadoutListUiState(
+                                    simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                                    selectedSimulator = Simulator.Gt7Ps5,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
+                                    readoutEnabledStates = enabledStates,
+                                ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
@@ -129,11 +131,12 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
-                                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
-                                selectedSimulator = Simulator.AceWindows,
-                                items = ReadoutListItemType.defaultOrder(Simulator.AceWindows),
-                            ),
+                            uiState =
+                                ReadoutListUiState(
+                                    simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
+                                    selectedSimulator = Simulator.AceWindows,
+                                    items = ReadoutListItemType.defaultOrder(Simulator.AceWindows),
+                                ),
                             onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },

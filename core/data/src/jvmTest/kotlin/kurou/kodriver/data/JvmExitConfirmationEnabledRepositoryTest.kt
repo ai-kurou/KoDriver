@@ -17,7 +17,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class JvmExitConfirmationEnabledRepositoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_exit_confirmation_pref_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -27,37 +26,41 @@ class JvmExitConfirmationEnabledRepositoryTest {
     }
 
     @Test
-    fun `デフォルト値はtrueを返す`() = testScope.runTest {
-        val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
+    fun `デフォルト値はtrueを返す`() =
+        testScope.runTest {
+            val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
 
-        assertTrue(repository.exitConfirmationEnabled().first())
-    }
-
-    @Test
-    fun `falseを保存するとfalseを返す`() = testScope.runTest {
-        val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
-
-        repository.saveExitConfirmationEnabled(false)
-
-        assertFalse(repository.exitConfirmationEnabled().first())
-    }
+            assertTrue(repository.exitConfirmationEnabled().first())
+        }
 
     @Test
-    fun `trueを保存するとtrueを返す`() = testScope.runTest {
-        val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
-        repository.saveExitConfirmationEnabled(false)
+    fun `falseを保存するとfalseを返す`() =
+        testScope.runTest {
+            val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
 
-        repository.saveExitConfirmationEnabled(true)
+            repository.saveExitConfirmationEnabled(false)
 
-        assertTrue(repository.exitConfirmationEnabled().first())
-    }
+            assertFalse(repository.exitConfirmationEnabled().first())
+        }
 
     @Test
-    fun `DataStoreがIOエラーを起こした場合はデフォルト値trueを返す`() = testScope.runTest {
-        val repository = JvmExitConfirmationEnabledRepository(BrokenDataStore())
+    fun `trueを保存するとtrueを返す`() =
+        testScope.runTest {
+            val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
+            repository.saveExitConfirmationEnabled(false)
 
-        assertTrue(repository.exitConfirmationEnabled().first())
-    }
+            repository.saveExitConfirmationEnabled(true)
+
+            assertTrue(repository.exitConfirmationEnabled().first())
+        }
+
+    @Test
+    fun `DataStoreがIOエラーを起こした場合はデフォルト値trueを返す`() =
+        testScope.runTest {
+            val repository = JvmExitConfirmationEnabledRepository(BrokenDataStore())
+
+            assertTrue(repository.exitConfirmationEnabled().first())
+        }
 }
 
 private class BrokenDataStore : DataStore<Preferences> {

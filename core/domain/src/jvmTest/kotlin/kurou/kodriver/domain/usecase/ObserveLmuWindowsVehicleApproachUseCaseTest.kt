@@ -28,7 +28,6 @@ private fun fakeVehicleApproachData(
 )
 
 class ObserveLmuWindowsVehicleApproachUseCaseTest {
-
     @MockK
     private lateinit var repo: LmuWindowsVehicleApproachRepository
 
@@ -38,42 +37,45 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
     }
 
     @Test
-    fun `invokeはリポジトリのvehicleApproachStreamを返す`() = runBlocking {
-        val expected = fakeVehicleApproachData(isSideBySideLeft = true)
-        every { repo.vehicleApproachStream() } returns flowOf(expected)
-        val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
+    fun `invokeはリポジトリのvehicleApproachStreamを返す`() =
+        runBlocking {
+            val expected = fakeVehicleApproachData(isSideBySideLeft = true)
+            every { repo.vehicleApproachStream() } returns flowOf(expected)
+            val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
 
-        val result = useCase().first()
+            val result = useCase().first()
 
-        assertEquals(expected, result)
-        verify(exactly = 1) { repo.vehicleApproachStream() }
-        confirmVerified(repo)
-    }
-
-    @Test
-    fun `invokeは空のフローをそのまま返す`() = runBlocking {
-        every { repo.vehicleApproachStream() } returns flowOf()
-        val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
-
-        val results = buildList { useCase().collect { add(it) } }
-
-        assertTrue(results.isEmpty())
-        verify(exactly = 1) { repo.vehicleApproachStream() }
-        confirmVerified(repo)
-    }
+            assertEquals(expected, result)
+            verify(exactly = 1) { repo.vehicleApproachStream() }
+            confirmVerified(repo)
+        }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
-        val data1 = fakeVehicleApproachData(isSideBySideLeft = false, isSideBySideRight = false)
-        val data2 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = false)
-        val data3 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = true)
-        every { repo.vehicleApproachStream() } returns flowOf(data1, data2, data3)
-        val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
+    fun `invokeは空のフローをそのまま返す`() =
+        runBlocking {
+            every { repo.vehicleApproachStream() } returns flowOf()
+            val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
 
-        val results = buildList { useCase().collect { add(it) } }
+            val results = buildList { useCase().collect { add(it) } }
 
-        assertEquals(listOf(data1, data2, data3), results)
-        verify(exactly = 1) { repo.vehicleApproachStream() }
-        confirmVerified(repo)
-    }
+            assertTrue(results.isEmpty())
+            verify(exactly = 1) { repo.vehicleApproachStream() }
+            confirmVerified(repo)
+        }
+
+    @Test
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
+            val data1 = fakeVehicleApproachData(isSideBySideLeft = false, isSideBySideRight = false)
+            val data2 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = false)
+            val data3 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = true)
+            every { repo.vehicleApproachStream() } returns flowOf(data1, data2, data3)
+            val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
+
+            val results = buildList { useCase().collect { add(it) } }
+
+            assertEquals(listOf(data1, data2, data3), results)
+            verify(exactly = 1) { repo.vehicleApproachStream() }
+            confirmVerified(repo)
+        }
 }

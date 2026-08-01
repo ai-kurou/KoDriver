@@ -18,7 +18,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidExitConfirmationEnabledRepositoryTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var tempFile: File
     private lateinit var repository: AndroidExitConfirmationEnabledRepository
@@ -26,10 +25,11 @@ class AndroidExitConfirmationEnabledRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("exit_confirmation_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
-            scope = CoroutineScope(testDispatcher + SupervisorJob()),
-            produceFile = { tempFile },
-        )
+        val dataStore =
+            PreferenceDataStoreFactory.create(
+                scope = CoroutineScope(testDispatcher + SupervisorJob()),
+                produceFile = { tempFile },
+            )
         repository = AndroidExitConfirmationEnabledRepository(dataStore)
     }
 
@@ -39,22 +39,25 @@ class AndroidExitConfirmationEnabledRepositoryTest {
     }
 
     @Test
-    fun `初期状態はtrueを返す`() = runTest(testDispatcher) {
-        assertTrue(repository.exitConfirmationEnabled().first())
-    }
+    fun `初期状態はtrueを返す`() =
+        runTest(testDispatcher) {
+            assertTrue(repository.exitConfirmationEnabled().first())
+        }
 
     @Test
-    fun `saveExitConfirmationEnabled falseの後にfalseを返す`() = runTest(testDispatcher) {
-        repository.saveExitConfirmationEnabled(false)
+    fun `saveExitConfirmationEnabled falseの後にfalseを返す`() =
+        runTest(testDispatcher) {
+            repository.saveExitConfirmationEnabled(false)
 
-        assertFalse(repository.exitConfirmationEnabled().first())
-    }
+            assertFalse(repository.exitConfirmationEnabled().first())
+        }
 
     @Test
-    fun `saveExitConfirmationEnabled trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
-        repository.saveExitConfirmationEnabled(false)
-        repository.saveExitConfirmationEnabled(true)
+    fun `saveExitConfirmationEnabled trueで上書きするとtrueを返す`() =
+        runTest(testDispatcher) {
+            repository.saveExitConfirmationEnabled(false)
+            repository.saveExitConfirmationEnabled(true)
 
-        assertTrue(repository.exitConfirmationEnabled().first())
-    }
+            assertTrue(repository.exitConfirmationEnabled().first())
+        }
 }

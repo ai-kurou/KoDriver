@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveThemeModeUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: ThemePreferencesRepository
 
@@ -21,10 +20,11 @@ class SaveThemeModeUseCaseTest {
     }
 
     @Test
-    fun `テーマモードを保存できる`() = runBlocking {
-        SaveThemeModeUseCase(repository)(ThemeMode.LIGHT)
+    fun `テーマモードを保存できる`() =
+        runBlocking {
+            SaveThemeModeUseCase(repository)(ThemeMode.LIGHT)
 
-        coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.LIGHT) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.LIGHT) }
+            confirmVerified(repository)
+        }
 }

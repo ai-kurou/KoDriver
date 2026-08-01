@@ -19,7 +19,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class ObserveSelectedSimulatorUseCaseTest {
-
     @MockK
     private lateinit var repo: SimulatorPreferencesRepository
 
@@ -29,21 +28,22 @@ class ObserveSelectedSimulatorUseCaseTest {
     }
 
     @Test
-    fun `初期値がnullのときnullを返し・保存済みの値をそのまま返す`() = runBlocking {
-        val state = MutableStateFlow<Simulator?>(null)
-        every { repo.selectedSimulator() } returns state
-        listOf(Simulator.LmuWindows).forEach { simulator ->
-            coEvery { repo.saveSelectedSimulator(simulator) } answers { state.update { simulator } }
+    fun `初期値がnullのときnullを返し・保存済みの値をそのまま返す`() =
+        runBlocking {
+            val state = MutableStateFlow<Simulator?>(null)
+            every { repo.selectedSimulator() } returns state
+            listOf(Simulator.LmuWindows).forEach { simulator ->
+                coEvery { repo.saveSelectedSimulator(simulator) } answers { state.update { simulator } }
+            }
+            val useCase = ObserveSelectedSimulatorUseCase(repo)
+
+            assertNull(useCase().first())
+
+            repo.saveSelectedSimulator(Simulator.LmuWindows)
+            assertEquals(Simulator.LmuWindows, useCase().first())
+
+            verify(exactly = 2) { repo.selectedSimulator() }
+            coVerify(exactly = 1) { repo.saveSelectedSimulator(Simulator.LmuWindows) }
+            confirmVerified(repo)
         }
-        val useCase = ObserveSelectedSimulatorUseCase(repo)
-
-        assertNull(useCase().first())
-
-        repo.saveSelectedSimulator(Simulator.LmuWindows)
-        assertEquals(Simulator.LmuWindows, useCase().first())
-
-        verify(exactly = 2) { repo.selectedSimulator() }
-        coVerify(exactly = 1) { repo.saveSelectedSimulator(Simulator.LmuWindows) }
-        confirmVerified(repo)
-    }
 }

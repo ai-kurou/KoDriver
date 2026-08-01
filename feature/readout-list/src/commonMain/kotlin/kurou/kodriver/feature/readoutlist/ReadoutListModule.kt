@@ -19,18 +19,19 @@ import org.koin.dsl.module
  * 消費（get で解決）: SimulatorPreferencesRepository・ReadoutPreferencesRepository・
  *   QueuePreferencesRepository（いずれも :core:data で登録）。
  */
-val readoutListModule = module {
-    // ViewModel
-    viewModelOf(::ReadoutListViewModel)
+val readoutListModule =
+    module {
+        // ViewModel
+        viewModelOf(::ReadoutListViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { SaveSelectedSimulatorUseCase(get()) }
-    factory { ObserveReadoutEnabledStatesUseCase(get()) }
-    factory { SaveReadoutEnabledStateUseCase(get()) }
-    factory { ObserveReadoutOrderUseCase(get()) }
-    factory { ResolveReadoutOrderUseCase() }
-    factory { SaveReadoutOrderUseCase(get()) }
-    factory { ObserveQueueEnabledStatesUseCase(get()) }
-    factory { SaveQueueEnabledStateUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { SaveSelectedSimulatorUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { SaveReadoutEnabledStateUseCase(get()) }
+        factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ResolveReadoutOrderUseCase() }
+        factory { SaveReadoutOrderUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get()) }
+        factory { SaveQueueEnabledStateUseCase(get()) }
+    }

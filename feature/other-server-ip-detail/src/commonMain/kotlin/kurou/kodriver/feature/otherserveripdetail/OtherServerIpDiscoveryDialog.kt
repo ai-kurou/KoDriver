@@ -39,9 +39,10 @@ internal fun OtherServerIpDiscoveryDialog(
                 discoveredServers.forEach { server ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onServerSelected(server) },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable { onServerSelected(server) },
                     ) {
                         RadioButton(
                             selected = selectedDiscoveredServer == server,
@@ -71,10 +72,11 @@ internal fun OtherServerIpDiscoveryDialog(
 @Preview(showBackground = true)
 @Composable
 private fun OtherServerIpDiscoveryDialogPreview() {
-    val servers = listOf(
-        DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
-        DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
-    )
+    val servers =
+        listOf(
+            DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+            DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
+        )
     OtherServerIpDiscoveryDialog(
         discoveredServers = servers,
         selectedDiscoveredServer = servers.first(),

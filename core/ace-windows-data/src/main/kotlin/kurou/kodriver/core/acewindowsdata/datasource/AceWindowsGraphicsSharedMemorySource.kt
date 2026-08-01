@@ -15,42 +15,45 @@ import java.nio.ByteBuffer
 internal class AceWindowsGraphicsSharedMemorySource(
     pollingIntervalMs: Long = 16L,
     reconnectIntervalMs: Long = 1_000L,
-    internal val reader: SharedMemoryReader = WindowsSharedMemoryReader(
-        segmentName = "Local\\acevo_pmf_graphics",
-        sizeBytes = GRAPHICS_SEGMENT_SIZE_BYTES,
-    ),
+    internal val reader: SharedMemoryReader =
+        WindowsSharedMemoryReader(
+            segmentName = "Local\\acevo_pmf_graphics",
+            sizeBytes = GRAPHICS_SEGMENT_SIZE_BYTES,
+        ),
     private val currentTimeMs: () -> Long = System::currentTimeMillis,
     scope: CoroutineScope,
 ) {
-    private val pollingSource = SharedMemoryPollingSource(
-        reader = reader,
-        pollingIntervalMs = pollingIntervalMs,
-        reconnectIntervalMs = reconnectIntervalMs,
-        scope = scope,
-    )
+    private val pollingSource =
+        SharedMemoryPollingSource(
+            reader = reader,
+            pollingIntervalMs = pollingIntervalMs,
+            reconnectIntervalMs = reconnectIntervalMs,
+            scope = scope,
+        )
     private var lastKnownPacketId: Int? = null
     private var lastPacketIdChangeTimeMs: Long = 0L
 
     val bufferFlow: Flow<ByteBuffer> = pollingSource.bufferFlow
 
-    suspend fun isConnected(): Boolean = pollingSource.withReaderLock { reader ->
-        // LmuWindowsSharedMemorySource と同様、他プロセスの参照によってセクションが
-        // 生き残っているケースに対応するため、まず close してから開き直す。
-        reader.close()
-        if (!reader.open()) return@withReaderLock false
-        val buffer = reader.readBuffer() ?: return@withReaderLock false
+    suspend fun isConnected(): Boolean =
+        pollingSource.withReaderLock { reader ->
+            // LmuWindowsSharedMemorySource と同様、他プロセスの参照によってセクションが
+            // 生き残っているケースに対応するため、まず close してから開き直す。
+            reader.close()
+            if (!reader.open()) return@withReaderLock false
+            val buffer = reader.readBuffer() ?: return@withReaderLock false
 
-        // packetId（+0）はフレームごとに増加するカウンタ。ACE が終了・停止した場合は
-        // 値が変化しなくなるため、PACKET_ID_STALE_THRESHOLD_MS 以上変化がなければ
-        // 実質的に切断されたとみなす。
-        val currentPacketId = buffer.getInt(PACKET_ID_OFFSET)
-        val nowMs = currentTimeMs()
-        if (currentPacketId != lastKnownPacketId) {
-            lastKnownPacketId = currentPacketId
-            lastPacketIdChangeTimeMs = nowMs
+            // packetId（+0）はフレームごとに増加するカウンタ。ACE が終了・停止した場合は
+            // 値が変化しなくなるため、PACKET_ID_STALE_THRESHOLD_MS 以上変化がなければ
+            // 実質的に切断されたとみなす。
+            val currentPacketId = buffer.getInt(PACKET_ID_OFFSET)
+            val nowMs = currentTimeMs()
+            if (currentPacketId != lastKnownPacketId) {
+                lastKnownPacketId = currentPacketId
+                lastPacketIdChangeTimeMs = nowMs
+            }
+            nowMs - lastPacketIdChangeTimeMs < PACKET_ID_STALE_THRESHOLD_MS
         }
-        nowMs - lastPacketIdChangeTimeMs < PACKET_ID_STALE_THRESHOLD_MS
-    }
 
     private companion object {
         const val GRAPHICS_SEGMENT_SIZE_BYTES = 8_192

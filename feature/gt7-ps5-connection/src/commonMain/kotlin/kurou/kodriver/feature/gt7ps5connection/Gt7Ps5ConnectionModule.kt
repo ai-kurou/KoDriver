@@ -13,13 +13,14 @@ import org.koin.dsl.module
  * 提供: Gt7Ps5ConnectionViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: Gt7Ps5Repository（:core:gt7-ps5-data）・SimulatorPreferencesRepository（:core:data）。
  */
-val gt7Ps5ConnectionModule = module {
-    // ViewModel
-    viewModelOf(::Gt7Ps5ConnectionViewModel)
+val gt7Ps5ConnectionModule =
+    module {
+        // ViewModel
+        viewModelOf(::Gt7Ps5ConnectionViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:gt7-ps5-data / :core:data の Repository を解決）
-    factory { CheckGt7Ps5ConnectionUseCase(get()) }
-    factory { ObserveGt7Ps5UseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveGt7Ps5ConnectionUseCase(get(), get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:gt7-ps5-data / :core:data の Repository を解決）
+        factory { CheckGt7Ps5ConnectionUseCase(get()) }
+        factory { ObserveGt7Ps5UseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveGt7Ps5ConnectionUseCase(get(), get()) }
+    }

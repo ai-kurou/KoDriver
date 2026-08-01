@@ -14,14 +14,15 @@ import org.koin.dsl.module
  * 消費（get で解決）: ReadoutStartSoundPreferencesRepository（:core:data）、および試聴用の
  *   named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
-val otherReadoutStartSoundDetailModule = module {
-    // ViewModel
-    viewModelOf(::OtherReadoutStartSoundDetailViewModel)
+val otherReadoutStartSoundDetailModule =
+    module {
+        // ViewModel
+        viewModelOf(::OtherReadoutStartSoundDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveReadoutStartSoundTypeUseCase(get()) }
-    factory { SaveReadoutStartSoundTypeUseCase(get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveReadoutStartSoundTypeUseCase(get()) }
+        factory { SaveReadoutStartSoundTypeUseCase(get()) }
 
-    // 試聴再生（named "lmu_windows" の TextToSpeechEngine に依存）
-    factory { PreviewStartSoundUseCase(get(named("lmu_windows"))) }
-}
+        // 試聴再生（named "lmu_windows" の TextToSpeechEngine に依存）
+        factory { PreviewStartSoundUseCase(get(named("lmu_windows"))) }
+    }

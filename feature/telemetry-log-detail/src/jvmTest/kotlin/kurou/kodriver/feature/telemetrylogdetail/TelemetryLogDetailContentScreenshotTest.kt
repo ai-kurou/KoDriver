@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class TelemetryLogDetailContentScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -23,19 +22,21 @@ class TelemetryLogDetailContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         TelemetryLogDetailContent(
-                            uiState = TelemetryLogDetailUiState(
-                                logId = 2L,
-                                items = listOf(
-                                    TelemetryLogDetailItemUiState(
-                                        title = "選択したログ",
-                                        telemetryJson = """{"speed":120,"gear":4}""",
-                                    ),
-                                    TelemetryLogDetailItemUiState(
-                                        title = "一つ前のログ",
-                                        telemetryJson = """{"speed":118,"gear":4}""",
-                                    ),
+                            uiState =
+                                TelemetryLogDetailUiState(
+                                    logId = 2L,
+                                    items =
+                                        listOf(
+                                            TelemetryLogDetailItemUiState(
+                                                title = "選択したログ",
+                                                telemetryJson = """{"speed":120,"gear":4}""",
+                                            ),
+                                            TelemetryLogDetailItemUiState(
+                                                title = "一つ前のログ",
+                                                telemetryJson = """{"speed":118,"gear":4}""",
+                                            ),
+                                        ),
                                 ),
-                            ),
                         )
                     }
                 }

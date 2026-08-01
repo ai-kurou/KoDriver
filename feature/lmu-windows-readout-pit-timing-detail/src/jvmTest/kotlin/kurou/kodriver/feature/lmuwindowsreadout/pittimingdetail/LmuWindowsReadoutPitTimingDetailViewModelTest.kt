@@ -33,7 +33,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutPitTimingDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -56,60 +55,67 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutPitTimingDetailViewModel(
-        observeLmuWindowsPitTimingVirtualEnergyLaps = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
-        observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
-        saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
-        saveLmuWindowsPitTimingTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
+    private fun createViewModel() =
+        LmuWindowsReadoutPitTimingDetailViewModel(
+            observeLmuWindowsPitTimingVirtualEnergyLaps =
+                ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
+                    repository,
+                ),
+            observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+            saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
+            saveLmuWindowsPitTimingTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+        )
 
     @Test
-    fun `初期状態は両方とも3周のUiStateを返す`() = runTest {
-        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
-        val viewModel = createViewModel()
+    fun `初期状態は両方とも3周のUiStateを返す`() =
+        runTest {
+            every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
+            every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+            val viewModel = createViewModel()
 
-        val uiState = viewModel.uiState.first()
+            val uiState = viewModel.uiState.first()
 
-        assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, uiState.virtualEnergyLaps)
-        assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, uiState.tyreWearLaps)
-        verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
-        verify(exactly = 1) { repository.observeTyreWearLaps() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `onVirtualEnergyLapsChangedに5を渡すと保存されvirtualEnergyLapsが5になる`() = runTest {
-        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
-        coEvery { repository.saveVirtualEnergyLaps(5) } answers { virtualEnergyLapsFlow.update { 5 } }
-        val viewModel = createViewModel()
-
-        viewModel.onVirtualEnergyLapsChanged(5)
-
-        assertEquals(5, viewModel.uiState.first().virtualEnergyLaps)
-        verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
-        verify(exactly = 1) { repository.observeTyreWearLaps() }
-        coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(5) }
-        confirmVerified(repository)
-    }
+            assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, uiState.virtualEnergyLaps)
+            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, uiState.tyreWearLaps)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `onTyreWearLapsChangedに1を渡すと保存されtyreWearLapsが1になる`() = runTest {
-        every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
-        every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
-        coEvery { repository.saveTyreWearLaps(1) } answers { tyreWearLapsFlow.update { 1 } }
-        val viewModel = createViewModel()
+    fun `onVirtualEnergyLapsChangedに5を渡すと保存されvirtualEnergyLapsが5になる`() =
+        runTest {
+            every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
+            every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+            coEvery { repository.saveVirtualEnergyLaps(5) } answers { virtualEnergyLapsFlow.update { 5 } }
+            val viewModel = createViewModel()
 
-        viewModel.onTyreWearLapsChanged(1)
+            viewModel.onVirtualEnergyLapsChanged(5)
 
-        assertEquals(1, viewModel.uiState.first().tyreWearLaps)
-        verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
-        verify(exactly = 1) { repository.observeTyreWearLaps() }
-        coVerify(exactly = 1) { repository.saveTyreWearLaps(1) }
-        confirmVerified(repository)
-    }
+            assertEquals(5, viewModel.uiState.first().virtualEnergyLaps)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(5) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onTyreWearLapsChangedに1を渡すと保存されtyreWearLapsが1になる`() =
+        runTest {
+            every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
+            every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
+            coEvery { repository.saveTyreWearLaps(1) } answers { tyreWearLapsFlow.update { 1 } }
+            val viewModel = createViewModel()
+
+            viewModel.onTyreWearLapsChanged(1)
+
+            assertEquals(1, viewModel.uiState.first().tyreWearLaps)
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            verify(exactly = 1) { repository.observeTyreWearLaps() }
+            coVerify(exactly = 1) { repository.saveTyreWearLaps(1) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onPreviewClickedを呼ぶと5周と0周のPitTimingWarningイベントが再生される`() {

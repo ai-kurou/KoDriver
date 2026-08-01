@@ -18,7 +18,6 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     private val saveMyBestLapVoiceType: SaveGt7Ps5MyBestLapVoiceTypeUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<Gt7Ps5ReadoutMyBestLapDetailUiState> =
         observeMyBestLapVoiceType()
             .map { Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = it) }
@@ -35,10 +34,11 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     }
 
     fun onPreviewClicked(type: MyBestLapVoiceType) {
-        val event = when (type) {
-            MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
-            MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
-        }
+        val event =
+            when (type) {
+                MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
+                MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
+            }
         playSpeechEvent(event)
     }
 }

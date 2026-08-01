@@ -18,7 +18,6 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
     private val saveMyBestLapVoiceType: SaveLmuWindowsMyBestLapVoiceTypeUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<LmuWindowsReadoutMyBestLapDetailUiState> =
         observeMyBestLapVoiceType()
             .map { LmuWindowsReadoutMyBestLapDetailUiState(voiceType = it) }
@@ -35,10 +34,11 @@ internal class LmuWindowsReadoutMyBestLapDetailViewModel(
     }
 
     fun onPreviewClicked(type: MyBestLapVoiceType) {
-        val event = when (type) {
-            MyBestLapVoiceType.FORMAL -> SpeechEvent.LmuWindowsMyBestLapFormal
-            MyBestLapVoiceType.CASUAL -> SpeechEvent.LmuWindowsMyBestLapCasual
-        }
+        val event =
+            when (type) {
+                MyBestLapVoiceType.FORMAL -> SpeechEvent.LmuWindowsMyBestLapFormal
+                MyBestLapVoiceType.CASUAL -> SpeechEvent.LmuWindowsMyBestLapCasual
+            }
         playSpeechEvent(event)
     }
 }

@@ -63,7 +63,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DebugStateDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -104,508 +103,494 @@ class DebugStateDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = DebugStateDetailViewModel(
-        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
-        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
-        observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
-        observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
-        observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
-        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(aceWindowsFuelRepository),
-        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(aceWindowsFlagRepository),
-        observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
-        observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
-        resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
-        saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
-    )
+    private fun createViewModel() =
+        DebugStateDetailViewModel(
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
+            observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
+            observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
+            observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
+            observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
+            observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(aceWindowsFuelRepository),
+            observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(aceWindowsFlagRepository),
+            observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
+            observeCardOrder = ObserveDebugStateCardOrderUseCase(cardOrderRepository),
+            resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
+            saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
+        )
 
-    private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) = LmuWindowsVehicleApproachData(
-        sideBySideLeftVehicleIds = leftVehicleIds,
-        sideBySideRightVehicleIds = emptySet(),
-        lateralDistanceLeftMeters = if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0,
-        lateralDistanceRightMeters = Double.MAX_VALUE,
-    )
+    private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
+        LmuWindowsVehicleApproachData(
+            sideBySideLeftVehicleIds = leftVehicleIds,
+            sideBySideRightVehicleIds = emptySet(),
+            lateralDistanceLeftMeters = if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0,
+            lateralDistanceRightMeters = Double.MAX_VALUE,
+        )
 
     @Test
-    fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
+    fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(SessionPhase.UNKNOWN, state.raceFlags?.gamePhase)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
-
-    @Test
-    fun `フラグ情報を購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
-        every { flagRepository.flagStream() } returns flagsFlow
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
-
-        flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
-        val state = viewModel.uiState.first()
-
-        assertEquals(SessionPhase.GREEN_FLAG, state.raceFlags?.gamePhase)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
+            assertEquals(SessionPhase.UNKNOWN, state.raceFlags?.gamePhase)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
 
     @Test
-    fun `選択中シミュレータを購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
+    fun `フラグ情報を購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
+            every { flagRepository.flagStream() } returns flagsFlow
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            flagsFlow.update { sampleRaceFlags(gamePhase = SessionPhase.GREEN_FLAG) }
+            val state = viewModel.uiState.first()
 
-        assertEquals(Simulator.LmuWindows, state.selectedSimulator)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
-
-    @Test
-    fun `バーチャルエナジー情報を購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
-
-        val state = viewModel.uiState.first()
-
-        assertEquals(10, state.virtualEnergy?.session)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
+            assertEquals(SessionPhase.GREEN_FLAG, state.raceFlags?.gamePhase)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
 
     @Test
-    fun `LMUテレメトリを購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(3))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
+    fun `選択中シミュレータを購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(3, state.lmuWindowsTelemetry?.timing?.currentLap)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
-
-    @Test
-    fun `GT7テレメトリを購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(5))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
-
-        val state = viewModel.uiState.first()
-
-        assertEquals(5, state.gt7Ps5Telemetry?.lapCount)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
+            assertEquals(Simulator.LmuWindows, state.selectedSimulator)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
 
     @Test
-    fun `ACEフラッグ情報を購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns
-            MutableStateFlow(AceWindowsFlagData(flag = AceWindowsFlagType.BLUE_FLAG))
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
+    fun `バーチャルエナジー情報を購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(10))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(AceWindowsFlagType.BLUE_FLAG, state.aceWindowsFlag?.flag)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
-
-    @Test
-    fun `並走車両情報を購読すると uiState に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(setOf(1)))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
-
-        val state = viewModel.uiState.first()
-
-        assertEquals(true, state.vehicleApproach?.isSideBySideLeft)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
+            assertEquals(10, state.virtualEnergy?.session)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
 
     @Test
-    fun `初期状態のcardOrderはデフォルト順序`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
+    fun `LMUテレメトリを購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(3))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(
-            listOf(
-                DebugStateCardKey.SIMULATOR,
-                DebugStateCardKey.FLAG_INFO,
-                DebugStateCardKey.GAME_PHASE,
-                DebugStateCardKey.SESSION,
-                DebugStateCardKey.YELLOW_FLAG_STATE,
-                DebugStateCardKey.CURRENT_LAP,
-                DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                DebugStateCardKey.BEST_LAP,
-                DebugStateCardKey.TYRE_TEMPERATURE,
-                DebugStateCardKey.TYRE_WEAR,
-                DebugStateCardKey.FUEL_CONSUMPTION,
-                DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-            ),
-            state.cardOrder,
-        )
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
+            assertEquals(3, state.lmuWindowsTelemetry?.timing?.currentLap)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
 
     @Test
-    fun `永続化された順序があればそれを初期値として使う`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns
-            MutableStateFlow(listOf(DebugStateCardKey.FUEL_CONSUMPTION, DebugStateCardKey.SIMULATOR))
-        val viewModel = createViewModel()
+    fun `GT7テレメトリを購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(5))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(
-            listOf(
-                DebugStateCardKey.FUEL_CONSUMPTION,
-                DebugStateCardKey.SIMULATOR,
-                DebugStateCardKey.FLAG_INFO,
-                DebugStateCardKey.GAME_PHASE,
-                DebugStateCardKey.SESSION,
-                DebugStateCardKey.YELLOW_FLAG_STATE,
-                DebugStateCardKey.CURRENT_LAP,
-                DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                DebugStateCardKey.BEST_LAP,
-                DebugStateCardKey.TYRE_TEMPERATURE,
-                DebugStateCardKey.TYRE_WEAR,
-                DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-            ),
-            state.cardOrder,
-        )
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
+            assertEquals(5, state.gt7Ps5Telemetry?.lapCount)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
 
     @Test
-    fun `moveCardで順序を入れ替えるとuiStateへ即座に反映される`() = runTest {
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every { flagRepository.flagStream() } returns
-            MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
-        every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
-        every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
-        every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
-        every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
-        every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
-        every { vehicleApproachRepository.vehicleApproachStream() } returns
-            MutableStateFlow(sampleVehicleApproach(emptySet()))
-        every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
-        val viewModel = createViewModel()
+    fun `ACEフラッグ情報を購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns
+                MutableStateFlow(AceWindowsFlagData(flag = AceWindowsFlagType.BLUE_FLAG))
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
 
-        viewModel.moveCard(0, 1)
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(
-            listOf(
-                DebugStateCardKey.FLAG_INFO,
-                DebugStateCardKey.SIMULATOR,
-                DebugStateCardKey.GAME_PHASE,
-                DebugStateCardKey.SESSION,
-                DebugStateCardKey.YELLOW_FLAG_STATE,
-                DebugStateCardKey.CURRENT_LAP,
-                DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-                DebugStateCardKey.BEST_LAP,
-                DebugStateCardKey.TYRE_TEMPERATURE,
-                DebugStateCardKey.TYRE_WEAR,
-                DebugStateCardKey.FUEL_CONSUMPTION,
-                DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-            ),
-            state.cardOrder,
-        )
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        verify(exactly = 1) { flagRepository.flagStream() }
-        verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
-        verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-        verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
-        verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
-        verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
-        verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
-        verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
-        coVerify(exactly = 1) {
-            cardOrderRepository.saveCardOrder(
+            assertEquals(AceWindowsFlagType.BLUE_FLAG, state.aceWindowsFlag?.flag)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `並走車両情報を購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(setOf(1)))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.first()
+
+            assertEquals(true, state.vehicleApproach?.isSideBySideLeft)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `初期状態のcardOrderはデフォルト順序`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.first()
+
+            assertEquals(
+                listOf(
+                    DebugStateCardKey.SIMULATOR,
+                    DebugStateCardKey.FLAG_INFO,
+                    DebugStateCardKey.GAME_PHASE,
+                    DebugStateCardKey.SESSION,
+                    DebugStateCardKey.YELLOW_FLAG_STATE,
+                    DebugStateCardKey.CURRENT_LAP,
+                    DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    DebugStateCardKey.BEST_LAP,
+                    DebugStateCardKey.TYRE_TEMPERATURE,
+                    DebugStateCardKey.TYRE_WEAR,
+                    DebugStateCardKey.FUEL_CONSUMPTION,
+                    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                ),
+                state.cardOrder,
+            )
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `永続化された順序があればそれを初期値として使う`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns
+                MutableStateFlow(listOf(DebugStateCardKey.FUEL_CONSUMPTION, DebugStateCardKey.SIMULATOR))
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.first()
+
+            assertEquals(
+                listOf(
+                    DebugStateCardKey.FUEL_CONSUMPTION,
+                    DebugStateCardKey.SIMULATOR,
+                    DebugStateCardKey.FLAG_INFO,
+                    DebugStateCardKey.GAME_PHASE,
+                    DebugStateCardKey.SESSION,
+                    DebugStateCardKey.YELLOW_FLAG_STATE,
+                    DebugStateCardKey.CURRENT_LAP,
+                    DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                    DebugStateCardKey.BEST_LAP,
+                    DebugStateCardKey.TYRE_TEMPERATURE,
+                    DebugStateCardKey.TYRE_WEAR,
+                    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                ),
+                state.cardOrder,
+            )
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `moveCardで順序を入れ替えるとuiStateへ即座に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(0))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            viewModel.moveCard(0, 1)
+            val state = viewModel.uiState.first()
+
+            assertEquals(
                 listOf(
                     DebugStateCardKey.FLAG_INFO,
                     DebugStateCardKey.SIMULATOR,
@@ -620,67 +605,99 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.FUEL_CONSUMPTION,
                     DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
                 ),
+                state.cardOrder,
+            )
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            coVerify(exactly = 1) {
+                cardOrderRepository.saveCardOrder(
+                    listOf(
+                        DebugStateCardKey.FLAG_INFO,
+                        DebugStateCardKey.SIMULATOR,
+                        DebugStateCardKey.GAME_PHASE,
+                        DebugStateCardKey.SESSION,
+                        DebugStateCardKey.YELLOW_FLAG_STATE,
+                        DebugStateCardKey.CURRENT_LAP,
+                        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+                        DebugStateCardKey.BEST_LAP,
+                        DebugStateCardKey.TYRE_TEMPERATURE,
+                        DebugStateCardKey.TYRE_WEAR,
+                        DebugStateCardKey.FUEL_CONSUMPTION,
+                        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+                    ),
+                )
+            }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                cardOrderRepository,
             )
         }
-        confirmVerified(
-            simulatorPreferencesRepository,
-            flagRepository,
-            virtualEnergyRepository,
-            lmuWindowsRepository,
-            gt7Ps5Repository,
-            aceWindowsFuelRepository,
-            aceWindowsFlagRepository,
-            vehicleApproachRepository,
-            cardOrderRepository,
-        )
-    }
 }
 
-private fun sampleRaceFlags(gamePhase: SessionPhase) = LmuWindowsRaceFlagsData(
-    gamePhase = gamePhase,
-    yellowFlagState = SessionYellowFlagState.NONE,
-    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-    startLight = 0,
-    numRedLights = 0,
-    playerFlag = PrimaryFlag.GREEN,
-    playerUnderYellow = false,
-    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
-)
+private fun sampleRaceFlags(gamePhase: SessionPhase) =
+    LmuWindowsRaceFlagsData(
+        gamePhase = gamePhase,
+        yellowFlagState = SessionYellowFlagState.NONE,
+        sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+        startLight = 0,
+        numRedLights = 0,
+        playerFlag = PrimaryFlag.GREEN,
+        playerUnderYellow = false,
+        playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+    )
 
 private fun sampleVirtualEnergy(session: Int) = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session)
 
-private fun sampleLmuWindowsTelemetry(currentLap: Int) = LmuWindowsTelemetryData(
-    timestampMs = 0L,
-    engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
-    inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-    tyres = LmuWindowsTyreData(wheels = emptyMap()),
-    fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-    timing = LmuWindowsTimingData(
-        currentLapTimeMs = 0L,
-        lastLapTimeMs = 0L,
-        bestLapTimeMs = 0L,
-        sector1Ms = 0L,
-        sector1And2Ms = 0L,
-        currentLap = currentLap,
-        maxLaps = 0,
-    ),
-    vehicle = LmuWindowsVehicleData(
-        localVelocityX = 0.0,
-        localVelocityY = 0.0,
-        localVelocityZ = 0.0,
-        positionX = 0.0,
-        positionY = 0.0,
-        positionZ = 0.0,
-    ),
-)
+private fun sampleLmuWindowsTelemetry(currentLap: Int) =
+    LmuWindowsTelemetryData(
+        timestampMs = 0L,
+        engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+        inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+        tyres = LmuWindowsTyreData(wheels = emptyMap()),
+        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        timing =
+            LmuWindowsTimingData(
+                currentLapTimeMs = 0L,
+                lastLapTimeMs = 0L,
+                bestLapTimeMs = 0L,
+                sector1Ms = 0L,
+                sector1And2Ms = 0L,
+                currentLap = currentLap,
+                maxLaps = 0,
+            ),
+        vehicle =
+            LmuWindowsVehicleData(
+                localVelocityX = 0.0,
+                localVelocityY = 0.0,
+                localVelocityZ = 0.0,
+                positionX = 0.0,
+                positionY = 0.0,
+                positionZ = 0.0,
+            ),
+    )
 
-private fun sampleGt7Ps5Telemetry(lapCount: Int) = Gt7Ps5TelemetryData(
-    lapCount = lapCount,
-    lapsInRace = 0,
-    bestLapTimeMs = 0,
-    gasLevel = 0f,
-    gasCapacity = 0f,
-)
+private fun sampleGt7Ps5Telemetry(lapCount: Int) =
+    Gt7Ps5TelemetryData(
+        lapCount = lapCount,
+        lapsInRace = 0,
+        bestLapTimeMs = 0,
+        gasLevel = 0f,
+        gasCapacity = 0f,
+    )
 
 private fun sampleAceWindowsFuel() = AceWindowsFuelData(remainingPercent = 50.0)
 

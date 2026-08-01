@@ -15,9 +15,7 @@ import java.nio.ByteBuffer
 internal class LmuWindowsFlagRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsFlagRepository {
-
-    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> =
-        source.bufferFlow.mapNotNull { readFlags(it) }
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = source.bufferFlow.mapNotNull { readFlags(it) }
 
     private fun readFlags(buffer: ByteBuffer): LmuWindowsRaceFlagsData? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_NUM_VEHICLES).coerceIn(0, MAX_VEHICLES)
@@ -26,22 +24,27 @@ internal class LmuWindowsFlagRepositoryImpl(
         return LmuWindowsRaceFlagsData(
             gamePhase = SessionPhase.fromRaw(buffer.get(SCORING_BASE + OFF_GAME_PHASE).toInt() and 0xFF),
             yellowFlagState = SessionYellowFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_YELLOW_FLAG_STATE).toInt()),
-            sectorFlags = listOf(
-                SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS).toInt()),
-                SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 1).toInt()),
-                SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 2).toInt()),
-            ),
+            sectorFlags =
+                listOf(
+                    SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS).toInt()),
+                    SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 1).toInt()),
+                    SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 2).toInt()),
+                ),
             startLight = buffer.get(SCORING_BASE + OFF_START_LIGHT).toInt() and 0xFF,
             numRedLights = buffer.get(SCORING_BASE + OFF_NUM_RED_LIGHTS).toInt() and 0xFF,
             playerFlag = PrimaryFlag.fromRaw(buffer.get(playerVehicleBase + OFF_PLAYER_FLAG).toInt() and 0xFF),
             playerUnderYellow = buffer.get(playerVehicleBase + OFF_PLAYER_UNDER_YELLOW).toInt() != 0,
-            playerCountLapFlag = CountLapFlag.fromRaw(
-                buffer.get(playerVehicleBase + OFF_PLAYER_COUNT_LAP_FLAG).toInt() and 0xFF,
-            ),
+            playerCountLapFlag =
+                CountLapFlag.fromRaw(
+                    buffer.get(playerVehicleBase + OFF_PLAYER_COUNT_LAP_FLAG).toInt() and 0xFF,
+                ),
         )
     }
 
-    private fun findPlayerVehicleBase(buffer: ByteBuffer, vehicleCount: Int): Int? {
+    private fun findPlayerVehicleBase(
+        buffer: ByteBuffer,
+        vehicleCount: Int,
+    ): Int? {
         for (index in 0 until vehicleCount) {
             val vehicleBase = VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
             if (buffer.get(vehicleBase + OFF_IS_PLAYER).toInt() != 0) {

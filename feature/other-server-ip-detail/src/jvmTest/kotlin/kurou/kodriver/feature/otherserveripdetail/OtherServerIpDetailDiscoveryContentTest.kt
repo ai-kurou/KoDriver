@@ -12,7 +12,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherServerIpDetailDiscoveryContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -20,10 +19,11 @@ class OtherServerIpDetailDiscoveryContentTest {
     fun `検出中かつ検出結果がない場合は検出中の表示がされる`() {
         rule.setContent {
             OtherServerIpDetailPaneContent(
-                uiState = OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = emptyList(),
-                ),
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        discoveredServers = emptyList(),
+                    ),
             )
         }
 
@@ -34,10 +34,11 @@ class OtherServerIpDetailDiscoveryContentTest {
     fun `検出中は検出ボタンが無効になっている`() {
         rule.setContent {
             OtherServerIpDetailPaneContent(
-                uiState = OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = emptyList(),
-                ),
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        discoveredServers = emptyList(),
+                    ),
             )
         }
 
@@ -49,12 +50,13 @@ class OtherServerIpDetailDiscoveryContentTest {
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         rule.setContent {
             OtherServerIpDetailPaneContent(
-                uiState = OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = true,
-                    selectedDiscoveredServer = server,
-                ),
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = true,
+                        selectedDiscoveredServer = server,
+                    ),
             )
         }
 
@@ -68,12 +70,13 @@ class OtherServerIpDetailDiscoveryContentTest {
         var confirmCount = 0
         rule.setContent {
             OtherServerIpDetailPaneContent(
-                uiState = OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = true,
-                    selectedDiscoveredServer = server,
-                ),
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = true,
+                        selectedDiscoveredServer = server,
+                    ),
                 onDiscoveryDialogConfirm = { confirmCount++ },
             )
         }
@@ -89,12 +92,13 @@ class OtherServerIpDetailDiscoveryContentTest {
         var dismissCount = 0
         rule.setContent {
             OtherServerIpDetailPaneContent(
-                uiState = OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = true,
-                    selectedDiscoveredServer = server,
-                ),
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = true,
+                        selectedDiscoveredServer = server,
+                    ),
                 onDiscoveryDialogDismiss = { dismissCount++ },
             )
         }
@@ -110,11 +114,12 @@ class OtherServerIpDetailDiscoveryContentTest {
         var showCount = 0
         rule.setContent {
             OtherServerIpDetailPaneContent(
-                uiState = OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = false,
-                ),
+                uiState =
+                    OtherServerIpDetailUiState(
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = false,
+                    ),
                 onShowDiscoveredServers = { showCount++ },
             )
         }

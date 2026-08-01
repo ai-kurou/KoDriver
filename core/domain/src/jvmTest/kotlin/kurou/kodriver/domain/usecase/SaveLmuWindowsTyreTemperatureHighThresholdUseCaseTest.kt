@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsTyreTemperaturePreferencesRepository
 
@@ -20,14 +19,15 @@ class SaveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
     }
 
     @Test
-    fun `任意の値を保存できる`() = runBlocking {
-        val useCase = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository)
+    fun `任意の値を保存できる`() =
+        runBlocking {
+            val useCase = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository)
 
-        useCase(100)
-        useCase(75)
+            useCase(100)
+            useCase(75)
 
-        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-        coVerify(exactly = 1) { repository.saveHighThresholdCelsius(75) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
+            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(75) }
+            confirmVerified(repository)
+        }
 }

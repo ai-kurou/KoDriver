@@ -12,21 +12,21 @@ private const val TIMEOUT_MS = 3000
 internal class TcpServerConnectivityChecker(
     private val port: Int = DEFAULT_PORT,
 ) : ServerConnectivityChecker {
-    override suspend fun isReachable(ip: String): Boolean = withContext(Dispatchers.IO) {
-        val address = ip.toIpv4InetAddress() ?: return@withContext false
-        try {
-            Socket().use { socket ->
-                socket.connect(InetSocketAddress(address, port), TIMEOUT_MS)
-                true
+    override suspend fun isReachable(ip: String): Boolean =
+        withContext(Dispatchers.IO) {
+            val address = ip.toIpv4InetAddress() ?: return@withContext false
+            try {
+                Socket().use { socket ->
+                    socket.connect(InetSocketAddress(address, port), TIMEOUT_MS)
+                    true
+                }
+            } catch (e: Exception) {
+                false
             }
-        } catch (e: Exception) {
-            false
         }
-    }
 }
 
-internal actual fun createServerConnectivityChecker(): ServerConnectivityChecker =
-    TcpServerConnectivityChecker()
+internal actual fun createServerConnectivityChecker(): ServerConnectivityChecker = TcpServerConnectivityChecker()
 
 private fun String.toIpv4InetAddress(): InetAddress? {
     val octets = split(".")

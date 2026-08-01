@@ -20,7 +20,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class LmuWindowsVehicleDamageRepositoryImplTest {
-
     private fun makeSource(
         reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -33,83 +32,93 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから overheating と partDetached と lastImpactMagnitude を読み取る`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
-            buildDamageBuffer(
-                DamageBufferConfig(
-                    overheating = true,
-                    partDetached = true,
-                    lastImpactMagnitude = 42.5,
-                ),
-            ),
-        )
-        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
+    fun `共有メモリから overheating と partDetached と lastImpactMagnitude を読み取る`() =
+        runBlocking {
+            val reader =
+                FakeDamageMemoryReader(
+                    buildDamageBuffer(
+                        DamageBufferConfig(
+                            overheating = true,
+                            partDetached = true,
+                            lastImpactMagnitude = 42.5,
+                        ),
+                    ),
+                )
+            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.vehicleDamageStream().first()
+            val result = repo.vehicleDamageStream().first()
 
-        assertTrue(result.overheating)
-        assertTrue(result.partDetached)
-        assertEquals(42.5, result.lastImpactMagnitude)
-    }
-
-    @Test
-    fun `overheating と partDetached が false のとき false を返す`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
-            buildDamageBuffer(DamageBufferConfig(overheating = false, partDetached = false)),
-        )
-        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
-
-        val result = repo.vehicleDamageStream().first()
-
-        assertFalse(result.overheating)
-        assertFalse(result.partDetached)
-    }
+            assertTrue(result.overheating)
+            assertTrue(result.partDetached)
+            assertEquals(42.5, result.lastImpactMagnitude)
+        }
 
     @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
-            buildDamageBuffer(DamageBufferConfig(activeVehicles = 0)),
-        )
-        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+    fun `overheating と partDetached が false のとき false を返す`() =
+        runBlocking {
+            val reader =
+                FakeDamageMemoryReader(
+                    buildDamageBuffer(DamageBufferConfig(overheating = false, partDetached = false)),
+                )
+            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
 
-        val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val result = repo.vehicleDamageStream().first()
 
-        assertEquals(0, emitCount.get())
-    }
-
-    @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
-            buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
-        )
-        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
-
-        val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
-
-        assertEquals(0, emitCount.get())
-    }
+            assertFalse(result.overheating)
+            assertFalse(result.partDetached)
+        }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
-            buffer = buildDamageBuffer(),
-            openResult = false,
-        )
-        val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+            val reader =
+                FakeDamageMemoryReader(
+                    buildDamageBuffer(DamageBufferConfig(activeVehicles = 0)),
+                )
+            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
+
+    @Test
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+            val reader =
+                FakeDamageMemoryReader(
+                    buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
+                )
+            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
+        }
+
+    @Test
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+            val reader =
+                FakeDamageMemoryReader(
+                    buffer = buildDamageBuffer(),
+                    openResult = false,
+                )
+            val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
+
+            val job = launch { repo.vehicleDamageStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
+
+            assertEquals(0, emitCount.get())
+        }
 
     private fun buildDamageBuffer(config: DamageBufferConfig = DamageBufferConfig()): ByteBuffer {
         val telemetryBase = 128_464
@@ -141,7 +150,6 @@ private class FakeDamageMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
 ) : SharedMemoryReader {
-
     private var opened = openResult
 
     override fun open(): Boolean {

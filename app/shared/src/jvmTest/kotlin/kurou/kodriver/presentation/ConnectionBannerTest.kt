@@ -11,7 +11,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ConnectionBannerTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -19,11 +18,12 @@ class ConnectionBannerTest {
     fun `CONNECTED状態でメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.CONNECTED,
-                    message = "接続済み",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "接続済み",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
             )
         }
 
@@ -34,11 +34,12 @@ class ConnectionBannerTest {
     fun `DISCONNECTED状態でメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "切断中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "切断中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
             )
         }
 
@@ -49,11 +50,12 @@ class ConnectionBannerTest {
     fun `UNCHECKED状態でメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "確認中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "確認中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
             )
         }
 
@@ -64,11 +66,12 @@ class ConnectionBannerTest {
     fun `SIMULATORアイコンタイプかつCONNECTEDでメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.CONNECTED,
-                    message = "LMU接続済み",
-                    iconType = ConnectionBannerIconType.SIMULATOR,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "LMU接続済み",
+                        iconType = ConnectionBannerIconType.SIMULATOR,
+                    ),
             )
         }
 
@@ -79,11 +82,12 @@ class ConnectionBannerTest {
     fun `SIMULATORアイコンタイプかつDISCONNECTEDでメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "LMU未接続",
-                    iconType = ConnectionBannerIconType.SIMULATOR,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "LMU未接続",
+                        iconType = ConnectionBannerIconType.SIMULATOR,
+                    ),
             )
         }
 
@@ -95,12 +99,13 @@ class ConnectionBannerTest {
         var clicked = false
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "IPアドレスが未設定です",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = true,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "IPアドレスが未設定です",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = true,
+                    ),
                 onClick = { clicked = true },
             )
         }
@@ -114,12 +119,13 @@ class ConnectionBannerTest {
     fun `isTappableがfalseの場合はタップ不可でシェブロンが表示されない`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "確認中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = false,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "確認中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = false,
+                    ),
                 onClick = {},
             )
         }
@@ -131,12 +137,13 @@ class ConnectionBannerTest {
     fun `isTappableがtrueでもonClickがnullの場合はタップ不可`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "確認中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = true,
-                ),
+                uiState =
+                    ConnectionBannerUiState(
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "確認中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = true,
+                    ),
                 onClick = null,
             )
         }

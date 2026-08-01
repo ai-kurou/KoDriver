@@ -14,9 +14,10 @@ import org.koin.dsl.module
  * テスト用の Fake Koin モジュール（testFixtures）。:core:data の TelemetryLogRepository を
  * インメモリの Fake 実装に差し替える。
  */
-val fakeTelemetryLogListModule = module {
-    single<TelemetryLogRepository> { fakeTelemetryLogRepository }
-}
+val fakeTelemetryLogListModule =
+    module {
+        single<TelemetryLogRepository> { fakeTelemetryLogRepository }
+    }
 
 val fakeTelemetryLogRepository = FakeTelemetryLogRepository()
 
@@ -25,13 +26,17 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
 
     override fun observeTelemetryLogs() = logs
 
-    override fun observeTelemetryLogDetail(id: Long) = logs.map { logs ->
-        val current = logs.firstOrNull { it.id == id } ?: return@map null
-        val previous = logs
-            .filter { it.createdAt < current.createdAt || (it.createdAt == current.createdAt && it.id < current.id) }
-            .maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
-        TelemetryLogDetail(current = current, previous = previous)
-    }
+    override fun observeTelemetryLogDetail(id: Long) =
+        logs.map { logs ->
+            val current = logs.firstOrNull { it.id == id } ?: return@map null
+            val previous =
+                logs
+                    .filter {
+                        it.createdAt < current.createdAt ||
+                            (it.createdAt == current.createdAt && it.id < current.id)
+                    }.maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
+            TelemetryLogDetail(current = current, previous = previous)
+        }
 
     override suspend fun saveTelemetryLog(
         createdAt: Long,
@@ -41,13 +46,14 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
         emit(
-            logs.value + TelemetryLog(
-                id = nextId,
-                createdAt = createdAt,
-                simulator = simulator,
-                readoutItemKey = readoutItemKey,
-                telemetryJson = telemetryJson,
-            ),
+            logs.value +
+                TelemetryLog(
+                    id = nextId,
+                    createdAt = createdAt,
+                    simulator = simulator,
+                    readoutItemKey = readoutItemKey,
+                    telemetryJson = telemetryJson,
+                ),
         )
     }
 

@@ -26,35 +26,40 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val connectedMessage = stringResource(Res.string.banner_simulator_connected)
     val disconnectedMessage = stringResource(Res.string.banner_simulator_disconnected)
     val consoleIpNotConfiguredMessage = stringResource(Res.string.banner_console_ip_not_configured)
-    val snackbarConnectedMessage = stringResource(
-        connectionBannerSnackbarConnectedMessageRes(isGt7, isAceWindows),
-    )
-    val snackbarDisconnectedMessage = stringResource(
-        connectionBannerSnackbarDisconnectedMessageRes(isGt7, isAceWindows),
-    )
-    val status = when (uiState.connectionStatus) {
-        ConnectionBannerVmStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
+    val snackbarConnectedMessage =
+        stringResource(
+            connectionBannerSnackbarConnectedMessageRes(isGt7, isAceWindows),
+        )
+    val snackbarDisconnectedMessage =
+        stringResource(
+            connectionBannerSnackbarDisconnectedMessageRes(isGt7, isAceWindows),
+        )
+    val status =
+        when (uiState.connectionStatus) {
+            ConnectionBannerVmStatus.CONNECTED -> ConnectionBannerStatus.CONNECTED
 
-        ConnectionBannerVmStatus.DISCONNECTED -> ConnectionBannerStatus.DISCONNECTED
+            ConnectionBannerVmStatus.DISCONNECTED -> ConnectionBannerStatus.DISCONNECTED
 
-        ConnectionBannerVmStatus.UNCHECKED,
-        ConnectionBannerVmStatus.IP_NOT_CONFIGURED,
-        -> ConnectionBannerStatus.UNCHECKED
-    }
-    val message = when (uiState.connectionStatus) {
-        ConnectionBannerVmStatus.CONNECTED -> connectedMessage
+            ConnectionBannerVmStatus.UNCHECKED,
+            ConnectionBannerVmStatus.IP_NOT_CONFIGURED,
+            -> ConnectionBannerStatus.UNCHECKED
+        }
+    val message =
+        when (uiState.connectionStatus) {
+            ConnectionBannerVmStatus.CONNECTED -> connectedMessage
 
-        ConnectionBannerVmStatus.IP_NOT_CONFIGURED -> consoleIpNotConfiguredMessage
+            ConnectionBannerVmStatus.IP_NOT_CONFIGURED -> consoleIpNotConfiguredMessage
 
-        ConnectionBannerVmStatus.DISCONNECTED,
-        ConnectionBannerVmStatus.UNCHECKED,
-        -> disconnectedMessage
-    }
+            ConnectionBannerVmStatus.DISCONNECTED,
+            ConnectionBannerVmStatus.UNCHECKED,
+            -> disconnectedMessage
+        }
     val iconType = if (isGt7) ConnectionBannerIconType.NETWORK else ConnectionBannerIconType.SIMULATOR
-    val tapNavigationTarget = connectionBannerNavigationTarget(
-        isGt7 = isGt7,
-        supportsLmuServerIpNavigation = false,
-    )
+    val tapNavigationTarget =
+        connectionBannerNavigationTarget(
+            isGt7 = isGt7,
+            supportsLmuServerIpNavigation = false,
+        )
     return ConnectionBannerUiState(
         status = status,
         message = message,

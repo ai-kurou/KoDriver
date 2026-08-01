@@ -74,88 +74,119 @@ private enum class OtherListSection {
     Information,
 }
 
-private val otherListSections = listOf(
-    OtherListSection.ConnectionSettings,
-    OtherListSection.ReadoutSettings,
-    OtherListSection.AppSettings,
-    OtherListSection.Information,
-)
+private val otherListSections =
+    listOf(
+        OtherListSection.ConnectionSettings,
+        OtherListSection.ReadoutSettings,
+        OtherListSection.AppSettings,
+        OtherListSection.Information,
+    )
 
-private fun OtherListItemType.section(): OtherListSection = when (this) {
-    OtherListItemType.ServerIp,
-    OtherListItemType.ConsoleIp,
-    -> OtherListSection.ConnectionSettings
+private fun OtherListItemType.section(): OtherListSection =
+    when (this) {
+        OtherListItemType.ServerIp,
+        OtherListItemType.ConsoleIp,
+        -> OtherListSection.ConnectionSettings
 
-    OtherListItemType.Volume,
-    OtherListItemType.ReadoutStartSound,
-    -> OtherListSection.ReadoutSettings
+        OtherListItemType.Volume,
+        OtherListItemType.ReadoutStartSound,
+        -> OtherListSection.ReadoutSettings
 
-    OtherListItemType.KeepScreenOn,
-    OtherListItemType.ExitConfirmation,
-    OtherListItemType.Theme,
-    OtherListItemType.DynamicColor,
-    -> OtherListSection.AppSettings
+        OtherListItemType.KeepScreenOn,
+        OtherListItemType.ExitConfirmation,
+        OtherListItemType.Theme,
+        OtherListItemType.DynamicColor,
+        -> OtherListSection.AppSettings
 
-    OtherListItemType.GitHubRepository,
-    OtherListItemType.ReleasePage,
-    OtherListItemType.License,
-    -> OtherListSection.Information
+        OtherListItemType.GitHubRepository,
+        OtherListItemType.ReleasePage,
+        OtherListItemType.License,
+        -> OtherListSection.Information
 
-    OtherListItemType.DebugState -> OtherListSection.Information
-}
-
-@Composable
-private fun otherItemDisplayName(itemType: OtherListItemType): String = when (itemType) {
-    OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
-    OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
-    OtherListItemType.Volume -> stringResource(Res.string.item_volume)
-    OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
-    OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
-    OtherListItemType.ExitConfirmation -> stringResource(Res.string.item_exit_confirmation)
-    OtherListItemType.Theme -> stringResource(Res.string.item_theme)
-    OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
-    OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
-    OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
-    OtherListItemType.License -> stringResource(Res.string.item_license)
-    OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
-}
+        OtherListItemType.DebugState -> OtherListSection.Information
+    }
 
 @Composable
-private fun otherListSectionTitle(section: OtherListSection): String = when (section) {
-    OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
-    OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
-    OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
-    OtherListSection.Information -> stringResource(Res.string.section_information)
-}
-
-@Composable
-private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: Boolean) {
+private fun otherItemDisplayName(itemType: OtherListItemType): String =
     when (itemType) {
-        OtherListItemType.ServerIp -> Icon(imageVector = Icons.Outlined.Computer, contentDescription = null)
+        OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
+        OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
+        OtherListItemType.Volume -> stringResource(Res.string.item_volume)
+        OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
+        OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
+        OtherListItemType.ExitConfirmation -> stringResource(Res.string.item_exit_confirmation)
+        OtherListItemType.Theme -> stringResource(Res.string.item_theme)
+        OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
+        OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
+        OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
+        OtherListItemType.License -> stringResource(Res.string.item_license)
+        OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
+    }
 
-        OtherListItemType.ConsoleIp -> Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = null)
+@Composable
+private fun otherListSectionTitle(section: OtherListSection): String =
+    when (section) {
+        OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
+        OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
+        OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
+        OtherListSection.Information -> stringResource(Res.string.section_information)
+    }
 
-        OtherListItemType.Volume -> Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
-
-        OtherListItemType.KeepScreenOn -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
-
-        OtherListItemType.ReadoutStartSound -> Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
-
-        OtherListItemType.ExitConfirmation -> Icon(imageVector = Icons.Outlined.Output, contentDescription = null)
-
-        OtherListItemType.Theme -> Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
-
-        OtherListItemType.DynamicColor -> Icon(imageVector = Icons.Outlined.Palette, contentDescription = null)
-
-        OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
-
-        OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
-            Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
+@Composable
+private fun OtherListItemLeadingIcon(
+    itemType: OtherListItemType,
+    hasAppUpdate: Boolean,
+) {
+    when (itemType) {
+        OtherListItemType.ServerIp -> {
+            Icon(imageVector = Icons.Outlined.Computer, contentDescription = null)
         }
 
-        OtherListItemType.License -> Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
+        OtherListItemType.ConsoleIp -> {
+            Icon(imageVector = Icons.Outlined.SportsEsports, contentDescription = null)
+        }
 
-        OtherListItemType.DebugState -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
+        OtherListItemType.Volume -> {
+            Icon(imageVector = Icons.AutoMirrored.Outlined.VolumeUp, contentDescription = null)
+        }
+
+        OtherListItemType.KeepScreenOn -> {
+            Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
+        }
+
+        OtherListItemType.ReadoutStartSound -> {
+            Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
+        }
+
+        OtherListItemType.ExitConfirmation -> {
+            Icon(imageVector = Icons.Outlined.Output, contentDescription = null)
+        }
+
+        OtherListItemType.Theme -> {
+            Icon(imageVector = Icons.Outlined.BrightnessHigh, contentDescription = null)
+        }
+
+        OtherListItemType.DynamicColor -> {
+            Icon(imageVector = Icons.Outlined.Palette, contentDescription = null)
+        }
+
+        OtherListItemType.GitHubRepository -> {
+            Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
+        }
+
+        OtherListItemType.ReleasePage -> {
+            BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+                Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
+            }
+        }
+
+        OtherListItemType.License -> {
+            Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
+        }
+
+        OtherListItemType.DebugState -> {
+            Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
+        }
     }
 }
 
@@ -206,9 +237,10 @@ fun OtherListPane(
 
     LazyColumn(
         state = listState,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(vertical = 8.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp),
     ) {
         val groupedItems = uiState.items.groupBy { it.section() }
         otherListSections.forEach { section ->
@@ -262,9 +294,10 @@ private fun OtherListSectionHeader(section: OtherListSection) {
         text = otherListSectionTitle(section),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
     )
 }
 
@@ -279,29 +312,32 @@ private fun OtherListItem(
 ) {
     val isSelected = item == uiState.selectedItem
     val containerColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.secondaryContainer
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemContainerColor",
     )
     val headlineColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.onSecondaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        },
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.onSecondaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemHeadlineColor",
     )
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            MaterialTheme.colorScheme.onSecondaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        },
+        targetValue =
+            if (isSelected) {
+                MaterialTheme.colorScheme.onSecondaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
         animationSpec = tween(durationMillis = 500),
         label = "otherListItemIconColor",
     )
@@ -311,20 +347,26 @@ private fun OtherListItem(
         leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
         trailingContent = {
             when (item) {
-                OtherListItemType.KeepScreenOn -> Switch(
-                    checked = uiState.keepScreenOn,
-                    onCheckedChange = onKeepScreenOnChange,
-                )
+                OtherListItemType.KeepScreenOn -> {
+                    Switch(
+                        checked = uiState.keepScreenOn,
+                        onCheckedChange = onKeepScreenOnChange,
+                    )
+                }
 
-                OtherListItemType.ExitConfirmation -> Switch(
-                    checked = uiState.exitConfirmationEnabled,
-                    onCheckedChange = onExitConfirmationEnabledChange,
-                )
+                OtherListItemType.ExitConfirmation -> {
+                    Switch(
+                        checked = uiState.exitConfirmationEnabled,
+                        onCheckedChange = onExitConfirmationEnabledChange,
+                    )
+                }
 
-                OtherListItemType.DynamicColor -> Switch(
-                    checked = uiState.dynamicColorEnabled,
-                    onCheckedChange = onDynamicColorEnabledChange,
-                )
+                OtherListItemType.DynamicColor -> {
+                    Switch(
+                        checked = uiState.dynamicColorEnabled,
+                        onCheckedChange = onDynamicColorEnabledChange,
+                    )
+                }
 
                 OtherListItemType.ServerIp,
                 OtherListItemType.ConsoleIp,
@@ -335,46 +377,50 @@ private fun OtherListItem(
                 OtherListItemType.ReleasePage,
                 OtherListItemType.License,
                 OtherListItemType.DebugState,
-                -> OtherListItemTrailingIcon(item)
+                -> {
+                    OtherListItemTrailingIcon(item)
+                }
             }
         },
-        colors = ListItemDefaults.colors(
-            containerColor = containerColor,
-            headlineColor = headlineColor,
-            leadingIconColor = iconColor,
-            trailingIconColor = iconColor,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics { selected = isSelected }
-            .clickable {
-                when (item) {
-                    OtherListItemType.KeepScreenOn -> {
-                        onKeepScreenOnChange(!uiState.keepScreenOn)
-                    }
+        colors =
+            ListItemDefaults.colors(
+                containerColor = containerColor,
+                headlineColor = headlineColor,
+                leadingIconColor = iconColor,
+                trailingIconColor = iconColor,
+            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .semantics { selected = isSelected }
+                .clickable {
+                    when (item) {
+                        OtherListItemType.KeepScreenOn -> {
+                            onKeepScreenOnChange(!uiState.keepScreenOn)
+                        }
 
-                    OtherListItemType.ExitConfirmation -> {
-                        onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
-                    }
+                        OtherListItemType.ExitConfirmation -> {
+                            onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
+                        }
 
-                    OtherListItemType.DynamicColor -> {
-                        onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
-                    }
+                        OtherListItemType.DynamicColor -> {
+                            onDynamicColorEnabledChange(!uiState.dynamicColorEnabled)
+                        }
 
-                    OtherListItemType.ServerIp,
-                    OtherListItemType.ConsoleIp,
-                    OtherListItemType.Volume,
-                    OtherListItemType.ReadoutStartSound,
-                    OtherListItemType.Theme,
-                    OtherListItemType.GitHubRepository,
-                    OtherListItemType.ReleasePage,
-                    OtherListItemType.License,
-                    OtherListItemType.DebugState,
-                    -> {
-                        onItemClick(item)
+                        OtherListItemType.ServerIp,
+                        OtherListItemType.ConsoleIp,
+                        OtherListItemType.Volume,
+                        OtherListItemType.ReadoutStartSound,
+                        OtherListItemType.Theme,
+                        OtherListItemType.GitHubRepository,
+                        OtherListItemType.ReleasePage,
+                        OtherListItemType.License,
+                        OtherListItemType.DebugState,
+                        -> {
+                            onItemClick(item)
+                        }
                     }
-                }
-            },
+                },
     )
 }
 
@@ -406,28 +452,31 @@ private fun OtherAppVersionListItem(
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            headlineColor = MaterialTheme.colorScheme.onSurface,
-            leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                val now = TimeSource.Monotonic.markNow()
-                val elapsedSinceLastTap = lastTapMark?.elapsedNow()
-                tapCount = if (elapsedSinceLastTap != null && elapsedSinceLastTap < DEBUG_STATE_TAP_TIMEOUT) {
-                    tapCount + 1
-                } else {
-                    1
-                }
-                lastTapMark = now
-                if (tapCount >= DEBUG_STATE_TAP_THRESHOLD) {
-                    tapCount = 0
-                    onAppVersionTapped()
-                }
-            },
+        colors =
+            ListItemDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                headlineColor = MaterialTheme.colorScheme.onSurface,
+                leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable {
+                    val now = TimeSource.Monotonic.markNow()
+                    val elapsedSinceLastTap = lastTapMark?.elapsedNow()
+                    tapCount =
+                        if (elapsedSinceLastTap != null && elapsedSinceLastTap < DEBUG_STATE_TAP_TIMEOUT) {
+                            tapCount + 1
+                        } else {
+                            1
+                        }
+                    lastTapMark = now
+                    if (tapCount >= DEBUG_STATE_TAP_THRESHOLD) {
+                        tapCount = 0
+                        onAppVersionTapped()
+                    }
+                },
     )
 }
 

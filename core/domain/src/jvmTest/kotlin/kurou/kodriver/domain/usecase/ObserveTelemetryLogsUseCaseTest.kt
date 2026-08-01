@@ -55,7 +55,6 @@ private fun createTelemetryLogRepository(
 }
 
 class ObserveTelemetryLogsUseCaseTest {
-
     @MockK
     private lateinit var repository: TelemetryLogRepository
 
@@ -65,39 +64,40 @@ class ObserveTelemetryLogsUseCaseTest {
     }
 
     @Test
-    fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() = runBlocking {
-        val repository = createTelemetryLogRepository(repository)
-        val useCase = ObserveTelemetryLogsUseCase(repository)
+    fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() =
+        runBlocking {
+            val repository = createTelemetryLogRepository(repository)
+            val useCase = ObserveTelemetryLogsUseCase(repository)
 
-        assertEquals(emptyList(), useCase().first())
+            assertEquals(emptyList(), useCase().first())
 
-        repository.saveTelemetryLog(
-            createdAt = 2000L,
-            simulator = Simulator.LmuWindows,
-            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-            telemetryJson = """{"currentLap":2}""",
-        )
-        assertEquals(
-            listOf(
-                TelemetryLog(
-                    id = 1L,
-                    createdAt = 2000L,
-                    simulator = Simulator.LmuWindows,
-                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-                    telemetryJson = """{"currentLap":2}""",
-                ),
-            ),
-            useCase().first(),
-        )
-        verify(exactly = 2) { repository.observeTelemetryLogs() }
-        coVerify(exactly = 1) {
             repository.saveTelemetryLog(
                 createdAt = 2000L,
                 simulator = Simulator.LmuWindows,
                 readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
                 telemetryJson = """{"currentLap":2}""",
             )
+            assertEquals(
+                listOf(
+                    TelemetryLog(
+                        id = 1L,
+                        createdAt = 2000L,
+                        simulator = Simulator.LmuWindows,
+                        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                        telemetryJson = """{"currentLap":2}""",
+                    ),
+                ),
+                useCase().first(),
+            )
+            verify(exactly = 2) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) {
+                repository.saveTelemetryLog(
+                    createdAt = 2000L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                    telemetryJson = """{"currentLap":2}""",
+                )
+            }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
 }

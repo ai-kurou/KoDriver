@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SimulatorPreferencesRepositoryFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_simulator_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -23,10 +22,11 @@ class SimulatorPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `simulator_preferences_pbに書き込まれる`() = testScope.runTest {
-        val repository = createSimulatorPreferencesRepository(tempDir.absolutePath)
-        repository.saveSelectedSimulator(Simulator.LmuWindows)
+    fun `simulator_preferences_pbに書き込まれる`() =
+        testScope.runTest {
+            val repository = createSimulatorPreferencesRepository(tempDir.absolutePath)
+            repository.saveSelectedSimulator(Simulator.LmuWindows)
 
-        assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
-    }
+            assertEquals(Simulator.LmuWindows, repository.selectedSimulator().first())
+        }
 }

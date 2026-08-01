@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveDynamicColorEnabledUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: DynamicColorEnabledRepository
 
@@ -20,10 +19,11 @@ class SaveDynamicColorEnabledUseCaseTest {
     }
 
     @Test
-    fun `Repositoryへ保存する`() = runBlocking {
-        SaveDynamicColorEnabledUseCase(repository)(true)
+    fun `Repositoryへ保存する`() =
+        runBlocking {
+            SaveDynamicColorEnabledUseCase(repository)(true)
 
-        coVerify(exactly = 1) { repository.saveDynamicColorEnabled(true) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveDynamicColorEnabled(true) }
+            confirmVerified(repository)
+        }
 }

@@ -29,7 +29,6 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
 }
 
 class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -39,32 +38,36 @@ class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialLongitudinal = 10.0,
-        )
-        val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
+    fun `初期値を返す`() =
+        runBlocking {
+            val repo =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialLongitudinal = 10.0,
+                )
+            val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
-        assertEquals(10.0, useCase().first())
+            assertEquals(10.0, useCase().first())
 
-        verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
-        confirmVerified(repo)
-    }
+            verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
+            confirmVerified(repo)
+        }
 
     @Test
-    fun `保存済みの縦方向閾値をそのまま返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialLongitudinal = 10.0,
-        )
-        val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
+    fun `保存済みの縦方向閾値をそのまま返す`() =
+        runBlocking {
+            val repo =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialLongitudinal = 10.0,
+                )
+            val useCase = ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repo)
 
-        repo.saveLongitudinalThresholdMeters(50.0)
-        assertEquals(50.0, useCase().first())
+            repo.saveLongitudinalThresholdMeters(50.0)
+            assertEquals(50.0, useCase().first())
 
-        coVerify(exactly = 1) { repo.saveLongitudinalThresholdMeters(50.0) }
-        verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
-        confirmVerified(repo)
-    }
+            coVerify(exactly = 1) { repo.saveLongitudinalThresholdMeters(50.0) }
+            verify(exactly = 1) { repo.observeLongitudinalThresholdMeters() }
+            confirmVerified(repo)
+        }
 }

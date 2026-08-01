@@ -14,7 +14,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SharedMemoryPollingSourceTest {
-
     private fun makeSource(
         reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -27,49 +26,53 @@ class SharedMemoryPollingSourceTest {
     )
 
     @Test
-    fun `open 成功後に bufferFlow がバッファを emit する`() = runBlocking<Unit> {
-        val reader = FakeSharedMemoryReader(initialOpen = true)
-        val source = makeSource(reader)
+    fun `open 成功後に bufferFlow がバッファを emit する`() =
+        runBlocking<Unit> {
+            val reader = FakeSharedMemoryReader(initialOpen = true)
+            val source = makeSource(reader)
 
-        source.bufferFlow.first()
-    }
-
-    @Test
-    fun `open 失敗中は bufferFlow が emit しない`() = runBlocking {
-        val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
-        val source = makeSource(reader)
-        var emitCount = 0
-
-        val job = launch { source.bufferFlow.collect { emitCount++ } }
-        delay(50)
-        job.cancelAndJoin()
-
-        assertTrue(emitCount == 0)
-    }
+            source.bufferFlow.first()
+        }
 
     @Test
-    fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() = runBlocking {
-        val reader = FakeSharedMemoryReader(initialOpen = true)
-        val source = makeSource(reader)
+    fun `open 失敗中は bufferFlow が emit しない`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
+            val source = makeSource(reader)
+            var emitCount = 0
 
-        val job = launch { source.bufferFlow.collect { } }
-        delay(50)
-        job.cancelAndJoin()
-        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
-        delay(100)
+            val job = launch { source.bufferFlow.collect { emitCount++ } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertTrue(reader.closeCalled)
-    }
+            assertTrue(emitCount == 0)
+        }
 
     @Test
-    fun `withReaderLock は reader を渡して block を実行する`() = runBlocking {
-        val reader = FakeSharedMemoryReader(initialOpen = true)
-        val source = makeSource(reader)
+    fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = true)
+            val source = makeSource(reader)
 
-        val result = source.withReaderLock { r -> r.isOpen() }
+            val job = launch { source.bufferFlow.collect { } }
+            delay(50)
+            job.cancelAndJoin()
+            // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
+            delay(100)
 
-        assertEquals(true, result)
-    }
+            assertTrue(reader.closeCalled)
+        }
+
+    @Test
+    fun `withReaderLock は reader を渡して block を実行する`() =
+        runBlocking {
+            val reader = FakeSharedMemoryReader(initialOpen = true)
+            val source = makeSource(reader)
+
+            val result = source.withReaderLock { r -> r.isOpen() }
+
+            assertEquals(true, result)
+        }
 }
 
 private class FakeSharedMemoryReader(
@@ -77,7 +80,6 @@ private class FakeSharedMemoryReader(
     private val openResult: Boolean = true,
     private val returnNullBuffer: Boolean = false,
 ) : SharedMemoryReader {
-
     private var opened = initialOpen
     var closeCalled = false
 

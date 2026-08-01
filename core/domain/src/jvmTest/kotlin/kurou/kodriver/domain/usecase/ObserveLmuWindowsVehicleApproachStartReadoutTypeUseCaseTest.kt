@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsVehicleApproachPreferencesRepository
 
@@ -25,13 +24,14 @@ class ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
     }
 
     @Test
-    fun `接近開始時読み上げ種別を監視できる`() = runBlocking {
-        every { repository.observeStartReadoutType() } returns
-            MutableStateFlow(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
-        val useCase = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)
+    fun `接近開始時読み上げ種別を監視できる`() =
+        runBlocking {
+            every { repository.observeStartReadoutType() } returns
+                MutableStateFlow(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
+            val useCase = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)
 
-        assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCase().first())
-        verify(exactly = 1) { repository.observeStartReadoutType() }
-        confirmVerified(repository)
-    }
+            assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCase().first())
+            verify(exactly = 1) { repository.observeStartReadoutType() }
+            confirmVerified(repository)
+        }
 }

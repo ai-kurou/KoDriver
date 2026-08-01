@@ -18,7 +18,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidKeepScreenOnEnabledRepositoryTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var tempFile: File
     private lateinit var repository: AndroidKeepScreenOnEnabledRepository
@@ -26,10 +25,11 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("keep_screen_on_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
-            scope = CoroutineScope(testDispatcher + SupervisorJob()),
-            produceFile = { tempFile },
-        )
+        val dataStore =
+            PreferenceDataStoreFactory.create(
+                scope = CoroutineScope(testDispatcher + SupervisorJob()),
+                produceFile = { tempFile },
+            )
         repository = AndroidKeepScreenOnEnabledRepository(dataStore)
     }
 
@@ -39,22 +39,25 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
     }
 
     @Test
-    fun `初期状態はtrueを返す`() = runTest(testDispatcher) {
-        assertTrue(repository.keepScreenOn().first())
-    }
+    fun `初期状態はtrueを返す`() =
+        runTest(testDispatcher) {
+            assertTrue(repository.keepScreenOn().first())
+        }
 
     @Test
-    fun `saveKeepScreenOn falseの後にfalseを返す`() = runTest(testDispatcher) {
-        repository.saveKeepScreenOn(false)
+    fun `saveKeepScreenOn falseの後にfalseを返す`() =
+        runTest(testDispatcher) {
+            repository.saveKeepScreenOn(false)
 
-        assertFalse(repository.keepScreenOn().first())
-    }
+            assertFalse(repository.keepScreenOn().first())
+        }
 
     @Test
-    fun `saveKeepScreenOn trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
-        repository.saveKeepScreenOn(false)
-        repository.saveKeepScreenOn(true)
+    fun `saveKeepScreenOn trueで上書きするとtrueを返す`() =
+        runTest(testDispatcher) {
+            repository.saveKeepScreenOn(false)
+            repository.saveKeepScreenOn(true)
 
-        assertTrue(repository.keepScreenOn().first())
-    }
+            assertTrue(repository.keepScreenOn().first())
+        }
 }

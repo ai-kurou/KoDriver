@@ -6,7 +6,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class Gt7Ps5MapperTest {
-
     private companion object {
         const val LAP_COUNT_OFFSET = 0x74
         const val LAPS_IN_RACE_OFFSET = 0x76
@@ -76,13 +75,14 @@ class Gt7Ps5MapperTest {
 
     @Test
     fun `全フィールドを同時に正しくマッピングする`() {
-        val packet = packetWith(
-            lapCount = 3,
-            lapsInRace = 15,
-            bestLapTimeMs = 85_432,
-            gasLevel = 30.2f,
-            gasCapacity = 80f,
-        )
+        val packet =
+            packetWith(
+                lapCount = 3,
+                lapsInRace = 15,
+                bestLapTimeMs = 85_432,
+                gasLevel = 30.2f,
+                gasCapacity = 80f,
+            )
         val result = Gt7Ps5Mapper.map(packet)
         assertEquals(3, result.lapCount)
         assertEquals(15, result.lapsInRace)

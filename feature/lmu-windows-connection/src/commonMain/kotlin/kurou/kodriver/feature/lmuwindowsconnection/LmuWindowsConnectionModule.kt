@@ -11,8 +11,9 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsRepository（:core:lmu-windows-data / Android は :core:data の WebSocket 実装）・
  *   SimulatorPreferencesRepository（:core:data）。
  */
-val lmuWindowsConnectionModule = module {
-    // ドメイン UseCase（:core:domain。get() は接続元 Repository・:core:data の Preferences Repository を解決）
-    factory { CheckLmuWindowsConnectionUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-}
+val lmuWindowsConnectionModule =
+    module {
+        // ドメイン UseCase（:core:domain。get() は接続元 Repository・:core:data の Preferences Repository を解決）
+        factory { CheckLmuWindowsConnectionUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+    }

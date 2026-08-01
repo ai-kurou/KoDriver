@@ -12,11 +12,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesRepositoryFactoryTest {
-
-    private val tempDir = Files
-        .createTempDirectory(
-        "kodriver_lmu_windows_vehicle_approach_preferences_repository_factory_test",
-    ).toFile()
+    private val tempDir =
+        Files
+            .createTempDirectory(
+                "kodriver_lmu_windows_vehicle_approach_preferences_repository_factory_test",
+            ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -25,18 +25,20 @@ class LmuWindowsVehicleApproachPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は skipFirstLap が true`() = testScope.runTest {
-        val repository = createLmuWindowsVehicleApproachPreferencesRepository(tempDir.absolutePath)
+    fun `デフォルト値は skipFirstLap が true`() =
+        testScope.runTest {
+            val repository = createLmuWindowsVehicleApproachPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(true, repository.observeSkipFirstLap().first())
-    }
+            assertEquals(true, repository.observeSkipFirstLap().first())
+        }
 
     @Test
-    fun `保存した skipFirstLap を読み出せる`() = testScope.runTest {
-        val repository = createLmuWindowsVehicleApproachPreferencesRepository(tempDir.absolutePath)
+    fun `保存した skipFirstLap を読み出せる`() =
+        testScope.runTest {
+            val repository = createLmuWindowsVehicleApproachPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveSkipFirstLap(true)
+            repository.saveSkipFirstLap(true)
 
-        assertEquals(true, repository.observeSkipFirstLap().first())
-    }
+            assertEquals(true, repository.observeSkipFirstLap().first())
+        }
 }

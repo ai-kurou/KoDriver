@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveGt7Ps5RemainingFuelLapsUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: Gt7Ps5RemainingFuelLapsPreferencesRepository
 
@@ -20,10 +19,11 @@ class SaveGt7Ps5RemainingFuelLapsUseCaseTest {
     }
 
     @Test
-    fun `燃料残り周回数を保存できる`() = runBlocking {
-        SaveGt7Ps5RemainingFuelLapsUseCase(repository)(1)
+    fun `燃料残り周回数を保存できる`() =
+        runBlocking {
+            SaveGt7Ps5RemainingFuelLapsUseCase(repository)(1)
 
-        coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }
+            confirmVerified(repository)
+        }
 }

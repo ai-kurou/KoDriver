@@ -14,7 +14,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutStartSoundPreferencesRepositoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_readout_start_sound_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -24,38 +23,42 @@ class ReadoutStartSoundPreferencesRepositoryTest {
     }
 
     @Test
-    fun `デフォルト値は FORMULA_RADIO`() = testScope.runTest {
-        val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
+    fun `デフォルト値は FORMULA_RADIO`() =
+        testScope.runTest {
+            val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
-    }
-
-    @Test
-    fun `saveType した値を observeType で取得できる`() = testScope.runTest {
-        val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
-
-        repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
-
-        assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
-    }
+            assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
+        }
 
     @Test
-    fun `readout_start_sound_preferences_pb に書き込まれる`() = testScope.runTest {
-        val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
-        repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE)
-        repository.observeType().first()
+    fun `saveType した値を observeType で取得できる`() =
+        testScope.runTest {
+            val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
-        assertTrue(tempDir.resolve("readout_start_sound_preferences.pb").exists())
-    }
+            repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
+
+            assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
+        }
 
     @Test
-    fun `異なる種別を連続して保存できる`() = testScope.runTest {
-        val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
+    fun `readout_start_sound_preferences_pb に書き込まれる`() =
+        testScope.runTest {
+            val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
+            repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE)
+            repository.observeType().first()
 
-        repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
-        assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
+            assertTrue(tempDir.resolve("readout_start_sound_preferences.pb").exists())
+        }
 
-        repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE)
-        assertEquals(ReadoutStartSoundType.ELECTRONIC_NOISE, repository.observeType().first())
-    }
+    @Test
+    fun `異なる種別を連続して保存できる`() =
+        testScope.runTest {
+            val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
+
+            repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
+            assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
+
+            repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE)
+            assertEquals(ReadoutStartSoundType.ELECTRONIC_NOISE, repository.observeType().first())
+        }
 }

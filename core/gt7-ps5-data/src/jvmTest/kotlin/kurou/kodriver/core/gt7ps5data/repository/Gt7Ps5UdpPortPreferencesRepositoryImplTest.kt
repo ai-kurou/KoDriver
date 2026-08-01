@@ -16,14 +16,14 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_gt7_udp_port_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
-        serializer = Gt7Ps5UdpPortPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("test.pb") },
-    )
+    private val dataStore =
+        DataStoreFactory.create(
+            serializer = Gt7Ps5UdpPortPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("test.pb") },
+        )
     private val repository = Gt7Ps5UdpPortPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
@@ -32,13 +32,14 @@ class Gt7Ps5UdpPortPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値はデフォルトポート・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
+    fun `初期値はデフォルトポート・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
+            assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
 
-        repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE)
-        assertEquals(GT7_PS5_UDP_PORT_ALTERNATE, repository.port().first())
+            repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE)
+            assertEquals(GT7_PS5_UDP_PORT_ALTERNATE, repository.port().first())
 
-        repository.savePort(GT7_PS5_UDP_PORT_DEFAULT)
-        assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
-    }
+            repository.savePort(GT7_PS5_UDP_PORT_DEFAULT)
+            assertEquals(GT7_PS5_UDP_PORT_DEFAULT, repository.port().first())
+        }
 }

@@ -20,7 +20,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveQueueEnabledStatesUseCaseTest {
-
     @MockK
     private lateinit var repository: QueuePreferencesRepository
 
@@ -30,63 +29,65 @@ class ObserveQueueEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() = runBlocking {
-        every { repository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-        val useCase = ObserveQueueEnabledStatesUseCase(repository)
+    fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() =
+        runBlocking {
+            every { repository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.Flag.Root to false,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
-                ReadoutItemKey.LmuWindows.TyreWear.Root to true,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                ReadoutItemKey.AceWindows.Flag.Root to true,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-            ),
-            useCase().first(),
-        )
-        verify(exactly = 1) { repository.observeQueueEnabledStates() }
-        confirmVerified(repository)
-    }
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.Flag.Root to false,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.LmuWindows.PitTiming.Root to true,
+                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                    ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+                    ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
+                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                ),
+                useCase().first(),
+            )
+            verify(exactly = 1) { repository.observeQueueEnabledStates() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-        every { repository.observeQueueEnabledStates() } returns states
-        coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {
-            states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
-        }
-        val useCase = ObserveQueueEnabledStatesUseCase(repository)
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
+            val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeQueueEnabledStates() } returns states
+            coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {
+                states.update { it + (ReadoutItemKey.LmuWindows.Flag.Root to true) }
+            }
+            val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
-        repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
-
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.Flag.Root to true,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                ReadoutItemKey.LmuWindows.PitTiming.Root to true,
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
-                ReadoutItemKey.LmuWindows.TyreWear.Root to true,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                ReadoutItemKey.AceWindows.Flag.Root to true,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
-            ),
-            useCase().first(),
-        )
-        coVerify(exactly = 1) {
             repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.Flag.Root to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+                    ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                    ReadoutItemKey.LmuWindows.PitTiming.Root to true,
+                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                    ReadoutItemKey.LmuWindows.TyreWear.Root to true,
+                    ReadoutItemKey.LmuWindows.MyBestLap.Root to false,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
+                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root to true,
+                ),
+                useCase().first(),
+            )
+            coVerify(exactly = 1) {
+                repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+            }
+            verify(exactly = 1) { repository.observeQueueEnabledStates() }
+            confirmVerified(repository)
         }
-        verify(exactly = 1) { repository.observeQueueEnabledStates() }
-        confirmVerified(repository)
-    }
 }

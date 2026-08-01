@@ -23,7 +23,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class WebSocketVirtualEnergyRepositoryTest {
-
     private lateinit var server: MockWebServer
     private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVirtualEnergy
 
@@ -42,106 +41,127 @@ class WebSocketVirtualEnergyRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsVirtualEnergyRepository(
-        serverIpRepository = fakeIpRepository,
-        port = server.port,
-        retryDelayMs = retryDelayMs,
-    )
-
-    @Test
-    fun `ipがnullのときvirtualEnergyStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
-            buildRepository().virtualEnergyStream().first()
-        }
-        assertNull(result)
-    }
-
-    @Test
-    fun `有効なJSONフレームを受信したときLmuWindowsVirtualEnergyDataをemitする`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(VIRTUAL_ENERGY_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
-
-        val result = buildRepository().virtualEnergyStream().first()
-
-        assertEquals(0.5, result.remainingRatio)
-        assertEquals("/ws/lmu_windows/virtual_energy", server.takeRequest().path)
-    }
-
-    @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send("invalid json")
-                        webSocket.send(VIRTUAL_ENERGY_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
-
-        val result = buildRepository().virtualEnergyStream().first()
-
-        assertNotNull(result)
-        assertEquals(0.5, result.remainingRatio)
-    }
-
-    @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() = runTest {
-        val closedPort = server.port
-        server.shutdown()
-        fakeIpRepository.setIp("127.0.0.1")
-        val repository = WebSocketLmuWindowsVirtualEnergyRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsVirtualEnergyRepository(
             serverIpRepository = fakeIpRepository,
-            port = closedPort,
-            retryDelayMs = 0L,
+            port = server.port,
+            retryDelayMs = retryDelayMs,
         )
-
-        val result = withTimeoutOrNull(300) {
-            repository.virtualEnergyStream().first()
-        }
-
-        assertNull(result)
-    }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.close(1001, "drop")
-                    }
-                },
-            ),
-        )
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(VIRTUAL_ENERGY_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
+    fun `ipがnullのときvirtualEnergyStreamは何もemitしない`() =
+        runTest {
+            val result =
+                withTimeoutOrNull(300) {
+                    buildRepository().virtualEnergyStream().first()
+                }
+            assertNull(result)
+        }
 
-        val result = buildRepository(retryDelayMs = 0L).virtualEnergyStream().first()
+    @Test
+    fun `有効なJSONフレームを受信したときLmuWindowsVirtualEnergyDataをemitする`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(VIRTUAL_ENERGY_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        assertEquals(0.5, result.remainingRatio)
-    }
+            val result = buildRepository().virtualEnergyStream().first()
+
+            assertEquals(0.5, result.remainingRatio)
+            assertEquals("/ws/lmu_windows/virtual_energy", server.takeRequest().path)
+        }
+
+    @Test
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send("invalid json")
+                            webSocket.send(VIRTUAL_ENERGY_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
+
+            val result = buildRepository().virtualEnergyStream().first()
+
+            assertNotNull(result)
+            assertEquals(0.5, result.remainingRatio)
+        }
+
+    @Test
+    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
+        runTest {
+            val closedPort = server.port
+            server.shutdown()
+            fakeIpRepository.setIp("127.0.0.1")
+            val repository =
+                WebSocketLmuWindowsVirtualEnergyRepository(
+                    serverIpRepository = fakeIpRepository,
+                    port = closedPort,
+                    retryDelayMs = 0L,
+                )
+
+            val result =
+                withTimeoutOrNull(300) {
+                    repository.virtualEnergyStream().first()
+                }
+
+            assertNull(result)
+        }
+
+    @Test
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.close(1001, "drop")
+                        }
+                    },
+                ),
+            )
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(VIRTUAL_ENERGY_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
+
+            val result = buildRepository(retryDelayMs = 0L).virtualEnergyStream().first()
+
+            assertEquals(0.5, result.remainingRatio)
+        }
 }
 
 private class FakeServerIpPreferencesRepositoryForVirtualEnergy(
@@ -160,8 +180,9 @@ private class FakeServerIpPreferencesRepositoryForVirtualEnergy(
     }
 }
 
-private val VIRTUAL_ENERGY_JSON = """
+private val VIRTUAL_ENERGY_JSON =
+    """
     {
         "remainingRatio": 0.5
     }
-""".trimIndent()
+    """.trimIndent()

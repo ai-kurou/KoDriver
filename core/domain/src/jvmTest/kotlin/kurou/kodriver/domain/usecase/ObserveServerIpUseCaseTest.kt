@@ -31,7 +31,6 @@ private fun createServerIpPreferencesRepository(
 }
 
 class ObserveServerIpUseCaseTest {
-
     @MockK
     private lateinit var repository: ServerIpPreferencesRepository
 
@@ -41,26 +40,28 @@ class ObserveServerIpUseCaseTest {
     }
 
     @Test
-    fun `初期状態でnullを返す`() = runBlocking {
-        val repo = createServerIpPreferencesRepository(repository)
-        val useCase = ObserveServerIpUseCase(repo)
+    fun `初期状態でnullを返す`() =
+        runBlocking {
+            val repo = createServerIpPreferencesRepository(repository)
+            val useCase = ObserveServerIpUseCase(repo)
 
-        assertNull(useCase().first())
+            assertNull(useCase().first())
 
-        verify(exactly = 1) { repo.serverIp() }
-        confirmVerified(repo)
-    }
+            verify(exactly = 1) { repo.serverIp() }
+            confirmVerified(repo)
+        }
 
     @Test
-    fun `保存後にIPアドレスを返す`() = runBlocking {
-        val repo = createServerIpPreferencesRepository(repository)
-        val useCase = ObserveServerIpUseCase(repo)
+    fun `保存後にIPアドレスを返す`() =
+        runBlocking {
+            val repo = createServerIpPreferencesRepository(repository)
+            val useCase = ObserveServerIpUseCase(repo)
 
-        repo.saveServerIp("192.168.1.10")
+            repo.saveServerIp("192.168.1.10")
 
-        assertEquals("192.168.1.10", useCase().first())
-        coVerify(exactly = 1) { repo.saveServerIp("192.168.1.10") }
-        verify(exactly = 1) { repo.serverIp() }
-        confirmVerified(repo)
-    }
+            assertEquals("192.168.1.10", useCase().first())
+            coVerify(exactly = 1) { repo.saveServerIp("192.168.1.10") }
+            verify(exactly = 1) { repo.serverIp() }
+            confirmVerified(repo)
+        }
 }

@@ -128,411 +128,462 @@ internal class LmuWindowsNarratorViewModel(
     private val narratorUseCases: NarratorUseCases,
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
-
     private var narratorState = LmuWindowsNarratorState()
 
     // バーチャルエナジー・タイヤ摩耗のピットタイミング警告は同一ラップ内で1回だけ読み上げる。
     // 別tickで各々が閾値を跨いで先着した場合も、後着の警告で二重読み上げしないようにラップ単位でロックする。
     private var lastAnnouncedPitTimingLap: Int = -1
 
-    private val selectedSimulator = readoutListUseCases
-        .observeSelectedSimulator()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val selectedSimulator =
+        readoutListUseCases
+            .observeSelectedSimulator()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // listPane（readoutStates）とdetailPane（flagStates・vehicleDamageStates）を統合した、
     // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
-    private val mergedEnabledStates = combine(
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator == null)
-                    emptyFlow<Map<ReadoutItemKey, Boolean>>()
-                else
-                    readoutListUseCases.observeReadoutEnabledStates(simulator.id)
-            },
-        flagUseCases.observeFlagEnabledStates(),
-        vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
-        tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
-        vehicleApproachUseCases.observeEnabledStates(),
-    ) {
+    private val mergedEnabledStates =
+        combine(
+            selectedSimulator
+                .flatMapLatest { simulator ->
+                    if (simulator == null) {
+                        emptyFlow<Map<ReadoutItemKey, Boolean>>()
+                    } else {
+                        readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                    }
+                },
+            flagUseCases.observeFlagEnabledStates(),
+            vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
+            tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
+            vehicleApproachUseCases.observeEnabledStates(),
+        ) {
             readoutStates: Map<ReadoutItemKey, Boolean>,
             flagStates,
             vehicleDamageStates,
             tyreTemperatureStates,
             vehicleApproachStates,
-        ->
-        readoutStates + flagStates + vehicleDamageStates + tyreTemperatureStates + vehicleApproachStates
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
+            ->
+            readoutStates + flagStates + vehicleDamageStates + tyreTemperatureStates + vehicleApproachStates
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
     // index が小さいほど優先度が高い（リスト上位 = 高優先）
-    private val readoutOrder = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    private val readoutOrder =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
-    private val queueEnabledStates = readoutListUseCases
-        .observeQueueEnabledStates()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
+    private val queueEnabledStates =
+        readoutListUseCases
+            .observeQueueEnabledStates()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
-    private val lmuTelemetryFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows)
-                emptyFlow()
-            else
-                vehicleApproachUseCases.observeLmuWindows()
-        }.shareIn(viewModelScope, SharingStarted.Eagerly)
+    private val lmuTelemetryFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) {
+                    emptyFlow()
+                } else {
+                    vehicleApproachUseCases.observeLmuWindows()
+                }
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
-    private val raceFlagsFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            flagUseCases.observeRaceFlags()
-        }.shareIn(viewModelScope, SharingStarted.Eagerly)
+    private val raceFlagsFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                flagUseCases.observeRaceFlags()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
-    private val currentLap = lmuTelemetryFlow
-        .map { it.timing.currentLap }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
+    private val currentLap =
+        lmuTelemetryFlow
+            .map { it.timing.currentLap }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
-    private val voiceType = narratorUseCases
-        .observeMyBestLapVoiceType()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
+    private val voiceType =
+        narratorUseCases
+            .observeMyBestLapVoiceType()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
 
-    private val redFlagVoiceType = narratorUseCases
-        .observeRedFlagVoiceType()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, RedFlagVoiceType.SESSION_STOP)
+    private val redFlagVoiceType =
+        narratorUseCases
+            .observeRedFlagVoiceType()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, RedFlagVoiceType.SESSION_STOP)
 
-    private val tyreHighThreshold = tyreTemperatureUseCases
-        .observeHighThreshold()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, 95)
+    private val tyreHighThreshold =
+        tyreTemperatureUseCases
+            .observeHighThreshold()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, 95)
 
-    private val tyreLowWarningPhases = tyreTemperatureUseCases
-        .observeLowWarningPhases()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, lmuWindowsTyreTemperatureLowWarningDefaultPhases)
+    private val tyreLowWarningPhases =
+        tyreTemperatureUseCases
+            .observeLowWarningPhases()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, lmuWindowsTyreTemperatureLowWarningDefaultPhases)
 
-    private val tyreWearThresholdPercentage = tyreWearUseCases
-        .observeThresholdPercentage()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE)
+    private val tyreWearThresholdPercentage =
+        tyreWearUseCases
+            .observeThresholdPercentage()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE)
 
-    private val remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyUseCases
-        .observeThresholdPercentage()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE,
-        )
+    private val remainingVirtualEnergyThresholdPercentage =
+        remainingVirtualEnergyUseCases
+            .observeThresholdPercentage()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE,
+            )
 
-    private val pitTimingVirtualEnergyLapsThreshold = pitTimingUseCases
-        .observeVirtualEnergyLapsThreshold()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
+    private val pitTimingVirtualEnergyLapsThreshold =
+        pitTimingUseCases
+            .observeVirtualEnergyLapsThreshold()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT)
 
-    private val pitTimingTyreWearLapsThreshold = pitTimingUseCases
-        .observeTyreWearLapsThreshold()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
+    private val pitTimingTyreWearLapsThreshold =
+        pitTimingUseCases
+            .observeTyreWearLapsThreshold()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT)
 
-    private val skipFirstLap = vehicleApproachUseCases
-        .observeSkipFirstLap()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+    private val skipFirstLap =
+        vehicleApproachUseCases
+            .observeSkipFirstLap()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    private val startReadoutType = vehicleApproachUseCases
-        .observeStartReadoutType()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+    private val startReadoutType =
+        vehicleApproachUseCases
+            .observeStartReadoutType()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
 
-    private val sustainedApproachDurationSeconds = vehicleApproachUseCases
-        .observeSustainedApproachDuration()
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
-        )
+    private val sustainedApproachDurationSeconds =
+        vehicleApproachUseCases
+            .observeSustainedApproachDuration()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
+            )
 
-    private val sustainedReadoutType = vehicleApproachUseCases
-        .observeSustainedReadoutType()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+    private val sustainedReadoutType =
+        vehicleApproachUseCases
+            .observeSustainedReadoutType()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
 
     @Suppress("UnusedPrivateProperty")
-    private val myBestLapJob = lmuTelemetryFlow
-        .onEach { telemetry ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineMyBestLap(
-                state = state,
-                telemetry = telemetry,
-                settings = settings,
-            )
-            narratorState = decision.state
-            eventProcessor.processTelemetry(
-                telemetry = telemetry,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val vehicleApproachJob = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            vehicleApproachUseCases.observeVehicleApproach()
-        }.onEach { vehicleApproach ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineVehicleApproach(
-                state = state,
-                vehicleApproach = vehicleApproach,
-                settings = settings,
-                observedAtMs = observedAtMs,
-            )
-            narratorState = decision.state
-            eventProcessor.processVehicleApproach(
-                vehicleApproach = vehicleApproach,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val vehicleDamageJob = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            vehicleDamageUseCases.observeVehicleDamage()
-        }.onEach { vehicleDamage ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineVehicleDamage(
-                state = state,
-                vehicleDamage = vehicleDamage,
-                settings = settings,
-            )
-            narratorState = decision.state
-            eventProcessor.processVehicleDamage(
-                vehicleDamage = vehicleDamage,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val flagJob = raceFlagsFlow
-        .onEach { raceFlags ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineRaceFlags(
-                state = state,
-                raceFlags = raceFlags,
-                settings = settings,
-            )
-            narratorState = decision.state
-            eventProcessor.processRaceFlags(
-                raceFlags = raceFlags,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val tyreTemperatureJob = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            combine(
-                tyreTemperatureUseCases.observeTyreCarcassTemperature(),
-                raceFlagsFlow,
-            ) { tyreCarcassTemperature, raceFlags -> tyreCarcassTemperature to raceFlags }
-        }.onEach { (tyreCarcassTemperature, raceFlags) ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val overheatDecision = narratorUseCases.determineReadout.determineTyreTemperatureOverheat(
-                state = state,
-                data = tyreCarcassTemperature,
-                settings = settings,
-            )
-            narratorState = overheatDecision.state
-            val lowDecision = narratorUseCases.determineReadout.determineTyreTemperatureLow(
-                state = overheatDecision.state,
-                data = tyreCarcassTemperature,
-                raceFlags = raceFlags,
-                settings = settings,
-            )
-            narratorState = lowDecision.state
-            eventProcessor.processTyreTemperature(
-                tyreCarcassTemperature = tyreCarcassTemperature,
-                raceFlags = raceFlags,
-                events = overheatDecision.events + lowDecision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTyreTemperatureLogContext(
-                    state = state,
-                    settings = settings,
-                    overheatState = overheatDecision.state,
-                    finalState = lowDecision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    private val tyreWearFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            tyreWearUseCases.observeTyreWear()
-        }.shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    private val virtualEnergyFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
-            remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
-        }.shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    @Suppress("UnusedPrivateProperty")
-    private val tyreWearJob = tyreWearFlow
-        .onEach { tyreWear ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineTyreWear(
-                state = state,
-                data = tyreWear,
-                settings = settings,
-            )
-            narratorState = decision.state
-            eventProcessor.processTyreWear(
-                tyreWear = tyreWear,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val remainingVirtualEnergyJob = virtualEnergyFlow
-        .onEach { remainingVirtualEnergy ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = narratorUseCases.determineReadout.determineRemainingVirtualEnergy(
-                state = state,
-                data = remainingVirtualEnergy,
-                settings = settings,
-            )
-            narratorState = decision.state
-            eventProcessor.processRemainingVirtualEnergy(
-                remainingVirtualEnergy = remainingVirtualEnergy,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
-
-    @Suppress("UnusedPrivateProperty")
-    private val pitTimingJob = combine(
-        lmuTelemetryFlow,
-        virtualEnergyFlow,
-        tyreWearFlow,
-    ) { telemetry, virtualEnergy, tyreWear -> Triple(telemetry, virtualEnergy, tyreWear) }
-        .onEach { (telemetry, virtualEnergy, tyreWear) ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val virtualEnergyDecision = narratorUseCases.determineReadout.determinePitTimingVirtualEnergy(
-                state = state,
-                telemetry = telemetry,
-                virtualEnergy = virtualEnergy,
-                settings = settings,
-                observedAtMs = observedAtMs,
-            )
-            narratorState = virtualEnergyDecision.state
-            val tyreWearDecision = narratorUseCases.determineReadout.determinePitTimingTyreWear(
-                state = virtualEnergyDecision.state,
-                telemetry = telemetry,
-                tyreWear = tyreWear,
-                settings = settings,
-                observedAtMs = observedAtMs,
-            )
-            narratorState = tyreWearDecision.state
-            val pitTimingEvents = if (telemetry.timing.currentLap == lastAnnouncedPitTimingLap) {
-                emptyList()
-            } else {
-                selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events)
-            }
-            if (pitTimingEvents.isNotEmpty()) {
-                lastAnnouncedPitTimingLap = telemetry.timing.currentLap
-            }
-            eventProcessor.processPitTiming(
-                snapshot = LmuWindowsPitTimingSnapshot(
+    private val myBestLapJob =
+        lmuTelemetryFlow
+            .onEach { telemetry ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineMyBestLap(
+                        state = state,
+                        telemetry = telemetry,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processTelemetry(
                     telemetry = telemetry,
-                    virtualEnergy = virtualEnergy,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val vehicleApproachJob =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                vehicleApproachUseCases.observeVehicleApproach()
+            }.onEach { vehicleApproach ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineVehicleApproach(
+                        state = state,
+                        vehicleApproach = vehicleApproach,
+                        settings = settings,
+                        observedAtMs = observedAtMs,
+                    )
+                narratorState = decision.state
+                eventProcessor.processVehicleApproach(
+                    vehicleApproach = vehicleApproach,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val vehicleDamageJob =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                vehicleDamageUseCases.observeVehicleDamage()
+            }.onEach { vehicleDamage ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineVehicleDamage(
+                        state = state,
+                        vehicleDamage = vehicleDamage,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processVehicleDamage(
+                    vehicleDamage = vehicleDamage,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val flagJob =
+        raceFlagsFlow
+            .onEach { raceFlags ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineRaceFlags(
+                        state = state,
+                        raceFlags = raceFlags,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processRaceFlags(
+                    raceFlags = raceFlags,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val tyreTemperatureJob =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                combine(
+                    tyreTemperatureUseCases.observeTyreCarcassTemperature(),
+                    raceFlagsFlow,
+                ) { tyreCarcassTemperature, raceFlags -> tyreCarcassTemperature to raceFlags }
+            }.onEach { (tyreCarcassTemperature, raceFlags) ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val overheatDecision =
+                    narratorUseCases.determineReadout.determineTyreTemperatureOverheat(
+                        state = state,
+                        data = tyreCarcassTemperature,
+                        settings = settings,
+                    )
+                narratorState = overheatDecision.state
+                val lowDecision =
+                    narratorUseCases.determineReadout.determineTyreTemperatureLow(
+                        state = overheatDecision.state,
+                        data = tyreCarcassTemperature,
+                        raceFlags = raceFlags,
+                        settings = settings,
+                    )
+                narratorState = lowDecision.state
+                eventProcessor.processTyreTemperature(
+                    tyreCarcassTemperature = tyreCarcassTemperature,
+                    raceFlags = raceFlags,
+                    events = overheatDecision.events + lowDecision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTyreTemperatureLogContext(
+                            state = state,
+                            settings = settings,
+                            overheatState = overheatDecision.state,
+                            finalState = lowDecision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    private val tyreWearFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                tyreWearUseCases.observeTyreWear()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val virtualEnergyFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.LmuWindows) return@flatMapLatest emptyFlow()
+                remainingVirtualEnergyUseCases.observeRemainingVirtualEnergy()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val tyreWearJob =
+        tyreWearFlow
+            .onEach { tyreWear ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineTyreWear(
+                        state = state,
+                        data = tyreWear,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processTyreWear(
                     tyreWear = tyreWear,
-                ),
-                events = pitTimingEvents,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = LmuWindowsPitTimingLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = tyreWearDecision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val remainingVirtualEnergyJob =
+        virtualEnergyFlow
+            .onEach { remainingVirtualEnergy ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    narratorUseCases.determineReadout.determineRemainingVirtualEnergy(
+                        state = state,
+                        data = remainingVirtualEnergy,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processRemainingVirtualEnergy(
+                    remainingVirtualEnergy = remainingVirtualEnergy,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val pitTimingJob =
+        combine(
+            lmuTelemetryFlow,
+            virtualEnergyFlow,
+            tyreWearFlow,
+        ) { telemetry, virtualEnergy, tyreWear -> Triple(telemetry, virtualEnergy, tyreWear) }
+            .onEach { (telemetry, virtualEnergy, tyreWear) ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val virtualEnergyDecision =
+                    narratorUseCases.determineReadout.determinePitTimingVirtualEnergy(
+                        state = state,
+                        telemetry = telemetry,
+                        virtualEnergy = virtualEnergy,
+                        settings = settings,
+                        observedAtMs = observedAtMs,
+                    )
+                narratorState = virtualEnergyDecision.state
+                val tyreWearDecision =
+                    narratorUseCases.determineReadout.determinePitTimingTyreWear(
+                        state = virtualEnergyDecision.state,
+                        telemetry = telemetry,
+                        tyreWear = tyreWear,
+                        settings = settings,
+                        observedAtMs = observedAtMs,
+                    )
+                narratorState = tyreWearDecision.state
+                val pitTimingEvents =
+                    if (telemetry.timing.currentLap == lastAnnouncedPitTimingLap) {
+                        emptyList()
+                    } else {
+                        selectLowerPitTimingEvent(virtualEnergyDecision.events, tyreWearDecision.events)
+                    }
+                if (pitTimingEvents.isNotEmpty()) {
+                    lastAnnouncedPitTimingLap = telemetry.timing.currentLap
+                }
+                eventProcessor.processPitTiming(
+                    snapshot =
+                        LmuWindowsPitTimingSnapshot(
+                            telemetry = telemetry,
+                            virtualEnergy = virtualEnergy,
+                            tyreWear = tyreWear,
+                        ),
+                    events = pitTimingEvents,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        LmuWindowsPitTimingLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = tyreWearDecision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
 
     private val currentSettings: LmuWindowsNarratorReadoutSettings
-        get() = LmuWindowsNarratorReadoutSettings(
-            enabledStates = mergedEnabledStates.value,
-            myBestLapVoiceType = voiceType.value,
-            redFlagVoiceType = redFlagVoiceType.value,
-            currentLap = currentLap.value,
-            skipFirstLap = skipFirstLap.value,
-            vehicleApproachStartReadoutType = startReadoutType.value,
-            vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds.value,
-            vehicleApproachSustainedReadoutType = sustainedReadoutType.value,
-            tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
-            tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
-            tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
-            remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
-            pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
-            pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
-        )
+        get() =
+            LmuWindowsNarratorReadoutSettings(
+                enabledStates = mergedEnabledStates.value,
+                myBestLapVoiceType = voiceType.value,
+                redFlagVoiceType = redFlagVoiceType.value,
+                currentLap = currentLap.value,
+                skipFirstLap = skipFirstLap.value,
+                vehicleApproachStartReadoutType = startReadoutType.value,
+                vehicleApproachSustainedApproachDurationSeconds = sustainedApproachDurationSeconds.value,
+                vehicleApproachSustainedReadoutType = sustainedReadoutType.value,
+                tyreTemperatureHighThresholdCelsius = tyreHighThreshold.value,
+                tyreTemperatureLowWarningPhases = tyreLowWarningPhases.value,
+                tyreWearThresholdPercentage = tyreWearThresholdPercentage.value,
+                remainingVirtualEnergyThresholdPercentage = remainingVirtualEnergyThresholdPercentage.value,
+                pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
+                pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
+            )
 }
 
 /**

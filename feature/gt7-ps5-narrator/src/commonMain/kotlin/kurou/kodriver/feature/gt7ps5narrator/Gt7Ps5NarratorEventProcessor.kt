@@ -29,18 +29,20 @@ internal class Gt7Ps5NarratorEventProcessor(
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
-        logContext: Gt7Ps5TelemetryLogContext = Gt7Ps5TelemetryLogContext(
-            state = Gt7Ps5NarratorState(),
-            settings = Gt7Ps5NarratorReadoutSettings(
-                enabledStates = emptyMap(),
-                myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
-                remainingFuelLapsThreshold = 0,
-                remainingFuelLapsEnabled = false,
-                remainingFuelThresholdPercentage = 0,
-                remainingFuelEnabled = false,
+        logContext: Gt7Ps5TelemetryLogContext =
+            Gt7Ps5TelemetryLogContext(
+                state = Gt7Ps5NarratorState(),
+                settings =
+                    Gt7Ps5NarratorReadoutSettings(
+                        enabledStates = emptyMap(),
+                        myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+                        remainingFuelLapsThreshold = 0,
+                        remainingFuelLapsEnabled = false,
+                        remainingFuelThresholdPercentage = 0,
+                        remainingFuelEnabled = false,
+                    ),
+                finalState = Gt7Ps5NarratorState(),
             ),
-            finalState = Gt7Ps5NarratorState(),
-        ),
     ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
@@ -49,14 +51,15 @@ internal class Gt7Ps5NarratorEventProcessor(
                     createdAt = observedAtMs,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
-                        state = logContext.state,
-                        previous = previous,
-                        current = telemetry,
-                        settings = logContext.settings,
-                        observedAtMs = observedAtMs,
-                        finalState = logContext.finalState,
-                    ),
+                    telemetryJson =
+                        buildTelemetryLogJson(
+                            state = logContext.state,
+                            previous = previous,
+                            current = telemetry,
+                            settings = logContext.settings,
+                            observedAtMs = observedAtMs,
+                            finalState = logContext.finalState,
+                        ),
                 )
             }
         }
@@ -101,11 +104,9 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private fun Gt7Ps5NarratorReadoutSettings.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
+private fun Gt7Ps5NarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
-private fun Gt7Ps5NarratorState.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
+private fun Gt7Ps5NarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
 private fun Gt7Ps5TelemetryData.toJson(): String =
     "{" +

@@ -35,7 +35,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppScreenViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -87,115 +86,126 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
-        val (viewModel) = createViewModel(tagName = "v9.9.9")
+    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() =
+        runTest {
+            val (viewModel) = createViewModel(tagName = "v9.9.9")
 
-        viewModel.checkUpdate()
-        advanceUntilIdle()
+            viewModel.checkUpdate()
+            advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.first().hasAppUpdate)
-        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
-        confirmVerified(appUpdateRepository)
-    }
-
-    @Test
-    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
-        val (viewModel) = createViewModel(tagName = "v1.0.0")
-
-        viewModel.checkUpdate()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.uiState.first().hasAppUpdate)
-        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
-        confirmVerified(appUpdateRepository)
-    }
-
-    @Test
-    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalse`() = runTest {
-        val (viewModel) = createViewModel(tagName = "v9.9.9")
-
-        assertFalse(viewModel.uiState.first().hasAppUpdate)
-        coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
-        confirmVerified(appUpdateRepository)
-    }
-
-    @Test
-    fun `currentVersionが空文字の場合hasAppUpdateがfalseのまま`() = runTest {
-        val (viewModel) = createViewModel(tagName = "v9.9.9", version = "")
-
-        viewModel.checkUpdate()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.uiState.first().hasAppUpdate)
-        coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
-        confirmVerified(appUpdateRepository)
-    }
-
-    @Test
-    fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() = runTest {
-        val (viewModel) = createViewModel(tagName = null)
-
-        viewModel.checkUpdate()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.uiState.first().hasAppUpdate)
-        coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
-        confirmVerified(appUpdateRepository)
-    }
-
-    @Test
-    fun `終了確認が有効な場合exitConfirmationEnabledがtrueになる`() = runTest {
-        val (viewModel) = createViewModel(exitConfirmationEnabled = true)
-
-        assertTrue(viewModel.uiState.first().exitConfirmationEnabled)
-    }
-
-    @Test
-    fun `終了確認が無効な場合exitConfirmationEnabledがfalseになる`() = runTest {
-        val (viewModel) = createViewModel(exitConfirmationEnabled = false)
-
-        assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
-    }
-
-    @Test
-    fun `saveExitConfirmationEnabledを呼ぶとリポジトリに保存される`() = runTest {
-        val (viewModel, exitConfirmationEnabledFlow) = createViewModel(exitConfirmationEnabled = true)
-
-        viewModel.saveExitConfirmationEnabled(false)
-
-        assertFalse(exitConfirmationEnabledFlow.value)
-        verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
-        coVerify(exactly = 1) {
-            exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
+            assertTrue(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
         }
-        confirmVerified(exitConfirmationEnabledRepository)
-    }
 
     @Test
-    fun `saveExitConfirmationEnabledをfalseで呼ぶとuiStateのexitConfirmationEnabledがfalseになる`() = runTest {
-        val (viewModel) = createViewModel(exitConfirmationEnabled = true)
+    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() =
+        runTest {
+            val (viewModel) = createViewModel(tagName = "v1.0.0")
 
-        viewModel.saveExitConfirmationEnabled(false)
+            viewModel.checkUpdate()
+            advanceUntilIdle()
 
-        assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
-        verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
-        coVerify(exactly = 1) {
-            exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
+            assertFalse(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
         }
-        confirmVerified(exitConfirmationEnabledRepository)
-    }
 
     @Test
-    fun `Dynamic Colorが有効な場合dynamicColorEnabledがtrueになる`() = runTest {
-        val (viewModel) = createViewModel(dynamicColorEnabled = true)
+    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalse`() =
+        runTest {
+            val (viewModel) = createViewModel(tagName = "v9.9.9")
 
-        assertTrue(viewModel.uiState.first().dynamicColorEnabled)
-    }
+            assertFalse(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
+        }
 
     @Test
-    fun `Dynamic Colorが無効な場合dynamicColorEnabledがfalseになる`() = runTest {
-        val (viewModel) = createViewModel(dynamicColorEnabled = false)
+    fun `currentVersionが空文字の場合hasAppUpdateがfalseのまま`() =
+        runTest {
+            val (viewModel) = createViewModel(tagName = "v9.9.9", version = "")
 
-        assertFalse(viewModel.uiState.first().dynamicColorEnabled)
-    }
+            viewModel.checkUpdate()
+            advanceUntilIdle()
+
+            assertFalse(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 0) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
+        }
+
+    @Test
+    fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() =
+        runTest {
+            val (viewModel) = createViewModel(tagName = null)
+
+            viewModel.checkUpdate()
+            advanceUntilIdle()
+
+            assertFalse(viewModel.uiState.first().hasAppUpdate)
+            coVerify(exactly = 1) { appUpdateRepository.getLatestRelease() }
+            confirmVerified(appUpdateRepository)
+        }
+
+    @Test
+    fun `終了確認が有効な場合exitConfirmationEnabledがtrueになる`() =
+        runTest {
+            val (viewModel) = createViewModel(exitConfirmationEnabled = true)
+
+            assertTrue(viewModel.uiState.first().exitConfirmationEnabled)
+        }
+
+    @Test
+    fun `終了確認が無効な場合exitConfirmationEnabledがfalseになる`() =
+        runTest {
+            val (viewModel) = createViewModel(exitConfirmationEnabled = false)
+
+            assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+        }
+
+    @Test
+    fun `saveExitConfirmationEnabledを呼ぶとリポジトリに保存される`() =
+        runTest {
+            val (viewModel, exitConfirmationEnabledFlow) = createViewModel(exitConfirmationEnabled = true)
+
+            viewModel.saveExitConfirmationEnabled(false)
+
+            assertFalse(exitConfirmationEnabledFlow.value)
+            verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
+            coVerify(exactly = 1) {
+                exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
+            }
+            confirmVerified(exitConfirmationEnabledRepository)
+        }
+
+    @Test
+    fun `saveExitConfirmationEnabledをfalseで呼ぶとuiStateのexitConfirmationEnabledがfalseになる`() =
+        runTest {
+            val (viewModel) = createViewModel(exitConfirmationEnabled = true)
+
+            viewModel.saveExitConfirmationEnabled(false)
+
+            assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
+            verify(exactly = 1) { exitConfirmationEnabledRepository.exitConfirmationEnabled() }
+            coVerify(exactly = 1) {
+                exitConfirmationEnabledRepository.saveExitConfirmationEnabled(false)
+            }
+            confirmVerified(exitConfirmationEnabledRepository)
+        }
+
+    @Test
+    fun `Dynamic Colorが有効な場合dynamicColorEnabledがtrueになる`() =
+        runTest {
+            val (viewModel) = createViewModel(dynamicColorEnabled = true)
+
+            assertTrue(viewModel.uiState.first().dynamicColorEnabled)
+        }
+
+    @Test
+    fun `Dynamic Colorが無効な場合dynamicColorEnabledがfalseになる`() =
+        runTest {
+            val (viewModel) = createViewModel(dynamicColorEnabled = false)
+
+            assertFalse(viewModel.uiState.first().dynamicColorEnabled)
+        }
 }

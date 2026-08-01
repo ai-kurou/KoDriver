@@ -14,11 +14,12 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsRemainingVirtualEnergyPreferencesRepository（:core:data）、試聴用の
  *   named("lmu_windows") の PlaySpeechEventUseCase（:feature:lmu-windows-narrator で登録）。
  */
-val lmuWindowsReadoutRemainingVirtualEnergyDetailModule = module {
-    viewModel {
-        LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(get(), get(), get(named("lmu_windows")))
-    }
+val lmuWindowsReadoutRemainingVirtualEnergyDetailModule =
+    module {
+        viewModel {
+            LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(get(), get(), get(named("lmu_windows")))
+        }
 
-    factoryOf(::ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
-    factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
-}
+        factoryOf(::ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
+        factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
+    }

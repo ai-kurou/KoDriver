@@ -7,7 +7,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class TelemetryLogDetailContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -24,19 +23,21 @@ class TelemetryLogDetailContentTest {
     fun `2つのテレメトリーデータJSONを表示する`() {
         rule.setContent {
             TelemetryLogDetailContent(
-                uiState = TelemetryLogDetailUiState(
-                    logId = 2L,
-                    items = listOf(
-                        TelemetryLogDetailItemUiState(
-                            title = "選択したログ",
-                            telemetryJson = """{"speed":120}""",
-                        ),
-                        TelemetryLogDetailItemUiState(
-                            title = "一つ前のログ",
-                            telemetryJson = """{"speed":118}""",
-                        ),
+                uiState =
+                    TelemetryLogDetailUiState(
+                        logId = 2L,
+                        items =
+                            listOf(
+                                TelemetryLogDetailItemUiState(
+                                    title = "選択したログ",
+                                    telemetryJson = """{"speed":120}""",
+                                ),
+                                TelemetryLogDetailItemUiState(
+                                    title = "一つ前のログ",
+                                    telemetryJson = """{"speed":118}""",
+                                ),
+                            ),
                     ),
-                ),
             )
         }
 

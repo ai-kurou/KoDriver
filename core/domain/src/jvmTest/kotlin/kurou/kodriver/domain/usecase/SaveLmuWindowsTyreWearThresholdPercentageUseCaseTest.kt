@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsTyreWearThresholdPercentageUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsTyreWearPreferencesRepository
 
@@ -20,14 +19,15 @@ class SaveLmuWindowsTyreWearThresholdPercentageUseCaseTest {
     }
 
     @Test
-    fun `任意の値を保存できる`() = runBlocking {
-        val useCase = SaveLmuWindowsTyreWearThresholdPercentageUseCase(repository)
+    fun `任意の値を保存できる`() =
+        runBlocking {
+            val useCase = SaveLmuWindowsTyreWearThresholdPercentageUseCase(repository)
 
-        useCase(30)
-        useCase(60)
+            useCase(30)
+            useCase(60)
 
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(60) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
+            coVerify(exactly = 1) { repository.saveThresholdPercentage(60) }
+            confirmVerified(repository)
+        }
 }

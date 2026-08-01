@@ -14,10 +14,10 @@ internal class OtherVolumeDetailViewModel(
     observeSoundVolume: ObserveSoundVolumeUseCase,
     private val saveSoundVolume: SaveSoundVolumeUseCase,
 ) : ViewModel() {
-
-    val uiState: StateFlow<OtherVolumeDetailUiState> = observeSoundVolume()
-        .map { OtherVolumeDetailUiState(volume = it) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
+    val uiState: StateFlow<OtherVolumeDetailUiState> =
+        observeSoundVolume()
+            .map { OtherVolumeDetailUiState(volume = it) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
 
     fun onVolumeChanged(volume: Int) {
         viewModelScope.launch { saveSoundVolume(volume) }

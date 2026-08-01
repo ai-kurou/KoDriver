@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveReadoutOrderUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: ReadoutPreferencesRepository
 
@@ -21,24 +20,27 @@ class SaveReadoutOrderUseCaseTest {
     }
 
     @Test
-    fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
-        val useCase = SaveReadoutOrderUseCase(repository)
-        val firstOrder = listOf(
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-            ReadoutItemKey.LmuWindows.Flag.Root,
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-        )
-        val secondOrder = listOf(
-            ReadoutItemKey.LmuWindows.Flag.Root,
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-        )
+    fun `保存するとFlowに値が反映され・上書きで更新される`() =
+        runBlocking {
+            val useCase = SaveReadoutOrderUseCase(repository)
+            val firstOrder =
+                listOf(
+                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.Flag.Root,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                )
+            val secondOrder =
+                listOf(
+                    ReadoutItemKey.LmuWindows.Flag.Root,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                )
 
-        useCase("lmu_windows", firstOrder)
-        useCase("lmu_windows", secondOrder)
+            useCase("lmu_windows", firstOrder)
+            useCase("lmu_windows", secondOrder)
 
-        coVerify(exactly = 1) { repository.saveReadoutOrder("lmu_windows", firstOrder) }
-        coVerify(exactly = 1) { repository.saveReadoutOrder("lmu_windows", secondOrder) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveReadoutOrder("lmu_windows", firstOrder) }
+            coVerify(exactly = 1) { repository.saveReadoutOrder("lmu_windows", secondOrder) }
+            confirmVerified(repository)
+        }
 }

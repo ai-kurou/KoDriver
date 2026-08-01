@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsMyBestLapPreferencesDataStoreFactoryTest {
-
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_my_best_lap_preferences_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -22,10 +21,11 @@ class LmuWindowsMyBestLapPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `LMU自己ベストラップ設定が正しいファイルに書き込まれる`() = testScope.runTest {
-        val dataStore = createLmuWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(voiceType = "casual") }
+    fun `LMU自己ベストラップ設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
+            val dataStore = createLmuWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(voiceType = "casual") }
 
-        assertTrue(tempDir.resolve("lmu_windows_my_best_lap_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("lmu_windows_my_best_lap_preferences.pb").exists())
+        }
 }

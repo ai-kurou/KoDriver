@@ -10,7 +10,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class DetermineActiveRaceFlagsTest {
-
     @Test
     fun `アクティブなフラグがない場合は空リストを返す`() {
         val raceFlags = sampleRaceFlags()
@@ -34,9 +33,10 @@ class DetermineActiveRaceFlagsTest {
 
     @Test
     fun `sectorFlagsにYELLOWが含まれる場合はYELLOWを含む`() {
-        val raceFlags = sampleRaceFlags(
-            sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
-        )
+        val raceFlags =
+            sampleRaceFlags(
+                sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
+            )
 
         assertEquals(listOf(ActiveRaceFlag.YELLOW), determineActiveRaceFlags(raceFlags))
     }
@@ -57,11 +57,12 @@ class DetermineActiveRaceFlagsTest {
 
     private fun sampleRaceFlags(
         gamePhase: SessionPhase = SessionPhase.GREEN_FLAG,
-        sectorFlags: List<SectorFlagState> = listOf(
-            SectorFlagState.CLEAR,
-            SectorFlagState.CLEAR,
-            SectorFlagState.CLEAR,
-        ),
+        sectorFlags: List<SectorFlagState> =
+            listOf(
+                SectorFlagState.CLEAR,
+                SectorFlagState.CLEAR,
+                SectorFlagState.CLEAR,
+            ),
         playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
         playerUnderYellow: Boolean = false,
     ) = LmuWindowsRaceFlagsData(

@@ -30,20 +30,20 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class TelemetryLogContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
     private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
 
-    private val singlePaneDirective = PaneScaffoldDirective(
-        maxHorizontalPartitions = 1,
-        horizontalPartitionSpacerSize = 0.dp,
-        maxVerticalPartitions = 1,
-        verticalPartitionSpacerSize = 0.dp,
-        defaultPanePreferredWidth = 360.dp,
-        excludedBounds = emptyList(),
-    )
+    private val singlePaneDirective =
+        PaneScaffoldDirective(
+            maxHorizontalPartitions = 1,
+            horizontalPartitionSpacerSize = 0.dp,
+            maxVerticalPartitions = 1,
+            verticalPartitionSpacerSize = 0.dp,
+            defaultPanePreferredWidth = 360.dp,
+            excludedBounds = emptyList(),
+        )
 
     @Test
     fun `一覧ペインにログを表示する`() {
@@ -64,17 +64,19 @@ class TelemetryLogContentTest {
     fun `ace_windowsのログもアイコン付きで一覧に表示する`() {
         rule.setContent {
             TelemetryLogContentScaffold(
-                uiState = TelemetryLogListUiState(
-                    logs = listOf(
-                        TelemetryLog(
-                            id = 1,
-                            createdAt = 1_800_000,
-                            simulator = Simulator.AceWindows,
-                            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-                            telemetryJson = """{"flag":"green"}""",
-                        ),
+                uiState =
+                    TelemetryLogListUiState(
+                        logs =
+                            listOf(
+                                TelemetryLog(
+                                    id = 1,
+                                    createdAt = 1_800_000,
+                                    simulator = Simulator.AceWindows,
+                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    telemetryJson = """{"flag":"green"}""",
+                                ),
+                            ),
                     ),
-                ),
             )
         }
 
@@ -148,25 +150,26 @@ class TelemetryLogContentTest {
 
     @Test
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
-        val expectedDisplayNames = listOf(
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root to "車両接近",
-            ReadoutItemKey.LmuWindows.Flag.Root to "フラッグ",
-            ReadoutItemKey.LmuWindows.Flag.BlueFlag to "ブルーフラッグ",
-            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to "イエローフラッグ",
-            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to "フルコースイエロー",
-            ReadoutItemKey.LmuWindows.Flag.RedFlag to "レッドフラッグ",
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root to "車両故障",
-            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to "オーバーヒート",
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root to "タイヤ温度",
-            ReadoutItemKey.LmuWindows.PitTiming.Root to "ピットタイミング",
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to "バーチャルエナジー残量",
-            ReadoutItemKey.LmuWindows.TyreWear.Root to "タイヤ摩耗",
-            ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
-            ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
-            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
-            ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
-            ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
-        )
+        val expectedDisplayNames =
+            listOf(
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root to "車両接近",
+                ReadoutItemKey.LmuWindows.Flag.Root to "フラッグ",
+                ReadoutItemKey.LmuWindows.Flag.BlueFlag to "ブルーフラッグ",
+                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to "イエローフラッグ",
+                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to "フルコースイエロー",
+                ReadoutItemKey.LmuWindows.Flag.RedFlag to "レッドフラッグ",
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root to "車両故障",
+                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to "オーバーヒート",
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root to "タイヤ温度",
+                ReadoutItemKey.LmuWindows.PitTiming.Root to "ピットタイミング",
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to "バーチャルエナジー残量",
+                ReadoutItemKey.LmuWindows.TyreWear.Root to "タイヤ摩耗",
+                ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
+                ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
+            )
 
         rule.setContent {
             expectedDisplayNames.forEach { (readoutItemKey, _) ->
@@ -319,16 +322,18 @@ class TelemetryLogContentTest {
     }
 }
 
-private fun createTelemetryLogs(): List<TelemetryLog> = (30 downTo 1).map { id ->
-    createTelemetryLog(
-        id = id.toLong(),
-        readoutItemKey = when (id) {
-            30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
-            20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
-            else -> ReadoutItemKey.LmuWindows.Flag.Root
-        },
-    )
-}
+private fun createTelemetryLogs(): List<TelemetryLog> =
+    (30 downTo 1).map { id ->
+        createTelemetryLog(
+            id = id.toLong(),
+            readoutItemKey =
+                when (id) {
+                    30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
+                    20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
+                    else -> ReadoutItemKey.LmuWindows.Flag.Root
+                },
+        )
+    }
 
 private fun createTelemetryLog(
     id: Long,

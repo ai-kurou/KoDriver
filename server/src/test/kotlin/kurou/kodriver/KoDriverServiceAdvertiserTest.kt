@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class KoDriverServiceAdvertiserTest {
-
     @RelaxedMockK
     private lateinit var jmdns: JmDNS
 
@@ -26,10 +25,11 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `startするとホスト名でmDNSサービスを登録する`() {
-        val advertiser = KoDriverServiceAdvertiser(
-            jmdnsFactory = { jmdns },
-            hostNameProvider = { "my-pc" },
-        )
+        val advertiser =
+            KoDriverServiceAdvertiser(
+                jmdnsFactory = { jmdns },
+                hostNameProvider = { "my-pc" },
+            )
 
         advertiser.start(port = 8080)
 
@@ -62,10 +62,11 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `FQDNのホスト名はドット以降を除去してサービス名に使う`() {
-        val advertiser = KoDriverServiceAdvertiser(
-            jmdnsFactory = { jmdns },
-            hostNameProvider = { "my-pc.local" },
-        )
+        val advertiser =
+            KoDriverServiceAdvertiser(
+                jmdnsFactory = { jmdns },
+                hostNameProvider = { "my-pc.local" },
+            )
 
         advertiser.start(port = 8080)
 
@@ -82,10 +83,11 @@ class KoDriverServiceAdvertiserTest {
     @Test
     fun `startを2回呼ぶと前のインスタンスを解除してから新規登録する`() {
         var callCount = 0
-        val advertiser = KoDriverServiceAdvertiser(
-            jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
-            hostNameProvider = { "my-pc" },
-        )
+        val advertiser =
+            KoDriverServiceAdvertiser(
+                jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
+                hostNameProvider = { "my-pc" },
+            )
 
         advertiser.start(port = 8080)
         advertiser.start(port = 8081)
@@ -116,10 +118,11 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `startでIOExceptionが発生しても例外を伝播しない`() {
-        val advertiser = KoDriverServiceAdvertiser(
-            jmdnsFactory = { throw IOException("network unavailable") },
-            hostNameProvider = { "my-pc" },
-        )
+        val advertiser =
+            KoDriverServiceAdvertiser(
+                jmdnsFactory = { throw IOException("network unavailable") },
+                hostNameProvider = { "my-pc" },
+            )
 
         advertiser.start(port = 8080)
     }

@@ -16,14 +16,14 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsPitTimingPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_pit_timing_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val pitTimingDataStore = DataStoreFactory.create(
-        serializer = LmuWindowsPitTimingPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("pit_timing.pb") },
-    )
+    private val pitTimingDataStore =
+        DataStoreFactory.create(
+            serializer = LmuWindowsPitTimingPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("pit_timing.pb") },
+        )
     private val repository = LmuWindowsPitTimingPreferencesRepositoryImpl(pitTimingDataStore)
 
     @AfterTest
@@ -32,22 +32,28 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は両方とも3周`() = testScope.runTest {
-        assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, repository.observeVirtualEnergyLaps().first())
-        assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, repository.observeTyreWearLaps().first())
-    }
+    fun `初期値は両方とも3周`() =
+        testScope.runTest {
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                repository.observeVirtualEnergyLaps().first(),
+            )
+            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, repository.observeTyreWearLaps().first())
+        }
 
     @Test
-    fun `保存したバーチャルエナジー予想残り周回数を取得できる`() = testScope.runTest {
-        repository.saveVirtualEnergyLaps(1)
+    fun `保存したバーチャルエナジー予想残り周回数を取得できる`() =
+        testScope.runTest {
+            repository.saveVirtualEnergyLaps(1)
 
-        assertEquals(1, repository.observeVirtualEnergyLaps().first())
-    }
+            assertEquals(1, repository.observeVirtualEnergyLaps().first())
+        }
 
     @Test
-    fun `保存したタイヤ摩耗予想残り周回数を取得できる`() = testScope.runTest {
-        repository.saveTyreWearLaps(5)
+    fun `保存したタイヤ摩耗予想残り周回数を取得できる`() =
+        testScope.runTest {
+            repository.saveTyreWearLaps(5)
 
-        assertEquals(5, repository.observeTyreWearLaps().first())
-    }
+            assertEquals(5, repository.observeTyreWearLaps().first())
+        }
 }

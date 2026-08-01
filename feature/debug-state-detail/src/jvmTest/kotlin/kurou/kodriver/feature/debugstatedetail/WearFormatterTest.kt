@@ -6,12 +6,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class WearFormatterTest {
-
     @Test
     fun `対象ホイールが存在する場合は残タイヤ溝割合をパーセントで表示する`() {
-        val wheels = mapOf(
-            WheelIndex.FRONT_LEFT to sampleWheel(wear = 0.8),
-        )
+        val wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to sampleWheel(wear = 0.8),
+            )
 
         assertEquals("80.0", wheelWearPercentText(wheels, WheelIndex.FRONT_LEFT))
     }
@@ -21,11 +21,12 @@ class WearFormatterTest {
         assertEquals("-", wheelWearPercentText(emptyMap(), WheelIndex.FRONT_LEFT))
     }
 
-    private fun sampleWheel(wear: Double) = LmuWindowsTyreWheelData(
-        surfaceTemperatureK = 0.0,
-        carcassTemperatureK = 0.0,
-        brakeTemperatureC = 0.0,
-        pressureKpa = 0.0,
-        wear = wear,
-    )
+    private fun sampleWheel(wear: Double) =
+        LmuWindowsTyreWheelData(
+            surfaceTemperatureK = 0.0,
+            carcassTemperatureK = 0.0,
+            brakeTemperatureC = 0.0,
+            pressureKpa = 0.0,
+            wear = wear,
+        )
 }

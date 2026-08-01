@@ -14,19 +14,20 @@ import org.koin.dsl.module
  *   （プラットフォーム実装を [platformWindowsServerDiscoveryModule] で解決）。
  * 消費（get で解決）: ServerIpPreferencesRepository（:core:data で登録）。
  */
-val otherServerIpDetailModule = module {
-    // ViewModel
-    viewModelOf(::OtherServerIpDetailViewModel)
+val otherServerIpDetailModule =
+    module {
+        // ViewModel
+        viewModelOf(::OtherServerIpDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveServerIpUseCase(get()) }
-    factory { SaveServerIpUseCase(get()) }
-    factory { ValidateServerIpAddressUseCase() }
-    factory { SaveServerIpWithConnectivityCheckUseCase(get(), get(), get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveServerIpUseCase(get()) }
+        factory { SaveServerIpUseCase(get()) }
+        factory { ValidateServerIpAddressUseCase() }
+        factory { SaveServerIpWithConnectivityCheckUseCase(get(), get(), get()) }
 
-    // feature 固有: サーバー疎通確認（プラットフォーム別実装）
-    factory<ServerConnectivityChecker> { createServerConnectivityChecker() }
+        // feature 固有: サーバー疎通確認（プラットフォーム別実装）
+        factory<ServerConnectivityChecker> { createServerConnectivityChecker() }
 
-    // feature 固有: Windows 版 KoDriver の mDNS 検出（プラットフォーム別実装）
-    includes(platformWindowsServerDiscoveryModule)
-}
+        // feature 固有: Windows 版 KoDriver の mDNS 検出（プラットフォーム別実装）
+        includes(platformWindowsServerDiscoveryModule)
+    }

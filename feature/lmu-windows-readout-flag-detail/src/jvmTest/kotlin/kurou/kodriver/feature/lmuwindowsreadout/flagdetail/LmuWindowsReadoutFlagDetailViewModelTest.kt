@@ -36,7 +36,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutFlagDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -59,87 +58,92 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutFlagDetailViewModel(
-        observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
-        observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
-        saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
-        saveRedFlagVoiceType = SaveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
+    private fun createViewModel() =
+        LmuWindowsReadoutFlagDetailViewModel(
+            observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
+            observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
+            saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
+            saveRedFlagVoiceType = SaveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+        )
 
     @Test
-    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() = runTest {
-        every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        val viewModel = createViewModel()
+    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.BlueFlag])
-        assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag])
-        assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.FullCourseYellow])
-        assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
-        assertEquals(RedFlagVoiceType.SESSION_STOP, state.redFlagVoiceType)
-        verify(exactly = 1) { repository.observeFlagEnabledStates() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
-        val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-        every { repository.observeFlagEnabledStates() } returns statesFlow
-        coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) } answers {
-            statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.BlueFlag to false) }
+            assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.BlueFlag])
+            assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag])
+            assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.FullCourseYellow])
+            assertEquals(true, state.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
+            assertEquals(RedFlagVoiceType.SESSION_STOP, state.redFlagVoiceType)
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            confirmVerified(repository)
         }
-        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        val viewModel = createViewModel()
-
-        viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
-
-        assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.BlueFlag])
-        coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) }
-        verify(exactly = 1) { repository.observeFlagEnabledStates() }
-        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(repository, redFlagRepository)
-    }
 
     @Test
-    fun `onRedFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
-        val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-        every { repository.observeFlagEnabledStates() } returns statesFlow
-        coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) } answers {
-            statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.RedFlag to false) }
+    fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() =
+        runTest {
+            val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeFlagEnabledStates() } returns statesFlow
+            coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) } answers {
+                statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.BlueFlag to false) }
+            }
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            val viewModel = createViewModel()
+
+            viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
+
+            assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.BlueFlag])
+            coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            confirmVerified(repository, redFlagRepository)
         }
-        every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        val viewModel = createViewModel()
-
-        viewModel.onRedFlagEnabledChanged(false)
-
-        assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
-        coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) }
-        verify(exactly = 1) { repository.observeFlagEnabledStates() }
-        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(repository, redFlagRepository)
-    }
 
     @Test
-    fun `onRedFlagVoiceTypeChanged を呼ぶと UiState が更新される`() = runTest {
-        every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
-        val voiceTypeFlow = MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
-        every { redFlagRepository.observeVoiceType() } returns voiceTypeFlow
-        coEvery { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) } answers {
-            voiceTypeFlow.update { RedFlagVoiceType.RED_FLAG }
+    fun `onRedFlagEnabledChanged を呼ぶと UiState が更新される`() =
+        runTest {
+            val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeFlagEnabledStates() } returns statesFlow
+            coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) } answers {
+                statesFlow.update { it + (ReadoutItemKey.LmuWindows.Flag.RedFlag to false) }
+            }
+            every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            val viewModel = createViewModel()
+
+            viewModel.onRedFlagEnabledChanged(false)
+
+            assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag])
+            coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            confirmVerified(repository, redFlagRepository)
         }
-        val viewModel = createViewModel()
 
-        viewModel.onRedFlagVoiceTypeChanged(RedFlagVoiceType.RED_FLAG)
+    @Test
+    fun `onRedFlagVoiceTypeChanged を呼ぶと UiState が更新される`() =
+        runTest {
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            val voiceTypeFlow = MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
+            every { redFlagRepository.observeVoiceType() } returns voiceTypeFlow
+            coEvery { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) } answers {
+                voiceTypeFlow.update { RedFlagVoiceType.RED_FLAG }
+            }
+            val viewModel = createViewModel()
 
-        assertEquals(RedFlagVoiceType.RED_FLAG, viewModel.uiState.first().redFlagVoiceType)
-        coVerify(exactly = 1) { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
-        verify(exactly = 1) { repository.observeFlagEnabledStates() }
-        verify(exactly = 1) { redFlagRepository.observeVoiceType() }
-        confirmVerified(redFlagRepository, repository)
-    }
+            viewModel.onRedFlagVoiceTypeChanged(RedFlagVoiceType.RED_FLAG)
+
+            assertEquals(RedFlagVoiceType.RED_FLAG, viewModel.uiState.first().redFlagVoiceType)
+            coVerify(exactly = 1) { redFlagRepository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            verify(exactly = 1) { redFlagRepository.observeVoiceType() }
+            confirmVerified(redFlagRepository, repository)
+        }
 
     @Test
     fun `onPreviewClicked に BlueFlag を渡すと BlueFlag イベントが再生される`() {

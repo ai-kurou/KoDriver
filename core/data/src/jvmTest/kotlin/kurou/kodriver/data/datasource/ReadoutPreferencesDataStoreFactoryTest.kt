@@ -12,7 +12,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutPreferencesDataStoreFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_readout_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -22,12 +21,13 @@ class ReadoutPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `readout設定が正しいファイルに書き込まれる`() = testScope.runTest {
-        val dataStore = createReadoutPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { prefs ->
-            prefs.copy(simulatorStates = prefs.simulatorStates + ("lmu_windows" to SimulatorReadoutState()))
-        }
+    fun `readout設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
+            val dataStore = createReadoutPreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { prefs ->
+                prefs.copy(simulatorStates = prefs.simulatorStates + ("lmu_windows" to SimulatorReadoutState()))
+            }
 
-        assertTrue(tempDir.resolve("readout_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("readout_preferences.pb").exists())
+        }
 }

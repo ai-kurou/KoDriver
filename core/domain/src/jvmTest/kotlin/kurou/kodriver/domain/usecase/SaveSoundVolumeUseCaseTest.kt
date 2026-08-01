@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class SaveSoundVolumeUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: SoundVolumePreferencesRepository
 
@@ -23,30 +22,33 @@ class SaveSoundVolumeUseCaseTest {
     }
 
     @Test
-    fun `0から100の値を保存できる`() = runBlocking {
-        val useCase = SaveSoundVolumeUseCase(repository)
+    fun `0から100の値を保存できる`() =
+        runBlocking {
+            val useCase = SaveSoundVolumeUseCase(repository)
 
-        useCase(SOUND_VOLUME_MIN)
-        useCase(50)
-        useCase(SOUND_VOLUME_MAX)
+            useCase(SOUND_VOLUME_MIN)
+            useCase(50)
+            useCase(SOUND_VOLUME_MAX)
 
-        coVerify(exactly = 1) { repository.saveVolume(SOUND_VOLUME_MIN) }
-        coVerify(exactly = 1) { repository.saveVolume(50) }
-        coVerify(exactly = 1) { repository.saveVolume(SOUND_VOLUME_MAX) }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `0未満はIllegalArgumentExceptionをスローする`() = runBlocking {
-        assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(SOUND_VOLUME_MIN - 1) }
-
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveVolume(SOUND_VOLUME_MIN) }
+            coVerify(exactly = 1) { repository.saveVolume(50) }
+            coVerify(exactly = 1) { repository.saveVolume(SOUND_VOLUME_MAX) }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `100超はIllegalArgumentExceptionをスローする`() = runBlocking {
-        assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(SOUND_VOLUME_MAX + 1) }
+    fun `0未満はIllegalArgumentExceptionをスローする`() =
+        runBlocking {
+            assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(SOUND_VOLUME_MIN - 1) }
 
-        confirmVerified(repository)
-    }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `100超はIllegalArgumentExceptionをスローする`() =
+        runBlocking {
+            assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(SOUND_VOLUME_MAX + 1) }
+
+            confirmVerified(repository)
+        }
 }

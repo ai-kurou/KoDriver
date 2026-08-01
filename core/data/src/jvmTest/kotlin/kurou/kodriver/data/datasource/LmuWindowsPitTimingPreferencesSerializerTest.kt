@@ -12,7 +12,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class LmuWindowsPitTimingPreferencesSerializerTest {
-
     @Test
     fun `デフォルト値は両方とも3周`() {
         assertEquals(
@@ -25,24 +24,27 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() = runTest {
-        val original = LmuWindowsPitTimingPreferences(virtualEnergyLaps = 5, tyreWearLaps = 1)
-        val output = ByteArrayOutputStream()
-        LmuWindowsPitTimingPreferencesSerializer.writeTo(original, output)
+    fun `書き込んだ値を読み出せる`() =
+        runTest {
+            val original = LmuWindowsPitTimingPreferences(virtualEnergyLaps = 5, tyreWearLaps = 1)
+            val output = ByteArrayOutputStream()
+            LmuWindowsPitTimingPreferencesSerializer.writeTo(original, output)
 
-        val restored = LmuWindowsPitTimingPreferencesSerializer.readFrom(
-            ByteArrayInputStream(output.toByteArray()),
-        )
+            val restored =
+                LmuWindowsPitTimingPreferencesSerializer.readFrom(
+                    ByteArrayInputStream(output.toByteArray()),
+                )
 
-        assertEquals(original, restored)
-    }
+            assertEquals(original, restored)
+        }
 
     @Test
-    fun `不正なバイト列で CorruptionException が発生する`() = runTest {
-        val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
+    fun `不正なバイト列で CorruptionException が発生する`() =
+        runTest {
+            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
-        assertFailsWith<CorruptionException> {
-            LmuWindowsPitTimingPreferencesSerializer.readFrom(corrupt)
+            assertFailsWith<CorruptionException> {
+                LmuWindowsPitTimingPreferencesSerializer.readFrom(corrupt)
+            }
         }
-    }
 }

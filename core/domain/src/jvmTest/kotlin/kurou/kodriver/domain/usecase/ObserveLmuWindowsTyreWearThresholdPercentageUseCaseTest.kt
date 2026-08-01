@@ -17,7 +17,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsTyreWearThresholdPercentageUseCaseTest {
-
     @MockK
     private lateinit var repo: LmuWindowsTyreWearPreferencesRepository
 
@@ -27,19 +26,20 @@ class ObserveLmuWindowsTyreWearThresholdPercentageUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す・保存済みの値を返す`() = runBlocking {
-        val state = MutableStateFlow(50)
-        every { repo.observeThresholdPercentage() } returns state
-        coEvery { repo.saveThresholdPercentage(30) } answers { state.update { 30 } }
-        val useCase = ObserveLmuWindowsTyreWearThresholdPercentageUseCase(repo)
+    fun `初期値を返す・保存済みの値を返す`() =
+        runBlocking {
+            val state = MutableStateFlow(50)
+            every { repo.observeThresholdPercentage() } returns state
+            coEvery { repo.saveThresholdPercentage(30) } answers { state.update { 30 } }
+            val useCase = ObserveLmuWindowsTyreWearThresholdPercentageUseCase(repo)
 
-        assertEquals(50, useCase().first())
+            assertEquals(50, useCase().first())
 
-        repo.saveThresholdPercentage(30)
-        assertEquals(30, useCase().first())
+            repo.saveThresholdPercentage(30)
+            assertEquals(30, useCase().first())
 
-        verify(exactly = 2) { repo.observeThresholdPercentage() }
-        coVerify(exactly = 1) { repo.saveThresholdPercentage(30) }
-        confirmVerified(repo)
-    }
+            verify(exactly = 2) { repo.observeThresholdPercentage() }
+            coVerify(exactly = 1) { repo.saveThresholdPercentage(30) }
+            confirmVerified(repo)
+        }
 }

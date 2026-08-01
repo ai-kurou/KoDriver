@@ -8,7 +8,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtherConsoleIpDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -60,10 +59,11 @@ class OtherConsoleIpDetailPaneScreenshotTest {
             KoDriverTheme {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(
-                            inputAddress = "192.168.1.100",
-                            saveFailed = true,
-                        ),
+                        uiState =
+                            OtherConsoleIpDetailUiState(
+                                inputAddress = "192.168.1.100",
+                                saveFailed = true,
+                            ),
                     )
                 }
             }

@@ -15,34 +15,36 @@ import kotlin.test.assertFailsWith
 
 @OptIn(ExperimentalSerializationApi::class)
 class Gt7Ps5UdpPortPreferencesSerializerTest {
-
     @Test
-    fun `正常なバイト列をデシリアライズできる`() = runTest {
-        val original = Gt7Ps5UdpPortPreferences(port = GT7_PS5_UDP_PORT_ALTERNATE)
-        val bytes = ProtoBuf.encodeToByteArray(Gt7Ps5UdpPortPreferences.serializer(), original)
+    fun `正常なバイト列をデシリアライズできる`() =
+        runTest {
+            val original = Gt7Ps5UdpPortPreferences(port = GT7_PS5_UDP_PORT_ALTERNATE)
+            val bytes = ProtoBuf.encodeToByteArray(Gt7Ps5UdpPortPreferences.serializer(), original)
 
-        val result = Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
+            val result = Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(bytes))
 
-        assertEquals(original, result)
-    }
-
-    @Test
-    fun `不正なバイト列はCorruptionExceptionをスローする`() = runTest {
-        val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
-
-        assertFailsWith<CorruptionException> {
-            Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
+            assertEquals(original, result)
         }
-    }
 
     @Test
-    fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
-        val original = Gt7Ps5UdpPortPreferences(port = GT7_PS5_UDP_PORT_DEFAULT)
-        val output = ByteArrayOutputStream()
-        Gt7Ps5UdpPortPreferencesSerializer.writeTo(original, output)
+    fun `不正なバイト列はCorruptionExceptionをスローする`() =
+        runTest {
+            val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
 
-        val result = Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+            assertFailsWith<CorruptionException> {
+                Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(invalidBytes))
+            }
+        }
 
-        assertEquals(original, result)
-    }
+    @Test
+    fun `writeToしたバイト列をreadFromで復元できる`() =
+        runTest {
+            val original = Gt7Ps5UdpPortPreferences(port = GT7_PS5_UDP_PORT_DEFAULT)
+            val output = ByteArrayOutputStream()
+            Gt7Ps5UdpPortPreferencesSerializer.writeTo(original, output)
+
+            val result = Gt7Ps5UdpPortPreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+
+            assertEquals(original, result)
+        }
 }

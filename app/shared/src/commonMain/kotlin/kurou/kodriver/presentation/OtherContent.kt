@@ -127,30 +127,33 @@ internal fun OtherContent(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = when {
-            uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
-                scaffoldDirective.copy(maxHorizontalPartitions = 1)
-            }
+    val navigator =
+        rememberListDetailPaneScaffoldNavigator<Nothing>(
+            scaffoldDirective =
+                when {
+                    uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
+                        scaffoldDirective.copy(maxHorizontalPartitions = 1)
+                    }
 
-            uiState.selectedItem != null &&
-                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
-                    scaffoldDirective.copy(maxHorizontalPartitions = 2)
-            }
+                    uiState.selectedItem != null &&
+                        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+                        scaffoldDirective.copy(maxHorizontalPartitions = 2)
+                    }
 
-            else -> {
-                scaffoldDirective
-            }
-        },
-        initialDestinationHistory = if (uiState.selectedItem != null) {
-            listOf(
-                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
-                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
-            )
-        } else {
-            listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
-        },
-    )
+                    else -> {
+                        scaffoldDirective
+                    }
+                },
+            initialDestinationHistory =
+                if (uiState.selectedItem != null) {
+                    listOf(
+                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+                    )
+                } else {
+                    listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+                },
+        )
     val scope = rememberCoroutineScope()
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
@@ -161,10 +164,11 @@ internal fun OtherContent(
         }
         Unit
     }
-    val paneExpansionState = rememberPaneExpansionState(
-        anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
-        initialAnchoredIndex = 0,
-    )
+    val paneExpansionState =
+        rememberPaneExpansionState(
+            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
+            initialAnchoredIndex = 0,
+        )
 
     LaunchedEffect(uiState.selectedItem) {
         navigator.navigateTo(

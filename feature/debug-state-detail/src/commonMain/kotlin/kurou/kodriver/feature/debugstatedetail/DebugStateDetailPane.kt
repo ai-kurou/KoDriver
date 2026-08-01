@@ -89,11 +89,12 @@ private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
 
 internal const val DEBUG_STATE_GRID_TEST_TAG = "debug_state_grid"
 
-internal fun calculateDebugStateColumns(maxWidth: Dp): Int = when {
-    maxWidth < NARROW_WIDTH_UPPER_BOUND -> 1
-    maxWidth < MEDIUM_WIDTH_UPPER_BOUND -> 2
-    else -> 3
-}
+internal fun calculateDebugStateColumns(maxWidth: Dp): Int =
+    when {
+        maxWidth < NARROW_WIDTH_UPPER_BOUND -> 1
+        maxWidth < MEDIUM_WIDTH_UPPER_BOUND -> 2
+        else -> 3
+    }
 
 /**
  * DebugStateDetail の画面を表示する Composable。
@@ -133,9 +134,10 @@ internal fun DebugStateDetailPaneContent(
         BoxWithConstraints {
             val columns = calculateDebugStateColumns(maxWidth)
             val gridState = rememberLazyGridState()
-            val reorderableState = rememberReorderableLazyGridState(gridState) { from, to ->
-                onMoveCard(from.index, to.index)
-            }
+            val reorderableState =
+                rememberReorderableLazyGridState(gridState) { from, to ->
+                    onMoveCard(from.index, to.index)
+                }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
                 state = gridState,
@@ -162,144 +164,171 @@ private fun DebugStateCard(
     modifier: Modifier = Modifier,
 ) {
     when (cardKey) {
-        DebugStateCardKey.SIMULATOR -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_simulator_info_title),
-            modifier = modifier,
-            bottomContent = {
-                SimulatorInfoContent(uiState.selectedSimulator)
-            },
-        )
+        DebugStateCardKey.SIMULATOR -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_simulator_info_title),
+                modifier = modifier,
+                bottomContent = {
+                    SimulatorInfoContent(uiState.selectedSimulator)
+                },
+            )
+        }
 
-        DebugStateCardKey.FLAG_INFO -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_flag_info_title),
-            modifier = modifier,
-            bottomContent = {
-                FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag)
-            },
-        )
+        DebugStateCardKey.FLAG_INFO -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_flag_info_title),
+                modifier = modifier,
+                bottomContent = {
+                    FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag)
+                },
+            )
+        }
 
-        DebugStateCardKey.GAME_PHASE -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_game_phase_title),
-            modifier = modifier,
-            bottomContent = {
-                GamePhaseContent(uiState.raceFlags)
-            },
-        )
+        DebugStateCardKey.GAME_PHASE -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_game_phase_title),
+                modifier = modifier,
+                bottomContent = {
+                    GamePhaseContent(uiState.raceFlags)
+                },
+            )
+        }
 
-        DebugStateCardKey.SESSION -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_session_title),
-            modifier = modifier,
-            bottomContent = {
-                SessionContent(uiState.virtualEnergy)
-            },
-        )
+        DebugStateCardKey.SESSION -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_session_title),
+                modifier = modifier,
+                bottomContent = {
+                    SessionContent(uiState.virtualEnergy)
+                },
+            )
+        }
 
-        DebugStateCardKey.YELLOW_FLAG_STATE -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_yellow_flag_state_title),
-            modifier = modifier,
-            bottomContent = {
-                YellowFlagStateContent(uiState.raceFlags)
-            },
-        )
+        DebugStateCardKey.YELLOW_FLAG_STATE -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_yellow_flag_state_title),
+                modifier = modifier,
+                bottomContent = {
+                    YellowFlagStateContent(uiState.raceFlags)
+                },
+            )
+        }
 
-        DebugStateCardKey.CURRENT_LAP -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_current_lap_title),
-            modifier = modifier,
-            bottomContent = {
-                CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
-            },
-        )
+        DebugStateCardKey.CURRENT_LAP -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_current_lap_title),
+                modifier = modifier,
+                bottomContent = {
+                    CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+                },
+            )
+        }
 
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_side_by_side_title),
-            modifier = modifier,
-            bottomContent = {
-                SideBySideVehiclesContent(uiState.vehicleApproach)
-            },
-        )
+        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_side_by_side_title),
+                modifier = modifier,
+                bottomContent = {
+                    SideBySideVehiclesContent(uiState.vehicleApproach)
+                },
+            )
+        }
 
-        DebugStateCardKey.BEST_LAP -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_best_lap_title),
-            modifier = modifier,
-            bottomContent = {
-                BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
-            },
-        )
+        DebugStateCardKey.BEST_LAP -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_best_lap_title),
+                modifier = modifier,
+                bottomContent = {
+                    BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+                },
+            )
+        }
 
-        DebugStateCardKey.TYRE_TEMPERATURE -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_tyre_temperature_title),
-            modifier = modifier,
-            bottomContent = {
-                TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
-            },
-        )
+        DebugStateCardKey.TYRE_TEMPERATURE -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_tyre_temperature_title),
+                modifier = modifier,
+                bottomContent = {
+                    TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
+                },
+            )
+        }
 
-        DebugStateCardKey.TYRE_WEAR -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_tyre_wear_title),
-            modifier = modifier,
-            bottomContent = {
-                TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
-            },
-        )
+        DebugStateCardKey.TYRE_WEAR -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_tyre_wear_title),
+                modifier = modifier,
+                bottomContent = {
+                    TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
+                },
+            )
+        }
 
-        DebugStateCardKey.FUEL_CONSUMPTION -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_fuel_consumption_title),
-            modifier = modifier,
-            bottomContent = {
-                FuelConsumptionContent(
-                    uiState.selectedSimulator,
-                    uiState.virtualEnergy,
-                    uiState.lmuWindowsTelemetry,
-                    uiState.gt7Ps5Telemetry,
-                    uiState.aceWindowsFuel,
-                )
-            },
-        )
+        DebugStateCardKey.FUEL_CONSUMPTION -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_fuel_consumption_title),
+                modifier = modifier,
+                bottomContent = {
+                    FuelConsumptionContent(
+                        uiState.selectedSimulator,
+                        uiState.virtualEnergy,
+                        uiState.lmuWindowsTelemetry,
+                        uiState.gt7Ps5Telemetry,
+                        uiState.aceWindowsFuel,
+                    )
+                },
+            )
+        }
 
-        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> DetailPaneCard(
-            title = stringResource(Res.string.debug_state_pit_timing_title),
-            modifier = modifier,
-            bottomContent = {
-                PitTimingRemainingLapsContent(
-                    uiState.selectedSimulator,
-                    uiState.virtualEnergy,
-                    uiState.lmuWindowsTelemetry,
-                )
-            },
-        )
+        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_pit_timing_title),
+                modifier = modifier,
+                bottomContent = {
+                    PitTimingRemainingLapsContent(
+                        uiState.selectedSimulator,
+                        uiState.virtualEnergy,
+                        uiState.lmuWindowsTelemetry,
+                    )
+                },
+            )
+        }
     }
 }
 
 @Composable
-private fun simulatorDisplayName(simulator: Simulator): String = when (simulator) {
-    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu_windows)
-    is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
-    is Simulator.AceWindows -> stringResource(Res.string.simulator_name_ace_windows)
-}
+private fun simulatorDisplayName(simulator: Simulator): String =
+    when (simulator) {
+        is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu_windows)
+        is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
+        is Simulator.AceWindows -> stringResource(Res.string.simulator_name_ace_windows)
+    }
 
 @Composable
 private fun SimulatorInfoContent(selectedSimulator: Simulator?) {
     Text(
-        text = selectedSimulator
-            ?.let { simulatorDisplayName(it) }
-            ?: stringResource(Res.string.debug_state_simulator_info_unselected),
+        text =
+            selectedSimulator
+                ?.let { simulatorDisplayName(it) }
+                ?: stringResource(Res.string.debug_state_simulator_info_unselected),
     )
 }
 
 @Composable
-private fun gamePhaseDisplayName(gamePhase: SessionPhase): String = when (gamePhase) {
-    SessionPhase.GARAGE -> stringResource(Res.string.debug_state_game_phase_garage)
-    SessionPhase.WARM_UP -> stringResource(Res.string.debug_state_game_phase_warm_up)
-    SessionPhase.GRID_WALK -> stringResource(Res.string.debug_state_game_phase_grid_walk)
-    SessionPhase.FORMATION -> stringResource(Res.string.debug_state_game_phase_formation)
-    SessionPhase.COUNTDOWN -> stringResource(Res.string.debug_state_game_phase_countdown)
-    SessionPhase.GREEN_FLAG -> stringResource(Res.string.debug_state_game_phase_green_flag)
-    SessionPhase.FULL_COURSE_YELLOW -> stringResource(Res.string.debug_state_game_phase_full_course_yellow)
-    SessionPhase.RED_FLAG -> stringResource(Res.string.debug_state_game_phase_session_stopped)
-    SessionPhase.SESSION_OVER -> stringResource(Res.string.debug_state_game_phase_session_over)
-    SessionPhase.PAUSED_OR_HEARTBEAT -> stringResource(Res.string.debug_state_game_phase_paused)
-    SessionPhase.UNKNOWN -> stringResource(Res.string.debug_state_game_phase_unknown)
-}
+private fun gamePhaseDisplayName(gamePhase: SessionPhase): String =
+    when (gamePhase) {
+        SessionPhase.GARAGE -> stringResource(Res.string.debug_state_game_phase_garage)
+        SessionPhase.WARM_UP -> stringResource(Res.string.debug_state_game_phase_warm_up)
+        SessionPhase.GRID_WALK -> stringResource(Res.string.debug_state_game_phase_grid_walk)
+        SessionPhase.FORMATION -> stringResource(Res.string.debug_state_game_phase_formation)
+        SessionPhase.COUNTDOWN -> stringResource(Res.string.debug_state_game_phase_countdown)
+        SessionPhase.GREEN_FLAG -> stringResource(Res.string.debug_state_game_phase_green_flag)
+        SessionPhase.FULL_COURSE_YELLOW -> stringResource(Res.string.debug_state_game_phase_full_course_yellow)
+        SessionPhase.RED_FLAG -> stringResource(Res.string.debug_state_game_phase_session_stopped)
+        SessionPhase.SESSION_OVER -> stringResource(Res.string.debug_state_game_phase_session_over)
+        SessionPhase.PAUSED_OR_HEARTBEAT -> stringResource(Res.string.debug_state_game_phase_paused)
+        SessionPhase.UNKNOWN -> stringResource(Res.string.debug_state_game_phase_unknown)
+    }
 
 @Composable
 private fun GamePhaseContent(raceFlags: LmuWindowsRaceFlagsData?) {
@@ -311,14 +340,15 @@ private fun GamePhaseContent(raceFlags: LmuWindowsRaceFlagsData?) {
 }
 
 @Composable
-private fun sessionDisplayName(session: Int): String = when (session) {
-    0 -> stringResource(Res.string.debug_state_session_test_day)
-    in 1..4 -> stringResource(Res.string.debug_state_session_practice)
-    in 5..8 -> stringResource(Res.string.debug_state_session_qualifying)
-    9 -> stringResource(Res.string.debug_state_session_warmup)
-    in 10..13 -> stringResource(Res.string.debug_state_session_race)
-    else -> stringResource(Res.string.debug_state_session_unknown)
-}
+private fun sessionDisplayName(session: Int): String =
+    when (session) {
+        0 -> stringResource(Res.string.debug_state_session_test_day)
+        in 1..4 -> stringResource(Res.string.debug_state_session_practice)
+        in 5..8 -> stringResource(Res.string.debug_state_session_qualifying)
+        9 -> stringResource(Res.string.debug_state_session_warmup)
+        in 10..13 -> stringResource(Res.string.debug_state_session_race)
+        else -> stringResource(Res.string.debug_state_session_unknown)
+    }
 
 @Composable
 private fun SessionContent(virtualEnergy: LmuWindowsVirtualEnergyData?) {
@@ -330,18 +360,19 @@ private fun SessionContent(virtualEnergy: LmuWindowsVirtualEnergyData?) {
 }
 
 @Composable
-private fun yellowFlagStateDisplayName(yellowFlagState: SessionYellowFlagState): String = when (yellowFlagState) {
-    SessionYellowFlagState.INVALID -> stringResource(Res.string.debug_state_yellow_flag_state_invalid)
-    SessionYellowFlagState.NONE -> stringResource(Res.string.debug_state_yellow_flag_state_none)
-    SessionYellowFlagState.PENDING -> stringResource(Res.string.debug_state_yellow_flag_state_pending)
-    SessionYellowFlagState.PIT_CLOSED -> stringResource(Res.string.debug_state_yellow_flag_state_pit_closed)
-    SessionYellowFlagState.PIT_LEAD_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_pit_lead_lap)
-    SessionYellowFlagState.PIT_OPEN -> stringResource(Res.string.debug_state_yellow_flag_state_pit_open)
-    SessionYellowFlagState.LAST_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_last_lap)
-    SessionYellowFlagState.RESUME -> stringResource(Res.string.debug_state_yellow_flag_state_resume)
-    SessionYellowFlagState.RACE_HALT -> stringResource(Res.string.debug_state_yellow_flag_state_race_halt)
-    SessionYellowFlagState.UNKNOWN -> stringResource(Res.string.debug_state_yellow_flag_state_unknown)
-}
+private fun yellowFlagStateDisplayName(yellowFlagState: SessionYellowFlagState): String =
+    when (yellowFlagState) {
+        SessionYellowFlagState.INVALID -> stringResource(Res.string.debug_state_yellow_flag_state_invalid)
+        SessionYellowFlagState.NONE -> stringResource(Res.string.debug_state_yellow_flag_state_none)
+        SessionYellowFlagState.PENDING -> stringResource(Res.string.debug_state_yellow_flag_state_pending)
+        SessionYellowFlagState.PIT_CLOSED -> stringResource(Res.string.debug_state_yellow_flag_state_pit_closed)
+        SessionYellowFlagState.PIT_LEAD_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_pit_lead_lap)
+        SessionYellowFlagState.PIT_OPEN -> stringResource(Res.string.debug_state_yellow_flag_state_pit_open)
+        SessionYellowFlagState.LAST_LAP -> stringResource(Res.string.debug_state_yellow_flag_state_last_lap)
+        SessionYellowFlagState.RESUME -> stringResource(Res.string.debug_state_yellow_flag_state_resume)
+        SessionYellowFlagState.RACE_HALT -> stringResource(Res.string.debug_state_yellow_flag_state_race_halt)
+        SessionYellowFlagState.UNKNOWN -> stringResource(Res.string.debug_state_yellow_flag_state_unknown)
+    }
 
 @Composable
 private fun YellowFlagStateContent(raceFlags: LmuWindowsRaceFlagsData?) {
@@ -358,12 +389,13 @@ private fun CurrentLapContent(
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
 ) {
-    val currentLap = when (selectedSimulator) {
-        is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.currentLap
-        is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.lapCount
-        is Simulator.AceWindows -> null
-        null -> null
-    }
+    val currentLap =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.currentLap
+            is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.lapCount
+            is Simulator.AceWindows -> null
+            null -> null
+        }
     Text(
         text = currentLap?.toString() ?: stringResource(Res.string.debug_state_flag_info_unavailable),
     )
@@ -375,15 +407,17 @@ private fun BestLapContent(
     lmuWindowsTelemetry: LmuWindowsTelemetryData?,
     gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
 ) {
-    val bestLapTimeMs = when (selectedSimulator) {
-        is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.bestLapTimeMs
-        is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.bestLapTimeMs?.toLong()
-        is Simulator.AceWindows -> null
-        null -> null
-    }
+    val bestLapTimeMs =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> lmuWindowsTelemetry?.timing?.bestLapTimeMs
+            is Simulator.Gt7Ps5 -> gt7Ps5Telemetry?.bestLapTimeMs?.toLong()
+            is Simulator.AceWindows -> null
+            null -> null
+        }
     Text(
-        text = bestLapTimeMs?.takeIf { it > 0L }?.let { formatLapTimeMs(it) }
-            ?: stringResource(Res.string.debug_state_flag_info_unavailable),
+        text =
+            bestLapTimeMs?.takeIf { it > 0L }?.let { formatLapTimeMs(it) }
+                ?: stringResource(Res.string.debug_state_flag_info_unavailable),
     )
 }
 
@@ -404,25 +438,27 @@ private fun SideBySideVehiclesContent(vehicleApproach: LmuWindowsVehicleApproach
     }
     Row {
         Text(
-            text = if (vehicleApproach.isSideBySideLeft) {
-                stringResource(
-                    Res.string.debug_state_side_by_side_left,
-                    formatMeters(vehicleApproach.lateralDistanceLeftMeters),
-                )
-            } else {
-                ""
-            },
+            text =
+                if (vehicleApproach.isSideBySideLeft) {
+                    stringResource(
+                        Res.string.debug_state_side_by_side_left,
+                        formatMeters(vehicleApproach.lateralDistanceLeftMeters),
+                    )
+                } else {
+                    ""
+                },
             modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH),
         )
         Text(
-            text = if (vehicleApproach.isSideBySideRight) {
-                stringResource(
-                    Res.string.debug_state_side_by_side_right,
-                    formatMeters(vehicleApproach.lateralDistanceRightMeters),
-                )
-            } else {
-                ""
-            },
+            text =
+                if (vehicleApproach.isSideBySideRight) {
+                    stringResource(
+                        Res.string.debug_state_side_by_side_right,
+                        formatMeters(vehicleApproach.lateralDistanceRightMeters),
+                    )
+                } else {
+                    ""
+                },
             modifier = Modifier.width(SIDE_BY_SIDE_COLUMN_WIDTH),
         )
     }

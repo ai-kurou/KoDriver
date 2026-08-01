@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -20,22 +19,24 @@ class SaveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
     }
 
     @Test
-    fun `保存した継続時間閾値がFlowに反映される`() = runBlocking {
-        SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)(8)
+    fun `保存した継続時間閾値がFlowに反映される`() =
+        runBlocking {
+            SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)(8)
 
-        coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `上書き保存すると最新値がFlowに反映される`() = runBlocking {
-        val useCase = SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)
+    fun `上書き保存すると最新値がFlowに反映される`() =
+        runBlocking {
+            val useCase = SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)
 
-        useCase(8)
-        useCase(6)
+            useCase(8)
+            useCase(6)
 
-        coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
-        coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(6) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
+            coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(6) }
+            confirmVerified(repository)
+        }
 }

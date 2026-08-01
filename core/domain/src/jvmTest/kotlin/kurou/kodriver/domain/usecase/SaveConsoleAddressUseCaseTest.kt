@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveConsoleAddressUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: ConsoleAddressPreferencesRepository
 
@@ -20,10 +19,11 @@ class SaveConsoleAddressUseCaseTest {
     }
 
     @Test
-    fun `アドレスを保存する`() = runBlocking {
-        SaveConsoleAddressUseCase(repository)("192.168.1.50")
+    fun `アドレスを保存する`() =
+        runBlocking {
+            SaveConsoleAddressUseCase(repository)("192.168.1.50")
 
-        coVerify(exactly = 1) { repository.saveConsoleAddress("192.168.1.50") }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveConsoleAddress("192.168.1.50") }
+            confirmVerified(repository)
+        }
 }

@@ -57,9 +57,7 @@ private const val MAXIMUM_PIT_TIMING_LAPS = 5f
  * LmuWindowsReadoutPitTimingDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsReadoutPitTimingDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun LmuWindowsReadoutPitTimingDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutPitTimingDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutPitTimingDetailPaneContent(
@@ -92,9 +90,10 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     val lapsHelpSheetState = rememberModalBottomSheetState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
     ) {
         DetailPaneDescription(
             text = stringResource(Res.string.pit_timing_description),

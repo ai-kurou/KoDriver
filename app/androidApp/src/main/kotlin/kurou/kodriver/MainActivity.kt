@@ -20,10 +20,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                scrim = Color.TRANSPARENT,
-                darkScrim = Color.TRANSPARENT,
-            ),
+            statusBarStyle =
+                SystemBarStyle.light(
+                    scrim = Color.TRANSPARENT,
+                    darkScrim = Color.TRANSPARENT,
+                ),
         )
         super.onCreate(savedInstanceState)
         setContent {
@@ -45,14 +46,15 @@ class MainActivity : ComponentActivity() {
                 onExit = { finish() },
                 onDarkThemeChanged = { darkTheme ->
                     enableEdgeToEdge(
-                        statusBarStyle = if (darkTheme) {
-                            SystemBarStyle.dark(Color.TRANSPARENT)
-                        } else {
-                            SystemBarStyle.light(
-                                scrim = Color.TRANSPARENT,
-                                darkScrim = Color.TRANSPARENT,
-                            )
-                        },
+                        statusBarStyle =
+                            if (darkTheme) {
+                                SystemBarStyle.dark(Color.TRANSPARENT)
+                            } else {
+                                SystemBarStyle.light(
+                                    scrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT,
+                                )
+                            },
                     )
                 },
             )

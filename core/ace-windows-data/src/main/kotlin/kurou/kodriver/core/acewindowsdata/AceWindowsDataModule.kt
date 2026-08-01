@@ -22,17 +22,18 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * 共有メモリ読み取りは Windows 専用のため、非 Windows では空 Flow を返す
  * No-Op 実装（下部の private class）にフォールバックする。
  */
-val aceWindowsDataModule = module {
-    single { CoroutineScope(SupervisorJob()) }
-    single { AceWindowsGraphicsSharedMemorySource(scope = get()) }
+val aceWindowsDataModule =
+    module {
+        single { CoroutineScope(SupervisorJob()) }
+        single { AceWindowsGraphicsSharedMemorySource(scope = get()) }
 
-    single<AceWindowsFuelRepository> {
-        if (isWindows) AceWindowsFuelRepositoryImpl(source = get()) else NoOpAceWindowsFuelRepository()
+        single<AceWindowsFuelRepository> {
+            if (isWindows) AceWindowsFuelRepositoryImpl(source = get()) else NoOpAceWindowsFuelRepository()
+        }
+        single<AceWindowsFlagRepository> {
+            if (isWindows) AceWindowsFlagRepositoryImpl(source = get()) else NoOpAceWindowsFlagRepository()
+        }
     }
-    single<AceWindowsFlagRepository> {
-        if (isWindows) AceWindowsFlagRepositoryImpl(source = get()) else NoOpAceWindowsFlagRepository()
-    }
-}
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()

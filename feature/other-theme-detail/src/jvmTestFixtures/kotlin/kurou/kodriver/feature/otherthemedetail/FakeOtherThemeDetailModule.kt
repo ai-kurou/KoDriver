@@ -11,9 +11,10 @@ import org.koin.dsl.module
  * テスト用の Fake Koin モジュール（testFixtures）。:core:data の代わりに ThemePreferencesRepository の
  * Fake 実装をバインドし、実DataStore（`~/.kodriver`）への書き込みを避ける。
  */
-val fakeOtherThemeDetailModule = module {
-    single<ThemePreferencesRepository> { FakeThemePreferencesRepository() }
-}
+val fakeOtherThemeDetailModule =
+    module {
+        single<ThemePreferencesRepository> { FakeThemePreferencesRepository() }
+    }
 
 class FakeThemePreferencesRepository : ThemePreferencesRepository {
     private val flow = MutableStateFlow(ThemeMode.SYSTEM)

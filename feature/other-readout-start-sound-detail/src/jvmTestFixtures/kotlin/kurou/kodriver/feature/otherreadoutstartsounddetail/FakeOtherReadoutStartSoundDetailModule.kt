@@ -12,9 +12,10 @@ import org.koin.dsl.module
  * ReadoutStartSoundPreferencesRepository の Fake 実装をバインドし、実DataStore
  * （`~/.kodriver`）への書き込みを避ける。
  */
-val fakeOtherReadoutStartSoundDetailModule = module {
-    single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
-}
+val fakeOtherReadoutStartSoundDetailModule =
+    module {
+        single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
+    }
 
 class FakeReadoutStartSoundPreferencesRepository : ReadoutStartSoundPreferencesRepository {
     private val flow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)

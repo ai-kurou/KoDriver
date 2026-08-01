@@ -15,11 +15,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
-
-    private val tempDir = Files
-        .createTempDirectory(
-        "kodriver_lmu_windows_vehicle_damage_preferences_repository_factory_test",
-    ).toFile()
+    private val tempDir =
+        Files
+            .createTempDirectory(
+                "kodriver_lmu_windows_vehicle_damage_preferences_repository_factory_test",
+            ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -28,21 +28,23 @@ class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は enabledStates が空Map`() = testScope.runTest {
-        val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
+    fun `デフォルト値は enabledStates が空Map`() =
+        testScope.runTest {
+            val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(emptyMap(), repository.observeEnabledStates().first())
-    }
+            assertEquals(emptyMap(), repository.observeEnabledStates().first())
+        }
 
     @Test
-    fun `保存した enabledStates を読み出せる`() = testScope.runTest {
-        val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
+    fun `保存した enabledStates を読み出せる`() =
+        testScope.runTest {
+            val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
-        repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
+            repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
 
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true),
-            repository.observeEnabledStates().first(),
-        )
-    }
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true),
+                repository.observeEnabledStates().first(),
+            )
+        }
 }

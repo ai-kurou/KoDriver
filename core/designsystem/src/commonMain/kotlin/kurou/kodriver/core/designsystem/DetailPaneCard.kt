@@ -89,17 +89,19 @@ private fun DetailPaneCardLayout(
         Column {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .weight(1f)
-                        .alpha(titleAlpha),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .alpha(titleAlpha),
                 )
                 headerContent()
             }
@@ -109,10 +111,11 @@ private fun DetailPaneCardLayout(
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .alpha(bottomContentAlpha)
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .alpha(bottomContentAlpha)
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
             ) {
                 bottomContent()
             }
@@ -137,16 +140,17 @@ fun DetailPaneCardChips(
             enabled = chipEnabled,
             onClick = { onChipClick(label) },
             label = { Text(text = label) },
-            leadingIcon = if (selected) {
-                {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                    )
-                }
-            } else {
-                null
-            },
+            leadingIcon =
+                if (selected) {
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                        )
+                    }
+                } else {
+                    null
+                },
         )
     }
 }

@@ -9,22 +9,22 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class QueuePreferencesRepositoryFactoryTest {
-
     @Test
-    fun `createQueuePreferencesRepository は保存と取得が正常に動作する`() = runBlocking {
-        val tempDir = Files.createTempDirectory("kodriver_queue_pref_factory_test").toFile()
-        try {
-            val repo = createQueuePreferencesRepository(tempDir.absolutePath)
+    fun `createQueuePreferencesRepository は保存と取得が正常に動作する`() =
+        runBlocking {
+            val tempDir = Files.createTempDirectory("kodriver_queue_pref_factory_test").toFile()
+            try {
+                val repo = createQueuePreferencesRepository(tempDir.absolutePath)
 
-            assertTrue(repo.observeQueueEnabledStates().first().isEmpty())
+                assertTrue(repo.observeQueueEnabledStates().first().isEmpty())
 
-            repo.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
-            assertEquals(
-                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true),
-                repo.observeQueueEnabledStates().first(),
-            )
-        } finally {
-            tempDir.deleteRecursively()
+                repo.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
+                assertEquals(
+                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                    repo.observeQueueEnabledStates().first(),
+                )
+            } finally {
+                tempDir.deleteRecursively()
+            }
         }
-    }
 }

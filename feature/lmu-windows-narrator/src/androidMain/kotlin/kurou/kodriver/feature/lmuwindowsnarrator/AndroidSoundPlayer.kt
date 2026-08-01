@@ -18,17 +18,17 @@ import kotlin.coroutines.resume
 class AndroidSoundPlayer(
     private val context: Context,
 ) : SoundPlayer {
-
-    private val soundPool = SoundPool
-        .Builder()
-        .setMaxStreams(2)
-        .setAudioAttributes(
-            AudioAttributes
-                .Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build(),
-        ).build()
+    private val soundPool =
+        SoundPool
+            .Builder()
+            .setMaxStreams(2)
+            .setAudioAttributes(
+                AudioAttributes
+                    .Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build(),
+            ).build()
 
     private var currentStreamId: Int = 0
 
@@ -41,10 +41,14 @@ class AndroidSoundPlayer(
     override val isPlaying: Boolean
         get() = currentStreamId != 0
 
-    override suspend fun play(bytes: ByteArray, volume: Int) {
-        val temp = withContext(Dispatchers.IO) {
-            File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
-        }
+    override suspend fun play(
+        bytes: ByteArray,
+        volume: Int,
+    ) {
+        val temp =
+            withContext(Dispatchers.IO) {
+                File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
+            }
         try {
             val durationMs = wavDurationMs(bytes)
             val soundId = loadSound(temp.absolutePath)
@@ -87,31 +91,32 @@ class AndroidSoundPlayer(
         return soundId
     }
 
-    private suspend fun awaitLoad(path: String): Int = suspendCancellableCoroutine { cont ->
-        // load() より先にリスナーを登録する。逆順だと、小さい WAV のロードが
-        // リスナー登録前に完了して onLoadComplete が捨てられ、永久にサスペンドする。
-        // リスナーは別スレッドから soundId 代入前に発火しうるため loadLock で待ち合わせる。
-        var soundId = 0
-        soundPool.setOnLoadCompleteListener { _, loadedId, status ->
-            val expectedId = synchronized(loadLock) { soundId }
-            if (loadedId == expectedId) {
-                soundPool.setOnLoadCompleteListener(null)
-                if (cont.isActive) {
-                    if (status == 0) {
-                        cont.resume(loadedId)
-                    } else {
-                        captureNarratorError(IllegalStateException("SoundPool load failed: status=$status"))
-                        soundPool.unload(loadedId)
-                        cont.resume(0)
+    private suspend fun awaitLoad(path: String): Int =
+        suspendCancellableCoroutine { cont ->
+            // load() より先にリスナーを登録する。逆順だと、小さい WAV のロードが
+            // リスナー登録前に完了して onLoadComplete が捨てられ、永久にサスペンドする。
+            // リスナーは別スレッドから soundId 代入前に発火しうるため loadLock で待ち合わせる。
+            var soundId = 0
+            soundPool.setOnLoadCompleteListener { _, loadedId, status ->
+                val expectedId = synchronized(loadLock) { soundId }
+                if (loadedId == expectedId) {
+                    soundPool.setOnLoadCompleteListener(null)
+                    if (cont.isActive) {
+                        if (status == 0) {
+                            cont.resume(loadedId)
+                        } else {
+                            captureNarratorError(IllegalStateException("SoundPool load failed: status=$status"))
+                            soundPool.unload(loadedId)
+                            cont.resume(0)
+                        }
                     }
                 }
             }
+            synchronized(loadLock) { soundId = soundPool.load(path, 1) }
+            cont.invokeOnCancellation {
+                synchronized(loadLock) { soundId }.takeIf { it != 0 }?.let { soundPool.unload(it) }
+            }
         }
-        synchronized(loadLock) { soundId = soundPool.load(path, 1) }
-        cont.invokeOnCancellation {
-            synchronized(loadLock) { soundId }.takeIf { it != 0 }?.let { soundPool.unload(it) }
-        }
-    }
 
     private companion object {
         const val LOAD_TIMEOUT_MS = 5_000L

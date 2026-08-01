@@ -29,22 +29,22 @@ class AppScreenViewModel(
     private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
 ) : ViewModel() {
-
     private val _hasAppUpdate = MutableStateFlow(false)
 
-    val uiState: StateFlow<AppScreenUiState> = combine(
-        _hasAppUpdate,
-        observeKeepScreenOn(),
-        observeExitConfirmationEnabled(),
-        observeDynamicColorEnabled(),
-    ) { hasUpdate, keepOn, exitConfirmation, dynamicColorEnabled ->
-        AppScreenUiState(
-            hasAppUpdate = hasUpdate,
-            keepScreenOn = keepOn,
-            exitConfirmationEnabled = exitConfirmation,
-            dynamicColorEnabled = dynamicColorEnabled,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
+    val uiState: StateFlow<AppScreenUiState> =
+        combine(
+            _hasAppUpdate,
+            observeKeepScreenOn(),
+            observeExitConfirmationEnabled(),
+            observeDynamicColorEnabled(),
+        ) { hasUpdate, keepOn, exitConfirmation, dynamicColorEnabled ->
+            AppScreenUiState(
+                hasAppUpdate = hasUpdate,
+                keepScreenOn = keepOn,
+                exitConfirmationEnabled = exitConfirmation,
+                dynamicColorEnabled = dynamicColorEnabled,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppScreenUiState())
 
     fun checkUpdate() {
         if (currentVersion.isBlank()) return

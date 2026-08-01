@@ -18,30 +18,33 @@ class ObserveGt7Ps5ConnectionUseCase(
     private val checkGt7Ps5Connection: CheckGt7Ps5ConnectionUseCase,
     private val observeGt7Ps5: ObserveGt7Ps5UseCase,
 ) {
-    operator fun invoke(): Flow<Gt7Ps5ConnectionState> = connectionCheckFlow().combine(
-        observeGt7Ps5()
-            .map<Gt7Ps5TelemetryData, Gt7Ps5TelemetryData?> { telemetry -> telemetry }
-            .onStart { emit(null) },
-    ) { isConnected, telemetry ->
-        Gt7Ps5ConnectionState(
-            isConnected = isConnected,
-            telemetry = telemetry,
-        )
-    }
-
-    private fun connectionCheckFlow() = flow {
-        while (true) {
-            val isConnected = try {
-                checkGt7Ps5Connection()
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                false
-            }
-            emit(isConnected)
-            delay(CONNECTION_CHECK_INTERVAL_MS)
+    operator fun invoke(): Flow<Gt7Ps5ConnectionState> =
+        connectionCheckFlow().combine(
+            observeGt7Ps5()
+                .map<Gt7Ps5TelemetryData, Gt7Ps5TelemetryData?> { telemetry -> telemetry }
+                .onStart { emit(null) },
+        ) { isConnected, telemetry ->
+            Gt7Ps5ConnectionState(
+                isConnected = isConnected,
+                telemetry = telemetry,
+            )
         }
-    }
+
+    private fun connectionCheckFlow() =
+        flow {
+            while (true) {
+                val isConnected =
+                    try {
+                        checkGt7Ps5Connection()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        false
+                    }
+                emit(isConnected)
+                delay(CONNECTION_CHECK_INTERVAL_MS)
+            }
+        }
 
     private companion object {
         const val CONNECTION_CHECK_INTERVAL_MS = 1_000L

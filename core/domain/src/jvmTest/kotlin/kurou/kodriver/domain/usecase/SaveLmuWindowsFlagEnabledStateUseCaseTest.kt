@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsFlagEnabledStateUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsFlagPreferencesRepository
 
@@ -21,12 +20,13 @@ class SaveLmuWindowsFlagEnabledStateUseCaseTest {
     }
 
     @Test
-    fun `指定したフラグの有効状態が保存される`() = runBlocking {
-        SaveLmuWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+    fun `指定したフラグの有効状態が保存される`() =
+        runBlocking {
+            SaveLmuWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
 
-        coVerify(exactly = 1) {
-            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+            coVerify(exactly = 1) {
+                repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+            }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
 }

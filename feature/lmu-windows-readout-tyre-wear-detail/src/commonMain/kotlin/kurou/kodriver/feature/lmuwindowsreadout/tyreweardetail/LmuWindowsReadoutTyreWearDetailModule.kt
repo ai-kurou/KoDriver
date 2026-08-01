@@ -14,11 +14,12 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsTyreWearPreferencesRepository（:core:data）、試聴用の
  *   named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
-val lmuWindowsReadoutTyreWearDetailModule = module {
-    viewModel {
-        LmuWindowsReadoutTyreWearDetailViewModel(get(), get(), get(named("lmu_windows")))
-    }
+val lmuWindowsReadoutTyreWearDetailModule =
+    module {
+        viewModel {
+            LmuWindowsReadoutTyreWearDetailViewModel(get(), get(), get(named("lmu_windows")))
+        }
 
-    factoryOf(::ObserveLmuWindowsTyreWearThresholdPercentageUseCase)
-    factoryOf(::SaveLmuWindowsTyreWearThresholdPercentageUseCase)
-}
+        factoryOf(::ObserveLmuWindowsTyreWearThresholdPercentageUseCase)
+        factoryOf(::SaveLmuWindowsTyreWearThresholdPercentageUseCase)
+    }

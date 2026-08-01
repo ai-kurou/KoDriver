@@ -18,7 +18,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveSortedTelemetryLogsUseCaseTest {
-
     @MockK
     private lateinit var repository: TelemetryLogRepository
 
@@ -33,44 +32,49 @@ class ObserveSortedTelemetryLogsUseCaseTest {
     }
 
     @Test
-    fun `createdAtの降順かつ同時刻ではidの降順で返す`() = runTest {
-        every { repository.observeTelemetryLogs() } returns logs
-        logs.value = listOf(
-            telemetryLog(id = 1, createdAt = 100),
-            telemetryLog(id = 2, createdAt = 200),
-            telemetryLog(id = 3, createdAt = 200),
-        )
+    fun `createdAtの降順かつ同時刻ではidの降順で返す`() =
+        runTest {
+            every { repository.observeTelemetryLogs() } returns logs
+            logs.value =
+                listOf(
+                    telemetryLog(id = 1, createdAt = 100),
+                    telemetryLog(id = 2, createdAt = 200),
+                    telemetryLog(id = 3, createdAt = 200),
+                )
 
-        assertEquals(listOf(3L, 2L, 1L), useCase().first().map { it.id })
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
-
-    @Test
-    fun `空の一覧を返す`() = runTest {
-        every { repository.observeTelemetryLogs() } returns logs
-
-        assertEquals(emptyList(), useCase().first())
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+            assertEquals(listOf(3L, 2L, 1L), useCase().first().map { it.id })
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
     @Test
-    fun `ログの更新を並び替えて観測する`() = runTest {
-        every { repository.observeTelemetryLogs() } returns logs
-        val result = useCase()
+    fun `空の一覧を返す`() =
+        runTest {
+            every { repository.observeTelemetryLogs() } returns logs
 
-        logs.value = listOf(telemetryLog(id = 1, createdAt = 100))
-        assertEquals(listOf(1L), result.first().map { it.id })
+            assertEquals(emptyList(), useCase().first())
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 
-        logs.value = listOf(
-            telemetryLog(id = 1, createdAt = 100),
-            telemetryLog(id = 2, createdAt = 300),
-        )
-        assertEquals(listOf(2L, 1L), result.first().map { it.id })
-        verify(exactly = 1) { repository.observeTelemetryLogs() }
-        confirmVerified(repository)
-    }
+    @Test
+    fun `ログの更新を並び替えて観測する`() =
+        runTest {
+            every { repository.observeTelemetryLogs() } returns logs
+            val result = useCase()
+
+            logs.value = listOf(telemetryLog(id = 1, createdAt = 100))
+            assertEquals(listOf(1L), result.first().map { it.id })
+
+            logs.value =
+                listOf(
+                    telemetryLog(id = 1, createdAt = 100),
+                    telemetryLog(id = 2, createdAt = 300),
+                )
+            assertEquals(listOf(2L, 1L), result.first().map { it.id })
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
 }
 
 private fun telemetryLog(

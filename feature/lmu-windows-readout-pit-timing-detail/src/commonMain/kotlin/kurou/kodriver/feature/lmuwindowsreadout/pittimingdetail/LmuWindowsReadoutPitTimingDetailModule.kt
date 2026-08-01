@@ -17,12 +17,13 @@ import org.koin.dsl.module
  * desktopDataModule / androidDataModule で束ねられる。試聴用の named("lmu_windows") の
  * PlaySpeechEventUseCase は :feature:lmu-windows-narrator で登録される。
  */
-val lmuWindowsReadoutPitTimingDetailModule = module {
-    viewModel {
-        LmuWindowsReadoutPitTimingDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
+val lmuWindowsReadoutPitTimingDetailModule =
+    module {
+        viewModel {
+            LmuWindowsReadoutPitTimingDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
+        }
+        factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
+        factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingTyreWearLapsUseCase)
     }
-    factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
-    factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)
-    factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
-    factoryOf(::SaveLmuWindowsPitTimingTyreWearLapsUseCase)
-}

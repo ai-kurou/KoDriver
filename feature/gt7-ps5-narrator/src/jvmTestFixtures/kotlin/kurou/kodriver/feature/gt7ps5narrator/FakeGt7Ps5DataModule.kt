@@ -17,14 +17,15 @@ import org.koin.dsl.module
  * テスト用の Fake Koin モジュール（testFixtures）。:core:data の代わりに GT7 系 Repository の
  * Fake 実装をバインドし、narrator の ViewModel/UseCase を Koin 経由で解決するテストで使う。
  */
-val fakeGt7Ps5DataModule = module {
-    single<Gt7Ps5Repository> { FakeGt7Ps5Repository() }
-    single<Gt7Ps5UdpPortPreferencesRepository> { FakeGt7Ps5UdpPortPreferencesRepository() }
-    single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
-    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
-    single<Gt7Ps5RemainingFuelPreferencesRepository> { FakeGt7Ps5RemainingFuelPreferencesRepository() }
-    single<SoundPlayer> { NoOpSoundPlayer() }
-}
+val fakeGt7Ps5DataModule =
+    module {
+        single<Gt7Ps5Repository> { FakeGt7Ps5Repository() }
+        single<Gt7Ps5UdpPortPreferencesRepository> { FakeGt7Ps5UdpPortPreferencesRepository() }
+        single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
+        single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
+        single<Gt7Ps5RemainingFuelPreferencesRepository> { FakeGt7Ps5RemainingFuelPreferencesRepository() }
+        single<SoundPlayer> { NoOpSoundPlayer() }
+    }
 
 private class FakeGt7Ps5Repository : Gt7Ps5Repository {
     override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = emptyFlow()
@@ -75,5 +76,8 @@ private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuel
 private class NoOpSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean = false
 
-    override suspend fun play(bytes: ByteArray, volume: Int) = Unit
+    override suspend fun play(
+        bytes: ByteArray,
+        volume: Int,
+    ) = Unit
 }

@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsPitTimingPreferencesRepository
 
@@ -20,10 +19,11 @@ class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー予想残り周回数を保存できる`() = runBlocking {
-        SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)(1)
+    fun `バーチャルエナジー予想残り周回数を保存できる`() =
+        runBlocking {
+            SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)(1)
 
-        coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(1) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(1) }
+            confirmVerified(repository)
+        }
 }

@@ -18,7 +18,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidDynamicColorEnabledRepositoryTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var tempFile: File
     private lateinit var repository: AndroidDynamicColorEnabledRepository
@@ -26,10 +25,11 @@ class AndroidDynamicColorEnabledRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("dynamic_color_enabled_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
-            scope = CoroutineScope(testDispatcher + SupervisorJob()),
-            produceFile = { tempFile },
-        )
+        val dataStore =
+            PreferenceDataStoreFactory.create(
+                scope = CoroutineScope(testDispatcher + SupervisorJob()),
+                produceFile = { tempFile },
+            )
         repository = AndroidDynamicColorEnabledRepository(dataStore)
     }
 
@@ -39,22 +39,25 @@ class AndroidDynamicColorEnabledRepositoryTest {
     }
 
     @Test
-    fun `初期状態はfalseを返す`() = runTest(testDispatcher) {
-        assertFalse(repository.dynamicColorEnabled().first())
-    }
+    fun `初期状態はfalseを返す`() =
+        runTest(testDispatcher) {
+            assertFalse(repository.dynamicColorEnabled().first())
+        }
 
     @Test
-    fun `saveDynamicColorEnabled trueの後にtrueを返す`() = runTest(testDispatcher) {
-        repository.saveDynamicColorEnabled(true)
+    fun `saveDynamicColorEnabled trueの後にtrueを返す`() =
+        runTest(testDispatcher) {
+            repository.saveDynamicColorEnabled(true)
 
-        assertTrue(repository.dynamicColorEnabled().first())
-    }
+            assertTrue(repository.dynamicColorEnabled().first())
+        }
 
     @Test
-    fun `saveDynamicColorEnabled falseで上書きするとfalseを返す`() = runTest(testDispatcher) {
-        repository.saveDynamicColorEnabled(true)
-        repository.saveDynamicColorEnabled(false)
+    fun `saveDynamicColorEnabled falseで上書きするとfalseを返す`() =
+        runTest(testDispatcher) {
+            repository.saveDynamicColorEnabled(true)
+            repository.saveDynamicColorEnabled(false)
 
-        assertFalse(repository.dynamicColorEnabled().first())
-    }
+            assertFalse(repository.dynamicColorEnabled().first())
+        }
 }

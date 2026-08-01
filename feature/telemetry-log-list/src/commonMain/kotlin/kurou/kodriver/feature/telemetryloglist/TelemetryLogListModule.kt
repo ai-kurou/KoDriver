@@ -11,14 +11,15 @@ import org.koin.dsl.module
  * 提供: TelemetryLogListViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: TelemetryLogRepository（:core:data で登録）。
  */
-val telemetryLogListModule = module {
-    // ViewModel
-    viewModelOf(::TelemetryLogListViewModel)
+val telemetryLogListModule =
+    module {
+        // ViewModel
+        viewModelOf(::TelemetryLogListViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
-    factory { ObserveTelemetryLogsUseCase(get()) }
-    factory { ResetTelemetryLogDatabaseUseCase(get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
+        factory { ObserveTelemetryLogsUseCase(get()) }
+        factory { ResetTelemetryLogDatabaseUseCase(get()) }
 
-    // 一覧表示用 UseCase
-    factory { ObserveSortedTelemetryLogsUseCase(get()) }
-}
+        // 一覧表示用 UseCase
+        factory { ObserveSortedTelemetryLogsUseCase(get()) }
+    }

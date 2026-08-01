@@ -38,7 +38,6 @@ private fun createLmuWindowsVehicleDamagePreferencesRepository(
 }
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsVehicleDamagePreferencesRepository
 
@@ -48,50 +47,53 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はOverheatのデフォルトtrueを返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
+    fun `初期値はOverheatのデフォルトtrueを返す`() =
+        runBlocking {
+            val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-        val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true)
-        assertEquals(expected, useCase().first())
-        verify(exactly = 1) { repo.observeEnabledStates() }
-        confirmVerified(repo)
-    }
+            val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true)
+            assertEquals(expected, useCase().first())
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
+        }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
-        val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
+            val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
-
-        val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false)
-        assertEquals(expected, useCase().first())
-        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+
+            val expected = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false)
+            assertEquals(expected, useCase().first())
+            coVerify(exactly = 1) {
+                repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
+            }
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
         }
-        verify(exactly = 1) { repo.observeEnabledStates() }
-        confirmVerified(repo)
-    }
 
     @Test
-    fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
+    fun `デフォルトにないキーを保存した場合そのエントリも返す`() =
+        runBlocking {
+            val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
-        repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
-
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
-            ),
-            useCase().first(),
-        )
-        coVerify(exactly = 1) {
             repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root to false,
+                ),
+                useCase().first(),
+            )
+            coVerify(exactly = 1) {
+                repo.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
+            }
+            verify(exactly = 1) { repo.observeEnabledStates() }
+            confirmVerified(repo)
         }
-        verify(exactly = 1) { repo.observeEnabledStates() }
-        confirmVerified(repo)
-    }
 }

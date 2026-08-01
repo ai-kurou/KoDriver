@@ -14,13 +14,14 @@ import org.koin.dsl.module
  * 消費（get で解決）: ConsoleAddressPreferencesRepository・Gt7Ps5UdpPortPreferencesRepository
  *   （いずれも :core:data で登録）。
  */
-val otherConsoleIpDetailModule = module {
-    // ViewModel
-    viewModelOf(::OtherConsoleIpDetailViewModel)
+val otherConsoleIpDetailModule =
+    module {
+        // ViewModel
+        viewModelOf(::OtherConsoleIpDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveConsoleAddressUseCase(get()) }
-    factory { SaveConsoleAddressUseCase(get()) }
-    factory { ObserveGt7Ps5UdpPortUseCase(get()) }
-    factory { SaveGt7Ps5UdpPortUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveConsoleAddressUseCase(get()) }
+        factory { SaveConsoleAddressUseCase(get()) }
+        factory { ObserveGt7Ps5UdpPortUseCase(get()) }
+        factory { SaveGt7Ps5UdpPortUseCase(get()) }
+    }

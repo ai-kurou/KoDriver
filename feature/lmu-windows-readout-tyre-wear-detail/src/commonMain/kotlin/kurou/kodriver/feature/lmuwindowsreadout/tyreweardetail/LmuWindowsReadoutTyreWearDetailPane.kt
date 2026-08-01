@@ -40,9 +40,7 @@ private const val THRESHOLD_MAX = 90f
  * LmuWindowsReadoutTyreWearDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsReadoutTyreWearDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun LmuWindowsReadoutTyreWearDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutTyreWearDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutTyreWearDetailPaneContent(
@@ -63,9 +61,10 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
     ) {
         DetailPaneDescription(
             text = stringResource(Res.string.tyre_wear_description),

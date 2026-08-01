@@ -29,7 +29,6 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
 }
 
 class ObserveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -39,30 +38,34 @@ class ObserveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialLateral = 2.0,
-        )
-        val useCase = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
+    fun `初期値を返す`() =
+        runBlocking {
+            val repo =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialLateral = 2.0,
+                )
+            val useCase = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
 
-        assertEquals(2.0, useCase().first())
-        verify(exactly = 1) { repo.observeLateralThresholdMeters() }
-        confirmVerified(repo)
-    }
+            assertEquals(2.0, useCase().first())
+            verify(exactly = 1) { repo.observeLateralThresholdMeters() }
+            confirmVerified(repo)
+        }
 
     @Test
-    fun `保存済みの横方向閾値をそのまま返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialLateral = 2.0,
-        )
-        val useCase = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
+    fun `保存済みの横方向閾値をそのまま返す`() =
+        runBlocking {
+            val repo =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialLateral = 2.0,
+                )
+            val useCase = ObserveLmuWindowsVehicleApproachLateralThresholdUseCase(repo)
 
-        repo.saveLateralThresholdMeters(3.5)
-        assertEquals(3.5, useCase().first())
-        coVerify(exactly = 1) { repo.saveLateralThresholdMeters(3.5) }
-        verify(exactly = 1) { repo.observeLateralThresholdMeters() }
-        confirmVerified(repo)
-    }
+            repo.saveLateralThresholdMeters(3.5)
+            assertEquals(3.5, useCase().first())
+            coVerify(exactly = 1) { repo.saveLateralThresholdMeters(3.5) }
+            verify(exactly = 1) { repo.observeLateralThresholdMeters() }
+            confirmVerified(repo)
+        }
 }

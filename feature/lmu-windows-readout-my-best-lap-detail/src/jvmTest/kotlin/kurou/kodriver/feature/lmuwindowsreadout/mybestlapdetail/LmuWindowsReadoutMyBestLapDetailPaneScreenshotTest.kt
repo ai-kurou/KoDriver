@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -25,9 +24,10 @@ class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
     @Test
     fun `casual選択`() {
         capturePane(
-            uiState = LmuWindowsReadoutMyBestLapDetailUiState(
-                voiceType = MyBestLapVoiceType.CASUAL,
-            ),
+            uiState =
+                LmuWindowsReadoutMyBestLapDetailUiState(
+                    voiceType = MyBestLapVoiceType.CASUAL,
+                ),
         )
     }
 

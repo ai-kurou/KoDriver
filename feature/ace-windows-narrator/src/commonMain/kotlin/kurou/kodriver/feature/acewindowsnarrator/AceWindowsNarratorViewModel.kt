@@ -55,105 +55,119 @@ internal class AceWindowsNarratorViewModel(
         DetermineAceWindowsNarratorReadoutUseCase(),
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
+    private val selectedSimulator =
+        readoutListUseCases
+            .observeSelectedSimulator()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val selectedSimulator = readoutListUseCases
-        .observeSelectedSimulator()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val listEnabledStates = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+    private val listEnabledStates =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     // listPane（listEnabledStates）とdetailPane（flagEnabledStates）を統合した、
     // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
-    private val mergedEnabledStates = combine(
-        listEnabledStates,
-        flagUseCases.observeFlagEnabledStates(),
-    ) { readoutStates, flagStates -> readoutStates + flagStates }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
+    private val mergedEnabledStates =
+        combine(
+            listEnabledStates,
+            flagUseCases.observeFlagEnabledStates(),
+        ) { readoutStates, flagStates -> readoutStates + flagStates }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
-    private val readoutOrder = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    private val readoutOrder =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
-    private val queueEnabledStates = readoutListUseCases
-        .observeQueueEnabledStates()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
+    private val queueEnabledStates =
+        readoutListUseCases
+            .observeQueueEnabledStates()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
-    private val remainingFuelThreshold = remainingFuelUseCases
-        .observeThresholdPercentage()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE)
+    private val remainingFuelThreshold =
+        remainingFuelUseCases
+            .observeThresholdPercentage()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE)
 
     private var narratorState = AceWindowsNarratorState()
 
     private val currentSettings: AceWindowsNarratorReadoutSettings
-        get() = AceWindowsNarratorReadoutSettings(
-            enabledStates = mergedEnabledStates.value,
-            remainingFuelThresholdPercentage = remainingFuelThreshold.value,
-        )
-
-    private val fuelFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.AceWindows) emptyFlow() else remainingFuelUseCases.observeAceWindowsFuel()
-        }.shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    private val flagFlow = selectedSimulator
-        .flatMapLatest { simulator ->
-            if (simulator !is Simulator.AceWindows) emptyFlow() else flagUseCases.observeAceWindowsFlag()
-        }.shareIn(viewModelScope, SharingStarted.Eagerly)
-
-    @Suppress("UnusedPrivateProperty")
-    private val readoutJob = fuelFlow
-        .onEach { fuel ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = determineAceWindowsNarratorReadout.determineRemainingFuel(
-                state = state,
-                data = fuel,
-                settings = settings,
+        get() =
+            AceWindowsNarratorReadoutSettings(
+                enabledStates = mergedEnabledStates.value,
+                remainingFuelThresholdPercentage = remainingFuelThreshold.value,
             )
-            narratorState = decision.state
-            eventProcessor.processRemainingFuel(
-                fuel = fuel,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = AceWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
+
+    private val fuelFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.AceWindows) emptyFlow() else remainingFuelUseCases.observeAceWindowsFuel()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    private val flagFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.AceWindows) emptyFlow() else flagUseCases.observeAceWindowsFlag()
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     @Suppress("UnusedPrivateProperty")
-    private val flagJob = flagFlow
-        .onEach { flag ->
-            val observedAtMs = currentTimeMs()
-            val state = narratorState
-            val settings = currentSettings
-            val decision = determineAceWindowsNarratorReadout.determineFlag(
-                state = state,
-                data = flag,
-                settings = settings,
-            )
-            narratorState = decision.state
-            eventProcessor.processFlag(
-                flag = flag,
-                events = decision.events,
-                readoutOrder = readoutOrder.value,
-                queueEnabledStates = queueEnabledStates.value,
-                observedAtMs = observedAtMs,
-                logContext = AceWindowsTelemetryLogContext(
-                    state = state,
-                    settings = settings,
-                    finalState = decision.state,
-                ),
-            )
-        }.launchIn(viewModelScope)
+    private val readoutJob =
+        fuelFlow
+            .onEach { fuel ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineAceWindowsNarratorReadout.determineRemainingFuel(
+                        state = state,
+                        data = fuel,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processRemainingFuel(
+                    fuel = fuel,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        AceWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val flagJob =
+        flagFlow
+            .onEach { flag ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineAceWindowsNarratorReadout.determineFlag(
+                        state = state,
+                        data = flag,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.processFlag(
+                    flag = flag,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        AceWindowsTelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
 }

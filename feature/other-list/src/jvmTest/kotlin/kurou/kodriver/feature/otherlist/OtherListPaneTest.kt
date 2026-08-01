@@ -20,7 +20,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class OtherListPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -30,9 +29,10 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.Volume),
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Volume),
+                    ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -51,10 +51,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.KeepScreenOn),
-                    keepScreenOn = true,
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.KeepScreenOn),
+                        keepScreenOn = true,
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
@@ -73,10 +74,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.KeepScreenOn),
-                    keepScreenOn = false,
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.KeepScreenOn),
+                        keepScreenOn = false,
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
@@ -95,10 +97,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.ExitConfirmation),
-                    exitConfirmationEnabled = true,
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.ExitConfirmation),
+                        exitConfirmationEnabled = true,
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
@@ -117,10 +120,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.ExitConfirmation),
-                    exitConfirmationEnabled = false,
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.ExitConfirmation),
+                        exitConfirmationEnabled = false,
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
@@ -139,10 +143,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.DynamicColor),
-                    dynamicColorEnabled = true,
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.DynamicColor),
+                        dynamicColorEnabled = true,
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -161,13 +166,15 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(
-                        OtherListItemType.KeepScreenOn,
-                        OtherListItemType.ExitConfirmation,
-                        OtherListItemType.DynamicColor,
+                uiState =
+                    OtherListUiState(
+                        items =
+                            listOf(
+                                OtherListItemType.KeepScreenOn,
+                                OtherListItemType.ExitConfirmation,
+                                OtherListItemType.DynamicColor,
+                            ),
                     ),
-                ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -186,11 +193,12 @@ class OtherListPaneTest {
     fun `アプリバージョンが設定されているとバージョン行を表示する`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = emptyList(),
-                    appVersionLabel = "Android版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = emptyList(),
+                        appVersionLabel = "Android版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -208,9 +216,10 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.DebugState),
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.DebugState),
+                    ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -229,11 +238,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = emptyList(),
-                    appVersionLabel = "Android版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = emptyList(),
+                        appVersionLabel = "Android版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -255,11 +265,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = emptyList(),
-                    appVersionLabel = "Android版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = emptyList(),
+                        appVersionLabel = "Android版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -279,14 +290,16 @@ class OtherListPaneTest {
     fun `表示項目に応じたセクション見出しを表示する`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(
-                        OtherListItemType.ConsoleIp,
-                        OtherListItemType.Volume,
-                        OtherListItemType.ExitConfirmation,
-                        OtherListItemType.License,
+                uiState =
+                    OtherListUiState(
+                        items =
+                            listOf(
+                                OtherListItemType.ConsoleIp,
+                                OtherListItemType.Volume,
+                                OtherListItemType.ExitConfirmation,
+                                OtherListItemType.License,
+                            ),
                     ),
-                ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -304,9 +317,10 @@ class OtherListPaneTest {
     fun `項目がないセクション見出しは表示しない`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.Volume),
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Volume),
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -324,9 +338,10 @@ class OtherListPaneTest {
     fun `テーマ項目をアプリ設定セクションに表示する`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(OtherListItemType.Theme),
-                ),
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Theme),
+                    ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
@@ -345,19 +360,21 @@ class OtherListPaneTest {
         rule.setContent {
             Box(modifier = Modifier.height(160.dp)) {
                 OtherListPane(
-                    uiState = OtherListUiState(
-                        items = listOf(
-                            OtherListItemType.ConsoleIp,
-                            OtherListItemType.Volume,
-                            OtherListItemType.ReadoutStartSound,
-                            OtherListItemType.ExitConfirmation,
-                            OtherListItemType.Theme,
-                            OtherListItemType.DynamicColor,
-                            OtherListItemType.GitHubRepository,
-                            OtherListItemType.ReleasePage,
-                            OtherListItemType.License,
+                    uiState =
+                        OtherListUiState(
+                            items =
+                                listOf(
+                                    OtherListItemType.ConsoleIp,
+                                    OtherListItemType.Volume,
+                                    OtherListItemType.ReadoutStartSound,
+                                    OtherListItemType.ExitConfirmation,
+                                    OtherListItemType.Theme,
+                                    OtherListItemType.DynamicColor,
+                                    OtherListItemType.GitHubRepository,
+                                    OtherListItemType.ReleasePage,
+                                    OtherListItemType.License,
+                                ),
                         ),
-                    ),
                     onItemClick = {},
                     onKeepScreenOnChange = {},
                     onExitConfirmationEnabledChange = {},

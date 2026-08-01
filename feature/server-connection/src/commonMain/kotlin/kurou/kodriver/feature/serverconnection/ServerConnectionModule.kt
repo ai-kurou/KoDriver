@@ -16,13 +16,14 @@ import org.koin.dsl.module
  *   SimulatorPreferencesRepository（:core:data）、named("appVersion") のバージョン定数
  *   （app エントリーポイントで登録）。
  */
-val serverConnectionModule = module {
-    // ViewModel（get(named "appVersion") は app エントリーポイントで束ねるバージョン定数を解決）
-    viewModel { ServerConnectionViewModel(get(), get(named("appVersion"))) }
+val serverConnectionModule =
+    module {
+        // ViewModel（get(named "appVersion") は app エントリーポイントで束ねるバージョン定数を解決）
+        viewModel { ServerConnectionViewModel(get(), get(named("appVersion"))) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
-    factory { FetchServerVersionUseCase(get()) }
-    factory { ObserveServerIpUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveKoDriverServerConnectionUseCase(get(), get(), get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
+        factory { FetchServerVersionUseCase(get()) }
+        factory { ObserveServerIpUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveKoDriverServerConnectionUseCase(get(), get(), get()) }
+    }

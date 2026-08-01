@@ -16,13 +16,14 @@ import org.koin.dsl.module
  *   （:core:data）、試聴用の named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator
  *   で登録）。
  */
-val lmuWindowsReadoutFlagDetailModule = module {
-    // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
-    viewModel { LmuWindowsReadoutFlagDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows"))) }
+val lmuWindowsReadoutFlagDetailModule =
+    module {
+        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        viewModel { LmuWindowsReadoutFlagDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows"))) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
-    factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
-    factory { SaveLmuWindowsFlagEnabledStateUseCase(get()) }
-    factory { SaveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
+        factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
+        factory { SaveLmuWindowsFlagEnabledStateUseCase(get()) }
+        factory { SaveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
+    }

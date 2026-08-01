@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsMyBestLapPreferencesRepository
 
@@ -21,10 +20,11 @@ class SaveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `LMU自己ベストラップ音声タイプを保存する`() = runBlocking {
-        SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
+    fun `LMU自己ベストラップ音声タイプを保存する`() =
+        runBlocking {
+            SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
 
-        coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
+            confirmVerified(repository)
+        }
 }

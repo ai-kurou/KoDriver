@@ -98,19 +98,21 @@ import org.koin.compose.viewmodel.koinViewModel
 private fun bannerTapWithTabSwitch(
     onBannerTap: (() -> Unit)?,
     switchToMore: () -> Unit,
-): (() -> Unit)? = if (onBannerTap != null) {
-    {
-        switchToMore()
-        onBannerTap()
+): (() -> Unit)? =
+    if (onBannerTap != null) {
+        {
+            switchToMore()
+            onBannerTap()
+        }
+    } else {
+        null
     }
-} else {
-    null
-}
 
-private fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType = when (this) {
-    ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
-    ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
-}
+private fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType =
+    when (this) {
+        ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
+        ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
+    }
 
 private fun handleTabClick(
     dest: AppDestination,
@@ -153,11 +155,12 @@ private enum class AppDestination(
 }
 
 @Composable
-private fun AppDestination.label(): String = when (this) {
-    AppDestination.Readout -> stringResource(Res.string.nav_readout)
-    AppDestination.Log -> stringResource(Res.string.nav_log)
-    AppDestination.More -> stringResource(Res.string.nav_more)
-}
+private fun AppDestination.label(): String =
+    when (this) {
+        AppDestination.Readout -> stringResource(Res.string.nav_readout)
+        AppDestination.Log -> stringResource(Res.string.nav_log)
+        AppDestination.More -> stringResource(Res.string.nav_more)
+    }
 
 @Composable
 private fun AppNavIcon(
@@ -273,14 +276,15 @@ fun AppScreen(
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
 
-    val onBannerTap = if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
-        {
-            otherListViewModel.selectItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
-            Unit
+    val onBannerTap =
+        if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
+            {
+                otherListViewModel.selectItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
+                Unit
+            }
+        } else {
+            null
         }
-    } else {
-        null
-    }
 
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
@@ -430,32 +434,35 @@ internal fun AppScreenContent(
     otherListScrollToTopRequest: Int = 0,
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
-    val onBannerTapWithTabSwitch = bannerTapWithTabSwitch(onBannerTap) {
-        currentDestination = AppDestination.More
-    }
+    val onBannerTapWithTabSwitch =
+        bannerTapWithTabSwitch(onBannerTap) {
+            currentDestination = AppDestination.More
+        }
 
     AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
         val resolvedLayoutType = layoutType ?: windowSizeClass.resolveNavigationSuiteType()
         KeepScreenOnEffect(keepScreenOn)
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .safeDrawingPadding(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .safeDrawingPadding(),
         ) {
             NavigationSuiteScaffold(
                 modifier = Modifier.padding(top = 4.dp),
                 layoutType = resolvedLayoutType,
                 navigationSuiteItems = {
                     AppDestination.entries.forEach { dest ->
-                        val itemModifier = if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp)
-                        } else {
-                            Modifier
-                        }
+                        val itemModifier =
+                            if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp)
+                            } else {
+                                Modifier
+                            }
                         val showBadge = dest == AppDestination.More && hasAppUpdate
                         item(
                             icon = {
@@ -466,9 +473,10 @@ internal fun AppScreenContent(
                             label = {
                                 if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
                                     Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .offset(x = (-6).dp),
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .offset(x = (-6).dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
@@ -502,35 +510,38 @@ internal fun AppScreenContent(
             ) {
                 val dividerColor = DividerDefaults.color
                 val dividerThickness = DividerDefaults.Thickness
-                val contentModifier = Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                            Modifier
-                        } else {
-                            Modifier.drawWithContent {
-                                drawContent()
-                                val strokeWidth = dividerThickness.toPx()
-                                drawLine(
-                                    color = dividerColor,
-                                    start = Offset(strokeWidth / 2, 0f),
-                                    end = Offset(strokeWidth / 2, size.height),
-                                    strokeWidth = strokeWidth,
-                                )
-                            }
-                        },
-                    )
+                val contentModifier =
+                    Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                                Modifier
+                            } else {
+                                Modifier.drawWithContent {
+                                    drawContent()
+                                    val strokeWidth = dividerThickness.toPx()
+                                    drawLine(
+                                        color = dividerColor,
+                                        start = Offset(strokeWidth / 2, 0f),
+                                        end = Offset(strokeWidth / 2, size.height),
+                                        strokeWidth = strokeWidth,
+                                    )
+                                }
+                            },
+                        )
                 Column(modifier = contentModifier) {
                     AnimatedVisibility(
                         visible = bannerUiState.isVisible,
-                        enter = slideInVertically(
-                            initialOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 300),
-                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                        exit = slideOutVertically(
-                            targetOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 200),
-                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                        enter =
+                            slideInVertically(
+                                initialOffsetY = { -it },
+                                animationSpec = tween(durationMillis = 300),
+                            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                        exit =
+                            slideOutVertically(
+                                targetOffsetY = { -it },
+                                animationSpec = tween(durationMillis = 200),
+                            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
                     ) {
                         ConnectionBannerContent(
                             uiState = bannerUiState,
@@ -553,31 +564,34 @@ internal fun AppScreenContent(
             }
             SnackbarHost(
                 hostState = snackbarHostState,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        bottom = if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                            96.dp
-                        } else {
-                            16.dp
-                        },
-                    ),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom =
+                                if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                                    96.dp
+                                } else {
+                                    16.dp
+                                },
+                        ),
             )
         }
     }
 }
 
-internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType = when {
-    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
-        NavigationSuiteType.NavigationRail
-    }
+internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
+    when {
+        isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+            NavigationSuiteType.NavigationRail
+        }
 
-    else -> {
-        NavigationSuiteType.NavigationBar
+        else -> {
+            NavigationSuiteType.NavigationBar
+        }
     }
-}
 
 @Composable
 internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {

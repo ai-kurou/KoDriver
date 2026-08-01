@@ -27,9 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * Gt7Ps5ReadoutMyBestLapDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5ReadoutMyBestLapDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun Gt7Ps5ReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5ReadoutMyBestLapDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutMyBestLapDetailPaneContent(
@@ -49,9 +47,10 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
 ) {
     val voiceTypeLabels = MyBestLapVoiceType.entries.map { type -> type to type.displayName() }
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
     ) {
         DetailPaneDescription(
             text = stringResource(Res.string.my_best_lap_description),
@@ -62,10 +61,11 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = voiceTypeLabels.map { (_, label) -> label },
-                    selectedChipLabels = voiceTypeLabels
-                        .filter { (type, _) -> type == uiState.voiceType }
-                        .map { (_, label) -> label }
-                        .toSet(),
+                    selectedChipLabels =
+                        voiceTypeLabels
+                            .filter { (type, _) -> type == uiState.voiceType }
+                            .map { (_, label) -> label }
+                            .toSet(),
                     chipEnabled = true,
                     onChipClick = { label ->
                         val type = voiceTypeLabels.first { (_, typeLabel) -> typeLabel == label }.first
@@ -87,7 +87,8 @@ private fun Gt7Ps5ReadoutMyBestLapDetailPanePreview() {
 }
 
 @Composable
-private fun MyBestLapVoiceType.displayName(): String = when (this) {
-    MyBestLapVoiceType.FORMAL -> stringResource(Res.string.my_best_lap_voice_type_formal)
-    MyBestLapVoiceType.CASUAL -> stringResource(Res.string.my_best_lap_voice_type_casual)
-}
+private fun MyBestLapVoiceType.displayName(): String =
+    when (this) {
+        MyBestLapVoiceType.FORMAL -> stringResource(Res.string.my_best_lap_voice_type_formal)
+        MyBestLapVoiceType.CASUAL -> stringResource(Res.string.my_best_lap_voice_type_casual)
+    }

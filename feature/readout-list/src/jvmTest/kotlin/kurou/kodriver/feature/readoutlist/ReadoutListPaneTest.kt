@@ -21,7 +21,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 class ReadoutListPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -30,9 +29,10 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState = ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                    ),
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                        ),
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -52,9 +52,10 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState = ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-                    ),
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                        ),
                     onSimulatorSelected = { selected += it },
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -76,14 +77,16 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState = ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows),
-                        selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
-                        readoutEnabledStates = mapOf(
-                            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                            readoutEnabledStates =
+                                mapOf(
+                                    ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to true,
+                                ),
                         ),
-                    ),
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -105,13 +108,14 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState = ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows),
-                        selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
-                        queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
-                    ),
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                            queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                        ),
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
@@ -138,13 +142,14 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState = ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows),
-                        selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
-                        queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
-                    ),
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                            queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                        ),
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { item, enabled -> readoutChanges += item to enabled },
@@ -174,13 +179,14 @@ class ReadoutListPaneTest {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
-                    uiState = ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows),
-                        selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
-                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
-                        queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
-                    ),
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                            queueEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to false),
+                        ),
                     onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
@@ -195,8 +201,7 @@ class ReadoutListPaneTest {
         assertFalse(queueChanges.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
     }
 
-    private fun hasSwitchRole(): SemanticsMatcher =
-        SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
+    private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 
     private fun hasQueueToggleRole(): SemanticsMatcher =
         SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)

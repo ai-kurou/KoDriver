@@ -12,11 +12,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreWearPreferencesRepositoryFactoryTest {
-
-    private val tempDir = Files
-        .createTempDirectory(
-        "kodriver_lmu_windows_tyre_wear_preferences_repository_factory_test",
-    ).toFile()
+    private val tempDir =
+        Files
+            .createTempDirectory(
+                "kodriver_lmu_windows_tyre_wear_preferences_repository_factory_test",
+            ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -25,18 +25,20 @@ class LmuWindowsTyreWearPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は thresholdPercentage が 50`() = testScope.runTest {
-        val repository = createLmuWindowsTyreWearPreferencesRepository(tempDir.absolutePath)
+    fun `デフォルト値は thresholdPercentage が 50`() =
+        testScope.runTest {
+            val repository = createLmuWindowsTyreWearPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(50, repository.observeThresholdPercentage().first())
-    }
+            assertEquals(50, repository.observeThresholdPercentage().first())
+        }
 
     @Test
-    fun `保存した thresholdPercentage を読み出せる`() = testScope.runTest {
-        val repository = createLmuWindowsTyreWearPreferencesRepository(tempDir.absolutePath)
+    fun `保存した thresholdPercentage を読み出せる`() =
+        testScope.runTest {
+            val repository = createLmuWindowsTyreWearPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveThresholdPercentage(30)
+            repository.saveThresholdPercentage(30)
 
-        assertEquals(30, repository.observeThresholdPercentage().first())
-    }
+            assertEquals(30, repository.observeThresholdPercentage().first())
+        }
 }

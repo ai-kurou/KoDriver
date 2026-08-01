@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsPitTimingPreferencesRepository
 
@@ -24,12 +23,13 @@ class ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー予想残り周回数を監視できる`() = runBlocking {
-        every { repository.observeVirtualEnergyLaps() } returns MutableStateFlow(5)
-        val useCase = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)
+    fun `バーチャルエナジー予想残り周回数を監視できる`() =
+        runBlocking {
+            every { repository.observeVirtualEnergyLaps() } returns MutableStateFlow(5)
+            val useCase = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)
 
-        assertEquals(5, useCase().first())
-        verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
-        confirmVerified(repository)
-    }
+            assertEquals(5, useCase().first())
+            verify(exactly = 1) { repository.observeVirtualEnergyLaps() }
+            confirmVerified(repository)
+        }
 }

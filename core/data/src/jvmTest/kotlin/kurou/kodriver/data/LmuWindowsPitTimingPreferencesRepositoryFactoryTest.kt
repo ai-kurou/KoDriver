@@ -14,11 +14,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
-
-    private val tempDir = Files
-        .createTempDirectory(
-        "kodriver_lmu_windows_pit_timing_preferences_repository_factory_test",
-    ).toFile()
+    private val tempDir =
+        Files
+            .createTempDirectory(
+                "kodriver_lmu_windows_pit_timing_preferences_repository_factory_test",
+            ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -27,21 +27,26 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は両方とも3周`() = testScope.runTest {
-        val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
+    fun `デフォルト値は両方とも3周`() =
+        testScope.runTest {
+            val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
 
-        assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, repository.observeVirtualEnergyLaps().first())
-        assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, repository.observeTyreWearLaps().first())
-    }
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                repository.observeVirtualEnergyLaps().first(),
+            )
+            assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, repository.observeTyreWearLaps().first())
+        }
 
     @Test
-    fun `保存した予想残り周回数を読み出せる`() = testScope.runTest {
-        val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
+    fun `保存した予想残り周回数を読み出せる`() =
+        testScope.runTest {
+            val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
 
-        repository.saveVirtualEnergyLaps(5)
-        repository.saveTyreWearLaps(1)
+            repository.saveVirtualEnergyLaps(5)
+            repository.saveTyreWearLaps(1)
 
-        assertEquals(5, repository.observeVirtualEnergyLaps().first())
-        assertEquals(1, repository.observeTyreWearLaps().first())
-    }
+            assertEquals(5, repository.observeVirtualEnergyLaps().first())
+            assertEquals(1, repository.observeTyreWearLaps().first())
+        }
 }

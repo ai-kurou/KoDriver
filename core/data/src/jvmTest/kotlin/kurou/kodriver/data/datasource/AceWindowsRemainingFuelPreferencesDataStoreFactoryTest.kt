@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsRemainingFuelPreferencesDataStoreFactoryTest {
-
     private val tempDir =
         Files.createTempDirectory("kodriver_ace_windows_remaining_fuel_preferences_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -22,10 +21,11 @@ class AceWindowsRemainingFuelPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `残り燃料設定が正しいファイルに書き込まれる`() = testScope.runTest {
-        val dataStore = createAceWindowsRemainingFuelPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(thresholdPercentage = 50) }
+    fun `残り燃料設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
+            val dataStore = createAceWindowsRemainingFuelPreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(thresholdPercentage = 50) }
 
-        assertTrue(tempDir.resolve("ace_windows_remaining_fuel_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("ace_windows_remaining_fuel_preferences.pb").exists())
+        }
 }

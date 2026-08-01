@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsMyBestLapPreferencesRepository
 
@@ -25,12 +24,13 @@ class ObserveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `保存済みのLMU自己ベストラップ音声タイプを返す`() = runBlocking {
-        every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
-        val useCase = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository)
+    fun `保存済みのLMU自己ベストラップ音声タイプを返す`() =
+        runBlocking {
+            every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
+            val useCase = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository)
 
-        assertEquals(MyBestLapVoiceType.CASUAL, useCase().first())
-        verify(exactly = 1) { repository.observeVoiceType() }
-        confirmVerified(repository)
-    }
+            assertEquals(MyBestLapVoiceType.CASUAL, useCase().first())
+            verify(exactly = 1) { repository.observeVoiceType() }
+            confirmVerified(repository)
+        }
 }

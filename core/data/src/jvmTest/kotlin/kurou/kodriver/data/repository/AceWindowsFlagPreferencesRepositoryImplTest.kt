@@ -16,14 +16,14 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsFlagPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_ace_flag_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
-        serializer = AceWindowsFlagPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("test.pb") },
-    )
+    private val dataStore =
+        DataStoreFactory.create(
+            serializer = AceWindowsFlagPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("test.pb") },
+        )
     private val repository = AceWindowsFlagPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
@@ -32,35 +32,37 @@ class AceWindowsFlagPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は空Map・保存した値を返す・上書きで更新される`() = testScope.runTest {
-        assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
+    fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
+            assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
 
-        repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.Flag.BlueFlag to true),
-            repository.observeFlagEnabledStates().first(),
-        )
+            repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.Flag.BlueFlag to true),
+                repository.observeFlagEnabledStates().first(),
+            )
 
-        repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false)
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
-            repository.observeFlagEnabledStates().first(),
-        )
-    }
+            repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false)
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
+                repository.observeFlagEnabledStates().first(),
+            )
+        }
 
     @Test
-    fun `複数フラグを独立して保存・取得できる`() = testScope.runTest {
-        repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
-        repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.YellowFlag, false)
-        repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.RedFlag, true)
+    fun `複数フラグを独立して保存・取得できる`() =
+        testScope.runTest {
+            repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, true)
+            repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.YellowFlag, false)
+            repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.RedFlag, true)
 
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
-                ReadoutItemKey.AceWindows.Flag.YellowFlag to false,
-                ReadoutItemKey.AceWindows.Flag.RedFlag to true,
-            ),
-            repository.observeFlagEnabledStates().first(),
-        )
-    }
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.YellowFlag to false,
+                    ReadoutItemKey.AceWindows.Flag.RedFlag to true,
+                ),
+                repository.observeFlagEnabledStates().first(),
+            )
+        }
 }

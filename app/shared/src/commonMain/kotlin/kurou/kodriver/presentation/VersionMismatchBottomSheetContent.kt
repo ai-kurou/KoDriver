@@ -30,10 +30,11 @@ internal fun VersionMismatchBottomSheetContent(
     val windowsIsNewer = parseVersion(windowsKoDriverVersion) > parseVersion(appVersion)
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp),
     ) {
         Text(
             text = stringResource(Res.string.version_mismatch_title),
@@ -55,11 +56,12 @@ internal fun VersionMismatchBottomSheetContent(
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = if (windowsIsNewer) {
-                stringResource(Res.string.version_mismatch_update_app)
-            } else {
-                stringResource(Res.string.version_mismatch_update_windows)
-            },
+            text =
+                if (windowsIsNewer) {
+                    stringResource(Res.string.version_mismatch_update_app)
+                } else {
+                    stringResource(Res.string.version_mismatch_update_windows)
+                },
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -72,8 +74,7 @@ internal fun VersionMismatchBottomSheetContent(
     }
 }
 
-private fun parseVersion(version: String): List<Int> =
-    version.split(".").map { it.toIntOrNull() ?: 0 }
+private fun parseVersion(version: String): List<Int> = version.split(".").map { it.toIntOrNull() ?: 0 }
 
 private operator fun List<Int>.compareTo(other: List<Int>): Int {
     val size = maxOf(this.size, other.size)
