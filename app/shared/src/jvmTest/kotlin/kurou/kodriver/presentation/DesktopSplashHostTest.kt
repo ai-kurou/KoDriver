@@ -58,6 +58,7 @@ class DesktopSplashHostTest {
             MaterialTheme {
                 val initializeModules: suspend () -> Unit = remember { {} }
                 val startServer: suspend () -> Unit = remember { {} }
+
                 @Suppress("UNUSED_VARIABLE")
                 val observed = tick
                 DesktopSplashHost(
