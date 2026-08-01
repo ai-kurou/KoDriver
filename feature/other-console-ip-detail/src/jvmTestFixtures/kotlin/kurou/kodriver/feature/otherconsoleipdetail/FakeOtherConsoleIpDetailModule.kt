@@ -20,5 +20,7 @@ class FakeConsoleAddressPreferencesRepository : ConsoleAddressPreferencesReposit
 
     override fun consoleAddress(): Flow<String?> = flow
 
-    override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
+    override suspend fun saveConsoleAddress(address: String) {
+        flow.update { address }
+    }
 }

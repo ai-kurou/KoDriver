@@ -37,7 +37,9 @@ private class FakeGt7Ps5UdpPortPreferencesRepository : Gt7Ps5UdpPortPreferencesR
 
     override fun port(): Flow<Int> = flow
 
-    override suspend fun savePort(port: Int) { flow.update { port } }
+    override suspend fun savePort(port: Int) {
+        flow.update { port }
+    }
 }
 
 private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferencesRepository {
@@ -45,7 +47,9 @@ private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferen
 
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
 
-    override suspend fun saveVoiceType(type: MyBestLapVoiceType) { flow.update { type } }
+    override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
+        flow.update { type }
+    }
 }
 
 private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5RemainingFuelLapsPreferencesRepository {
@@ -53,7 +57,9 @@ private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5Remaining
 
     override fun observeRemainingFuelLaps(): Flow<Int> = flow
 
-    override suspend fun saveRemainingFuelLaps(laps: Int) { flow.update { laps } }
+    override suspend fun saveRemainingFuelLaps(laps: Int) {
+        flow.update { laps }
+    }
 }
 
 private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuelPreferencesRepository {
@@ -61,7 +67,9 @@ private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuel
 
     override fun observeThresholdPercentage(): Flow<Int> = flow
 
-    override suspend fun saveThresholdPercentage(percentage: Int) { flow.update { percentage } }
+    override suspend fun saveThresholdPercentage(percentage: Int) {
+        flow.update { percentage }
+    }
 }
 
 private class NoOpSoundPlayer : SoundPlayer {

@@ -127,11 +127,15 @@ class WebSocketVehicleDamageRepositoryTest {
 private class FakeServerIpPreferencesRepositoryForDamage(initialIp: String?) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
-    fun setIp(ip: String?) { _ip.value = ip }
+    fun setIp(ip: String?) {
+        _ip.value = ip
+    }
 
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
 
-    override suspend fun saveServerIp(ip: String) { _ip.value = ip }
+    override suspend fun saveServerIp(ip: String) {
+        _ip.value = ip
+    }
 }
 
 private val DAMAGE_JSON = """

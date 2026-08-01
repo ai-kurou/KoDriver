@@ -45,17 +45,29 @@ sealed interface SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root
     }
 
-    data object BlueFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
+    data object BlueFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+    }
 
-    data object YellowFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
+    data object YellowFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+    }
 
-    data object FullCourseYellow : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
+    data object FullCourseYellow : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+    }
 
-    data object SessionStop : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
+    data object SessionStop : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+    }
 
-    data object RedFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root }
+    data object RedFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root
+    }
 
-    data object Overheating : SpeechEvent { override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root }
+    data object Overheating : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.LmuWindows.VehicleDamage.Root
+    }
 
     data object TyreOverheat : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.TyreTemperature.Root
@@ -107,19 +119,29 @@ sealed interface SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
     }
 
-    data object AceWindowsWhiteFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsWhiteFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
 
-    data object AceWindowsGreenFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsGreenFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
 
-    data object AceWindowsRedFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsRedFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
 
-    data object AceWindowsBlueFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsBlueFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
 
     data object AceWindowsYellowFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
     }
 
-    data object AceWindowsBlackFlag : SpeechEvent { override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root }
+    data object AceWindowsBlackFlag : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root
+    }
 
     data object AceWindowsBlackWhiteFlag : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.AceWindows.Flag.Root

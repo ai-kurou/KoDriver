@@ -153,11 +153,15 @@ private class FakeServerIpPreferencesRepositoryForTyreWear(
 ) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
-    fun setIp(ip: String?) { _ip.update { ip } }
+    fun setIp(ip: String?) {
+        _ip.update { ip }
+    }
 
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
 
-    override suspend fun saveServerIp(ip: String) { _ip.update { ip } }
+    override suspend fun saveServerIp(ip: String) {
+        _ip.update { ip }
+    }
 }
 
 private val TYRE_WEAR_JSON = """

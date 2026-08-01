@@ -76,7 +76,9 @@ class FakeLmuWindowsVehicleApproachPreferencesRepository : LmuWindowsVehicleAppr
 
     override fun observeSkipFirstLap(): Flow<Boolean> = skipFirstLapFlow
 
-    override suspend fun saveSkipFirstLap(skip: Boolean) { skipFirstLapFlow.update { skip } }
+    override suspend fun saveSkipFirstLap(skip: Boolean) {
+        skipFirstLapFlow.update { skip }
+    }
 
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> = startReadoutTypeFlow
 
@@ -118,7 +120,9 @@ class FakeSoundVolumePreferencesRepository : SoundVolumePreferencesRepository {
 
     override fun volume(): Flow<Int> = flow
 
-    override suspend fun saveVolume(volume: Int) { flow.update { volume } }
+    override suspend fun saveVolume(volume: Int) {
+        flow.update { volume }
+    }
 }
 
 class FakeLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
@@ -132,7 +136,9 @@ class FakeLmuWindowsTyreTemperaturePreferencesRepository : LmuWindowsTyreTempera
 
     override fun observeHighThresholdCelsius(): Flow<Int> = flow
 
-    override suspend fun saveHighThresholdCelsius(celsius: Int) { flow.update { celsius } }
+    override suspend fun saveHighThresholdCelsius(celsius: Int) {
+        flow.update { celsius }
+    }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
 
@@ -156,7 +162,9 @@ class FakeLmuWindowsTyreWearPreferencesRepository : LmuWindowsTyreWearPreference
 
     override fun observeThresholdPercentage(): Flow<Int> = flow
 
-    override suspend fun saveThresholdPercentage(percentage: Int) { flow.update { percentage } }
+    override suspend fun saveThresholdPercentage(percentage: Int) {
+        flow.update { percentage }
+    }
 }
 
 class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferencesRepository {
@@ -164,7 +172,9 @@ class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferen
 
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
 
-    override suspend fun saveVoiceType(type: MyBestLapVoiceType) { flow.update { type } }
+    override suspend fun saveVoiceType(type: MyBestLapVoiceType) {
+        flow.update { type }
+    }
 }
 
 class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
