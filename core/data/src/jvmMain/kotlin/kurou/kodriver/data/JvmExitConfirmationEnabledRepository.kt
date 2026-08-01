@@ -33,5 +33,8 @@ internal fun createExitConfirmationPreferencesDataStore(directory: String): Data
     )
 }
 
+/**
+ * ExitConfirmationEnabled Repository の永続化実装を生成する。
+ */
 fun createExitConfirmationEnabledRepository(directory: String): ExitConfirmationEnabledRepository =
     JvmExitConfirmationEnabledRepository(createExitConfirmationPreferencesDataStore(directory))

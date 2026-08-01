@@ -12,6 +12,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.presentation.AppScreen
 
+/**
+ * MainActivity の Android Activity。
+ */
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalActivityApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {

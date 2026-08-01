@@ -28,6 +28,9 @@ import kurou.kodriver.domain.model.ThemeMode
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * OtherThemeDetail のダイアログを表示する Composable。
+ */
 @Composable
 fun OtherThemeDetailDialog(
     onDismiss: () -> Unit,

@@ -8,6 +8,9 @@ import javax.sound.sampled.LineEvent
 import kotlin.coroutines.resume
 import kotlin.math.log10
 
+/**
+ * WAV 音声を再生する Jvm 向け実装。
+ */
 class JvmSoundPlayer : SoundPlayer {
     private var currentClip: javax.sound.sampled.Clip? = null
 

@@ -166,6 +166,9 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
     }
 }
 
+/**
+ * OtherList の画面を表示する Composable。
+ */
 @Composable
 fun OtherListPane(
     uiState: OtherListUiState,

@@ -4,6 +4,9 @@ import kurou.kodriver.domain.model.DYNAMIC_COLOR_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.EXIT_CONFIRMATION_ENABLED_DEFAULT
 import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 
+/**
+ * OtherList 画面の表示状態。
+ */
 data class OtherListUiState(
     val items: List<OtherListItemType> = buildOtherListItems(),
     val selectedItem: OtherListItemType? = null,

@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.dp
 
 private const val DisabledContentAlpha = 0.38f
 
+/**
+ * DetailPaneCard を提供する公開関数。
+ */
 @Composable
 fun DetailPaneCard(
     title: String,
@@ -50,6 +53,9 @@ fun DetailPaneCard(
     )
 }
 
+/**
+ * DetailPaneCard を提供する公開関数。
+ */
 @Composable
 fun DetailPaneCard(
     title: String,
@@ -114,6 +120,9 @@ private fun DetailPaneCardLayout(
     }
 }
 
+/**
+ * DetailPaneCardChips を提供する公開関数。
+ */
 @Composable
 fun DetailPaneCardChips(
     chipLabels: List<String>,

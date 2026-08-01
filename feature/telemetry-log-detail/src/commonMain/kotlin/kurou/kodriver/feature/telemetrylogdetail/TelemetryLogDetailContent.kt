@@ -17,6 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * TelemetryLogDetail のコンテンツを表示する Composable。
+ */
 @Composable
 fun TelemetryLogDetailContent(
     id: Long,

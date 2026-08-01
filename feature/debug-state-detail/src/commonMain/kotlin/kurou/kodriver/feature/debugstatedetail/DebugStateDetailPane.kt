@@ -95,6 +95,9 @@ internal fun calculateDebugStateColumns(maxWidth: Dp): Int = when {
     else -> 3
 }
 
+/**
+ * DebugStateDetail の画面を表示する Composable。
+ */
 @Composable
 fun DebugStateDetailPane(
     canNavigateBack: Boolean,

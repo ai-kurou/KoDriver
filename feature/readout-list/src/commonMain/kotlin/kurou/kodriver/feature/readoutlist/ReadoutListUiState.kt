@@ -3,6 +3,9 @@ package kurou.kodriver.feature.readoutlist
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 
+/**
+ * ReadoutList 画面の表示状態。
+ */
 data class ReadoutListUiState(
     val selectedSimulator: Simulator? = null,
     val simulators: List<Simulator> = emptyList(),

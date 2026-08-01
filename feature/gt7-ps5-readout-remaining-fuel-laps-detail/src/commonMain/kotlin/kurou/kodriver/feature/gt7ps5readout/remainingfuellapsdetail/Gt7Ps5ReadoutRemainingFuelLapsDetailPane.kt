@@ -32,6 +32,9 @@ import kotlin.math.roundToInt
 private const val MINIMUM_REMAINING_FUEL_LAPS = 1f
 private const val MAXIMUM_REMAINING_FUEL_LAPS = 5f
 
+/**
+ * Gt7Ps5ReadoutRemainingFuelLapsDetail の画面を表示する Composable。
+ */
 @Composable
 fun Gt7Ps5ReadoutRemainingFuelLapsDetailPane(
     modifier: Modifier = Modifier,

@@ -36,6 +36,9 @@ import kotlin.math.roundToInt
 private const val THRESHOLD_MIN = 5f
 private const val THRESHOLD_MAX = 90f
 
+/**
+ * AceWindowsReadoutRemainingFuelDetail の画面を表示する Composable。
+ */
 @Composable
 fun AceWindowsReadoutRemainingFuelDetailPane(
     modifier: Modifier = Modifier,

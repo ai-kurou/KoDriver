@@ -35,6 +35,9 @@ import org.koin.compose.viewmodel.koinViewModel
 private const val GITHUB_REPOSITORY_URL = "https://github.com/ai-kurou/KoDriver"
 private const val RELEASE_PAGE_URL = "$GITHUB_REPOSITORY_URL/releases"
 
+/**
+ * Other のコンテンツを表示する Composable。
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun OtherContent(

@@ -10,6 +10,9 @@ import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.FloatControl
 import javax.sound.sampled.SourceDataLine
 
+/**
+ * WAV 音声を再生する Jvm 向け実装。
+ */
 class JvmSoundPlayer : SoundPlayer {
     @Volatile
     private var currentLine: SourceDataLine? = null

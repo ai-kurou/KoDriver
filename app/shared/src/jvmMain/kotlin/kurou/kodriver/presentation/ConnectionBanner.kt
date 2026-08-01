@@ -12,6 +12,9 @@ import kurou.kodriver.feature.main.ConnectionBannerVmStatus
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * rememberConnectionBannerUiState のこのプラットフォーム向け実装。
+ */
 @Composable
 actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val viewModel: ConnectionBannerViewModel = koinViewModel()

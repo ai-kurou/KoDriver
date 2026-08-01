@@ -15,6 +15,9 @@ import org.koin.dsl.module
 private const val SENTRY_DSN =
     "https://93dc09daf8552c39b0eea61b4f1319ee@o4511575800676352.ingest.us.sentry.io/4511575816667136"
 
+/**
+ * KoDriverApplication の Android Application 実装。
+ */
 class KoDriverApplication : Application() {
     override fun onCreate() {
         super.onCreate()

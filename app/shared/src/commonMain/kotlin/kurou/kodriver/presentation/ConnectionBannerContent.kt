@@ -88,6 +88,9 @@ private fun Modifier.pulseWhile(enabled: Boolean): Modifier {
     return graphicsLayer(scaleX = pulseScale(progress), scaleY = pulseScale(progress), alpha = pulseAlpha(progress))
 }
 
+/**
+ * ConnectionBanner のコンテンツを表示する Composable。
+ */
 @Composable
 fun ConnectionBannerContent(
     uiState: ConnectionBannerUiState,

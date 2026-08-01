@@ -27,6 +27,9 @@ import kurou.kodriver.domain.model.ReadoutStartSoundType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * OtherReadoutStartSoundDetail のダイアログを表示する Composable。
+ */
 @Composable
 fun OtherReadoutStartSoundDetailDialog(
     onDismiss: () -> Unit,

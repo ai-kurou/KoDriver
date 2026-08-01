@@ -23,6 +23,9 @@ import kurou.kodriver.domain.model.RedFlagVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * LmuWindowsReadoutFlagDetail の画面を表示する Composable。
+ */
 @Composable
 fun LmuWindowsReadoutFlagDetailPane(
     modifier: Modifier = Modifier,

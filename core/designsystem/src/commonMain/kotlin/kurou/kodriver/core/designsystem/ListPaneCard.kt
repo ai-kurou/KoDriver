@@ -12,6 +12,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * ListPaneCard を提供する公開関数。
+ */
 @Composable
 fun ListPaneCard(
     onClick: () -> Unit,

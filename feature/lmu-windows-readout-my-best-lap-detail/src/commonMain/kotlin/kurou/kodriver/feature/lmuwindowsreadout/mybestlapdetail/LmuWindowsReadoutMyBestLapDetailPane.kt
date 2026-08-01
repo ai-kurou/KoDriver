@@ -23,6 +23,9 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * LmuWindowsReadoutMyBestLapDetail の画面を表示する Composable。
+ */
 @Composable
 fun LmuWindowsReadoutMyBestLapDetailPane(
     modifier: Modifier = Modifier,

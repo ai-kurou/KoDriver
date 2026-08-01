@@ -1,5 +1,8 @@
 package kurou.kodriver.feature.otherlist
 
+/**
+ * OtherList の項目種別。
+ */
 enum class OtherListItemType(
     val id: String,
 ) {

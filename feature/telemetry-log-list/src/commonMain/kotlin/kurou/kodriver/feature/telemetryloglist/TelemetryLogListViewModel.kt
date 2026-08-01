@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
+/**
+ * TelemetryLogList 画面の状態管理とユーザー操作を扱う ViewModel。
+ */
 class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,

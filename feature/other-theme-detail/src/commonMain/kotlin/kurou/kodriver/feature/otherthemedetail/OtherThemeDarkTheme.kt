@@ -5,6 +5,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.domain.model.ThemeMode
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * rememberOtherThemeDarkTheme を Compose の状態として生成・保持する。
+ */
 @Composable
 fun rememberOtherThemeDarkTheme(
     systemDarkTheme: Boolean,

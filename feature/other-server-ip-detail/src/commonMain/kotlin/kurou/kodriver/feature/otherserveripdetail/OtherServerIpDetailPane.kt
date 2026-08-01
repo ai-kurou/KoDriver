@@ -41,6 +41,9 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * OtherServerIpDetail の画面を表示する Composable。
+ */
 @Composable
 fun OtherServerIpDetailPane(
     canNavigateBack: Boolean,
@@ -65,6 +68,9 @@ fun OtherServerIpDetailPane(
     )
 }
 
+/**
+ * OtherServerIpDetail の画面本体を表示する Composable。
+ */
 @Composable
 fun OtherServerIpDetailPaneContent(
     uiState: OtherServerIpDetailUiState,

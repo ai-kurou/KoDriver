@@ -32,6 +32,9 @@ private data class LocalOrderState(
     val items: List<ReadoutItemKey>,
 )
 
+/**
+ * ReadoutList 画面の状態管理とユーザー操作を扱う ViewModel。
+ */
 @Suppress("LongParameterList")
 class ReadoutListViewModel(
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,

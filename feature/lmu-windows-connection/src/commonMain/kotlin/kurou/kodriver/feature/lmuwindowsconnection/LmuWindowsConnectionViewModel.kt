@@ -22,6 +22,9 @@ internal data class LmuWindowsConnectionUiState(
     val isConnectionChecked: Boolean get() = connectionStatus != LmuWindowsConnectionStatus.UNCHECKED
 }
 
+/**
+ * LmuWindowsConnection の接続状態を表す表示用ステータス。
+ */
 enum class LmuWindowsConnectionStatus {
     UNCHECKED,
     CONNECTED,

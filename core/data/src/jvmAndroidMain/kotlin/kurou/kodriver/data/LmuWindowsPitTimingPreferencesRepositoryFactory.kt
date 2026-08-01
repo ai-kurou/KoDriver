@@ -4,6 +4,9 @@ import kurou.kodriver.data.datasource.createLmuWindowsPitTimingPreferencesDataSt
 import kurou.kodriver.data.repository.LmuWindowsPitTimingPreferencesRepositoryImpl
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 
+/**
+ * LmuWindowsPitTimingPreferences Repository の永続化実装を生成する。
+ */
 fun createLmuWindowsPitTimingPreferencesRepository(
     directory: String,
 ): LmuWindowsPitTimingPreferencesRepository =
