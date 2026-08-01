@@ -18,7 +18,6 @@ internal class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
     private val saveGt7Ps5RemainingFuelLaps: SaveGt7Ps5RemainingFuelLapsUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<Gt7Ps5ReadoutRemainingFuelLapsDetailUiState> =
         observeGt7Ps5RemainingFuelLaps()
             .map { Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = it) }

@@ -12,7 +12,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsReadoutTyreWearDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 

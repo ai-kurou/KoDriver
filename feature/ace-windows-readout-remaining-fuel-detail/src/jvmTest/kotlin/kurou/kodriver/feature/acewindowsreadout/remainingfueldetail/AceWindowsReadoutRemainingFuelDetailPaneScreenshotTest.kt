@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class AceWindowsReadoutRemainingFuelDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

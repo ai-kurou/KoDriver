@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtherLicenseDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

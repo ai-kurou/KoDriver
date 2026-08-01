@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.QueuePreferencesRepository
 internal class QueuePreferencesRepositoryImpl(
     private val dataStore: DataStore<QueuePreferences>,
 ) : QueuePreferencesRepository {
-
     override fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.map { prefs ->
             prefs.enabledStates

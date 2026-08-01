@@ -18,7 +18,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w480dp-h640dp")
 class OtherLicenseDetailPaneScreenshotTest {
-
     @Test
     fun `デフォルト`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {

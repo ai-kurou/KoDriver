@@ -10,7 +10,6 @@ import java.nio.ByteBuffer
 internal class LmuWindowsVehicleDamageRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsVehicleDamageRepository {
-
     override fun vehicleDamageStream(): Flow<LmuWindowsVehicleDamageData> =
         source.bufferFlow.mapNotNull { readDamage(it) }
 

@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 internal class LmuWindowsRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsRepository {
-
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> =
         source.bufferFlow.map { LmuWindowsMapper.map(it) }
 

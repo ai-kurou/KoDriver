@@ -24,7 +24,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w360dp-h640dp")
 class OtherListPaneScreenshotTest {
-
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 

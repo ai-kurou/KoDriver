@@ -11,7 +11,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ConnectionBannerSnackbarMessageTest {
-
     @Test
     fun `GT7選択時はGT7用の接続文言を返す`() {
         assertEquals(

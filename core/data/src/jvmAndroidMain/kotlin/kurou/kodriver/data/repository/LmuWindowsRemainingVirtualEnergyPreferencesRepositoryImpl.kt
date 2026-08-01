@@ -9,7 +9,6 @@ import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferen
 internal class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsRemainingVirtualEnergyPreferences>,
 ) : LmuWindowsRemainingVirtualEnergyPreferencesRepository {
-
     override fun observeThresholdPercentage(): Flow<Int> =
         dataStore.data.map { it.thresholdPercentage }
 

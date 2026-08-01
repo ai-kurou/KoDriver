@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LapTimeFormatterTest {
-
     @Test
     fun `1分23秒456ミリ秒は 1_23_456 形式で表示される`() {
         assertEquals("1:23.456", formatLapTimeMs(83_456L))

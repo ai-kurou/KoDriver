@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 internal class LmuWindowsMyBestLapPreferencesRepositoryImpl(
     private val dataStore: DataStore<MyBestLapPreferences>,
 ) : LmuWindowsMyBestLapPreferencesRepository {
-
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> =
         dataStore.data.map { MyBestLapVoiceType.fromId(it.voiceType) }
 

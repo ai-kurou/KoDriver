@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ThemeModeTest {
-
     @Test
     fun `idからテーマモードへ変換できる`() {
         assertEquals(ThemeMode.SYSTEM, ThemeMode.fromId("system"))

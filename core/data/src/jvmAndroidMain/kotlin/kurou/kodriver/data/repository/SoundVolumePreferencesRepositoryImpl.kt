@@ -9,7 +9,6 @@ import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 internal class SoundVolumePreferencesRepositoryImpl(
     private val dataStore: DataStore<SoundVolumePreferences>,
 ) : SoundVolumePreferencesRepository {
-
     override fun volume(): Flow<Int> = dataStore.data.map { it.volume }
 
     override suspend fun saveVolume(volume: Int) {

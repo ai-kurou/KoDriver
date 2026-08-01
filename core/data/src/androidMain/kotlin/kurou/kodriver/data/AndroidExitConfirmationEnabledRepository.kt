@@ -12,7 +12,6 @@ import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 internal class AndroidExitConfirmationEnabledRepository(
     private val dataStore: DataStore<Preferences>,
 ) : ExitConfirmationEnabledRepository {
-
     private val exitConfirmationEnabledKey = booleanPreferencesKey("exit_confirmation_enabled")
 
     override fun exitConfirmationEnabled(): Flow<Boolean> =

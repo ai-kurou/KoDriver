@@ -7,7 +7,6 @@ import java.util.UUID
  * AnonymousUserId の singleton。
  */
 object AnonymousUserId {
-
     private const val FILE_NAME = "anonymous_user_id"
 
     fun getOrCreate(directory: String): String {

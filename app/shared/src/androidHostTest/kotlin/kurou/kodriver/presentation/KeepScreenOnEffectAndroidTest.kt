@@ -17,7 +17,6 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [36])
 class KeepScreenOnEffectAndroidTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 

@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class ReadoutItemKeyTest {
-
     @Test
     fun `fromValue は一致するキーを返す`() {
         assertEquals(

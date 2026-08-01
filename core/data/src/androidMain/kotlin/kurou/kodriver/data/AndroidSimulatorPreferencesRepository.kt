@@ -12,7 +12,6 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 internal class AndroidSimulatorPreferencesRepository(
     private val dataStore: DataStore<Preferences>,
 ) : SimulatorPreferencesRepository {
-
     private val selectedSimulatorKey = stringPreferencesKey("selected_simulator")
 
     override fun selectedSimulator(): Flow<Simulator?> =

@@ -8,7 +8,6 @@ internal class FakeStaticSharedMemoryReader(
     initialOpen: Boolean = true,
     private val openResult: Boolean = true,
 ) : SharedMemoryReader {
-
     private var opened = initialOpen
     var closeCalled = false
 

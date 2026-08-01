@@ -10,7 +10,6 @@ import org.junit.Test
 import kotlin.test.assertTrue
 
 class DesktopSplashErrorDialogTest {
-
     @get:Rule
     val rule = createComposeRule()
 

@@ -19,7 +19,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w480dp-h320dp")
 class OtherThemeDetailDialogContentScreenshotTest {
-
     @Test
     fun `システムに従うを選択中`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {

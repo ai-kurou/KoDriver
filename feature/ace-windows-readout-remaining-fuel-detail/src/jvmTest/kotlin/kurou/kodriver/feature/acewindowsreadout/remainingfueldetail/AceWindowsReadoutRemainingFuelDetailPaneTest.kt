@@ -15,7 +15,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class AceWindowsReadoutRemainingFuelDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 

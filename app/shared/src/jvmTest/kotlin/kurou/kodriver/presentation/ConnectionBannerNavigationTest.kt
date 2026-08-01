@@ -4,7 +4,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ConnectionBannerNavigationTest {
-
     @Test
     fun `Android版LMUではサーバーIP設定へ遷移する`() {
         assertEquals(

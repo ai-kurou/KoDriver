@@ -7,7 +7,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ServerConnectionUiStateTest {
-
     @Test
     fun `isConnected_CONNECTEDのときtrue`() {
         val state = ServerConnectionUiState(connectionStatus = ServerConnectionStatus.CONNECTED)

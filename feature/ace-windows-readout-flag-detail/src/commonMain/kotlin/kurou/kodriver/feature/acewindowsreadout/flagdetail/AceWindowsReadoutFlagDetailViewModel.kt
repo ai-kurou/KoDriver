@@ -16,7 +16,6 @@ internal class AceWindowsReadoutFlagDetailViewModel(
     private val saveFlagEnabledState: SaveAceWindowsFlagEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<AceWindowsReadoutFlagDetailUiState> =
         observeFlagEnabledStates()
             .map { enabledStates -> AceWindowsReadoutFlagDetailUiState(enabledStates = enabledStates) }

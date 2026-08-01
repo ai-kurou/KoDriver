@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 internal class LmuWindowsRedFlagPreferencesRepositoryImpl(
     private val dataStore: DataStore<RedFlagPreferences>,
 ) : LmuWindowsRedFlagPreferencesRepository {
-
     override fun observeVoiceType(): Flow<RedFlagVoiceType> =
         dataStore.data.map { RedFlagVoiceType.fromId(it.voiceType) }
 

@@ -6,7 +6,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class AnonymousUserIdTest {
-
     @Test
     fun `初回はIDを新規生成してファイルに保存する`() {
         val directory = Files.createTempDirectory("kodriver_anonymous_user_id_test").toFile()

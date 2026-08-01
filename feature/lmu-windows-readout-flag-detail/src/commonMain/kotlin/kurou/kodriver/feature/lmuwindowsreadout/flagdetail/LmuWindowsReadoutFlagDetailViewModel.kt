@@ -23,7 +23,6 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
     private val saveRedFlagVoiceType: SaveLmuWindowsRedFlagVoiceTypeUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<LmuWindowsReadoutFlagDetailUiState> =
         combine(observeFlagEnabledStates(), observeRedFlagVoiceType()) { enabledStates, redFlagVoiceType ->
             LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates, redFlagVoiceType = redFlagVoiceType)

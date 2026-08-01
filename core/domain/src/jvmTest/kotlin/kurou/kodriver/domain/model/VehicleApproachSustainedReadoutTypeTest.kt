@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class VehicleApproachSustainedReadoutTypeTest {
-
     @Test
     fun `fromId は一致する種別を返す`() {
         assertEquals(

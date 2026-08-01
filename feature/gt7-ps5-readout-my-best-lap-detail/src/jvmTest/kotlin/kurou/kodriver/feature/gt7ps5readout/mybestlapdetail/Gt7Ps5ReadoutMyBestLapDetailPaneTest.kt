@@ -13,7 +13,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class Gt7Ps5ReadoutMyBestLapDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 

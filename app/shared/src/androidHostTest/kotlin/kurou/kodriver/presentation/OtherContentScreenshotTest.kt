@@ -27,7 +27,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w840dp-h640dp")
 class OtherContentScreenshotTest {
-
     @Test
     fun `Windows版KoDriverへ接続するIPアドレス詳細を表示`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {

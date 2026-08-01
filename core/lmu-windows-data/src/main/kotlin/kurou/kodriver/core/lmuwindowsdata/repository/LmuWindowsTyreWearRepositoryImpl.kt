@@ -11,7 +11,6 @@ import java.nio.ByteBuffer
 internal class LmuWindowsTyreWearRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsTyreWearRepository {
-
     override fun tyreWearStream(): Flow<LmuWindowsTyreWearData> =
         source.bufferFlow.mapNotNull { readTyreWear(it) }
 

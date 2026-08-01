@@ -18,7 +18,6 @@ internal class Gt7Ps5ReadoutRemainingFuelDetailViewModel(
     private val saveThresholdPercentage: SaveGt7Ps5RemainingFuelThresholdPercentageUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<Gt7Ps5ReadoutRemainingFuelDetailUiState> =
         observeThresholdPercentage()
             .map { Gt7Ps5ReadoutRemainingFuelDetailUiState(thresholdPercentage = it) }

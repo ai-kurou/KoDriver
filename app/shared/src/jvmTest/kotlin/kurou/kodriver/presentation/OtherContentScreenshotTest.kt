@@ -19,7 +19,6 @@ import org.junit.Test
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class OtherContentScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

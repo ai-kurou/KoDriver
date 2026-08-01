@@ -11,7 +11,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherThemeDetailDialogContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 

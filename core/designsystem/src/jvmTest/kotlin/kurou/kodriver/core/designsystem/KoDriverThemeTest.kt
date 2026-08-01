@@ -5,7 +5,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class KoDriverThemeTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 

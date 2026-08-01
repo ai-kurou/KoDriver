@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.update
  * 駆動される揮発的な状態のため、単純な [MutableStateFlow] ホルダーとする。
  */
 class DesktopSplashProgress {
-
     private val _uiState = MutableStateFlow(DesktopSplashUiState())
 
     /** スプラッシュ画面が購読する現在の表示状態。 */

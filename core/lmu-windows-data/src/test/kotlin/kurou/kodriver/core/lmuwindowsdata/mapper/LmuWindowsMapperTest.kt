@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class LmuWindowsMapperTest {
-
     // オフセット定数（LmuWindowsMapper と一致）
     private companion object {
         const val SCORING_BASE = 1_632
