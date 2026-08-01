@@ -174,7 +174,13 @@ private class FakeTelemetryLogDao(
 
     override fun observeTelemetryLogs(): Flow<List<TelemetryLogEntity>> = logs
 
-    override fun observeTelemetryLog(id: Long): Flow<TelemetryLogEntity?> = logs.map { logs -> logs.firstOrNull { it.id == id } }
+    override fun observeTelemetryLog(id: Long): Flow<TelemetryLogEntity?> =
+        logs.map { logs ->
+            logs.firstOrNull {
+                it.id ==
+                    id
+            }
+        }
 
     override fun observePreviousTelemetryLog(
         createdAt: Long,

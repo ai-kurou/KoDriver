@@ -66,7 +66,10 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
             every { repository.observeThresholdPercentage() } returns thresholdFlow
             val viewModel = createViewModel()
 
-            assertEquals(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT, viewModel.uiState.first().thresholdPercentage)
+            assertEquals(
+                GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
+                viewModel.uiState.first().thresholdPercentage,
+            )
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             confirmVerified(repository)
         }
@@ -100,7 +103,10 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
 
             viewModel.onThresholdReset()
 
-            assertEquals(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT, viewModel.uiState.first().thresholdPercentage)
+            assertEquals(
+                GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
+                viewModel.uiState.first().thresholdPercentage,
+            )
             verify(exactly = 1) { repository.observeThresholdPercentage() }
             coVerify(exactly = 1) {
                 repository.saveThresholdPercentage(GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)

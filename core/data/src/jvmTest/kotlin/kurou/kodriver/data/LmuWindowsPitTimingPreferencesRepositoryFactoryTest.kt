@@ -31,7 +31,10 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
         testScope.runTest {
             val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
 
-            assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, repository.observeVirtualEnergyLaps().first())
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                repository.observeVirtualEnergyLaps().first(),
+            )
             assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, repository.observeTyreWearLaps().first())
         }
 

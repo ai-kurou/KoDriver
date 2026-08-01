@@ -89,7 +89,10 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
                 )
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
-            assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCases.observeStartReadoutType().first())
+            assertEquals(
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+                useCases.observeStartReadoutType().first(),
+            )
             verify(exactly = 1) { repository.observeStartReadoutType() }
             confirmVerified(repository)
         }
@@ -102,7 +105,10 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
             useCases.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
 
-            assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, useCases.observeStartReadoutType().first())
+            assertEquals(
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+                useCases.observeStartReadoutType().first(),
+            )
             coVerify(exactly = 1) {
                 repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
             }

@@ -307,7 +307,11 @@ class ReadoutContentTest {
                     ReadoutListUiState(
                         simulators = listOf(Simulator.LmuWindows),
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                        items =
+                            listOf(
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                                ReadoutItemKey.LmuWindows.Flag.Root,
+                            ),
                         readoutEnabledStates =
                             mapOf(
                                 ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
@@ -355,7 +359,11 @@ class ReadoutContentTest {
                     ReadoutListUiState(
                         simulators = listOf(Simulator.LmuWindows),
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                        items =
+                            listOf(
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                                ReadoutItemKey.LmuWindows.Flag.Root,
+                            ),
                         readoutEnabledStates =
                             mapOf(
                                 ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
@@ -408,7 +416,11 @@ class ReadoutContentTest {
                     ReadoutListUiState(
                         simulators = listOf(Simulator.LmuWindows),
                         selectedSimulator = Simulator.LmuWindows,
-                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                        items =
+                            listOf(
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                                ReadoutItemKey.LmuWindows.Flag.Root,
+                            ),
                         readoutEnabledStates =
                             mapOf(
                                 ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
@@ -573,5 +585,6 @@ class ReadoutContentTest {
 
     private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 
-    private fun hasQueueToggleRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
+    private fun hasQueueToggleRole(): SemanticsMatcher =
+        SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
 }

@@ -226,7 +226,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 vehicleApproach = leftVehicleApproach(vehicleId = 1),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
                     ),
                 observedAtMs = 0L,
             )
@@ -237,7 +238,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 vehicleApproach = leftVehicleApproach(vehicleId = 1),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
                     ),
                 observedAtMs = 50L,
             )
@@ -591,7 +593,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 vehicleDamage = damage(overheating = true),
                 settings =
                     settings(
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false),
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false),
                     ),
             )
 
@@ -678,7 +681,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                 settings =
                     settings(
                         tyreTemperatureHighThresholdCelsius = 90,
-                        enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+                        enabledStates =
+                            allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
                     ),
             )
 
@@ -696,7 +700,8 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
                     settings =
                         settings(
                             tyreTemperatureHighThresholdCelsius = 90,
-                            enabledStates = allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
+                            enabledStates =
+                                allEnabledStates + mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to false),
                         ),
                 ).state
 

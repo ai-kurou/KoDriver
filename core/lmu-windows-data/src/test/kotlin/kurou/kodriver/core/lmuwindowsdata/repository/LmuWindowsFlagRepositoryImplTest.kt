@@ -56,7 +56,10 @@ class LmuWindowsFlagRepositoryImplTest {
 
             assertEquals(SessionPhase.COUNTDOWN, result.gamePhase)
             assertEquals(SessionYellowFlagState.PIT_CLOSED, result.yellowFlagState)
-            assertEquals(listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR), result.sectorFlags)
+            assertEquals(
+                listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR),
+                result.sectorFlags,
+            )
             assertEquals(3, result.startLight)
             assertEquals(5, result.numRedLights)
             assertEquals(PrimaryFlag.BLUE, result.playerFlag)

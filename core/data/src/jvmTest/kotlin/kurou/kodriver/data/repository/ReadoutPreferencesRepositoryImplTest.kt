@@ -193,7 +193,10 @@ class ReadoutPreferencesRepositoryImplTest {
             )
             repository.saveReadoutOrder("rFactor 2", listOf(ReadoutItemKey.LmuWindows.Flag.Root))
 
-            assertEquals(listOf(ReadoutItemKey.LmuWindows.Flag.Root), repository.observeReadoutOrder("rFactor 2").first())
+            assertEquals(
+                listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                repository.observeReadoutOrder("rFactor 2").first(),
+            )
         }
 
     @Test

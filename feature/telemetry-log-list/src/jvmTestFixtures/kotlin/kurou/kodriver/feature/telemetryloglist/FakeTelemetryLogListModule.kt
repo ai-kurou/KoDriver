@@ -31,8 +31,10 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
             val current = logs.firstOrNull { it.id == id } ?: return@map null
             val previous =
                 logs
-                    .filter { it.createdAt < current.createdAt || (it.createdAt == current.createdAt && it.id < current.id) }
-                    .maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
+                    .filter {
+                        it.createdAt < current.createdAt ||
+                            (it.createdAt == current.createdAt && it.id < current.id)
+                    }.maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
             TelemetryLogDetail(current = current, previous = previous)
         }
 

@@ -107,7 +107,11 @@ private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepositor
         }
     }
 
-    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> = orders.map { it[simulator] ?: emptyList() }
+    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
+        orders.map {
+            it[simulator]
+                ?: emptyList()
+        }
 
     override suspend fun saveReadoutOrder(
         simulator: String,

@@ -66,7 +66,8 @@ class AceWindowsWavNarratorEngineTest {
     fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() =
         runTest {
             val player = FakeSoundPlayer()
-            val engine = createEngine(player = player, startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE))
+            val engine =
+                createEngine(player = player, startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE))
             runCurrent()
 
             engine.speak(SpeechEvent.AceWindowsRemainingFuelWarning)

@@ -184,7 +184,10 @@ class AceWindowsNarratorViewModelTest {
             channel.send(fuel(20.0))
 
             assertEquals(
-                listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning, SpeechEvent.AceWindowsRemainingFuelWarning),
+                listOf<SpeechEvent>(
+                    SpeechEvent.AceWindowsRemainingFuelWarning,
+                    SpeechEvent.AceWindowsRemainingFuelWarning,
+                ),
                 spokenTexts,
             )
         }

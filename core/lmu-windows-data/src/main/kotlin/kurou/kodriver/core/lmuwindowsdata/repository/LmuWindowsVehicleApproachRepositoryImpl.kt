@@ -42,7 +42,13 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
                     .coerceAtMost(maxCount)
             val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
             if (activeVehicles > 0 && playerIdx < activeVehicles) {
-                computeVehicleApproach(buffer, activeVehicles, playerIdx, longitudinalThresholdMeters, lateralMaximumMeters)
+                computeVehicleApproach(
+                    buffer,
+                    activeVehicles,
+                    playerIdx,
+                    longitudinalThresholdMeters,
+                    lateralMaximumMeters,
+                )
             } else {
                 null
             }

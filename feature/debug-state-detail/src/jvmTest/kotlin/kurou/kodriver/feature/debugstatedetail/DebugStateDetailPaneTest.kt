@@ -248,7 +248,12 @@ class DebugStateDetailPaneTest {
                                 LmuWindowsRaceFlagsData(
                                     gamePhase = SessionPhase.GREEN_FLAG,
                                     yellowFlagState = SessionYellowFlagState.NONE,
-                                    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+                                    sectorFlags =
+                                        listOf(
+                                            SectorFlagState.CLEAR,
+                                            SectorFlagState.CLEAR,
+                                            SectorFlagState.CLEAR,
+                                        ),
                                     startLight = 0,
                                     numRedLights = 0,
                                     playerFlag = PrimaryFlag.GREEN,
@@ -277,7 +282,12 @@ class DebugStateDetailPaneTest {
                                 LmuWindowsRaceFlagsData(
                                     gamePhase = SessionPhase.GREEN_FLAG,
                                     yellowFlagState = SessionYellowFlagState.NONE,
-                                    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+                                    sectorFlags =
+                                        listOf(
+                                            SectorFlagState.CLEAR,
+                                            SectorFlagState.CLEAR,
+                                            SectorFlagState.CLEAR,
+                                        ),
                                     startLight = 0,
                                     numRedLights = 0,
                                     playerFlag = PrimaryFlag.BLUE,

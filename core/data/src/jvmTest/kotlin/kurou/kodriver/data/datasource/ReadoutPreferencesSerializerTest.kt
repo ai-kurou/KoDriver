@@ -50,7 +50,12 @@ class ReadoutPreferencesSerializerTest {
                         mapOf(
                             "lmu_windows" to
                                 SimulatorReadoutState(
-                                    enabledStates = mapOf("vehicle_approach" to true, "flag" to false, "vehicle_damage" to true),
+                                    enabledStates =
+                                        mapOf(
+                                            "vehicle_approach" to true,
+                                            "flag" to false,
+                                            "vehicle_damage" to true,
+                                        ),
                                 ),
                         ),
                 )

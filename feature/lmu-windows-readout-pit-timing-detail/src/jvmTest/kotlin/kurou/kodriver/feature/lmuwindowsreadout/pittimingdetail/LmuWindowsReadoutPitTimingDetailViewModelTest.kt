@@ -57,7 +57,10 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutPitTimingDetailViewModel(
-            observeLmuWindowsPitTimingVirtualEnergyLaps = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
+            observeLmuWindowsPitTimingVirtualEnergyLaps =
+                ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(
+                    repository,
+                ),
             observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
             saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
             saveLmuWindowsPitTimingTyreWearLaps = SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository),

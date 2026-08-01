@@ -95,7 +95,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -112,7 +117,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -131,7 +141,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -150,7 +165,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -169,7 +189,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -187,7 +212,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -204,7 +234,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -226,7 +261,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             coVerify(exactly = 1) { exitConfirmationRepository.saveExitConfirmationEnabled(false) }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -243,7 +283,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -263,7 +308,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             coVerify(exactly = 1) { keepScreenOnRepository.saveKeepScreenOn(false) }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -285,7 +335,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             coVerify(exactly = 1) { dynamicColorRepository.saveDynamicColorEnabled(true) }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -304,7 +359,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -323,7 +383,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -338,7 +403,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -355,7 +425,12 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 
     @Test
@@ -374,6 +449,11 @@ class OtherListViewModelTest {
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { exitConfirmationRepository.exitConfirmationEnabled() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
-            confirmVerified(appUpdateRepository, keepScreenOnRepository, exitConfirmationRepository, dynamicColorRepository)
+            confirmVerified(
+                appUpdateRepository,
+                keepScreenOnRepository,
+                exitConfirmationRepository,
+                dynamicColorRepository,
+            )
         }
 }

@@ -145,7 +145,8 @@ class Gt7Ps5NarratorViewModelTest {
             every {
                 readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
             } returns MutableStateFlow(emptyList())
-            every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.FORMAL)
+            every { myBestLapPreferencesRepository.observeVoiceType() } returns
+                MutableStateFlow(MyBestLapVoiceType.FORMAL)
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())

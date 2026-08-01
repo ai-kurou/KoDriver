@@ -373,7 +373,8 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 )
             every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
                 MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns sustainedReadoutTypeFlow
+            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
+                sustainedReadoutTypeFlow
             val newType = VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED
             coEvery {
                 vehicleApproachPreferencesRepository.saveSustainedReadoutType(newType)
@@ -416,7 +417,8 @@ class LmuWindowsReadoutVehicleApproachDetailViewModelTest {
                 )
             every { vehicleApproachPreferencesRepository.observeStartReadoutType() } returns
                 MutableStateFlow(VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
-            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns sustainedReadoutTypeFlow
+            every { vehicleApproachPreferencesRepository.observeSustainedReadoutType() } returns
+                sustainedReadoutTypeFlow
             val newType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT
             coEvery {
                 vehicleApproachPreferencesRepository.saveSustainedReadoutType(newType)

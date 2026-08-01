@@ -85,7 +85,10 @@ class OtherServerIpDetailViewModelTest {
 
             viewModel.onIpChanged("10.0.0.1")
 
-            assertEquals(OtherServerIpDetailUiState(inputIp = "10.0.0.1", isInputValid = true), viewModel.uiState.first())
+            assertEquals(
+                OtherServerIpDetailUiState(inputIp = "10.0.0.1", isInputValid = true),
+                viewModel.uiState.first(),
+            )
             verify(exactly = 1) { repository.serverIp() }
             confirmVerified(repository)
         }
@@ -175,7 +178,10 @@ class OtherServerIpDetailViewModelTest {
             val viewModel =
                 createViewModel(
                     reachable = false,
-                    discoveredServers = listOf(DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10")),
+                    discoveredServers =
+                        listOf(
+                            DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+                        ),
                 )
 
             viewModel.onIpChanged("10.0.0.1")

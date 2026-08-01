@@ -105,7 +105,10 @@ internal class Gt7Ps5NarratorViewModel(
                 enabledStates = listEnabledStates.value,
                 myBestLapVoiceType = voiceType.value,
                 remainingFuelLapsThreshold = fuelThreshold.value,
-                remainingFuelLapsEnabled = listEnabledStates.value.getValue(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root),
+                remainingFuelLapsEnabled =
+                    listEnabledStates.value.getValue(
+                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    ),
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 remainingFuelEnabled = listEnabledStates.value.getValue(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
             )

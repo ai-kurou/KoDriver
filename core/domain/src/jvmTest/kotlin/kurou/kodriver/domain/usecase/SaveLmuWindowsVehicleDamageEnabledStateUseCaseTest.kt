@@ -29,8 +29,12 @@ class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
             useCase(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
             useCase(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
 
-            coVerify(exactly = 1) { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true) }
-            coVerify(exactly = 1) { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false) }
+            coVerify(
+                exactly = 1,
+            ) { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true) }
+            coVerify(
+                exactly = 1,
+            ) { repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false) }
             confirmVerified(repository)
         }
 }

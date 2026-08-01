@@ -131,7 +131,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
@@ -153,7 +156,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
@@ -178,7 +184,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
@@ -204,7 +213,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
@@ -319,7 +331,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
@@ -345,7 +360,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 
@@ -369,7 +387,10 @@ class LmuWindowsVehicleApproachRepositoryImplTest {
                 )
             val repo =
                 LmuWindowsVehicleApproachRepositoryImpl(
-                    thresholdsRepository = FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(longitudinal = 4.5),
+                    thresholdsRepository =
+                        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                            longitudinal = 4.5,
+                        ),
                     source = makeSource(FakeVehicleApproachMemoryReader(buffer)),
                 )
 

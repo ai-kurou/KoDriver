@@ -63,7 +63,10 @@ class LmuWindowsVehicleApproachPreferencesRepositoryImplTest {
     fun `saveStartReadoutType で保存した値を observeStartReadoutType で取得できる`() =
         testScope.runTest {
             repository.saveStartReadoutType(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
-            assertEquals(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH, repository.observeStartReadoutType().first())
+            assertEquals(
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
+                repository.observeStartReadoutType().first(),
+            )
         }
 
     @Test

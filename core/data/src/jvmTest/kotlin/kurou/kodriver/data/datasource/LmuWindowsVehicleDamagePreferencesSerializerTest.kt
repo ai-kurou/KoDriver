@@ -24,7 +24,10 @@ class LmuWindowsVehicleDamagePreferencesSerializerTest {
             val output = ByteArrayOutputStream()
             LmuWindowsVehicleDamagePreferencesSerializer.writeTo(original, output)
 
-            val restored = LmuWindowsVehicleDamagePreferencesSerializer.readFrom(ByteArrayInputStream(output.toByteArray()))
+            val restored =
+                LmuWindowsVehicleDamagePreferencesSerializer.readFrom(
+                    ByteArrayInputStream(output.toByteArray()),
+                )
 
             assertEquals(original, restored)
         }

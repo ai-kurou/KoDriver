@@ -76,7 +76,10 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
                 MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false))
             val viewModel = createViewModel()
 
-            assertEquals(LmuWindowsReadoutVehicleDamageDetailUiState(overheatEnabled = false), viewModel.uiState.first())
+            assertEquals(
+                LmuWindowsReadoutVehicleDamageDetailUiState(overheatEnabled = false),
+                viewModel.uiState.first(),
+            )
             verify(exactly = 1) { repository.observeEnabledStates() }
             confirmVerified(repository)
         }

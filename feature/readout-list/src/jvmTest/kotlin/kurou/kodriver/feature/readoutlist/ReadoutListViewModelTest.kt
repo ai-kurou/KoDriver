@@ -565,7 +565,11 @@ class ReadoutListViewModelTest {
             every { readoutRepository.observeReadoutOrder("gt7_ps5") } returns MutableStateFlow(emptyList())
             every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
             coEvery {
-                readoutRepository.saveReadoutEnabledState("gt7_ps5", ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root, false)
+                readoutRepository.saveReadoutEnabledState(
+                    "gt7_ps5",
+                    ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    false,
+                )
             } answers {
                 gt7EnabledFlow.update { it + (ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false) }
             }

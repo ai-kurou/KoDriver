@@ -83,7 +83,12 @@ fun androidDataModule(context: Context) =
         // HttpClient は全リポジトリで単一インスタンスを共有する。
         single<HttpClient> { createWebSocketHttpClient() }
         single<LmuWindowsRepository> { WebSocketLmuWindowsRepository(serverIpRepository = get(), client = get()) }
-        single<LmuWindowsFlagRepository> { WebSocketLmuWindowsFlagRepository(serverIpRepository = get(), client = get()) }
+        single<LmuWindowsFlagRepository> {
+            WebSocketLmuWindowsFlagRepository(
+                serverIpRepository = get(),
+                client = get(),
+            )
+        }
         single<LmuWindowsVehicleApproachRepository> {
             WebSocketLmuWindowsVehicleApproachRepository(serverIpRepository = get(), client = get())
         }

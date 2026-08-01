@@ -447,8 +447,14 @@ class LmuWindowsNarratorViewModelTest {
             narratorUseCases =
                 NarratorUseCases(
                     determineReadout = DetermineLmuWindowsNarratorReadoutUseCase(),
-                    observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
-                    observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagPreferencesRepository),
+                    observeMyBestLapVoiceType =
+                        ObserveLmuWindowsMyBestLapVoiceTypeUseCase(
+                            myBestLapPreferencesRepository,
+                        ),
+                    observeRedFlagVoiceType =
+                        ObserveLmuWindowsRedFlagVoiceTypeUseCase(
+                            redFlagPreferencesRepository,
+                        ),
                 ),
             currentTimeMs = currentTimeMs,
         )
@@ -655,7 +661,8 @@ class LmuWindowsNarratorViewModelTest {
             createViewModel(
                 vehicleApproachChannel = channel,
                 ttsEngine = tts,
-                enabledOverrides = mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
+                enabledOverrides =
+                    mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.VehicleApproach.Root to false),
                 currentTimeMs = { fakeTime },
             )
 

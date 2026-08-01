@@ -34,7 +34,10 @@ class LmuWindowsPitTimingPreferencesRepositoryImplTest {
     @Test
     fun `初期値は両方とも3周`() =
         testScope.runTest {
-            assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, repository.observeVirtualEnergyLaps().first())
+            assertEquals(
+                LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT,
+                repository.observeVirtualEnergyLaps().first(),
+            )
             assertEquals(LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT, repository.observeTyreWearLaps().first())
         }
 
