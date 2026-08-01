@@ -133,31 +133,29 @@ class KoDriverServer(
  * Desktop アプリ内でサーバーを起動する通常経路。単体起動用の [main] は空 Repository を使うため、
  * 実走行データを配信したい場合はこちらを使う。
  */
-fun createKoDriverServer(koin: Koin): KoDriverServer {
-    return KoDriverServer(
-        useCases = KoDriverServerUseCases(
-            observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
-            observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
-                koin.get<LmuWindowsVehicleApproachRepository>(),
-            ),
-            observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
-                koin.get<LmuWindowsVehicleDamageRepository>(),
-            ),
-            observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
-            ),
-            observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(
-                koin.get<LmuWindowsTyreWearRepository>(),
-            ),
-            observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
-            observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
-                koin.get<LmuWindowsVirtualEnergyRepository>(),
-            ),
-            observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(koin.get<AceWindowsFuelRepository>()),
-            observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(koin.get<AceWindowsFlagRepository>()),
+fun createKoDriverServer(koin: Koin): KoDriverServer = KoDriverServer(
+    useCases = KoDriverServerUseCases(
+        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
+        observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+            koin.get<LmuWindowsVehicleApproachRepository>(),
         ),
-    )
-}
+        observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+            koin.get<LmuWindowsVehicleDamageRepository>(),
+        ),
+        observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+            koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
+        ),
+        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(
+            koin.get<LmuWindowsTyreWearRepository>(),
+        ),
+        observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
+        observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+            koin.get<LmuWindowsVirtualEnergyRepository>(),
+        ),
+        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(koin.get<AceWindowsFuelRepository>()),
+        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(koin.get<AceWindowsFlagRepository>()),
+    ),
+)
 
 private const val WEB_SOCKET_PING_PERIOD_MS = 15_000L
 private const val WEB_SOCKET_TIMEOUT_MS = 15_000L
