@@ -57,8 +57,10 @@ class ReadoutListViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _persistedOrder: StateFlow<List<ReadoutItemKey>> = _selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator != null) observeReadoutOrder(simulator.id)
-            else flowOf(emptyList())
+            if (simulator != null)
+                observeReadoutOrder(simulator.id)
+            else
+                flowOf(emptyList())
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -27,8 +27,10 @@ class LmuServerBannerConnectionChecker(
                     while (true) {
                         val result = fetchServerVersion(ip)
                         emit(
-                            if (result.isSuccess) ConnectionBannerVmStatus.CONNECTED
-                            else ConnectionBannerVmStatus.DISCONNECTED,
+                            if (result.isSuccess)
+                                ConnectionBannerVmStatus.CONNECTED
+                            else
+                                ConnectionBannerVmStatus.DISCONNECTED,
                         )
                         delay(CONNECTION_CHECK_INTERVAL_MS)
                     }

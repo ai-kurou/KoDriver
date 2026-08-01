@@ -144,8 +144,10 @@ internal class LmuWindowsNarratorViewModel(
     private val mergedEnabledStates = combine(
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow<Map<ReadoutItemKey, Boolean>>()
-                else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                if (simulator == null)
+                    emptyFlow<Map<ReadoutItemKey, Boolean>>()
+                else
+                    readoutListUseCases.observeReadoutEnabledStates(simulator.id)
             },
         flagUseCases.observeFlagEnabledStates(),
         vehicleDamageUseCases.observeVehicleDamageEnabledStates(),
@@ -174,8 +176,10 @@ internal class LmuWindowsNarratorViewModel(
 
     private val lmuTelemetryFlow = selectedSimulator
         .flatMapLatest { simulator ->
-            if (simulator !is Simulator.LmuWindows) emptyFlow()
-            else vehicleApproachUseCases.observeLmuWindows()
+            if (simulator !is Simulator.LmuWindows)
+                emptyFlow()
+            else
+                vehicleApproachUseCases.observeLmuWindows()
         }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     private val raceFlagsFlow = selectedSimulator
