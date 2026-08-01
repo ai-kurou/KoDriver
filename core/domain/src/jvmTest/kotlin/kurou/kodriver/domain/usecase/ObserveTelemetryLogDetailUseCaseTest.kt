@@ -32,8 +32,8 @@ private fun createTelemetryLogRepository(
             logs.map { currentLogs ->
                 val sortedLogs =
                     currentLogs.sortedWith(
-                    compareByDescending<TelemetryLog> { it.createdAt }.thenByDescending { it.id },
-                )
+                        compareByDescending<TelemetryLog> { it.createdAt }.thenByDescending { it.id },
+                    )
                 val index = sortedLogs.indexOfFirst { it.id == id }
                 if (index == -1) {
                     null
@@ -76,7 +76,6 @@ private fun createTelemetryLogRepository(
 }
 
 class ObserveTelemetryLogDetailUseCaseTest {
-
     @MockK
     private lateinit var repository: TelemetryLogRepository
 
@@ -88,67 +87,67 @@ class ObserveTelemetryLogDetailUseCaseTest {
     @Test
     fun `指定したidのログとその一つ前のログを返す`() =
         runBlocking {
-        val latest = telemetryLog(id = 3L, createdAt = 3000L)
-        val current = telemetryLog(id = 2L, createdAt = 2000L)
-        val previous = telemetryLog(id = 1L, createdAt = 1000L)
-        val repository =
-            createTelemetryLogRepository(
-            repository,
-            initialLogs = listOf(previous, current, latest),
-        )
-        val useCase = ObserveTelemetryLogDetailUseCase(repository)
+            val latest = telemetryLog(id = 3L, createdAt = 3000L)
+            val current = telemetryLog(id = 2L, createdAt = 2000L)
+            val previous = telemetryLog(id = 1L, createdAt = 1000L)
+            val repository =
+                createTelemetryLogRepository(
+                    repository,
+                    initialLogs = listOf(previous, current, latest),
+                )
+            val useCase = ObserveTelemetryLogDetailUseCase(repository)
 
-        assertEquals(
-            TelemetryLogDetail(
-                current = current,
-                previous = previous,
-            ),
-            useCase(2L).first(),
-        )
-        verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
-        confirmVerified(repository)
-    }
+            assertEquals(
+                TelemetryLogDetail(
+                    current = current,
+                    previous = previous,
+                ),
+                useCase(2L).first(),
+            )
+            verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `指定したidのログがない場合はnullを返す`() =
         runBlocking {
-        val repository =
-            createTelemetryLogRepository(
-            repository,
-            initialLogs = listOf(telemetryLog(id = 1L, createdAt = 1000L)),
-        )
-        val useCase = ObserveTelemetryLogDetailUseCase(repository)
+            val repository =
+                createTelemetryLogRepository(
+                    repository,
+                    initialLogs = listOf(telemetryLog(id = 1L, createdAt = 1000L)),
+                )
+            val useCase = ObserveTelemetryLogDetailUseCase(repository)
 
-        assertNull(useCase(999L).first())
-        verify(exactly = 1) { repository.observeTelemetryLogDetail(999L) }
-        confirmVerified(repository)
-    }
+            assertNull(useCase(999L).first())
+            verify(exactly = 1) { repository.observeTelemetryLogDetail(999L) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `指定したidのログが最も古い場合はpreviousにnullを返す`() =
         runBlocking {
-        val current = telemetryLog(id = 1L, createdAt = 1000L)
-        val repository =
-            createTelemetryLogRepository(
-            repository,
-            initialLogs =
-                listOf(
-                current,
-                telemetryLog(id = 2L, createdAt = 2000L),
-            ),
+            val current = telemetryLog(id = 1L, createdAt = 1000L)
+            val repository =
+                createTelemetryLogRepository(
+                    repository,
+                    initialLogs =
+                        listOf(
+                            current,
+                            telemetryLog(id = 2L, createdAt = 2000L),
+                        ),
                 )
-        val useCase = ObserveTelemetryLogDetailUseCase(repository)
+            val useCase = ObserveTelemetryLogDetailUseCase(repository)
 
-        assertEquals(
-            TelemetryLogDetail(
-                current = current,
-                previous = null,
-            ),
-            useCase(1L).first(),
-        )
-        verify(exactly = 1) { repository.observeTelemetryLogDetail(1L) }
-        confirmVerified(repository)
-    }
+            assertEquals(
+                TelemetryLogDetail(
+                    current = current,
+                    previous = null,
+                ),
+                useCase(1L).first(),
+            )
+            verify(exactly = 1) { repository.observeTelemetryLogDetail(1L) }
+            confirmVerified(repository)
+        }
 }
 
 private fun telemetryLog(

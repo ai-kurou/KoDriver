@@ -19,14 +19,14 @@ import org.koin.dsl.module
  */
 val fakeReadoutListModule =
     module {
-    single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
-    single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
-    single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
-        FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl()
+        single<SimulatorPreferencesRepository> { FakeSimulatorPreferencesRepositoryImpl() }
+        single<ReadoutPreferencesRepository> { FakeReadoutPreferencesRepositoryImpl() }
+        single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+            FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl()
+        }
+        single<LmuWindowsFlagPreferencesRepository> { FakeLmuWindowsFlagPreferencesRepositoryImpl() }
+        single<QueuePreferencesRepository> { FakeQueuePreferencesRepositoryImpl() }
     }
-    single<LmuWindowsFlagPreferencesRepository> { FakeLmuWindowsFlagPreferencesRepositoryImpl() }
-    single<QueuePreferencesRepository> { FakeQueuePreferencesRepositoryImpl() }
-}
 
 private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepository {
     private val flow = MutableStateFlow<Simulator?>(null)
@@ -68,7 +68,10 @@ private class FakeLmuWindowsFlagPreferencesRepositoryImpl : LmuWindowsFlagPrefer
 
     override fun observeFlagEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
 
-    override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveFlagEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         states.update { it + (key to enabled) }
     }
 }
@@ -78,7 +81,10 @@ private class FakeQueuePreferencesRepositoryImpl : QueuePreferencesRepository {
 
     override fun observeQueueEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = states
 
-    override suspend fun saveQueueEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveQueueEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         states.update { it + (key to enabled) }
     }
 }
@@ -90,17 +96,23 @@ private class FakeReadoutPreferencesRepositoryImpl : ReadoutPreferencesRepositor
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         enabledStates.map { it[simulator] ?: emptyMap() }
 
-    override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveReadoutEnabledState(
+        simulator: String,
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         enabledStates.update { all ->
             val current = all[simulator] ?: emptyMap()
             all + (simulator to (current + (key to enabled)))
         }
     }
 
-    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
-        orders.map { it[simulator] ?: emptyList() }
+    override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> = orders.map { it[simulator] ?: emptyList() }
 
-    override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) {
+    override suspend fun saveReadoutOrder(
+        simulator: String,
+        order: List<ReadoutItemKey>,
+    ) {
         orders.update { it + (simulator to order) }
     }
 }

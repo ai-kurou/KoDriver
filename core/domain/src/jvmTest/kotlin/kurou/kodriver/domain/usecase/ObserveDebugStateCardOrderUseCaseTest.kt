@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveDebugStateCardOrderUseCaseTest {
-
     @MockK
     private lateinit var repository: DebugStateCardOrderPreferencesRepository
 
@@ -27,12 +26,12 @@ class ObserveDebugStateCardOrderUseCaseTest {
     @Test
     fun `Repositoryが返す順序をそのまま返す`() =
         runBlocking {
-        val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
-        every { repository.observeCardOrder() } returns MutableStateFlow(order)
-        val useCase = ObserveDebugStateCardOrderUseCase(repository)
+            val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            every { repository.observeCardOrder() } returns MutableStateFlow(order)
+            val useCase = ObserveDebugStateCardOrderUseCase(repository)
 
-        assertEquals(order, useCase().first())
-        verify(exactly = 1) { repository.observeCardOrder() }
-        confirmVerified(repository)
-    }
+            assertEquals(order, useCase().first())
+            verify(exactly = 1) { repository.observeCardOrder() }
+            confirmVerified(repository)
+        }
 }

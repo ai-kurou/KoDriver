@@ -28,7 +28,7 @@ enum class DesktopSplashStep {
 val DesktopSplashStep.displayName: String
     get() =
         when (this) {
-        DesktopSplashStep.INITIALIZING_MODULES -> "モジュールを初期化しています…"
-        DesktopSplashStep.STARTING_SERVER -> "サーバーを起動しています…"
-        DesktopSplashStep.READY -> "起動が完了しました"
-    }
+            DesktopSplashStep.INITIALIZING_MODULES -> "モジュールを初期化しています…"
+            DesktopSplashStep.STARTING_SERVER -> "サーバーを起動しています…"
+            DesktopSplashStep.READY -> "起動が完了しました"
+        }

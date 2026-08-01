@@ -30,7 +30,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsReadoutFlagDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -52,60 +51,60 @@ class AceWindowsReadoutFlagDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsReadoutFlagDetailViewModel(
-        observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(repository),
-        saveFlagEnabledState = SaveAceWindowsFlagEnabledStateUseCase(repository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
+            observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(repository),
+            saveFlagEnabledState = SaveAceWindowsFlagEnabledStateUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+        )
 
     @Test
     fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() =
         runTest {
-        every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
-        val viewModel = createViewModel()
+            every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel = createViewModel()
 
-        val state = viewModel.uiState.first()
+            val state = viewModel.uiState.first()
 
-        FlagReadoutItem.entries.forEach { item ->
-            assertEquals(true, state.enabledStates[item.key])
+            FlagReadoutItem.entries.forEach { item ->
+                assertEquals(true, state.enabledStates[item.key])
+            }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            confirmVerified(repository)
         }
-        verify(exactly = 1) { repository.observeFlagEnabledStates() }
-        confirmVerified(repository)
-    }
 
     @Test
     fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() =
         runTest {
-        val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
-        every { repository.observeFlagEnabledStates() } returns statesFlow
-        coEvery { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) } answers {
-            statesFlow.update { it + (ReadoutItemKey.AceWindows.Flag.BlueFlag to false) }
+            val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
+            every { repository.observeFlagEnabledStates() } returns statesFlow
+            coEvery { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) } answers {
+                statesFlow.update { it + (ReadoutItemKey.AceWindows.Flag.BlueFlag to false) }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
+
+            assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.AceWindows.Flag.BlueFlag])
+            coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) }
+            verify(exactly = 1) { repository.observeFlagEnabledStates() }
+            confirmVerified(repository)
         }
-        val viewModel = createViewModel()
-
-        viewModel.onFlagEnabledChanged(FlagReadoutItem.BlueFlag, false)
-
-        assertEquals(false, viewModel.uiState.first().enabledStates[ReadoutItemKey.AceWindows.Flag.BlueFlag])
-        coVerify(exactly = 1) { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) }
-        verify(exactly = 1) { repository.observeFlagEnabledStates() }
-        confirmVerified(repository)
-    }
 
     @Test
     fun `onPreviewClicked を呼ぶと各フラグに対応する SpeechEvent が再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         val eventByItem =
             mapOf(
-            FlagReadoutItem.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag,
-            FlagReadoutItem.GreenFlag to SpeechEvent.AceWindowsGreenFlag,
-            FlagReadoutItem.RedFlag to SpeechEvent.AceWindowsRedFlag,
-            FlagReadoutItem.BlueFlag to SpeechEvent.AceWindowsBlueFlag,
-            FlagReadoutItem.YellowFlag to SpeechEvent.AceWindowsYellowFlag,
-            FlagReadoutItem.BlackFlag to SpeechEvent.AceWindowsBlackFlag,
-            FlagReadoutItem.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag,
-            FlagReadoutItem.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag,
-            FlagReadoutItem.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag,
-            FlagReadoutItem.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag,
-        )
+                FlagReadoutItem.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag,
+                FlagReadoutItem.GreenFlag to SpeechEvent.AceWindowsGreenFlag,
+                FlagReadoutItem.RedFlag to SpeechEvent.AceWindowsRedFlag,
+                FlagReadoutItem.BlueFlag to SpeechEvent.AceWindowsBlueFlag,
+                FlagReadoutItem.YellowFlag to SpeechEvent.AceWindowsYellowFlag,
+                FlagReadoutItem.BlackFlag to SpeechEvent.AceWindowsBlackFlag,
+                FlagReadoutItem.BlackWhiteFlag to SpeechEvent.AceWindowsBlackWhiteFlag,
+                FlagReadoutItem.CheckeredFlag to SpeechEvent.AceWindowsCheckeredFlag,
+                FlagReadoutItem.OrangeCircleFlag to SpeechEvent.AceWindowsOrangeCircleFlag,
+                FlagReadoutItem.RedYellowStripesFlag to SpeechEvent.AceWindowsRedYellowStripesFlag,
+            )
         assertEquals(FlagReadoutItem.entries.toSet(), eventByItem.keys)
         eventByItem.forEach { (_, event) -> every { ttsEngine.speak(event, false) } returns Unit }
         val viewModel = createViewModel()

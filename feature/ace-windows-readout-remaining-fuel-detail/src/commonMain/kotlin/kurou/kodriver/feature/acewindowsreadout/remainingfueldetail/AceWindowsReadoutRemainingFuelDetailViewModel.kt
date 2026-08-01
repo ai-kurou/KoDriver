@@ -18,15 +18,14 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
     private val saveThresholdPercentage: SaveAceWindowsRemainingFuelThresholdPercentageUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<AceWindowsReadoutRemainingFuelDetailUiState> =
         observeThresholdPercentage()
-        .map { AceWindowsReadoutRemainingFuelDetailUiState(thresholdPercentage = it) }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            AceWindowsReadoutRemainingFuelDetailUiState(),
-        )
+            .map { AceWindowsReadoutRemainingFuelDetailUiState(thresholdPercentage = it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                AceWindowsReadoutRemainingFuelDetailUiState(),
+            )
 
     fun onThresholdChanged(percentage: Int) {
         viewModelScope.launch { saveThresholdPercentage(percentage) }

@@ -28,24 +28,23 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     private val saveLowWarningPhases: SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
         combine(
-        observeHighThreshold(),
-        observeEnabledStates(),
-        observeLowWarningPhases(),
-    ) { highThresholdCelsius, states, lowWarningPhases ->
-        LmuWindowsReadoutTyreTemperatureDetailUiState(
-            highThresholdCelsius = highThresholdCelsius,
-            overheatWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning),
-            lowWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning),
-            lowWarningPhases = lowWarningPhases,
+            observeHighThreshold(),
+            observeEnabledStates(),
+            observeLowWarningPhases(),
+        ) { highThresholdCelsius, states, lowWarningPhases ->
+            LmuWindowsReadoutTyreTemperatureDetailUiState(
+                highThresholdCelsius = highThresholdCelsius,
+                overheatWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning),
+                lowWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning),
+                lowWarningPhases = lowWarningPhases,
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsReadoutTyreTemperatureDetailUiState(),
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        LmuWindowsReadoutTyreTemperatureDetailUiState(),
-    )
 
     fun onHighThresholdChanged(celsius: Int) {
         viewModelScope.launch { saveHighThreshold(celsius) }

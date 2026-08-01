@@ -15,10 +15,10 @@ import org.koin.dsl.module
  */
 val gt7Ps5ReadoutRemainingFuelLapsDetailModule =
     module {
-    // ViewModel（get(named "gt7_ps5") は narrator モジュールの TextToSpeechEngine を解決）
-    viewModel { Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(get(), get(), get(named("gt7_ps5"))) }
+        // ViewModel（get(named "gt7_ps5") は narrator モジュールの TextToSpeechEngine を解決）
+        viewModel { Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(get(), get(), get(named("gt7_ps5"))) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
-    factory { SaveGt7Ps5RemainingFuelLapsUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
+        factory { SaveGt7Ps5RemainingFuelLapsUseCase(get()) }
+    }

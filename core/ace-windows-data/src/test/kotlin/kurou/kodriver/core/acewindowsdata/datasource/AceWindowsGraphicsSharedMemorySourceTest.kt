@@ -15,7 +15,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AceWindowsGraphicsSharedMemorySourceTest {
-
     private fun makeSource(
         reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -36,40 +35,40 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     @Test
     fun `open 成功後に bufferFlow がバッファを emit する`() =
         runBlocking<Unit> {
-        val reader = FakeSharedMemoryReader(initialOpen = true)
-        val source = makeSource(reader)
+            val reader = FakeSharedMemoryReader(initialOpen = true)
+            val source = makeSource(reader)
 
-        source.bufferFlow.first()
-    }
+            source.bufferFlow.first()
+        }
 
     @Test
     fun `open 失敗中は bufferFlow が emit しない`() =
         runBlocking {
-        val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
-        val source = makeSource(reader)
-        var emitCount = 0
+            val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
+            val source = makeSource(reader)
+            var emitCount = 0
 
-        val job = launch { source.bufferFlow.collect { emitCount++ } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { source.bufferFlow.collect { emitCount++ } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertTrue(emitCount == 0)
-    }
+            assertTrue(emitCount == 0)
+        }
 
     @Test
     fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() =
         runBlocking {
-        val reader = FakeSharedMemoryReader(initialOpen = true)
-        val source = makeSource(reader)
+            val reader = FakeSharedMemoryReader(initialOpen = true)
+            val source = makeSource(reader)
 
-        val job = launch { source.bufferFlow.collect { } }
-        delay(50)
-        job.cancelAndJoin()
-        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
-        delay(100)
+            val job = launch { source.bufferFlow.collect { } }
+            delay(50)
+            job.cancelAndJoin()
+            // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
+            delay(100)
 
-        assertTrue(reader.closeCalled)
-    }
+            assertTrue(reader.closeCalled)
+        }
 
     // -------------------------------------------------------------------------
     // isConnected
@@ -78,68 +77,68 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     @Test
     fun `open に成功しバッファを読み取れるとき isConnected は true を返す`() =
         runBlocking {
-        val source = makeSource(reader = FakeSharedMemoryReader(openResult = true))
+            val source = makeSource(reader = FakeSharedMemoryReader(openResult = true))
 
-        assertTrue(source.isConnected())
-    }
+            assertTrue(source.isConnected())
+        }
 
     @Test
     fun `open に失敗するとき isConnected は false を返す`() =
         runBlocking {
-        val source = makeSource(reader = FakeSharedMemoryReader(openResult = false))
+            val source = makeSource(reader = FakeSharedMemoryReader(openResult = false))
 
-        assertFalse(source.isConnected())
-    }
+            assertFalse(source.isConnected())
+        }
 
     @Test
     fun `isConnected は reader を close してから open する`() =
         runBlocking {
-        val reader = FakeSharedMemoryReader(openResult = true)
-        val source = makeSource(reader = reader)
+            val reader = FakeSharedMemoryReader(openResult = true)
+            val source = makeSource(reader = reader)
 
-        source.isConnected()
+            source.isConnected()
 
-        assertTrue(reader.closeCalled)
-    }
+            assertTrue(reader.closeCalled)
+        }
 
     @Test
     fun `バッファを読み取れないとき isConnected は false を返す`() =
         runBlocking {
-        val source = makeSource(reader = FakeSharedMemoryReader(openResult = true, returnNullBuffer = true))
+            val source = makeSource(reader = FakeSharedMemoryReader(openResult = true, returnNullBuffer = true))
 
-        assertFalse(source.isConnected())
-    }
+            assertFalse(source.isConnected())
+        }
 
     @Test
     fun `packetId が閾値以内に変化し続けるとき isConnected は true を返す`() =
         runBlocking {
-        var fakeTime = 0L
-        val reader = FakeSharedMemoryReader(openResult = true, packetId = 1)
-        val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
+            var fakeTime = 0L
+            val reader = FakeSharedMemoryReader(openResult = true, packetId = 1)
+            val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
 
-        fakeTime = 0L
-        reader.packetId = 1
-        assertTrue(source.isConnected())
-        fakeTime = 1_000L
-        reader.packetId = 2
-        assertTrue(source.isConnected())
-        fakeTime = 2_000L
-        reader.packetId = 3
-        assertTrue(source.isConnected())
-    }
+            fakeTime = 0L
+            reader.packetId = 1
+            assertTrue(source.isConnected())
+            fakeTime = 1_000L
+            reader.packetId = 2
+            assertTrue(source.isConnected())
+            fakeTime = 2_000L
+            reader.packetId = 3
+            assertTrue(source.isConnected())
+        }
 
     @Test
     fun `packetId が閾値以上変化しないとき isConnected は false を返す`() =
         runBlocking {
-        var fakeTime = 0L
-        val reader = FakeSharedMemoryReader(openResult = true, packetId = 500)
-        val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
+            var fakeTime = 0L
+            val reader = FakeSharedMemoryReader(openResult = true, packetId = 500)
+            val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
 
-        fakeTime = 0L
-        source.isConnected() // 初回: タイムスタンプ = 0
-        fakeTime = 3_000L
-        assertFalse(source.isConnected())
-    }
+            fakeTime = 0L
+            source.isConnected() // 初回: タイムスタンプ = 0
+            fakeTime = 3_000L
+            assertFalse(source.isConnected())
+        }
 }
 
 // -----------------------------------------------------------------------------
@@ -152,7 +151,6 @@ private class FakeSharedMemoryReader(
     private val returnNullBuffer: Boolean = false,
     var packetId: Int = 0,
 ) : SharedMemoryReader {
-
     private var opened = initialOpen
     var closeCalled = false
 

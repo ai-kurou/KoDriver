@@ -19,9 +19,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-private fun createServerIpPreferencesRepository(
-    repository: ServerIpPreferencesRepository,
-): ServerIpPreferencesRepository {
+private fun createServerIpPreferencesRepository(repository: ServerIpPreferencesRepository): ServerIpPreferencesRepository {
     val state = MutableStateFlow<String?>(null)
     every { repository.serverIp() } returns state
     listOf("192.168.1.10", "10.0.0.1").forEach { serverIp ->
@@ -31,7 +29,6 @@ private fun createServerIpPreferencesRepository(
 }
 
 class ObserveServerIpUseCaseTest {
-
     @MockK
     private lateinit var repository: ServerIpPreferencesRepository
 
@@ -43,26 +40,26 @@ class ObserveServerIpUseCaseTest {
     @Test
     fun `初期状態でnullを返す`() =
         runBlocking {
-        val repo = createServerIpPreferencesRepository(repository)
-        val useCase = ObserveServerIpUseCase(repo)
+            val repo = createServerIpPreferencesRepository(repository)
+            val useCase = ObserveServerIpUseCase(repo)
 
-        assertNull(useCase().first())
+            assertNull(useCase().first())
 
-        verify(exactly = 1) { repo.serverIp() }
-        confirmVerified(repo)
-    }
+            verify(exactly = 1) { repo.serverIp() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `保存後にIPアドレスを返す`() =
         runBlocking {
-        val repo = createServerIpPreferencesRepository(repository)
-        val useCase = ObserveServerIpUseCase(repo)
+            val repo = createServerIpPreferencesRepository(repository)
+            val useCase = ObserveServerIpUseCase(repo)
 
-        repo.saveServerIp("192.168.1.10")
+            repo.saveServerIp("192.168.1.10")
 
-        assertEquals("192.168.1.10", useCase().first())
-        coVerify(exactly = 1) { repo.saveServerIp("192.168.1.10") }
-        verify(exactly = 1) { repo.serverIp() }
-        confirmVerified(repo)
-    }
+            assertEquals("192.168.1.10", useCase().first())
+            coVerify(exactly = 1) { repo.saveServerIp("192.168.1.10") }
+            verify(exactly = 1) { repo.serverIp() }
+            confirmVerified(repo)
+        }
 }

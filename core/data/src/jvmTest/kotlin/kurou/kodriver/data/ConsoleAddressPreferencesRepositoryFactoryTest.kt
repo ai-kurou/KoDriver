@@ -11,7 +11,6 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 
 class ConsoleAddressPreferencesRepositoryFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_console_address_factory_test").toFile()
 
     @AfterTest
@@ -29,18 +28,18 @@ class ConsoleAddressPreferencesRepositoryFactoryTest {
     @Test
     fun `初期状態はnullを返す`() =
         runTest {
-        val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
+            val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
-        assertNull(repository.consoleAddress().first())
-    }
+            assertNull(repository.consoleAddress().first())
+        }
 
     @Test
     fun `保存したアドレスを取得できる`() =
         runTest {
-        val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
+            val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveConsoleAddress("10.0.0.1")
+            repository.saveConsoleAddress("10.0.0.1")
 
-        assertEquals("10.0.0.1", repository.consoleAddress().first())
-    }
+            assertEquals("10.0.0.1", repository.consoleAddress().first())
+        }
 }

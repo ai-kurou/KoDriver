@@ -40,14 +40,14 @@ internal class AceWindowsNarratorEventProcessor(
                     readoutItemKey = event.readoutItemKey,
                     telemetryJson =
                         buildFlagTelemetryLogJson(
-                        state = logContext.state,
-                        previous = previous,
-                        current = flag,
-                        settings = logContext.settings,
-                        observedAtMs = observedAtMs,
-                        finalState = logContext.finalState,
-                    ),
-                        )
+                            state = logContext.state,
+                            previous = previous,
+                            current = flag,
+                            settings = logContext.settings,
+                            observedAtMs = observedAtMs,
+                            finalState = logContext.finalState,
+                        ),
+                )
             }
         }
         previousFlag = flag
@@ -69,14 +69,14 @@ internal class AceWindowsNarratorEventProcessor(
                     readoutItemKey = event.readoutItemKey,
                     telemetryJson =
                         buildTelemetryLogJson(
-                        state = logContext.state,
-                        previous = previous,
-                        current = fuel,
-                        settings = logContext.settings,
-                        observedAtMs = observedAtMs,
-                        finalState = logContext.finalState,
-                    ),
-                        )
+                            state = logContext.state,
+                            previous = previous,
+                            current = fuel,
+                            settings = logContext.settings,
+                            observedAtMs = observedAtMs,
+                            finalState = logContext.finalState,
+                        ),
+                )
             }
         }
         previousFuel = fuel
@@ -139,14 +139,11 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private fun AceWindowsNarratorReadoutSettings.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
+private fun AceWindowsNarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
-private fun AceWindowsNarratorState.toJsonString(): String =
-    """{"raw":${toString().toJsonStringLiteral()}}"""
+private fun AceWindowsNarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
-private fun AceWindowsFuelData.toJson(): String =
-    """{"remainingPercent":$remainingPercent}"""
+private fun AceWindowsFuelData.toJson(): String = """{"remainingPercent":$remainingPercent}"""
 
 private fun buildFlagTelemetryLogJson(
     state: AceWindowsNarratorState,
@@ -165,8 +162,7 @@ private fun buildFlagTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private fun AceWindowsFlagData.toJson(): String =
-    """{"flag":"${flag.name}"}"""
+private fun AceWindowsFlagData.toJson(): String = """{"flag":"${flag.name}"}"""
 
 private fun String.toJsonStringLiteral(): String =
     buildString {

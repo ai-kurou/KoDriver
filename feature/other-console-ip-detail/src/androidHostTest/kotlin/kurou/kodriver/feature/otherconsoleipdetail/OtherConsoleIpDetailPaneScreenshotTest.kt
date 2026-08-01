@@ -18,7 +18,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w480dp-h640dp")
 class OtherConsoleIpDetailPaneScreenshotTest {
-
     @Test
     fun `デフォルト`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
@@ -73,10 +72,10 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                         OtherConsoleIpDetailPaneContent(
                             uiState =
                                 OtherConsoleIpDetailUiState(
-                                inputAddress = "192.168.1.100",
-                                saveFailed = true,
-                            ),
-                                )
+                                    inputAddress = "192.168.1.100",
+                                    saveFailed = true,
+                                ),
+                        )
                     }
                 }
             }

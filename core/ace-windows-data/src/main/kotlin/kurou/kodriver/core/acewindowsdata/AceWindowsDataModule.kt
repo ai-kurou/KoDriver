@@ -24,16 +24,16 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  */
 val aceWindowsDataModule =
     module {
-    single { CoroutineScope(SupervisorJob()) }
-    single { AceWindowsGraphicsSharedMemorySource(scope = get()) }
+        single { CoroutineScope(SupervisorJob()) }
+        single { AceWindowsGraphicsSharedMemorySource(scope = get()) }
 
-    single<AceWindowsFuelRepository> {
-        if (isWindows) AceWindowsFuelRepositoryImpl(source = get()) else NoOpAceWindowsFuelRepository()
+        single<AceWindowsFuelRepository> {
+            if (isWindows) AceWindowsFuelRepositoryImpl(source = get()) else NoOpAceWindowsFuelRepository()
+        }
+        single<AceWindowsFlagRepository> {
+            if (isWindows) AceWindowsFlagRepositoryImpl(source = get()) else NoOpAceWindowsFlagRepository()
+        }
     }
-    single<AceWindowsFlagRepository> {
-        if (isWindows) AceWindowsFlagRepositoryImpl(source = get()) else NoOpAceWindowsFlagRepository()
-    }
-}
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()

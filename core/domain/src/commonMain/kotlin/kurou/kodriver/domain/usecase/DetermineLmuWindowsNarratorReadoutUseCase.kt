@@ -130,9 +130,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
 
         val event =
             when (settings.myBestLapVoiceType) {
-            MyBestLapVoiceType.FORMAL -> SpeechEvent.LmuWindowsMyBestLapFormal
-            MyBestLapVoiceType.CASUAL -> SpeechEvent.LmuWindowsMyBestLapCasual
-        }
+                MyBestLapVoiceType.FORMAL -> SpeechEvent.LmuWindowsMyBestLapFormal
+                MyBestLapVoiceType.CASUAL -> SpeechEvent.LmuWindowsMyBestLapCasual
+            }
         return LmuWindowsNarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),
@@ -149,33 +149,33 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val previousApproachState = state.vehicleApproachState
         val left =
             computeApproachSideStates(
-            vehicleIds = vehicleApproach.sideBySideLeftVehicleIds,
-            previous = previousApproachState.left,
-            observedAtMs = observedAtMs,
-            sustainedThresholdMs = sustainedThresholdMs,
-        )
+                vehicleIds = vehicleApproach.sideBySideLeftVehicleIds,
+                previous = previousApproachState.left,
+                observedAtMs = observedAtMs,
+                sustainedThresholdMs = sustainedThresholdMs,
+            )
         val right =
             computeApproachSideStates(
-            vehicleIds = vehicleApproach.sideBySideRightVehicleIds,
-            previous = previousApproachState.right,
-            observedAtMs = observedAtMs,
-            sustainedThresholdMs = sustainedThresholdMs,
-        )
+                vehicleIds = vehicleApproach.sideBySideRightVehicleIds,
+                previous = previousApproachState.right,
+                observedAtMs = observedAtMs,
+                sustainedThresholdMs = sustainedThresholdMs,
+            )
         val nextState =
             state.copy(
-            vehicleApproachState =
-                LmuWindowsVehicleApproachState(
-                left = left.states,
-                right = right.states,
-            ),
-                )
+                vehicleApproachState =
+                    LmuWindowsVehicleApproachState(
+                        left = left.states,
+                        right = right.states,
+                    ),
+            )
         val event = determineVehicleApproachEvent(left.announce, right.announce, settings)
         val sustainedEvent =
             determineVehicleApproachSustainedEvent(
-            leftSustainedAnnounce = left.sustainedAnnounce,
-            rightSustainedAnnounce = right.sustainedAnnounce,
-            settings = settings,
-        )
+                leftSustainedAnnounce = left.sustainedAnnounce,
+                rightSustainedAnnounce = right.sustainedAnnounce,
+                settings = settings,
+            )
         return LmuWindowsNarratorReadoutDecision(
             state = nextState,
             events = listOfNotNull(event, sustainedEvent),
@@ -192,21 +192,21 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         var sustainedAnnounce = false
         val states =
             vehicleIds.associateWith { id ->
-            val prev = previous[id]
-            if (prev == null) {
-                LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)
-            } else {
-                val elapsedMs = observedAtMs - prev.startedAtMs
-                val shouldAnnounce = !prev.announced && elapsedMs >= APPROACH_DEBOUNCE_MS
-                val shouldAnnounceSustained = !prev.sustainedAnnounced && elapsedMs >= sustainedThresholdMs
-                if (shouldAnnounce) announce = true
-                if (shouldAnnounceSustained) sustainedAnnounce = true
-                prev.copy(
-                    announced = prev.announced || shouldAnnounce,
-                    sustainedAnnounced = prev.sustainedAnnounced || shouldAnnounceSustained,
-                )
+                val prev = previous[id]
+                if (prev == null) {
+                    LmuWindowsApproachState(startedAtMs = observedAtMs, announced = false)
+                } else {
+                    val elapsedMs = observedAtMs - prev.startedAtMs
+                    val shouldAnnounce = !prev.announced && elapsedMs >= APPROACH_DEBOUNCE_MS
+                    val shouldAnnounceSustained = !prev.sustainedAnnounced && elapsedMs >= sustainedThresholdMs
+                    if (shouldAnnounce) announce = true
+                    if (shouldAnnounceSustained) sustainedAnnounce = true
+                    prev.copy(
+                        announced = prev.announced || shouldAnnounce,
+                        sustainedAnnounced = prev.sustainedAnnounced || shouldAnnounceSustained,
+                    )
+                }
             }
-        }
         return ApproachSideStatesResult(states, announce, sustainedAnnounce)
     }
 
@@ -217,20 +217,20 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val previous =
             state.previousVehicleDamage ?: return LmuWindowsNarratorReadoutDecision(
-            state = state.copy(previousVehicleDamage = vehicleDamage),
-            events = emptyList(),
-        )
+                state = state.copy(previousVehicleDamage = vehicleDamage),
+                events = emptyList(),
+            )
         val event =
             if (
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat) &&
-            !previous.overheating &&
-            vehicleDamage.overheating
-        ) {
-            SpeechEvent.Overheating
-        } else {
-            null
-        }
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Root) &&
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat) &&
+                !previous.overheating &&
+                vehicleDamage.overheating
+            ) {
+                SpeechEvent.Overheating
+            } else {
+                null
+            }
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousVehicleDamage = vehicleDamage),
             events = listOfNotNull(event),
@@ -248,14 +248,14 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val allCool = data.wheels.values.all { it <= coolThreshold }
         val nextOverheating =
             when {
-            anyHot -> true
-            allCool -> false
-            else -> state.tyreOverheating
-        }
+                anyHot -> true
+                allCool -> false
+                else -> state.tyreOverheating
+            }
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning)
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreOverheat) else emptyList(),
@@ -271,13 +271,13 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val previousGamePhase = state.previousGamePhaseForTyreLowWarning
         val enteringTargetPhase =
             previousGamePhase != null &&
-            raceFlags.gamePhase != previousGamePhase &&
-            raceFlags.gamePhase in settings.tyreTemperatureLowWarningPhases
+                raceFlags.gamePhase != previousGamePhase &&
+                raceFlags.gamePhase in settings.tyreTemperatureLowWarningPhases
         val anyCold = data.wheels.values.any { it <= TYRE_LOW_WARNING_THRESHOLD_CELSIUS }
         val shouldAnnounce =
             enteringTargetPhase && anyCold &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning)
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.Root) &&
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(previousGamePhaseForTyreLowWarning = raceFlags.gamePhase),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreCold) else emptyList(),
@@ -291,11 +291,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val anyWorn =
             data.wheels.values.any { remainingRatio ->
-            (1.0 - remainingRatio) * PERCENTAGE_SCALE >= settings.tyreWearThresholdPercentage
-        }
+                (1.0 - remainingRatio) * PERCENTAGE_SCALE >= settings.tyreWearThresholdPercentage
+            }
         val shouldAnnounce =
             !state.tyreWearWarned && anyWorn &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreWear.Root)
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.TyreWear.Root)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(tyreWearWarned = anyWorn),
             events = if (shouldAnnounce) listOf(SpeechEvent.TyreWearWarning) else emptyList(),
@@ -310,7 +310,7 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         val isLow = data.remainingRatio * PERCENTAGE_SCALE <= settings.remainingVirtualEnergyThresholdPercentage
         val shouldAnnounce =
             !state.remainingVirtualEnergyWarned && isLow &&
-            settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
+                settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
         return LmuWindowsNarratorReadoutDecision(
             state = state.copy(remainingVirtualEnergyWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.RemainingVirtualEnergyWarning) else emptyList(),
@@ -326,45 +326,49 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val trackingState =
             trackPitTimingValue(
-            state = state.pitTimingVirtualEnergyTrackingState,
-            currentLap = telemetry.timing.currentLap,
-            bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-            currentValue = virtualEnergy.remainingRatio,
-            session = virtualEnergy.session,
-            observedAtMs = observedAtMs,
-        )
+                state = state.pitTimingVirtualEnergyTrackingState,
+                currentLap = telemetry.timing.currentLap,
+                bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                currentValue = virtualEnergy.remainingRatio,
+                session = virtualEnergy.session,
+                observedAtMs = observedAtMs,
+            )
         val stateAfterTracking =
             when {
-            trackingState.isNewSession ->
-                state.copy(
-                lastAnnouncedPitTimingVirtualEnergyLaps = -1,
-                lastPitTimingVirtualEnergyEvaluationLap = -1,
-                pitTimingVirtualEnergyTrackingState = trackingState,
-            )
+                trackingState.isNewSession -> {
+                    state.copy(
+                        lastAnnouncedPitTimingVirtualEnergyLaps = -1,
+                        lastPitTimingVirtualEnergyEvaluationLap = -1,
+                        pitTimingVirtualEnergyTrackingState = trackingState,
+                    )
+                }
 
-            trackingState.hasRefilled ->
-                state.copy(
-                lastAnnouncedPitTimingVirtualEnergyLaps = -1,
-                pitTimingVirtualEnergyTrackingState = trackingState,
-            )
+                trackingState.hasRefilled -> {
+                    state.copy(
+                        lastAnnouncedPitTimingVirtualEnergyLaps = -1,
+                        pitTimingVirtualEnergyTrackingState = trackingState,
+                    )
+                }
 
-            else -> state.copy(pitTimingVirtualEnergyTrackingState = trackingState)
-        }
+                else -> {
+                    state.copy(pitTimingVirtualEnergyTrackingState = trackingState)
+                }
+            }
         val evaluation =
             calculatePitTimingRemainingLaps(
-            trackingState = trackingState,
-            lastEvaluationLap = stateAfterTracking.lastPitTimingVirtualEnergyEvaluationLap,
-            lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingVirtualEnergyLaps,
-            threshold = settings.pitTimingVirtualEnergyLapsThreshold,
-            enabled = settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.Root),
-        )
+                trackingState = trackingState,
+                lastEvaluationLap = stateAfterTracking.lastPitTimingVirtualEnergyEvaluationLap,
+                lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingVirtualEnergyLaps,
+                threshold = settings.pitTimingVirtualEnergyLapsThreshold,
+                enabled = settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.Root),
+            )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingVirtualEnergyEvaluationLap = evaluation.evaluatedLap)
         val remainingLaps =
             evaluation.remainingLaps ?: return LmuWindowsNarratorReadoutDecision(
-            stateAfterEvaluation,
-            emptyList(),
-        )
+                stateAfterEvaluation,
+                emptyList(),
+            )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedPitTimingVirtualEnergyLaps = remainingLaps),
             events = listOf(SpeechEvent.PitTimingWarning(remainingLaps)),
@@ -380,48 +384,52 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val worstRemainingRatio =
             tyreWear.wheels.values.minOrNull()
-            ?: return LmuWindowsNarratorReadoutDecision(state, emptyList())
+                ?: return LmuWindowsNarratorReadoutDecision(state, emptyList())
         val trackingState =
             trackPitTimingValue(
-            state = state.pitTimingTyreWearTrackingState,
-            currentLap = telemetry.timing.currentLap,
-            bestLapTimeMs = telemetry.timing.bestLapTimeMs,
-            currentValue = worstRemainingRatio,
-            session = null,
-            observedAtMs = observedAtMs,
-        )
+                state = state.pitTimingTyreWearTrackingState,
+                currentLap = telemetry.timing.currentLap,
+                bestLapTimeMs = telemetry.timing.bestLapTimeMs,
+                currentValue = worstRemainingRatio,
+                session = null,
+                observedAtMs = observedAtMs,
+            )
         val stateAfterTracking =
             when {
-            trackingState.isNewSession ->
-                state.copy(
-                lastAnnouncedPitTimingTyreWearLaps = -1,
-                lastPitTimingTyreWearEvaluationLap = -1,
-                pitTimingTyreWearTrackingState = trackingState,
-            )
+                trackingState.isNewSession -> {
+                    state.copy(
+                        lastAnnouncedPitTimingTyreWearLaps = -1,
+                        lastPitTimingTyreWearEvaluationLap = -1,
+                        pitTimingTyreWearTrackingState = trackingState,
+                    )
+                }
 
-            trackingState.hasRefilled ->
-                state.copy(
-                lastAnnouncedPitTimingTyreWearLaps = -1,
-                pitTimingTyreWearTrackingState = trackingState,
-            )
+                trackingState.hasRefilled -> {
+                    state.copy(
+                        lastAnnouncedPitTimingTyreWearLaps = -1,
+                        pitTimingTyreWearTrackingState = trackingState,
+                    )
+                }
 
-            else -> state.copy(pitTimingTyreWearTrackingState = trackingState)
-        }
+                else -> {
+                    state.copy(pitTimingTyreWearTrackingState = trackingState)
+                }
+            }
         val evaluation =
             calculatePitTimingRemainingLaps(
-            trackingState = trackingState,
-            lastEvaluationLap = stateAfterTracking.lastPitTimingTyreWearEvaluationLap,
-            lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingTyreWearLaps,
-            threshold = settings.pitTimingTyreWearLapsThreshold,
-            enabled = settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.Root),
-        )
+                trackingState = trackingState,
+                lastEvaluationLap = stateAfterTracking.lastPitTimingTyreWearEvaluationLap,
+                lastAnnouncedLaps = stateAfterTracking.lastAnnouncedPitTimingTyreWearLaps,
+                threshold = settings.pitTimingTyreWearLapsThreshold,
+                enabled = settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.PitTiming.Root),
+            )
         val stateAfterEvaluation =
             stateAfterTracking.copy(lastPitTimingTyreWearEvaluationLap = evaluation.evaluatedLap)
         val remainingLaps =
             evaluation.remainingLaps ?: return LmuWindowsNarratorReadoutDecision(
-            stateAfterEvaluation,
-            emptyList(),
-        )
+                stateAfterEvaluation,
+                emptyList(),
+            )
         return LmuWindowsNarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedPitTimingTyreWearLaps = remainingLaps),
             events = listOf(SpeechEvent.PitTimingWarning(remainingLaps)),
@@ -435,9 +443,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
     ): LmuWindowsNarratorReadoutDecision {
         val previous =
             state.previousRaceFlags ?: return LmuWindowsNarratorReadoutDecision(
-            state = state.copy(previousRaceFlags = raceFlags),
-            events = emptyList(),
-        )
+                state = state.copy(previousRaceFlags = raceFlags),
+                events = emptyList(),
+            )
         if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.Root)) {
             return LmuWindowsNarratorReadoutDecision(
                 state = state.copy(previousRaceFlags = raceFlags),
@@ -456,11 +464,11 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         settings: LmuWindowsNarratorReadoutSettings,
     ): List<SpeechEvent> =
         listOfNotNull(
-        determineBlueFlagEvent(previous, raceFlags, settings),
-        determineYellowFlagEvent(previous, raceFlags, settings),
-        determineFullCourseYellowEvent(previous, raceFlags, settings),
-        determineRedFlagEvent(previous, raceFlags, settings),
-    )
+            determineBlueFlagEvent(previous, raceFlags, settings),
+            determineYellowFlagEvent(previous, raceFlags, settings),
+            determineFullCourseYellowEvent(previous, raceFlags, settings),
+            determineRedFlagEvent(previous, raceFlags, settings),
+        )
 
     private fun determineBlueFlagEvent(
         previous: LmuWindowsRaceFlagsData,
@@ -485,9 +493,9 @@ class DetermineLmuWindowsNarratorReadoutUseCase {
         if (!settings.enabledStates.getValue(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag)) return null
         val newYellowSector =
             raceFlags.sectorFlags.indices.any { i ->
-            raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
-                previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
-        }
+                raceFlags.sectorFlags[i] == SectorFlagState.YELLOW &&
+                    previous.sectorFlags.getOrNull(i) != SectorFlagState.YELLOW
+            }
         return if (newYellowSector) SpeechEvent.YellowFlag else null
     }
 
@@ -597,18 +605,18 @@ private fun trackPitTimingValue(
     when {
         state.currentLap == -1 -> {
             LmuWindowsPitTimingTrackingState(
-            session = session,
-            currentLap = currentLap,
-            currentLapStartedAtMs = observedAtMs,
-            currentLapStartValue = currentValue,
-            currentLapHasRefilled = false,
-            currentValue = currentValue,
-            lastValidLapConsumption = null,
-            bestLapTimeMs = bestLapTimeMs,
-            hasRefilled = false,
-            isNewSession = false,
-            observedAtMs = observedAtMs,
-        )
+                session = session,
+                currentLap = currentLap,
+                currentLapStartedAtMs = observedAtMs,
+                currentLapStartValue = currentValue,
+                currentLapHasRefilled = false,
+                currentValue = currentValue,
+                lastValidLapConsumption = null,
+                bestLapTimeMs = bestLapTimeMs,
+                hasRefilled = false,
+                isNewSession = false,
+                observedAtMs = observedAtMs,
+            )
         }
 
         (session != null && session != state.session) || currentLap < state.currentLap -> {
@@ -638,10 +646,10 @@ private fun trackPitTimingValue(
                 val completedLapConsumption = state.currentLapStartValue - state.currentValue
                 val lastValidLapConsumption =
                     if (!state.currentLapHasRefilled && completedLapConsumption > 0.0) {
-                    completedLapConsumption
-                } else {
-                    state.lastValidLapConsumption
-                }
+                        completedLapConsumption
+                    } else {
+                        state.lastValidLapConsumption
+                    }
                 state.copy(
                     session = session,
                     currentLap = currentLap,
@@ -686,7 +694,7 @@ private fun calculatePitTimingRemainingLaps(
     if (currentLapElapsedMs < readoutTimingMs) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
     val avgConsumption =
         trackingState.lastValidLapConsumption
-        ?: return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+            ?: return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
     if (avgConsumption <= 0.0) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
     val remainingLapsFloor = (trackingState.currentValue / avgConsumption).toInt()
     if (remainingLapsFloor < 0 || remainingLapsFloor > threshold) {
@@ -704,31 +712,35 @@ private enum class ApproachSide {
 
     fun toSpeechEvent(readoutType: VehicleApproachStartReadoutType): SpeechEvent =
         when (this) {
-            LEFT ->
+            LEFT -> {
                 when (readoutType) {
-                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach
+                    VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft
+                    VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach
+                }
             }
 
-            RIGHT ->
+            RIGHT -> {
                 when (readoutType) {
-                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarRight
-                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.RightApproach
+                    VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarRight
+                    VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.RightApproach
+                }
             }
         }
 
     fun toSustainedSpeechEvent(readoutType: VehicleApproachSustainedReadoutType): SpeechEvent =
         when (this) {
-            LEFT ->
+            LEFT -> {
                 when (readoutType) {
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepRight
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.RightSustained
+                    VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepRight
+                    VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.RightSustained
+                }
             }
 
-            RIGHT ->
+            RIGHT -> {
                 when (readoutType) {
-                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft
-                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.LeftSustained
+                    VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft
+                    VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> SpeechEvent.LeftSustained
+                }
             }
         }
 }

@@ -35,19 +35,19 @@ internal fun FuelConsumptionContent(
     }
     val (result, perLapTextRes) =
         when (selectedSimulator) {
-        is Simulator.LmuWindows -> {
-            calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
-                Res.string.debug_state_fuel_consumption_per_lap_ratio
-        }
+            is Simulator.LmuWindows -> {
+                calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
+                    Res.string.debug_state_fuel_consumption_per_lap_ratio
+            }
 
-        is Simulator.AceWindows, null -> {
-            null to Res.string.debug_state_fuel_consumption_per_lap_liters
-        }
+            is Simulator.AceWindows, null -> {
+                null to Res.string.debug_state_fuel_consumption_per_lap_liters
+            }
 
-        is Simulator.Gt7Ps5 -> {
-            error("GT7 fuel is handled before this branch")
+            is Simulator.Gt7Ps5 -> {
+                error("GT7 fuel is handled before this branch")
+            }
         }
-    }
     if (result == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
@@ -57,10 +57,10 @@ internal fun FuelConsumptionContent(
         Text(
             text =
                 stringResource(
-                Res.string.debug_state_fuel_consumption_remaining_laps,
-                formatOneDecimal(result.preciseRemainingLaps),
-            ),
-                )
+                    Res.string.debug_state_fuel_consumption_remaining_laps,
+                    formatOneDecimal(result.preciseRemainingLaps),
+                ),
+        )
     }
 }
 
@@ -76,25 +76,25 @@ private fun Gt7Ps5FuelContent(gt7Ps5Telemetry: Gt7Ps5TelemetryData?) {
         Text(
             text =
                 stringResource(
-                Res.string.debug_state_fuel_consumption_remaining_percent,
-                formatOneDecimal(remainingPercent),
-            ),
-                )
+                    Res.string.debug_state_fuel_consumption_remaining_percent,
+                    formatOneDecimal(remainingPercent),
+                ),
+        )
         if (fuelConsumption != null) {
             Text(
                 text =
                     stringResource(
-                    Res.string.debug_state_fuel_consumption_per_lap_liters,
-                    formatOneDecimal(fuelConsumption.consumptionPerLap),
-                ),
-                    )
+                        Res.string.debug_state_fuel_consumption_per_lap_liters,
+                        formatOneDecimal(fuelConsumption.consumptionPerLap),
+                    ),
+            )
             Text(
                 text =
                     stringResource(
-                    Res.string.debug_state_fuel_consumption_remaining_laps,
-                    formatOneDecimal(fuelConsumption.preciseRemainingLaps),
-                ),
-                    )
+                        Res.string.debug_state_fuel_consumption_remaining_laps,
+                        formatOneDecimal(fuelConsumption.preciseRemainingLaps),
+                    ),
+            )
         }
     }
 }
@@ -108,10 +108,10 @@ private fun AceWindowsFuelContent(aceWindowsFuel: AceWindowsFuelData?) {
     Text(
         text =
             stringResource(
-            Res.string.debug_state_fuel_consumption_remaining_percent,
-            formatOneDecimal(aceWindowsFuel.remainingPercent),
-        ),
-            )
+                Res.string.debug_state_fuel_consumption_remaining_percent,
+                formatOneDecimal(aceWindowsFuel.remainingPercent),
+            ),
+    )
 }
 
 private fun formatOneDecimal(value: Double): String {

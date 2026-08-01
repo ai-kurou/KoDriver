@@ -13,13 +13,13 @@ import org.koin.dsl.module
  */
 val telemetryLogListModule =
     module {
-    // ViewModel
-    viewModelOf(::TelemetryLogListViewModel)
+        // ViewModel
+        viewModelOf(::TelemetryLogListViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
-    factory { ObserveTelemetryLogsUseCase(get()) }
-    factory { ResetTelemetryLogDatabaseUseCase(get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
+        factory { ObserveTelemetryLogsUseCase(get()) }
+        factory { ResetTelemetryLogDatabaseUseCase(get()) }
 
-    // 一覧表示用 UseCase
-    factory { ObserveSortedTelemetryLogsUseCase(get()) }
-}
+        // 一覧表示用 UseCase
+        factory { ObserveSortedTelemetryLogsUseCase(get()) }
+    }

@@ -17,7 +17,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveSoundVolumeUseCaseTest {
-
     @MockK
     private lateinit var repo: SoundVolumePreferencesRepository
 
@@ -29,20 +28,20 @@ class ObserveSoundVolumeUseCaseTest {
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
         runBlocking {
-        val state = MutableStateFlow(80)
-        every { repo.volume() } returns state
-        listOf(50).forEach { volume ->
-            coEvery { repo.saveVolume(volume) } answers { state.update { volume } }
+            val state = MutableStateFlow(80)
+            every { repo.volume() } returns state
+            listOf(50).forEach { volume ->
+                coEvery { repo.saveVolume(volume) } answers { state.update { volume } }
+            }
+            val useCase = ObserveSoundVolumeUseCase(repo)
+
+            assertEquals(80, useCase().first())
+
+            repo.saveVolume(50)
+            assertEquals(50, useCase().first())
+
+            verify(exactly = 2) { repo.volume() }
+            coVerify(exactly = 1) { repo.saveVolume(50) }
+            confirmVerified(repo)
         }
-        val useCase = ObserveSoundVolumeUseCase(repo)
-
-        assertEquals(80, useCase().first())
-
-        repo.saveVolume(50)
-        assertEquals(50, useCase().first())
-
-        verify(exactly = 2) { repo.volume() }
-        coVerify(exactly = 1) { repo.saveVolume(50) }
-        confirmVerified(repo)
-    }
 }

@@ -14,7 +14,6 @@ import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConsoleAddressPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_console_address_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -25,43 +24,43 @@ class ConsoleAddressPreferencesRepositoryImplTest {
 
     private fun createRepository() =
         ConsoleAddressPreferencesRepositoryImpl(
-        dataStore = createConsoleAddressDataStore(tempDir.absolutePath),
-    )
+            dataStore = createConsoleAddressDataStore(tempDir.absolutePath),
+        )
 
     @Test
     fun `アドレスを保存して取得できる`() =
         testScope.runTest {
-        val repository = createRepository()
-        repository.saveConsoleAddress("192.168.1.100")
+            val repository = createRepository()
+            repository.saveConsoleAddress("192.168.1.100")
 
-        assertEquals("192.168.1.100", repository.consoleAddress().first())
-    }
+            assertEquals("192.168.1.100", repository.consoleAddress().first())
+        }
 
     @Test
     fun `未保存の場合はnullを返す`() =
         testScope.runTest {
-        val repository = createRepository()
+            val repository = createRepository()
 
-        assertNull(repository.consoleAddress().first())
-    }
+            assertNull(repository.consoleAddress().first())
+        }
 
     @Test
     fun `アドレスを上書き保存できる`() =
         testScope.runTest {
-        val repository = createRepository()
-        repository.saveConsoleAddress("192.168.1.1")
-        repository.saveConsoleAddress("10.0.0.50")
+            val repository = createRepository()
+            repository.saveConsoleAddress("192.168.1.1")
+            repository.saveConsoleAddress("10.0.0.50")
 
-        assertEquals("10.0.0.50", repository.consoleAddress().first())
-    }
+            assertEquals("10.0.0.50", repository.consoleAddress().first())
+        }
 
     @Test
     fun `console_address_pbに書き込まれる`() =
         testScope.runTest {
-        val repository = createRepository()
-        repository.saveConsoleAddress("192.168.0.1")
+            val repository = createRepository()
+            repository.saveConsoleAddress("192.168.0.1")
 
-        val file = tempDir.resolve("console_address.pb")
-        assert(file.exists()) { "console_address.pb が作成されていない" }
-    }
+            val file = tempDir.resolve("console_address.pb")
+            assert(file.exists()) { "console_address.pb が作成されていない" }
+        }
 }

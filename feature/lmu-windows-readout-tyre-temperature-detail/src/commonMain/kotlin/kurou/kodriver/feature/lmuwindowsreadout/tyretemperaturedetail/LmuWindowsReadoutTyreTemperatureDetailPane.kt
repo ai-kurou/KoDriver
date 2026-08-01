@@ -68,9 +68,7 @@ private const val HIGH_THRESHOLD_MAX = 100f
  * LmuWindowsReadoutTyreTemperatureDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsReadoutTyreTemperatureDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun LmuWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutTyreTemperatureDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutTyreTemperatureDetailPaneContent(
@@ -125,9 +123,9 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.tyre_temperature_description),
         )
@@ -138,11 +136,11 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
             stringResource(Res.string.tyre_temperature_low_warning_phases_help_icon_content_description)
         val phaseLabels =
             mapOf(
-            SessionPhase.GARAGE to stringResource(Res.string.tyre_temperature_low_warning_phase_garage),
-            SessionPhase.WARM_UP to stringResource(Res.string.tyre_temperature_low_warning_phase_warm_up),
-            SessionPhase.GRID_WALK to stringResource(Res.string.tyre_temperature_low_warning_phase_grid_walk),
-            SessionPhase.FORMATION to stringResource(Res.string.tyre_temperature_low_warning_phase_formation),
-        )
+                SessionPhase.GARAGE to stringResource(Res.string.tyre_temperature_low_warning_phase_garage),
+                SessionPhase.WARM_UP to stringResource(Res.string.tyre_temperature_low_warning_phase_warm_up),
+                SessionPhase.GRID_WALK to stringResource(Res.string.tyre_temperature_low_warning_phase_grid_walk),
+                SessionPhase.FORMATION to stringResource(Res.string.tyre_temperature_low_warning_phase_formation),
+            )
         val overheatWarningChipLabel = stringResource(Res.string.tyre_temperature_overheat_warning_chip)
         DetailPaneCard(
             title = stringResource(Res.string.tyre_temperature_carcass_card_title),
@@ -235,16 +233,16 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                                 label = { Text(text = label) },
                                 leadingIcon =
                                     if (selected) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Default.Check,
-                                            contentDescription = null,
-                                        )
-                                    }
-                                } else {
-                                    null
-                                },
-                                    )
+                                        {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    } else {
+                                        null
+                                    },
+                            )
                         }
                     }
                 }

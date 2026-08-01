@@ -13,10 +13,10 @@ import org.koin.dsl.module
  */
 val otherThemeDetailModule =
     module {
-    // ViewModel
-    viewModelOf(::OtherThemeDetailViewModel)
+        // ViewModel
+        viewModelOf(::OtherThemeDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveThemeModeUseCase(get()) }
-    factory { SaveThemeModeUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveThemeModeUseCase(get()) }
+        factory { SaveThemeModeUseCase(get()) }
+    }

@@ -22,7 +22,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 class WebSocketAceWindowsFuelRepositoryTest {
-
     private lateinit var server: MockWebServer
     private lateinit var fakeIpRepository: FakeAceServerIpPreferencesRepository
 
@@ -40,122 +39,137 @@ class WebSocketAceWindowsFuelRepositoryTest {
 
     private fun buildRepository(retryDelayMs: Long = 0L) =
         WebSocketAceWindowsFuelRepository(
-        serverIpRepository = fakeIpRepository,
-        port = server.port,
-        retryDelayMs = retryDelayMs,
-    )
+            serverIpRepository = fakeIpRepository,
+            port = server.port,
+            retryDelayMs = retryDelayMs,
+        )
 
     @Test
     fun `ipがnullのときfuelStreamは何もemitしない`() =
         runTest {
-        val result =
-            withTimeoutOrNull(300) {
-            buildRepository().fuelStream().first()
+            val result =
+                withTimeoutOrNull(300) {
+                    buildRepository().fuelStream().first()
+                }
+            assertNull(result)
         }
-        assertNull(result)
-    }
 
     @Test
     fun `有効なJSONフレームを受信したときAceWindowsFuelDataをemitする`() =
         runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(FUEL_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(FUEL_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().fuelStream().first()
+            val result = buildRepository().fuelStream().first()
 
-        assertEquals(42.0, result.remainingPercent)
-        assertEquals("/ws/ace_windows/fuel", server.takeRequest().path)
-    }
+            assertEquals(42.0, result.remainingPercent)
+            assertEquals("/ws/ace_windows/fuel", server.takeRequest().path)
+        }
 
     @Test
     fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
         runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send("invalid json")
-                        webSocket.send(FUEL_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send("invalid json")
+                            webSocket.send(FUEL_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository().fuelStream().first()
+            val result = buildRepository().fuelStream().first()
 
-        assertEquals(42.0, result.remainingPercent)
-    }
+            assertEquals(42.0, result.remainingPercent)
+        }
 
     @Test
     fun `接続切断後にリトライして再接続する`() =
         runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.close(1001, "drop")
-                    }
-                },
-            ),
-        )
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(FUEL_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        fakeIpRepository.setIp("127.0.0.1")
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.close(1001, "drop")
+                        }
+                    },
+                ),
+            )
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(FUEL_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            fakeIpRepository.setIp("127.0.0.1")
 
-        val result = buildRepository(retryDelayMs = 0L).fuelStream().first()
+            val result = buildRepository(retryDelayMs = 0L).fuelStream().first()
 
-        assertEquals(42.0, result.remainingPercent)
-    }
+            assertEquals(42.0, result.remainingPercent)
+        }
 
     @Test
     fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
         runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send(OTHER_FUEL_JSON)
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(OTHER_FUEL_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
 
-        fakeIpRepository.setIp(null)
-        val repository = buildRepository()
+            fakeIpRepository.setIp(null)
+            val repository = buildRepository()
 
-        val noEmit = withTimeoutOrNull(300) { repository.fuelStream().first() }
-        assertNull(noEmit)
+            val noEmit = withTimeoutOrNull(300) { repository.fuelStream().first() }
+            assertNull(noEmit)
 
-        fakeIpRepository.setIp("127.0.0.1")
-        val result = repository.fuelStream().first()
-        assertEquals(28.5, result.remainingPercent)
-    }
+            fakeIpRepository.setIp("127.0.0.1")
+            val result = repository.fuelStream().first()
+            assertEquals(28.5, result.remainingPercent)
+        }
 
     @Test
     fun `isConnectedは常にfalseを返す`() =
         runTest {
-        assertFalse(buildRepository().isConnected())
-    }
+            assertFalse(buildRepository().isConnected())
+        }
 }
 
 private class FakeAceServerIpPreferencesRepository(

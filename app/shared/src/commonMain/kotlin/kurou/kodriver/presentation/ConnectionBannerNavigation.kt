@@ -5,7 +5,7 @@ internal fun connectionBannerNavigationTarget(
     supportsLmuServerIpNavigation: Boolean,
 ): ConnectionBannerNavigationTarget? =
     when {
-    isGt7 -> ConnectionBannerNavigationTarget.ConsoleIp
-    supportsLmuServerIpNavigation -> ConnectionBannerNavigationTarget.ServerIp
-    else -> null
-}
+        isGt7 -> ConnectionBannerNavigationTarget.ConsoleIp
+        supportsLmuServerIpNavigation -> ConnectionBannerNavigationTarget.ServerIp
+        else -> null
+    }

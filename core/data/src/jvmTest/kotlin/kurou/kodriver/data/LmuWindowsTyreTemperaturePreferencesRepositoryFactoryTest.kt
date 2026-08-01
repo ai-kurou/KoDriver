@@ -13,12 +13,11 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
-
     private val tempDir =
         Files
-        .createTempDirectory(
-        "kodriver_lmu_windows_tyre_temperature_preferences_repository_factory_test",
-    ).toFile()
+            .createTempDirectory(
+                "kodriver_lmu_windows_tyre_temperature_preferences_repository_factory_test",
+            ).toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -29,21 +28,21 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
     @Test
     fun `デフォルト値は highThresholdCelsius が 95`() =
         testScope.runTest {
-        val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
+            val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(
-            LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
-            repository.observeHighThresholdCelsius().first(),
-        )
-    }
+            assertEquals(
+                LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+                repository.observeHighThresholdCelsius().first(),
+            )
+        }
 
     @Test
     fun `保存した highThresholdCelsius を読み出せる`() =
         testScope.runTest {
-        val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
+            val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 
-        repository.saveHighThresholdCelsius(105)
+            repository.saveHighThresholdCelsius(105)
 
-        assertEquals(105, repository.observeHighThresholdCelsius().first())
-    }
+            assertEquals(105, repository.observeHighThresholdCelsius().first())
+        }
 }

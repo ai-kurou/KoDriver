@@ -15,15 +15,14 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsMyBestLapPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_my_best_lap_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
-        serializer = MyBestLapPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("test.pb") },
-    )
+            serializer = MyBestLapPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("test.pb") },
+        )
     private val repository = LmuWindowsMyBestLapPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
@@ -34,28 +33,28 @@ class LmuWindowsMyBestLapPreferencesRepositoryImplTest {
     @Test
     fun `voiceType の初期値は FORMAL`() =
         testScope.runTest {
-        assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
-    }
+            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+        }
 
     @Test
     fun `saveVoiceType で保存した値を observeVoiceType で取得できる`() =
         testScope.runTest {
-        repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
-        assertEquals(MyBestLapVoiceType.CASUAL, repository.observeVoiceType().first())
-    }
+            repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
+            assertEquals(MyBestLapVoiceType.CASUAL, repository.observeVoiceType().first())
+        }
 
     @Test
     fun `saveVoiceType を複数回呼ぶと最後の値で上書きされる`() =
         testScope.runTest {
-        repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
-        repository.saveVoiceType(MyBestLapVoiceType.FORMAL)
-        assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
-    }
+            repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
+            repository.saveVoiceType(MyBestLapVoiceType.FORMAL)
+            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+        }
 
     @Test
     fun `voiceType が未知の ID のとき FORMAL を返す`() =
         testScope.runTest {
-        dataStore.updateData { it.copy(voiceType = "unknown") }
-        assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
-    }
+            dataStore.updateData { it.copy(voiceType = "unknown") }
+            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+        }
 }

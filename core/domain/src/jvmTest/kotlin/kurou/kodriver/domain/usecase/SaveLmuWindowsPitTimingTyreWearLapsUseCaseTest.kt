@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsPitTimingTyreWearLapsUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsPitTimingPreferencesRepository
 
@@ -22,9 +21,9 @@ class SaveLmuWindowsPitTimingTyreWearLapsUseCaseTest {
     @Test
     fun `タイヤ摩耗予想残り周回数を保存できる`() =
         runBlocking {
-        SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository)(2)
+            SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository)(2)
 
-        coVerify(exactly = 1) { repository.saveTyreWearLaps(2) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveTyreWearLaps(2) }
+            confirmVerified(repository)
+        }
 }

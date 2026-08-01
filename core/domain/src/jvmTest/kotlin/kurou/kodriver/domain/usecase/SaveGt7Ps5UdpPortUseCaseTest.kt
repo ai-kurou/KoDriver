@@ -13,7 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class SaveGt7Ps5UdpPortUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: Gt7Ps5UdpPortPreferencesRepository
 
@@ -25,30 +24,30 @@ class SaveGt7Ps5UdpPortUseCaseTest {
     @Test
     fun `33740を保存できる`() =
         runBlocking {
-        SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_DEFAULT)
+            SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_DEFAULT)
 
-        coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_DEFAULT) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_DEFAULT) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `33741を保存できる`() =
         runBlocking {
-        SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_ALTERNATE)
+            SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_ALTERNATE)
 
-        coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `33740でも33741でもない値はIllegalArgumentExceptionをスローする`() =
         runBlocking {
-        val useCase = SaveGt7Ps5UdpPortUseCase(repository)
+            val useCase = SaveGt7Ps5UdpPortUseCase(repository)
 
-        assertFailsWith<IllegalArgumentException> { useCase(33739) }
-        assertFailsWith<IllegalArgumentException> { useCase(33742) }
-        assertFailsWith<IllegalArgumentException> { useCase(0) }
+            assertFailsWith<IllegalArgumentException> { useCase(33739) }
+            assertFailsWith<IllegalArgumentException> { useCase(33742) }
+            assertFailsWith<IllegalArgumentException> { useCase(0) }
 
-        confirmVerified(repository)
-    }
+            confirmVerified(repository)
+        }
 }

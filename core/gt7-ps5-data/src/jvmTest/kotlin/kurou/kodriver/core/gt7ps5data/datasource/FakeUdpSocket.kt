@@ -7,7 +7,6 @@ import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.TimeUnit
 
 internal class FakeUdpSocket : UdpSocket {
-
     // IO スレッドとテストスレッドから同時にアクセスされるため、スレッドセーフなコレクションを使用する
     private val responses: LinkedBlockingDeque<FakeResponse> = LinkedBlockingDeque()
     val sentPackets: CopyOnWriteArrayList<SentPacket> = CopyOnWriteArrayList()
@@ -27,7 +26,7 @@ internal class FakeUdpSocket : UdpSocket {
         // 1ms 待機することで、キャンセル到着前のタイトループを防ぐ
         val response =
             responses.poll(1L, TimeUnit.MILLISECONDS)
-            ?: throw SocketTimeoutException("FakeUdpSocket: no more responses")
+                ?: throw SocketTimeoutException("FakeUdpSocket: no more responses")
         when (response) {
             is FakeResponse.Packet -> {
                 // 実際の DatagramSocket.receive は packet.length を超えるバイト数を切り詰め、
@@ -43,7 +42,11 @@ internal class FakeUdpSocket : UdpSocket {
         }
     }
 
-    override fun send(data: ByteArray, address: String, port: Int) {
+    override fun send(
+        data: ByteArray,
+        address: String,
+        port: Int,
+    ) {
         sentPackets.add(SentPacket(data.copyOf(), address, port))
     }
 

@@ -32,7 +32,6 @@ private fun createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
 }
 
 class ObserveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -44,34 +43,34 @@ class ObserveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
     @Test
     fun `初期値を返す`() =
         runBlocking {
-        val repo =
-            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialSustainedDuration = 4,
-        )
-        val useCase = ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(repo)
+            val repo =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialSustainedDuration = 4,
+                )
+            val useCase = ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(repo)
 
-        assertEquals(4, useCase().first())
+            assertEquals(4, useCase().first())
 
-        verify(exactly = 1) { repo.observeSustainedApproachDurationSeconds() }
-        confirmVerified(repo)
-    }
+            verify(exactly = 1) { repo.observeSustainedApproachDurationSeconds() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `保存済みの継続時間閾値をそのまま返す`() =
         runBlocking {
-        val repo =
-            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
-            repository,
-            initialSustainedDuration = 4,
-        )
-        val useCase = ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(repo)
+            val repo =
+                createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+                    repository,
+                    initialSustainedDuration = 4,
+                )
+            val useCase = ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(repo)
 
-        repo.saveSustainedApproachDurationSeconds(8)
-        assertEquals(8, useCase().first())
+            repo.saveSustainedApproachDurationSeconds(8)
+            assertEquals(8, useCase().first())
 
-        coVerify(exactly = 1) { repo.saveSustainedApproachDurationSeconds(8) }
-        verify(exactly = 1) { repo.observeSustainedApproachDurationSeconds() }
-        confirmVerified(repo)
-    }
+            coVerify(exactly = 1) { repo.saveSustainedApproachDurationSeconds(8) }
+            verify(exactly = 1) { repo.observeSustainedApproachDurationSeconds() }
+            confirmVerified(repo)
+        }
 }

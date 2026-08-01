@@ -40,9 +40,7 @@ private const val THRESHOLD_MAX = 90f
  * Gt7Ps5ReadoutRemainingFuelDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5ReadoutRemainingFuelDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun Gt7Ps5ReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5ReadoutRemainingFuelDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
@@ -68,9 +66,9 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_fuel_description),
         )

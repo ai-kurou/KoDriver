@@ -16,12 +16,12 @@ import org.koin.dsl.module
  */
 val otherConsoleIpDetailModule =
     module {
-    // ViewModel
-    viewModelOf(::OtherConsoleIpDetailViewModel)
+        // ViewModel
+        viewModelOf(::OtherConsoleIpDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveConsoleAddressUseCase(get()) }
-    factory { SaveConsoleAddressUseCase(get()) }
-    factory { ObserveGt7Ps5UdpPortUseCase(get()) }
-    factory { SaveGt7Ps5UdpPortUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveConsoleAddressUseCase(get()) }
+        factory { SaveConsoleAddressUseCase(get()) }
+        factory { ObserveGt7Ps5UdpPortUseCase(get()) }
+        factory { SaveGt7Ps5UdpPortUseCase(get()) }
+    }

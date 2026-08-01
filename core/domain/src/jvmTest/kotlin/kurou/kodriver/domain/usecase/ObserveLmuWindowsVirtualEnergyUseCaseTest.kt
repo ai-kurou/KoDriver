@@ -18,7 +18,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObserveLmuWindowsVirtualEnergyUseCaseTest {
-
     @MockK
     private lateinit var repo: LmuWindowsVirtualEnergyRepository
 
@@ -30,43 +29,43 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     @Test
     fun `invoke はリポジトリの virtualEnergyStream を返す`() =
         runBlocking {
-        val expected = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
-        every { repo.virtualEnergyStream() } returns flowOf(expected)
-        val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
+            val expected = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
+            every { repo.virtualEnergyStream() } returns flowOf(expected)
+            val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
 
-        val result = useCase().first()
+            val result = useCase().first()
 
-        assertEquals(expected, result)
-        verify(exactly = 1) { repo.virtualEnergyStream() }
-        confirmVerified(repo)
-    }
+            assertEquals(expected, result)
+            verify(exactly = 1) { repo.virtualEnergyStream() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
         runBlocking {
-        every { repo.virtualEnergyStream() } returns flowOf()
-        val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
+            every { repo.virtualEnergyStream() } returns flowOf()
+            val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
 
-        val results = buildList { useCase().collect { add(it) } }
+            val results = buildList { useCase().collect { add(it) } }
 
-        assertTrue(results.isEmpty())
-        verify(exactly = 1) { repo.virtualEnergyStream() }
-        confirmVerified(repo)
-    }
+            assertTrue(results.isEmpty())
+            verify(exactly = 1) { repo.virtualEnergyStream() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `複数のデータを順番通りに流す`() =
         runBlocking {
-        val data1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.8)
-        val data2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
-        val data3 = LmuWindowsVirtualEnergyData(remainingRatio = 0.2)
-        every { repo.virtualEnergyStream() } returns flowOf(data1, data2, data3)
-        val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
+            val data1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.8)
+            val data2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
+            val data3 = LmuWindowsVirtualEnergyData(remainingRatio = 0.2)
+            every { repo.virtualEnergyStream() } returns flowOf(data1, data2, data3)
+            val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
 
-        val results = buildList { useCase().collect { add(it) } }
+            val results = buildList { useCase().collect { add(it) } }
 
-        assertEquals(listOf(data1, data2, data3), results)
-        verify(exactly = 1) { repo.virtualEnergyStream() }
-        confirmVerified(repo)
-    }
+            assertEquals(listOf(data1, data2, data3), results)
+            verify(exactly = 1) { repo.virtualEnergyStream() }
+            confirmVerified(repo)
+        }
 }

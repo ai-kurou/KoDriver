@@ -17,7 +17,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class WebSocketHttpClientFactoryTest {
-
     private lateinit var server: MockWebServer
 
     @BeforeTest
@@ -34,28 +33,31 @@ class WebSocketHttpClientFactoryTest {
     @Test
     fun `生成したクライアントでWebSocket接続してフレームを受信できる`() =
         runTest {
-        server.enqueue(
-            MockResponse().withWebSocketUpgrade(
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        webSocket.send("hello")
-                        webSocket.close(1000, "done")
-                    }
-                },
-            ),
-        )
-        val client = createWebSocketHttpClient()
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send("hello")
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+            val client = createWebSocketHttpClient()
 
-        var received: String? = null
-        client.webSocket(host = "127.0.0.1", port = server.port, path = "/ws/test") {
-            for (frame in incoming) {
-                if (frame is Frame.Text) {
-                    received = frame.readText()
+            var received: String? = null
+            client.webSocket(host = "127.0.0.1", port = server.port, path = "/ws/test") {
+                for (frame in incoming) {
+                    if (frame is Frame.Text) {
+                        received = frame.readText()
+                    }
                 }
             }
-        }
 
-        assertEquals("hello", received)
-        client.close()
-    }
+            assertEquals("hello", received)
+            client.close()
+        }
 }

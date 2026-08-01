@@ -19,16 +19,15 @@ class OtherThemeDetailViewModel internal constructor(
     observeThemeMode: ObserveThemeModeUseCase,
     private val saveThemeMode: SaveThemeModeUseCase,
 ) : ViewModel() {
-
     private val pendingThemeMode = MutableStateFlow<ThemeMode?>(null)
 
     internal val uiState =
         combine(observeThemeMode(), pendingThemeMode) { saved, pending ->
-        OtherThemeDetailUiState(
-            selectedThemeMode = saved,
-            pendingThemeMode = pending ?: saved,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherThemeDetailUiState())
+            OtherThemeDetailUiState(
+                selectedThemeMode = saved,
+                pendingThemeMode = pending ?: saved,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherThemeDetailUiState())
 
     internal fun onPendingThemeModeSelected(themeMode: ThemeMode) {
         pendingThemeMode.update { themeMode }

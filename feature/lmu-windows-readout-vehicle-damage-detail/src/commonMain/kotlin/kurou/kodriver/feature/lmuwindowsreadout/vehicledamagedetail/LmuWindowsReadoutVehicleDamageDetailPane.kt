@@ -25,9 +25,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * LmuWindowsReadoutVehicleDamageDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsReadoutVehicleDamageDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun LmuWindowsReadoutVehicleDamageDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutVehicleDamageDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutVehicleDamageDetailPaneContent(
@@ -48,9 +46,9 @@ internal fun LmuWindowsReadoutVehicleDamageDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.vehicle_damage_description),
         )

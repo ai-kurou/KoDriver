@@ -52,61 +52,61 @@ import org.koin.dsl.module
  */
 val lmuWindowsNarratorModule: Module =
     module {
-    // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-    viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
+        viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 
-    // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-    factory { NarratorUseCases(get(), get(), get()) }
-    factory { FlagUseCases(get(), get()) }
-    factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
-    factory { VehicleDamageUseCases(get(), get()) }
-    factory { ReadoutListUseCases(get(), get(), get(), get()) }
-    factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
-    factory { TyreWearUseCases(get(), get()) }
-    factory { RemainingVirtualEnergyUseCases(get(), get()) }
-    factory { PitTimingUseCases(get(), get()) }
-    factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
+        // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { NarratorUseCases(get(), get(), get()) }
+        factory { FlagUseCases(get(), get()) }
+        factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
+        factory { VehicleDamageUseCases(get(), get()) }
+        factory { ReadoutListUseCases(get(), get(), get(), get()) }
+        factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
+        factory { TyreWearUseCases(get(), get()) }
+        factory { RemainingVirtualEnergyUseCases(get(), get()) }
+        factory { PitTimingUseCases(get(), get()) }
+        factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
-    factory { DetermineLmuWindowsNarratorReadoutUseCase() }
-    factory { SaveTelemetryLogUseCase(get()) }
-    factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
-    factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-    factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
-    factory { ObserveLmuWindowsUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
-    factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
-    factory { ObserveReadoutEnabledStatesUseCase(get()) }
-    factory { ObserveReadoutOrderUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
-    factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
-    factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
-    factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
-    factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
-    factory { ObserveLmuWindowsTyreWearUseCase(get()) }
-    factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
-    factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
-    factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
-    factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
-    factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
-    factory { ObserveQueueEnabledStatesUseCase(get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
+        factory { DetermineLmuWindowsNarratorReadoutUseCase() }
+        factory { SaveTelemetryLogUseCase(get()) }
+        factory { ObserveLmuWindowsFlagEnabledStatesUseCase(get()) }
+        factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
+        factory { ObserveLmuWindowsRedFlagVoiceTypeUseCase(get()) }
+        factory { ObserveLmuWindowsUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
+        factory { ObserveLmuWindowsRaceFlagsUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachSustainedDurationUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
+        factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
+        factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
+        factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
+        factory { ObserveLmuWindowsTyreWearUseCase(get()) }
+        factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }
+        factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
+        factory { ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase(get()) }
+        factory { ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(get()) }
+        factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get()) }
 
-    // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）
-    factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
-    includes(platformSoundModule)
-    single<TextToSpeechEngine>(named("lmu_windows")) {
-        LmuWindowsWavNarratorEngine(
-            soundPlayer = get(),
-            volumeFlow = ObserveSoundVolumeUseCase(get())(),
-            startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
-        )
+        // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）
+        factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
+        includes(platformSoundModule)
+        single<TextToSpeechEngine>(named("lmu_windows")) {
+            LmuWindowsWavNarratorEngine(
+                soundPlayer = get(),
+                volumeFlow = ObserveSoundVolumeUseCase(get())(),
+                startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+            )
+        }
     }
-}
 
 internal expect val platformSoundModule: Module

@@ -10,7 +10,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class AceWindowsFuelRepositoryImplTest {
-
     private fun makeSource(
         reader: FakeSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -24,27 +23,27 @@ class AceWindowsFuelRepositoryImplTest {
     @Test
     fun `reader が open 済みのときデータを emit する`() =
         runBlocking<Unit> {
-        val fake = FakeSharedMemoryReader(initialOpen = true)
-        val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
+            val fake = FakeSharedMemoryReader(initialOpen = true)
+            val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
-        repo.fuelStream().first()
-    }
+            repo.fuelStream().first()
+        }
 
     @Test
     fun `reader が open できるとき isConnected は true を返す`() =
         runBlocking {
-        val fake = FakeSharedMemoryReader(openResults = listOf(true))
-        val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
+            val fake = FakeSharedMemoryReader(openResults = listOf(true))
+            val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
-        assertTrue(repo.isConnected())
-    }
+            assertTrue(repo.isConnected())
+        }
 
     @Test
     fun `reader が open できないとき isConnected は false を返す`() =
         runBlocking {
-        val fake = FakeSharedMemoryReader(openResults = listOf(false))
-        val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
+            val fake = FakeSharedMemoryReader(openResults = listOf(false))
+            val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
-        assertFalse(repo.isConnected())
-    }
+            assertFalse(repo.isConnected())
+        }
 }

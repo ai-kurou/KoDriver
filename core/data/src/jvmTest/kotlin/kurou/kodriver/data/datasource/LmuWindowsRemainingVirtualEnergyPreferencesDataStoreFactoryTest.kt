@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsRemainingVirtualEnergyPreferencesDataStoreFactoryTest {
-
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_remaining_virtual_energy_preferences_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -24,9 +23,9 @@ class LmuWindowsRemainingVirtualEnergyPreferencesDataStoreFactoryTest {
     @Test
     fun `バーチャルエナジー残量設定が正しいファイルに書き込まれる`() =
         testScope.runTest {
-        val dataStore = createLmuWindowsRemainingVirtualEnergyPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(thresholdPercentage = 50) }
+            val dataStore = createLmuWindowsRemainingVirtualEnergyPreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(thresholdPercentage = 50) }
 
-        assertTrue(tempDir.resolve("lmu_windows_remaining_virtual_energy_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("lmu_windows_remaining_virtual_energy_preferences.pb").exists())
+        }
 }

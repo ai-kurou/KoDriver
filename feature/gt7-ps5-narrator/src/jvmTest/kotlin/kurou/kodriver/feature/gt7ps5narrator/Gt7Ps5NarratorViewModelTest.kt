@@ -51,7 +51,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5NarratorViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -104,457 +103,457 @@ class Gt7Ps5NarratorViewModelTest {
         return Gt7Ps5NarratorViewModel(
             myBestLapUseCases =
                 MyBestLapUseCases(
-                observeGt7Ps5 = ObserveGt7Ps5UseCase(telemetryRepository),
-                observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
-            ),
-                readoutListUseCases =
-                    ReadoutListUseCases(
-                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
-                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
-                observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
-            ),
-                    remainingFuelLapsUseCases =
-                        RemainingFuelLapsUseCases(
-                observeRemainingFuelLapsThreshold =
-                    ObserveGt7Ps5RemainingFuelLapsUseCase(remainingFuelLapsPreferencesRepository),
-            ),
-                        remainingFuelUseCases =
-                            RemainingFuelUseCases(
-                observeRemainingFuelThresholdPercentage =
-                    ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
-            ),
-                            eventProcessor =
-                                Gt7Ps5NarratorEventProcessor(
-                ttsEngine = ttsEngine,
-                saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-            ),
-                                currentTimeMs = currentTimeMs,
+                    observeGt7Ps5 = ObserveGt7Ps5UseCase(telemetryRepository),
+                    observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
+                ),
+            readoutListUseCases =
+                ReadoutListUseCases(
+                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
+                ),
+            remainingFuelLapsUseCases =
+                RemainingFuelLapsUseCases(
+                    observeRemainingFuelLapsThreshold =
+                        ObserveGt7Ps5RemainingFuelLapsUseCase(remainingFuelLapsPreferencesRepository),
+                ),
+            remainingFuelUseCases =
+                RemainingFuelUseCases(
+                    observeRemainingFuelThresholdPercentage =
+                        ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
+                ),
+            eventProcessor =
+                Gt7Ps5NarratorEventProcessor(
+                    ttsEngine = ttsEngine,
+                    saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                ),
+            currentTimeMs = currentTimeMs,
         )
     }
 
     @Test
     fun `GT7非選択時は読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every {
-            readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
-        } returns MutableStateFlow(emptyMap())
-        every {
-            readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
-        } returns MutableStateFlow(emptyList())
-        every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.FORMAL)
-        every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
-        every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
-        every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+            } returns MutableStateFlow(emptyList())
+            every { myBestLapPreferencesRepository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.FORMAL)
+            every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
+            every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
+            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 50f, gasCapacity = 100f))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        confirmVerified(simulatorPreferencesRepository)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            confirmVerified(simulatorPreferencesRepository)
+        }
 
     @Test
     fun `起動直後の最初のemitではベストラップが設定済みでもアナウンスしない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults()
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults()
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     @Test
     fun `自己ベストラップの声種別設定を反映して読み上げる`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(voiceType = MyBestLapVoiceType.CASUAL)
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(voiceType = MyBestLapVoiceType.CASUAL)
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapCasual), spokenTexts)
-    }
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapCasual), spokenTexts)
+        }
 
     @Test
     fun `読み上げが発生したら現在と直前のテレメトリを保存する`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val telemetryJsons = mutableListOf<String>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults()
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(
-                123_456L,
-                Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                capture(telemetryJsons),
-            )
-        } just Runs
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(1, telemetryJsons.size)
-        assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
-        assertEquals(
-            true,
-            telemetryJsons.single().contains(
-                """"previousTelemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
-                    """"gasLevel":0.0,"gasCapacity":100.0}""",
-            ),
-        )
-        assertEquals(
-            true,
-            telemetryJsons.single().contains(
-                """"telemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":59000,""" +
-                    """"gasLevel":0.0,"gasCapacity":100.0}""",
-            ),
-        )
-        assertEquals(true, telemetryJsons.single().contains(""""settings":{"raw":"""))
-        assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
-        assertEquals(true, telemetryJsons.single().contains(""""finalState":{"raw":"""))
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(
-                123_456L,
-                Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                telemetryJsons.single(),
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(
+                    """"previousTelemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
+                        """"gasLevel":0.0,"gasCapacity":100.0}""",
+                ),
             )
+            assertEquals(
+                true,
+                telemetryJsons.single().contains(
+                    """"telemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":59000,""" +
+                        """"gasLevel":0.0,"gasCapacity":100.0}""",
+                ),
+            )
+            assertEquals(true, telemetryJsons.single().contains(""""settings":{"raw":"""))
+            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+            assertEquals(true, telemetryJsons.single().contains(""""finalState":{"raw":"""))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
-        confirmVerified(telemetryLogRepository)
-    }
 
     @Test
     fun `自己ベストラップが無効のときは読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false))
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false))
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     @Test
     fun `燃料残り周回数の閾値設定を反映して読み上げる`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(fuelThreshold = 3)
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(fuelThreshold = 3)
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 0, gasLevel = 40f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 2, gasLevel = 20f, gasCapacity = 100f))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(2)), spokenTexts)
-    }
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.RemainingFuelLapsWarning(2)), spokenTexts)
+        }
 
     @Test
     fun `給油やラップ数戻り後は燃料残り周回数を再度読み上げる`() =
         runTest(testDispatcher) {
-        suspend fun runRemainingFuelLapsSequence(
-            spokenTexts: MutableList<SpeechEvent>,
-            telemetry: List<Gt7Ps5TelemetryData>,
-        ) {
-            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-            val ttsEngine = mockTts(spokenTexts)
-            val currentTimeMsQueue = mutableListOf(0L, 100_000L, 160_000L, 200_000L, 300_000L, 360_000L)
-            stubReadoutDefaults(fuelThreshold = 3)
-            createViewModel(
-                telemetryChannel = channel,
-                ttsEngine = ttsEngine,
-                currentTimeMs = { currentTimeMsQueue.removeAt(0) },
+            suspend fun runRemainingFuelLapsSequence(
+                spokenTexts: MutableList<SpeechEvent>,
+                telemetry: List<Gt7Ps5TelemetryData>,
+            ) {
+                val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+                val ttsEngine = mockTts(spokenTexts)
+                val currentTimeMsQueue = mutableListOf(0L, 100_000L, 160_000L, 200_000L, 300_000L, 360_000L)
+                stubReadoutDefaults(fuelThreshold = 3)
+                createViewModel(
+                    telemetryChannel = channel,
+                    ttsEngine = ttsEngine,
+                    currentTimeMs = { currentTimeMsQueue.removeAt(0) },
+                )
+                runCurrent()
+
+                telemetry.forEach { channel.send(it) }
+                runCurrent()
+            }
+
+            val refuelSpokenTexts = mutableListOf<SpeechEvent>()
+            runRemainingFuelLapsSequence(
+                spokenTexts = refuelSpokenTexts,
+                telemetry =
+                    listOf(
+                        gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 3, gasLevel = 80f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                    ),
             )
-            runCurrent()
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.RemainingFuelLapsWarning(0),
+                    SpeechEvent.RemainingFuelLapsWarning(0),
+                ),
+                refuelSpokenTexts,
+            )
 
-            telemetry.forEach { channel.send(it) }
-            runCurrent()
+            val lapResetSpokenTexts = mutableListOf<SpeechEvent>()
+            runRemainingFuelLapsSequence(
+                spokenTexts = lapResetSpokenTexts,
+                telemetry =
+                    listOf(
+                        gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                        gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
+                    ),
+            )
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.RemainingFuelLapsWarning(0),
+                    SpeechEvent.RemainingFuelLapsWarning(0),
+                ),
+                lapResetSpokenTexts,
+            )
         }
-
-        val refuelSpokenTexts = mutableListOf<SpeechEvent>()
-        runRemainingFuelLapsSequence(
-            spokenTexts = refuelSpokenTexts,
-            telemetry =
-                listOf(
-                gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 3, gasLevel = 80f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-            ),
-                )
-        assertEquals(
-            listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(0),
-                SpeechEvent.RemainingFuelLapsWarning(0),
-            ),
-            refuelSpokenTexts,
-        )
-
-        val lapResetSpokenTexts = mutableListOf<SpeechEvent>()
-        runRemainingFuelLapsSequence(
-            spokenTexts = lapResetSpokenTexts,
-            telemetry =
-                listOf(
-                gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-                gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
-            ),
-                )
-        assertEquals(
-            listOf<SpeechEvent>(
-                SpeechEvent.RemainingFuelLapsWarning(0),
-                SpeechEvent.RemainingFuelLapsWarning(0),
-            ),
-            lapResetSpokenTexts,
-        )
-    }
 
     @Test
     fun `燃料残り周回数が無効のときは読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(
-            enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false),
-            fuelThreshold = 3,
-        )
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false),
+                fuelThreshold = 3,
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 2, gasLevel = 10f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 0, gasLevel = 30f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 2, gasLevel = 10f, gasCapacity = 100f))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     @Test
     fun `燃料残量の閾値設定を反映して読み上げる`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(remainingFuelThresholdPercentage = 30)
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(remainingFuelThresholdPercentage = 30)
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
-    }
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
+        }
 
     @Test
     fun `燃料残量が無効のときは読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(
-            enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false),
-            remainingFuelThresholdPercentage = 30,
-        )
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                enabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false),
+                remainingFuelThresholdPercentage = 30,
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 20f, gasCapacity = 100f))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     @Test
     fun `燃料残量の読み上げが発生したら現在と直前のテレメトリを保存する`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val telemetryJsons = mutableListOf<String>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(remainingFuelThresholdPercentage = 30)
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(
-                123_456L,
-                Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                capture(telemetryJsons),
-            )
-        } just Runs
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(remainingFuelThresholdPercentage = 30)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
 
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
-        channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 31f, gasCapacity = 100f))
+            channel.send(gt7Telemetry(lapCount = 1, gasLevel = 30f, gasCapacity = 100f))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
-        assertEquals(1, telemetryJsons.size)
-        assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=false"))
-        assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=true"))
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(
-                123_456L,
-                Simulator.Gt7Ps5,
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                telemetryJsons.single(),
-            )
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5RemainingFuelWarning), spokenTexts)
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=false"))
+            assertEquals(true, telemetryJsons.single().contains("remainingFuelWarned=true"))
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    telemetryJsons.single(),
+                )
+            }
         }
-    }
 
     @Test
     fun `優先度の高いアイテム読み上げ中にベストラップが来ても読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine =
-            mockPriorityAwareTts(
-            spokenTexts = spokenTexts,
-            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
-        )
-        stubReadoutDefaults(
-            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
-        )
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                )
+            stubReadoutDefaults(
+                orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(false, ttsEngine.stopCalled)
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        verify(exactly = 0) { ttsEngine.stop() }
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        verify(exactly = 1) { ttsEngine.stopCalled }
-        confirmVerified(ttsEngine)
-    }
+            assertEquals(false, ttsEngine.stopCalled)
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            verify(exactly = 0) { ttsEngine.stop() }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.stopCalled }
+            confirmVerified(ttsEngine)
+        }
 
     @Test
     fun `優先度制御で読み上げなかったイベントは保存しない`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine =
-            mockPriorityAwareTts(
-            spokenTexts = spokenTexts,
-            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
-        )
-        stubReadoutDefaults(
-            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
-        )
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                )
+            stubReadoutDefaults(
+                orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        confirmVerified(telemetryLogRepository)
-    }
+            confirmVerified(telemetryLogRepository)
+        }
 
     @Test
     fun `優先度の低いアイテム読み上げ中にベストラップが来ると割り込む`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine =
-            mockPriorityAwareTts(
-            spokenTexts = spokenTexts,
-            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
-        )
-        stubReadoutDefaults(
-            orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.LmuWindows.Flag.Root),
-        )
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                )
+            stubReadoutDefaults(
+                orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(true, ttsEngine.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
-    }
+            assertEquals(true, ttsEngine.stopCalled)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
+        }
 
     @Test
     fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine =
-            mockPriorityAwareTts(
-            spokenTexts = spokenTexts,
-            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
-        )
-        stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root))
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                )
+            stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root))
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(true, ttsEngine.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
-    }
+            assertEquals(true, ttsEngine.stopCalled)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
+        }
 
     @Test
     fun `キュー設定が有効なら優先度で本来無視される項目もキュー再生する`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine =
-            mockPriorityAwareTts(
-            spokenTexts = spokenTexts,
-            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
-        )
-        stubReadoutDefaults(
-            orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
-            queueEnabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
-        )
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                )
+            stubReadoutDefaults(
+                orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
+                queueEnabledOverrides = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(false, ttsEngine.stopCalled)
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
-    }
+            assertEquals(false, ttsEngine.stopCalled)
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
+        }
 
     @Test
     fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() =
         runTest(testDispatcher) {
-        val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine =
-            mockPriorityAwareTts(
-            spokenTexts = spokenTexts,
-            initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
-        )
-        stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root))
-        createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine =
+                mockPriorityAwareTts(
+                    spokenTexts = spokenTexts,
+                    initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                )
+            stubReadoutDefaults(orderOverride = listOf(ReadoutItemKey.LmuWindows.Flag.Root))
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
-        channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
 
-        assertEquals(false, ttsEngine.stopCalled)
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(false, ttsEngine.stopCalled)
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     /**
      * simulator/enabledStates/readoutOrder/voiceType/fuelThresholdの標準スタブをまとめて設定する。
@@ -643,12 +642,12 @@ class Gt7Ps5NarratorViewModelTest {
 
 private fun gt7Telemetry(bestLapTimeMs: Int) =
     Gt7Ps5TelemetryData(
-    lapCount = 0,
-    lapsInRace = 0,
-    bestLapTimeMs = bestLapTimeMs,
-    gasLevel = 0f,
-    gasCapacity = 100f,
-)
+        lapCount = 0,
+        lapsInRace = 0,
+        bestLapTimeMs = bestLapTimeMs,
+        gasLevel = 0f,
+        gasCapacity = 100f,
+    )
 
 private fun gt7Telemetry(
     lapCount: Int,

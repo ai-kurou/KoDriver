@@ -9,17 +9,16 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DetermineAceWindowsNarratorReadoutUseCaseTest {
-
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
 
     @Test
     fun `残量が閾値以下になると読み上げる`() {
         val decision =
             useCase.determineRemainingFuel(
-            state = AceWindowsNarratorState(),
-            data = fuel(remainingPercent = 20.0),
-            settings = settings(thresholdPercentage = 30),
-        )
+                state = AceWindowsNarratorState(),
+                data = fuel(remainingPercent = 20.0),
+                settings = settings(thresholdPercentage = 30),
+            )
 
         assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
@@ -29,10 +28,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `閾値ちょうどは低燃料扱い`() {
         val decision =
             useCase.determineRemainingFuel(
-            state = AceWindowsNarratorState(),
-            data = fuel(remainingPercent = 30.0),
-            settings = settings(thresholdPercentage = 30),
-        )
+                state = AceWindowsNarratorState(),
+                data = fuel(remainingPercent = 30.0),
+                settings = settings(thresholdPercentage = 30),
+            )
 
         assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), decision.events)
     }
@@ -43,10 +42,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineRemainingFuel(
-            state = state,
-            data = fuel(remainingPercent = 20.0),
-            settings = settings(thresholdPercentage = 30),
-        )
+                state = state,
+                data = fuel(remainingPercent = 20.0),
+                settings = settings(thresholdPercentage = 30),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
@@ -56,26 +55,26 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `残量が閾値より上に戻ると再度読み上げ可能になる`() {
         val warnedState =
             useCase
-            .determineRemainingFuel(
-            state = AceWindowsNarratorState(),
-            data = fuel(remainingPercent = 20.0),
-            settings = settings(thresholdPercentage = 30),
-        ).state
+                .determineRemainingFuel(
+                    state = AceWindowsNarratorState(),
+                    data = fuel(remainingPercent = 20.0),
+                    settings = settings(thresholdPercentage = 30),
+                ).state
 
         val recoveredState =
             useCase
-            .determineRemainingFuel(
-            state = warnedState,
-            data = fuel(remainingPercent = 50.0),
-            settings = settings(thresholdPercentage = 30),
-        ).state
+                .determineRemainingFuel(
+                    state = warnedState,
+                    data = fuel(remainingPercent = 50.0),
+                    settings = settings(thresholdPercentage = 30),
+                ).state
 
         val rewarnedDecision =
             useCase.determineRemainingFuel(
-            state = recoveredState,
-            data = fuel(remainingPercent = 20.0),
-            settings = settings(thresholdPercentage = 30),
-        )
+                state = recoveredState,
+                data = fuel(remainingPercent = 20.0),
+                settings = settings(thresholdPercentage = 30),
+            )
 
         assertEquals(false, recoveredState.remainingFuelWarned)
         assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), rewarnedDecision.events)
@@ -85,10 +84,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `残量が0パーセントの未初期化値では読み上げない`() {
         val decision =
             useCase.determineRemainingFuel(
-            state = AceWindowsNarratorState(),
-            data = fuel(remainingPercent = 0.0),
-            settings = settings(thresholdPercentage = 30),
-        )
+                state = AceWindowsNarratorState(),
+                data = fuel(remainingPercent = 0.0),
+                settings = settings(thresholdPercentage = 30),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(false, decision.state.remainingFuelWarned)
@@ -98,14 +97,14 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `残り燃料項目が無効なら読み上げない`() {
         val decision =
             useCase.determineRemainingFuel(
-            state = AceWindowsNarratorState(),
-            data = fuel(remainingPercent = 20.0),
-            settings =
-                settings(
-                thresholdPercentage = 30,
-                enabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to false),
-            ),
-                )
+                state = AceWindowsNarratorState(),
+                data = fuel(remainingPercent = 20.0),
+                settings =
+                    settings(
+                        thresholdPercentage = 30,
+                        enabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to false),
+                    ),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(true, decision.state.remainingFuelWarned)
@@ -115,10 +114,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `初回観測時は読み上げない`() {
         val decision =
             useCase.determineFlag(
-            state = AceWindowsNarratorState(),
-            data = flag(AceWindowsFlagType.BLUE_FLAG),
-            settings = flagSettings(),
-        )
+                state = AceWindowsNarratorState(),
+                data = flag(AceWindowsFlagType.BLUE_FLAG),
+                settings = flagSettings(),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(AceWindowsFlagType.BLUE_FLAG, decision.state.previousFlag)
@@ -130,10 +129,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineFlag(
-            state = state,
-            data = flag(AceWindowsFlagType.BLUE_FLAG),
-            settings = flagSettings(),
-        )
+                state = state,
+                data = flag(AceWindowsFlagType.BLUE_FLAG),
+                settings = flagSettings(),
+            )
 
         assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag), decision.events)
         assertEquals(AceWindowsFlagType.BLUE_FLAG, decision.state.previousFlag)
@@ -145,10 +144,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineFlag(
-            state = state,
-            data = flag(AceWindowsFlagType.BLUE_FLAG),
-            settings = flagSettings(),
-        )
+                state = state,
+                data = flag(AceWindowsFlagType.BLUE_FLAG),
+                settings = flagSettings(),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
     }
@@ -159,10 +158,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineFlag(
-            state = state,
-            data = flag(AceWindowsFlagType.BLUE_FLAG),
-            settings = flagSettings(enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false)),
-        )
+                state = state,
+                data = flag(AceWindowsFlagType.BLUE_FLAG),
+                settings = flagSettings(enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false)),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(AceWindowsFlagType.BLUE_FLAG, decision.state.previousFlag)
@@ -174,10 +173,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineFlag(
-            state = state,
-            data = flag(AceWindowsFlagType.BLUE_FLAG),
-            settings = flagSettings(enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false)),
-        )
+                state = state,
+                data = flag(AceWindowsFlagType.BLUE_FLAG),
+                settings = flagSettings(enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false)),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
     }
@@ -188,10 +187,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineFlag(
-            state = state,
-            data = flag(AceWindowsFlagType.NO_FLAG),
-            settings = flagSettings(),
-        )
+                state = state,
+                data = flag(AceWindowsFlagType.NO_FLAG),
+                settings = flagSettings(),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(AceWindowsFlagType.NO_FLAG, decision.state.previousFlag)
@@ -203,10 +202,10 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
 
         val decision =
             useCase.determineFlag(
-            state = state,
-            data = flag(AceWindowsFlagType.UNKNOWN),
-            settings = flagSettings(),
-        )
+                state = state,
+                data = flag(AceWindowsFlagType.UNKNOWN),
+                settings = flagSettings(),
+            )
 
         assertEquals(emptyList<SpeechEvent>(), decision.events)
         assertEquals(AceWindowsFlagType.UNKNOWN, decision.state.previousFlag)
@@ -216,25 +215,25 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     fun `各フラグ種別に対応するイベントを読み上げる`() {
         val expected =
             mapOf(
-            AceWindowsFlagType.WHITE_FLAG to SpeechEvent.AceWindowsWhiteFlag,
-            AceWindowsFlagType.GREEN_FLAG to SpeechEvent.AceWindowsGreenFlag,
-            AceWindowsFlagType.RED_FLAG to SpeechEvent.AceWindowsRedFlag,
-            AceWindowsFlagType.BLUE_FLAG to SpeechEvent.AceWindowsBlueFlag,
-            AceWindowsFlagType.YELLOW_FLAG to SpeechEvent.AceWindowsYellowFlag,
-            AceWindowsFlagType.BLACK_FLAG to SpeechEvent.AceWindowsBlackFlag,
-            AceWindowsFlagType.BLACK_WHITE_FLAG to SpeechEvent.AceWindowsBlackWhiteFlag,
-            AceWindowsFlagType.CHECKERED_FLAG to SpeechEvent.AceWindowsCheckeredFlag,
-            AceWindowsFlagType.ORANGE_CIRCLE_FLAG to SpeechEvent.AceWindowsOrangeCircleFlag,
-            AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to SpeechEvent.AceWindowsRedYellowStripesFlag,
-        )
+                AceWindowsFlagType.WHITE_FLAG to SpeechEvent.AceWindowsWhiteFlag,
+                AceWindowsFlagType.GREEN_FLAG to SpeechEvent.AceWindowsGreenFlag,
+                AceWindowsFlagType.RED_FLAG to SpeechEvent.AceWindowsRedFlag,
+                AceWindowsFlagType.BLUE_FLAG to SpeechEvent.AceWindowsBlueFlag,
+                AceWindowsFlagType.YELLOW_FLAG to SpeechEvent.AceWindowsYellowFlag,
+                AceWindowsFlagType.BLACK_FLAG to SpeechEvent.AceWindowsBlackFlag,
+                AceWindowsFlagType.BLACK_WHITE_FLAG to SpeechEvent.AceWindowsBlackWhiteFlag,
+                AceWindowsFlagType.CHECKERED_FLAG to SpeechEvent.AceWindowsCheckeredFlag,
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG to SpeechEvent.AceWindowsOrangeCircleFlag,
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to SpeechEvent.AceWindowsRedYellowStripesFlag,
+            )
 
         expected.forEach { (flagType, event) ->
             val decision =
                 useCase.determineFlag(
-                state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG),
-                data = flag(flagType),
-                settings = flagSettings(),
-            )
+                    state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG),
+                    data = flag(flagType),
+                    settings = flagSettings(),
+                )
             assertEquals(listOf(event), decision.events)
         }
     }
@@ -251,23 +250,22 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
         remainingFuelThresholdPercentage = thresholdPercentage,
     )
 
-    private fun flagSettings(
-        enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-    ) = AceWindowsNarratorReadoutSettings(
-        enabledStates =
-            mapOf(
-            ReadoutItemKey.AceWindows.Flag.Root to true,
-            ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
-            ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
-            ReadoutItemKey.AceWindows.Flag.RedFlag to true,
-            ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
-            ReadoutItemKey.AceWindows.Flag.YellowFlag to true,
-            ReadoutItemKey.AceWindows.Flag.BlackFlag to true,
-            ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to true,
-            ReadoutItemKey.AceWindows.Flag.CheckeredFlag to true,
-            ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to true,
-            ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to true,
-        ) + enabledOverrides,
+    private fun flagSettings(enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap()) =
+        AceWindowsNarratorReadoutSettings(
+            enabledStates =
+                mapOf(
+                    ReadoutItemKey.AceWindows.Flag.Root to true,
+                    ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.RedFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.BlueFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.YellowFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.BlackFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.CheckeredFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag to true,
+                    ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag to true,
+                ) + enabledOverrides,
             remainingFuelThresholdPercentage = 0,
-    )
+        )
 }

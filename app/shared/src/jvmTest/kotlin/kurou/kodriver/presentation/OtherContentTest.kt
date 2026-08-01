@@ -21,7 +21,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class OtherContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -29,13 +28,13 @@ class OtherContentTest {
 
     private val singlePaneDirective =
         PaneScaffoldDirective(
-        maxHorizontalPartitions = 1,
-        horizontalPartitionSpacerSize = 0.dp,
-        maxVerticalPartitions = 1,
-        verticalPartitionSpacerSize = 0.dp,
-        defaultPanePreferredWidth = 360.dp,
-        excludedBounds = emptyList(),
-    )
+            maxHorizontalPartitions = 1,
+            horizontalPartitionSpacerSize = 0.dp,
+            maxVerticalPartitions = 1,
+            verticalPartitionSpacerSize = 0.dp,
+            defaultPanePreferredWidth = 360.dp,
+            excludedBounds = emptyList(),
+        )
 
     @Test
     fun `詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
@@ -53,15 +52,15 @@ class OtherContentTest {
             OtherContent(
                 uiState =
                     OtherListUiState(
-                    selectedItem = selectedItem,
-                    keepScreenOn = keepScreenOn,
-                    exitConfirmationEnabled = exitConfirmationEnabled,
-                    dynamicColorEnabled = dynamicColorEnabled,
-                    items = OtherListUiState().items + OtherListItemType.DynamicColor,
-                    appVersionLabel = "Windows版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
-                    onItemSelected = { selectedItem = it },
+                        selectedItem = selectedItem,
+                        keepScreenOn = keepScreenOn,
+                        exitConfirmationEnabled = exitConfirmationEnabled,
+                        dynamicColorEnabled = dynamicColorEnabled,
+                        items = OtherListUiState().items + OtherListItemType.DynamicColor,
+                        appVersionLabel = "Windows版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
+                onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
                 onOpenThemeDialog = { themeDialogOpened = true },

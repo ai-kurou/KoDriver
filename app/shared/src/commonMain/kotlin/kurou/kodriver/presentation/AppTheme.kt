@@ -51,65 +51,65 @@ private val AppNeutralVariant90 = Color(0xFFE7E0EC)
 
 private val AppLightColorScheme =
     lightColorScheme(
-    primary = AppYellow40,
-    onPrimary = AppNeutral99,
-    primaryContainer = AppYellow90,
-    onPrimaryContainer = AppYellow10,
-    secondary = AppLime40,
-    onSecondary = AppNeutral99,
-    secondaryContainer = AppLime90,
-    onSecondaryContainer = AppLime10,
-    tertiary = AppNeon40,
-    onTertiary = AppNeutral99,
-    tertiaryContainer = AppNeon80,
-    onTertiaryContainer = AppNeon10,
-    error = AppError40,
-    onError = AppNeutral99,
-    errorContainer = AppError90,
-    onErrorContainer = AppError10,
-    background = AppYellow99,
-    onBackground = AppNeutral10,
-    surface = AppYellow99,
-    onSurface = AppNeutral10,
-    surfaceVariant = AppNeutralVariant90,
-    onSurfaceVariant = AppNeutralVariant30,
-    outline = AppNeutralVariant50,
-    outlineVariant = AppNeutralVariant80,
-    surfaceContainerLow = AppYellow95,
-    surfaceContainer = AppNeutral95,
-    surfaceContainerHigh = AppNeutralVariant90,
-)
+        primary = AppYellow40,
+        onPrimary = AppNeutral99,
+        primaryContainer = AppYellow90,
+        onPrimaryContainer = AppYellow10,
+        secondary = AppLime40,
+        onSecondary = AppNeutral99,
+        secondaryContainer = AppLime90,
+        onSecondaryContainer = AppLime10,
+        tertiary = AppNeon40,
+        onTertiary = AppNeutral99,
+        tertiaryContainer = AppNeon80,
+        onTertiaryContainer = AppNeon10,
+        error = AppError40,
+        onError = AppNeutral99,
+        errorContainer = AppError90,
+        onErrorContainer = AppError10,
+        background = AppYellow99,
+        onBackground = AppNeutral10,
+        surface = AppYellow99,
+        onSurface = AppNeutral10,
+        surfaceVariant = AppNeutralVariant90,
+        onSurfaceVariant = AppNeutralVariant30,
+        outline = AppNeutralVariant50,
+        outlineVariant = AppNeutralVariant80,
+        surfaceContainerLow = AppYellow95,
+        surfaceContainer = AppNeutral95,
+        surfaceContainerHigh = AppNeutralVariant90,
+    )
 
 private val AppDarkColorScheme =
     darkColorScheme(
-    primary = AppYellow80,
-    onPrimary = AppYellow20,
-    primaryContainer = AppYellow30,
-    onPrimaryContainer = AppYellow90,
-    secondary = AppLime80,
-    onSecondary = AppLime20,
-    secondaryContainer = AppLime30,
-    onSecondaryContainer = AppLime90,
-    tertiary = AppNeon80,
-    onTertiary = AppNeon20,
-    tertiaryContainer = AppNeon30,
-    onTertiaryContainer = AppNeon90,
-    error = AppError80,
-    onError = AppError20,
-    errorContainer = AppError30,
-    onErrorContainer = AppError90,
-    background = AppNeutral10,
-    onBackground = AppNeutral90,
-    surface = AppNeutral10,
-    onSurface = AppNeutral90,
-    surfaceVariant = AppNeutralVariant30,
-    onSurfaceVariant = AppNeutralVariant80,
-    outline = AppNeutralVariant60,
-    outlineVariant = AppNeutralVariant30,
-    surfaceContainerLow = AppNeutral20,
-    surfaceContainer = AppNeutral20,
-    surfaceContainerHigh = AppNeutralVariant30,
-)
+        primary = AppYellow80,
+        onPrimary = AppYellow20,
+        primaryContainer = AppYellow30,
+        onPrimaryContainer = AppYellow90,
+        secondary = AppLime80,
+        onSecondary = AppLime20,
+        secondaryContainer = AppLime30,
+        onSecondaryContainer = AppLime90,
+        tertiary = AppNeon80,
+        onTertiary = AppNeon20,
+        tertiaryContainer = AppNeon30,
+        onTertiaryContainer = AppNeon90,
+        error = AppError80,
+        onError = AppError20,
+        errorContainer = AppError30,
+        onErrorContainer = AppError90,
+        background = AppNeutral10,
+        onBackground = AppNeutral90,
+        surface = AppNeutral10,
+        onSurface = AppNeutral90,
+        surfaceVariant = AppNeutralVariant30,
+        onSurfaceVariant = AppNeutralVariant80,
+        outline = AppNeutralVariant60,
+        outlineVariant = AppNeutralVariant30,
+        surfaceContainerLow = AppNeutral20,
+        surfaceContainer = AppNeutral20,
+        surfaceContainerHigh = AppNeutralVariant30,
+    )
 
 @Composable
 internal expect fun dynamicAppColorScheme(darkTheme: Boolean): ColorScheme?
@@ -126,10 +126,10 @@ fun AppTheme(
     val fallbackColorScheme = if (darkTheme) AppDarkColorScheme else AppLightColorScheme
     val colorScheme =
         if (dynamicColor) {
-        dynamicAppColorScheme(darkTheme) ?: fallbackColorScheme
-    } else {
-        fallbackColorScheme
-    }
+            dynamicAppColorScheme(darkTheme) ?: fallbackColorScheme
+        } else {
+            fallbackColorScheme
+        }
     MaterialTheme(
         colorScheme = colorScheme,
         content = content,

@@ -22,10 +22,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge(
             statusBarStyle =
                 SystemBarStyle.light(
-                scrim = Color.TRANSPARENT,
-                darkScrim = Color.TRANSPARENT,
-            ),
-                )
+                    scrim = Color.TRANSPARENT,
+                    darkScrim = Color.TRANSPARENT,
+                ),
+        )
         super.onCreate(savedInstanceState)
         setContent {
             AppScreen(
@@ -48,14 +48,14 @@ class MainActivity : ComponentActivity() {
                     enableEdgeToEdge(
                         statusBarStyle =
                             if (darkTheme) {
-                            SystemBarStyle.dark(Color.TRANSPARENT)
-                        } else {
-                            SystemBarStyle.light(
-                                scrim = Color.TRANSPARENT,
-                                darkScrim = Color.TRANSPARENT,
-                            )
-                        },
-                            )
+                                SystemBarStyle.dark(Color.TRANSPARENT)
+                            } else {
+                                SystemBarStyle.light(
+                                    scrim = Color.TRANSPARENT,
+                                    darkScrim = Color.TRANSPARENT,
+                                )
+                            },
+                    )
                 },
             )
         }

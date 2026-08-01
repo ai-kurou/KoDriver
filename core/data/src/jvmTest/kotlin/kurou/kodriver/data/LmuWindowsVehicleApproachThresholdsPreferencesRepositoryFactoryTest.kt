@@ -14,11 +14,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
-
     private val tempDir =
         Files
-        .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_repository_factory_test")
-        .toFile()
+            .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_repository_factory_test")
+            .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -29,39 +28,39 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
     @Test
     fun `デフォルト値は縦方向5m・横方向5m`() =
         testScope.runTest {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
+            val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-            repository.observeLongitudinalThresholdMeters().first(),
-        )
-        assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
-            repository.observeLateralThresholdMeters().first(),
-        )
-    }
+            assertEquals(
+                LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
+                repository.observeLongitudinalThresholdMeters().first(),
+            )
+            assertEquals(
+                LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
+                repository.observeLateralThresholdMeters().first(),
+            )
+        }
 
     @Test
     fun `保存した閾値を読み出せる`() =
         testScope.runTest {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
+            val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveLongitudinalThresholdMeters(0.5)
-        repository.saveLateralThresholdMeters(3.5)
+            repository.saveLongitudinalThresholdMeters(0.5)
+            repository.saveLateralThresholdMeters(3.5)
 
-        assertEquals(0.5, repository.observeLongitudinalThresholdMeters().first())
-        assertEquals(3.5, repository.observeLateralThresholdMeters().first())
-    }
+            assertEquals(0.5, repository.observeLongitudinalThresholdMeters().first())
+            assertEquals(3.5, repository.observeLateralThresholdMeters().first())
+        }
 
     @Test
     fun `縦横の閾値は独立して保持される`() =
         testScope.runTest {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
+            val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveLongitudinalThresholdMeters(0.3)
-        repository.saveLateralThresholdMeters(4.0)
+            repository.saveLongitudinalThresholdMeters(0.3)
+            repository.saveLateralThresholdMeters(4.0)
 
-        assertEquals(0.3, repository.observeLongitudinalThresholdMeters().first())
-        assertEquals(4.0, repository.observeLateralThresholdMeters().first())
-    }
+            assertEquals(0.3, repository.observeLongitudinalThresholdMeters().first())
+            assertEquals(4.0, repository.observeLateralThresholdMeters().first())
+        }
 }

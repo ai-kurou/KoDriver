@@ -40,9 +40,7 @@ private const val THRESHOLD_MAX = 90f
  * LmuWindowsReadoutRemainingVirtualEnergyDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsReadoutRemainingVirtualEnergyDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun LmuWindowsReadoutRemainingVirtualEnergyDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
@@ -66,9 +64,9 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_virtual_energy_description),
         )

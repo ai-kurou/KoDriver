@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 internal actual val platformWindowsServerDiscoveryModule: Module =
     module {
-    factory<WindowsServerDiscovery> { WindowsServerDiscovery { emptyFlow() } }
-}
+        factory<WindowsServerDiscovery> { WindowsServerDiscovery { emptyFlow() } }
+    }

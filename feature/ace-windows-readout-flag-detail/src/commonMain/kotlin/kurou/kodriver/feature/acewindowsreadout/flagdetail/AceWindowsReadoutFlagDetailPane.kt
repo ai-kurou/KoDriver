@@ -23,9 +23,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * AceWindowsReadoutFlagDetail の画面を表示する Composable。
  */
 @Composable
-fun AceWindowsReadoutFlagDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun AceWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsReadoutFlagDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     AceWindowsReadoutFlagDetailPaneContent(
@@ -46,9 +44,9 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.flag_description),
         )
@@ -79,7 +77,7 @@ private fun AceWindowsReadoutFlagDetailPanePreview() {
     AceWindowsReadoutFlagDetailPaneContent(
         uiState =
             AceWindowsReadoutFlagDetailUiState(
-            enabledStates = FlagReadoutItem.entries.associate { it.key to true },
-        ),
-            )
+                enabledStates = FlagReadoutItem.entries.associate { it.key to true },
+            ),
+    )
 }

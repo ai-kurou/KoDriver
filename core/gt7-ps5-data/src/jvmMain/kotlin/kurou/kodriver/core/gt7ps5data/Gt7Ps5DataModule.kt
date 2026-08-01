@@ -22,21 +22,21 @@ private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
  */
 val gt7Ps5DataModule =
     module {
-    // UDP 受信を回す専用スコープ（named で他スコープと分離）
-    single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
+        // UDP 受信を回す専用スコープ（named で他スコープと分離）
+        single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
 
-    // 設定永続化（DataStore）
-    single<Gt7Ps5UdpPortPreferencesRepository> {
-        createGt7Ps5UdpPortPreferencesRepository("${System.getProperty("user.home")}/.kodriver")
-    }
+        // 設定永続化（DataStore）
+        single<Gt7Ps5UdpPortPreferencesRepository> {
+            createGt7Ps5UdpPortPreferencesRepository("${System.getProperty("user.home")}/.kodriver")
+        }
 
-    // データソース・Repository（UDP パケット受信。get() で接続先アドレス・待受ポート設定を解決）
-    single<Gt7Ps5PacketSource> {
-        Gt7Ps5UdpSource(
-            consoleAddressFlow = get<ConsoleAddressPreferencesRepository>().consoleAddress(),
-            listenPortFlow = get<Gt7Ps5UdpPortPreferencesRepository>().port(),
-            scope = get(named(GT7_PS5_SCOPE_QUALIFIER)),
-        )
+        // データソース・Repository（UDP パケット受信。get() で接続先アドレス・待受ポート設定を解決）
+        single<Gt7Ps5PacketSource> {
+            Gt7Ps5UdpSource(
+                consoleAddressFlow = get<ConsoleAddressPreferencesRepository>().consoleAddress(),
+                listenPortFlow = get<Gt7Ps5UdpPortPreferencesRepository>().port(),
+                scope = get(named(GT7_PS5_SCOPE_QUALIFIER)),
+            )
+        }
+        single<Gt7Ps5Repository> { Gt7Ps5RepositoryImpl(source = get()) }
     }
-    single<Gt7Ps5Repository> { Gt7Ps5RepositoryImpl(source = get()) }
-}

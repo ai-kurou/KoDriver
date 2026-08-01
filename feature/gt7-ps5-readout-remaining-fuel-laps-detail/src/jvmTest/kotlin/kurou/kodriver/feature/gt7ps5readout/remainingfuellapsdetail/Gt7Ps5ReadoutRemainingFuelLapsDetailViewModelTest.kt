@@ -32,7 +32,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -56,68 +55,68 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
 
     private fun createViewModel() =
         Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
-        observeGt7Ps5RemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
-        saveGt7Ps5RemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
+            observeGt7Ps5RemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
+            saveGt7Ps5RemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+        )
 
     @Test
     fun `初期状態は燃料残り周回数3のUiStateを返す`() =
         runTest {
-        every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
-        val viewModel = createViewModel()
+            every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
+            val viewModel = createViewModel()
 
-        assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
-        verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-        confirmVerified(repository)
-    }
+            assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
+            verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onRemainingFuelLapsChangedに1を渡すと燃料残り周回数が1になる`() =
         runTest {
-        every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
-        coEvery { repository.saveRemainingFuelLaps(1) } answers { remainingFuelLapsFlow.update { 1 } }
-        val viewModel = createViewModel()
+            every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
+            coEvery { repository.saveRemainingFuelLaps(1) } answers { remainingFuelLapsFlow.update { 1 } }
+            val viewModel = createViewModel()
 
-        viewModel.onRemainingFuelLapsChanged(1)
+            viewModel.onRemainingFuelLapsChanged(1)
 
-        assertEquals(1, viewModel.uiState.first().remainingFuelLaps)
-        verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-        coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }
-        confirmVerified(repository)
-    }
+            assertEquals(1, viewModel.uiState.first().remainingFuelLaps)
+            verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onResetRemainingFuelLapsを呼ぶと燃料残り周回数が3になる`() =
         runTest {
-        remainingFuelLapsFlow.update { 5 }
-        every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
-        coEvery { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) } answers {
-            remainingFuelLapsFlow.update { GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT }
+            remainingFuelLapsFlow.update { 5 }
+            every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
+            coEvery { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) } answers {
+                remainingFuelLapsFlow.update { GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onResetRemainingFuelLaps()
+
+            assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
+            verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            coVerify(exactly = 1) { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) }
+            confirmVerified(repository)
         }
-        val viewModel = createViewModel()
-
-        viewModel.onResetRemainingFuelLaps()
-
-        assertEquals(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT, viewModel.uiState.first().remainingFuelLaps)
-        verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-        coVerify(exactly = 1) { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) }
-        confirmVerified(repository)
-    }
 
     @Test
     fun `onPreviewClickedを呼ぶと設定中の燃料残り周回数イベントが再生される`() =
         runTest {
-        remainingFuelLapsFlow.update { 4 }
-        every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
-        val viewModel = createViewModel()
-        assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
+            remainingFuelLapsFlow.update { 4 }
+            every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
+            val viewModel = createViewModel()
+            assertEquals(4, viewModel.uiState.first().remainingFuelLaps)
 
-        viewModel.onPreviewClicked()
+            viewModel.onPreviewClicked()
 
-        verify(exactly = 1) { repository.observeRemainingFuelLaps() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingFuelLapsWarning(4), false) }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingFuelLapsWarning(0), true) }
-        confirmVerified(repository, ttsEngine)
-    }
+            verify(exactly = 1) { repository.observeRemainingFuelLaps() }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingFuelLapsWarning(4), false) }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingFuelLapsWarning(0), true) }
+            confirmVerified(repository, ttsEngine)
+        }
 }

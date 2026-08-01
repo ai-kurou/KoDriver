@@ -22,22 +22,22 @@ internal class TelemetryLogDetailViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<TelemetryLogDetailUiState> =
         selectedLogId
-        .flatMapLatest { id ->
-            if (id == null) {
-                flowOf(TelemetryLogDetailUiState())
-            } else {
-                observeTelemetryLogDetail(id).map { detail ->
-                    TelemetryLogDetailUiState(
-                        logId = id,
-                        items = detail.toItems(),
-                    )
+            .flatMapLatest { id ->
+                if (id == null) {
+                    flowOf(TelemetryLogDetailUiState())
+                } else {
+                    observeTelemetryLogDetail(id).map { detail ->
+                        TelemetryLogDetailUiState(
+                            logId = id,
+                            items = detail.toItems(),
+                        )
+                    }
                 }
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = TelemetryLogDetailUiState(),
-        )
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = TelemetryLogDetailUiState(),
+            )
 
     fun setLogId(id: Long) {
         selectedLogId.update { id }

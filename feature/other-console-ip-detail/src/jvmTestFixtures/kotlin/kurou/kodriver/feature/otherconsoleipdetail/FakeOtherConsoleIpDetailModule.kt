@@ -13,8 +13,8 @@ import org.koin.dsl.module
  */
 val fakeOtherConsoleIpDetailModule =
     module {
-    single<ConsoleAddressPreferencesRepository> { FakeConsoleAddressPreferencesRepository() }
-}
+        single<ConsoleAddressPreferencesRepository> { FakeConsoleAddressPreferencesRepository() }
+    }
 
 class FakeConsoleAddressPreferencesRepository : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow<String?>(null)

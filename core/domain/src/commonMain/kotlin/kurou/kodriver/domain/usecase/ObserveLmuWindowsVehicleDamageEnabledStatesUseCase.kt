@@ -9,8 +9,8 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
 private val vehicleDamageEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
     mapOf(
-    ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
-)
+        ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to true,
+    )
 
 class ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(
     private val repository: LmuWindowsVehicleDamagePreferencesRepository,

@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreTemperaturePreferencesDataStoreFactoryTest {
-
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_tyre_temperature_preferences_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -24,9 +23,9 @@ class LmuWindowsTyreTemperaturePreferencesDataStoreFactoryTest {
     @Test
     fun `タイヤ温度設定が正しいファイルに書き込まれる`() =
         testScope.runTest {
-        val dataStore = createLmuWindowsTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(highThresholdCelsius = 100) }
+            val dataStore = createLmuWindowsTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(highThresholdCelsius = 100) }
 
-        assertTrue(tempDir.resolve("lmu_windows_tyre_temperature_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("lmu_windows_tyre_temperature_preferences.pb").exists())
+        }
 }

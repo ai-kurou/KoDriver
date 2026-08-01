@@ -108,18 +108,18 @@ import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemR
 @Composable
 private fun simulatorDisplayName(simulator: Simulator): String =
     when (simulator) {
-    is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu_windows)
-    is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
-    is Simulator.AceWindows -> stringResource(Res.string.simulator_name_ace_windows)
-}
+        is Simulator.LmuWindows -> stringResource(Res.string.simulator_name_lmu_windows)
+        is Simulator.Gt7Ps5 -> stringResource(Res.string.simulator_name_gt7_ps5)
+        is Simulator.AceWindows -> stringResource(Res.string.simulator_name_ace_windows)
+    }
 
 @Composable
 private fun simulatorIcon(simulator: Simulator) =
     when (simulator) {
-    is Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
-    is Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
-    is Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
-}
+        is Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
+        is Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
+        is Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
+    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,19 +134,19 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
     Row(
         modifier =
             modifier
-            .fillMaxWidth()
-            .heightIn(min = 56.dp)
-            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
-                shape = shape,
-            ).clip(shape)
-            .semantics {
-                contentDescription = hint
-                stateDescription = selectedSimulatorName
-            }.padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .fillMaxWidth()
+                .heightIn(min = 56.dp)
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = shape,
+                ).clip(shape)
+                .semantics {
+                    contentDescription = hint
+                    stateDescription = selectedSimulatorName
+                }.padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (selectedSimulator != null) {
             Image(
@@ -178,20 +178,20 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
     when (itemId) {
-    is ReadoutItemKey.LmuWindows.VehicleApproach -> Icons.Filled.DirectionsCar
-    is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
-    is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
-    is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
-    is ReadoutItemKey.LmuWindows.PitTiming.Root -> Icons.Filled.AccessTime
-    is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
-    is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DonutLarge
-    is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
-    is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
-    is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
-    is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Icons.Filled.LocalGasStation
-    is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
-    is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
-}
+        is ReadoutItemKey.LmuWindows.VehicleApproach -> Icons.Filled.DirectionsCar
+        is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
+        is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
+        is ReadoutItemKey.LmuWindows.TyreTemperature -> Icons.Filled.DeviceThermostat
+        is ReadoutItemKey.LmuWindows.PitTiming.Root -> Icons.Filled.AccessTime
+        is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
+        is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DonutLarge
+        is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
+        is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
+        is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
+        is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Icons.Filled.LocalGasStation
+        is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
+        is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
+    }
 
 private fun readoutItemIndex(
     lazyListIndex: Int,
@@ -201,9 +201,7 @@ private fun readoutItemIndex(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PriorityHintRow(
-    modifier: Modifier = Modifier,
-) {
+private fun PriorityHintRow(modifier: Modifier = Modifier) {
     var showHelpSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -273,11 +271,11 @@ internal fun ReadoutListPane(
     }
     val reorderableState =
         rememberReorderableLazyListState(listState) { from, to ->
-        onMove(
-            readoutItemIndex(from.index, readoutItemStartIndex, uiState.items.size),
-            readoutItemIndex(to.index, readoutItemStartIndex, uiState.items.size),
-        )
-    }
+            onMove(
+                readoutItemIndex(from.index, readoutItemStartIndex, uiState.items.size),
+                readoutItemIndex(to.index, readoutItemStartIndex, uiState.items.size),
+            )
+        }
 
     ScrollToTopEffect(scrollToTopRequest = scrollToTopRequest) {
         listState.animateScrollToItem(0)
@@ -288,9 +286,9 @@ internal fun ReadoutListPane(
             state = listState,
             modifier =
                 Modifier
-                .fillMaxSize()
-                .padding(vertical = 16.dp),
-                ) {
+                    .fillMaxSize()
+                    .padding(vertical = 16.dp),
+        ) {
             item(key = "simulatorSelector") {
                 ExposedDropdownMenuBox(
                     expanded = expanded,
@@ -333,16 +331,16 @@ internal fun ReadoutListPane(
                     ReorderableItem(reorderableState, key = item.value) {
                         val isSelected =
                             uiState.selectedSimulator.let {
-                            ReadoutListItemType.fromId(it, item)
-                        } == uiState.selectedItem
+                                ReadoutListItemType.fromId(it, item)
+                            } == uiState.selectedItem
                         val cardContainerColor by animateColorAsState(
                             targetValue =
                                 if (isSelected) {
-                                MaterialTheme.colorScheme.secondaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.surfaceContainerLow
-                            },
-                                animationSpec = tween(durationMillis = 500),
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerLow
+                                },
+                            animationSpec = tween(durationMillis = 500),
                             label = "cardContainerColor",
                         )
                         val itemName = itemDisplayName(item)
@@ -368,19 +366,19 @@ internal fun ReadoutListPane(
             visible = !isAtTop,
             enter =
                 slideInVertically(
-                initialOffsetY = { -it },
-                animationSpec = tween(durationMillis = 300),
-            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit =
-                    slideOutVertically(
-                targetOffsetY = { -it },
-                animationSpec = tween(durationMillis = 200),
-            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                    modifier =
-                        Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp),
-                        ) {
+                    initialOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 300),
+                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit =
+                slideOutVertically(
+                    targetOffsetY = { -it },
+                    animationSpec = tween(durationMillis = 200),
+                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+            modifier =
+                Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 16.dp),
+        ) {
             ScrollToTopButton(
                 onClick = {
                     coroutineScope.launch {
@@ -408,31 +406,31 @@ private fun ReadoutListItemCard(
     ElevatedCard(
         modifier =
             Modifier
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .fillMaxWidth(),
-            colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
     ) {
         Row(
             modifier =
                 Modifier
-                .fillMaxWidth()
-                .heightIn(min = 72.dp)
-                .padding(start = 16.dp, end = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                    .fillMaxWidth()
+                    .heightIn(min = 72.dp)
+                    .padding(start = 16.dp, end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier =
                     Modifier
-                    .weight(1f)
-                    .heightIn(min = 72.dp)
-                    .semantics { contentDescription = itemName }
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                    ) {
-                        onItemClick(item)
-                    },
-                    verticalAlignment = Alignment.CenterVertically,
+                        .weight(1f)
+                        .heightIn(min = 72.dp)
+                        .semantics { contentDescription = itemName }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                        ) {
+                            onItemClick(item)
+                        },
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Icon(
@@ -490,16 +488,16 @@ private fun ReadoutListQueueToggle(
         contentAlignment = Alignment.Center,
         modifier =
             Modifier
-            .size(width = 56.dp, height = 56.dp)
-            .testTag("readoutListQueueTouchTarget:${item.value}")
-            .clickable(
-                enabled = enabled,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                onCheckedChange(!checked)
-            },
-            ) {
+                .size(width = 56.dp, height = 56.dp)
+                .testTag("readoutListQueueTouchTarget:${item.value}")
+                .clickable(
+                    enabled = enabled,
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) {
+                    onCheckedChange(!checked)
+                },
+    ) {
         FilledIconToggleButton(
             checked = checked,
             onCheckedChange = onCheckedChange,
@@ -523,15 +521,15 @@ private fun ReadoutListReadoutSwitch(
         contentAlignment = Alignment.Center,
         modifier =
             Modifier
-            .size(width = 64.dp, height = 56.dp)
-            .testTag("readoutListSwitchTouchTarget:${item.value}")
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                onCheckedChange(!checked)
-            },
-            ) {
+                .size(width = 64.dp, height = 56.dp)
+                .testTag("readoutListSwitchTouchTarget:${item.value}")
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) {
+                    onCheckedChange(!checked)
+                },
+    ) {
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
@@ -569,10 +567,10 @@ private fun ScrollToTopButton(
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
     ) {
         Text(stringResource(Res.string.scroll_to_top))
     }
@@ -597,26 +595,26 @@ private fun ReadoutListPanePreview(
 private class ReadoutListPanePreviewParameterProvider : PreviewParameterProvider<ReadoutListUiState> {
     override val values: Sequence<ReadoutListUiState> =
         sequenceOf(
-        ReadoutListUiState(
-            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-            selectedSimulator = Simulator.LmuWindows,
-            items =
-                listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+            ReadoutListUiState(
+                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                selectedSimulator = Simulator.LmuWindows,
+                items =
+                    listOf(
+                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                        ReadoutItemKey.LmuWindows.Flag.Root,
+                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                        ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ),
             ),
-                ),
-        ReadoutListUiState(
-            simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
-            selectedSimulator = Simulator.Gt7Ps5,
-            items =
-                listOf(
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+            ReadoutListUiState(
+                simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
+                selectedSimulator = Simulator.Gt7Ps5,
+                items =
+                    listOf(
+                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                        ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    ),
             ),
-                ),
-    )
+        )
 }

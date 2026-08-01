@@ -11,17 +11,16 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherConsoleIpDetailPaneContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
     private data class ContentParams(
         val uiState: OtherConsoleIpDetailUiState =
             OtherConsoleIpDetailUiState(
-            inputAddress = "192.168.1.1",
-            isInputValid = true,
-        ),
-            val onPortSelected: (Int) -> Unit = {},
+                inputAddress = "192.168.1.1",
+                isInputValid = true,
+            ),
+        val onPortSelected: (Int) -> Unit = {},
         val onSave: () -> Unit = {},
         val onDismiss: () -> Unit = {},
         val onBack: () -> Unit = {},

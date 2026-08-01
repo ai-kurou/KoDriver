@@ -4,9 +4,11 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsVehicleDataTest {
-
-    private fun vehicleData(vx: Double = 0.0, vy: Double = 0.0, vz: Double = 0.0) =
-        LmuWindowsVehicleData(
+    private fun vehicleData(
+        vx: Double = 0.0,
+        vy: Double = 0.0,
+        vz: Double = 0.0,
+    ) = LmuWindowsVehicleData(
         localVelocityX = vx,
         localVelocityY = vy,
         localVelocityZ = vz,

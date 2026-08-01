@@ -16,10 +16,10 @@ import org.koin.dsl.module
  */
 val fakeMainModule =
     module {
-    single<AppUpdateRepository> { FakeAppUpdateRepository() }
-    single<ExitConfirmationEnabledRepository> { FakeExitConfirmationEnabledRepository() }
-    single<KeepScreenOnEnabledRepository> { FakeKeepScreenOnEnabledRepository() }
-}
+        single<AppUpdateRepository> { FakeAppUpdateRepository() }
+        single<ExitConfirmationEnabledRepository> { FakeExitConfirmationEnabledRepository() }
+        single<KeepScreenOnEnabledRepository> { FakeKeepScreenOnEnabledRepository() }
+    }
 
 class FakeAppUpdateRepository : AppUpdateRepository {
     override suspend fun getLatestRelease(): AppUpdate? = null

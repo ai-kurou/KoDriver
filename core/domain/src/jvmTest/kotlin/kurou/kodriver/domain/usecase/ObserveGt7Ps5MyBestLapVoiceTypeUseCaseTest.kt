@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveGt7Ps5MyBestLapVoiceTypeUseCaseTest {
-
     @MockK
     private lateinit var repository: Gt7Ps5MyBestLapPreferencesRepository
 
@@ -27,11 +26,11 @@ class ObserveGt7Ps5MyBestLapVoiceTypeUseCaseTest {
     @Test
     fun `音声タイプを監視できる`() =
         runBlocking {
-        every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
-        val useCase = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository)
+            every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
+            val useCase = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository)
 
-        assertEquals(MyBestLapVoiceType.CASUAL, useCase().first())
-        verify(exactly = 1) { repository.observeVoiceType() }
-        confirmVerified(repository)
-    }
+            assertEquals(MyBestLapVoiceType.CASUAL, useCase().first())
+            verify(exactly = 1) { repository.observeVoiceType() }
+            confirmVerified(repository)
+        }
 }

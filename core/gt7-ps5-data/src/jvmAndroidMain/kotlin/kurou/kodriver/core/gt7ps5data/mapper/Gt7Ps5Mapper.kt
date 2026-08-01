@@ -14,15 +14,14 @@ import java.nio.ByteBuffer
  *   0x78 (120) : BestLapTimeMs   int32  (-1 = ベストラップなし)
  */
 internal object Gt7Ps5Mapper {
-
     fun map(packet: ByteBuffer): Gt7Ps5TelemetryData =
         Gt7Ps5TelemetryData(
-        lapCount = packet.getShort(LAP_COUNT_OFFSET).toInt(),
-        lapsInRace = packet.getShort(LAPS_IN_RACE_OFFSET).toInt(),
-        bestLapTimeMs = packet.getInt(BEST_LAP_TIME_OFFSET),
-        gasLevel = packet.getFloat(GAS_LEVEL_OFFSET),
-        gasCapacity = packet.getFloat(GAS_CAPACITY_OFFSET),
-    )
+            lapCount = packet.getShort(LAP_COUNT_OFFSET).toInt(),
+            lapsInRace = packet.getShort(LAPS_IN_RACE_OFFSET).toInt(),
+            bestLapTimeMs = packet.getInt(BEST_LAP_TIME_OFFSET),
+            gasLevel = packet.getFloat(GAS_LEVEL_OFFSET),
+            gasCapacity = packet.getFloat(GAS_CAPACITY_OFFSET),
+        )
 
     private const val GAS_LEVEL_OFFSET = 0x44
     private const val GAS_CAPACITY_OFFSET = 0x48

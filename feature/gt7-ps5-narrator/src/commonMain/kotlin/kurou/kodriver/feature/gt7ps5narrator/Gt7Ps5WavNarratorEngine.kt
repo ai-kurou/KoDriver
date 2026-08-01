@@ -26,7 +26,6 @@ internal class Gt7Ps5WavNarratorEngine(
     private val startSoundResourceLoader: suspend (String) -> ByteArray = ::readStartSoundBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
-
     @Volatile
     private var currentVolume: Int = 100
 
@@ -49,19 +48,19 @@ internal class Gt7Ps5WavNarratorEngine(
 
     private val eventToFile: Map<SpeechEvent, String> =
         buildMap {
-        put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
-        put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
-        put(SpeechEvent.Gt7Ps5RemainingFuelWarning, "files/remaining_fuel_caution.wav")
-        for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
-            put(SpeechEvent.RemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
+            put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
+            put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
+            put(SpeechEvent.Gt7Ps5RemainingFuelWarning, "files/remaining_fuel_caution.wav")
+            for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
+                put(SpeechEvent.RemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
+            }
         }
-    }
 
     private val startSoundTypeToFile =
         mapOf(
-        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
-        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
-    )
+            ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+            ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+        )
 
     init {
         scope.launch { volumeFlow.collect { currentVolume = it } }
@@ -92,15 +91,18 @@ internal class Gt7Ps5WavNarratorEngine(
         }
     }
 
-    override fun speak(event: SpeechEvent, queue: Boolean) {
+    override fun speak(
+        event: SpeechEvent,
+        queue: Boolean,
+    ) {
         val mainSound = sounds[event] ?: return
         if (queue) {
             val previousJob = playJob
             playJob =
                 scope.launch(playbackParent) {
-                previousJob?.join()
-                play(event, mainSound)
-            }
+                    previousJob?.join()
+                    play(event, mainSound)
+                }
             return
         }
         if (soundPlayer.isPlaying) return
@@ -108,7 +110,10 @@ internal class Gt7Ps5WavNarratorEngine(
         playJob = scope.launch(playbackParent) { play(event, mainSound) }
     }
 
-    private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {
+    private suspend fun play(
+        event: SpeechEvent,
+        mainSound: ByteArray,
+    ) {
         _currentReadoutItemKey = event.readoutItemKey
         val vol = currentVolume
         startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }

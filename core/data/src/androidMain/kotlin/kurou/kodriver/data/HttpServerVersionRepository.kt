@@ -14,7 +14,6 @@ private const val PATH = "/version"
 internal class HttpServerVersionRepository(
     private val port: Int = DEFAULT_PORT,
 ) : ServerVersionRepository {
-
     private val client = HttpClient(OkHttp)
 
     @SuppressWarnings("SSRF")
@@ -25,7 +24,7 @@ internal class HttpServerVersionRepository(
                 val body = response.bodyAsText()
                 val version =
                     parseVersion(body)
-                    ?: return Result.failure(IllegalStateException("unexpected response: $body"))
+                        ?: return Result.failure(IllegalStateException("unexpected response: $body"))
                 Result.success(version)
             } else {
                 Result.failure(IllegalStateException("HTTP ${response.status.value}"))

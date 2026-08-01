@@ -62,29 +62,29 @@ fun main() {
     KoDriverServer(
         useCases =
             KoDriverServerUseCases(
-            observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyLmuWindowsFlagRepository),
-            observeLmuWindowsVehicleApproach =
-                ObserveLmuWindowsVehicleApproachUseCase(
-                EmptyLmuWindowsVehicleApproachRepository,
-            ),
+                observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(EmptyLmuWindowsFlagRepository),
+                observeLmuWindowsVehicleApproach =
+                    ObserveLmuWindowsVehicleApproachUseCase(
+                        EmptyLmuWindowsVehicleApproachRepository,
+                    ),
                 observeLmuWindowsVehicleDamage =
                     ObserveLmuWindowsVehicleDamageUseCase(
-                EmptyLmuWindowsVehicleDamageRepository,
-            ),
-                    observeLmuWindowsTyreCarcassTemperature =
-                        ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-                EmptyLmuWindowsTyreCarcassTemperatureRepository,
-            ),
-                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
-            observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-            observeLmuWindowsVirtualEnergy =
-                ObserveLmuWindowsVirtualEnergyUseCase(
-                EmptyLmuWindowsVirtualEnergyRepository,
-            ),
+                        EmptyLmuWindowsVehicleDamageRepository,
+                    ),
+                observeLmuWindowsTyreCarcassTemperature =
+                    ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                observeLmuWindowsVirtualEnergy =
+                    ObserveLmuWindowsVirtualEnergyUseCase(
+                        EmptyLmuWindowsVirtualEnergyRepository,
+                    ),
                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
-            observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
-        ),
-            ).start(wait = true)
+                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+            ),
+    ).start(wait = true)
 }
 
 /**
@@ -102,13 +102,13 @@ class KoDriverServer(
     internal var serviceAdvertiser: KoDriverServiceAdvertiser = KoDriverServiceAdvertiser()
     private val server =
         embeddedServer(
-        factory = Netty,
-        port = port,
-        host = host,
-        module = {
-            module(useCases)
-        },
-    )
+            factory = Netty,
+            port = port,
+            host = host,
+            module = {
+                module(useCases)
+            },
+        )
 
     /**
      * Ktor サーバーを起動し、同じポートで mDNS 広告を開始する。
@@ -141,34 +141,34 @@ class KoDriverServer(
  */
 fun createKoDriverServer(koin: Koin): KoDriverServer =
     KoDriverServer(
-    useCases =
-        KoDriverServerUseCases(
-        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
-        observeLmuWindowsVehicleApproach =
-            ObserveLmuWindowsVehicleApproachUseCase(
-            koin.get<LmuWindowsVehicleApproachRepository>(),
-        ),
-            observeLmuWindowsVehicleDamage =
-                ObserveLmuWindowsVehicleDamageUseCase(
-            koin.get<LmuWindowsVehicleDamageRepository>(),
-        ),
+        useCases =
+            KoDriverServerUseCases(
+                observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(koin.get<LmuWindowsFlagRepository>()),
+                observeLmuWindowsVehicleApproach =
+                    ObserveLmuWindowsVehicleApproachUseCase(
+                        koin.get<LmuWindowsVehicleApproachRepository>(),
+                    ),
+                observeLmuWindowsVehicleDamage =
+                    ObserveLmuWindowsVehicleDamageUseCase(
+                        koin.get<LmuWindowsVehicleDamageRepository>(),
+                    ),
                 observeLmuWindowsTyreCarcassTemperature =
                     ObserveLmuWindowsTyreCarcassTemperatureUseCase(
-            koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
-        ),
-                    observeLmuWindowsTyreWear =
-                        ObserveLmuWindowsTyreWearUseCase(
-            koin.get<LmuWindowsTyreWearRepository>(),
-        ),
-                        observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
-        observeLmuWindowsVirtualEnergy =
-            ObserveLmuWindowsVirtualEnergyUseCase(
-            koin.get<LmuWindowsVirtualEnergyRepository>(),
-        ),
-            observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(koin.get<AceWindowsFuelRepository>()),
-        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(koin.get<AceWindowsFlagRepository>()),
-    ),
-        )
+                        koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
+                    ),
+                observeLmuWindowsTyreWear =
+                    ObserveLmuWindowsTyreWearUseCase(
+                        koin.get<LmuWindowsTyreWearRepository>(),
+                    ),
+                observeLmuWindows = ObserveLmuWindowsUseCase(koin.get<LmuWindowsRepository>()),
+                observeLmuWindowsVirtualEnergy =
+                    ObserveLmuWindowsVirtualEnergyUseCase(
+                        koin.get<LmuWindowsVirtualEnergyRepository>(),
+                    ),
+                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(koin.get<AceWindowsFuelRepository>()),
+                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(koin.get<AceWindowsFlagRepository>()),
+            ),
+    )
 
 private const val WEB_SOCKET_PING_PERIOD_MS = 15_000L
 private const val WEB_SOCKET_TIMEOUT_MS = 15_000L

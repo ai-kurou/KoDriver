@@ -23,21 +23,20 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
     private val saveLmuWindowsPitTimingTyreWearLaps: SaveLmuWindowsPitTimingTyreWearLapsUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<LmuWindowsReadoutPitTimingDetailUiState> =
         combine(
-        observeLmuWindowsPitTimingVirtualEnergyLaps(),
-        observeLmuWindowsPitTimingTyreWearLaps(),
-    ) { virtualEnergyLaps, tyreWearLaps ->
-        LmuWindowsReadoutPitTimingDetailUiState(
-            virtualEnergyLaps = virtualEnergyLaps,
-            tyreWearLaps = tyreWearLaps,
+            observeLmuWindowsPitTimingVirtualEnergyLaps(),
+            observeLmuWindowsPitTimingTyreWearLaps(),
+        ) { virtualEnergyLaps, tyreWearLaps ->
+            LmuWindowsReadoutPitTimingDetailUiState(
+                virtualEnergyLaps = virtualEnergyLaps,
+                tyreWearLaps = tyreWearLaps,
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LmuWindowsReadoutPitTimingDetailUiState(),
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        LmuWindowsReadoutPitTimingDetailUiState(),
-    )
 
     fun onVirtualEnergyLapsChanged(laps: Int) {
         viewModelScope.launch {

@@ -40,9 +40,7 @@ private const val THRESHOLD_MAX = 90f
  * AceWindowsReadoutRemainingFuelDetail の画面を表示する Composable。
  */
 @Composable
-fun AceWindowsReadoutRemainingFuelDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun AceWindowsReadoutRemainingFuelDetailPane(modifier: Modifier = Modifier) {
     val viewModel: AceWindowsReadoutRemainingFuelDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     AceWindowsReadoutRemainingFuelDetailPaneContent(
@@ -68,9 +66,9 @@ internal fun AceWindowsReadoutRemainingFuelDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_fuel_description),
         )

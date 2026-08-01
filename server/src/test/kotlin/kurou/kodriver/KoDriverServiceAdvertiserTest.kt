@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class KoDriverServiceAdvertiserTest {
-
     @RelaxedMockK
     private lateinit var jmdns: JmDNS
 
@@ -28,9 +27,9 @@ class KoDriverServiceAdvertiserTest {
     fun `startするとホスト名でmDNSサービスを登録する`() {
         val advertiser =
             KoDriverServiceAdvertiser(
-            jmdnsFactory = { jmdns },
-            hostNameProvider = { "my-pc" },
-        )
+                jmdnsFactory = { jmdns },
+                hostNameProvider = { "my-pc" },
+            )
 
         advertiser.start(port = 8080)
 
@@ -65,9 +64,9 @@ class KoDriverServiceAdvertiserTest {
     fun `FQDNのホスト名はドット以降を除去してサービス名に使う`() {
         val advertiser =
             KoDriverServiceAdvertiser(
-            jmdnsFactory = { jmdns },
-            hostNameProvider = { "my-pc.local" },
-        )
+                jmdnsFactory = { jmdns },
+                hostNameProvider = { "my-pc.local" },
+            )
 
         advertiser.start(port = 8080)
 
@@ -86,9 +85,9 @@ class KoDriverServiceAdvertiserTest {
         var callCount = 0
         val advertiser =
             KoDriverServiceAdvertiser(
-            jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
-            hostNameProvider = { "my-pc" },
-        )
+                jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
+                hostNameProvider = { "my-pc" },
+            )
 
         advertiser.start(port = 8080)
         advertiser.start(port = 8081)
@@ -121,9 +120,9 @@ class KoDriverServiceAdvertiserTest {
     fun `startでIOExceptionが発生しても例外を伝播しない`() {
         val advertiser =
             KoDriverServiceAdvertiser(
-            jmdnsFactory = { throw IOException("network unavailable") },
-            hostNameProvider = { "my-pc" },
-        )
+                jmdnsFactory = { throw IOException("network unavailable") },
+                hostNameProvider = { "my-pc" },
+            )
 
         advertiser.start(port = 8080)
     }

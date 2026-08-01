@@ -11,6 +11,6 @@ import org.koin.dsl.module
  */
 actual val mainPlatformModule: Module =
     module {
-    factory<LmuBannerConnectionChecker> { LmuServerBannerConnectionChecker(get(), get()) }
-    factory<AceBannerConnectionChecker> { AceServerBannerConnectionChecker(get(), get()) }
-}
+        factory<LmuBannerConnectionChecker> { LmuServerBannerConnectionChecker(get(), get()) }
+        factory<AceBannerConnectionChecker> { AceServerBannerConnectionChecker(get(), get()) }
+    }

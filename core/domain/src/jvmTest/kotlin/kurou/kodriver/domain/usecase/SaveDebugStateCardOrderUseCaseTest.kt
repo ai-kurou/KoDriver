@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveDebugStateCardOrderUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: DebugStateCardOrderPreferencesRepository
 
@@ -23,15 +22,15 @@ class SaveDebugStateCardOrderUseCaseTest {
     @Test
     fun `保存すると上書きで更新される`() =
         runBlocking {
-        val useCase = SaveDebugStateCardOrderUseCase(repository)
-        val firstOrder = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
-        val secondOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SESSION)
+            val useCase = SaveDebugStateCardOrderUseCase(repository)
+            val firstOrder = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
+            val secondOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SESSION)
 
-        useCase(firstOrder)
-        useCase(secondOrder)
+            useCase(firstOrder)
+            useCase(secondOrder)
 
-        coVerify(exactly = 1) { repository.saveCardOrder(firstOrder) }
-        coVerify(exactly = 1) { repository.saveCardOrder(secondOrder) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveCardOrder(firstOrder) }
+            coVerify(exactly = 1) { repository.saveCardOrder(secondOrder) }
+            confirmVerified(repository)
+        }
 }

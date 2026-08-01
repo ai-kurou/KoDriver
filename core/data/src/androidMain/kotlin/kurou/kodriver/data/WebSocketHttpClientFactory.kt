@@ -16,14 +16,12 @@ internal const val WEB_SOCKET_PING_INTERVAL_MS = 15_000L
  * OkHttp エンジンでは Ktor プラグイン側の pingIntervalMillis は ping 送信に使われないため、
  * OkHttpClient 自体の pingInterval を設定する必要がある。
  */
-internal fun createWebSocketHttpClient(
-    pingIntervalMs: Long = WEB_SOCKET_PING_INTERVAL_MS,
-): HttpClient =
+internal fun createWebSocketHttpClient(pingIntervalMs: Long = WEB_SOCKET_PING_INTERVAL_MS): HttpClient =
     HttpClient(OkHttp) {
-    engine {
-        config {
-            pingInterval(pingIntervalMs, TimeUnit.MILLISECONDS)
+        engine {
+            config {
+                pingInterval(pingIntervalMs, TimeUnit.MILLISECONDS)
+            }
         }
+        install(WebSockets)
     }
-    install(WebSockets)
-}

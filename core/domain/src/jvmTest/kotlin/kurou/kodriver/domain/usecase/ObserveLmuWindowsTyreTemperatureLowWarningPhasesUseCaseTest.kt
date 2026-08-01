@@ -35,7 +35,6 @@ private fun createLmuWindowsTyreTemperaturePreferencesRepository(
 }
 
 class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsTyreTemperaturePreferencesRepository
 
@@ -47,36 +46,36 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
         runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
+            val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
 
-        assertEquals(
-            setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
-            useCase().first(),
-        )
+            assertEquals(
+                setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
+                useCase().first(),
+            )
 
-        repo.saveLowWarningPhases(setOf(SessionPhase.GARAGE))
-        assertEquals(setOf(SessionPhase.GARAGE), useCase().first())
-        coVerify(exactly = 1) { repo.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) }
-        verify(exactly = 2) { repo.observeLowWarningPhases() }
-        confirmVerified(repo)
-    }
+            repo.saveLowWarningPhases(setOf(SessionPhase.GARAGE))
+            assertEquals(setOf(SessionPhase.GARAGE), useCase().first())
+            coVerify(exactly = 1) { repo.saveLowWarningPhases(setOf(SessionPhase.GARAGE)) }
+            verify(exactly = 2) { repo.observeLowWarningPhases() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `一部のフェーズだけ保存されている場合は保存済みの値がデフォルトより優先される`() =
         runBlocking {
-        val repo =
-            createLmuWindowsTyreTemperaturePreferencesRepository(
-            repository,
-            initialLowWarningPhases = mapOf(SessionPhase.GARAGE to true),
-        )
-        val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
+            val repo =
+                createLmuWindowsTyreTemperaturePreferencesRepository(
+                    repository,
+                    initialLowWarningPhases = mapOf(SessionPhase.GARAGE to true),
+                )
+            val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
 
-        assertEquals(
-            setOf(SessionPhase.GARAGE, SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
-            useCase().first(),
-        )
-        verify(exactly = 1) { repo.observeLowWarningPhases() }
-        confirmVerified(repo)
-    }
+            assertEquals(
+                setOf(SessionPhase.GARAGE, SessionPhase.WARM_UP, SessionPhase.GRID_WALK, SessionPhase.FORMATION),
+                useCase().first(),
+            )
+            verify(exactly = 1) { repo.observeLowWarningPhases() }
+            confirmVerified(repo)
+        }
 }

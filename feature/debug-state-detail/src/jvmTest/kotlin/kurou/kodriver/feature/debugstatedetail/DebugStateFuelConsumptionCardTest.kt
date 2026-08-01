@@ -20,7 +20,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DebugStateFuelConsumptionCardTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -46,12 +45,12 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.LmuWindows,
-                        virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
-                        lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.LmuWindows,
+                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -68,11 +67,11 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.Gt7Ps5,
-                        gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -90,11 +89,11 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.Gt7Ps5,
-                        gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -110,11 +109,11 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.Gt7Ps5,
-                        gt7Ps5Telemetry = null,
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry = null,
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -130,11 +129,11 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.AceWindows,
-                        aceWindowsFuel = AceWindowsFuelData(remainingPercent = 42.0),
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = 42.0),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -150,11 +149,11 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.AceWindows,
-                        aceWindowsFuel = null,
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = null,
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -170,12 +169,12 @@ class DebugStateFuelConsumptionCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = null,
-                        virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
-                        lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
-                        cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = null,
+                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -186,34 +185,37 @@ class DebugStateFuelConsumptionCardTest {
 
     private fun sampleLmuTelemetry(currentLap: Int) =
         LmuWindowsTelemetryData(
-        timestampMs = 0L,
-        engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
-        inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-        tyres = LmuWindowsTyreData(wheels = emptyMap()),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing =
-            LmuWindowsTimingData(
-            currentLapTimeMs = 0L,
-            lastLapTimeMs = 0L,
-            bestLapTimeMs = 0L,
-            sector1Ms = 0L,
-            sector1And2Ms = 0L,
-            currentLap = currentLap,
-            maxLaps = 0,
-        ),
+            timestampMs = 0L,
+            engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+            inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+            tyres = LmuWindowsTyreData(wheels = emptyMap()),
+            fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+            timing =
+                LmuWindowsTimingData(
+                    currentLapTimeMs = 0L,
+                    lastLapTimeMs = 0L,
+                    bestLapTimeMs = 0L,
+                    sector1Ms = 0L,
+                    sector1And2Ms = 0L,
+                    currentLap = currentLap,
+                    maxLaps = 0,
+                ),
             vehicle =
                 LmuWindowsVehicleData(
-            localVelocityX = 0.0,
-            localVelocityY = 0.0,
-            localVelocityZ = 0.0,
-            positionX = 0.0,
-            positionY = 0.0,
-            positionZ = 0.0,
-        ),
-                )
+                    localVelocityX = 0.0,
+                    localVelocityY = 0.0,
+                    localVelocityZ = 0.0,
+                    positionX = 0.0,
+                    positionY = 0.0,
+                    positionZ = 0.0,
+                ),
+        )
 
-    private fun sampleGt7Telemetry(lapCount: Int, gasLevel: Float, gasCapacity: Float) =
-        Gt7Ps5TelemetryData(
+    private fun sampleGt7Telemetry(
+        lapCount: Int,
+        gasLevel: Float,
+        gasCapacity: Float,
+    ) = Gt7Ps5TelemetryData(
         lapCount = lapCount,
         lapsInRace = 0,
         bestLapTimeMs = 0,

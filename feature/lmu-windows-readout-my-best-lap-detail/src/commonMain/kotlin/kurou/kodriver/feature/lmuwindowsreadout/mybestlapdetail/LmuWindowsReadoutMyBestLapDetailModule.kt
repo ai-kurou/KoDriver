@@ -15,10 +15,10 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutMyBestLapDetailModule =
     module {
-    // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
-    viewModel { LmuWindowsReadoutMyBestLapDetailViewModel(get(), get(), get(named("lmu_windows"))) }
+        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        viewModel { LmuWindowsReadoutMyBestLapDetailViewModel(get(), get(), get(named("lmu_windows"))) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-    factory { SaveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
+        factory { SaveLmuWindowsMyBestLapVoiceTypeUseCase(get()) }
+    }

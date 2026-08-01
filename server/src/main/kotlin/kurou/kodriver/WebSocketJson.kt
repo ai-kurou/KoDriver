@@ -12,35 +12,34 @@ import kotlinx.serialization.json.Json
 
 internal val serverJson =
     Json {
-    encodeDefaults = true
-}
-
-internal suspend inline fun <reified T> DefaultWebSocketServerSession.sendJsonMessages(
-    messages: Flow<T>,
-) = coroutineScope {
-    val outgoingJob =
-        launch {
-        messages.collect { message ->
-            send(Frame.Text(serverJson.encodeToString(message)))
-        }
-    }
-    val incomingJob =
-        launch {
-        for (frame in incoming) {
-            // Consume close/control frames so client initiated close cancels the sender promptly.
-        }
-    }
-    val closeReasonJob =
-        launch {
-        closeReason.await()
+        encodeDefaults = true
     }
 
-    select {
-        outgoingJob.onJoin {}
-        incomingJob.onJoin {}
-        closeReasonJob.onJoin {}
+internal suspend inline fun <reified T> DefaultWebSocketServerSession.sendJsonMessages(messages: Flow<T>) =
+    coroutineScope {
+        val outgoingJob =
+            launch {
+                messages.collect { message ->
+                    send(Frame.Text(serverJson.encodeToString(message)))
+                }
+            }
+        val incomingJob =
+            launch {
+                for (frame in incoming) {
+                    // Consume close/control frames so client initiated close cancels the sender promptly.
+                }
+            }
+        val closeReasonJob =
+            launch {
+                closeReason.await()
+            }
+
+        select {
+            outgoingJob.onJoin {}
+            incomingJob.onJoin {}
+            closeReasonJob.onJoin {}
+        }
+        outgoingJob.cancelAndJoin()
+        incomingJob.cancelAndJoin()
+        closeReasonJob.cancelAndJoin()
     }
-    outgoingJob.cancelAndJoin()
-    incomingJob.cancelAndJoin()
-    closeReasonJob.cancelAndJoin()
-}

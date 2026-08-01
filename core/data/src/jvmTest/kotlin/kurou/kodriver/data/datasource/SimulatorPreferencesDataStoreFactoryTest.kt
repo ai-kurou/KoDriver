@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SimulatorPreferencesDataStoreFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_simulator_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -23,9 +22,9 @@ class SimulatorPreferencesDataStoreFactoryTest {
     @Test
     fun `シミュレータ設定が正しいファイルに書き込まれる`() =
         testScope.runTest {
-        val dataStore = createSimulatorPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(selectedSimulator = "lmu_windows") }
+            val dataStore = createSimulatorPreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(selectedSimulator = "lmu_windows") }
 
-        assertTrue(tempDir.resolve("simulator_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("simulator_preferences.pb").exists())
+        }
 }

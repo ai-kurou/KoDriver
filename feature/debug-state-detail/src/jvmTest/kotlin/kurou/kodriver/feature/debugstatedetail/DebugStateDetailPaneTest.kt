@@ -25,7 +25,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class DebugStateDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -82,17 +81,17 @@ class DebugStateDetailPaneTest {
     fun `yellowFlagStateの各値に対応する表示文言を表示する`() {
         val expectedByYellowFlagState =
             mapOf(
-            SessionYellowFlagState.INVALID to "Invalid",
-            SessionYellowFlagState.NONE to "None（グリーン）",
-            SessionYellowFlagState.PENDING to "Pending（FCY 発動保留）",
-            SessionYellowFlagState.PIT_CLOSED to "PitClosed（ピットクローズ）",
-            SessionYellowFlagState.PIT_LEAD_LAP to "PitLeadLap（先頭周回のみピット可）",
-            SessionYellowFlagState.PIT_OPEN to "PitOpen（ピットオープン）",
-            SessionYellowFlagState.LAST_LAP to "LastLap（最終周）",
-            SessionYellowFlagState.RESUME to "Resume（リスタート）",
-            SessionYellowFlagState.RACE_HALT to "RaceHalt（レース中断、現在未使用）",
-            SessionYellowFlagState.UNKNOWN to "不明",
-        )
+                SessionYellowFlagState.INVALID to "Invalid",
+                SessionYellowFlagState.NONE to "None（グリーン）",
+                SessionYellowFlagState.PENDING to "Pending（FCY 発動保留）",
+                SessionYellowFlagState.PIT_CLOSED to "PitClosed（ピットクローズ）",
+                SessionYellowFlagState.PIT_LEAD_LAP to "PitLeadLap（先頭周回のみピット可）",
+                SessionYellowFlagState.PIT_OPEN to "PitOpen（ピットオープン）",
+                SessionYellowFlagState.LAST_LAP to "LastLap（最終周）",
+                SessionYellowFlagState.RESUME to "Resume（リスタート）",
+                SessionYellowFlagState.RACE_HALT to "RaceHalt（レース中断、現在未使用）",
+                SessionYellowFlagState.UNKNOWN to "不明",
+            )
 
         expectedByYellowFlagState.forEach { (yellowFlagState, expectedText) ->
             rule.setContent {
@@ -100,9 +99,9 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                            raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
-                        ),
-                            canNavigateBack = true,
+                                raceFlags = sampleRaceFlags(yellowFlagState = yellowFlagState),
+                            ),
+                        canNavigateBack = true,
                         onBack = {},
                     )
                 }
@@ -131,16 +130,16 @@ class DebugStateDetailPaneTest {
     fun `sessionの各値に対応する表示文言を表示する`() {
         val expectedBySession =
             mapOf(
-            0 to "Test Day（テスト走行）",
-            1 to "Practice（練習走行）",
-            4 to "Practice（練習走行）",
-            5 to "Qualifying（予選）",
-            8 to "Qualifying（予選）",
-            9 to "Warmup（ウォームアップ）",
-            10 to "Race（決勝）",
-            13 to "Race（決勝）",
-            -1 to "不明",
-        )
+                0 to "Test Day（テスト走行）",
+                1 to "Practice（練習走行）",
+                4 to "Practice（練習走行）",
+                5 to "Qualifying（予選）",
+                8 to "Qualifying（予選）",
+                9 to "Warmup（ウォームアップ）",
+                10 to "Race（決勝）",
+                13 to "Race（決勝）",
+                -1 to "不明",
+            )
 
         expectedBySession.forEach { (session, expectedText) ->
             rule.setContent {
@@ -148,9 +147,9 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session),
-                        ),
-                            canNavigateBack = true,
+                                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session),
+                            ),
+                        canNavigateBack = true,
                         onBack = {},
                     )
                 }
@@ -179,18 +178,18 @@ class DebugStateDetailPaneTest {
     fun `gamePhaseの各値に対応する表示文言を表示する`() {
         val expectedByGamePhase =
             mapOf(
-            SessionPhase.GARAGE to "セッション開始前",
-            SessionPhase.WARM_UP to "Reconnaissance laps（レースのみ）",
-            SessionPhase.GRID_WALK to "GridWalk（グリッドウォーク、レースのみ）",
-            SessionPhase.FORMATION to "Formation（フォーメーションラップ、レースのみ）",
-            SessionPhase.COUNTDOWN to "Countdown（スタートライト点灯開始、レースのみ）",
-            SessionPhase.GREEN_FLAG to "GreenFlag（グリーンフラッグ）",
-            SessionPhase.FULL_COURSE_YELLOW to "FullCourseYellow（FCY / セーフティカー）",
-            SessionPhase.RED_FLAG to "SessionStopped（セッション停止）",
-            SessionPhase.SESSION_OVER to "SessionOver（セッション終了）",
-            SessionPhase.PAUSED_OR_HEARTBEAT to "Paused（ポーズ中。プラグインへのハートビート呼び出し）",
-            SessionPhase.UNKNOWN to "不明",
-        )
+                SessionPhase.GARAGE to "セッション開始前",
+                SessionPhase.WARM_UP to "Reconnaissance laps（レースのみ）",
+                SessionPhase.GRID_WALK to "GridWalk（グリッドウォーク、レースのみ）",
+                SessionPhase.FORMATION to "Formation（フォーメーションラップ、レースのみ）",
+                SessionPhase.COUNTDOWN to "Countdown（スタートライト点灯開始、レースのみ）",
+                SessionPhase.GREEN_FLAG to "GreenFlag（グリーンフラッグ）",
+                SessionPhase.FULL_COURSE_YELLOW to "FullCourseYellow（FCY / セーフティカー）",
+                SessionPhase.RED_FLAG to "SessionStopped（セッション停止）",
+                SessionPhase.SESSION_OVER to "SessionOver（セッション終了）",
+                SessionPhase.PAUSED_OR_HEARTBEAT to "Paused（ポーズ中。プラグインへのハートビート呼び出し）",
+                SessionPhase.UNKNOWN to "不明",
+            )
 
         expectedByGamePhase.forEach { (gamePhase, expectedText) ->
             rule.setContent {
@@ -244,20 +243,20 @@ class DebugStateDetailPaneTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.LmuWindows,
-                        raceFlags =
-                            LmuWindowsRaceFlagsData(
-                            gamePhase = SessionPhase.GREEN_FLAG,
-                            yellowFlagState = SessionYellowFlagState.NONE,
-                            sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-                            startLight = 0,
-                            numRedLights = 0,
-                            playerFlag = PrimaryFlag.GREEN,
-                            playerUnderYellow = false,
-                            playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+                            selectedSimulator = Simulator.LmuWindows,
+                            raceFlags =
+                                LmuWindowsRaceFlagsData(
+                                    gamePhase = SessionPhase.GREEN_FLAG,
+                                    yellowFlagState = SessionYellowFlagState.NONE,
+                                    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+                                    startLight = 0,
+                                    numRedLights = 0,
+                                    playerFlag = PrimaryFlag.GREEN,
+                                    playerUnderYellow = false,
+                                    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+                                ),
                         ),
-                            ),
-                        canNavigateBack = true,
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -273,20 +272,20 @@ class DebugStateDetailPaneTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.LmuWindows,
-                        raceFlags =
-                            LmuWindowsRaceFlagsData(
-                            gamePhase = SessionPhase.GREEN_FLAG,
-                            yellowFlagState = SessionYellowFlagState.NONE,
-                            sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
-                            startLight = 0,
-                            numRedLights = 0,
-                            playerFlag = PrimaryFlag.BLUE,
-                            playerUnderYellow = false,
-                            playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+                            selectedSimulator = Simulator.LmuWindows,
+                            raceFlags =
+                                LmuWindowsRaceFlagsData(
+                                    gamePhase = SessionPhase.GREEN_FLAG,
+                                    yellowFlagState = SessionYellowFlagState.NONE,
+                                    sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
+                                    startLight = 0,
+                                    numRedLights = 0,
+                                    playerFlag = PrimaryFlag.BLUE,
+                                    playerUnderYellow = false,
+                                    playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
+                                ),
                         ),
-                            ),
-                        canNavigateBack = true,
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -299,18 +298,18 @@ class DebugStateDetailPaneTest {
     fun `選択中のシミュレータがACEの場合はACEフラッグ種別ごとの表示文言を表示する`() {
         val expectedByAceFlag =
             mapOf(
-            AceWindowsFlagType.NO_FLAG to "フラッグなし",
-            AceWindowsFlagType.WHITE_FLAG to "ホワイトフラッグ",
-            AceWindowsFlagType.GREEN_FLAG to "グリーンフラッグ",
-            AceWindowsFlagType.RED_FLAG to "レッドフラッグ",
-            AceWindowsFlagType.BLUE_FLAG to "ブルーフラッグ",
-            AceWindowsFlagType.YELLOW_FLAG to "イエローフラッグ",
-            AceWindowsFlagType.BLACK_FLAG to "ブラックフラッグ",
-            AceWindowsFlagType.BLACK_WHITE_FLAG to "ブラック・ホワイトフラッグ",
-            AceWindowsFlagType.CHECKERED_FLAG to "チェッカーフラッグ",
-            AceWindowsFlagType.ORANGE_CIRCLE_FLAG to "オレンジボールフラッグ",
-            AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to "レッド・イエローストライプフラッグ",
-        )
+                AceWindowsFlagType.NO_FLAG to "フラッグなし",
+                AceWindowsFlagType.WHITE_FLAG to "ホワイトフラッグ",
+                AceWindowsFlagType.GREEN_FLAG to "グリーンフラッグ",
+                AceWindowsFlagType.RED_FLAG to "レッドフラッグ",
+                AceWindowsFlagType.BLUE_FLAG to "ブルーフラッグ",
+                AceWindowsFlagType.YELLOW_FLAG to "イエローフラッグ",
+                AceWindowsFlagType.BLACK_FLAG to "ブラックフラッグ",
+                AceWindowsFlagType.BLACK_WHITE_FLAG to "ブラック・ホワイトフラッグ",
+                AceWindowsFlagType.CHECKERED_FLAG to "チェッカーフラッグ",
+                AceWindowsFlagType.ORANGE_CIRCLE_FLAG to "オレンジボールフラッグ",
+                AceWindowsFlagType.RED_YELLOW_STRIPES_FLAG to "レッド・イエローストライプフラッグ",
+            )
 
         expectedByAceFlag.forEach { (flag, expectedText) ->
             rule.setContent {
@@ -318,10 +317,10 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                            selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFlag = AceWindowsFlagData(flag = flag),
-                        ),
-                            canNavigateBack = true,
+                                selectedSimulator = Simulator.AceWindows,
+                                aceWindowsFlag = AceWindowsFlagData(flag = flag),
+                            ),
+                        canNavigateBack = true,
                         onBack = {},
                     )
                 }
@@ -339,10 +338,10 @@ class DebugStateDetailPaneTest {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                            selectedSimulator = Simulator.AceWindows,
-                            aceWindowsFlag = aceWindowsFlag,
-                        ),
-                            canNavigateBack = true,
+                                selectedSimulator = Simulator.AceWindows,
+                                aceWindowsFlag = aceWindowsFlag,
+                            ),
+                        canNavigateBack = true,
                         onBack = {},
                     )
                 }
@@ -359,9 +358,9 @@ class DebugStateDetailPaneTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        cardOrder = listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR),
-                    ),
-                        canNavigateBack = true,
+                            cardOrder = listOf(DebugStateCardKey.FLAG_INFO, DebugStateCardKey.SIMULATOR),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -392,11 +391,11 @@ class DebugStateDetailPaneTest {
         yellowFlagState: SessionYellowFlagState = SessionYellowFlagState.NONE,
         sectorFlags: List<SectorFlagState> =
             listOf(
-            SectorFlagState.CLEAR,
-            SectorFlagState.CLEAR,
-            SectorFlagState.CLEAR,
-        ),
-            playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
+                SectorFlagState.CLEAR,
+                SectorFlagState.CLEAR,
+                SectorFlagState.CLEAR,
+            ),
+        playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
         playerUnderYellow: Boolean = false,
     ) = LmuWindowsRaceFlagsData(
         gamePhase = gamePhase,

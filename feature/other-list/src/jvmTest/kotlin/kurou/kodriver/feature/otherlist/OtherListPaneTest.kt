@@ -20,7 +20,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class OtherListPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -32,9 +31,9 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.Volume),
-                ),
-                    onItemClick = { clickedItem = it },
+                        items = listOf(OtherListItemType.Volume),
+                    ),
+                onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -54,10 +53,10 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.KeepScreenOn),
-                    keepScreenOn = true,
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.KeepScreenOn),
+                        keepScreenOn = true,
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -77,10 +76,10 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.KeepScreenOn),
-                    keepScreenOn = false,
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.KeepScreenOn),
+                        keepScreenOn = false,
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -100,10 +99,10 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.ExitConfirmation),
-                    exitConfirmationEnabled = true,
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.ExitConfirmation),
+                        exitConfirmationEnabled = true,
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onDynamicColorEnabledChange = {},
@@ -123,10 +122,10 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.ExitConfirmation),
-                    exitConfirmationEnabled = false,
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.ExitConfirmation),
+                        exitConfirmationEnabled = false,
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onDynamicColorEnabledChange = {},
@@ -146,10 +145,10 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.DynamicColor),
-                    dynamicColorEnabled = true,
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.DynamicColor),
+                        dynamicColorEnabled = true,
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
@@ -169,14 +168,14 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items =
-                        listOf(
-                        OtherListItemType.KeepScreenOn,
-                        OtherListItemType.ExitConfirmation,
-                        OtherListItemType.DynamicColor,
+                        items =
+                            listOf(
+                                OtherListItemType.KeepScreenOn,
+                                OtherListItemType.ExitConfirmation,
+                                OtherListItemType.DynamicColor,
+                            ),
                     ),
-                        ),
-                    onItemClick = { clickedItem = it },
+                onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -196,11 +195,11 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = emptyList(),
-                    appVersionLabel = "Android版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
-                    onItemClick = {},
+                        items = emptyList(),
+                        appVersionLabel = "Android版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -219,9 +218,9 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.DebugState),
-                ),
-                    onItemClick = { clickedItem = it },
+                        items = listOf(OtherListItemType.DebugState),
+                    ),
+                onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -241,11 +240,11 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = emptyList(),
-                    appVersionLabel = "Android版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
-                    onItemClick = {},
+                        items = emptyList(),
+                        appVersionLabel = "Android版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -268,11 +267,11 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = emptyList(),
-                    appVersionLabel = "Android版KoDriverバージョン",
-                    appVersion = "1.2.3",
-                ),
-                    onItemClick = {},
+                        items = emptyList(),
+                        appVersionLabel = "Android版KoDriverバージョン",
+                        appVersion = "1.2.3",
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -293,15 +292,15 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items =
-                        listOf(
-                        OtherListItemType.ConsoleIp,
-                        OtherListItemType.Volume,
-                        OtherListItemType.ExitConfirmation,
-                        OtherListItemType.License,
+                        items =
+                            listOf(
+                                OtherListItemType.ConsoleIp,
+                                OtherListItemType.Volume,
+                                OtherListItemType.ExitConfirmation,
+                                OtherListItemType.License,
+                            ),
                     ),
-                        ),
-                    onItemClick = {},
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -320,9 +319,9 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.Volume),
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.Volume),
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -341,9 +340,9 @@ class OtherListPaneTest {
             OtherListPane(
                 uiState =
                     OtherListUiState(
-                    items = listOf(OtherListItemType.Theme),
-                ),
-                    onItemClick = {},
+                        items = listOf(OtherListItemType.Theme),
+                    ),
+                onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -363,20 +362,20 @@ class OtherListPaneTest {
                 OtherListPane(
                     uiState =
                         OtherListUiState(
-                        items =
-                            listOf(
-                            OtherListItemType.ConsoleIp,
-                            OtherListItemType.Volume,
-                            OtherListItemType.ReadoutStartSound,
-                            OtherListItemType.ExitConfirmation,
-                            OtherListItemType.Theme,
-                            OtherListItemType.DynamicColor,
-                            OtherListItemType.GitHubRepository,
-                            OtherListItemType.ReleasePage,
-                            OtherListItemType.License,
+                            items =
+                                listOf(
+                                    OtherListItemType.ConsoleIp,
+                                    OtherListItemType.Volume,
+                                    OtherListItemType.ReadoutStartSound,
+                                    OtherListItemType.ExitConfirmation,
+                                    OtherListItemType.Theme,
+                                    OtherListItemType.DynamicColor,
+                                    OtherListItemType.GitHubRepository,
+                                    OtherListItemType.ReleasePage,
+                                    OtherListItemType.License,
+                                ),
                         ),
-                            ),
-                        onItemClick = {},
+                    onItemClick = {},
                     onKeepScreenOnChange = {},
                     onExitConfirmationEnabledChange = {},
                     onDynamicColorEnabledChange = {},

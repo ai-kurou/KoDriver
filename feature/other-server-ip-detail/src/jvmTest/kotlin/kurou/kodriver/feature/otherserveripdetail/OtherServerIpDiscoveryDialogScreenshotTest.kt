@@ -14,15 +14,14 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtherServerIpDiscoveryDialogScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
     private val servers =
         listOf(
-        DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
-        DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
-    )
+            DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+            DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
+        )
 
     @Test
     fun `1台検出時`() {

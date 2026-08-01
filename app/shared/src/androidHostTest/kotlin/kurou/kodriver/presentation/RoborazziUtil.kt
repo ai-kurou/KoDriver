@@ -7,19 +7,19 @@ import com.github.takahirom.roborazzi.RoborazziOptions
 
 internal val defaultRoborazziOptions =
     RoborazziOptions(
-    compareOptions =
-        RoborazziOptions.CompareOptions(
-        changeThreshold = 0.001f,
-    ),
-        )
+        compareOptions =
+            RoborazziOptions.CompareOptions(
+                changeThreshold = 0.001f,
+            ),
+    )
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 internal val twoPaneDirective =
     PaneScaffoldDirective(
-    maxHorizontalPartitions = 2,
-    horizontalPartitionSpacerSize = 16.dp,
-    maxVerticalPartitions = 1,
-    verticalPartitionSpacerSize = 0.dp,
-    defaultPanePreferredWidth = 360.dp,
-    excludedBounds = emptyList(),
-)
+        maxHorizontalPartitions = 2,
+        horizontalPartitionSpacerSize = 16.dp,
+        maxVerticalPartitions = 1,
+        verticalPartitionSpacerSize = 0.dp,
+        defaultPanePreferredWidth = 360.dp,
+        excludedBounds = emptyList(),
+    )

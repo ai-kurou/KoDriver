@@ -26,7 +26,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AceWindowsNarratorEventProcessorTest {
-
     @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository
 
@@ -41,263 +40,263 @@ class AceWindowsNarratorEventProcessorTest {
     @Test
     fun `直前の燃料データがないイベントはnullとして保存する`() =
         runTest {
-        val telemetryJsons = mutableListOf<String>()
-        every { ttsEngine.currentReadoutItemKey } returns null
-        val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
-        } just Runs
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
 
-        createProcessor().processRemainingFuel(
-            fuel = fuel(20.0),
-            events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
-            readoutOrder = listOf(key),
-            queueEnabledStates = emptyMap(),
-            observedAtMs = 0L,
-            logContext = logContext(),
-        )
+            createProcessor().processRemainingFuel(
+                fuel = fuel(20.0),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
 
-        assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
-        assertEquals(true, telemetryJsons.single().contains("\"previousFuel\":null"))
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            assertEquals(true, telemetryJsons.single().startsWith("{\"state\":{\"raw\":"))
+            assertEquals(true, telemetryJsons.single().contains("\"previousFuel\":null"))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
 
     @Test
     fun `読み上げたイベントを直前と現在の燃料データとともに保存する`() =
         runTest {
-        val telemetryJsons = mutableListOf<String>()
-        every { ttsEngine.currentReadoutItemKey } returns null
-        val processor = createProcessor()
-        val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
-        } just Runs
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
 
-        processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext())
-        processor.processRemainingFuel(
-            fuel(20.0),
-            listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
-            listOf(key),
-            emptyMap(),
-            200L,
-            logContext(),
-        )
+            processor.processRemainingFuel(fuel(50.0), emptyList(), emptyList(), emptyMap(), 100L, logContext())
+            processor.processRemainingFuel(
+                fuel(20.0),
+                listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+            )
 
-        assertEquals(1, telemetryJsons.size)
-        assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":50.0}"""))
-        assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":20.0}"""))
-        assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":50.0}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":20.0}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
 
     @Test
     fun `優先度の高い項目を再生中なら読み上げも保存もしない`() =
         runTest {
-        val currentKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        val otherKey = ReadoutItemKey.LmuWindows.Flag.Root
-        every { ttsEngine.currentReadoutItemKey } returns currentKey
-        val processor = createProcessor()
+            val currentKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            val otherKey = ReadoutItemKey.LmuWindows.Flag.Root
+            every { ttsEngine.currentReadoutItemKey } returns currentKey
+            val processor = createProcessor()
 
-        processor.processRemainingFuel(
-            fuel = fuel(20.0),
-            events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
-            readoutOrder = listOf(currentKey, otherKey),
-            queueEnabledStates = emptyMap(),
-            observedAtMs = 0L,
-            logContext = logContext(),
-        )
+            processor.processRemainingFuel(
+                fuel = fuel(20.0),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                readoutOrder = listOf(currentKey, otherKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
 
-        verify(exactly = 0) { ttsEngine.stop() }
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
+            verify(exactly = 0) { ttsEngine.stop() }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
 
     @Test
     fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
         runTest {
-        val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
-        val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        val telemetryJsons = mutableListOf<String>()
-        every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, queue = true) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
-        } just Runs
-        val processor = createProcessor()
+            val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
+            val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, queue = true) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+            val processor = createProcessor()
 
-        processor.processRemainingFuel(
-            fuel = fuel(20.0),
-            events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
-            readoutOrder = listOf(currentKey, key),
-            queueEnabledStates = mapOf(key to true),
-            observedAtMs = 0L,
-            logContext = logContext(),
-        )
+            processor.processRemainingFuel(
+                fuel = fuel(20.0),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                readoutOrder = listOf(currentKey, key),
+                queueEnabledStates = mapOf(key to true),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
 
-        verify(exactly = 0) { ttsEngine.stop() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, queue = true) }
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            verify(exactly = 0) { ttsEngine.stop() }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, queue = true) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
 
     @Test
     fun `優先度の低い項目を再生中なら停止して読み上げる`() =
         runTest {
-        val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
-        val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        val telemetryJsons = mutableListOf<String>()
-        every { ttsEngine.currentReadoutItemKey } returns currentKey
-        every { ttsEngine.stop() } just Runs
-        every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
-        } just Runs
-        val processor = createProcessor()
+            val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
+            val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns currentKey
+            every { ttsEngine.stop() } just Runs
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+            val processor = createProcessor()
 
-        processor.processRemainingFuel(
-            fuel = fuel(20.0),
-            events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
-            readoutOrder = listOf(key, currentKey),
-            queueEnabledStates = emptyMap(),
-            observedAtMs = 0L,
-            logContext = logContext(),
-        )
+            processor.processRemainingFuel(
+                fuel = fuel(20.0),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                readoutOrder = listOf(key, currentKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
 
-        verify(exactly = 1) { ttsEngine.stop() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            verify(exactly = 1) { ttsEngine.stop() }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
 
     @Test
     fun `テレメトリログの保存に失敗しても例外を投げない`() =
         runTest {
-        every { ttsEngine.currentReadoutItemKey } returns null
-        val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
-        every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any())
-        } throws RuntimeException("db error")
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any())
+            } throws RuntimeException("db error")
 
-        createProcessor().processRemainingFuel(
-            fuel = fuel(20.0),
-            events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
-            readoutOrder = listOf(key),
-            queueEnabledStates = emptyMap(),
-            observedAtMs = 0L,
-            logContext = logContext(),
-        )
+            createProcessor().processRemainingFuel(
+                fuel = fuel(20.0),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
 
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
-        coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any()) }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            coVerify(exactly = 1) { telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, any()) }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
 
     @Test
     fun `直前のフラグデータがないイベントはnullとして保存する`() =
         runTest {
-        val telemetryJsons = mutableListOf<String>()
-        every { ttsEngine.currentReadoutItemKey } returns null
-        val key = ReadoutItemKey.AceWindows.Flag.Root
-        every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
-        } just Runs
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.Flag.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
 
-        createProcessor().processFlag(
-            flag = flag(AceWindowsFlagType.BLUE_FLAG),
-            events = listOf(SpeechEvent.AceWindowsBlueFlag),
-            readoutOrder = listOf(key),
-            queueEnabledStates = emptyMap(),
-            observedAtMs = 0L,
-            logContext = logContext(),
-        )
+            createProcessor().processFlag(
+                flag = flag(AceWindowsFlagType.BLUE_FLAG),
+                events = listOf(SpeechEvent.AceWindowsBlueFlag),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
 
-        assertEquals(true, telemetryJsons.single().contains("\"previousFlag\":null"))
-        assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            assertEquals(true, telemetryJsons.single().contains("\"previousFlag\":null"))
+            assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
 
     @Test
     fun `読み上げたフラグイベントを直前と現在のフラグデータとともに保存する`() =
         runTest {
-        val telemetryJsons = mutableListOf<String>()
-        every { ttsEngine.currentReadoutItemKey } returns null
-        val processor = createProcessor()
-        val key = ReadoutItemKey.AceWindows.Flag.Root
-        every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
-        } just Runs
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val processor = createProcessor()
+            val key = ReadoutItemKey.AceWindows.Flag.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
 
-        processor.processFlag(
-            flag(AceWindowsFlagType.NO_FLAG),
-            emptyList(),
-            emptyList(),
-            emptyMap(),
-            100L,
-            logContext(),
-        )
-        processor.processFlag(
-            flag(AceWindowsFlagType.BLUE_FLAG),
-            listOf(SpeechEvent.AceWindowsBlueFlag),
-            listOf(key),
-            emptyMap(),
-            200L,
-            logContext(),
-        )
+            processor.processFlag(
+                flag(AceWindowsFlagType.NO_FLAG),
+                emptyList(),
+                emptyList(),
+                emptyMap(),
+                100L,
+                logContext(),
+            )
+            processor.processFlag(
+                flag(AceWindowsFlagType.BLUE_FLAG),
+                listOf(SpeechEvent.AceWindowsBlueFlag),
+                listOf(key),
+                emptyMap(),
+                200L,
+                logContext(),
+            )
 
-        assertEquals(1, telemetryJsons.size)
-        assertEquals(true, telemetryJsons.single().contains(""""previousFlag":{"flag":"NO_FLAG"}"""))
-        assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
-        verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
-        coVerify(exactly = 1) {
-            telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().contains(""""previousFlag":{"flag":"NO_FLAG"}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""flag":{"flag":"BLUE_FLAG"}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsBlueFlag, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(200L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
         }
-        confirmVerified(telemetryLogRepository, ttsEngine)
-    }
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
     private fun createProcessor() =
         AceWindowsNarratorEventProcessor(
-        ttsEngine = ttsEngine,
-        saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-    )
+            ttsEngine = ttsEngine,
+            saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+        )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
 
     private fun logContext() =
         AceWindowsTelemetryLogContext(
-        state = AceWindowsNarratorState(),
-        settings =
-            AceWindowsNarratorReadoutSettings(
-            enabledStates = emptyMap(),
-            remainingFuelThresholdPercentage = 0,
-        ),
+            state = AceWindowsNarratorState(),
+            settings =
+                AceWindowsNarratorReadoutSettings(
+                    enabledStates = emptyMap(),
+                    remainingFuelThresholdPercentage = 0,
+                ),
             finalState = AceWindowsNarratorState(),
-    )
+        )
 }

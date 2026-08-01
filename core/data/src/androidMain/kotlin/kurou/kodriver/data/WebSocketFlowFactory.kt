@@ -26,26 +26,26 @@ internal fun <T> HttpClient.webSocketFlow(
     decode: (String) -> T,
 ): Flow<T> =
     flow {
-    while (true) {
-        try {
-            webSocket(host = host, port = port, path = path) {
-                for (frame in incoming) {
-                    if (frame is Frame.Text) {
-                        try {
-                            emit(decode(frame.readText()))
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (e: SerializationException) {
-                            Sentry.captureException(e)
+        while (true) {
+            try {
+                webSocket(host = host, port = port, path = path) {
+                    for (frame in incoming) {
+                        if (frame is Frame.Text) {
+                            try {
+                                emit(decode(frame.readText()))
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (e: SerializationException) {
+                                Sentry.captureException(e)
+                            }
                         }
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Sentry.captureException(e)
             }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            Sentry.captureException(e)
+            delay(retryDelayMs)
         }
-        delay(retryDelayMs)
     }
-}

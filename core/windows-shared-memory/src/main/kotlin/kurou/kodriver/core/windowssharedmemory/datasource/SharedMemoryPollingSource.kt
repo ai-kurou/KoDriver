@@ -29,39 +29,39 @@ class SharedMemoryPollingSource(
 
     val bufferFlow: Flow<ByteBuffer> =
         flow {
-        try {
-            while (true) {
-                val buffer =
-                    readerMutex.withLock {
-                    if (!reader.isOpen() && !reader.open()) {
-                        null
-                    } else {
-                        // Copy to a heap buffer so downstream never holds a native-backed
-                        // reference, allowing withReaderLock callers to safely unmap/remap
-                        // the reader without risking an access violation on Windows.
-                        reader.readBuffer()?.let { native ->
-                            val copy = ByteBuffer.allocate(native.limit()).order(native.order())
-                            native.rewind()
-                            copy.put(native)
-                            copy.rewind()
-                            copy
+            try {
+                while (true) {
+                    val buffer =
+                        readerMutex.withLock {
+                            if (!reader.isOpen() && !reader.open()) {
+                                null
+                            } else {
+                                // Copy to a heap buffer so downstream never holds a native-backed
+                                // reference, allowing withReaderLock callers to safely unmap/remap
+                                // the reader without risking an access violation on Windows.
+                                reader.readBuffer()?.let { native ->
+                                    val copy = ByteBuffer.allocate(native.limit()).order(native.order())
+                                    native.rewind()
+                                    copy.put(native)
+                                    copy.rewind()
+                                    copy
+                                }
+                            }
                         }
+                    if (buffer == null) {
+                        delay(reconnectIntervalMs)
+                    } else {
+                        emit(buffer)
+                        delay(pollingIntervalMs)
                     }
                 }
-                if (buffer == null) {
-                    delay(reconnectIntervalMs)
-                } else {
-                    emit(buffer)
-                    delay(pollingIntervalMs)
+            } finally {
+                withContext(NonCancellable) {
+                    readerMutex.withLock { reader.close() }
                 }
             }
-        } finally {
-            withContext(NonCancellable) {
-                readerMutex.withLock { reader.close() }
-            }
-        }
-    }.flowOn(Dispatchers.IO)
-        .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
+        }.flowOn(Dispatchers.IO)
+            .shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
     /**
      * [bufferFlow] のポーリングループと同じ [Mutex] の下で [reader] を操作する。

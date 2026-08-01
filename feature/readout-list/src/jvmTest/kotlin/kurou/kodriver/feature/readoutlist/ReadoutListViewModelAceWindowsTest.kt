@@ -37,7 +37,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutListViewModelAceWindowsTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -63,49 +62,49 @@ class ReadoutListViewModelAceWindowsTest {
     @Test
     fun `ace_windowsを選択するとlistPaneにフラッグと燃料残量アイテムが表示される`() =
         runTest {
-        val simulatorFlow = MutableStateFlow<Simulator?>(null)
-        every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        coEvery { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) } answers {
-            simulatorFlow.update { Simulator.AceWindows }
+            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) } answers {
+                simulatorFlow.update { Simulator.AceWindows }
+            }
+            every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns MutableStateFlow(emptyMap())
+            every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
+            every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            val viewModel =
+                ReadoutListViewModel(
+                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+                    saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
+                    saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
+                    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
+                    resolveReadoutOrder = ResolveReadoutOrderUseCase(),
+                    saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
+                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
+                    saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
+                )
+
+            assertEquals(
+                listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
+                viewModel.uiState.first().simulators,
+            )
+
+            viewModel.onSimulatorSelected(Simulator.AceWindows)
+
+            val state = viewModel.uiState.first()
+            assertEquals(Simulator.AceWindows, state.selectedSimulator)
+            assertEquals(
+                listOf(ReadoutItemKey.AceWindows.Flag.Root, ReadoutItemKey.AceWindows.RemainingFuel.Root),
+                state.items,
+            )
+            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
+            assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
+            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
+            assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
+            verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
+            verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
+            verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
+            confirmVerified(simulatorRepository, readoutRepository, queueRepository)
         }
-        every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns MutableStateFlow(emptyMap())
-        every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
-        every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-        val viewModel =
-            ReadoutListViewModel(
-            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-            saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
-            observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),
-            saveReadoutEnabledState = SaveReadoutEnabledStateUseCase(readoutRepository),
-            observeReadoutOrder = ObserveReadoutOrderUseCase(readoutRepository),
-            resolveReadoutOrder = ResolveReadoutOrderUseCase(),
-            saveReadoutOrder = SaveReadoutOrderUseCase(readoutRepository),
-            observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queueRepository),
-            saveQueueEnabledState = SaveQueueEnabledStateUseCase(queueRepository),
-        )
-
-        assertEquals(
-            listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
-            viewModel.uiState.first().simulators,
-        )
-
-        viewModel.onSimulatorSelected(Simulator.AceWindows)
-
-        val state = viewModel.uiState.first()
-        assertEquals(Simulator.AceWindows, state.selectedSimulator)
-        assertEquals(
-            listOf(ReadoutItemKey.AceWindows.Flag.Root, ReadoutItemKey.AceWindows.RemainingFuel.Root),
-            state.items,
-        )
-        assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
-        assertEquals(true, state.readoutEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
-        assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.Flag.Root])
-        assertEquals(true, state.queueEnabledStates[ReadoutItemKey.AceWindows.RemainingFuel.Root])
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) }
-        verify(exactly = 1) { readoutRepository.observeReadoutEnabledStates("ace_windows") }
-        verify(exactly = 1) { readoutRepository.observeReadoutOrder("ace_windows") }
-        verify(exactly = 1) { queueRepository.observeQueueEnabledStates() }
-        confirmVerified(simulatorRepository, readoutRepository, queueRepository)
-    }
 }

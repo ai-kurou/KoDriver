@@ -36,9 +36,7 @@ private const val MAXIMUM_REMAINING_FUEL_LAPS = 5f
  * Gt7Ps5ReadoutRemainingFuelLapsDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5ReadoutRemainingFuelLapsDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun Gt7Ps5ReadoutRemainingFuelLapsDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
@@ -62,16 +60,16 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
     val resetToDefaultLabel = stringResource(Res.string.remaining_fuel_laps_reset_to_default)
     val voiceTypeLabel =
         stringResource(
-        Res.string.remaining_fuel_laps_voice_type,
-        uiState.remainingFuelLaps,
-    )
+            Res.string.remaining_fuel_laps_voice_type,
+            uiState.remainingFuelLaps,
+        )
 
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_fuel_laps_description),
         )

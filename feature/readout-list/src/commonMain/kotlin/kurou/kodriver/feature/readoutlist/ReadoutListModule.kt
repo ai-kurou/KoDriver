@@ -21,17 +21,17 @@ import org.koin.dsl.module
  */
 val readoutListModule =
     module {
-    // ViewModel
-    viewModelOf(::ReadoutListViewModel)
+        // ViewModel
+        viewModelOf(::ReadoutListViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { SaveSelectedSimulatorUseCase(get()) }
-    factory { ObserveReadoutEnabledStatesUseCase(get()) }
-    factory { SaveReadoutEnabledStateUseCase(get()) }
-    factory { ObserveReadoutOrderUseCase(get()) }
-    factory { ResolveReadoutOrderUseCase() }
-    factory { SaveReadoutOrderUseCase(get()) }
-    factory { ObserveQueueEnabledStatesUseCase(get()) }
-    factory { SaveQueueEnabledStateUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { SaveSelectedSimulatorUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { SaveReadoutEnabledStateUseCase(get()) }
+        factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ResolveReadoutOrderUseCase() }
+        factory { SaveReadoutOrderUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get()) }
+        factory { SaveQueueEnabledStateUseCase(get()) }
+    }

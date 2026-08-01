@@ -12,9 +12,9 @@ import org.koin.dsl.module
  */
 val telemetryLogDetailModule =
     module {
-    // ViewModel
-    viewModelOf(::TelemetryLogDetailViewModel)
+        // ViewModel
+        viewModelOf(::TelemetryLogDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
-    factory { ObserveTelemetryLogDetailUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
+        factory { ObserveTelemetryLogDetailUseCase(get()) }
+    }

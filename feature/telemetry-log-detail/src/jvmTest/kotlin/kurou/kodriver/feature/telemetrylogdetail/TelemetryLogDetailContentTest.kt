@@ -7,7 +7,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class TelemetryLogDetailContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -26,20 +25,20 @@ class TelemetryLogDetailContentTest {
             TelemetryLogDetailContent(
                 uiState =
                     TelemetryLogDetailUiState(
-                    logId = 2L,
-                    items =
-                        listOf(
-                        TelemetryLogDetailItemUiState(
-                            title = "選択したログ",
-                            telemetryJson = """{"speed":120}""",
-                        ),
-                        TelemetryLogDetailItemUiState(
-                            title = "一つ前のログ",
-                            telemetryJson = """{"speed":118}""",
-                        ),
+                        logId = 2L,
+                        items =
+                            listOf(
+                                TelemetryLogDetailItemUiState(
+                                    title = "選択したログ",
+                                    telemetryJson = """{"speed":120}""",
+                                ),
+                                TelemetryLogDetailItemUiState(
+                                    title = "一つ前のログ",
+                                    telemetryJson = """{"speed":118}""",
+                                ),
+                            ),
                     ),
-                        ),
-                    )
+            )
         }
 
         rule.onNodeWithText("選択したログ").assertExists()

@@ -12,7 +12,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherServerIpDetailDiscoveryContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -22,10 +21,10 @@ class OtherServerIpDetailDiscoveryContentTest {
             OtherServerIpDetailPaneContent(
                 uiState =
                     OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = emptyList(),
-                ),
-                    )
+                        inputIp = "192.168.1.1",
+                        discoveredServers = emptyList(),
+                    ),
+            )
         }
 
         rule.onNodeWithText("Windows版KoDriverを検出中…").assertIsDisplayed()
@@ -37,10 +36,10 @@ class OtherServerIpDetailDiscoveryContentTest {
             OtherServerIpDetailPaneContent(
                 uiState =
                     OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = emptyList(),
-                ),
-                    )
+                        inputIp = "192.168.1.1",
+                        discoveredServers = emptyList(),
+                    ),
+            )
         }
 
         rule.onNodeWithText("Windows版KoDriverを検出中…").assertIsNotEnabled()
@@ -53,12 +52,12 @@ class OtherServerIpDetailDiscoveryContentTest {
             OtherServerIpDetailPaneContent(
                 uiState =
                     OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = true,
-                    selectedDiscoveredServer = server,
-                ),
-                    )
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = true,
+                        selectedDiscoveredServer = server,
+                    ),
+            )
         }
 
         rule.onNodeWithText("Windows版KoDriverを選択").assertIsDisplayed()
@@ -73,12 +72,12 @@ class OtherServerIpDetailDiscoveryContentTest {
             OtherServerIpDetailPaneContent(
                 uiState =
                     OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = true,
-                    selectedDiscoveredServer = server,
-                ),
-                    onDiscoveryDialogConfirm = { confirmCount++ },
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = true,
+                        selectedDiscoveredServer = server,
+                    ),
+                onDiscoveryDialogConfirm = { confirmCount++ },
             )
         }
 
@@ -95,12 +94,12 @@ class OtherServerIpDetailDiscoveryContentTest {
             OtherServerIpDetailPaneContent(
                 uiState =
                     OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = true,
-                    selectedDiscoveredServer = server,
-                ),
-                    onDiscoveryDialogDismiss = { dismissCount++ },
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = true,
+                        selectedDiscoveredServer = server,
+                    ),
+                onDiscoveryDialogDismiss = { dismissCount++ },
             )
         }
 
@@ -117,11 +116,11 @@ class OtherServerIpDetailDiscoveryContentTest {
             OtherServerIpDetailPaneContent(
                 uiState =
                     OtherServerIpDetailUiState(
-                    inputIp = "192.168.1.1",
-                    discoveredServers = listOf(server),
-                    isDiscoveryDialogVisible = false,
-                ),
-                    onShowDiscoveredServers = { showCount++ },
+                        inputIp = "192.168.1.1",
+                        discoveredServers = listOf(server),
+                        isDiscoveryDialogVisible = false,
+                    ),
+                onShowDiscoveredServers = { showCount++ },
             )
         }
 

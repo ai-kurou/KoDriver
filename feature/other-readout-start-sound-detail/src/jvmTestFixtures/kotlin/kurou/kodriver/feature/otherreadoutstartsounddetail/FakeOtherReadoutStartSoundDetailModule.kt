@@ -14,8 +14,8 @@ import org.koin.dsl.module
  */
 val fakeOtherReadoutStartSoundDetailModule =
     module {
-    single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
-}
+        single<ReadoutStartSoundPreferencesRepository> { FakeReadoutStartSoundPreferencesRepository() }
+    }
 
 class FakeReadoutStartSoundPreferencesRepository : ReadoutStartSoundPreferencesRepository {
     private val flow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)

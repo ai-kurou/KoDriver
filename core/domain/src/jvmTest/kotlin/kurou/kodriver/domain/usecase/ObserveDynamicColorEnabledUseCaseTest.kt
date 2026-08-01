@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class ObserveDynamicColorEnabledUseCaseTest {
-
     @MockK
     private lateinit var repository: DynamicColorEnabledRepository
 
@@ -26,10 +25,10 @@ class ObserveDynamicColorEnabledUseCaseTest {
     @Test
     fun `Repositoryの値を返す`() =
         runBlocking {
-        every { repository.dynamicColorEnabled() } returns flowOf(true)
+            every { repository.dynamicColorEnabled() } returns flowOf(true)
 
-        assertTrue(ObserveDynamicColorEnabledUseCase(repository)().first())
-        verify(exactly = 1) { repository.dynamicColorEnabled() }
-        confirmVerified(repository)
-    }
+            assertTrue(ObserveDynamicColorEnabledUseCase(repository)().first())
+            verify(exactly = 1) { repository.dynamicColorEnabled() }
+            confirmVerified(repository)
+        }
 }

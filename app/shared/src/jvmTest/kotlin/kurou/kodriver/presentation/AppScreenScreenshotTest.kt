@@ -38,7 +38,6 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin as koinStop
 
 class AppScreenScreenshotTest {
-
     companion object {
         @OptIn(ExperimentalCoroutinesApi::class)
         private val testDispatcher = UnconfinedTestDispatcher()
@@ -81,10 +80,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -104,10 +103,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -129,10 +128,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     otherContent = { _ ->
                         OtherContent(
                             uiState = OtherListUiState(),
@@ -161,10 +160,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationRail,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     telemetryLogContent = { _ -> TelemetryLogContent() },
                 )
             }
@@ -183,10 +182,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationBar,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     readoutContent = {
                         ReadoutContent(scaffoldDirective = singlePaneDirective)
                     },
@@ -208,10 +207,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationBar,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     telemetryLogContent = { _ -> TelemetryLogContent() },
                 )
             }
@@ -233,10 +232,10 @@ class AppScreenScreenshotTest {
                     layoutType = NavigationSuiteType.NavigationBar,
                     bannerUiState =
                         ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = bannerMessage,
-                    ),
-                        hasAppUpdate = true,
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = bannerMessage,
+                        ),
+                    hasAppUpdate = true,
                     otherContent = { _ ->
                         OtherContent(
                             uiState = OtherListUiState(),

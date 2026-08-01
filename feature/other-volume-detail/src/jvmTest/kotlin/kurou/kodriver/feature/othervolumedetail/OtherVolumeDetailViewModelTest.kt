@@ -28,7 +28,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class OtherVolumeDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -49,33 +48,33 @@ class OtherVolumeDetailViewModelTest {
 
     private fun createViewModel() =
         OtherVolumeDetailViewModel(
-        observeSoundVolume = ObserveSoundVolumeUseCase(repository),
-        saveSoundVolume = SaveSoundVolumeUseCase(repository),
-    )
+            observeSoundVolume = ObserveSoundVolumeUseCase(repository),
+            saveSoundVolume = SaveSoundVolumeUseCase(repository),
+        )
 
     @Test
     fun `保存済みの音量をUiStateで返す`() =
         runTest {
-        every { repository.volume() } returns volumeFlow
-        val viewModel = createViewModel()
+            every { repository.volume() } returns volumeFlow
+            val viewModel = createViewModel()
 
-        assertEquals(OtherVolumeDetailUiState(volume = 80), viewModel.uiState.first())
-        verify(exactly = 1) { repository.volume() }
-        confirmVerified(repository)
-    }
+            assertEquals(OtherVolumeDetailUiState(volume = 80), viewModel.uiState.first())
+            verify(exactly = 1) { repository.volume() }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `音量を変更するとUiStateが更新される`() =
         runTest {
-        every { repository.volume() } returns volumeFlow
-        coEvery { repository.saveVolume(40) } answers { volumeFlow.update { 40 } }
-        val viewModel = createViewModel()
+            every { repository.volume() } returns volumeFlow
+            coEvery { repository.saveVolume(40) } answers { volumeFlow.update { 40 } }
+            val viewModel = createViewModel()
 
-        viewModel.onVolumeChanged(40)
+            viewModel.onVolumeChanged(40)
 
-        assertEquals(OtherVolumeDetailUiState(volume = 40), viewModel.uiState.first())
-        verify(exactly = 1) { repository.volume() }
-        coVerify(exactly = 1) { repository.saveVolume(40) }
-        confirmVerified(repository)
-    }
+            assertEquals(OtherVolumeDetailUiState(volume = 40), viewModel.uiState.first())
+            verify(exactly = 1) { repository.volume() }
+            coVerify(exactly = 1) { repository.saveVolume(40) }
+            confirmVerified(repository)
+        }
 }

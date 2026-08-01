@@ -39,7 +39,6 @@ private fun createLmuWindowsFlagPreferencesRepository(
 }
 
 class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsFlagPreferencesRepository
 
@@ -51,43 +50,43 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
     @Test
     fun `初期値はフラグ4種のデフォルトtrueを返す`() =
         runBlocking {
-        val repo = createLmuWindowsFlagPreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
+            val repo = createLmuWindowsFlagPreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-            ),
-            useCase().first(),
-        )
-        verify(exactly = 1) { repo.observeFlagEnabledStates() }
-        confirmVerified(repo)
-    }
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                    ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                ),
+                useCase().first(),
+            )
+            verify(exactly = 1) { repo.observeFlagEnabledStates() }
+            confirmVerified(repo)
+        }
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() =
         runBlocking {
-        val repo = createLmuWindowsFlagPreferencesRepository(repository)
-        val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
+            val repo = createLmuWindowsFlagPreferencesRepository(repository)
+            val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
-        repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
-
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
-            ),
-            useCase().first(),
-        )
-        coVerify(exactly = 1) {
             repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                    ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
+                ),
+                useCase().first(),
+            )
+            coVerify(exactly = 1) {
+                repo.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
+            }
+            verify(exactly = 1) { repo.observeFlagEnabledStates() }
+            confirmVerified(repo)
         }
-        verify(exactly = 1) { repo.observeFlagEnabledStates() }
-        confirmVerified(repo)
-    }
 }

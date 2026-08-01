@@ -21,14 +21,14 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutVehicleApproachDetailModule =
     module {
-    // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
-    viewModel {
-        LmuWindowsReadoutVehicleApproachDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
-    }
+        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        viewModel {
+            LmuWindowsReadoutVehicleApproachDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
+        }
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { LmuWindowsVehicleApproachThresholdsUseCases(get()) }
-    factory { LmuWindowsVehicleApproachPreferencesUseCases(get()) }
-    factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
-    factory { SaveLmuWindowsVehicleApproachEnabledStateUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { LmuWindowsVehicleApproachThresholdsUseCases(get()) }
+        factory { LmuWindowsVehicleApproachPreferencesUseCases(get()) }
+        factory { ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(get()) }
+        factory { SaveLmuWindowsVehicleApproachEnabledStateUseCase(get()) }
+    }

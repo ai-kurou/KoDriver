@@ -16,11 +16,11 @@ import org.koin.dsl.module
  */
 val aceWindowsReadoutRemainingFuelDetailModule =
     module {
-    // ViewModel（get(named "ace_windows") は narrator モジュールの TextToSpeechEngine を解決）
-    viewModel {
-        AceWindowsReadoutRemainingFuelDetailViewModel(get(), get(), get(named("ace_windows")))
-    }
+        // ViewModel（get(named "ace_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        viewModel {
+            AceWindowsReadoutRemainingFuelDetailViewModel(get(), get(), get(named("ace_windows")))
+        }
 
-    factoryOf(::ObserveAceWindowsRemainingFuelThresholdPercentageUseCase)
-    factoryOf(::SaveAceWindowsRemainingFuelThresholdPercentageUseCase)
-}
+        factoryOf(::ObserveAceWindowsRemainingFuelThresholdPercentageUseCase)
+        factoryOf(::SaveAceWindowsRemainingFuelThresholdPercentageUseCase)
+    }

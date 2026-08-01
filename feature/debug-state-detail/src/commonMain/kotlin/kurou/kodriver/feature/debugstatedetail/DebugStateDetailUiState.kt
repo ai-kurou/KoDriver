@@ -12,19 +12,19 @@ import kurou.kodriver.domain.model.Simulator
 
 internal val defaultDebugStateCardOrder =
     listOf(
-    DebugStateCardKey.SIMULATOR,
-    DebugStateCardKey.FLAG_INFO,
-    DebugStateCardKey.GAME_PHASE,
-    DebugStateCardKey.SESSION,
-    DebugStateCardKey.YELLOW_FLAG_STATE,
-    DebugStateCardKey.CURRENT_LAP,
-    DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
-    DebugStateCardKey.BEST_LAP,
-    DebugStateCardKey.TYRE_TEMPERATURE,
-    DebugStateCardKey.TYRE_WEAR,
-    DebugStateCardKey.FUEL_CONSUMPTION,
-    DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
-)
+        DebugStateCardKey.SIMULATOR,
+        DebugStateCardKey.FLAG_INFO,
+        DebugStateCardKey.GAME_PHASE,
+        DebugStateCardKey.SESSION,
+        DebugStateCardKey.YELLOW_FLAG_STATE,
+        DebugStateCardKey.CURRENT_LAP,
+        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
+        DebugStateCardKey.BEST_LAP,
+        DebugStateCardKey.TYRE_TEMPERATURE,
+        DebugStateCardKey.TYRE_WEAR,
+        DebugStateCardKey.FUEL_CONSUMPTION,
+        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
+    )
 
 internal data class DebugStateDetailUiState(
     val selectedSimulator: Simulator? = null,

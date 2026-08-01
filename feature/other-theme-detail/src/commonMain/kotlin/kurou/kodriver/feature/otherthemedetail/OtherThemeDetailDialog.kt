@@ -70,17 +70,17 @@ internal fun OtherThemeDetailDialogContent(
                 ThemeMode.entries.forEach { themeMode ->
                     val label =
                         when (themeMode) {
-                        ThemeMode.SYSTEM -> stringResource(Res.string.theme_system)
-                        ThemeMode.LIGHT -> stringResource(Res.string.theme_light)
-                        ThemeMode.DARK -> stringResource(Res.string.theme_dark)
-                    }
+                            ThemeMode.SYSTEM -> stringResource(Res.string.theme_system)
+                            ThemeMode.LIGHT -> stringResource(Res.string.theme_light)
+                            ThemeMode.DARK -> stringResource(Res.string.theme_dark)
+                        }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =
                             Modifier
-                            .fillMaxWidth()
-                            .clickable { onThemeModeSelected(themeMode) },
-                            ) {
+                                .fillMaxWidth()
+                                .clickable { onThemeModeSelected(themeMode) },
+                    ) {
                         RadioButton(
                             selected = uiState.pendingThemeMode == themeMode,
                             onClick = { onThemeModeSelected(themeMode) },

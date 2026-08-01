@@ -19,7 +19,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
-
     private fun makeSource(
         reader: SharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -34,103 +33,103 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
     @Test
     fun `共有メモリから4輪のカーカス温度を読み取る`() =
         runBlocking {
-        val reader =
-            FakeTyreCarcassTemperatureMemoryReader(
-            buildTyreCarcassTemperatureBuffer(
-                TyreCarcassTemperatureBufferConfig(
-                    temperatures =
-                        mapOf(
-                        WheelIndex.FRONT_LEFT to 350.0,
-                        WheelIndex.FRONT_RIGHT to 351.0,
-                        WheelIndex.REAR_LEFT to 352.0,
-                        WheelIndex.REAR_RIGHT to 353.0,
-                    ),
+            val reader =
+                FakeTyreCarcassTemperatureMemoryReader(
+                    buildTyreCarcassTemperatureBuffer(
+                        TyreCarcassTemperatureBufferConfig(
+                            temperatures =
+                                mapOf(
+                                    WheelIndex.FRONT_LEFT to 350.0,
+                                    WheelIndex.FRONT_RIGHT to 351.0,
+                                    WheelIndex.REAR_LEFT to 352.0,
+                                    WheelIndex.REAR_RIGHT to 353.0,
+                                ),
                         ),
-            ),
-        )
-        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
+                    ),
+                )
+            val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.tyreCarcassTemperatureStream().first()
+            val result = repo.tyreCarcassTemperatureStream().first()
 
-        assertEquals(350.0 - 273.15, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
-        assertEquals(351.0 - 273.15, result.wheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
-        assertEquals(352.0 - 273.15, result.wheels[WheelIndex.REAR_LEFT]!!, 1e-9)
-        assertEquals(353.0 - 273.15, result.wheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
-    }
+            assertEquals(350.0 - 273.15, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+            assertEquals(351.0 - 273.15, result.wheels[WheelIndex.FRONT_RIGHT]!!, 1e-9)
+            assertEquals(352.0 - 273.15, result.wheels[WheelIndex.REAR_LEFT]!!, 1e-9)
+            assertEquals(353.0 - 273.15, result.wheels[WheelIndex.REAR_RIGHT]!!, 1e-9)
+        }
 
     @Test
     fun `playerIndexに応じた車両スロットからカーカス温度を読み取る`() =
         runBlocking {
-        val reader =
-            FakeTyreCarcassTemperatureMemoryReader(
-            buildTyreCarcassTemperatureBuffer(
-                TyreCarcassTemperatureBufferConfig(
-                    activeVehicles = 2,
-                    playerIdx = 1,
-                    temperatures = mapOf(WheelIndex.FRONT_LEFT to 365.0),
-                ),
-            ),
-        )
-        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
+            val reader =
+                FakeTyreCarcassTemperatureMemoryReader(
+                    buildTyreCarcassTemperatureBuffer(
+                        TyreCarcassTemperatureBufferConfig(
+                            activeVehicles = 2,
+                            playerIdx = 1,
+                            temperatures = mapOf(WheelIndex.FRONT_LEFT to 365.0),
+                        ),
+                    ),
+                )
+            val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.tyreCarcassTemperatureStream().first()
+            val result = repo.tyreCarcassTemperatureStream().first()
 
-        assertEquals(365.0 - 273.15, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
-    }
+            assertEquals(365.0 - 273.15, result.wheels[WheelIndex.FRONT_LEFT]!!, 1e-9)
+        }
 
     @Test
     fun `activeVehicles が 0 のとき emit しない`() =
         runBlocking {
-        val reader =
-            FakeTyreCarcassTemperatureMemoryReader(
-            buildTyreCarcassTemperatureBuffer(TyreCarcassTemperatureBufferConfig(activeVehicles = 0)),
-        )
-        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+            val reader =
+                FakeTyreCarcassTemperatureMemoryReader(
+                    buildTyreCarcassTemperatureBuffer(TyreCarcassTemperatureBufferConfig(activeVehicles = 0)),
+                )
+            val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
     @Test
     fun `playerIdxがactiveVehicles以上のとき emit しない`() =
         runBlocking {
-        val reader =
-            FakeTyreCarcassTemperatureMemoryReader(
-            buildTyreCarcassTemperatureBuffer(
-                TyreCarcassTemperatureBufferConfig(activeVehicles = 1, playerIdx = 1),
-            ),
-        )
-        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+            val reader =
+                FakeTyreCarcassTemperatureMemoryReader(
+                    buildTyreCarcassTemperatureBuffer(
+                        TyreCarcassTemperatureBufferConfig(activeVehicles = 1, playerIdx = 1),
+                    ),
+                )
+            val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
     @Test
     fun `reader が open できない間は emit しない`() =
         runBlocking {
-        val reader =
-            FakeTyreCarcassTemperatureMemoryReader(
-            buffer = buildTyreCarcassTemperatureBuffer(),
-            openResult = false,
-        )
-        val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+            val reader =
+                FakeTyreCarcassTemperatureMemoryReader(
+                    buffer = buildTyreCarcassTemperatureBuffer(),
+                    openResult = false,
+                )
+            val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.tyreCarcassTemperatureStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
     private fun buildTyreCarcassTemperatureBuffer(
         config: TyreCarcassTemperatureBufferConfig = TyreCarcassTemperatureBufferConfig(),
@@ -171,7 +170,6 @@ private class FakeTyreCarcassTemperatureMemoryReader(
     private val buffer: ByteBuffer,
     private val openResult: Boolean = true,
 ) : SharedMemoryReader {
-
     private var opened = openResult
 
     override fun open(): Boolean {

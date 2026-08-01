@@ -8,11 +8,11 @@ package kurou.kodriver.domain.model
 // キー空間として使用）からも参照する必要があるため、両モジュールから見えるdomain/model層に置いている。
 val lmuWindowsTyreTemperatureLowWarningSelectablePhases: Set<SessionPhase> =
     setOf(
-    SessionPhase.GARAGE,
-    SessionPhase.WARM_UP,
-    SessionPhase.GRID_WALK,
-    SessionPhase.FORMATION,
-)
+        SessionPhase.GARAGE,
+        SessionPhase.WARM_UP,
+        SessionPhase.GRID_WALK,
+        SessionPhase.FORMATION,
+    )
 
 val lmuWindowsTyreTemperatureLowWarningDefaultPhases: Set<SessionPhase> =
     lmuWindowsTyreTemperatureLowWarningSelectablePhases - SessionPhase.GARAGE

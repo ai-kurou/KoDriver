@@ -13,10 +13,10 @@ data class LmuWindowsVehicleData(
     val speedMs: Double
         get() =
             sqrt(
-            localVelocityX * localVelocityX +
-                localVelocityY * localVelocityY +
-                localVelocityZ * localVelocityZ,
-        )
+                localVelocityX * localVelocityX +
+                    localVelocityY * localVelocityY +
+                    localVelocityZ * localVelocityZ,
+            )
 
     val speedKmh: Double
         get() = speedMs * 3.6

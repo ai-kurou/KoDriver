@@ -100,19 +100,19 @@ private fun bannerTapWithTabSwitch(
     switchToMore: () -> Unit,
 ): (() -> Unit)? =
     if (onBannerTap != null) {
-    {
-        switchToMore()
-        onBannerTap()
+        {
+            switchToMore()
+            onBannerTap()
+        }
+    } else {
+        null
     }
-} else {
-    null
-}
 
 private fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType =
     when (this) {
-    ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
-    ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
-}
+        ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
+        ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
+    }
 
 private fun handleTabClick(
     dest: AppDestination,
@@ -157,10 +157,10 @@ private enum class AppDestination(
 @Composable
 private fun AppDestination.label(): String =
     when (this) {
-    AppDestination.Readout -> stringResource(Res.string.nav_readout)
-    AppDestination.Log -> stringResource(Res.string.nav_log)
-    AppDestination.More -> stringResource(Res.string.nav_more)
-}
+        AppDestination.Readout -> stringResource(Res.string.nav_readout)
+        AppDestination.Log -> stringResource(Res.string.nav_log)
+        AppDestination.More -> stringResource(Res.string.nav_more)
+    }
 
 @Composable
 private fun AppNavIcon(
@@ -278,13 +278,13 @@ fun AppScreen(
 
     val onBannerTap =
         if (bannerUiState.isTappable && bannerUiState.tapNavigationTarget != null) {
-        {
-            otherListViewModel.selectItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
-            Unit
+            {
+                otherListViewModel.selectItem(bannerUiState.tapNavigationTarget.toOtherListItemType())
+                Unit
+            }
+        } else {
+            null
         }
-    } else {
-        null
-    }
 
     LaunchedEffect(Unit) {
         viewModel.checkUpdate()
@@ -436,8 +436,8 @@ internal fun AppScreenContent(
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
     val onBannerTapWithTabSwitch =
         bannerTapWithTabSwitch(onBannerTap) {
-        currentDestination = AppDestination.More
-    }
+            currentDestination = AppDestination.More
+        }
 
     AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
         val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -446,10 +446,10 @@ internal fun AppScreenContent(
         Box(
             modifier =
                 Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .safeDrawingPadding(),
-                ) {
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .safeDrawingPadding(),
+        ) {
             NavigationSuiteScaffold(
                 modifier = Modifier.padding(top = 4.dp),
                 layoutType = resolvedLayoutType,
@@ -457,12 +457,12 @@ internal fun AppScreenContent(
                     AppDestination.entries.forEach { dest ->
                         val itemModifier =
                             if (resolvedLayoutType == NavigationSuiteType.NavigationDrawer) {
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp)
-                        } else {
-                            Modifier
-                        }
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp)
+                            } else {
+                                Modifier
+                            }
                         val showBadge = dest == AppDestination.More && hasAppUpdate
                         item(
                             icon = {
@@ -475,9 +475,9 @@ internal fun AppScreenContent(
                                     Row(
                                         modifier =
                                             Modifier
-                                            .fillMaxWidth()
-                                            .offset(x = (-6).dp),
-                                            horizontalArrangement = Arrangement.Center,
+                                                .fillMaxWidth()
+                                                .offset(x = (-6).dp),
+                                        horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically,
                                     ) {
                                         AppNavIcon(
@@ -512,37 +512,37 @@ internal fun AppScreenContent(
                 val dividerThickness = DividerDefaults.Thickness
                 val contentModifier =
                     Modifier
-                    .fillMaxSize()
-                    .then(
-                        if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                            Modifier
-                        } else {
-                            Modifier.drawWithContent {
-                                drawContent()
-                                val strokeWidth = dividerThickness.toPx()
-                                drawLine(
-                                    color = dividerColor,
-                                    start = Offset(strokeWidth / 2, 0f),
-                                    end = Offset(strokeWidth / 2, size.height),
-                                    strokeWidth = strokeWidth,
-                                )
-                            }
-                        },
-                    )
+                        .fillMaxSize()
+                        .then(
+                            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                                Modifier
+                            } else {
+                                Modifier.drawWithContent {
+                                    drawContent()
+                                    val strokeWidth = dividerThickness.toPx()
+                                    drawLine(
+                                        color = dividerColor,
+                                        start = Offset(strokeWidth / 2, 0f),
+                                        end = Offset(strokeWidth / 2, size.height),
+                                        strokeWidth = strokeWidth,
+                                    )
+                                }
+                            },
+                        )
                 Column(modifier = contentModifier) {
                     AnimatedVisibility(
                         visible = bannerUiState.isVisible,
                         enter =
                             slideInVertically(
-                            initialOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 300),
-                        ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                            exit =
-                                slideOutVertically(
-                            targetOffsetY = { -it },
-                            animationSpec = tween(durationMillis = 200),
-                        ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                                ) {
+                                initialOffsetY = { -it },
+                                animationSpec = tween(durationMillis = 300),
+                            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                        exit =
+                            slideOutVertically(
+                                targetOffsetY = { -it },
+                                animationSpec = tween(durationMillis = 200),
+                            ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                    ) {
                         ConnectionBannerContent(
                             uiState = bannerUiState,
                             onClick = onBannerTapWithTabSwitch,
@@ -566,32 +566,32 @@ internal fun AppScreenContent(
                 hostState = snackbarHostState,
                 modifier =
                     Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        bottom =
-                            if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
-                            96.dp
-                        } else {
-                            16.dp
-                        },
-                            ),
-                    )
+                        .align(Alignment.BottomCenter)
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom =
+                                if (resolvedLayoutType == NavigationSuiteType.NavigationBar) {
+                                    96.dp
+                                } else {
+                                    16.dp
+                                },
+                        ),
+            )
         }
     }
 }
 
 internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
     when {
-    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
-        NavigationSuiteType.NavigationRail
-    }
+        isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+            NavigationSuiteType.NavigationRail
+        }
 
-    else -> {
-        NavigationSuiteType.NavigationBar
+        else -> {
+            NavigationSuiteType.NavigationBar
+        }
     }
-}
 
 @Composable
 internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {

@@ -23,7 +23,6 @@ internal class OtherConsoleIpDetailViewModel(
     observeGt7Ps5UdpPort: ObserveGt7Ps5UdpPortUseCase,
     private val saveGt7Ps5UdpPort: SaveGt7Ps5UdpPortUseCase,
 ) : ViewModel() {
-
     private data class MutableState(
         val userInput: String? = null,
         val saveFailed: Boolean = false,
@@ -33,30 +32,30 @@ internal class OtherConsoleIpDetailViewModel(
 
     private val savedAddress: StateFlow<String> =
         observeConsoleAddress()
-        .map { it ?: "" }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
+            .map { it ?: "" }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
     private val savedPort: StateFlow<Int> =
         observeGt7Ps5UdpPort()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GT7_PS5_UDP_PORT_DEFAULT)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GT7_PS5_UDP_PORT_DEFAULT)
 
     private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
 
     val uiState: StateFlow<OtherConsoleIpDetailUiState> =
         combine(
-        savedAddress,
-        savedPort,
-        _mutable,
-    ) { saved, port, m ->
-        val current = m.userInput ?: saved
-        OtherConsoleIpDetailUiState(
-            inputAddress = current,
-            isInputValid = current.isEmpty() || isValidIp(current),
-            saveFailed = m.saveFailed,
-            isSaved = m.isSaved,
-            selectedPort = m.userSelectedPort ?: port,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherConsoleIpDetailUiState())
+            savedAddress,
+            savedPort,
+            _mutable,
+        ) { saved, port, m ->
+            val current = m.userInput ?: saved
+            OtherConsoleIpDetailUiState(
+                inputAddress = current,
+                isInputValid = current.isEmpty() || isValidIp(current),
+                saveFailed = m.saveFailed,
+                isSaved = m.isSaved,
+                selectedPort = m.userSelectedPort ?: port,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherConsoleIpDetailUiState())
 
     fun onAddressChanged(address: String) {
         _mutable.update { it.copy(userInput = address) }

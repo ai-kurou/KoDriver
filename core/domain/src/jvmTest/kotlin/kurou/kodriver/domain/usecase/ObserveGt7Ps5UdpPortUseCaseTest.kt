@@ -17,7 +17,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveGt7Ps5UdpPortUseCaseTest {
-
     @MockK
     private lateinit var repo: Gt7Ps5UdpPortPreferencesRepository
 
@@ -29,20 +28,20 @@ class ObserveGt7Ps5UdpPortUseCaseTest {
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
         runBlocking {
-        val state = MutableStateFlow(33740)
-        every { repo.port() } returns state
-        listOf(33740, 33741).forEach { port ->
-            coEvery { repo.savePort(port) } answers { state.update { port } }
+            val state = MutableStateFlow(33740)
+            every { repo.port() } returns state
+            listOf(33740, 33741).forEach { port ->
+                coEvery { repo.savePort(port) } answers { state.update { port } }
+            }
+            val useCase = ObserveGt7Ps5UdpPortUseCase(repo)
+
+            assertEquals(33740, useCase().first())
+
+            repo.savePort(33741)
+            assertEquals(33741, useCase().first())
+
+            verify(exactly = 2) { repo.port() }
+            coVerify(exactly = 1) { repo.savePort(33741) }
+            confirmVerified(repo)
         }
-        val useCase = ObserveGt7Ps5UdpPortUseCase(repo)
-
-        assertEquals(33740, useCase().first())
-
-        repo.savePort(33741)
-        assertEquals(33741, useCase().first())
-
-        verify(exactly = 2) { repo.port() }
-        coVerify(exactly = 1) { repo.savePort(33741) }
-        confirmVerified(repo)
-    }
 }

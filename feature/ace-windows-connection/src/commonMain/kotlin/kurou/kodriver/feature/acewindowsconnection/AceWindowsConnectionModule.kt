@@ -16,12 +16,12 @@ import org.koin.dsl.module
  */
 val aceWindowsConnectionModule =
     module {
-    // ViewModel
-    viewModelOf(::AceWindowsConnectionViewModel)
+        // ViewModel
+        viewModelOf(::AceWindowsConnectionViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
-    factory { CheckAceWindowsConnectionUseCase(get()) }
-    factory { ObserveAceWindowsFuelUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveAceWindowsConnectionUseCase(get(), get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
+        factory { CheckAceWindowsConnectionUseCase(get()) }
+        factory { ObserveAceWindowsFuelUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveAceWindowsConnectionUseCase(get(), get()) }
+    }

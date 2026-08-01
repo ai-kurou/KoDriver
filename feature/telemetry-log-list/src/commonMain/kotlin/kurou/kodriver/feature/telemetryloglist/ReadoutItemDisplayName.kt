@@ -37,60 +37,60 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String =
     when (flag) {
-    is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
-    is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
-    is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
-    is ReadoutItemKey.LmuWindows.Flag.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
-    is ReadoutItemKey.LmuWindows.Flag.RedFlag -> stringResource(Res.string.readout_item_red_flag)
-}
+        is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
+        is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
+        is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
+        is ReadoutItemKey.LmuWindows.Flag.FullCourseYellow -> stringResource(Res.string.readout_item_full_course_yellow)
+        is ReadoutItemKey.LmuWindows.Flag.RedFlag -> stringResource(Res.string.readout_item_red_flag)
+    }
 
 @Composable
 private fun aceFlagDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String =
     when (flag) {
-    is ReadoutItemKey.AceWindows.Flag.Root -> {
-        stringResource(Res.string.readout_item_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.Root -> {
+            stringResource(Res.string.readout_item_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.WhiteFlag -> {
-        stringResource(Res.string.readout_item_ace_white_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.WhiteFlag -> {
+            stringResource(Res.string.readout_item_ace_white_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.GreenFlag -> {
-        stringResource(Res.string.readout_item_ace_green_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.GreenFlag -> {
+            stringResource(Res.string.readout_item_ace_green_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.RedFlag -> {
-        stringResource(Res.string.readout_item_ace_red_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.RedFlag -> {
+            stringResource(Res.string.readout_item_ace_red_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.BlueFlag -> {
-        stringResource(Res.string.readout_item_ace_blue_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.BlueFlag -> {
+            stringResource(Res.string.readout_item_ace_blue_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.YellowFlag -> {
-        stringResource(Res.string.readout_item_ace_yellow_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.YellowFlag -> {
+            stringResource(Res.string.readout_item_ace_yellow_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.BlackFlag -> {
-        stringResource(Res.string.readout_item_ace_black_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.BlackFlag -> {
+            stringResource(Res.string.readout_item_ace_black_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag -> {
-        stringResource(Res.string.readout_item_ace_black_white_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.BlackWhiteFlag -> {
+            stringResource(Res.string.readout_item_ace_black_white_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.CheckeredFlag -> {
-        stringResource(Res.string.readout_item_ace_checkered_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.CheckeredFlag -> {
+            stringResource(Res.string.readout_item_ace_checkered_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag -> {
-        stringResource(Res.string.readout_item_ace_orange_circle_flag)
-    }
+        is ReadoutItemKey.AceWindows.Flag.OrangeCircleFlag -> {
+            stringResource(Res.string.readout_item_ace_orange_circle_flag)
+        }
 
-    is ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag -> {
-        stringResource(Res.string.readout_item_ace_red_yellow_stripes_flag)
+        is ReadoutItemKey.AceWindows.Flag.RedYellowStripesFlag -> {
+            stringResource(Res.string.readout_item_ace_red_yellow_stripes_flag)
+        }
     }
-}
 
 @Composable
 private fun vehicleApproachDisplayName(vehicleApproach: ReadoutItemKey.LmuWindows.VehicleApproach): String =

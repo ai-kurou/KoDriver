@@ -22,18 +22,18 @@ import org.koin.dsl.module
  */
 val mainModule =
     module {
-    // ViewModel
-    viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get()) }
-    viewModelOf(::ConnectionBannerViewModel)
+        // ViewModel
+        viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get()) }
+        viewModelOf(::ConnectionBannerViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
-    factory { CheckAppUpdateAvailableUseCase(get()) }
-    factory { ObserveExitConfirmationEnabledUseCase(get()) }
-    factory { ObserveKeepScreenOnEnabledUseCase(get()) }
-    factory { SaveExitConfirmationEnabledUseCase(get()) }
-    factory { SaveKeepScreenOnEnabledUseCase(get()) }
-    factory { ObserveDynamicColorEnabledUseCase(get()) }
-    factory { SaveDynamicColorEnabledUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Repository を解決）
+        factory { CheckAppUpdateAvailableUseCase(get()) }
+        factory { ObserveExitConfirmationEnabledUseCase(get()) }
+        factory { ObserveKeepScreenOnEnabledUseCase(get()) }
+        factory { SaveExitConfirmationEnabledUseCase(get()) }
+        factory { SaveKeepScreenOnEnabledUseCase(get()) }
+        factory { ObserveDynamicColorEnabledUseCase(get()) }
+        factory { SaveDynamicColorEnabledUseCase(get()) }
+    }
 
 expect val mainPlatformModule: Module

@@ -24,19 +24,19 @@ class WindowsSharedMemoryReader(
 
         val h =
             kernel32.OpenFileMappingA(
-            Kernel32FileMapping.FILE_MAP_READ,
-            false,
-            segmentName,
-        ) ?: return false
+                Kernel32FileMapping.FILE_MAP_READ,
+                false,
+                segmentName,
+            ) ?: return false
 
         val ptr =
             kernel32.MapViewOfFile(
-            h,
-            Kernel32FileMapping.FILE_MAP_READ,
-            0,
-            0,
-            sizeBytes,
-        )
+                h,
+                Kernel32FileMapping.FILE_MAP_READ,
+                0,
+                0,
+                sizeBytes,
+            )
         if (ptr == null) {
             Sentry.captureMessage("WindowsSharedMemoryReader: MapViewOfFile failed for segment '$segmentName'")
             kernel32.CloseHandle(h)

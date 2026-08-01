@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsTyreTemperaturePreferencesRepository
 
@@ -23,14 +22,14 @@ class SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
     @Test
     fun `任意のフェーズ集合を保存できる`() =
         runBlocking {
-        val useCase = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository)
-        val phases = setOf(SessionPhase.WARM_UP, SessionPhase.FORMATION)
+            val useCase = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository)
+            val phases = setOf(SessionPhase.WARM_UP, SessionPhase.FORMATION)
 
-        useCase(phases)
-        useCase(emptySet())
+            useCase(phases)
+            useCase(emptySet())
 
-        coVerify(exactly = 1) { repository.saveLowWarningPhases(phases) }
-        coVerify(exactly = 1) { repository.saveLowWarningPhases(emptySet()) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveLowWarningPhases(phases) }
+            coVerify(exactly = 1) { repository.saveLowWarningPhases(emptySet()) }
+            confirmVerified(repository)
+        }
 }

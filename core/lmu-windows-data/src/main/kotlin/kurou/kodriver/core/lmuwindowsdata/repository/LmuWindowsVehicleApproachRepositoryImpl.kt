@@ -22,7 +22,6 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
     private val lateralMinimumMeters: Double = 1.0,
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsVehicleApproachRepository {
-
     override fun vehicleApproachStream(): Flow<LmuWindowsVehicleApproachData> =
         combine(
             thresholdsRepository.observeLongitudinalThresholdMeters(),
@@ -37,17 +36,17 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         lateralMaximumMeters: Double,
     ): Flow<LmuWindowsVehicleApproachData> =
         source.bufferFlow.mapNotNull { buffer ->
-        val maxCount = maxVehicleCount(buffer)
-        val activeVehicles =
-            (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
-            .coerceAtMost(maxCount)
-        val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
-        if (activeVehicles > 0 && playerIdx < activeVehicles) {
-            computeVehicleApproach(buffer, activeVehicles, playerIdx, longitudinalThresholdMeters, lateralMaximumMeters)
-        } else {
-            null
+            val maxCount = maxVehicleCount(buffer)
+            val activeVehicles =
+                (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
+                    .coerceAtMost(maxCount)
+            val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
+            if (activeVehicles > 0 && playerIdx < activeVehicles) {
+                computeVehicleApproach(buffer, activeVehicles, playerIdx, longitudinalThresholdMeters, lateralMaximumMeters)
+            } else {
+                null
+            }
         }
-    }
 
     private fun computeVehicleApproach(
         buffer: ByteBuffer,
@@ -61,9 +60,9 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
         val plrOriYaw =
             atan2(
-            buffer.getDouble(plrBase + OFF_ORI_ROW2_X),
-            buffer.getDouble(plrBase + OFF_ORI_ROW2_Z),
-        ) - PI
+                buffer.getDouble(plrBase + OFF_ORI_ROW2_X),
+                buffer.getDouble(plrBase + OFF_ORI_ROW2_Z),
+            ) - PI
 
         val sinYaw = sin(plrOriYaw)
         val cosYaw = cos(plrOriYaw)

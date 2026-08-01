@@ -18,7 +18,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AndroidReadoutPreferencesRepositoryTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var tempFile: File
     private lateinit var repository: AndroidReadoutPreferencesRepository
@@ -28,9 +27,9 @@ class AndroidReadoutPreferencesRepositoryTest {
         tempFile = File.createTempFile("readout_test", ".preferences_pb")
         val dataStore =
             PreferenceDataStoreFactory.create(
-            scope = CoroutineScope(testDispatcher + SupervisorJob()),
-            produceFile = { tempFile },
-        )
+                scope = CoroutineScope(testDispatcher + SupervisorJob()),
+                produceFile = { tempFile },
+            )
         repository = AndroidReadoutPreferencesRepository(dataStore)
     }
 
@@ -42,57 +41,57 @@ class AndroidReadoutPreferencesRepositoryTest {
     @Test
     fun `enabledStatesは初期状態で空を返し保存後にON_OFF状態を返す`() =
         runTest(testDispatcher) {
-        assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
+            assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
 
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag.Root, false)
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage.Root, true)
+            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
+            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.Flag.Root, false)
+            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleDamage.Root, true)
 
-        val states = repository.observeReadoutEnabledStates("lmu_windows").first()
-        assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleApproach.Root])
-        assertEquals(false, states[ReadoutItemKey.LmuWindows.Flag.Root])
-        assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
-    }
+            val states = repository.observeReadoutEnabledStates("lmu_windows").first()
+            assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleApproach.Root])
+            assertEquals(false, states[ReadoutItemKey.LmuWindows.Flag.Root])
+            assertEquals(true, states[ReadoutItemKey.LmuWindows.VehicleDamage.Root])
+        }
 
     @Test
     fun `orderは初期状態で空を返し保存後に順序を返す`() =
         runTest(testDispatcher) {
-        assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
+            assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
 
-        repository.saveReadoutOrder(
-            "lmu_windows",
-            listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-            ),
-        )
+            repository.saveReadoutOrder(
+                "lmu_windows",
+                listOf(
+                    ReadoutItemKey.LmuWindows.Flag.Root,
+                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ),
+            )
 
-        assertEquals(
-            listOf(
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-            ),
-            repository.observeReadoutOrder("lmu_windows").first(),
-        )
-    }
+            assertEquals(
+                listOf(
+                    ReadoutItemKey.LmuWindows.Flag.Root,
+                    ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ),
+                repository.observeReadoutOrder("lmu_windows").first(),
+            )
+        }
 
     @Test
     fun `空のorderを保存すると空リストを返す`() =
         runTest(testDispatcher) {
-        repository.saveReadoutOrder("lmu_windows", emptyList())
+            repository.saveReadoutOrder("lmu_windows", emptyList())
 
-        assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
-    }
+            assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
+        }
 
     @Test
     fun `異なるシミュレータのデータは互いに影響しない`() =
         runTest(testDispatcher) {
-        repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
-        repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root))
+            repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
+            repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root))
 
-        assertEquals(emptyMap(), repository.observeReadoutEnabledStates("other").first())
-        assertEquals(emptyList(), repository.observeReadoutOrder("other").first())
-    }
+            assertEquals(emptyMap(), repository.observeReadoutEnabledStates("other").first())
+            assertEquals(emptyList(), repository.observeReadoutOrder("other").first())
+        }
 }

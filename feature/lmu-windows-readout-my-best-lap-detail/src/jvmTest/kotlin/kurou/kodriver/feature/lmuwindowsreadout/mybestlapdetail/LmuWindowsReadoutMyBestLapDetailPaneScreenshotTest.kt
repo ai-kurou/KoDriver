@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -27,14 +26,12 @@ class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
         capturePane(
             uiState =
                 LmuWindowsReadoutMyBestLapDetailUiState(
-                voiceType = MyBestLapVoiceType.CASUAL,
-            ),
-                )
+                    voiceType = MyBestLapVoiceType.CASUAL,
+                ),
+        )
     }
 
-    private fun capturePane(
-        uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState(),
-    ) {
+    private fun capturePane(uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState()) {
         rule.setContent {
             KoDriverTheme {
                 Surface {

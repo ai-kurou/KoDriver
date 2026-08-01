@@ -25,23 +25,23 @@ internal fun PitTimingRemainingLapsContent(
     }
     val virtualEnergyRemainingLaps =
         calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
-        ?.preciseRemainingLaps
+            ?.preciseRemainingLaps
     val tyreWearRemainingLaps = calculateLmuTyreWearRemainingLaps(lmuWindowsTelemetry)
     Column {
         Text(
             text =
                 stringResource(
-                Res.string.debug_state_pit_timing_virtual_energy_remaining_laps,
-                virtualEnergyRemainingLaps?.let { formatOneDecimal(it) } ?: UNKNOWN_REMAINING_LAPS_TEXT,
-            ),
-                )
+                    Res.string.debug_state_pit_timing_virtual_energy_remaining_laps,
+                    virtualEnergyRemainingLaps?.let { formatOneDecimal(it) } ?: UNKNOWN_REMAINING_LAPS_TEXT,
+                ),
+        )
         Text(
             text =
                 stringResource(
-                Res.string.debug_state_pit_timing_tyre_wear_remaining_laps,
-                tyreWearRemainingLaps?.let { formatOneDecimal(it) } ?: UNKNOWN_REMAINING_LAPS_TEXT,
-            ),
-                )
+                    Res.string.debug_state_pit_timing_tyre_wear_remaining_laps,
+                    tyreWearRemainingLaps?.let { formatOneDecimal(it) } ?: UNKNOWN_REMAINING_LAPS_TEXT,
+                ),
+        )
     }
 }
 

@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class ObserveExitConfirmationEnabledUseCaseTest {
-
     @MockK
     private lateinit var repository: ExitConfirmationEnabledRepository
 
@@ -26,11 +25,11 @@ class ObserveExitConfirmationEnabledUseCaseTest {
     @Test
     fun `終了確認の有効状態を監視できる`() =
         runBlocking {
-        every { repository.exitConfirmationEnabled() } returns MutableStateFlow(true)
-        val useCase = ObserveExitConfirmationEnabledUseCase(repository)
+            every { repository.exitConfirmationEnabled() } returns MutableStateFlow(true)
+            val useCase = ObserveExitConfirmationEnabledUseCase(repository)
 
-        assertTrue(useCase().first())
-        verify(exactly = 1) { repository.exitConfirmationEnabled() }
-        confirmVerified(repository)
-    }
+            assertTrue(useCase().first())
+            verify(exactly = 1) { repository.exitConfirmationEnabled() }
+            confirmVerified(repository)
+        }
 }

@@ -77,18 +77,18 @@ private fun TelemetryLogDetailContentPreview() {
     TelemetryLogDetailContent(
         uiState =
             TelemetryLogDetailUiState(
-            logId = 1L,
-            items =
-                listOf(
-                TelemetryLogDetailItemUiState(
-                    title = "選択したログ",
-                    telemetryJson = """{"speed":120,"gear":4}""",
-                ),
-                TelemetryLogDetailItemUiState(
-                    title = "一つ前のログ",
-                    telemetryJson = """{"speed":118,"gear":4}""",
-                ),
+                logId = 1L,
+                items =
+                    listOf(
+                        TelemetryLogDetailItemUiState(
+                            title = "選択したログ",
+                            telemetryJson = """{"speed":120,"gear":4}""",
+                        ),
+                        TelemetryLogDetailItemUiState(
+                            title = "一つ前のログ",
+                            telemetryJson = """{"speed":118,"gear":4}""",
+                        ),
+                    ),
             ),
-                ),
-            )
+    )
 }

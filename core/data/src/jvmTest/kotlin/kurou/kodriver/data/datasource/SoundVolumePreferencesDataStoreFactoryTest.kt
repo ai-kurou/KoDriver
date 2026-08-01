@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SoundVolumePreferencesDataStoreFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_sound_volume_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -23,9 +22,9 @@ class SoundVolumePreferencesDataStoreFactoryTest {
     @Test
     fun `音量設定が正しいファイルに書き込まれる`() =
         testScope.runTest {
-        val dataStore = createSoundVolumePreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(volume = 60) }
+            val dataStore = createSoundVolumePreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(volume = 60) }
 
-        assertTrue(tempDir.resolve("sound_volume_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("sound_volume_preferences.pb").exists())
+        }
 }

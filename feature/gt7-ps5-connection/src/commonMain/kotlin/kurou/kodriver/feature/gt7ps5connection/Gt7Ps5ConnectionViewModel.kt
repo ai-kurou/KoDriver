@@ -37,32 +37,31 @@ internal class Gt7Ps5ConnectionViewModel(
     private val observeGt7Ps5Connection: ObserveGt7Ps5ConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) : ViewModel() {
-
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<Gt7Ps5ConnectionUiState> =
         observeSelectedSimulator()
-        .flatMapLatest { simulator ->
-            if (simulator is Simulator.Gt7Ps5) {
-                observeGt7Ps5Connection().map { state ->
-                    Gt7Ps5ConnectionUiState(
-                        connectionStatus =
-                            if (state.isConnected) {
-                            Gt7Ps5ConnectionStatus.CONNECTED
-                        } else {
-                            Gt7Ps5ConnectionStatus.DISCONNECTED
-                        },
+            .flatMapLatest { simulator ->
+                if (simulator is Simulator.Gt7Ps5) {
+                    observeGt7Ps5Connection().map { state ->
+                        Gt7Ps5ConnectionUiState(
+                            connectionStatus =
+                                if (state.isConnected) {
+                                    Gt7Ps5ConnectionStatus.CONNECTED
+                                } else {
+                                    Gt7Ps5ConnectionStatus.DISCONNECTED
+                                },
                             fuelLevel = state.telemetry?.gasLevel,
-                        fuelCapacity = state.telemetry?.gasCapacity,
-                        currentLap = state.telemetry?.lapCount,
-                        totalLaps = state.telemetry?.lapsInRace,
-                    )
+                            fuelCapacity = state.telemetry?.gasCapacity,
+                            currentLap = state.telemetry?.lapCount,
+                            totalLaps = state.telemetry?.lapsInRace,
+                        )
+                    }
+                } else {
+                    flowOf(Gt7Ps5ConnectionUiState())
                 }
-            } else {
-                flowOf(Gt7Ps5ConnectionUiState())
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = Gt7Ps5ConnectionUiState(),
-        )
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = Gt7Ps5ConnectionUiState(),
+            )
 }

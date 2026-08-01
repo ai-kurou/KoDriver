@@ -12,9 +12,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,
 ) : LmuWindowsTyreTemperaturePreferencesRepository {
-
-    override fun observeHighThresholdCelsius(): Flow<Int> =
-        dataStore.data.map { it.highThresholdCelsius }
+    override fun observeHighThresholdCelsius(): Flow<Int> = dataStore.data.map { it.highThresholdCelsius }
 
     override suspend fun saveHighThresholdCelsius(celsius: Int) {
         dataStore.updateData { it.copy(highThresholdCelsius = celsius) }
@@ -27,7 +25,10 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
                 .toMap()
         }
 
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 
@@ -42,7 +43,7 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
         val explicitPhases =
             lmuWindowsTyreTemperatureLowWarningSelectablePhases
-            .associate { phase -> phase.rawValue to (phase in phases) }
+                .associate { phase -> phase.rawValue to (phase in phases) }
         dataStore.updateData { it.copy(lowWarningPhases = explicitPhases) }
     }
 }

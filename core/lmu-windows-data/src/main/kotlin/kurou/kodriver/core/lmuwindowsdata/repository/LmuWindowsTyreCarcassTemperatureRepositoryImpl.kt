@@ -11,7 +11,6 @@ import java.nio.ByteBuffer
 internal class LmuWindowsTyreCarcassTemperatureRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsTyreCarcassTemperatureRepository {
-
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> =
         source.bufferFlow.mapNotNull { readTyreCarcassTemperature(it) }
 
@@ -19,8 +18,8 @@ internal class LmuWindowsTyreCarcassTemperatureRepositoryImpl(
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null
         val wheels =
             LmuWindowsMapper
-            .readCarcassTemperaturesK(buffer, vehicleBase)
-            .mapValues { (_, kelvin) -> kelvin - KELVIN_OFFSET }
+                .readCarcassTemperaturesK(buffer, vehicleBase)
+                .mapValues { (_, kelvin) -> kelvin - KELVIN_OFFSET }
         return LmuWindowsTyreCarcassTemperatureData(wheels)
     }
 

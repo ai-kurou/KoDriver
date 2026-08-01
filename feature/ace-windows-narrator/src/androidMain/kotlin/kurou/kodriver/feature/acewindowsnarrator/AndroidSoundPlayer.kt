@@ -20,16 +20,19 @@ class AndroidSoundPlayer(
     override val isPlaying: Boolean
         get() =
             try {
-            currentPlayer?.isPlaying == true
-        } catch (_: Exception) {
-            false
-        }
+                currentPlayer?.isPlaying == true
+            } catch (_: Exception) {
+                false
+            }
 
-    override suspend fun play(bytes: ByteArray, volume: Int) {
+    override suspend fun play(
+        bytes: ByteArray,
+        volume: Int,
+    ) {
         val temp =
             withContext(Dispatchers.IO) {
-            File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
-        }
+                File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
+            }
         withContext(Dispatchers.Main) {
             suspendCancellableCoroutine { cont ->
                 try {

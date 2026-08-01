@@ -16,10 +16,10 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutTyreWearDetailModule =
     module {
-    viewModel {
-        LmuWindowsReadoutTyreWearDetailViewModel(get(), get(), get(named("lmu_windows")))
-    }
+        viewModel {
+            LmuWindowsReadoutTyreWearDetailViewModel(get(), get(), get(named("lmu_windows")))
+        }
 
-    factoryOf(::ObserveLmuWindowsTyreWearThresholdPercentageUseCase)
-    factoryOf(::SaveLmuWindowsTyreWearThresholdPercentageUseCase)
-}
+        factoryOf(::ObserveLmuWindowsTyreWearThresholdPercentageUseCase)
+        factoryOf(::SaveLmuWindowsTyreWearThresholdPercentageUseCase)
+    }

@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveThemeModeUseCaseTest {
-
     @MockK
     private lateinit var repository: ThemePreferencesRepository
 
@@ -27,11 +26,11 @@ class ObserveThemeModeUseCaseTest {
     @Test
     fun `テーマモードを監視できる`() =
         runBlocking {
-        every { repository.observeThemeMode() } returns MutableStateFlow(ThemeMode.DARK)
-        val useCase = ObserveThemeModeUseCase(repository)
+            every { repository.observeThemeMode() } returns MutableStateFlow(ThemeMode.DARK)
+            val useCase = ObserveThemeModeUseCase(repository)
 
-        assertEquals(ThemeMode.DARK, useCase().first())
-        verify(exactly = 1) { repository.observeThemeMode() }
-        confirmVerified(repository)
-    }
+            assertEquals(ThemeMode.DARK, useCase().first())
+            verify(exactly = 1) { repository.observeThemeMode() }
+            confirmVerified(repository)
+        }
 }

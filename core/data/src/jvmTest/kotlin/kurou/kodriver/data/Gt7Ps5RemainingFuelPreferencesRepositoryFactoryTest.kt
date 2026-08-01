@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5RemainingFuelPreferencesRepositoryFactoryTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_gt7_remaining_fuel_repository_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
@@ -25,27 +24,27 @@ class Gt7Ps5RemainingFuelPreferencesRepositoryFactoryTest {
     @Test
     fun `デフォルト値は30パーセント`() =
         testScope.runTest {
-        val repository =
-            createGt7Ps5RemainingFuelPreferencesRepository(
-            directory = tempDir.absolutePath,
-        )
+            val repository =
+                createGt7Ps5RemainingFuelPreferencesRepository(
+                    directory = tempDir.absolutePath,
+                )
 
-        assertEquals(
-            GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
-            repository.observeThresholdPercentage().first(),
-        )
-    }
+            assertEquals(
+                GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
+                repository.observeThresholdPercentage().first(),
+            )
+        }
 
     @Test
     fun `保存した燃料残量閾値を読み出せる`() =
         testScope.runTest {
-        val repository =
-            createGt7Ps5RemainingFuelPreferencesRepository(
-            directory = tempDir.absolutePath,
-        )
+            val repository =
+                createGt7Ps5RemainingFuelPreferencesRepository(
+                    directory = tempDir.absolutePath,
+                )
 
-        repository.saveThresholdPercentage(45)
+            repository.saveThresholdPercentage(45)
 
-        assertEquals(45, repository.observeThresholdPercentage().first())
-    }
+            assertEquals(45, repository.observeThresholdPercentage().first())
+        }
 }

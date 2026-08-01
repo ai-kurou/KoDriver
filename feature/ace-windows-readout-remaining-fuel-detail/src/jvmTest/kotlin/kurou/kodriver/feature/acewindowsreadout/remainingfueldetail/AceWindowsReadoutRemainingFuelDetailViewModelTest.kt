@@ -31,7 +31,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsReadoutRemainingFuelDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -53,70 +52,70 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
 
     private fun createViewModel() =
         AceWindowsReadoutRemainingFuelDetailViewModel(
-        observeThresholdPercentage = ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
-        saveThresholdPercentage = SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
+            observeThresholdPercentage = ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
+            saveThresholdPercentage = SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+        )
 
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
         runTest {
-        every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
-        val viewModel = createViewModel()
+            every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
+            val viewModel = createViewModel()
 
-        assertEquals(
-            AceWindowsReadoutRemainingFuelDetailUiState(thresholdPercentage = 30),
-            viewModel.uiState.first(),
-        )
-        verify(exactly = 1) { repository.observeThresholdPercentage() }
-        confirmVerified(repository)
-    }
+            assertEquals(
+                AceWindowsReadoutRemainingFuelDetailUiState(thresholdPercentage = 30),
+                viewModel.uiState.first(),
+            )
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onThresholdChangedを呼ぶとuiStateのthresholdPercentageが更新される`() =
         runTest {
-        val thresholdFlow = MutableStateFlow(30)
-        every { repository.observeThresholdPercentage() } returns thresholdFlow
-        coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
-        val viewModel = createViewModel()
+            val thresholdFlow = MutableStateFlow(30)
+            every { repository.observeThresholdPercentage() } returns thresholdFlow
+            coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
+            val viewModel = createViewModel()
 
-        viewModel.onThresholdChanged(50)
+            viewModel.onThresholdChanged(50)
 
-        assertEquals(50, viewModel.uiState.first().thresholdPercentage)
-        verify(exactly = 1) { repository.observeThresholdPercentage() }
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
-        confirmVerified(repository)
-    }
+            assertEquals(50, viewModel.uiState.first().thresholdPercentage)
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値30に戻る`() =
         runTest {
-        val thresholdFlow = MutableStateFlow(30)
-        every { repository.observeThresholdPercentage() } returns thresholdFlow
-        coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
-        coEvery { repository.saveThresholdPercentage(30) } answers { thresholdFlow.update { 30 } }
-        val viewModel = createViewModel()
+            val thresholdFlow = MutableStateFlow(30)
+            every { repository.observeThresholdPercentage() } returns thresholdFlow
+            coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
+            coEvery { repository.saveThresholdPercentage(30) } answers { thresholdFlow.update { 30 } }
+            val viewModel = createViewModel()
 
-        viewModel.onThresholdChanged(50)
-        viewModel.onThresholdReset()
+            viewModel.onThresholdChanged(50)
+            viewModel.onThresholdReset()
 
-        assertEquals(30, viewModel.uiState.first().thresholdPercentage)
-        verify(exactly = 1) { repository.observeThresholdPercentage() }
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
-        coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
-        confirmVerified(repository)
-    }
+            assertEquals(30, viewModel.uiState.first().thresholdPercentage)
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            coVerify(exactly = 1) { repository.saveThresholdPercentage(50) }
+            coVerify(exactly = 1) { repository.saveThresholdPercentage(30) }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onPreviewClickedを呼ぶと残り燃料警告イベントが再生される`() =
         runTest {
-        every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
-        val viewModel = createViewModel()
+            every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
+            val viewModel = createViewModel()
 
-        viewModel.onPreviewClicked()
+            viewModel.onPreviewClicked()
 
-        verify(exactly = 1) { repository.observeThresholdPercentage() }
-        verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
-        confirmVerified(repository, ttsEngine)
-    }
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            confirmVerified(repository, ttsEngine)
+        }
 }

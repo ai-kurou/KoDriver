@@ -46,87 +46,90 @@ sealed class ReadoutListItemType(
     }
 
     companion object {
-        fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? =
+        fun fromId(
+            simulator: Simulator,
+            id: ReadoutItemKey,
+        ): ReadoutListItemType? =
             when (simulator) {
-            is Simulator.LmuWindows -> lmuWindowsFromId(id)
-            is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
-            is Simulator.AceWindows -> aceWindowsFromId(id)
-        }
+                is Simulator.LmuWindows -> lmuWindowsFromId(id)
+                is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
+                is Simulator.AceWindows -> aceWindowsFromId(id)
+            }
 
         private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? =
             when (id) {
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
-            ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
-            ReadoutItemKey.LmuWindows.PitTiming.Root -> LmuWindows.PitTiming
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
-            ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
-            ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
-            else -> null
-        }
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
+                ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root -> LmuWindows.TyreTemperature
+                ReadoutItemKey.LmuWindows.PitTiming.Root -> LmuWindows.PitTiming
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> LmuWindows.RemainingVirtualEnergy
+                ReadoutItemKey.LmuWindows.TyreWear.Root -> LmuWindows.TyreWear
+                ReadoutItemKey.LmuWindows.MyBestLap.Root -> LmuWindows.MyBestLap
+                else -> null
+            }
 
         private fun gt7Ps5FromId(id: ReadoutItemKey): Gt7Ps5? =
             when (id) {
-            ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
-            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
-            ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Gt7Ps5.RemainingFuel
-            else -> null
-        }
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Gt7Ps5.RemainingFuel
+                else -> null
+            }
 
         private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? =
             when (id) {
-            ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
-            ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
-            else -> null
-        }
+                ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
+                ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
+                else -> null
+            }
 
         fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> =
             when (simulator) {
-            is Simulator.LmuWindows -> {
-                ReadoutItemKey.entries
-                    .filterIsInstance<ReadoutItemKey.LmuWindows.TopLevel>()
-                    .sortedBy { key -> lmuWindowsOrderIndex(key) }
-            }
+                is Simulator.LmuWindows -> {
+                    ReadoutItemKey.entries
+                        .filterIsInstance<ReadoutItemKey.LmuWindows.TopLevel>()
+                        .sortedBy { key -> lmuWindowsOrderIndex(key) }
+                }
 
-            is Simulator.Gt7Ps5 -> {
-                ReadoutItemKey.entries
-                    .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
-                    .sortedBy { key -> gt7Ps5OrderIndex(key) }
-            }
+                is Simulator.Gt7Ps5 -> {
+                    ReadoutItemKey.entries
+                        .filterIsInstance<ReadoutItemKey.Gt7Ps5.TopLevel>()
+                        .sortedBy { key -> gt7Ps5OrderIndex(key) }
+                }
 
-            is Simulator.AceWindows -> {
-                ReadoutItemKey.entries
-                    .filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()
-                    .sortedBy { key -> aceWindowsOrderIndex(key) }
+                is Simulator.AceWindows -> {
+                    ReadoutItemKey.entries
+                        .filterIsInstance<ReadoutItemKey.AceWindows.TopLevel>()
+                        .sortedBy { key -> aceWindowsOrderIndex(key) }
+                }
             }
-        }
 
         // listPane のトップレベル項目のみ並び順を持つ。
         // 新しい TopLevel を追加した際、ここで対応を判断しないとコンパイルが通らない。
         private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int =
             when (key) {
-            ReadoutItemKey.LmuWindows.Flag.Root -> 0
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
-            ReadoutItemKey.LmuWindows.PitTiming.Root -> 3
-            ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 4
-            ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 6
-            ReadoutItemKey.LmuWindows.MyBestLap.Root -> 7
-        }
+                ReadoutItemKey.LmuWindows.Flag.Root -> 0
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
+                ReadoutItemKey.LmuWindows.PitTiming.Root -> 3
+                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> 4
+                ReadoutItemKey.LmuWindows.TyreWear.Root -> 5
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root -> 6
+                ReadoutItemKey.LmuWindows.MyBestLap.Root -> 7
+            }
 
         private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int =
             when (key) {
-            ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
-            ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> 1
-            ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 2
-        }
+                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
+                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> 1
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 2
+            }
 
         private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int =
             when (key) {
-            ReadoutItemKey.AceWindows.Flag.Root -> 0
-            ReadoutItemKey.AceWindows.RemainingFuel.Root -> 1
-        }
+                ReadoutItemKey.AceWindows.Flag.Root -> 0
+                ReadoutItemKey.AceWindows.RemainingFuel.Root -> 1
+            }
     }
 }

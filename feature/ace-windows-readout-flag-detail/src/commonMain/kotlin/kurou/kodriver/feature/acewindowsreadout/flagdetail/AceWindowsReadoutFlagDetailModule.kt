@@ -15,9 +15,9 @@ import org.koin.dsl.module
  */
 val aceWindowsReadoutFlagDetailModule =
     module {
-    // ViewModel（get(named "ace_windows") は narrator モジュールの PlaySpeechEventUseCase を解決）
-    viewModel { AceWindowsReadoutFlagDetailViewModel(get(), get(), get(named("ace_windows"))) }
+        // ViewModel（get(named "ace_windows") は narrator モジュールの PlaySpeechEventUseCase を解決）
+        viewModel { AceWindowsReadoutFlagDetailViewModel(get(), get(), get(named("ace_windows"))) }
 
-    factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
-    factory { SaveAceWindowsFlagEnabledStateUseCase(get()) }
-}
+        factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
+        factory { SaveAceWindowsFlagEnabledStateUseCase(get()) }
+    }

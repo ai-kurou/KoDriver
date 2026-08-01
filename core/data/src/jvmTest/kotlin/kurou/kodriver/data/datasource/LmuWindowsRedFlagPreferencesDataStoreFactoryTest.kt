@@ -11,7 +11,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsRedFlagPreferencesDataStoreFactoryTest {
-
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_red_flag_preferences_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -24,9 +23,9 @@ class LmuWindowsRedFlagPreferencesDataStoreFactoryTest {
     @Test
     fun `LMU赤旗設定が正しいファイルに書き込まれる`() =
         testScope.runTest {
-        val dataStore = createLmuWindowsRedFlagPreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(voiceType = "red_flag") }
+            val dataStore = createLmuWindowsRedFlagPreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(voiceType = "red_flag") }
 
-        assertTrue(tempDir.resolve("lmu_windows_red_flag_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("lmu_windows_red_flag_preferences.pb").exists())
+        }
 }

@@ -17,18 +17,17 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
-
     private val tempDir =
         Files
-        .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_test")
-        .toFile()
+            .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_test")
+            .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
-        serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("test.pb") },
-    )
+            serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("test.pb") },
+        )
     private val repository = LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
@@ -39,55 +38,55 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     @Test
     fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
         testScope.runTest {
-        assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
-            repository.observeLongitudinalThresholdMeters().first(),
-        )
+            assertEquals(
+                LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
+                repository.observeLongitudinalThresholdMeters().first(),
+            )
 
-        repository.saveLongitudinalThresholdMeters(50.0)
-        assertEquals(50.0, repository.observeLongitudinalThresholdMeters().first())
+            repository.saveLongitudinalThresholdMeters(50.0)
+            assertEquals(50.0, repository.observeLongitudinalThresholdMeters().first())
 
-        repository.saveLongitudinalThresholdMeters(30.0)
-        assertEquals(30.0, repository.observeLongitudinalThresholdMeters().first())
-    }
+            repository.saveLongitudinalThresholdMeters(30.0)
+            assertEquals(30.0, repository.observeLongitudinalThresholdMeters().first())
+        }
 
     @Test
     fun `横方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
         testScope.runTest {
-        assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
-            repository.observeLateralThresholdMeters().first(),
-        )
+            assertEquals(
+                LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
+                repository.observeLateralThresholdMeters().first(),
+            )
 
-        repository.saveLateralThresholdMeters(3.5)
-        assertEquals(3.5, repository.observeLateralThresholdMeters().first())
+            repository.saveLateralThresholdMeters(3.5)
+            assertEquals(3.5, repository.observeLateralThresholdMeters().first())
 
-        repository.saveLateralThresholdMeters(1.0)
-        assertEquals(1.0, repository.observeLateralThresholdMeters().first())
-    }
+            repository.saveLateralThresholdMeters(1.0)
+            assertEquals(1.0, repository.observeLateralThresholdMeters().first())
+        }
 
     @Test
     fun `縦横の閾値は独立して保持される`() =
         testScope.runTest {
-        repository.saveLongitudinalThresholdMeters(40.0)
-        repository.saveLateralThresholdMeters(5.0)
+            repository.saveLongitudinalThresholdMeters(40.0)
+            repository.saveLateralThresholdMeters(5.0)
 
-        assertEquals(40.0, repository.observeLongitudinalThresholdMeters().first())
-        assertEquals(5.0, repository.observeLateralThresholdMeters().first())
-    }
+            assertEquals(40.0, repository.observeLongitudinalThresholdMeters().first())
+            assertEquals(5.0, repository.observeLateralThresholdMeters().first())
+        }
 
     @Test
     fun `継続時間閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
         testScope.runTest {
-        assertEquals(
-            LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
-            repository.observeSustainedApproachDurationSeconds().first(),
-        )
+            assertEquals(
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
+                repository.observeSustainedApproachDurationSeconds().first(),
+            )
 
-        repository.saveSustainedApproachDurationSeconds(8)
-        assertEquals(8, repository.observeSustainedApproachDurationSeconds().first())
+            repository.saveSustainedApproachDurationSeconds(8)
+            assertEquals(8, repository.observeSustainedApproachDurationSeconds().first())
 
-        repository.saveSustainedApproachDurationSeconds(6)
-        assertEquals(6, repository.observeSustainedApproachDurationSeconds().first())
-    }
+            repository.saveSustainedApproachDurationSeconds(6)
+            assertEquals(6, repository.observeSustainedApproachDurationSeconds().first())
+        }
 }

@@ -7,7 +7,6 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 class WasmJsSoundPlayerTest {
-
     private val player = WasmJsSoundPlayer()
 
     @Test
@@ -18,12 +17,12 @@ class WasmJsSoundPlayerTest {
     @Test
     fun `play を呼んでも例外が発生しない`() =
         runTest {
-        player.play(ByteArray(0))
-    }
+            player.play(ByteArray(0))
+        }
 
     @Test
     fun `音量0を指定しても例外が発生しない`() =
         runTest {
-        player.play(ByteArray(0), volume = 0)
-    }
+            player.play(ByteArray(0), volume = 0)
+        }
 }

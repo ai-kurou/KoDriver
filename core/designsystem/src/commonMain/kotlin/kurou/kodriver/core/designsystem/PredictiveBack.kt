@@ -15,6 +15,6 @@ typealias AppBackHandler = @Composable (
  */
 fun Modifier.predictiveBackDetailPane(progress: Float): Modifier =
     graphicsLayer {
-    val coercedProgress = progress.coerceIn(0f, 1f)
-    translationX = size.width * 0.25f * coercedProgress
-}
+        val coercedProgress = progress.coerceIn(0f, 1f)
+        translationX = size.width * 0.25f * coercedProgress
+    }

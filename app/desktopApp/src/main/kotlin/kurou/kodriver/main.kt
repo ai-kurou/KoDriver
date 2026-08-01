@@ -64,20 +64,20 @@ fun main() {
                         withContext(Dispatchers.Default) {
                             koin =
                                 startKoin {
-                                // composition root: データ層モジュール（:core:*data）＋ 全 feature の Koin モジュール
-                                // （featureModules）＋ アプリバージョン定数（named("appVersion")。server-connection 等が
-                                // get で解決）を束ねる。
-                                modules(
-                                    listOf(
-                                        desktopDataModule,
-                                        lmuWindowsDataModule,
-                                        gt7Ps5DataModule,
-                                        aceWindowsDataModule,
-                                    ) +
-                                        featureModules +
-                                        listOf(module { single(named("appVersion")) { APP_VERSION } }),
-                                )
-                            }.koin
+                                    // composition root: データ層モジュール（:core:*data）＋ 全 feature の Koin モジュール
+                                    // （featureModules）＋ アプリバージョン定数（named("appVersion")。server-connection 等が
+                                    // get で解決）を束ねる。
+                                    modules(
+                                        listOf(
+                                            desktopDataModule,
+                                            lmuWindowsDataModule,
+                                            gt7Ps5DataModule,
+                                            aceWindowsDataModule,
+                                        ) +
+                                            featureModules +
+                                            listOf(module { single(named("appVersion")) { APP_VERSION } }),
+                                    )
+                                }.koin
                         }
                     },
                     startServer = {

@@ -16,10 +16,10 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutRemainingVirtualEnergyDetailModule =
     module {
-    viewModel {
-        LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(get(), get(), get(named("lmu_windows")))
-    }
+        viewModel {
+            LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(get(), get(), get(named("lmu_windows")))
+        }
 
-    factoryOf(::ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
-    factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
-}
+        factoryOf(::ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
+        factoryOf(::SaveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase)
+    }

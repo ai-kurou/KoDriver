@@ -69,21 +69,21 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
                 ReadoutStartSoundType.entries.forEach { type ->
                     val label =
                         when (type) {
-                        ReadoutStartSoundType.ELECTRONIC_NOISE -> {
-                            stringResource(Res.string.readout_start_sound_electronic_noise)
-                        }
+                            ReadoutStartSoundType.ELECTRONIC_NOISE -> {
+                                stringResource(Res.string.readout_start_sound_electronic_noise)
+                            }
 
-                        ReadoutStartSoundType.FORMULA_RADIO -> {
-                            stringResource(Res.string.readout_start_sound_formula_radio)
+                            ReadoutStartSoundType.FORMULA_RADIO -> {
+                                stringResource(Res.string.readout_start_sound_formula_radio)
+                            }
                         }
-                    }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier =
                             Modifier
-                            .fillMaxWidth()
-                            .clickable { onTypeSelected(type) },
-                            ) {
+                                .fillMaxWidth()
+                                .clickable { onTypeSelected(type) },
+                    ) {
                         RadioButton(
                             selected = uiState.pendingType == type,
                             onClick = { onTypeSelected(type) },

@@ -11,12 +11,12 @@ class TelemetryLogEntityTest {
     fun `toDomainはEntityをDomainに変換する`() {
         val entity =
             TelemetryLogEntity(
-            id = 1L,
-            createdAt = 1000L,
-            simulatorId = Simulator.Gt7Ps5.id,
-            readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
-            telemetryJson = """{"lapCount":1}""",
-        )
+                id = 1L,
+                createdAt = 1000L,
+                simulatorId = Simulator.Gt7Ps5.id,
+                readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.value,
+                telemetryJson = """{"lapCount":1}""",
+            )
 
         assertEquals(
             TelemetryLog(

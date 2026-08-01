@@ -13,10 +13,10 @@ import org.koin.dsl.module
  */
 val otherVolumeDetailModule =
     module {
-    // ViewModel
-    viewModelOf(::OtherVolumeDetailViewModel)
+        // ViewModel
+        viewModelOf(::OtherVolumeDetailViewModel)
 
-    // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-    factory { ObserveSoundVolumeUseCase(get()) }
-    factory { SaveSoundVolumeUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
+        factory { ObserveSoundVolumeUseCase(get()) }
+        factory { SaveSoundVolumeUseCase(get()) }
+    }

@@ -32,7 +32,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsReadoutMyBestLapDetailViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -56,38 +55,38 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutMyBestLapDetailViewModel(
-        observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
-        saveMyBestLapVoiceType = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
-        playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
-    )
+            observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
+            saveMyBestLapVoiceType = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
+            playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
+        )
 
     @Test
     fun `初期状態は voiceType=FORMAL の UiState を返す`() =
         runTest {
-        every { repository.observeVoiceType() } returns voiceTypeFlow
-        val viewModel = createViewModel()
+            every { repository.observeVoiceType() } returns voiceTypeFlow
+            val viewModel = createViewModel()
 
-        assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
-        verify(exactly = 1) { repository.observeVoiceType() }
-        confirmVerified(repository)
-    }
+            assertEquals(MyBestLapVoiceType.FORMAL, viewModel.uiState.first().voiceType)
+            verify(exactly = 1) { repository.observeVoiceType() }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() =
         runTest {
-        every { repository.observeVoiceType() } returns voiceTypeFlow
-        coEvery { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) } answers {
-            voiceTypeFlow.update { MyBestLapVoiceType.CASUAL }
+            every { repository.observeVoiceType() } returns voiceTypeFlow
+            coEvery { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) } answers {
+                voiceTypeFlow.update { MyBestLapVoiceType.CASUAL }
+            }
+            val viewModel = createViewModel()
+
+            viewModel.onVoiceTypeChanged(MyBestLapVoiceType.CASUAL)
+
+            assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
+            verify(exactly = 1) { repository.observeVoiceType() }
+            coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
+            confirmVerified(repository)
         }
-        val viewModel = createViewModel()
-
-        viewModel.onVoiceTypeChanged(MyBestLapVoiceType.CASUAL)
-
-        assertEquals(MyBestLapVoiceType.CASUAL, viewModel.uiState.first().voiceType)
-        verify(exactly = 1) { repository.observeVoiceType() }
-        coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }
-        confirmVerified(repository)
-    }
 
     @Test
     fun `onPreviewClicked に FORMAL を渡すと MyBestLapFormal イベントが再生される`() {

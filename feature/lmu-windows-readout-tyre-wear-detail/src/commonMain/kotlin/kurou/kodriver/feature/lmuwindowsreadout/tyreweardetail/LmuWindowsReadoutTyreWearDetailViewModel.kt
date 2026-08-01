@@ -18,15 +18,14 @@ internal class LmuWindowsReadoutTyreWearDetailViewModel(
     private val saveThresholdPercentage: SaveLmuWindowsTyreWearThresholdPercentageUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<LmuWindowsReadoutTyreWearDetailUiState> =
         observeThresholdPercentage()
-        .map { LmuWindowsReadoutTyreWearDetailUiState(thresholdPercentage = it) }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            LmuWindowsReadoutTyreWearDetailUiState(),
-        )
+            .map { LmuWindowsReadoutTyreWearDetailUiState(thresholdPercentage = it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5_000),
+                LmuWindowsReadoutTyreWearDetailUiState(),
+            )
 
     fun onWarningChipClicked() {
         playSpeechEvent(SpeechEvent.TyreWearWarning)

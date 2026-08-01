@@ -21,7 +21,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class LmuWindowsFlagRepositoryImplTest {
-
     private fun makeSource(
         reader: FakeStaticSharedMemoryReader,
         pollingIntervalMs: Long = 1L,
@@ -36,82 +35,82 @@ class LmuWindowsFlagRepositoryImplTest {
     @Test
     fun `共有メモリからセッション旗とプレイヤー旗を読み取る`() =
         runBlocking {
-        val reader =
-            FakeStaticSharedMemoryReader(
-            buildFlagsBuffer(
-                FlagBufferConfig(
-                    gamePhase = 4,
-                    yellowFlagState = 2,
-                    sectorFlags = listOf(0, 2, 0),
-                    startLight = 3,
-                    numRedLights = 5,
-                    playerFlag = 6,
-                    playerUnderYellow = true,
-                    playerCountLapFlag = 1,
-                ),
-            ),
-        )
-        val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
+            val reader =
+                FakeStaticSharedMemoryReader(
+                    buildFlagsBuffer(
+                        FlagBufferConfig(
+                            gamePhase = 4,
+                            yellowFlagState = 2,
+                            sectorFlags = listOf(0, 2, 0),
+                            startLight = 3,
+                            numRedLights = 5,
+                            playerFlag = 6,
+                            playerUnderYellow = true,
+                            playerCountLapFlag = 1,
+                        ),
+                    ),
+                )
+            val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
 
-        val result = repo.flagStream().first()
+            val result = repo.flagStream().first()
 
-        assertEquals(SessionPhase.COUNTDOWN, result.gamePhase)
-        assertEquals(SessionYellowFlagState.PIT_CLOSED, result.yellowFlagState)
-        assertEquals(listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR), result.sectorFlags)
-        assertEquals(3, result.startLight)
-        assertEquals(5, result.numRedLights)
-        assertEquals(PrimaryFlag.BLUE, result.playerFlag)
-        assertTrue(result.playerUnderYellow)
-        assertEquals(CountLapFlag.COUNT_LAP_BUT_NOT_TIME, result.playerCountLapFlag)
-    }
+            assertEquals(SessionPhase.COUNTDOWN, result.gamePhase)
+            assertEquals(SessionYellowFlagState.PIT_CLOSED, result.yellowFlagState)
+            assertEquals(listOf(SectorFlagState.CLEAR, SectorFlagState.UNKNOWN, SectorFlagState.CLEAR), result.sectorFlags)
+            assertEquals(3, result.startLight)
+            assertEquals(5, result.numRedLights)
+            assertEquals(PrimaryFlag.BLUE, result.playerFlag)
+            assertTrue(result.playerUnderYellow)
+            assertEquals(CountLapFlag.COUNT_LAP_BUT_NOT_TIME, result.playerCountLapFlag)
+        }
 
     @Test
     fun `player が見つからない間は emit しない`() =
         runBlocking {
-        val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer(FlagBufferConfig(hasPlayer = false)))
-        val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+            val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer(FlagBufferConfig(hasPlayer = false)))
+            val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
     @Test
     fun `reader が open できない間は emit しない`() =
         runBlocking {
-        val reader =
-            FakeStaticSharedMemoryReader(
-            buffer = buildFlagsBuffer(),
-            initialOpen = false,
-            openResult = false,
-        )
-        val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
-        val emitCount = AtomicInteger(0)
+            val reader =
+                FakeStaticSharedMemoryReader(
+                    buffer = buildFlagsBuffer(),
+                    initialOpen = false,
+                    openResult = false,
+                )
+            val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
+            val emitCount = AtomicInteger(0)
 
-        val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
-        delay(50)
-        job.cancelAndJoin()
+            val job = launch { repo.flagStream().collect { emitCount.incrementAndGet() } }
+            delay(50)
+            job.cancelAndJoin()
 
-        assertEquals(0, emitCount.get())
-    }
+            assertEquals(0, emitCount.get())
+        }
 
     @Test
     fun `フローがキャンセルされると reader の close が呼ばれる`() =
         runBlocking {
-        val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer())
-        val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
+            val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer())
+            val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
 
-        val job = launch { repo.flagStream().collect { } }
-        delay(50)
-        job.cancelAndJoin()
-        // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
-        delay(100)
+            val job = launch { repo.flagStream().collect { } }
+            delay(50)
+            job.cancelAndJoin()
+            // WhileSubscribed が IO スレッドへ cancellation を伝播するまで待機
+            delay(100)
 
-        assertTrue(reader.closeCalled)
-    }
+            assertTrue(reader.closeCalled)
+        }
 
     private fun buildFlagsBuffer(config: FlagBufferConfig = FlagBufferConfig()): ByteBuffer {
         val buffer = ByteBuffer.allocate(135_000).order(ByteOrder.LITTLE_ENDIAN)

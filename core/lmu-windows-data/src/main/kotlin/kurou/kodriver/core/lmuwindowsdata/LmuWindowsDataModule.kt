@@ -39,41 +39,41 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  */
 val lmuWindowsDataModule =
     module {
-    // 共有メモリのポーリングを回すスコープとデータソース
-    single { CoroutineScope(SupervisorJob()) }
-    single { LmuWindowsSharedMemorySource(scope = get()) }
+        // 共有メモリのポーリングを回すスコープとデータソース
+        single { CoroutineScope(SupervisorJob()) }
+        single { LmuWindowsSharedMemorySource(scope = get()) }
 
-    // 各 Repository（Windows は共有メモリ実装、非 Windows は No-Op。get() でスコープ/ソース/閾値設定を解決）
-    single<LmuWindowsRepository> {
-        if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
-    }
-    single<LmuWindowsVehicleApproachRepository> {
-        if (isWindows) {
-            LmuWindowsVehicleApproachRepositoryImpl(thresholdsRepository = get(), source = get())
-        } else {
-            NoOpVehicleApproachRepository()
+        // 各 Repository（Windows は共有メモリ実装、非 Windows は No-Op。get() でスコープ/ソース/閾値設定を解決）
+        single<LmuWindowsRepository> {
+            if (isWindows) LmuWindowsRepositoryImpl(source = get()) else NoOpLmuWindowsRepository()
+        }
+        single<LmuWindowsVehicleApproachRepository> {
+            if (isWindows) {
+                LmuWindowsVehicleApproachRepositoryImpl(thresholdsRepository = get(), source = get())
+            } else {
+                NoOpVehicleApproachRepository()
+            }
+        }
+        single<LmuWindowsFlagRepository> {
+            if (isWindows) LmuWindowsFlagRepositoryImpl(source = get()) else NoOpFlagRepository()
+        }
+        single<LmuWindowsVehicleDamageRepository> {
+            if (isWindows) LmuWindowsVehicleDamageRepositoryImpl(source = get()) else NoOpVehicleDamageRepository()
+        }
+        single<LmuWindowsTyreCarcassTemperatureRepository> {
+            if (isWindows) {
+                LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = get())
+            } else {
+                NoOpTyreCarcassTemperatureRepository()
+            }
+        }
+        single<LmuWindowsTyreWearRepository> {
+            if (isWindows) LmuWindowsTyreWearRepositoryImpl(source = get()) else NoOpTyreWearRepository()
+        }
+        single<LmuWindowsVirtualEnergyRepository> {
+            if (isWindows) LmuWindowsVirtualEnergyRepositoryImpl(source = get()) else NoOpVirtualEnergyRepository()
         }
     }
-    single<LmuWindowsFlagRepository> {
-        if (isWindows) LmuWindowsFlagRepositoryImpl(source = get()) else NoOpFlagRepository()
-    }
-    single<LmuWindowsVehicleDamageRepository> {
-        if (isWindows) LmuWindowsVehicleDamageRepositoryImpl(source = get()) else NoOpVehicleDamageRepository()
-    }
-    single<LmuWindowsTyreCarcassTemperatureRepository> {
-        if (isWindows) {
-            LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = get())
-        } else {
-            NoOpTyreCarcassTemperatureRepository()
-        }
-    }
-    single<LmuWindowsTyreWearRepository> {
-        if (isWindows) LmuWindowsTyreWearRepositoryImpl(source = get()) else NoOpTyreWearRepository()
-    }
-    single<LmuWindowsVirtualEnergyRepository> {
-        if (isWindows) LmuWindowsVirtualEnergyRepositoryImpl(source = get()) else NoOpVirtualEnergyRepository()
-    }
-}
 
 private class NoOpLmuWindowsRepository : LmuWindowsRepository {
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()

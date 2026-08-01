@@ -11,7 +11,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class ConnectionBannerTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 
@@ -21,11 +20,11 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.CONNECTED,
-                    message = "接続済み",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
-                    )
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "接続済み",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
+            )
         }
 
         composeRule.onNodeWithText("接続済み").assertIsDisplayed()
@@ -37,11 +36,11 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "切断中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
-                    )
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "切断中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
+            )
         }
 
         composeRule.onNodeWithText("切断中").assertIsDisplayed()
@@ -53,11 +52,11 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "確認中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                ),
-                    )
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "確認中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                    ),
+            )
         }
 
         composeRule.onNodeWithText("確認中").assertIsDisplayed()
@@ -69,11 +68,11 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.CONNECTED,
-                    message = "LMU接続済み",
-                    iconType = ConnectionBannerIconType.SIMULATOR,
-                ),
-                    )
+                        status = ConnectionBannerStatus.CONNECTED,
+                        message = "LMU接続済み",
+                        iconType = ConnectionBannerIconType.SIMULATOR,
+                    ),
+            )
         }
 
         composeRule.onNodeWithText("LMU接続済み").assertIsDisplayed()
@@ -85,11 +84,11 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.DISCONNECTED,
-                    message = "LMU未接続",
-                    iconType = ConnectionBannerIconType.SIMULATOR,
-                ),
-                    )
+                        status = ConnectionBannerStatus.DISCONNECTED,
+                        message = "LMU未接続",
+                        iconType = ConnectionBannerIconType.SIMULATOR,
+                    ),
+            )
         }
 
         composeRule.onNodeWithText("LMU未接続").assertIsDisplayed()
@@ -102,12 +101,12 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "IPアドレスが未設定です",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = true,
-                ),
-                    onClick = { clicked = true },
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "IPアドレスが未設定です",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = true,
+                    ),
+                onClick = { clicked = true },
             )
         }
 
@@ -122,12 +121,12 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "確認中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = false,
-                ),
-                    onClick = {},
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "確認中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = false,
+                    ),
+                onClick = {},
             )
         }
 
@@ -140,12 +139,12 @@ class ConnectionBannerTest {
             ConnectionBannerContent(
                 uiState =
                     ConnectionBannerUiState(
-                    status = ConnectionBannerStatus.UNCHECKED,
-                    message = "確認中",
-                    iconType = ConnectionBannerIconType.NETWORK,
-                    isTappable = true,
-                ),
-                    onClick = null,
+                        status = ConnectionBannerStatus.UNCHECKED,
+                        message = "確認中",
+                        iconType = ConnectionBannerIconType.NETWORK,
+                        isTappable = true,
+                    ),
+                onClick = null,
             )
         }
 

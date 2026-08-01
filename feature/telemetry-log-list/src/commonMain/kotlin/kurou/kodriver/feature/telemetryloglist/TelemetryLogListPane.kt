@@ -84,8 +84,8 @@ internal fun TelemetryLogListPane(
     val firstLogId = uiState.logs.first().id
     val raceStartedAt =
         remember(uiState.logs) {
-        uiState.logs.minOf { it.createdAt }
-    }
+            uiState.logs.minOf { it.createdAt }
+        }
     var previousFirstLogId by remember { mutableLongStateOf(firstLogId) }
     var showNewLogsButton by remember { mutableStateOf(false) }
     val isAtTop by remember {
@@ -120,19 +120,19 @@ internal fun TelemetryLogListPane(
         visible = true,
         enter =
             slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = tween(durationMillis = 400),
-        ) + fadeIn(animationSpec = tween(durationMillis = 400)),
-            modifier = modifier.fillMaxSize(),
+                initialOffsetY = { it },
+                animationSpec = tween(durationMillis = 400),
+            ) + fadeIn(animationSpec = tween(durationMillis = 400)),
+        modifier = modifier.fillMaxSize(),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 state = listState,
                 modifier =
                     Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 8.dp),
-                    ) {
+                        .fillMaxSize()
+                        .padding(vertical = 8.dp),
+            ) {
                 item(key = RESET_ITEM_KEY) {
                     TelemetryLogResetListItem(
                         isResetting = uiState.isResetting,
@@ -158,19 +158,19 @@ internal fun TelemetryLogListPane(
                 visible = showNewLogsButton,
                 enter =
                     slideInVertically(
-                    initialOffsetY = { -it },
-                    animationSpec = tween(durationMillis = 300),
-                ) + fadeIn(animationSpec = tween(durationMillis = 300)),
-                    exit =
-                        slideOutVertically(
-                    targetOffsetY = { -it },
-                    animationSpec = tween(durationMillis = 200),
-                ) + fadeOut(animationSpec = tween(durationMillis = 200)),
-                        modifier =
-                            Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp),
-                            ) {
+                        initialOffsetY = { -it },
+                        animationSpec = tween(durationMillis = 300),
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                exit =
+                    slideOutVertically(
+                        targetOffsetY = { -it },
+                        animationSpec = tween(durationMillis = 200),
+                    ) + fadeOut(animationSpec = tween(durationMillis = 200)),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp),
+            ) {
                 NewTelemetryLogsButton(
                     onClick = {
                         coroutineScope.launch {
@@ -206,10 +206,10 @@ private fun NewTelemetryLogsButton(
         modifier = modifier,
         colors =
             ButtonDefaults.textButtonColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
     ) {
         Text(stringResource(Res.string.new_telemetry_logs))
     }
@@ -226,10 +226,10 @@ private fun TelemetryLogResetListItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
             modifier
-            .fillMaxWidth()
-            .clickable(enabled = !isResetting, onClick = onClick)
-            .padding(vertical = 12.dp),
-            ) {
+                .fillMaxWidth()
+                .clickable(enabled = !isResetting, onClick = onClick)
+                .padding(vertical = 12.dp),
+    ) {
         if (isResetting) {
             CircularProgressIndicator(
                 modifier = Modifier.size(20.dp),
@@ -251,9 +251,7 @@ private fun TelemetryLogResetListItem(
 }
 
 @Composable
-private fun TelemetryLogEmptyState(
-    modifier: Modifier = Modifier,
-) {
+private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.padding(24.dp),
         contentAlignment = Alignment.Center,
@@ -289,31 +287,31 @@ private fun TelemetryLogListItem(
     val containerColor by animateColorAsState(
         targetValue =
             if (isSelected) {
-            MaterialTheme.colorScheme.secondaryContainer
-        } else {
-            MaterialTheme.colorScheme.surface
-        },
-            animationSpec = tween(durationMillis = 500),
+                MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            },
+        animationSpec = tween(durationMillis = 500),
         label = "telemetryLogListItemContainerColor",
     )
     val headlineColor by animateColorAsState(
         targetValue =
             if (isSelected) {
-            MaterialTheme.colorScheme.onSecondaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurface
-        },
-            animationSpec = tween(durationMillis = 500),
+                MaterialTheme.colorScheme.onSecondaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+        animationSpec = tween(durationMillis = 500),
         label = "telemetryLogListItemHeadlineColor",
     )
     val supportingColor by animateColorAsState(
         targetValue =
             if (isSelected) {
-            MaterialTheme.colorScheme.onSecondaryContainer
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        },
-            animationSpec = tween(durationMillis = 500),
+                MaterialTheme.colorScheme.onSecondaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        animationSpec = tween(durationMillis = 500),
         label = "telemetryLogListItemSupportingColor",
     )
 
@@ -330,10 +328,10 @@ private fun TelemetryLogListItem(
             Text(
                 text =
                     formatTelemetryLogTime(
-                    createdAt = log.createdAt,
-                    raceElapsedMs = (log.createdAt - raceStartedAt).coerceAtLeast(0),
-                ),
-                    color = supportingColor,
+                        createdAt = log.createdAt,
+                        raceElapsedMs = (log.createdAt - raceStartedAt).coerceAtLeast(0),
+                    ),
+                color = supportingColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -348,26 +346,26 @@ private fun TelemetryLogListItem(
                     contentDescription = null,
                     modifier =
                         Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(6.dp)),
-                        )
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(6.dp)),
+                )
             }
         },
         colors = ListItemDefaults.colors(containerColor = containerColor),
         modifier =
             modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-            )
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
+    )
 }
 
 @Composable
 private fun simulatorIcon(simulator: Simulator): Painter =
     when (simulator) {
-    Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
-    Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
-    Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
-}
+        Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
+        Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
+        Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
+    }
 
 internal fun formatTelemetryLogTime(
     createdAt: Long,

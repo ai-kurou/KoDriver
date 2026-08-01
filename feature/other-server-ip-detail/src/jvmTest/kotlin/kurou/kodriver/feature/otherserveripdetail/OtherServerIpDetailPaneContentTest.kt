@@ -11,7 +11,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherServerIpDetailPaneContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -49,11 +48,11 @@ class OtherServerIpDetailPaneContentTest {
         setContent(
             uiState =
                 OtherServerIpDetailUiState(
-                inputIp = "192.168.1.1",
-                isInputValid = true,
-                connectivityWarning = true,
-            ),
-                onSaveAnyway = { saveAnywayCount++ },
+                    inputIp = "192.168.1.1",
+                    isInputValid = true,
+                    connectivityWarning = true,
+                ),
+            onSaveAnyway = { saveAnywayCount++ },
         )
 
         rule.onNodeWithText("このまま保存").performClick()

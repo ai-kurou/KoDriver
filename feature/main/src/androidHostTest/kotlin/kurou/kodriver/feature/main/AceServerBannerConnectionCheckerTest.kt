@@ -27,7 +27,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceServerBannerConnectionCheckerTest {
-
     @MockK
     private lateinit var ipRepository: ServerIpPreferencesRepository
 
@@ -42,38 +41,38 @@ class AceServerBannerConnectionCheckerTest {
     @Test
     fun `IPアドレスが未設定の場合はIP_NOT_CONFIGUREDを返す`() =
         runTest {
-        val checker = createChecker(ip = null)
+            val checker = createChecker(ip = null)
 
-        val status = checker.statusFlow().first()
+            val status = checker.statusFlow().first()
 
-        assertEquals(ConnectionBannerVmStatus.IP_NOT_CONFIGURED, status)
-    }
+            assertEquals(ConnectionBannerVmStatus.IP_NOT_CONFIGURED, status)
+        }
 
     @Test
     fun `IPアドレスが設定されサーバー取得に成功するとCONNECTEDを返す`() =
         runTest {
-        val checker = createChecker(ip = "192.168.1.1", versionResult = Result.success("1.0.0"))
+            val checker = createChecker(ip = "192.168.1.1", versionResult = Result.success("1.0.0"))
 
-        val statuses = checker.statusFlow().take(2).toList()
+            val statuses = checker.statusFlow().take(2).toList()
 
-        assertEquals(ConnectionBannerVmStatus.UNCHECKED, statuses[0])
-        assertEquals(ConnectionBannerVmStatus.CONNECTED, statuses[1])
-        coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
-        confirmVerified(versionRepository)
-    }
+            assertEquals(ConnectionBannerVmStatus.UNCHECKED, statuses[0])
+            assertEquals(ConnectionBannerVmStatus.CONNECTED, statuses[1])
+            coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+            confirmVerified(versionRepository)
+        }
 
     @Test
     fun `IPアドレスが設定されサーバー取得に失敗するとDISCONNECTEDを返す`() =
         runTest {
-        val checker = createChecker(ip = "192.168.1.1", versionResult = Result.failure(Exception("error")))
+            val checker = createChecker(ip = "192.168.1.1", versionResult = Result.failure(Exception("error")))
 
-        val statuses = checker.statusFlow().take(2).toList()
+            val statuses = checker.statusFlow().take(2).toList()
 
-        assertEquals(ConnectionBannerVmStatus.UNCHECKED, statuses[0])
-        assertEquals(ConnectionBannerVmStatus.DISCONNECTED, statuses[1])
-        coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
-        confirmVerified(versionRepository)
-    }
+            assertEquals(ConnectionBannerVmStatus.UNCHECKED, statuses[0])
+            assertEquals(ConnectionBannerVmStatus.DISCONNECTED, statuses[1])
+            coVerify(exactly = 1) { versionRepository.fetchVersion("192.168.1.1") }
+            confirmVerified(versionRepository)
+        }
 
     @Test
     fun `IPアドレスがnullからIPが設定されるとIP_NOT_CONFIGUREDからCONNECTEDへ遷移する`() =

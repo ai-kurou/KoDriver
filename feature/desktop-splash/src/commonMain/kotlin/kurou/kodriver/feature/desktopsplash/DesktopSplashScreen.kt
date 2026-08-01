@@ -77,8 +77,8 @@ private fun DesktopSplashScreenPreview(
 private class DesktopSplashScreenPreviewParameterProvider : PreviewParameterProvider<DesktopSplashUiState> {
     override val values: Sequence<DesktopSplashUiState> =
         sequenceOf(
-        DesktopSplashUiState(step = DesktopSplashStep.INITIALIZING_MODULES),
-        DesktopSplashUiState(step = DesktopSplashStep.STARTING_SERVER),
-        DesktopSplashUiState(step = DesktopSplashStep.READY),
-    )
+            DesktopSplashUiState(step = DesktopSplashStep.INITIALIZING_MODULES),
+            DesktopSplashUiState(step = DesktopSplashStep.STARTING_SERVER),
+            DesktopSplashUiState(step = DesktopSplashStep.READY),
+        )
 }

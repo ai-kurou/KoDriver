@@ -8,7 +8,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtherConsoleIpDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -62,10 +61,10 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                     OtherConsoleIpDetailPaneContent(
                         uiState =
                             OtherConsoleIpDetailUiState(
-                            inputAddress = "192.168.1.100",
-                            saveFailed = true,
-                        ),
-                            )
+                                inputAddress = "192.168.1.100",
+                                saveFailed = true,
+                            ),
+                    )
                 }
             }
         }

@@ -27,9 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * Gt7Ps5ReadoutMyBestLapDetail の画面を表示する Composable。
  */
 @Composable
-fun Gt7Ps5ReadoutMyBestLapDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun Gt7Ps5ReadoutMyBestLapDetailPane(modifier: Modifier = Modifier) {
     val viewModel: Gt7Ps5ReadoutMyBestLapDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Gt7Ps5ReadoutMyBestLapDetailPaneContent(
@@ -51,9 +49,9 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.my_best_lap_description),
         )
@@ -65,10 +63,10 @@ internal fun Gt7Ps5ReadoutMyBestLapDetailPaneContent(
                     chipLabels = voiceTypeLabels.map { (_, label) -> label },
                     selectedChipLabels =
                         voiceTypeLabels
-                        .filter { (type, _) -> type == uiState.voiceType }
-                        .map { (_, label) -> label }
-                        .toSet(),
-                        chipEnabled = true,
+                            .filter { (type, _) -> type == uiState.voiceType }
+                            .map { (_, label) -> label }
+                            .toSet(),
+                    chipEnabled = true,
                     onChipClick = { label ->
                         val type = voiceTypeLabels.first { (_, typeLabel) -> typeLabel == label }.first
                         onVoiceTypeChanged(type)
@@ -91,6 +89,6 @@ private fun Gt7Ps5ReadoutMyBestLapDetailPanePreview() {
 @Composable
 private fun MyBestLapVoiceType.displayName(): String =
     when (this) {
-    MyBestLapVoiceType.FORMAL -> stringResource(Res.string.my_best_lap_voice_type_formal)
-    MyBestLapVoiceType.CASUAL -> stringResource(Res.string.my_best_lap_voice_type_casual)
-}
+        MyBestLapVoiceType.FORMAL -> stringResource(Res.string.my_best_lap_voice_type_formal)
+        MyBestLapVoiceType.CASUAL -> stringResource(Res.string.my_best_lap_voice_type_casual)
+    }

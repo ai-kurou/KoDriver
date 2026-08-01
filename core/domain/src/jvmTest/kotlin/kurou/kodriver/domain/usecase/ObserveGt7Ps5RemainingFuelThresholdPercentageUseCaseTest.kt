@@ -14,7 +14,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveGt7Ps5RemainingFuelThresholdPercentageUseCaseTest {
-
     @MockK
     private lateinit var repository: Gt7Ps5RemainingFuelPreferencesRepository
 
@@ -26,12 +25,12 @@ class ObserveGt7Ps5RemainingFuelThresholdPercentageUseCaseTest {
     @Test
     fun `リポジトリの燃料残量閾値を返す`() =
         runBlocking {
-        val threshold = MutableStateFlow(30)
-        every { repository.observeThresholdPercentage() } returns threshold
-        val useCase = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository)
+            val threshold = MutableStateFlow(30)
+            every { repository.observeThresholdPercentage() } returns threshold
+            val useCase = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository)
 
-        assertEquals(30, useCase().first())
-        verify(exactly = 1) { repository.observeThresholdPercentage() }
-        confirmVerified(repository)
-    }
+            assertEquals(30, useCase().first())
+            verify(exactly = 1) { repository.observeThresholdPercentage() }
+            confirmVerified(repository)
+        }
 }

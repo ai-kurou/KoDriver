@@ -32,7 +32,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsConnectionViewModelTest {
-
     private val dispatcher = StandardTestDispatcher()
 
     @MockK
@@ -54,151 +53,151 @@ class LmuWindowsConnectionViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsConnectionViewModel(
-        checkLmuWindowsConnection = CheckLmuWindowsConnectionUseCase(connectionRepository),
-        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
-    )
+            checkLmuWindowsConnection = CheckLmuWindowsConnectionUseCase(connectionRepository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+        )
 
     @Test
     fun `LMU選択時に接続確認結果を反映する`() =
         runTest {
-        coEvery { connectionRepository.isConnected() } returns true
-        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        val viewModel = createViewModel()
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            coEvery { connectionRepository.isConnected() } returns true
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
-        dispatcher.scheduler.runCurrent()
+            dispatcher.scheduler.runCurrent()
 
-        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 1) { connectionRepository.isConnected() }
-        confirmVerified(connectionRepository, simulatorRepository)
-        collectionJob.cancelAndJoin()
-    }
+            assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 1) { connectionRepository.isConnected() }
+            confirmVerified(connectionRepository, simulatorRepository)
+            collectionJob.cancelAndJoin()
+        }
 
     @Test
     fun `LMU非選択時は未接続・未確認状態を返す`() =
         runTest {
-        coEvery { connectionRepository.isConnected() } returns true
-        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-        val viewModel = createViewModel()
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            coEvery { connectionRepository.isConnected() } returns true
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
-        dispatcher.scheduler.runCurrent()
+            dispatcher.scheduler.runCurrent()
 
-        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 0) { connectionRepository.isConnected() }
-        confirmVerified(connectionRepository, simulatorRepository)
-        collectionJob.cancelAndJoin()
-    }
+            assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 0) { connectionRepository.isConnected() }
+            confirmVerified(connectionRepository, simulatorRepository)
+            collectionJob.cancelAndJoin()
+        }
 
     @Test
     fun `LMU選択前は未確認状態とする`() =
         runTest {
-        coEvery { connectionRepository.isConnected() } returns false
-        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
-        val viewModel = createViewModel()
+            coEvery { connectionRepository.isConnected() } returns false
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
+            val viewModel = createViewModel()
 
-        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 0) { connectionRepository.isConnected() }
-        confirmVerified(connectionRepository, simulatorRepository)
-    }
+            assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 0) { connectionRepository.isConnected() }
+            confirmVerified(connectionRepository, simulatorRepository)
+        }
 
     @Test
     fun `LMU選択に切り替えると接続確認を開始する`() =
         runTest {
-        val simulatorFlow = MutableStateFlow<Simulator?>(null)
-        coEvery { connectionRepository.isConnected() } returns true
-        every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
-            simulatorFlow.update { Simulator.LmuWindows }
+            val simulatorFlow = MutableStateFlow<Simulator?>(null)
+            coEvery { connectionRepository.isConnected() } returns true
+            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+            coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
+                simulatorFlow.update { Simulator.LmuWindows }
+            }
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            dispatcher.scheduler.runCurrent()
+            assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+
+            simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows)
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 1) { connectionRepository.isConnected() }
+            coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
+            confirmVerified(connectionRepository, simulatorRepository)
+            collectionJob.cancelAndJoin()
         }
-        val viewModel = createViewModel()
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
-        dispatcher.scheduler.runCurrent()
-        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-
-        simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows)
-        dispatcher.scheduler.runCurrent()
-
-        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 1) { connectionRepository.isConnected() }
-        coVerify(exactly = 1) { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) }
-        confirmVerified(connectionRepository, simulatorRepository)
-        collectionJob.cancelAndJoin()
-    }
 
     @Test
     fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() =
         runTest {
-        val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
-        coEvery { connectionRepository.isConnected() } returns true
-        every { simulatorRepository.selectedSimulator() } returns simulatorFlow
-        val viewModel = createViewModel()
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
-        dispatcher.scheduler.runCurrent()
-        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
+            coEvery { connectionRepository.isConnected() } returns true
+            every { simulatorRepository.selectedSimulator() } returns simulatorFlow
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            dispatcher.scheduler.runCurrent()
+            assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
 
-        simulatorFlow.update { null }
-        dispatcher.scheduler.runCurrent()
+            simulatorFlow.update { null }
+            dispatcher.scheduler.runCurrent()
 
-        assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 1) { connectionRepository.isConnected() }
-        confirmVerified(connectionRepository, simulatorRepository)
-        collectionJob.cancelAndJoin()
-    }
+            assertEquals(LmuWindowsConnectionStatus.UNCHECKED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 1) { connectionRepository.isConnected() }
+            confirmVerified(connectionRepository, simulatorRepository)
+            collectionJob.cancelAndJoin()
+        }
 
     @Test
     fun `LMU選択時に一定間隔で接続状態を更新する`() =
         runTest {
-        val connectedFlow = MutableStateFlow(false)
-        coEvery { connectionRepository.isConnected() } answers { connectedFlow.value }
-        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        val viewModel = createViewModel()
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
-        dispatcher.scheduler.runCurrent()
-        assertEquals(LmuWindowsConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
+            val connectedFlow = MutableStateFlow(false)
+            coEvery { connectionRepository.isConnected() } answers { connectedFlow.value }
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            dispatcher.scheduler.runCurrent()
+            assertEquals(LmuWindowsConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
 
-        connectedFlow.update { true }
-        dispatcher.scheduler.advanceTimeBy(1_000L)
-        dispatcher.scheduler.runCurrent()
+            connectedFlow.update { true }
+            dispatcher.scheduler.advanceTimeBy(1_000L)
+            dispatcher.scheduler.runCurrent()
 
-        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 2) { connectionRepository.isConnected() }
-        confirmVerified(connectionRepository, simulatorRepository)
-        collectionJob.cancelAndJoin()
-    }
+            assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 2) { connectionRepository.isConnected() }
+            confirmVerified(connectionRepository, simulatorRepository)
+            collectionJob.cancelAndJoin()
+        }
 
     @Test
     fun `接続確認で例外が発生しても未接続として監視を継続する`() =
         runTest {
-        val connectedFlow = MutableStateFlow(false)
-        var remainingFailures = 1
-        coEvery { connectionRepository.isConnected() } answers {
-            if (remainingFailures > 0) {
-                remainingFailures--
-                error("connection check failed")
+            val connectedFlow = MutableStateFlow(false)
+            var remainingFailures = 1
+            coEvery { connectionRepository.isConnected() } answers {
+                if (remainingFailures > 0) {
+                    remainingFailures--
+                    error("connection check failed")
+                }
+                connectedFlow.value
             }
-            connectedFlow.value
+            every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            dispatcher.scheduler.runCurrent()
+            assertEquals(LmuWindowsConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
+
+            connectedFlow.update { true }
+            dispatcher.scheduler.advanceTimeBy(1_000L)
+            dispatcher.scheduler.runCurrent()
+
+            assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
+            verify(exactly = 1) { simulatorRepository.selectedSimulator() }
+            coVerify(exactly = 2) { connectionRepository.isConnected() }
+            confirmVerified(connectionRepository, simulatorRepository)
+            collectionJob.cancelAndJoin()
         }
-        every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
-        val viewModel = createViewModel()
-        val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
-        dispatcher.scheduler.runCurrent()
-        assertEquals(LmuWindowsConnectionStatus.DISCONNECTED, viewModel.uiState.first().connectionStatus)
-
-        connectedFlow.update { true }
-        dispatcher.scheduler.advanceTimeBy(1_000L)
-        dispatcher.scheduler.runCurrent()
-
-        assertEquals(LmuWindowsConnectionStatus.CONNECTED, viewModel.uiState.first().connectionStatus)
-        verify(exactly = 1) { simulatorRepository.selectedSimulator() }
-        coVerify(exactly = 2) { connectionRepository.isConnected() }
-        confirmVerified(connectionRepository, simulatorRepository)
-        collectionJob.cancelAndJoin()
-    }
 }

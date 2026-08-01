@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveReadoutStartSoundTypeUseCaseTest {
-
     @MockK
     private lateinit var repository: ReadoutStartSoundPreferencesRepository
 
@@ -27,11 +26,11 @@ class ObserveReadoutStartSoundTypeUseCaseTest {
     @Test
     fun `読み上げ開始音種別を監視できる`() =
         runBlocking {
-        every { repository.observeType() } returns MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
-        val useCase = ObserveReadoutStartSoundTypeUseCase(repository)
+            every { repository.observeType() } returns MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
+            val useCase = ObserveReadoutStartSoundTypeUseCase(repository)
 
-        assertEquals(ReadoutStartSoundType.FORMULA_RADIO, useCase().first())
-        verify(exactly = 1) { repository.observeType() }
-        confirmVerified(repository)
-    }
+            assertEquals(ReadoutStartSoundType.FORMULA_RADIO, useCase().first())
+            verify(exactly = 1) { repository.observeType() }
+            confirmVerified(repository)
+        }
 }

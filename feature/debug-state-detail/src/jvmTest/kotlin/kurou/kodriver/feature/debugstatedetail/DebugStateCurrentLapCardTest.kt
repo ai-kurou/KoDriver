@@ -18,7 +18,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DebugStateCurrentLapCardTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -44,11 +43,11 @@ class DebugStateCurrentLapCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.LmuWindows,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                        gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -64,11 +63,11 @@ class DebugStateCurrentLapCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.Gt7Ps5,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                        gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -84,12 +83,12 @@ class DebugStateCurrentLapCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = Simulator.AceWindows,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                        gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                        cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = Simulator.AceWindows,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                            cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -105,12 +104,12 @@ class DebugStateCurrentLapCardTest {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                        selectedSimulator = null,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                        gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                        cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
-                    ),
-                        canNavigateBack = true,
+                            selectedSimulator = null,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                            cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
+                        ),
+                    canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -121,38 +120,38 @@ class DebugStateCurrentLapCardTest {
 
     private fun sampleLmuWindowsTelemetry(currentLap: Int) =
         LmuWindowsTelemetryData(
-        timestampMs = 0L,
-        engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
-        inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-        tyres = LmuWindowsTyreData(wheels = emptyMap()),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing =
-            LmuWindowsTimingData(
-            currentLapTimeMs = 0L,
-            lastLapTimeMs = 0L,
-            bestLapTimeMs = 0L,
-            sector1Ms = 0L,
-            sector1And2Ms = 0L,
-            currentLap = currentLap,
-            maxLaps = 0,
-        ),
+            timestampMs = 0L,
+            engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+            inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+            tyres = LmuWindowsTyreData(wheels = emptyMap()),
+            fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+            timing =
+                LmuWindowsTimingData(
+                    currentLapTimeMs = 0L,
+                    lastLapTimeMs = 0L,
+                    bestLapTimeMs = 0L,
+                    sector1Ms = 0L,
+                    sector1And2Ms = 0L,
+                    currentLap = currentLap,
+                    maxLaps = 0,
+                ),
             vehicle =
                 LmuWindowsVehicleData(
-            localVelocityX = 0.0,
-            localVelocityY = 0.0,
-            localVelocityZ = 0.0,
-            positionX = 0.0,
-            positionY = 0.0,
-            positionZ = 0.0,
-        ),
-                )
+                    localVelocityX = 0.0,
+                    localVelocityY = 0.0,
+                    localVelocityZ = 0.0,
+                    positionX = 0.0,
+                    positionY = 0.0,
+                    positionZ = 0.0,
+                ),
+        )
 
     private fun sampleGt7Ps5Telemetry(lapCount: Int) =
         Gt7Ps5TelemetryData(
-        lapCount = lapCount,
-        lapsInRace = 0,
-        bestLapTimeMs = 0,
-        gasLevel = 0f,
-        gasCapacity = 0f,
-    )
+            lapCount = lapCount,
+            lapsInRace = 0,
+            bestLapTimeMs = 0,
+            gasLevel = 0f,
+            gasCapacity = 0f,
+        )
 }

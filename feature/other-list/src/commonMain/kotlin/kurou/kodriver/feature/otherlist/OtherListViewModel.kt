@@ -32,27 +32,26 @@ class OtherListViewModel(
     private val currentVersion: String,
     appVersionLabel: String,
 ) : ViewModel() {
-
     private val _uiState =
         MutableStateFlow(
-        OtherListUiState(
-            appVersionLabel = appVersionLabel,
-            appVersion = currentVersion,
-        ),
-    )
+            OtherListUiState(
+                appVersionLabel = appVersionLabel,
+                appVersion = currentVersion,
+            ),
+        )
     val uiState: StateFlow<OtherListUiState> =
         combine(
-        _uiState,
-        observeKeepScreenOn(),
-        observeExitConfirmationEnabled(),
-        observeDynamicColorEnabled(),
-    ) { state, keepScreenOn, exitConfirmationEnabled, dynamicColorEnabled ->
-        state.copy(
-            keepScreenOn = keepScreenOn,
-            exitConfirmationEnabled = exitConfirmationEnabled,
-            dynamicColorEnabled = dynamicColorEnabled,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
+            _uiState,
+            observeKeepScreenOn(),
+            observeExitConfirmationEnabled(),
+            observeDynamicColorEnabled(),
+        ) { state, keepScreenOn, exitConfirmationEnabled, dynamicColorEnabled ->
+            state.copy(
+                keepScreenOn = keepScreenOn,
+                exitConfirmationEnabled = exitConfirmationEnabled,
+                dynamicColorEnabled = dynamicColorEnabled,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
 
     fun checkUpdate() {
         if (currentVersion.isBlank()) return

@@ -32,37 +32,37 @@ import org.koin.dsl.module
  */
 val aceWindowsNarratorModule: Module =
     module {
-    // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
-    viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get()) }
+        // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
+        viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get()) }
 
-    // この feature 固有の UseCase 集約 data class（本モジュールで定義）
-    factory { RemainingFuelUseCases(get(), get()) }
-    factory { ReadoutListUseCases(get(), get(), get(), get()) }
-    factory { FlagUseCases(get(), get()) }
-    factory { AceWindowsNarratorEventProcessor(get(named("ace_windows")), get()) }
+        // この feature 固有の UseCase 集約 data class（本モジュールで定義）
+        factory { RemainingFuelUseCases(get(), get()) }
+        factory { ReadoutListUseCases(get(), get(), get(), get()) }
+        factory { FlagUseCases(get(), get()) }
+        factory { AceWindowsNarratorEventProcessor(get(named("ace_windows")), get()) }
 
-    // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
-    factory { DetermineAceWindowsNarratorReadoutUseCase() }
-    factory { SaveTelemetryLogUseCase(get()) }
-    factory { ObserveAceWindowsFuelUseCase(get()) }
-    factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
-    factory { ObserveAceWindowsFlagUseCase(get()) }
-    factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
-    factory { ObserveReadoutEnabledStatesUseCase(get()) }
-    factory { ObserveReadoutOrderUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-    factory { ObserveQueueEnabledStatesUseCase(get()) }
+        // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
+        factory { DetermineAceWindowsNarratorReadoutUseCase() }
+        factory { SaveTelemetryLogUseCase(get()) }
+        factory { ObserveAceWindowsFuelUseCase(get()) }
+        factory { ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(get()) }
+        factory { ObserveAceWindowsFlagUseCase(get()) }
+        factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutEnabledStatesUseCase(get()) }
+        factory { ObserveReadoutOrderUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+        factory { ObserveQueueEnabledStatesUseCase(get()) }
 
-    // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は platformSoundModule が提供）
-    includes(platformSoundModule)
-    single<TextToSpeechEngine>(named("ace_windows")) {
-        AceWindowsWavNarratorEngine(
-            soundPlayer = get(),
-            volumeFlow = ObserveSoundVolumeUseCase(get())(),
-            startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
-        )
+        // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は platformSoundModule が提供）
+        includes(platformSoundModule)
+        single<TextToSpeechEngine>(named("ace_windows")) {
+            AceWindowsWavNarratorEngine(
+                soundPlayer = get(),
+                volumeFlow = ObserveSoundVolumeUseCase(get())(),
+                startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+            )
+        }
+        factory(named("ace_windows")) { PlaySpeechEventUseCase(get(named("ace_windows"))) }
     }
-    factory(named("ace_windows")) { PlaySpeechEventUseCase(get(named("ace_windows"))) }
-}
 
 internal expect val platformSoundModule: Module

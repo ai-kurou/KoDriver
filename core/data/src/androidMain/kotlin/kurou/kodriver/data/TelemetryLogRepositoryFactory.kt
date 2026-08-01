@@ -14,11 +14,11 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 fun createTelemetryLogRepository(context: Context): TelemetryLogRepository {
     val database =
         Room
-        .databaseBuilder<TelemetryLogDatabase>(
-        context = context,
-        name = "telemetry_logs.db",
-        factory = { TelemetryLogDatabaseConstructor.initialize() },
-    ).setDriver(BundledSQLiteDriver())
-        .build()
+            .databaseBuilder<TelemetryLogDatabase>(
+                context = context,
+                name = "telemetry_logs.db",
+                factory = { TelemetryLogDatabaseConstructor.initialize() },
+            ).setDriver(BundledSQLiteDriver())
+            .build()
     return TelemetryLogRepositoryImpl(database.telemetryLogDao())
 }

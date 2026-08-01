@@ -13,7 +13,7 @@ import org.koin.dsl.module
  */
 val lmuWindowsConnectionModule =
     module {
-    // ドメイン UseCase（:core:domain。get() は接続元 Repository・:core:data の Preferences Repository を解決）
-    factory { CheckLmuWindowsConnectionUseCase(get()) }
-    factory { ObserveSelectedSimulatorUseCase(get()) }
-}
+        // ドメイン UseCase（:core:domain。get() は接続元 Repository・:core:data の Preferences Repository を解決）
+        factory { CheckLmuWindowsConnectionUseCase(get()) }
+        factory { ObserveSelectedSimulatorUseCase(get()) }
+    }

@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class TelemetryLogDetailContentScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -25,20 +24,20 @@ class TelemetryLogDetailContentScreenshotTest {
                         TelemetryLogDetailContent(
                             uiState =
                                 TelemetryLogDetailUiState(
-                                logId = 2L,
-                                items =
-                                    listOf(
-                                    TelemetryLogDetailItemUiState(
-                                        title = "選択したログ",
-                                        telemetryJson = """{"speed":120,"gear":4}""",
-                                    ),
-                                    TelemetryLogDetailItemUiState(
-                                        title = "一つ前のログ",
-                                        telemetryJson = """{"speed":118,"gear":4}""",
-                                    ),
+                                    logId = 2L,
+                                    items =
+                                        listOf(
+                                            TelemetryLogDetailItemUiState(
+                                                title = "選択したログ",
+                                                telemetryJson = """{"speed":120,"gear":4}""",
+                                            ),
+                                            TelemetryLogDetailItemUiState(
+                                                title = "一つ前のログ",
+                                                telemetryJson = """{"speed":118,"gear":4}""",
+                                            ),
+                                        ),
                                 ),
-                                    ),
-                                )
+                        )
                     }
                 }
             }

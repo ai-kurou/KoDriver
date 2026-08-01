@@ -13,11 +13,10 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5MyBestLapPreferencesRepositoryFactoryTest {
-
     private val tempDir =
         Files
-        .createTempDirectory("kodriver_my_best_lap_preferences_repository_factory_test")
-        .toFile()
+            .createTempDirectory("kodriver_my_best_lap_preferences_repository_factory_test")
+            .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -28,18 +27,18 @@ class Gt7Ps5MyBestLapPreferencesRepositoryFactoryTest {
     @Test
     fun `デフォルト値は voiceType が FORMAL`() =
         testScope.runTest {
-        val repository = createGt7Ps5MyBestLapPreferencesRepository(tempDir.absolutePath)
+            val repository = createGt7Ps5MyBestLapPreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
-    }
+            assertEquals(MyBestLapVoiceType.FORMAL, repository.observeVoiceType().first())
+        }
 
     @Test
     fun `保存した voiceType を読み出せる`() =
         testScope.runTest {
-        val repository = createGt7Ps5MyBestLapPreferencesRepository(tempDir.absolutePath)
+            val repository = createGt7Ps5MyBestLapPreferencesRepository(tempDir.absolutePath)
 
-        repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
+            repository.saveVoiceType(MyBestLapVoiceType.CASUAL)
 
-        assertEquals(MyBestLapVoiceType.CASUAL, repository.observeVoiceType().first())
-    }
+            assertEquals(MyBestLapVoiceType.CASUAL, repository.observeVoiceType().first())
+        }
 }

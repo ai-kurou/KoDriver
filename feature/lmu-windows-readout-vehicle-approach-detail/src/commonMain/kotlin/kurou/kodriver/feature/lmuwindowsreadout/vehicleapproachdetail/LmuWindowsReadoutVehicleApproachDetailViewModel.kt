@@ -27,31 +27,30 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private val saveEnabledState: SaveLmuWindowsVehicleApproachEnabledStateUseCase,
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
-
     val uiState: StateFlow<LmuWindowsReadoutVehicleApproachDetailUiState> =
         combine(
-        combine(
-            thresholds.observeLateralThresholdMeters(),
-            thresholds.observeLongitudinalThresholdMeters(),
-            thresholds.observeSustainedApproachDurationSeconds(),
-        ) { lateral, longitudinal, sustainedDuration -> Triple(lateral, longitudinal, sustainedDuration) },
-        vehicleApproachPreferences.observeSkipFirstLap(),
-        observeEnabledStates(),
-        vehicleApproachPreferences.observeStartReadoutType(),
-        vehicleApproachPreferences.observeSustainedReadoutType(),
-    ) { thresholdValues, skipFirstLap, enabledStates, startReadoutType, sustainedReadoutType ->
-        val (lateral, longitudinal, sustainedDuration) = thresholdValues
-        LmuWindowsReadoutVehicleApproachDetailUiState(
-            lateralThresholdMeters = lateral,
-            longitudinalThresholdMeters = longitudinal,
-            sustainedApproachDurationSeconds = sustainedDuration,
-            skipFirstLap = skipFirstLap,
-            startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
-            startReadoutType = startReadoutType,
-            sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
-            sustainedReadoutType = sustainedReadoutType,
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
+            combine(
+                thresholds.observeLateralThresholdMeters(),
+                thresholds.observeLongitudinalThresholdMeters(),
+                thresholds.observeSustainedApproachDurationSeconds(),
+            ) { lateral, longitudinal, sustainedDuration -> Triple(lateral, longitudinal, sustainedDuration) },
+            vehicleApproachPreferences.observeSkipFirstLap(),
+            observeEnabledStates(),
+            vehicleApproachPreferences.observeStartReadoutType(),
+            vehicleApproachPreferences.observeSustainedReadoutType(),
+        ) { thresholdValues, skipFirstLap, enabledStates, startReadoutType, sustainedReadoutType ->
+            val (lateral, longitudinal, sustainedDuration) = thresholdValues
+            LmuWindowsReadoutVehicleApproachDetailUiState(
+                lateralThresholdMeters = lateral,
+                longitudinalThresholdMeters = longitudinal,
+                sustainedApproachDurationSeconds = sustainedDuration,
+                skipFirstLap = skipFirstLap,
+                startReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.StartReadout),
+                startReadoutType = startReadoutType,
+                sustainedReadoutEnabled = enabledStates.getValue(ReadoutItemKey.LmuWindows.VehicleApproach.Sustained),
+                sustainedReadoutType = sustainedReadoutType,
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutVehicleApproachDetailUiState())
 
     fun onLateralThresholdChanged(meters: Double) {
         viewModelScope.launch { thresholds.saveLateralThresholdMeters(meters) }
@@ -120,9 +119,9 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private fun playStartReadoutPreview(type: VehicleApproachStartReadoutType) {
         val events =
             when (type) {
-            VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft to SpeechEvent.CarRight
-            VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach to SpeechEvent.RightApproach
-        }
+                VehicleApproachStartReadoutType.CAR_LEFT_RIGHT -> SpeechEvent.CarLeft to SpeechEvent.CarRight
+                VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH -> SpeechEvent.LeftApproach to SpeechEvent.RightApproach
+            }
         playSpeechEvent(events.first)
         playSpeechEvent(events.second, queue = true)
     }
@@ -130,14 +129,14 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
     private fun playSustainedReadoutPreview(type: VehicleApproachSustainedReadoutType) {
         val events =
             when (type) {
-            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> {
-                SpeechEvent.KeepLeft to SpeechEvent.KeepRight
-            }
+                VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> {
+                    SpeechEvent.KeepLeft to SpeechEvent.KeepRight
+                }
 
-            VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> {
-                SpeechEvent.LeftSustained to SpeechEvent.RightSustained
+                VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> {
+                    SpeechEvent.LeftSustained to SpeechEvent.RightSustained
+                }
             }
-        }
         playSpeechEvent(events.first)
         playSpeechEvent(events.second, queue = true)
     }

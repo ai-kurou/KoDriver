@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveAceWindowsFlagEnabledStateUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: AceWindowsFlagPreferencesRepository
 
@@ -23,11 +22,11 @@ class SaveAceWindowsFlagEnabledStateUseCaseTest {
     @Test
     fun `指定したフラグの有効状態が保存される`() =
         runBlocking {
-        SaveAceWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.AceWindows.Flag.RedFlag, false)
+            SaveAceWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.AceWindows.Flag.RedFlag, false)
 
-        coVerify(exactly = 1) {
-            repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.RedFlag, false)
+            coVerify(exactly = 1) {
+                repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.RedFlag, false)
+            }
+            confirmVerified(repository)
         }
-        confirmVerified(repository)
-    }
 }

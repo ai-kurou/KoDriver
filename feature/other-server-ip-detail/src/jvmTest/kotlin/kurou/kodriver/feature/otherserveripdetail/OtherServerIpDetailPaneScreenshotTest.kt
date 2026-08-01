@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtherServerIpDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -73,10 +72,10 @@ class OtherServerIpDetailPaneScreenshotTest {
                         OtherServerIpDetailPaneContent(
                             uiState =
                                 OtherServerIpDetailUiState(
-                                inputIp = "192.168.1.100",
-                                isCheckingConnectivity = true,
-                            ),
-                                )
+                                    inputIp = "192.168.1.100",
+                                    isCheckingConnectivity = true,
+                                ),
+                        )
                     }
                 }
             }
@@ -93,10 +92,10 @@ class OtherServerIpDetailPaneScreenshotTest {
                         OtherServerIpDetailPaneContent(
                             uiState =
                                 OtherServerIpDetailUiState(
-                                inputIp = "192.168.1.100",
-                                connectivityWarning = true,
-                            ),
-                                )
+                                    inputIp = "192.168.1.100",
+                                    connectivityWarning = true,
+                                ),
+                        )
                     }
                 }
             }
@@ -113,10 +112,10 @@ class OtherServerIpDetailPaneScreenshotTest {
                         OtherServerIpDetailPaneContent(
                             uiState =
                                 OtherServerIpDetailUiState(
-                                inputIp = "192.168.1.100",
-                                discoveredServers = emptyList(),
-                            ),
-                                )
+                                    inputIp = "192.168.1.100",
+                                    discoveredServers = emptyList(),
+                                ),
+                        )
                     }
                 }
             }
@@ -133,14 +132,14 @@ class OtherServerIpDetailPaneScreenshotTest {
                         OtherServerIpDetailPaneContent(
                             uiState =
                                 OtherServerIpDetailUiState(
-                                inputIp = "192.168.1.100",
-                                discoveredServers =
-                                    listOf(
-                                    DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
-                                ),
+                                    inputIp = "192.168.1.100",
+                                    discoveredServers =
+                                        listOf(
+                                            DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
+                                        ),
                                     isDiscoveryDialogVisible = false,
-                            ),
-                                )
+                                ),
+                        )
                     }
                 }
             }

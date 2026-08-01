@@ -50,26 +50,32 @@ private data class BannerColors(
 @Composable
 private fun bannerColors(status: ConnectionBannerStatus): BannerColors =
     when (status) {
-    ConnectionBannerStatus.CONNECTED ->
-        BannerColors(
-        background = MaterialTheme.colorScheme.secondaryContainer,
-        content = MaterialTheme.colorScheme.onSecondaryContainer,
-    )
+        ConnectionBannerStatus.CONNECTED -> {
+            BannerColors(
+                background = MaterialTheme.colorScheme.secondaryContainer,
+                content = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
 
-    ConnectionBannerStatus.DISCONNECTED ->
-        BannerColors(
-        background = Color(0xFFFFF9C4),
-        content = Color(0xFF5F4B00),
-    )
+        ConnectionBannerStatus.DISCONNECTED -> {
+            BannerColors(
+                background = Color(0xFFFFF9C4),
+                content = Color(0xFF5F4B00),
+            )
+        }
 
-    ConnectionBannerStatus.UNCHECKED ->
-        BannerColors(
-        background = MaterialTheme.colorScheme.errorContainer,
-        content = MaterialTheme.colorScheme.onErrorContainer,
-    )
-}
+        ConnectionBannerStatus.UNCHECKED -> {
+            BannerColors(
+                background = MaterialTheme.colorScheme.errorContainer,
+                content = MaterialTheme.colorScheme.onErrorContainer,
+            )
+        }
+    }
 
-private fun bannerIcon(iconType: ConnectionBannerIconType, isConnected: Boolean): ImageVector =
+private fun bannerIcon(
+    iconType: ConnectionBannerIconType,
+    isConnected: Boolean,
+): ImageVector =
     when (iconType) {
         ConnectionBannerIconType.NETWORK -> {
             if (isConnected) Icons.Default.Wifi else Icons.Default.WifiOff
@@ -93,10 +99,10 @@ private fun Modifier.pulseWhile(enabled: Boolean): Modifier {
         targetValue = 1f,
         animationSpec =
             infiniteRepeatable(
-            animation = tween(durationMillis = ICON_PULSE_DURATION_MILLIS, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-            label = "connectionBannerIconPulseProgress",
+                animation = tween(durationMillis = ICON_PULSE_DURATION_MILLIS, easing = LinearEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        label = "connectionBannerIconPulseProgress",
     )
     return graphicsLayer(scaleX = pulseScale(progress), scaleY = pulseScale(progress), alpha = pulseAlpha(progress))
 }
@@ -117,16 +123,16 @@ fun ConnectionBannerContent(
     Box(
         modifier =
             modifier
-            .fillMaxWidth()
-            .background(colors.background)
-            .then(
-                if (isTappable) {
-                    Modifier.clickable(role = Role.Button, onClick = onClick!!)
-                } else {
-                    Modifier
-                },
-            ).padding(horizontal = 16.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center,
+                .fillMaxWidth()
+                .background(colors.background)
+                .then(
+                    if (isTappable) {
+                        Modifier.clickable(role = Role.Button, onClick = onClick!!)
+                    } else {
+                        Modifier
+                    },
+                ).padding(horizontal = 16.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -138,9 +144,9 @@ fun ConnectionBannerContent(
                 tint = colors.content,
                 modifier =
                     Modifier
-                    .size(18.dp)
-                    .pulseWhile(enabled = uiState.status == ConnectionBannerStatus.DISCONNECTED),
-                    )
+                        .size(18.dp)
+                        .pulseWhile(enabled = uiState.status == ConnectionBannerStatus.DISCONNECTED),
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = uiState.message,
@@ -155,9 +161,9 @@ fun ConnectionBannerContent(
                 tint = colors.content,
                 modifier =
                     Modifier
-                    .size(18.dp)
-                    .align(Alignment.CenterEnd),
-                    )
+                        .size(18.dp)
+                        .align(Alignment.CenterEnd),
+            )
         }
     }
 }
@@ -165,34 +171,34 @@ fun ConnectionBannerContent(
 private class ConnectionBannerContentPreviewParameterProvider : PreviewParameterProvider<ConnectionBannerUiState> {
     override val values =
         sequenceOf(
-        ConnectionBannerUiState(
-            status = ConnectionBannerStatus.CONNECTED,
-            message = "シミュレータに接続中",
-            iconType = ConnectionBannerIconType.SIMULATOR,
-        ),
-        ConnectionBannerUiState(
-            status = ConnectionBannerStatus.DISCONNECTED,
-            message = "シミュレータ接続待機中",
-            iconType = ConnectionBannerIconType.SIMULATOR,
-        ),
-        ConnectionBannerUiState(
-            status = ConnectionBannerStatus.CONNECTED,
-            message = "Windows版KoDriverに接続中",
-            iconType = ConnectionBannerIconType.NETWORK,
-        ),
-        ConnectionBannerUiState(
-            status = ConnectionBannerStatus.DISCONNECTED,
-            message = "Windows版KoDriver接続待機中",
-            iconType = ConnectionBannerIconType.NETWORK,
-        ),
-        ConnectionBannerUiState(
-            status = ConnectionBannerStatus.UNCHECKED,
-            message = "接続先IPアドレスが未設定です",
-            iconType = ConnectionBannerIconType.NETWORK,
-            isTappable = true,
-            tapNavigationTarget = ConnectionBannerNavigationTarget.ConsoleIp,
-        ),
-    )
+            ConnectionBannerUiState(
+                status = ConnectionBannerStatus.CONNECTED,
+                message = "シミュレータに接続中",
+                iconType = ConnectionBannerIconType.SIMULATOR,
+            ),
+            ConnectionBannerUiState(
+                status = ConnectionBannerStatus.DISCONNECTED,
+                message = "シミュレータ接続待機中",
+                iconType = ConnectionBannerIconType.SIMULATOR,
+            ),
+            ConnectionBannerUiState(
+                status = ConnectionBannerStatus.CONNECTED,
+                message = "Windows版KoDriverに接続中",
+                iconType = ConnectionBannerIconType.NETWORK,
+            ),
+            ConnectionBannerUiState(
+                status = ConnectionBannerStatus.DISCONNECTED,
+                message = "Windows版KoDriver接続待機中",
+                iconType = ConnectionBannerIconType.NETWORK,
+            ),
+            ConnectionBannerUiState(
+                status = ConnectionBannerStatus.UNCHECKED,
+                message = "接続先IPアドレスが未設定です",
+                iconType = ConnectionBannerIconType.NETWORK,
+                isTappable = true,
+                tapNavigationTarget = ConnectionBannerNavigationTarget.ConsoleIp,
+            ),
+        )
 }
 
 @Preview(showBackground = true)

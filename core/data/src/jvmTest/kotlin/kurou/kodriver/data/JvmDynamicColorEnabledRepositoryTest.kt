@@ -6,20 +6,19 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 class JvmDynamicColorEnabledRepositoryTest {
-
     private val repository = JvmDynamicColorEnabledRepository()
 
     @Test
     fun `dynamicColorEnabledはfalseを返す`() =
         runTest {
-        assertFalse(repository.dynamicColorEnabled().first())
-    }
+            assertFalse(repository.dynamicColorEnabled().first())
+        }
 
     @Test
     fun `saveDynamicColorEnabledを呼び出してもfalseを返す`() =
         runTest {
-        repository.saveDynamicColorEnabled(true)
+            repository.saveDynamicColorEnabled(true)
 
-        assertFalse(repository.dynamicColorEnabled().first())
-    }
+            assertFalse(repository.dynamicColorEnabled().first())
+        }
 }

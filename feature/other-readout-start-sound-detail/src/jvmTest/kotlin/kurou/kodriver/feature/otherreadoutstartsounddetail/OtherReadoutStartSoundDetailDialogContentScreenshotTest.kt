@@ -15,7 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -44,10 +43,10 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
                         OtherReadoutStartSoundDetailDialogContent(
                             uiState =
                                 OtherReadoutStartSoundDetailUiState(
-                                selectedType = ReadoutStartSoundType.FORMULA_RADIO,
-                                pendingType = ReadoutStartSoundType.ELECTRONIC_NOISE,
-                            ),
-                                )
+                                    selectedType = ReadoutStartSoundType.FORMULA_RADIO,
+                                    pendingType = ReadoutStartSoundType.ELECTRONIC_NOISE,
+                                ),
+                        )
                     }
                 }
             }

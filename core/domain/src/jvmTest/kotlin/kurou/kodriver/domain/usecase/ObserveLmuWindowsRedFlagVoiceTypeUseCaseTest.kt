@@ -15,7 +15,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ObserveLmuWindowsRedFlagVoiceTypeUseCaseTest {
-
     @MockK
     private lateinit var repository: LmuWindowsRedFlagPreferencesRepository
 
@@ -27,11 +26,11 @@ class ObserveLmuWindowsRedFlagVoiceTypeUseCaseTest {
     @Test
     fun `保存済みの赤旗音声タイプを返す`() =
         runBlocking {
-        every { repository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.RED_FLAG)
-        val useCase = ObserveLmuWindowsRedFlagVoiceTypeUseCase(repository)
+            every { repository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.RED_FLAG)
+            val useCase = ObserveLmuWindowsRedFlagVoiceTypeUseCase(repository)
 
-        assertEquals(RedFlagVoiceType.RED_FLAG, useCase().first())
-        verify(exactly = 1) { repository.observeVoiceType() }
-        confirmVerified(repository)
-    }
+            assertEquals(RedFlagVoiceType.RED_FLAG, useCase().first())
+            verify(exactly = 1) { repository.observeVoiceType() }
+            confirmVerified(repository)
+        }
 }

@@ -91,18 +91,18 @@ private fun DetailPaneCardLayout(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier =
                     Modifier
-                    .fillMaxWidth()
-                    .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                    ) {
+                        .fillMaxWidth()
+                        .then(if (onHeaderClick != null) Modifier.clickable { onHeaderClick() } else Modifier)
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+            ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     modifier =
                         Modifier
-                        .weight(1f)
-                        .alpha(titleAlpha),
-                        )
+                            .weight(1f)
+                            .alpha(titleAlpha),
+                )
                 headerContent()
             }
             HorizontalDivider(
@@ -113,10 +113,10 @@ private fun DetailPaneCardLayout(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier =
                     Modifier
-                    .fillMaxWidth()
-                    .alpha(bottomContentAlpha)
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
-                    ) {
+                        .fillMaxWidth()
+                        .alpha(bottomContentAlpha)
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
+            ) {
                 bottomContent()
             }
         }
@@ -142,16 +142,16 @@ fun DetailPaneCardChips(
             label = { Text(text = label) },
             leadingIcon =
                 if (selected) {
-                {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = null,
-                    )
-                }
-            } else {
-                null
-            },
-                )
+                    {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                        )
+                    }
+                } else {
+                    null
+                },
+        )
     }
 }
 

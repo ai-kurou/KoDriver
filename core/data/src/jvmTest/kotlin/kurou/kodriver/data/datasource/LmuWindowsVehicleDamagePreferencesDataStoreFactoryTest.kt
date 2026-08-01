@@ -13,11 +13,10 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesDataStoreFactoryTest {
-
     private val tempDir =
         Files
-        .createTempDirectory("kodriver_lmu_windows_vehicle_damage_preferences_factory_test")
-        .toFile()
+            .createTempDirectory("kodriver_lmu_windows_vehicle_damage_preferences_factory_test")
+            .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
@@ -28,9 +27,9 @@ class LmuWindowsVehicleDamagePreferencesDataStoreFactoryTest {
     @Test
     fun `lmu_windows_vehicle_damage_preferences設定が正しいファイルに書き込まれる`() =
         testScope.runTest {
-        val dataStore = createLmuWindowsVehicleDamagePreferencesDataStore(tempDir.absolutePath)
-        dataStore.updateData { it.copy(enabledStates = mapOf("overheat" to true)) }
+            val dataStore = createLmuWindowsVehicleDamagePreferencesDataStore(tempDir.absolutePath)
+            dataStore.updateData { it.copy(enabledStates = mapOf("overheat" to true)) }
 
-        assertTrue(tempDir.resolve("lmu_windows_vehicle_damage_preferences.pb").exists())
-    }
+            assertTrue(tempDir.resolve("lmu_windows_vehicle_damage_preferences.pb").exists())
+        }
 }

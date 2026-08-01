@@ -26,7 +26,6 @@ internal class AceWindowsWavNarratorEngine(
     private val startSoundResourceLoader: suspend (String) -> ByteArray = ::readStartSoundBytes,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : TextToSpeechEngine {
-
     @Volatile
     private var currentVolume: Int = 100
 
@@ -54,24 +53,24 @@ internal class AceWindowsWavNarratorEngine(
 
     private val eventToFile: Map<SpeechEvent, String> =
         mapOf(
-        SpeechEvent.AceWindowsRemainingFuelWarning to "files/remaining_fuel_caution.wav",
-        SpeechEvent.AceWindowsWhiteFlag to "files/white_flag.wav",
-        SpeechEvent.AceWindowsGreenFlag to "files/green_flag.wav",
-        SpeechEvent.AceWindowsRedFlag to "files/red_flag.wav",
-        SpeechEvent.AceWindowsBlueFlag to "files/blue_flag.wav",
-        SpeechEvent.AceWindowsYellowFlag to "files/yellow_flag.wav",
-        SpeechEvent.AceWindowsBlackFlag to "files/black_flag.wav",
-        SpeechEvent.AceWindowsBlackWhiteFlag to "files/black_white_flag.wav",
-        SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
-        SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
-        SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
-    )
+            SpeechEvent.AceWindowsRemainingFuelWarning to "files/remaining_fuel_caution.wav",
+            SpeechEvent.AceWindowsWhiteFlag to "files/white_flag.wav",
+            SpeechEvent.AceWindowsGreenFlag to "files/green_flag.wav",
+            SpeechEvent.AceWindowsRedFlag to "files/red_flag.wav",
+            SpeechEvent.AceWindowsBlueFlag to "files/blue_flag.wav",
+            SpeechEvent.AceWindowsYellowFlag to "files/yellow_flag.wav",
+            SpeechEvent.AceWindowsBlackFlag to "files/black_flag.wav",
+            SpeechEvent.AceWindowsBlackWhiteFlag to "files/black_white_flag.wav",
+            SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
+            SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
+            SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
+        )
 
     private val startSoundTypeToFile =
         mapOf(
-        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
-        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
-    )
+            ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+            ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+        )
 
     init {
         scope.launch { volumeFlow.collect { currentVolume = it } }
@@ -102,15 +101,18 @@ internal class AceWindowsWavNarratorEngine(
         }
     }
 
-    override fun speak(event: SpeechEvent, queue: Boolean) {
+    override fun speak(
+        event: SpeechEvent,
+        queue: Boolean,
+    ) {
         val mainSound = sounds[event] ?: return
         if (queue) {
             val previousJob = playJob
             playJob =
                 scope.launch(playbackParent) {
-                previousJob?.join()
-                play(event, mainSound)
-            }
+                    previousJob?.join()
+                    play(event, mainSound)
+                }
             return
         }
         if (soundPlayer.isPlaying) return
@@ -135,7 +137,10 @@ internal class AceWindowsWavNarratorEngine(
         playJob = scope.launch(playbackParent) { soundPlayer.play(sound, currentVolume) }
     }
 
-    private suspend fun play(event: SpeechEvent, mainSound: ByteArray) {
+    private suspend fun play(
+        event: SpeechEvent,
+        mainSound: ByteArray,
+    ) {
         _currentReadoutItemKey = event.readoutItemKey
         val vol = currentVolume
         startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }

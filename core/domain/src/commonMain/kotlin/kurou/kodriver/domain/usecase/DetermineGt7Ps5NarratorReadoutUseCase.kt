@@ -79,9 +79,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
 
         val event =
             when (settings.myBestLapVoiceType) {
-            MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
-            MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
-        }
+                MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
+                MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
+            }
         return Gt7Ps5NarratorReadoutDecision(
             state = stateWithCurrentBestLap.copy(personalBestMs = current),
             events = listOf(event),
@@ -97,28 +97,32 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         val fuelTrackingState = trackFuel(state.fuelTrackingState, telemetry, observedAtMs)
         val stateAfterTracking =
             when {
-            fuelTrackingState.isNewSession ->
-                state.copy(
-                lastAnnouncedRemainingLaps = -1,
-                lastFuelEvaluationLap = -1,
-                fuelTrackingState = fuelTrackingState,
-            )
+                fuelTrackingState.isNewSession -> {
+                    state.copy(
+                        lastAnnouncedRemainingLaps = -1,
+                        lastFuelEvaluationLap = -1,
+                        fuelTrackingState = fuelTrackingState,
+                    )
+                }
 
-            fuelTrackingState.hasRefueled ->
-                state.copy(
-                lastAnnouncedRemainingLaps = -1,
-                fuelTrackingState = fuelTrackingState,
-            )
+                fuelTrackingState.hasRefueled -> {
+                    state.copy(
+                        lastAnnouncedRemainingLaps = -1,
+                        fuelTrackingState = fuelTrackingState,
+                    )
+                }
 
-            else -> state.copy(fuelTrackingState = fuelTrackingState)
-        }
+                else -> {
+                    state.copy(fuelTrackingState = fuelTrackingState)
+                }
+            }
         val evaluation = calculateRemainingFuelLaps(stateAfterTracking, settings)
         val stateAfterEvaluation = stateAfterTracking.copy(lastFuelEvaluationLap = evaluation.evaluatedLap)
         val remainingLaps =
             evaluation.remainingLaps ?: return Gt7Ps5NarratorReadoutDecision(
-            stateAfterEvaluation,
-            emptyList(),
-        )
+                stateAfterEvaluation,
+                emptyList(),
+            )
         return Gt7Ps5NarratorReadoutDecision(
             state = stateAfterEvaluation.copy(lastAnnouncedRemainingLaps = remainingLaps),
             events = listOf(SpeechEvent.RemainingFuelLapsWarning(remainingLaps)),
@@ -146,42 +150,42 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         when {
             telemetry.lapCount < state.currentLap -> {
                 Gt7Ps5FuelTrackingState(
-                raceStartFuel = telemetry.gasLevel,
-                raceStartLap = telemetry.lapCount,
-                currentLap = telemetry.lapCount,
-                currentLapStartedAtMs = observedAtMs,
-                currentGasLevel = telemetry.gasLevel,
-                bestLapTimeMs = telemetry.bestLapTimeMs,
-                totalRefueled = 0f,
-                hasRefueled = false,
-                isNewSession = true,
-                observedAtMs = observedAtMs,
-            )
+                    raceStartFuel = telemetry.gasLevel,
+                    raceStartLap = telemetry.lapCount,
+                    currentLap = telemetry.lapCount,
+                    currentLapStartedAtMs = observedAtMs,
+                    currentGasLevel = telemetry.gasLevel,
+                    bestLapTimeMs = telemetry.bestLapTimeMs,
+                    totalRefueled = 0f,
+                    hasRefueled = false,
+                    isNewSession = true,
+                    observedAtMs = observedAtMs,
+                )
             }
 
             state.raceStartFuel == null -> {
                 Gt7Ps5FuelTrackingState(
-                raceStartFuel = telemetry.gasLevel,
-                raceStartLap = telemetry.lapCount,
-                currentLap = telemetry.lapCount,
-                currentLapStartedAtMs = observedAtMs,
-                currentGasLevel = telemetry.gasLevel,
-                bestLapTimeMs = telemetry.bestLapTimeMs,
-                totalRefueled = 0f,
-                hasRefueled = false,
-                isNewSession = false,
-                observedAtMs = observedAtMs,
-            )
+                    raceStartFuel = telemetry.gasLevel,
+                    raceStartLap = telemetry.lapCount,
+                    currentLap = telemetry.lapCount,
+                    currentLapStartedAtMs = observedAtMs,
+                    currentGasLevel = telemetry.gasLevel,
+                    bestLapTimeMs = telemetry.bestLapTimeMs,
+                    totalRefueled = 0f,
+                    hasRefueled = false,
+                    isNewSession = false,
+                    observedAtMs = observedAtMs,
+                )
             }
 
             else -> {
                 val refueled = (telemetry.gasLevel - state.currentGasLevel).coerceAtLeast(0f)
                 val currentLapStartedAtMs =
                     if (telemetry.lapCount != state.currentLap) {
-                    observedAtMs
-                } else {
-                    state.currentLapStartedAtMs
-                }
+                        observedAtMs
+                    } else {
+                        state.currentLapStartedAtMs
+                    }
                 state.copy(
                     currentLap = telemetry.lapCount,
                     currentLapStartedAtMs = currentLapStartedAtMs,
@@ -229,7 +233,10 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         return RemainingFuelLapsEvaluation(fuelState.currentLap, remainingLapsFloor)
     }
 
-    private fun isLowRemainingFuel(telemetry: Gt7Ps5TelemetryData, thresholdPercentage: Int): Boolean =
+    private fun isLowRemainingFuel(
+        telemetry: Gt7Ps5TelemetryData,
+        thresholdPercentage: Int,
+    ): Boolean =
         telemetry.gasLevel > 0f &&
             telemetry.gasCapacity > 0f &&
             telemetry.gasLevel * 100f <= thresholdPercentage * telemetry.gasCapacity

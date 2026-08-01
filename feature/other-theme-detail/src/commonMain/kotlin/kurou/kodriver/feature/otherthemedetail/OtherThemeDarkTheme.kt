@@ -25,7 +25,7 @@ internal fun resolveDarkTheme(
     systemDarkTheme: Boolean,
 ): Boolean =
     when (themeMode) {
-    ThemeMode.SYSTEM -> systemDarkTheme
-    ThemeMode.LIGHT -> false
-    ThemeMode.DARK -> true
-}
+        ThemeMode.SYSTEM -> systemDarkTheme
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    }

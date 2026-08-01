@@ -27,9 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * LmuWindowsReadoutFlagDetail の画面を表示する Composable。
  */
 @Composable
-fun LmuWindowsReadoutFlagDetailPane(
-    modifier: Modifier = Modifier,
-) {
+fun LmuWindowsReadoutFlagDetailPane(modifier: Modifier = Modifier) {
     val viewModel: LmuWindowsReadoutFlagDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutFlagDetailPaneContent(
@@ -57,9 +55,9 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
     Column(
         modifier =
             modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-            ) {
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+    ) {
         DetailPaneDescription(
             text = stringResource(Res.string.flag_description),
         )
@@ -86,9 +84,9 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
         val redFlagChecked = uiState.enabledStates[ReadoutItemKey.LmuWindows.Flag.RedFlag] ?: true
         val selectedRedFlagLabel =
             when (uiState.redFlagVoiceType) {
-            RedFlagVoiceType.RED_FLAG -> redFlagLabel
-            RedFlagVoiceType.SESSION_STOP -> sessionStopLabel
-        }
+                RedFlagVoiceType.RED_FLAG -> redFlagLabel
+                RedFlagVoiceType.SESSION_STOP -> sessionStopLabel
+            }
         DetailPaneCard(
             title = redFlagLabel,
             checked = redFlagChecked,
@@ -102,10 +100,10 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                     onChipClick = { label ->
                         val type =
                             if (label == redFlagLabel) {
-                            RedFlagVoiceType.RED_FLAG
-                        } else {
-                            RedFlagVoiceType.SESSION_STOP
-                        }
+                                RedFlagVoiceType.RED_FLAG
+                            } else {
+                                RedFlagVoiceType.SESSION_STOP
+                            }
                         onRedFlagVoiceTypeChanged(type)
                         onRedFlagPreviewClicked(type)
                     },
@@ -121,16 +119,16 @@ private fun LmuWindowsReadoutFlagDetailPanePreview() {
     LmuWindowsReadoutFlagDetailPaneContent(
         uiState =
             LmuWindowsReadoutFlagDetailUiState(
-            enabledStates =
-                mapOf(
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-            ),
+                enabledStates =
+                    mapOf(
+                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                        ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                    ),
                 redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
-        ),
-            onFlagEnabledChanged = { _, _ -> },
+            ),
+        onFlagEnabledChanged = { _, _ -> },
         onPreviewClicked = {},
         onRedFlagEnabledChanged = {},
         onRedFlagVoiceTypeChanged = {},

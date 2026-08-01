@@ -19,11 +19,11 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutPitTimingDetailModule =
     module {
-    viewModel {
-        LmuWindowsReadoutPitTimingDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
+        viewModel {
+            LmuWindowsReadoutPitTimingDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows")))
+        }
+        factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
+        factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
+        factoryOf(::SaveLmuWindowsPitTimingTyreWearLapsUseCase)
     }
-    factoryOf(::ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
-    factoryOf(::ObserveLmuWindowsPitTimingTyreWearLapsUseCase)
-    factoryOf(::SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase)
-    factoryOf(::SaveLmuWindowsPitTimingTyreWearLapsUseCase)
-}

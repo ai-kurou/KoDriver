@@ -25,23 +25,23 @@ class TelemetryLogListViewModel internal constructor(
 
     val uiState: StateFlow<TelemetryLogListUiState> =
         combine(
-        observeSortedTelemetryLogs(),
-        _selectedLogId,
-        _resetState,
-        _showResetConfirmDialog,
-    ) { logs, selectedLogId, resetState, showResetConfirmDialog ->
-        TelemetryLogListUiState(
-            logs = logs,
-            selectedLogId = selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } },
-            isResetting = resetState.isResetting,
-            resetSucceeded = resetState.resetSucceeded,
-            showResetConfirmDialog = showResetConfirmDialog,
+            observeSortedTelemetryLogs(),
+            _selectedLogId,
+            _resetState,
+            _showResetConfirmDialog,
+        ) { logs, selectedLogId, resetState, showResetConfirmDialog ->
+            TelemetryLogListUiState(
+                logs = logs,
+                selectedLogId = selectedLogId?.takeIf { selectedId -> logs.any { it.id == selectedId } },
+                isResetting = resetState.isResetting,
+                resetSucceeded = resetState.resetSucceeded,
+                showResetConfirmDialog = showResetConfirmDialog,
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            TelemetryLogListUiState(),
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
-        TelemetryLogListUiState(),
-    )
 
     fun selectLog(id: Long) {
         _selectedLogId.update { current -> if (current == id) null else id }
@@ -56,13 +56,13 @@ class TelemetryLogListViewModel internal constructor(
             _resetState.update { it.copy(isResetting = true, resetSucceeded = null) }
             val succeeded =
                 try {
-                resetTelemetryLogDatabase()
-                true
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                false
-            }
+                    resetTelemetryLogDatabase()
+                    true
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    false
+                }
             _resetState.update { it.copy(isResetting = false, resetSucceeded = succeeded) }
         }
     }

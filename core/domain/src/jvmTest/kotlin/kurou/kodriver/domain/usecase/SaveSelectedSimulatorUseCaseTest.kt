@@ -11,7 +11,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveSelectedSimulatorUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: SimulatorPreferencesRepository
 
@@ -23,9 +22,9 @@ class SaveSelectedSimulatorUseCaseTest {
     @Test
     fun `保存するとFlowに値が反映される`() =
         runBlocking {
-        SaveSelectedSimulatorUseCase(repository)(Simulator.LmuWindows)
+            SaveSelectedSimulatorUseCase(repository)(Simulator.LmuWindows)
 
-        coVerify(exactly = 1) { repository.saveSelectedSimulator(Simulator.LmuWindows) }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveSelectedSimulator(Simulator.LmuWindows) }
+            confirmVerified(repository)
+        }
 }

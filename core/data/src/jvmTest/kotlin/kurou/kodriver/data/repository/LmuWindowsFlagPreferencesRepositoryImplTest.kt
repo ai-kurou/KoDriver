@@ -16,15 +16,14 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsFlagPreferencesRepositoryImplTest {
-
     private val tempDir = Files.createTempDirectory("kodriver_flag_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
     private val dataStore =
         DataStoreFactory.create(
-        serializer = LmuWindowsFlagPreferencesSerializer,
-        scope = testScope,
-        produceFile = { tempDir.resolve("test.pb") },
-    )
+            serializer = LmuWindowsFlagPreferencesSerializer,
+            scope = testScope,
+            produceFile = { tempDir.resolve("test.pb") },
+        )
     private val repository = LmuWindowsFlagPreferencesRepositoryImpl(dataStore)
 
     @AfterTest
@@ -35,35 +34,35 @@ class LmuWindowsFlagPreferencesRepositoryImplTest {
     @Test
     fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
         testScope.runTest {
-        assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
+            assertTrue(repository.observeFlagEnabledStates().first().isEmpty())
 
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to true),
-            repository.observeFlagEnabledStates().first(),
-        )
+            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to true),
+                repository.observeFlagEnabledStates().first(),
+            )
 
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false)
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to false),
-            repository.observeFlagEnabledStates().first(),
-        )
-    }
+            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false)
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.BlueFlag to false),
+                repository.observeFlagEnabledStates().first(),
+            )
+        }
 
     @Test
     fun `複数フラグを独立して保存・取得できる`() =
         testScope.runTest {
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag, false)
-        repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, true)
+            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, true)
+            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag, false)
+            repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, true)
 
-        assertEquals(
-            mapOf<ReadoutItemKey, Boolean>(
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-            ),
-            repository.observeFlagEnabledStates().first(),
-        )
-    }
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
+                    ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                ),
+                repository.observeFlagEnabledStates().first(),
+            )
+        }
 }

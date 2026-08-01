@@ -50,7 +50,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AceWindowsNarratorViewModelTest {
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
@@ -102,138 +101,138 @@ class AceWindowsNarratorViewModelTest {
         return AceWindowsNarratorViewModel(
             remainingFuelUseCases =
                 RemainingFuelUseCases(
-                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
-                observeThresholdPercentage =
-                    ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
-            ),
-                readoutListUseCases =
-                    ReadoutListUseCases(
-                observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
-                observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
-                observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
-                observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
-            ),
-                    flagUseCases =
-                        FlagUseCases(
-                observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(flagRepository),
-                observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
-            ),
-                        eventProcessor =
-                            AceWindowsNarratorEventProcessor(
-                ttsEngine = ttsEngine,
-                saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
-            ),
-                            currentTimeMs = currentTimeMs,
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
+                    observeThresholdPercentage =
+                        ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
+                ),
+            readoutListUseCases =
+                ReadoutListUseCases(
+                    observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
+                    observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
+                    observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
+                    observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
+                ),
+            flagUseCases =
+                FlagUseCases(
+                    observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(flagRepository),
+                    observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
+                ),
+            eventProcessor =
+                AceWindowsNarratorEventProcessor(
+                    ttsEngine = ttsEngine,
+                    saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
+                ),
+            currentTimeMs = currentTimeMs,
         )
     }
 
     @Test
     fun `ACE非選択時は読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
-        every {
-            readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
-        } returns MutableStateFlow(emptyMap())
-        every {
-            readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
-        } returns MutableStateFlow(emptyList())
-        every {
-            remainingFuelPreferencesRepository.observeThresholdPercentage()
-        } returns MutableStateFlow(30)
-        every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-        every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
-        createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyList())
+            every {
+                remainingFuelPreferencesRepository.observeThresholdPercentage()
+            } returns MutableStateFlow(30)
+            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(fuel(20.0))
+            channel.send(fuel(20.0))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
-        confirmVerified(simulatorPreferencesRepository)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            confirmVerified(simulatorPreferencesRepository)
+        }
 
     @Test
     fun `残量が閾値以下になると読み上げる`() =
         runTest(testDispatcher) {
-        val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(thresholdPercentage = 30)
-        createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(fuel(50.0))
-        channel.send(fuel(20.0))
+            channel.send(fuel(50.0))
+            channel.send(fuel(20.0))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning), spokenTexts)
-    }
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning), spokenTexts)
+        }
 
     @Test
     fun `給油後は残り燃料警告を再度読み上げる`() =
         runTest(testDispatcher) {
-        val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(thresholdPercentage = 30)
-        createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(fuel(50.0))
-        channel.send(fuel(20.0))
-        channel.send(fuel(20.0))
-        channel.send(fuel(80.0))
-        channel.send(fuel(20.0))
+            channel.send(fuel(50.0))
+            channel.send(fuel(20.0))
+            channel.send(fuel(20.0))
+            channel.send(fuel(80.0))
+            channel.send(fuel(20.0))
 
-        assertEquals(
-            listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning, SpeechEvent.AceWindowsRemainingFuelWarning),
-            spokenTexts,
-        )
-    }
+            assertEquals(
+                listOf<SpeechEvent>(SpeechEvent.AceWindowsRemainingFuelWarning, SpeechEvent.AceWindowsRemainingFuelWarning),
+                spokenTexts,
+            )
+        }
 
     @Test
     fun `読み上げが発生したら現在と直前の燃料データを保存する`() =
         runTest(testDispatcher) {
-        val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val telemetryJsons = mutableListOf<String>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(thresholdPercentage = 30)
-        coEvery {
-            telemetryLogRepository.saveTelemetryLog(
-                123_456L,
-                Simulator.AceWindows,
-                ReadoutItemKey.AceWindows.RemainingFuel.Root,
-                capture(telemetryJsons),
-            )
-        } just Runs
-        createViewModel(fuelChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val telemetryJsons = mutableListOf<String>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    123_456L,
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine, currentTimeMs = { 123_456L })
 
-        channel.send(fuel(50.0))
-        channel.send(fuel(20.0))
+            channel.send(fuel(50.0))
+            channel.send(fuel(20.0))
 
-        assertEquals(1, telemetryJsons.size)
-        assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":50.0}"""))
-        assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":20.0}"""))
-        assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
-    }
+            assertEquals(1, telemetryJsons.size)
+            assertEquals(true, telemetryJsons.single().contains(""""previousFuel":{"remainingPercent":50.0}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":20.0}"""))
+            assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":123456"""))
+        }
 
     @Test
     fun `残り燃料項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
-        val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(
-            thresholdPercentage = 30,
-            enabledOverrides = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to false),
-        )
-        createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to false),
+            )
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
 
-        channel.send(fuel(50.0))
-        channel.send(fuel(20.0))
+            channel.send(fuel(50.0))
+            channel.send(fuel(20.0))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     /**
      * simulator/enabledStates/readoutOrder/thresholdの標準スタブをまとめて設定する。
@@ -270,56 +269,56 @@ class AceWindowsNarratorViewModelTest {
     @Test
     fun `フラグが変化すると読み上げる`() =
         runTest(testDispatcher) {
-        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(thresholdPercentage = 30)
-        createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30)
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
-        flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-        flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
 
-        assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsBlueFlag), spokenTexts)
-    }
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.AceWindowsBlueFlag), spokenTexts)
+        }
 
     @Test
     fun `フラグ項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
-        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(
-            thresholdPercentage = 30,
-            enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false),
-        )
-        createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                enabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.Root to false),
+            )
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
-        flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-        flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     @Test
     fun `個別のフラグ項目が無効のときは読み上げない`() =
         runTest(testDispatcher) {
-        val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-        val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
-        val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockTts(spokenTexts)
-        stubReadoutDefaults(
-            thresholdPercentage = 30,
-            flagEnabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
-        )
-        createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                flagEnabledOverrides = mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
+            )
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
-        flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-        flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
 
-        assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-    }
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 

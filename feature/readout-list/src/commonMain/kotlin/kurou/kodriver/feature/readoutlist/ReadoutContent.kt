@@ -92,31 +92,31 @@ internal fun ReadoutContent(
 ) {
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective =
-            when {
-            uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
-                scaffoldDirective.copy(maxHorizontalPartitions = 1)
-            }
+            scaffoldDirective =
+                when {
+                    uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
+                        scaffoldDirective.copy(maxHorizontalPartitions = 1)
+                    }
 
-            uiState.selectedItem != null &&
-                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
-                    scaffoldDirective.copy(maxHorizontalPartitions = 2)
-            }
+                    uiState.selectedItem != null &&
+                        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+                        scaffoldDirective.copy(maxHorizontalPartitions = 2)
+                    }
 
-            else -> {
-                scaffoldDirective
-            }
-        },
+                    else -> {
+                        scaffoldDirective
+                    }
+                },
             initialDestinationHistory =
                 if (uiState.selectedItem != null) {
-            listOf(
-                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
-                ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
-            )
-        } else {
-            listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
-        },
-                )
+                    listOf(
+                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
+                        ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
+                    )
+                } else {
+                    listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
+                },
+        )
     val scope = rememberCoroutineScope()
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
@@ -126,16 +126,17 @@ internal fun ReadoutContent(
     }
     val paneExpansionState =
         rememberPaneExpansionState(
-        anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
-        initialAnchoredIndex = 0,
-    )
+            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
+            initialAnchoredIndex = 0,
+        )
 
     LaunchedEffect(uiState.selectedItem) {
         navigator.navigateTo(
-            if (uiState.selectedItem != null)
+            if (uiState.selectedItem != null) {
                 ListDetailPaneScaffoldRole.Detail
-            else
-                ListDetailPaneScaffoldRole.List,
+            } else {
+                ListDetailPaneScaffoldRole.List
+            },
         )
     }
 
@@ -176,58 +177,58 @@ internal fun ReadoutContent(
 @Composable
 private fun selectedItemTitle(selectedItem: ReadoutListItemType): String =
     when (selectedItem) {
-    ReadoutListItemType.LmuWindows.VehicleApproach -> {
-        stringResource(Res.string.item_vehicle_approach)
-    }
+        ReadoutListItemType.LmuWindows.VehicleApproach -> {
+            stringResource(Res.string.item_vehicle_approach)
+        }
 
-    ReadoutListItemType.LmuWindows.Flag -> {
-        stringResource(Res.string.item_flag)
-    }
+        ReadoutListItemType.LmuWindows.Flag -> {
+            stringResource(Res.string.item_flag)
+        }
 
-    ReadoutListItemType.LmuWindows.VehicleDamage -> {
-        stringResource(Res.string.item_vehicle_damage)
-    }
+        ReadoutListItemType.LmuWindows.VehicleDamage -> {
+            stringResource(Res.string.item_vehicle_damage)
+        }
 
-    ReadoutListItemType.LmuWindows.TyreTemperature -> {
-        stringResource(Res.string.item_tyre_temperature)
-    }
+        ReadoutListItemType.LmuWindows.TyreTemperature -> {
+            stringResource(Res.string.item_tyre_temperature)
+        }
 
-    ReadoutListItemType.LmuWindows.PitTiming -> {
-        stringResource(Res.string.item_pit_timing)
-    }
+        ReadoutListItemType.LmuWindows.PitTiming -> {
+            stringResource(Res.string.item_pit_timing)
+        }
 
-    ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
-        stringResource(Res.string.item_remaining_virtual_energy)
-    }
+        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
+            stringResource(Res.string.item_remaining_virtual_energy)
+        }
 
-    ReadoutListItemType.LmuWindows.TyreWear -> {
-        stringResource(Res.string.item_tyre_wear)
-    }
+        ReadoutListItemType.LmuWindows.TyreWear -> {
+            stringResource(Res.string.item_tyre_wear)
+        }
 
-    ReadoutListItemType.LmuWindows.MyBestLap -> {
-        stringResource(Res.string.item_my_best_lap)
-    }
+        ReadoutListItemType.LmuWindows.MyBestLap -> {
+            stringResource(Res.string.item_my_best_lap)
+        }
 
-    ReadoutListItemType.Gt7Ps5.MyBestLap -> {
-        stringResource(Res.string.item_my_best_lap)
-    }
+        ReadoutListItemType.Gt7Ps5.MyBestLap -> {
+            stringResource(Res.string.item_my_best_lap)
+        }
 
-    ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
-        stringResource(Res.string.item_remaining_fuel_laps)
-    }
+        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
+            stringResource(Res.string.item_remaining_fuel_laps)
+        }
 
-    ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
-        stringResource(Res.string.item_remaining_fuel)
-    }
+        ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
+            stringResource(Res.string.item_remaining_fuel)
+        }
 
-    ReadoutListItemType.AceWindows.Flag -> {
-        stringResource(Res.string.item_flag)
-    }
+        ReadoutListItemType.AceWindows.Flag -> {
+            stringResource(Res.string.item_flag)
+        }
 
-    ReadoutListItemType.AceWindows.RemainingFuel -> {
-        stringResource(Res.string.item_remaining_fuel)
+        ReadoutListItemType.AceWindows.RemainingFuel -> {
+            stringResource(Res.string.item_remaining_fuel)
+        }
     }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -235,18 +236,18 @@ private fun ReadoutContentPreview() {
     ReadoutContent(
         uiState =
             ReadoutListUiState(
-            simulators = listOf(Simulator.LmuWindows),
-            selectedSimulator = Simulator.LmuWindows,
-            items =
-                listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                ReadoutItemKey.LmuWindows.Flag.Root,
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                simulators = listOf(Simulator.LmuWindows),
+                selectedSimulator = Simulator.LmuWindows,
+                items =
+                    listOf(
+                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                        ReadoutItemKey.LmuWindows.Flag.Root,
+                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                        ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                    ),
             ),
-                ),
-            onSimulatorSelected = {},
+        onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },

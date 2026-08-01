@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveServerIpUseCaseTest {
-
     @MockK(relaxUnitFun = true)
     private lateinit var repository: ServerIpPreferencesRepository
 
@@ -24,22 +23,22 @@ class SaveServerIpUseCaseTest {
     @Test
     fun `IPアドレスを保存できる`() =
         runBlocking {
-        SaveServerIpUseCase(repository)("192.168.1.10")
+            SaveServerIpUseCase(repository)("192.168.1.10")
 
-        coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
+            confirmVerified(repository)
+        }
 
     @Test
     fun `上書き保存で最新のIPアドレスが返る`() =
         runBlocking {
-        val useCase = SaveServerIpUseCase(repository)
+            val useCase = SaveServerIpUseCase(repository)
 
-        useCase("192.168.1.10")
-        useCase("10.0.0.1")
+            useCase("192.168.1.10")
+            useCase("10.0.0.1")
 
-        coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
-        coVerify(exactly = 1) { repository.saveServerIp("10.0.0.1") }
-        confirmVerified(repository)
-    }
+            coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
+            coVerify(exactly = 1) { repository.saveServerIp("10.0.0.1") }
+            confirmVerified(repository)
+        }
 }

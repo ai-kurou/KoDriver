@@ -12,7 +12,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SoundVolumePreferencesRepositoryFactoryTest {
-
     private val tempDir =
         Files.createTempDirectory("kodriver_sound_volume_preferences_repository_factory_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -25,17 +24,17 @@ class SoundVolumePreferencesRepositoryFactoryTest {
     @Test
     fun `デフォルト値は100`() =
         testScope.runTest {
-        val repository = createSoundVolumePreferencesRepository(tempDir.absolutePath)
+            val repository = createSoundVolumePreferencesRepository(tempDir.absolutePath)
 
-        assertEquals(100, repository.volume().first())
-    }
+            assertEquals(100, repository.volume().first())
+        }
 
     @Test
     fun `保存した音量を読み出せる`() =
         testScope.runTest {
-        val repository = createSoundVolumePreferencesRepository(tempDir.absolutePath)
-        repository.saveVolume(55)
+            val repository = createSoundVolumePreferencesRepository(tempDir.absolutePath)
+            repository.saveVolume(55)
 
-        assertEquals(55, repository.volume().first())
-    }
+            assertEquals(55, repository.volume().first())
+        }
 }

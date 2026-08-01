@@ -45,7 +45,6 @@ import kotlin.test.assertTrue
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class ReadoutContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -53,13 +52,13 @@ class ReadoutContentTest {
 
     private val singlePaneDirective =
         PaneScaffoldDirective(
-        maxHorizontalPartitions = 1,
-        horizontalPartitionSpacerSize = 0.dp,
-        maxVerticalPartitions = 1,
-        verticalPartitionSpacerSize = 0.dp,
-        defaultPanePreferredWidth = 360.dp,
-        excludedBounds = emptyList(),
-    )
+            maxHorizontalPartitions = 1,
+            horizontalPartitionSpacerSize = 0.dp,
+            maxVerticalPartitions = 1,
+            verticalPartitionSpacerSize = 0.dp,
+            defaultPanePreferredWidth = 360.dp,
+            excludedBounds = emptyList(),
+        )
 
     @Test
     fun `lmu_windowsの詳細ペインに遷移後にbackHandlerのコールバックを呼ぶと一覧に戻る`() {
@@ -73,35 +72,35 @@ class ReadoutContentTest {
             tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
             itemTexts =
                 listOf(
-                stringResource(Res.string.item_vehicle_approach),
-                stringResource(Res.string.item_flag),
-                stringResource(Res.string.item_vehicle_damage),
-                stringResource(Res.string.item_my_best_lap),
-            )
+                    stringResource(Res.string.item_vehicle_approach),
+                    stringResource(Res.string.item_flag),
+                    stringResource(Res.string.item_vehicle_damage),
+                    stringResource(Res.string.item_my_best_lap),
+                )
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.LmuWindows),
-                    selectedSimulator = Simulator.LmuWindows,
-                    items =
-                        listOf(
-                        ReadoutItemKey.LmuWindows.Flag.Root,
-                        ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-                        ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-                        ReadoutItemKey.LmuWindows.MyBestLap.Root,
-                    ),
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items =
+                            listOf(
+                                ReadoutItemKey.LmuWindows.Flag.Root,
+                                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+                            ),
                         readoutEnabledStates =
                             mapOf(
-                        ReadoutItemKey.LmuWindows.Flag.Root to true,
-                        ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
-                        ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                        ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                                ReadoutItemKey.LmuWindows.VehicleApproach.Root to true,
+                                ReadoutItemKey.LmuWindows.VehicleDamage.Root to true,
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
+                                ReadoutItemKey.LmuWindows.MyBestLap.Root to true,
+                            ),
+                        selectedItem = selectedItem,
                     ),
-                            selectedItem = selectedItem,
-                ),
-                    onSimulatorSelected = {},
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
@@ -129,13 +128,13 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.LmuWindows),
-                    selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
-                    readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
-                    selectedItem = ReadoutListItemType.LmuWindows.TyreWear,
-                ),
-                    onSimulatorSelected = {},
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreWear.Root to true),
+                        selectedItem = ReadoutListItemType.LmuWindows.TyreWear,
+                    ),
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
@@ -159,15 +158,15 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.LmuWindows),
-                    selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
-                    readoutEnabledStates =
-                        mapOf(
-                        ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                        readoutEnabledStates =
+                            mapOf(
+                                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to false,
+                            ),
                     ),
-                        ),
-                    onSimulatorSelected = {},
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
@@ -193,13 +192,13 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.AceWindows),
-                    selectedSimulator = Simulator.AceWindows,
-                    items = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
-                    readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to true),
-                    selectedItem = ReadoutListItemType.AceWindows.RemainingFuel,
-                ),
-                    onSimulatorSelected = {},
+                        simulators = listOf(Simulator.AceWindows),
+                        selectedSimulator = Simulator.AceWindows,
+                        items = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.RemainingFuel.Root to true),
+                        selectedItem = ReadoutListItemType.AceWindows.RemainingFuel,
+                    ),
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
@@ -223,12 +222,12 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.Gt7Ps5),
-                    selectedSimulator = Simulator.Gt7Ps5,
-                    items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
-                    readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true),
-                ),
-                    onSimulatorSelected = {},
+                        simulators = listOf(Simulator.Gt7Ps5),
+                        selectedSimulator = Simulator.Gt7Ps5,
+                        items = listOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true),
+                    ),
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
@@ -255,30 +254,30 @@ class ReadoutContentTest {
         rule.setContent {
             itemTexts =
                 listOf(
-                stringResource(Res.string.item_remaining_fuel_laps),
-                stringResource(Res.string.item_remaining_fuel),
-                stringResource(Res.string.item_my_best_lap),
-            )
+                    stringResource(Res.string.item_remaining_fuel_laps),
+                    stringResource(Res.string.item_remaining_fuel),
+                    stringResource(Res.string.item_my_best_lap),
+                )
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.Gt7Ps5),
-                    selectedSimulator = Simulator.Gt7Ps5,
-                    items =
-                        listOf(
-                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                        ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                        ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                    ),
+                        simulators = listOf(Simulator.Gt7Ps5),
+                        selectedSimulator = Simulator.Gt7Ps5,
+                        items =
+                            listOf(
+                                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                            ),
                         readoutEnabledStates =
                             mapOf(
-                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
-                        ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
-                        ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
+                                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
+                                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
+                            ),
+                        selectedItem = selectedItem,
                     ),
-                            selectedItem = selectedItem,
-                ),
-                    onSimulatorSelected = {},
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { _, _ -> },
@@ -306,16 +305,16 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.LmuWindows),
-                    selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
-                    readoutEnabledStates =
-                        mapOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                        ReadoutItemKey.LmuWindows.Flag.Root to true,
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                        readoutEnabledStates =
+                            mapOf(
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
+                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                            ),
                     ),
-                        ),
-                    onSimulatorSelected = {},
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { item, enabled -> changedItems += item to enabled },
                 onQueueEnabledChanged = { _, _ -> },
@@ -354,21 +353,21 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.LmuWindows),
-                    selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
-                    readoutEnabledStates =
-                        mapOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
-                        ReadoutItemKey.LmuWindows.Flag.Root to true,
-                    ),
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                        readoutEnabledStates =
+                            mapOf(
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to true,
+                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                            ),
                         queueEnabledStates =
                             mapOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                        ReadoutItemKey.LmuWindows.Flag.Root to false,
-                    ),
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                                ReadoutItemKey.LmuWindows.Flag.Root to false,
                             ),
-                    onSimulatorSelected = {},
+                    ),
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { item, enabled -> changedItems += item to enabled },
@@ -407,21 +406,21 @@ class ReadoutContentTest {
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
-                    simulators = listOf(Simulator.LmuWindows),
-                    selectedSimulator = Simulator.LmuWindows,
-                    items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
-                    readoutEnabledStates =
-                        mapOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                        ReadoutItemKey.LmuWindows.Flag.Root to true,
-                    ),
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root, ReadoutItemKey.LmuWindows.Flag.Root),
+                        readoutEnabledStates =
+                            mapOf(
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                                ReadoutItemKey.LmuWindows.Flag.Root to true,
+                            ),
                         queueEnabledStates =
                             mapOf(
-                        ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
-                        ReadoutItemKey.LmuWindows.Flag.Root to false,
-                    ),
+                                ReadoutItemKey.LmuWindows.TyreTemperature.Root to false,
+                                ReadoutItemKey.LmuWindows.Flag.Root to false,
                             ),
-                    onSimulatorSelected = {},
+                    ),
+                onSimulatorSelected = {},
                 onMove = { _, _ -> },
                 onReadoutEnabledChanged = { _, _ -> },
                 onQueueEnabledChanged = { item, enabled -> changedItems += item to enabled },
@@ -457,19 +456,19 @@ class ReadoutContentTest {
         var lastItemText by mutableStateOf("")
         val items =
             listOf(
-            ReadoutItemKey.LmuWindows.Flag.Root,
-            ReadoutItemKey.LmuWindows.Flag.BlueFlag,
-            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
-            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
-            ReadoutItemKey.LmuWindows.Flag.RedFlag,
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-            ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
-            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
-            ReadoutItemKey.LmuWindows.MyBestLap.Root,
-        )
+                ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.Flag.BlueFlag,
+                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
+                ReadoutItemKey.LmuWindows.Flag.RedFlag,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+            )
 
         rule.setContent {
             scrollToTopText = stringResource(Res.string.scroll_to_top)
@@ -479,12 +478,12 @@ class ReadoutContentTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows),
-                        selectedSimulator = Simulator.LmuWindows,
-                        items = items,
-                        readoutEnabledStates = items.associateWith { true },
-                    ),
-                        onSimulatorSelected = {},
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = items,
+                            readoutEnabledStates = items.associateWith { true },
+                        ),
+                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -508,19 +507,19 @@ class ReadoutContentTest {
         var scrollToTopRequest by mutableStateOf(0)
         val items =
             listOf(
-            ReadoutItemKey.LmuWindows.Flag.Root,
-            ReadoutItemKey.LmuWindows.Flag.BlueFlag,
-            ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
-            ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
-            ReadoutItemKey.LmuWindows.Flag.RedFlag,
-            ReadoutItemKey.LmuWindows.VehicleApproach.Root,
-            ReadoutItemKey.LmuWindows.VehicleDamage.Root,
-            ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
-            ReadoutItemKey.LmuWindows.TyreTemperature.Root,
-            ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
-            ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
-            ReadoutItemKey.LmuWindows.MyBestLap.Root,
-        )
+                ReadoutItemKey.LmuWindows.Flag.Root,
+                ReadoutItemKey.LmuWindows.Flag.BlueFlag,
+                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag,
+                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow,
+                ReadoutItemKey.LmuWindows.Flag.RedFlag,
+                ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Root,
+                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat,
+                ReadoutItemKey.LmuWindows.TyreTemperature.Root,
+                ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning,
+                ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning,
+                ReadoutItemKey.LmuWindows.MyBestLap.Root,
+            )
 
         rule.setContent {
             simulatorLabelText = stringResource(Res.string.simulator_label)
@@ -529,12 +528,12 @@ class ReadoutContentTest {
                 ReadoutListPane(
                     uiState =
                         ReadoutListUiState(
-                        simulators = listOf(Simulator.LmuWindows),
-                        selectedSimulator = Simulator.LmuWindows,
-                        items = items,
-                        readoutEnabledStates = items.associateWith { true },
-                    ),
-                        onSimulatorSelected = {},
+                            simulators = listOf(Simulator.LmuWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = items,
+                            readoutEnabledStates = items.associateWith { true },
+                        ),
+                    onSimulatorSelected = {},
                     onMove = { _, _ -> },
                     onReadoutEnabledChanged = { _, _ -> },
                     onQueueEnabledChanged = { _, _ -> },
@@ -574,6 +573,5 @@ class ReadoutContentTest {
 
     private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 
-    private fun hasQueueToggleRole(): SemanticsMatcher =
-        SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
+    private fun hasQueueToggleRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
 }

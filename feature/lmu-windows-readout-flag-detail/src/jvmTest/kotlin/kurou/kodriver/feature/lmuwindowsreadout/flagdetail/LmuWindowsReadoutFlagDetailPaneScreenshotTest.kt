@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 
@@ -22,12 +21,12 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
         captureLmuWindowsReadoutFlagDetailPane(
             enabledStates =
                 mapOf(
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
-            ),
-                )
+                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
+                    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,
+                    ReadoutItemKey.LmuWindows.Flag.RedFlag to true,
+                ),
+        )
     }
 
     @Test
@@ -35,12 +34,12 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
         captureLmuWindowsReadoutFlagDetailPane(
             enabledStates =
                 mapOf(
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to false,
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false,
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
-            ),
-                )
+                    ReadoutItemKey.LmuWindows.Flag.BlueFlag to false,
+                    ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
+                    ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false,
+                    ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
+                ),
+        )
     }
 
     private fun captureLmuWindowsReadoutFlagDetailPane(enabledStates: Map<ReadoutItemKey, Boolean>) {

@@ -19,7 +19,6 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w480dp-h320dp")
 class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
-
     @Test
     fun `デフォルト`() {
         captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
@@ -44,10 +43,10 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
                         OtherReadoutStartSoundDetailDialogContent(
                             uiState =
                                 OtherReadoutStartSoundDetailUiState(
-                                selectedType = ReadoutStartSoundType.FORMULA_RADIO,
-                                pendingType = ReadoutStartSoundType.ELECTRONIC_NOISE,
-                            ),
-                                )
+                                    selectedType = ReadoutStartSoundType.FORMULA_RADIO,
+                                    pendingType = ReadoutStartSoundType.ELECTRONIC_NOISE,
+                                ),
+                        )
                     }
                 }
             }

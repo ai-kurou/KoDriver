@@ -42,88 +42,88 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
  */
 val desktopDataModule =
     module {
-    // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
-    single<SimulatorPreferencesRepository> {
-        createSimulatorPreferencesRepository(directory = kodriverDirectory)
+        // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
+        single<SimulatorPreferencesRepository> {
+            createSimulatorPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<ReadoutPreferencesRepository> {
+            createReadoutPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<QueuePreferencesRepository> {
+            createQueuePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
+            createGt7Ps5RemainingFuelLapsPreferencesRepository(kodriverDirectory)
+        }
+        single<Gt7Ps5RemainingFuelPreferencesRepository> {
+            createGt7Ps5RemainingFuelPreferencesRepository(kodriverDirectory)
+        }
+        single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<DebugStateCardOrderPreferencesRepository> {
+            createDebugStateCardOrderPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsFlagPreferencesRepository> {
+            createLmuWindowsFlagPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsVehicleApproachPreferencesRepository> {
+            createLmuWindowsVehicleApproachPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsVehicleDamagePreferencesRepository> {
+            createLmuWindowsVehicleDamagePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<SoundVolumePreferencesRepository> {
+            createSoundVolumePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<ReadoutStartSoundPreferencesRepository> {
+            createReadoutStartSoundPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<ThemePreferencesRepository> {
+            createThemePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<Gt7Ps5MyBestLapPreferencesRepository> {
+            createGt7Ps5MyBestLapPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsMyBestLapPreferencesRepository> {
+            createLmuWindowsMyBestLapPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsRedFlagPreferencesRepository> {
+            createLmuWindowsRedFlagPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<ConsoleAddressPreferencesRepository> {
+            createConsoleAddressPreferencesRepository(directory = kodriverDirectory)
+        }
+        // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
+        single<AppUpdateRepository> { GitHubAppReleaseRepository() }
+        // 画面スリープ抑止（プラットフォーム固有実装。Desktop は no-op 相当）
+        single<KeepScreenOnEnabledRepository> { JvmKeepScreenOnEnabledRepository() }
+        // Dynamic Color（プラットフォーム固有実装。Desktop は no-op 相当。Android 12+ でのみ意味を持つ）
+        single<DynamicColorEnabledRepository> { JvmDynamicColorEnabledRepository() }
+        // 設定永続化（DataStore）
+        single<ExitConfirmationEnabledRepository> {
+            createExitConfirmationEnabledRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsTyreTemperaturePreferencesRepository> {
+            createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsTyreWearPreferencesRepository> {
+            createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
+            createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<AceWindowsRemainingFuelPreferencesRepository> {
+            createAceWindowsRemainingFuelPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<AceWindowsFlagPreferencesRepository> {
+            createAceWindowsFlagPreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsPitTimingPreferencesRepository> {
+            createLmuWindowsPitTimingPreferencesRepository(directory = kodriverDirectory)
+        }
+        // テレメトリログ（Room データベース）
+        single<TelemetryLogRepository> {
+            createTelemetryLogRepository(directory = kodriverDirectory)
+        }
     }
-    single<ReadoutPreferencesRepository> {
-        createReadoutPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<QueuePreferencesRepository> {
-        createQueuePreferencesRepository(directory = kodriverDirectory)
-    }
-    single<Gt7Ps5RemainingFuelLapsPreferencesRepository> {
-        createGt7Ps5RemainingFuelLapsPreferencesRepository(kodriverDirectory)
-    }
-    single<Gt7Ps5RemainingFuelPreferencesRepository> {
-        createGt7Ps5RemainingFuelPreferencesRepository(kodriverDirectory)
-    }
-    single<LmuWindowsVehicleApproachThresholdsPreferencesRepository> {
-        createLmuWindowsVehicleApproachThresholdsPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<DebugStateCardOrderPreferencesRepository> {
-        createDebugStateCardOrderPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsFlagPreferencesRepository> {
-        createLmuWindowsFlagPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsVehicleApproachPreferencesRepository> {
-        createLmuWindowsVehicleApproachPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsVehicleDamagePreferencesRepository> {
-        createLmuWindowsVehicleDamagePreferencesRepository(directory = kodriverDirectory)
-    }
-    single<SoundVolumePreferencesRepository> {
-        createSoundVolumePreferencesRepository(directory = kodriverDirectory)
-    }
-    single<ReadoutStartSoundPreferencesRepository> {
-        createReadoutStartSoundPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<ThemePreferencesRepository> {
-        createThemePreferencesRepository(directory = kodriverDirectory)
-    }
-    single<Gt7Ps5MyBestLapPreferencesRepository> {
-        createGt7Ps5MyBestLapPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsMyBestLapPreferencesRepository> {
-        createLmuWindowsMyBestLapPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsRedFlagPreferencesRepository> {
-        createLmuWindowsRedFlagPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<ConsoleAddressPreferencesRepository> {
-        createConsoleAddressPreferencesRepository(directory = kodriverDirectory)
-    }
-    // アプリ更新確認（GitHub リリース API を叩くネットワーク実装）
-    single<AppUpdateRepository> { GitHubAppReleaseRepository() }
-    // 画面スリープ抑止（プラットフォーム固有実装。Desktop は no-op 相当）
-    single<KeepScreenOnEnabledRepository> { JvmKeepScreenOnEnabledRepository() }
-    // Dynamic Color（プラットフォーム固有実装。Desktop は no-op 相当。Android 12+ でのみ意味を持つ）
-    single<DynamicColorEnabledRepository> { JvmDynamicColorEnabledRepository() }
-    // 設定永続化（DataStore）
-    single<ExitConfirmationEnabledRepository> {
-        createExitConfirmationEnabledRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsTyreTemperaturePreferencesRepository> {
-        createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsTyreWearPreferencesRepository> {
-        createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsRemainingVirtualEnergyPreferencesRepository> {
-        createLmuWindowsRemainingVirtualEnergyPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<AceWindowsRemainingFuelPreferencesRepository> {
-        createAceWindowsRemainingFuelPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<AceWindowsFlagPreferencesRepository> {
-        createAceWindowsFlagPreferencesRepository(directory = kodriverDirectory)
-    }
-    single<LmuWindowsPitTimingPreferencesRepository> {
-        createLmuWindowsPitTimingPreferencesRepository(directory = kodriverDirectory)
-    }
-    // テレメトリログ（Room データベース）
-    single<TelemetryLogRepository> {
-        createTelemetryLogRepository(directory = kodriverDirectory)
-    }
-}

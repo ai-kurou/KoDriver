@@ -6,11 +6,10 @@ import io.github.takahirom.roborazzi.captureRoboImage
 
 private val defaultOptions =
     RoborazziOptions(
-    compareOptions =
-        RoborazziOptions.CompareOptions(
-        changeThreshold = 0.001f,
-    ),
-        )
+        compareOptions =
+            RoborazziOptions.CompareOptions(
+                changeThreshold = 0.001f,
+            ),
+    )
 
-internal fun SemanticsNodeInteraction.captureRoboImage() =
-    captureRoboImage(roborazziOptions = defaultOptions)
+internal fun SemanticsNodeInteraction.captureRoboImage() = captureRoboImage(roborazziOptions = defaultOptions)

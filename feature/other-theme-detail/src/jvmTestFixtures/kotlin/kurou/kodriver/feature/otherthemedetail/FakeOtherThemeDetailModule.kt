@@ -13,8 +13,8 @@ import org.koin.dsl.module
  */
 val fakeOtherThemeDetailModule =
     module {
-    single<ThemePreferencesRepository> { FakeThemePreferencesRepository() }
-}
+        single<ThemePreferencesRepository> { FakeThemePreferencesRepository() }
+    }
 
 class FakeThemePreferencesRepository : ThemePreferencesRepository {
     private val flow = MutableStateFlow(ThemeMode.SYSTEM)
