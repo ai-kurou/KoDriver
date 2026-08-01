@@ -7,7 +7,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class ReadoutListItemTypeTest {
-
     @Test
     fun `lmu_windows の vehicle_approach は LmuWindows_VehicleApproach を返す`() {
         assertEquals(

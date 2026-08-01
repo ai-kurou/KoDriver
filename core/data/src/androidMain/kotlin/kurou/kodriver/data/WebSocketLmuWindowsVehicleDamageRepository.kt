@@ -21,7 +21,6 @@ internal class WebSocketLmuWindowsVehicleDamageRepository(
     private val retryDelayMs: Long = DEFAULT_RETRY_DELAY_MS,
     private val client: HttpClient = createWebSocketHttpClient(),
 ) : LmuWindowsVehicleDamageRepository {
-
     private val json = Json { ignoreUnknownKeys = true }
 
     @OptIn(ExperimentalCoroutinesApi::class)

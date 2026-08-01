@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class LmuWindowsVehicleApproachPreferencesTest {
-
     @Test
     fun `デフォルト値は skipFirstLap が true`() {
         assertEquals(true, LmuWindowsVehicleApproachPreferences().skipFirstLap)

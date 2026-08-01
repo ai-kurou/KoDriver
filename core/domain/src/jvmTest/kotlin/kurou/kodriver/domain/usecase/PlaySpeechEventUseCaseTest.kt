@@ -10,7 +10,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class PlaySpeechEventUseCaseTest {
-
     @MockK(relaxed = true)
     private lateinit var engine: TextToSpeechEngine
 

@@ -17,7 +17,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 

@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DebugStateCardKeyTest {
-
     @Test
     fun `SIMULATOR等12種類が定義されている`() {
         assertEquals(

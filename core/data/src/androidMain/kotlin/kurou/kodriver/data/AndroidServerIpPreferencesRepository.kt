@@ -11,7 +11,6 @@ import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 internal class AndroidServerIpPreferencesRepository(
     private val dataStore: DataStore<Preferences>,
 ) : ServerIpPreferencesRepository {
-
     private val serverIpKey = stringPreferencesKey("server_ip")
 
     override fun serverIp(): Flow<String?> =

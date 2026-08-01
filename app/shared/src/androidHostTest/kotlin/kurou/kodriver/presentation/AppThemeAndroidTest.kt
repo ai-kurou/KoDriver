@@ -23,7 +23,6 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class AppThemeAndroidTest {
-
     @get:Rule
     val composeRule = createComposeRule()
 

@@ -11,7 +11,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DesktopSplashErrorDialogScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

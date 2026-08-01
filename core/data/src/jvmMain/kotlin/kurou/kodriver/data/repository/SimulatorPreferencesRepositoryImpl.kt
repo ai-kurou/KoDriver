@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 internal class SimulatorPreferencesRepositoryImpl(
     private val dataStore: DataStore<SimulatorPreferences>,
 ) : SimulatorPreferencesRepository {
-
     override fun selectedSimulator(): Flow<Simulator?> =
         dataStore.data.map { Simulator.fromId(it.selectedSimulator) }
 

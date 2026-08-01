@@ -12,7 +12,6 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 internal class AndroidKeepScreenOnEnabledRepository(
     private val dataStore: DataStore<Preferences>,
 ) : KeepScreenOnEnabledRepository {
-
     private val keepScreenOnKey = booleanPreferencesKey("keep_screen_on")
 
     override fun keepScreenOn(): Flow<Boolean> =

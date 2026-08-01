@@ -12,7 +12,6 @@ import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 internal class AndroidDynamicColorEnabledRepository(
     private val dataStore: DataStore<Preferences>,
 ) : DynamicColorEnabledRepository {
-
     private val dynamicColorEnabledKey = booleanPreferencesKey("dynamic_color_enabled")
 
     override fun dynamicColorEnabled(): Flow<Boolean> =

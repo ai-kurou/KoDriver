@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class TelemetryLogListPaneTest {
-
     @Test
     fun `UTC0時0分0秒はJST9時0分0秒として表示する`() {
         val text = formatTelemetryLogTime(createdAt = 0L, raceElapsedMs = 0L)

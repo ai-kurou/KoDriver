@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class MyBestLapVoiceTypeTest {
-
     @Test
     fun `fromId は formal を FORMAL に変換する`() {
         assertEquals(MyBestLapVoiceType.FORMAL, MyBestLapVoiceType.fromId("formal"))

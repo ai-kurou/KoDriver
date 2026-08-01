@@ -6,7 +6,6 @@ import kotlin.test.Test
 import kotlin.test.assertIs
 
 class CreateServerConnectivityCheckerTest {
-
     @Test
     fun `createServerConnectivityCheckerはTcpServerConnectivityCheckerを返す`() {
         val checker = createServerConnectivityChecker()

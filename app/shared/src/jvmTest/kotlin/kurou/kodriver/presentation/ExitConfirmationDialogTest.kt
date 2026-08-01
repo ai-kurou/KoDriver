@@ -11,7 +11,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ExitConfirmationDialogTest {
-
     @get:Rule
     val rule = createComposeRule()
 

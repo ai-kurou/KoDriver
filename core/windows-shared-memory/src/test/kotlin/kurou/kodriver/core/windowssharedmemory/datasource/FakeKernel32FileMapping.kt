@@ -7,7 +7,6 @@ internal class FakeKernel32FileMapping(
     private val openFileMappingResult: HANDLE? = HANDLE(Pointer.createConstant(1L)),
     private val mapViewOfFileResult: Pointer? = Pointer.createConstant(2L),
 ) : Kernel32FileMapping {
-
     var openFileMappingCallCount = 0
     var mapViewOfFileCallCount = 0
     var closeHandleCallCount = 0

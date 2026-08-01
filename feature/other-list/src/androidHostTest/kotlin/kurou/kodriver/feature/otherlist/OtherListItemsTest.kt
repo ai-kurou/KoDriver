@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [36])
 class OtherListItemsTest {
-
     @Test
     fun `Android12以上では全項目を定義順で返す`() {
         val items = buildOtherListItems()
@@ -38,7 +37,6 @@ class OtherListItemsTest {
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [30])
 class OtherListItemsAndroid11Test {
-
     @Test
     fun `Android12未満ではDynamicColorを除いた全項目を定義順で返す`() {
         val items = buildOtherListItems()

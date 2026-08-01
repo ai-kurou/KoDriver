@@ -1,7 +1,6 @@
 package kurou.kodriver.core.gt7ps5data.datasource
 
 internal object Salsa20 {
-
     fun decrypt(key: ByteArray, iv: ByteArray, data: ByteArray): ByteArray {
         require(key.size == 32) { "Key must be 32 bytes" }
         require(iv.size == 8) { "IV must be 8 bytes" }

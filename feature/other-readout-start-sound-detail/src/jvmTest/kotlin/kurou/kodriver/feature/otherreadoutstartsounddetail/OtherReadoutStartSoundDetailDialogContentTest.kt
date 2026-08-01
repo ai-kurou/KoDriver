@@ -10,7 +10,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherReadoutStartSoundDetailDialogContentTest {
-
     @get:Rule
     val rule = createComposeRule()
 

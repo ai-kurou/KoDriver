@@ -12,7 +12,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class Gt7Ps5ReadoutRemainingFuelDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

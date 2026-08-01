@@ -13,7 +13,6 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 internal class AndroidReadoutPreferencesRepository(
     private val dataStore: DataStore<Preferences>,
 ) : ReadoutPreferencesRepository {
-
     private fun enabledKey(simulator: String, key: ReadoutItemKey) =
         booleanPreferencesKey("${simulator}_${key.value}_enabled")
 

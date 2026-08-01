@@ -13,7 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
-
     @get:Rule
     val rule = createComposeRule()
 

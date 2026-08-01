@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class SliderLabelFormatTest {
-
     @Test
     fun `整数プレースホルダーを含むテンプレートへ整数値を埋め込む`() {
         assertEquals("残り約: 3 周", "残り約: %1\$d 周".formatSliderLabel(3))

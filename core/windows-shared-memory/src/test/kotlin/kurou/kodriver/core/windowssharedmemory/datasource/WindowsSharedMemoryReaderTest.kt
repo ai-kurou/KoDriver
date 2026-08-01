@@ -7,7 +7,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WindowsSharedMemoryReaderTest {
-
     private fun reader(
         fake: FakeKernel32FileMapping = FakeKernel32FileMapping(),
         isWindows: Boolean = true,

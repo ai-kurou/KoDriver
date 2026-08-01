@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class KoDriverServerFeatureTest {
-
     @Test
     fun `webSocketPathはSimulator idとfeatureからパスを生成する`() {
         assertEquals("/ws/lmu_windows/flags", KoDriverServerFeature.FLAGS.webSocketPath(Simulator.LmuWindows))

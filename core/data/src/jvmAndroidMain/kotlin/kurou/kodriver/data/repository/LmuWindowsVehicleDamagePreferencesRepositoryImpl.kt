@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 internal class LmuWindowsVehicleDamagePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleDamagePreferences>,
 ) : LmuWindowsVehicleDamagePreferencesRepository {
-
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.map { prefs ->
             prefs.enabledStates

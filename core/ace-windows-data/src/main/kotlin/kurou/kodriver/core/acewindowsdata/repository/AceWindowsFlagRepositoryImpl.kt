@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 internal class AceWindowsFlagRepositoryImpl(
     private val source: AceWindowsGraphicsSharedMemorySource,
 ) : AceWindowsFlagRepository {
-
     override fun flagStream(): Flow<AceWindowsFlagData> =
         source.bufferFlow.map { AceWindowsMapper.mapFlag(it) }
 }

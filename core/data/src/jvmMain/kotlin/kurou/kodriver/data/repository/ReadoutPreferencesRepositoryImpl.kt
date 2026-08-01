@@ -11,7 +11,6 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 internal class ReadoutPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutPreferences>,
 ) : ReadoutPreferencesRepository {
-
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.map { prefs ->
             prefs.simulatorStates

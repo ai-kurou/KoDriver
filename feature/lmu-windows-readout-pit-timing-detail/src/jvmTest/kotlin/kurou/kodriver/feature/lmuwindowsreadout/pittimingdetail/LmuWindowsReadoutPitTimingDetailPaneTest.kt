@@ -16,7 +16,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class LmuWindowsReadoutPitTimingDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 

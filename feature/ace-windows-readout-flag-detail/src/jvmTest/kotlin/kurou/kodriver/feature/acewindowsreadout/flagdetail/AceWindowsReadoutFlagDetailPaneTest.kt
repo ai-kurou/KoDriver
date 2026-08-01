@@ -12,7 +12,6 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 class AceWindowsReadoutFlagDetailPaneTest {
-
     @get:Rule
     val rule = createComposeRule()
 

@@ -5,7 +5,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ResolveReadoutOrderUseCaseTest {
-
     private val useCase = ResolveReadoutOrderUseCase()
 
     private val flag = ReadoutItemKey.LmuWindows.Flag.Root

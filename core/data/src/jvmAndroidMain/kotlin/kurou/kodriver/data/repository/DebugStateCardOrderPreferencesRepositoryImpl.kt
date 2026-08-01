@@ -10,7 +10,6 @@ import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 internal class DebugStateCardOrderPreferencesRepositoryImpl(
     private val dataStore: DataStore<DebugStateCardOrderPreferences>,
 ) : DebugStateCardOrderPreferencesRepository {
-
     override fun observeCardOrder(): Flow<List<DebugStateCardKey>> =
         dataStore.data.map { prefs ->
             prefs.cardOrder.mapNotNull { name -> DebugStateCardKey.entries.find { it.name == name } }

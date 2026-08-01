@@ -9,7 +9,6 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 internal class Gt7Ps5RemainingFuelPreferencesRepositoryImpl(
     private val dataStore: DataStore<Gt7Ps5RemainingFuelPreferences>,
 ) : Gt7Ps5RemainingFuelPreferencesRepository {
-
     override fun observeThresholdPercentage(): Flow<Int> =
         dataStore.data.map { it.thresholdPercentage }
 

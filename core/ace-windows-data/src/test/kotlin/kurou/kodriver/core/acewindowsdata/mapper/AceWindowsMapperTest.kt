@@ -7,7 +7,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AceWindowsMapperTest {
-
     private companion object {
         const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
         const val OFF_FLAG = 2404

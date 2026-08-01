@@ -9,7 +9,6 @@ internal class FakeSharedMemoryReader(
     openResults: List<Boolean> = listOf(true),
     private val returnNullBuffer: Boolean = false,
 ) : SharedMemoryReader {
-
     private var opened = initialOpen
     private val remainingOpenResults = ArrayDeque(openResults)
     var closeCalled = false

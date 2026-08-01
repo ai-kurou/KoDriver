@@ -19,7 +19,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DesktopSplashHostTest {
-
     @get:Rule
     val rule = createComposeRule()
 
