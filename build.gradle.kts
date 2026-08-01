@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.kotlinJvm) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kover)
@@ -71,8 +72,15 @@ subprojects {
     }
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jetbrains.dokka")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
     extensions.configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         autoCorrect = !isCI
+    }
+    extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        version.set("1.8.0")
+    }
+    tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().configureEach {
+        exclude { it.file.path.contains("/build/generated/") }
     }
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         ignoreFailures = false
@@ -356,12 +364,12 @@ roborazziAggregateTasks.forEach { roborazziTask ->
 }
 
 // 完了報告・PR 作成前に必須のチェック一式を 1 コマンドに集約する。
-// CLAUDE.md「コード変更時の必須確認」に対応: 全モジュールの detekt、
+// CLAUDE.md「コード変更時の必須確認」に対応: 全モジュールの detekt・ktlint、
 // モジュールグラフ検証、全ユニットテスト（Kover カバレッジ付き）、
 // Android / デスクトップアプリのビルド、デスクトップアプリの統合テスト。
 val preMergeCheck = tasks.register("preMergeCheck") {
     group = "verification"
-    description = "Runs all mandatory pre-merge checks (detekt, module graph, tests with coverage, app builds)."
+    description = "Runs all mandatory pre-merge checks (detekt, ktlint, module graph, tests with coverage, app builds)."
     dependsOn(
         ":assertModuleGraph",
         ":koverXmlReport",
@@ -374,6 +382,7 @@ val preMergeCheck = tasks.register("preMergeCheck") {
 gradle.projectsEvaluated {
     preMergeCheck.configure {
         dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "detekt" } })
+        dependsOn(allprojects.map { project -> project.tasks.matching { it.name == "ktlintCheck" } })
     }
 }
 

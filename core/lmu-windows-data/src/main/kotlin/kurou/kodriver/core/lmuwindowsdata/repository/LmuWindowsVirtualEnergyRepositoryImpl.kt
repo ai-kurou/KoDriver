@@ -12,7 +12,9 @@ internal class LmuWindowsVirtualEnergyRepositoryImpl(
     private val source: LmuWindowsSharedMemorySource,
 ) : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> =
-        source.bufferFlow.mapNotNull { readVirtualEnergy(it) }
+        source.bufferFlow.mapNotNull {
+            readVirtualEnergy(it)
+        }
 
     private fun readVirtualEnergy(buffer: ByteBuffer): LmuWindowsVirtualEnergyData? {
         val vehicleBase = LmuWindowsMapper.findPlayerVehicleBase(buffer) ?: return null

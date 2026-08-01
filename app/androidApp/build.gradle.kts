@@ -34,7 +34,10 @@ dependencies {
 
 android {
     namespace = "kurou.kodriver"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
     base.archivesName = "KoDriver-android-${providers.gradleProperty("appVersion").get()}"
 
     buildFeatures {
@@ -42,8 +45,14 @@ android {
     }
     defaultConfig {
         applicationId = "kurou.kodriver"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = providers.gradleProperty("androidVersionCode").get().toInt()
         versionName = providers.gradleProperty("appVersion").get()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -53,10 +62,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    val localProps = Properties().apply {
-        val f = rootProject.file("local.properties")
-        if (f.exists()) load(f.inputStream())
-    }
+    val localProps =
+        Properties().apply {
+            val f = rootProject.file("local.properties")
+            if (f.exists()) load(f.inputStream())
+        }
     val storeFile = System.getenv("STORE_FILE") ?: localProps.getProperty("STORE_FILE")
     val storePassword = System.getenv("STORE_PASSWORD") ?: localProps.getProperty("STORE_PASSWORD")
     val keyAlias = System.getenv("KEY_ALIAS") ?: localProps.getProperty("KEY_ALIAS")
