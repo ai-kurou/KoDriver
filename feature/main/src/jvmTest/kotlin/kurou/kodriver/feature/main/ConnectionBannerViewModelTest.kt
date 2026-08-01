@@ -313,8 +313,11 @@ private class FakeAceBannerConnectionChecker(
 
 private class FakeConsoleAddressPreferencesRepository(initial: String?) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
+
     override fun consoleAddress(): Flow<String?> = flow
+
     override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
+
     fun save(address: String?) { flow.update { address } }
 }
 
@@ -339,5 +342,6 @@ private class FakeSimulatorPreferencesRepository(
     val flow = MutableStateFlow(initial)
 
     override fun selectedSimulator(): Flow<Simulator?> = flow
+
     override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
 }

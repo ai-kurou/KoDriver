@@ -17,6 +17,8 @@ val fakeOtherConsoleIpDetailModule = module {
 
 class FakeConsoleAddressPreferencesRepository : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow<String?>(null)
+
     override fun consoleAddress(): Flow<String?> = flow
+
     override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
 }

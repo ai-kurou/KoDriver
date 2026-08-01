@@ -5,8 +5,11 @@ import kurou.kodriver.domain.usecase.SaveServerIpUseCase
 
 internal sealed interface SaveServerIpResult {
     data object Saved : SaveServerIpResult
+
     data object InvalidIp : SaveServerIpResult
+
     data object Unreachable : SaveServerIpResult
+
     data object SaveFailed : SaveServerIpResult
 }
 

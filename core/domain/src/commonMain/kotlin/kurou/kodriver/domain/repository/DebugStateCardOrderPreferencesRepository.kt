@@ -5,5 +5,6 @@ import kurou.kodriver.domain.model.DebugStateCardKey
 
 interface DebugStateCardOrderPreferencesRepository {
     fun observeCardOrder(): Flow<List<DebugStateCardKey>>
+
     suspend fun saveCardOrder(order: List<DebugStateCardKey>)
 }

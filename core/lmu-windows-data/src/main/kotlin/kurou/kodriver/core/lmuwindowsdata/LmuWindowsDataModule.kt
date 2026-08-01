@@ -76,7 +76,9 @@ val lmuWindowsDataModule = module {
 
 private class NoOpLmuWindowsRepository : LmuWindowsRepository {
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
+
     override suspend fun disconnect() = Unit
 }
 

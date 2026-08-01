@@ -26,12 +26,16 @@ class FakeAppUpdateRepository : AppUpdateRepository {
 
 class FakeExitConfirmationEnabledRepository : ExitConfirmationEnabledRepository {
     private val flow = MutableStateFlow(true)
+
     override fun exitConfirmationEnabled(): Flow<Boolean> = flow
+
     override suspend fun saveExitConfirmationEnabled(enabled: Boolean) { flow.update { enabled } }
 }
 
 class FakeKeepScreenOnEnabledRepository : KeepScreenOnEnabledRepository {
     private val flow = MutableStateFlow(false)
+
     override fun keepScreenOn(): Flow<Boolean> = flow
+
     override suspend fun saveKeepScreenOn(enabled: Boolean) { flow.update { enabled } }
 }

@@ -62,6 +62,7 @@ class JvmExitConfirmationEnabledRepositoryTest {
 
 private class BrokenDataStore : DataStore<Preferences> {
     override val data: Flow<Preferences> = flow { throw java.io.IOException("simulated IO error") }
+
     override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences =
         throw java.io.IOException("simulated IO error")
 }

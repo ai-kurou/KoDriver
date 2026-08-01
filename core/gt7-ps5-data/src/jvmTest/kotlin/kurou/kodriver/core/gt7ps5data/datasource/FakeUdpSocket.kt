@@ -51,6 +51,7 @@ internal class FakeUdpSocket : UdpSocket {
 
     sealed interface FakeResponse {
         data class Packet(val data: ByteArray) : FakeResponse
+
         data object Timeout : FakeResponse
     }
 

@@ -26,6 +26,7 @@ sealed class Simulator(
         private val entries by lazy { listOf(LmuWindows, Gt7Ps5, AceWindows) }
 
         // nullは「まだシミュレーターが選択されていない」という正当な初期状態を表すため、非null化してデフォルト値にフォールバックしてはならない。
+
         /** 永続化された [id] からシミュレータを復元する。不明な値や未選択状態は null として扱う。 */
         fun fromId(id: String): Simulator? = entries.find { it.id == id }
     }

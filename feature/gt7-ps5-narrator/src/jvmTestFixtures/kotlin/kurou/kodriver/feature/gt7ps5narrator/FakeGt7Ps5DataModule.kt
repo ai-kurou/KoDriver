@@ -28,6 +28,7 @@ val fakeGt7Ps5DataModule = module {
 
 private class FakeGt7Ps5Repository : Gt7Ps5Repository {
     override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
 }
 
@@ -35,28 +36,36 @@ private class FakeGt7Ps5UdpPortPreferencesRepository : Gt7Ps5UdpPortPreferencesR
     private val flow = MutableStateFlow(33740)
 
     override fun port(): Flow<Int> = flow
+
     override suspend fun savePort(port: Int) { flow.update { port } }
 }
 
 private class FakeGt7Ps5MyBestLapPreferencesRepository : Gt7Ps5MyBestLapPreferencesRepository {
     private val flow = MutableStateFlow(MyBestLapVoiceType.FORMAL)
+
     override fun observeVoiceType(): Flow<MyBestLapVoiceType> = flow
+
     override suspend fun saveVoiceType(type: MyBestLapVoiceType) { flow.update { type } }
 }
 
 private class FakeGt7Ps5RemainingFuelLapsPreferencesRepository : Gt7Ps5RemainingFuelLapsPreferencesRepository {
     private val flow = MutableStateFlow(3)
+
     override fun observeRemainingFuelLaps(): Flow<Int> = flow
+
     override suspend fun saveRemainingFuelLaps(laps: Int) { flow.update { laps } }
 }
 
 private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuelPreferencesRepository {
     private val flow = MutableStateFlow(30)
+
     override fun observeThresholdPercentage(): Flow<Int> = flow
+
     override suspend fun saveThresholdPercentage(percentage: Int) { flow.update { percentage } }
 }
 
 private class NoOpSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean = false
+
     override suspend fun play(bytes: ByteArray, volume: Int) = Unit
 }

@@ -6,6 +6,7 @@ import java.net.InetAddress
 
 internal interface UdpSocket : AutoCloseable {
     fun receive(packet: DatagramPacket)
+
     fun send(data: ByteArray, address: String, port: Int)
 }
 

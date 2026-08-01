@@ -1167,7 +1167,9 @@ private class FakeLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
 
 private object EmptyLmuWindowsRepository : LmuWindowsRepository {
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
+
     override suspend fun disconnect() = Unit
 }
 
@@ -1175,7 +1177,9 @@ private class FakeLmuWindowsRepository : LmuWindowsRepository {
     private val channel = Channel<LmuWindowsTelemetryData>(capacity = Channel.UNLIMITED)
 
     override fun telemetryStream(): Flow<LmuWindowsTelemetryData> = channel.receiveAsFlow()
+
     override suspend fun isConnected(): Boolean = false
+
     override suspend fun disconnect() = Unit
 
     fun emit(data: LmuWindowsTelemetryData) {
@@ -1254,6 +1258,7 @@ private const val aceFuelJson2 = """{"remainingPercent":28.5}"""
 
 private object EmptyAceWindowsFuelRepository : AceWindowsFuelRepository {
     override fun fuelStream(): Flow<AceWindowsFuelData> = emptyFlow()
+
     override suspend fun isConnected(): Boolean = false
 }
 
@@ -1261,6 +1266,7 @@ private class FakeAceWindowsFuelRepository : AceWindowsFuelRepository {
     private val channel = Channel<AceWindowsFuelData>(capacity = Channel.UNLIMITED)
 
     override fun fuelStream(): Flow<AceWindowsFuelData> = channel.receiveAsFlow()
+
     override suspend fun isConnected(): Boolean = false
 
     fun emit(data: AceWindowsFuelData) {

@@ -424,10 +424,15 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     private val sustainedApproachDurationSeconds: Int = 4,
 ) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = flowOf(longitudinal)
+
     override fun observeLateralThresholdMeters(): Flow<Double> = flowOf(lateral)
+
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = flowOf(sustainedApproachDurationSeconds)
+
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) = Unit
+
     override suspend fun saveLateralThresholdMeters(meters: Double) = Unit
+
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) = Unit
 }
 
@@ -441,7 +446,9 @@ private class MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     private val sustainedApproachDurationSecondsFlow = MutableStateFlow(sustainedApproachDurationSeconds)
 
     override fun observeLongitudinalThresholdMeters(): Flow<Double> = longitudinalFlow
+
     override fun observeLateralThresholdMeters(): Flow<Double> = lateralFlow
+
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = sustainedApproachDurationSecondsFlow
 
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) {

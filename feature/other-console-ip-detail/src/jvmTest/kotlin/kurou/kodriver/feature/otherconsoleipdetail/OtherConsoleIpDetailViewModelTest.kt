@@ -136,12 +136,16 @@ class OtherConsoleIpDetailViewModelTest {
 
 private class FakeConsoleAddressPreferencesRepository(initial: String? = null) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
+
     override fun consoleAddress(): Flow<String?> = flow
+
     override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
 }
 
 private class FakeGt7Ps5UdpPortPreferencesRepository(initial: Int = 33740) : Gt7Ps5UdpPortPreferencesRepository {
     private val flow = MutableStateFlow(initial)
+
     override fun port(): Flow<Int> = flow
+
     override suspend fun savePort(port: Int) { flow.update { port } }
 }
