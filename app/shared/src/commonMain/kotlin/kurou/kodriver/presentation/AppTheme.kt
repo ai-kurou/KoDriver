@@ -54,22 +54,18 @@ private val AppLightColorScheme = lightColorScheme(
     onPrimary = AppNeutral99,
     primaryContainer = AppYellow90,
     onPrimaryContainer = AppYellow10,
-
     secondary = AppLime40,
     onSecondary = AppNeutral99,
     secondaryContainer = AppLime90,
     onSecondaryContainer = AppLime10,
-
     tertiary = AppNeon40,
     onTertiary = AppNeutral99,
     tertiaryContainer = AppNeon80,
     onTertiaryContainer = AppNeon10,
-
     error = AppError40,
     onError = AppNeutral99,
     errorContainer = AppError90,
     onErrorContainer = AppError10,
-
     background = AppYellow99,
     onBackground = AppNeutral10,
     surface = AppYellow99,
@@ -88,22 +84,18 @@ private val AppDarkColorScheme = darkColorScheme(
     onPrimary = AppYellow20,
     primaryContainer = AppYellow30,
     onPrimaryContainer = AppYellow90,
-
     secondary = AppLime80,
     onSecondary = AppLime20,
     secondaryContainer = AppLime30,
     onSecondaryContainer = AppLime90,
-
     tertiary = AppNeon80,
     onTertiary = AppNeon20,
     tertiaryContainer = AppNeon30,
     onTertiaryContainer = AppNeon90,
-
     error = AppError80,
     onError = AppError20,
     errorContainer = AppError30,
     onErrorContainer = AppError90,
-
     background = AppNeutral10,
     onBackground = AppNeutral90,
     surface = AppNeutral10,

@@ -10,22 +10,18 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = Neutral99,
     primaryContainer = Yellow90,
     onPrimaryContainer = Yellow10,
-
     secondary = Lime40,
     onSecondary = Neutral99,
     secondaryContainer = Lime90,
     onSecondaryContainer = Lime10,
-
     tertiary = Neon40,
     onTertiary = Neutral99,
     tertiaryContainer = Neon80,
     onTertiaryContainer = Neon10,
-
     error = Error40,
     onError = Neutral99,
     errorContainer = Error90,
     onErrorContainer = Error10,
-
     background = Yellow99,
     onBackground = Neutral10,
     surface = Yellow99,
@@ -44,22 +40,18 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = Yellow20,
     primaryContainer = Yellow30,
     onPrimaryContainer = Yellow90,
-
     secondary = Lime80,
     onSecondary = Lime20,
     secondaryContainer = Lime30,
     onSecondaryContainer = Lime90,
-
     tertiary = Neon80,
     onTertiary = Neon20,
     tertiaryContainer = Neon30,
     onTertiaryContainer = Neon90,
-
     error = Error80,
     onError = Error20,
     errorContainer = Error30,
     onErrorContainer = Error90,
-
     background = Neutral10,
     onBackground = Neutral90,
     surface = Neutral10,
