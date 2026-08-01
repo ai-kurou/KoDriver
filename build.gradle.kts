@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 
@@ -31,6 +33,13 @@ plugins.withType<YarnPlugin> {
         resolution("webpack-dev-server", "5.2.6")
         resolution("webpack", "5.104.1")
         resolution("ws", "8.21.0")
+    }
+}
+
+plugins.withType<NodeJsRootPlugin> {
+    extensions.configure<NodeJsRootExtension> {
+        versions.webpack.version = "5.104.1"
+        versions.webpackDevServer.version = "5.2.6"
     }
 }
 
