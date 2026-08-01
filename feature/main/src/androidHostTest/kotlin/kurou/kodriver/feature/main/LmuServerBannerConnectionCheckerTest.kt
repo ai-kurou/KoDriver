@@ -94,9 +94,8 @@ class LmuServerBannerConnectionCheckerTest {
         ip: String? = null,
         versionResult: Result<String> = Result.success("1.0.0"),
         ipRepository: ServerIpPreferencesRepository = this.ipRepository,
-    ): LmuServerBannerConnectionChecker {
-        return createChecker(ipFlow = MutableStateFlow(ip), versionResult = versionResult, ipRepository = ipRepository)
-    }
+    ): LmuServerBannerConnectionChecker =
+        createChecker(ipFlow = MutableStateFlow(ip), versionResult = versionResult, ipRepository = ipRepository)
 
     private fun createChecker(
         ipFlow: MutableStateFlow<String?>,
