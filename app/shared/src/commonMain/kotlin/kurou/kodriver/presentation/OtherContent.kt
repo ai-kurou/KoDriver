@@ -125,12 +125,16 @@ internal fun OtherContent(
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
         scaffoldDirective = when {
-            uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 ->
+            uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
+            }
             uiState.selectedItem != null &&
-                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
-                scaffoldDirective.copy(maxHorizontalPartitions = 2)
-            else -> scaffoldDirective
+                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+                    scaffoldDirective.copy(maxHorizontalPartitions = 2)
+            }
+            else -> {
+                scaffoldDirective
+            }
         },
         initialDestinationHistory = if (uiState.selectedItem != null) {
             listOf(

@@ -89,12 +89,16 @@ internal fun TelemetryLogContentScaffold(
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
         scaffoldDirective = when {
-            uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 ->
+            uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
+            }
             uiState.selectedLogId != null &&
-                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
-                scaffoldDirective.copy(maxHorizontalPartitions = 2)
-            else -> scaffoldDirective
+                windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
+                    scaffoldDirective.copy(maxHorizontalPartitions = 2)
+            }
+            else -> {
+                scaffoldDirective
+            }
         },
         initialDestinationHistory = if (uiState.selectedLogId != null) {
             listOf(

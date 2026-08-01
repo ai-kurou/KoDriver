@@ -127,9 +127,12 @@ internal class LmuWindowsReadoutVehicleApproachDetailViewModel(
 
     private fun playSustainedReadoutPreview(type: VehicleApproachSustainedReadoutType) {
         val events = when (type) {
-            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> SpeechEvent.KeepLeft to SpeechEvent.KeepRight
-            VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED ->
+            VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT -> {
+                SpeechEvent.KeepLeft to SpeechEvent.KeepRight
+            }
+            VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED -> {
                 SpeechEvent.LeftSustained to SpeechEvent.RightSustained
+            }
         }
         playSpeechEvent(events.first)
         playSpeechEvent(events.second, queue = true)

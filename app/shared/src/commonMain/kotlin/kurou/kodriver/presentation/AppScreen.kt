@@ -190,11 +190,21 @@ private fun DefaultOtherContent(
         onOpenThemeDialog = { showThemeDialog = true },
         detailContent = { itemType, canNavigateBack, onBack ->
             when (itemType) {
-                OtherListItemType.ServerIp -> OtherServerIpDetailPane(canNavigateBack, onBack)
-                OtherListItemType.ConsoleIp -> OtherConsoleIpDetailPane(canNavigateBack, onBack)
-                OtherListItemType.Volume -> OtherVolumeDetailPane(canNavigateBack, onBack)
-                OtherListItemType.License -> OtherLicenseDetailPane(canNavigateBack, onBack)
-                OtherListItemType.DebugState -> DebugStateDetailPane(canNavigateBack, onBack)
+                OtherListItemType.ServerIp -> {
+                    OtherServerIpDetailPane(canNavigateBack, onBack)
+                }
+                OtherListItemType.ConsoleIp -> {
+                    OtherConsoleIpDetailPane(canNavigateBack, onBack)
+                }
+                OtherListItemType.Volume -> {
+                    OtherVolumeDetailPane(canNavigateBack, onBack)
+                }
+                OtherListItemType.License -> {
+                    OtherLicenseDetailPane(canNavigateBack, onBack)
+                }
+                OtherListItemType.DebugState -> {
+                    DebugStateDetailPane(canNavigateBack, onBack)
+                }
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
                 OtherListItemType.ExitConfirmation,
@@ -555,9 +565,12 @@ internal fun AppScreenContent(
 }
 
 internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType = when {
-    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ->
+    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> {
         NavigationSuiteType.NavigationRail
-    else -> NavigationSuiteType.NavigationBar
+    }
+    else -> {
+        NavigationSuiteType.NavigationBar
+    }
 }
 
 @Composable
