@@ -40,6 +40,9 @@ import kurou.kodriver.domain.model.TelemetryLog
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * TelemetryLog のコンテンツを表示する Composable。
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun TelemetryLogContent(

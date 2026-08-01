@@ -5,6 +5,9 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.WinNT.HANDLE
 
+/**
+ * Windows file mapping API へアクセスする JNA interface。
+ */
 @Suppress("FunctionNaming")
 interface Kernel32FileMapping : Library {
     companion object {

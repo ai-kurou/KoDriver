@@ -23,6 +23,9 @@ import kurou.kodriver.domain.model.MyBestLapVoiceType
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Gt7Ps5ReadoutMyBestLapDetail の画面を表示する Composable。
+ */
 @Composable
 fun Gt7Ps5ReadoutMyBestLapDetailPane(
     modifier: Modifier = Modifier,

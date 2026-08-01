@@ -19,6 +19,9 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * AceWindowsReadoutFlagDetail の画面を表示する Composable。
+ */
 @Composable
 fun AceWindowsReadoutFlagDetailPane(
     modifier: Modifier = Modifier,

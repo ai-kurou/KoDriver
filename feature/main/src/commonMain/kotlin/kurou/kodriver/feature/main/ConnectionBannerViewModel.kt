@@ -17,6 +17,9 @@ import kurou.kodriver.domain.usecase.CheckGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveConsoleAddressUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
+/**
+ * ConnectionBannerVm 画面の表示状態。
+ */
 data class ConnectionBannerVmUiState(
     val connectionStatus: ConnectionBannerVmStatus = ConnectionBannerVmStatus.UNCHECKED,
     val selectedSimulator: Simulator? = null,
@@ -26,6 +29,9 @@ data class ConnectionBannerVmUiState(
     val isAceWindows: Boolean get() = selectedSimulator is Simulator.AceWindows
 }
 
+/**
+ * ConnectionBannerVm の接続状態を表す表示用ステータス。
+ */
 enum class ConnectionBannerVmStatus {
     UNCHECKED,
     CONNECTED,
@@ -33,6 +39,9 @@ enum class ConnectionBannerVmStatus {
     IP_NOT_CONFIGURED,
 }
 
+/**
+ * ConnectionBanner 画面の状態管理とユーザー操作を扱う ViewModel。
+ */
 class ConnectionBannerViewModel(
     private val checkLmuConnection: LmuBannerConnectionChecker,
     private val checkAceConnection: AceBannerConnectionChecker,

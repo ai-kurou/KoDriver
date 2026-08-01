@@ -42,6 +42,9 @@ import kurou.kodriver.domain.model.Simulator
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Readout のコンテンツを表示する Composable。
+ */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ReadoutContent(

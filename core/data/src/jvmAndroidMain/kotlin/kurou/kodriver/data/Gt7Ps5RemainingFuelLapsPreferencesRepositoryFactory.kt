@@ -4,6 +4,9 @@ import kurou.kodriver.data.datasource.createGt7Ps5RemainingFuelLapsPreferencesDa
 import kurou.kodriver.data.repository.Gt7Ps5RemainingFuelLapsPreferencesRepositoryImpl
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 
+/**
+ * Gt7Ps5RemainingFuelLapsPreferences Repository の永続化実装を生成する。
+ */
 fun createGt7Ps5RemainingFuelLapsPreferencesRepository(
     directory: String,
 ): Gt7Ps5RemainingFuelLapsPreferencesRepository =

@@ -7,6 +7,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+/**
+ * DetailPaneScaffold を提供する公開関数。
+ */
 @Composable
 fun DetailPaneScaffold(
     title: String,

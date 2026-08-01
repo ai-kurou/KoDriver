@@ -15,8 +15,14 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
 import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
 
+/**
+ * ServerConnection の接続状態を表す表示用ステータス。
+ */
 enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONNECTED }
 
+/**
+ * ServerConnection 画面の表示状態。
+ */
 data class ServerConnectionUiState(
     val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
     val requiresKoDriverServer: Boolean = false,
@@ -32,6 +38,9 @@ data class ServerConnectionUiState(
     val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
 }
 
+/**
+ * ServerConnection 画面の状態管理とユーザー操作を扱う ViewModel。
+ */
 class ServerConnectionViewModel(
     observeKoDriverServerConnection: ObserveKoDriverServerConnectionUseCase,
     private val appVersion: String,

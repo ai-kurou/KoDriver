@@ -12,6 +12,9 @@ import kodriver.feature.otherlicensedetail.generated.resources.navigate_back
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * OtherLicenseDetail の画面を表示する Composable。
+ */
 @Composable
 fun OtherLicenseDetailPane(
     canNavigateBack: Boolean,

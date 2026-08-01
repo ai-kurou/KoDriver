@@ -36,6 +36,9 @@ import kotlin.math.roundToInt
 private const val THRESHOLD_MIN = 5f
 private const val THRESHOLD_MAX = 90f
 
+/**
+ * Gt7Ps5ReadoutRemainingFuelDetail の画面を表示する Composable。
+ */
 @Composable
 fun Gt7Ps5ReadoutRemainingFuelDetailPane(
     modifier: Modifier = Modifier,

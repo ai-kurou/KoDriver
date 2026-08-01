@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * ThresholdSlider を提供する公開関数。
+ */
 @Composable
 fun ThresholdSlider(
     value: Float,

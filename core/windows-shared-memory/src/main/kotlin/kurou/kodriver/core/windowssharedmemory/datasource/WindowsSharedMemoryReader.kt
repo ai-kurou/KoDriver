@@ -6,6 +6,9 @@ import io.sentry.Sentry
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+/**
+ * Windows 共有メモリを読み取る reader。
+ */
 class WindowsSharedMemoryReader(
     private val segmentName: String,
     private val sizeBytes: Int,

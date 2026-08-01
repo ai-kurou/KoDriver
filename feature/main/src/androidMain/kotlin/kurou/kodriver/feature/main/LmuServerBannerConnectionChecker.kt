@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.flowOf
 import kurou.kodriver.domain.usecase.FetchServerVersionUseCase
 import kurou.kodriver.domain.usecase.ObserveServerIpUseCase
 
+/**
+ * LmuServerBanner の接続状態を監視する実装。
+ */
 class LmuServerBannerConnectionChecker(
     private val fetchServerVersion: FetchServerVersionUseCase,
     private val observeServerIp: ObserveServerIpUseCase,

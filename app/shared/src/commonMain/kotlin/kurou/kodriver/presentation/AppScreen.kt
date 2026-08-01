@@ -208,6 +208,9 @@ private fun DefaultOtherContent(
     )
 }
 
+/**
+ * AppScreen を提供する公開関数。
+ */
 @Composable
 fun AppScreen(
     viewModel: AppScreenViewModel = koinViewModel(),

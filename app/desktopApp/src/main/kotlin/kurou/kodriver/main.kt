@@ -33,6 +33,9 @@ private const val SENTRY_DSN =
     "https://93dc09daf8552c39b0eea61b4f1319ee@o4511575800676352.ingest.us.sentry.io/4511575816667136"
 private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
 
+/**
+ * アプリケーションを起動するエントリーポイント。
+ */
 fun main() {
     Sentry.init { options ->
         options.dsn = SENTRY_DSN

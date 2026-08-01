@@ -10,6 +10,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+/**
+ * DetailPaneTopAppBar を提供する公開関数。
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailPaneTopAppBar(

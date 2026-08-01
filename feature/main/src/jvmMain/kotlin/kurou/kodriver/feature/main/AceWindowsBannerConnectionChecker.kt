@@ -6,6 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kurou.kodriver.domain.usecase.CheckAceWindowsConnectionUseCase
 
+/**
+ * AceWindowsBanner の接続状態を監視する実装。
+ */
 class AceWindowsBannerConnectionChecker(
     private val checkAceWindowsConnection: CheckAceWindowsConnectionUseCase,
 ) : AceBannerConnectionChecker {

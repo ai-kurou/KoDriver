@@ -28,6 +28,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
+/**
+ * OtherVolumeDetail の画面を表示する Composable。
+ */
 @Composable
 fun OtherVolumeDetailPane(
     canNavigateBack: Boolean,
@@ -45,6 +48,9 @@ fun OtherVolumeDetailPane(
     )
 }
 
+/**
+ * OtherVolumeDetail の画面本体を表示する Composable。
+ */
 @Composable
 fun OtherVolumeDetailPaneContent(
     uiState: OtherVolumeDetailUiState,

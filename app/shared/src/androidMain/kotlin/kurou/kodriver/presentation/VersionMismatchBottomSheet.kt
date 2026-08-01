@@ -11,6 +11,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.feature.serverconnection.ServerConnectionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * VersionMismatchBottomSheetEffect のこのプラットフォーム向け実装。
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun VersionMismatchBottomSheetEffect() {

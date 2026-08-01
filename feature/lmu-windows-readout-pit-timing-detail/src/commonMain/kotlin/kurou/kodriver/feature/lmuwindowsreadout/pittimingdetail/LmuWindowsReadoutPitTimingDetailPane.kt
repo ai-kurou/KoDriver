@@ -53,6 +53,9 @@ import kotlin.math.roundToInt
 private const val MINIMUM_PIT_TIMING_LAPS = 1f
 private const val MAXIMUM_PIT_TIMING_LAPS = 5f
 
+/**
+ * LmuWindowsReadoutPitTimingDetail の画面を表示する Composable。
+ */
 @Composable
 fun LmuWindowsReadoutPitTimingDetailPane(
     modifier: Modifier = Modifier,

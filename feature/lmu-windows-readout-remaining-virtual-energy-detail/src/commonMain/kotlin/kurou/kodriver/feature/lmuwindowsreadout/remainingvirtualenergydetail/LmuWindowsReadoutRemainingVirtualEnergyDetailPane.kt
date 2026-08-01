@@ -36,6 +36,9 @@ import kotlin.math.roundToInt
 private const val THRESHOLD_MIN = 10f
 private const val THRESHOLD_MAX = 90f
 
+/**
+ * LmuWindowsReadoutRemainingVirtualEnergyDetail の画面を表示する Composable。
+ */
 @Composable
 fun LmuWindowsReadoutRemainingVirtualEnergyDetailPane(
     modifier: Modifier = Modifier,

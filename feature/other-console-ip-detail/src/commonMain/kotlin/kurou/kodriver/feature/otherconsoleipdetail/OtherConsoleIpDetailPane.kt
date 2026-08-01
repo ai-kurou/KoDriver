@@ -50,6 +50,9 @@ import org.koin.compose.viewmodel.koinViewModel
 private const val GT7_CONNECTION_SETUP_URL =
     "https://github.com/ai-kurou/KoDriver/blob/main/docs/gt7-ps5-connection-setup.md"
 
+/**
+ * OtherConsoleIpDetail の画面を表示する Composable。
+ */
 @Composable
 fun OtherConsoleIpDetailPane(
     canNavigateBack: Boolean,
@@ -72,6 +75,9 @@ fun OtherConsoleIpDetailPane(
     )
 }
 
+/**
+ * OtherConsoleIpDetail の画面本体を表示する Composable。
+ */
 @Composable
 fun OtherConsoleIpDetailPaneContent(
     uiState: OtherConsoleIpDetailUiState,

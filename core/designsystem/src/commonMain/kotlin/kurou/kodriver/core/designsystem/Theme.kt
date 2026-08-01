@@ -73,6 +73,9 @@ private val DarkColorScheme = darkColorScheme(
     surfaceContainerHigh = NeutralVariant30,
 )
 
+/**
+ * KoDriverTheme を提供する公開関数。
+ */
 @Composable
 fun KoDriverTheme(
     darkTheme: Boolean = false,

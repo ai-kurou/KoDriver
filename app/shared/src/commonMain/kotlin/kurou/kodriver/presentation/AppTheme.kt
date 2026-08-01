@@ -120,6 +120,9 @@ private val AppDarkColorScheme = darkColorScheme(
 @Composable
 internal expect fun dynamicAppColorScheme(darkTheme: Boolean): ColorScheme?
 
+/**
+ * AppTheme を提供する公開関数。
+ */
 @Composable
 fun AppTheme(
     darkTheme: Boolean = false,

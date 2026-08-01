@@ -14,6 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * DetailPaneBodyText を提供する公開関数。
+ */
 @Composable
 fun DetailPaneBodyText(
     text: String,
@@ -27,6 +30,9 @@ fun DetailPaneBodyText(
     )
 }
 
+/**
+ * DetailPaneDescription を提供する公開関数。
+ */
 @Composable
 fun DetailPaneDescription(
     text: String,
@@ -38,6 +44,9 @@ fun DetailPaneDescription(
     )
 }
 
+/**
+ * DetailPaneSubtitle を提供する公開関数。
+ */
 @Composable
 fun DetailPaneSubtitle(
     text: String,

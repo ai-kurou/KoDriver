@@ -18,6 +18,9 @@ import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 
+/**
+ * AppScreen 画面の状態管理とユーザー操作を扱う ViewModel。
+ */
 class AppScreenViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     private val currentVersion: String,
@@ -56,6 +59,9 @@ class AppScreenViewModel(
     }
 }
 
+/**
+ * AppScreen 画面の表示状態。
+ */
 data class AppScreenUiState(
     val hasAppUpdate: Boolean = false,
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,

@@ -24,6 +24,9 @@ internal data class Gt7Ps5ConnectionUiState(
     val isConnectionChecked: Boolean get() = connectionStatus != Gt7Ps5ConnectionStatus.UNCHECKED
 }
 
+/**
+ * Gt7Ps5Connection の接続状態を表す表示用ステータス。
+ */
 enum class Gt7Ps5ConnectionStatus {
     UNCHECKED,
     CONNECTED,
