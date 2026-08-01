@@ -17,7 +17,11 @@ interface Kernel32FileMapping : Library {
         const val FILE_MAP_READ = 0x0004
     }
 
-    fun OpenFileMappingA(dwDesiredAccess: Int, bInheritHandle: Boolean, lpName: String): HANDLE?
+    fun OpenFileMappingA(
+        dwDesiredAccess: Int,
+        bInheritHandle: Boolean,
+        lpName: String,
+    ): HANDLE?
 
     fun MapViewOfFile(
         hFileMappingObject: HANDLE,

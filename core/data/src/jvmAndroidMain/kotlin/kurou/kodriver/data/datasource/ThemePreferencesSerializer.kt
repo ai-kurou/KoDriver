@@ -22,7 +22,10 @@ internal object ThemePreferencesSerializer : Serializer<ThemePreferences> {
             throw CorruptionException("Cannot read ThemePreferences.", e)
         }
 
-    override suspend fun writeTo(t: ThemePreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: ThemePreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(ThemePreferences.serializer(), t))
     }
 }

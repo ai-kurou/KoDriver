@@ -22,7 +22,10 @@ internal object LmuWindowsVehicleDamagePreferencesSerializer : Serializer<LmuWin
             throw CorruptionException("Cannot read LmuWindowsVehicleDamagePreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsVehicleDamagePreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsVehicleDamagePreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsVehicleDamagePreferences.serializer(), t))
     }
 }

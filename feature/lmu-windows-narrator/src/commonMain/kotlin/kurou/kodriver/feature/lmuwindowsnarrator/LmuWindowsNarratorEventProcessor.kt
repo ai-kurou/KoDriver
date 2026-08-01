@@ -412,8 +412,7 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
-private fun LmuWindowsTyreWearData.toJson(): String =
-    """{"wheels":{${wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
+private fun LmuWindowsTyreWearData.toJson(): String = """{"wheels":{${wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
 
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,

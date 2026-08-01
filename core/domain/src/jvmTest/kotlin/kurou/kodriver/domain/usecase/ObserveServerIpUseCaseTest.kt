@@ -19,9 +19,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-private fun createServerIpPreferencesRepository(
-    repository: ServerIpPreferencesRepository,
-): ServerIpPreferencesRepository {
+private fun createServerIpPreferencesRepository(repository: ServerIpPreferencesRepository): ServerIpPreferencesRepository {
     val state = MutableStateFlow<String?>(null)
     every { repository.serverIp() } returns state
     listOf("192.168.1.10", "10.0.0.1").forEach { serverIp ->

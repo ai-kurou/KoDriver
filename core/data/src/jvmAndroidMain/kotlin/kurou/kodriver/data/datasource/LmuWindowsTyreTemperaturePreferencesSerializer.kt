@@ -24,7 +24,10 @@ internal object LmuWindowsTyreTemperaturePreferencesSerializer :
             throw CorruptionException("Cannot read LmuWindowsTyreTemperaturePreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsTyreTemperaturePreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsTyreTemperaturePreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsTyreTemperaturePreferences.serializer(), t))
     }
 }

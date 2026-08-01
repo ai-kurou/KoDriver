@@ -30,8 +30,8 @@ class OtherVolumeDetailPaneTest {
 
         rule
             .onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 80f, range = 0f..100f, steps = 99)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) { it(50f) }
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 80f, range = 0f..100f, steps = 99)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) { it(50f) }
 
         assertEquals(50, changedVolume)
     }

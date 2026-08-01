@@ -7,9 +7,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 /**
  * LmuWindowsTyreTemperaturePreferences Repository の永続化実装を生成する。
  */
-fun createLmuWindowsTyreTemperaturePreferencesRepository(
-    directory: String,
-): LmuWindowsTyreTemperaturePreferencesRepository =
+fun createLmuWindowsTyreTemperaturePreferencesRepository(directory: String): LmuWindowsTyreTemperaturePreferencesRepository =
     LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
         createLmuWindowsTyreTemperaturePreferencesDataStore(directory),
     )

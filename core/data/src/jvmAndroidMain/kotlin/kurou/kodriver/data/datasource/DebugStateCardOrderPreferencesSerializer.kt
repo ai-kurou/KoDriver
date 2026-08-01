@@ -22,7 +22,10 @@ internal object DebugStateCardOrderPreferencesSerializer : Serializer<DebugState
             throw CorruptionException("Cannot read DebugStateCardOrderPreferences.", e)
         }
 
-    override suspend fun writeTo(t: DebugStateCardOrderPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: DebugStateCardOrderPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(DebugStateCardOrderPreferences.serializer(), t))
     }
 }

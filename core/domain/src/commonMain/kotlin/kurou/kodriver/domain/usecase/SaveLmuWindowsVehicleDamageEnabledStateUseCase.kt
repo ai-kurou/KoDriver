@@ -6,6 +6,8 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 class SaveLmuWindowsVehicleDamageEnabledStateUseCase(
     private val repository: LmuWindowsVehicleDamagePreferencesRepository,
 ) {
-    suspend operator fun invoke(key: ReadoutItemKey, enabled: Boolean) =
-        repository.saveEnabledState(key, enabled)
+    suspend operator fun invoke(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) = repository.saveEnabledState(key, enabled)
 }

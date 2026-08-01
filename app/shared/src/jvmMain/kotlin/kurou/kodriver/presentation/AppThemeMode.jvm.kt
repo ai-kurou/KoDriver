@@ -5,5 +5,4 @@ import androidx.compose.runtime.Composable
 import kurou.kodriver.feature.otherthemedetail.rememberOtherThemeDarkTheme
 
 @Composable
-internal actual fun rememberAppDarkTheme(): Boolean =
-    rememberOtherThemeDarkTheme(systemDarkTheme = isSystemInDarkTheme())
+internal actual fun rememberAppDarkTheme(): Boolean = rememberOtherThemeDarkTheme(systemDarkTheme = isSystemInDarkTheme())

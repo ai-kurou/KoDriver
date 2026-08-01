@@ -22,7 +22,10 @@ internal object ConsoleAddressSerializer : Serializer<ConsoleAddressPreferences>
             throw CorruptionException("Cannot read ConsoleAddressPreferences.", e)
         }
 
-    override suspend fun writeTo(t: ConsoleAddressPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: ConsoleAddressPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(ConsoleAddressPreferences.serializer(), t))
     }
 }

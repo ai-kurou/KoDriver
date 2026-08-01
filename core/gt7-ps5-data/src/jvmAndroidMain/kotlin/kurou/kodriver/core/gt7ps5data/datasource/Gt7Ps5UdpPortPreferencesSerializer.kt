@@ -22,7 +22,10 @@ internal object Gt7Ps5UdpPortPreferencesSerializer : Serializer<Gt7Ps5UdpPortPre
             throw CorruptionException("Cannot read Gt7Ps5UdpPortPreferences.", e)
         }
 
-    override suspend fun writeTo(t: Gt7Ps5UdpPortPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: Gt7Ps5UdpPortPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(Gt7Ps5UdpPortPreferences.serializer(), t))
     }
 }

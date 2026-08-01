@@ -20,5 +20,8 @@ interface LmuWindowsVehicleApproachPreferencesRepository {
 
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean)
+    suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    )
 }

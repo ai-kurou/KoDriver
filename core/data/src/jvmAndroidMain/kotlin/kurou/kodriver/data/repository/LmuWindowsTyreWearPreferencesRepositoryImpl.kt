@@ -9,8 +9,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 internal class LmuWindowsTyreWearPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreWearPreferences>,
 ) : LmuWindowsTyreWearPreferencesRepository {
-    override fun observeThresholdPercentage(): Flow<Int> =
-        dataStore.data.map { it.thresholdPercentage }
+    override fun observeThresholdPercentage(): Flow<Int> = dataStore.data.map { it.thresholdPercentage }
 
     override suspend fun saveThresholdPercentage(percentage: Int) {
         dataStore.updateData { it.copy(thresholdPercentage = percentage) }

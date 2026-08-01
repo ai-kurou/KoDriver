@@ -21,7 +21,10 @@ internal class AceWindowsReadoutFlagDetailViewModel(
             .map { enabledStates -> AceWindowsReadoutFlagDetailUiState(enabledStates = enabledStates) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AceWindowsReadoutFlagDetailUiState())
 
-    fun onFlagEnabledChanged(item: FlagReadoutItem, enabled: Boolean) {
+    fun onFlagEnabledChanged(
+        item: FlagReadoutItem,
+        enabled: Boolean,
+    ) {
         viewModelScope.launch { saveFlagEnabledState(item.key, enabled) }
     }
 

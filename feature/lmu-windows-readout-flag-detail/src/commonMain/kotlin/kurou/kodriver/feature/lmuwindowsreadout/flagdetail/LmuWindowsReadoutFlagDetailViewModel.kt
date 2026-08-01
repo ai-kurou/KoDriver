@@ -28,7 +28,10 @@ internal class LmuWindowsReadoutFlagDetailViewModel(
             LmuWindowsReadoutFlagDetailUiState(enabledStates = enabledStates, redFlagVoiceType = redFlagVoiceType)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), LmuWindowsReadoutFlagDetailUiState())
 
-    fun onFlagEnabledChanged(item: FlagReadoutItem, enabled: Boolean) {
+    fun onFlagEnabledChanged(
+        item: FlagReadoutItem,
+        enabled: Boolean,
+    ) {
         viewModelScope.launch { saveFlagEnabledState(item.key, enabled) }
     }
 

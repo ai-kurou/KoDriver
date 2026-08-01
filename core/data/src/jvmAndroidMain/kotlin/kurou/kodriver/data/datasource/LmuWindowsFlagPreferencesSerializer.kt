@@ -22,7 +22,10 @@ internal object LmuWindowsFlagPreferencesSerializer : Serializer<LmuWindowsFlagP
             throw CorruptionException("Cannot read LmuWindowsFlagPreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsFlagPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsFlagPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsFlagPreferences.serializer(), t))
     }
 }

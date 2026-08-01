@@ -6,5 +6,4 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-actual fun <T> StateFlow<T>.collectAsStateInLifecycle(): State<T> =
-    collectAsStateWithLifecycle()
+actual fun <T> StateFlow<T>.collectAsStateInLifecycle(): State<T> = collectAsStateWithLifecycle()

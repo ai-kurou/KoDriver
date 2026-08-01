@@ -22,7 +22,10 @@ internal object MyBestLapPreferencesSerializer : Serializer<MyBestLapPreferences
             throw CorruptionException("Cannot read MyBestLapPreferences.", e)
         }
 
-    override suspend fun writeTo(t: MyBestLapPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: MyBestLapPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(MyBestLapPreferences.serializer(), t))
     }
 }

@@ -31,9 +31,7 @@ class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
         )
     }
 
-    private fun capturePane(
-        uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState(),
-    ) {
+    private fun capturePane(uiState: LmuWindowsReadoutMyBestLapDetailUiState = LmuWindowsReadoutMyBestLapDetailUiState()) {
         rule.setContent {
             KoDriverTheme {
                 Surface {

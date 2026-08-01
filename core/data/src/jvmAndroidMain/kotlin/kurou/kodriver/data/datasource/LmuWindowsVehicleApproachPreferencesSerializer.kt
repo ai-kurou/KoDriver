@@ -22,7 +22,10 @@ internal object LmuWindowsVehicleApproachPreferencesSerializer : Serializer<LmuW
             throw CorruptionException("Cannot read LmuWindowsVehicleApproachPreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsVehicleApproachPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsVehicleApproachPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsVehicleApproachPreferences.serializer(), t))
     }
 }

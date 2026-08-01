@@ -28,16 +28,16 @@ internal class TelemetryLogRepositoryImpl(
             } else {
                 dao
                     .observePreviousTelemetryLog(
-                    createdAt = current.createdAt,
-                    id = current.id,
-                ).map { previous ->
-                    current.toDomain()?.let { currentLog ->
-                        TelemetryLogDetail(
-                            current = currentLog,
-                            previous = previous?.toDomain(),
-                        )
+                        createdAt = current.createdAt,
+                        id = current.id,
+                    ).map { previous ->
+                        current.toDomain()?.let { currentLog ->
+                            TelemetryLogDetail(
+                                current = currentLog,
+                                previous = previous?.toDomain(),
+                            )
+                        }
                     }
-                }
             }
         }
 

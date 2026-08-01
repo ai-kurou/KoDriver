@@ -16,6 +16,5 @@ class LmuWindowsVehicleApproachThresholdsUseCases(
 
     fun observeSustainedApproachDurationSeconds(): Flow<Int> = repository.observeSustainedApproachDurationSeconds()
 
-    suspend fun saveSustainedApproachDurationSeconds(seconds: Int) =
-        repository.saveSustainedApproachDurationSeconds(seconds)
+    suspend fun saveSustainedApproachDurationSeconds(seconds: Int) = repository.saveSustainedApproachDurationSeconds(seconds)
 }

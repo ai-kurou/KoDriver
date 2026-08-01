@@ -22,7 +22,10 @@ internal object LmuWindowsPitTimingPreferencesSerializer : Serializer<LmuWindows
             throw CorruptionException("Cannot read LmuWindowsPitTimingPreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsPitTimingPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsPitTimingPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsPitTimingPreferences.serializer(), t))
     }
 }

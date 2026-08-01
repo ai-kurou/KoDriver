@@ -10,8 +10,7 @@ import kurou.kodriver.domain.repository.ThemePreferencesRepository
 internal class ThemePreferencesRepositoryImpl(
     private val dataStore: DataStore<ThemePreferences>,
 ) : ThemePreferencesRepository {
-    override fun observeThemeMode(): Flow<ThemeMode> =
-        dataStore.data.map { ThemeMode.fromId(it.mode) }
+    override fun observeThemeMode(): Flow<ThemeMode> = dataStore.data.map { ThemeMode.fromId(it.mode) }
 
     override suspend fun saveThemeMode(themeMode: ThemeMode) {
         dataStore.updateData { it.copy(mode = themeMode.id) }

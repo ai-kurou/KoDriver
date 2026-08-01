@@ -22,7 +22,10 @@ internal object RedFlagPreferencesSerializer : Serializer<RedFlagPreferences> {
             throw CorruptionException("Cannot read RedFlagPreferences.", e)
         }
 
-    override suspend fun writeTo(t: RedFlagPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: RedFlagPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(RedFlagPreferences.serializer(), t))
     }
 }

@@ -10,8 +10,7 @@ import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 internal class ReadoutStartSoundPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutStartSoundPreferences>,
 ) : ReadoutStartSoundPreferencesRepository {
-    override fun observeType(): Flow<ReadoutStartSoundType> =
-        dataStore.data.map { ReadoutStartSoundType.fromId(it.type) }
+    override fun observeType(): Flow<ReadoutStartSoundType> = dataStore.data.map { ReadoutStartSoundType.fromId(it.type) }
 
     override suspend fun saveType(type: ReadoutStartSoundType) {
         dataStore.updateData { it.copy(type = type.id) }

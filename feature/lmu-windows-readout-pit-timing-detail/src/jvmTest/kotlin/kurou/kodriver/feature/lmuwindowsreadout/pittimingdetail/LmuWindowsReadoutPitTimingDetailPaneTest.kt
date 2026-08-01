@@ -29,10 +29,10 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
 
         rule
             .onNodeWithText(
-            "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
-                "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
-                "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
-        ).assertIsDisplayed()
+                "ピットインの最適なタイミングが近づいたときに音声でお知らせします。\n" +
+                    "毎周ベストラップの30秒前に、燃料残量・タイヤ摩耗の予想残り周回数を判定し、" +
+                    "いずれかが閾値以下であれば、より緊急性の高い（予想残り周回数が少ない）方を1回だけ読み上げます。",
+            ).assertIsDisplayed()
         rule.onNodeWithText("予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗予想残り周回数").assertIsDisplayed()
@@ -70,11 +70,11 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
 
         rule
             .onAllNodes(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
-        )[0]
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
+            )[0]
             .performSemanticsAction(SemanticsActions.SetProgress) {
-            it(5f)
-        }
+                it(5f)
+            }
 
         assert(virtualEnergyLaps == 5)
     }
@@ -93,11 +93,11 @@ class LmuWindowsReadoutPitTimingDetailPaneTest {
 
         rule
             .onAllNodes(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
-        )[1]
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 3f, range = 1f..5f, steps = 3)),
+            )[1]
             .performSemanticsAction(SemanticsActions.SetProgress) {
-            it(1f)
-        }
+                it(1f)
+            }
 
         assert(tyreWearLaps == 1)
     }

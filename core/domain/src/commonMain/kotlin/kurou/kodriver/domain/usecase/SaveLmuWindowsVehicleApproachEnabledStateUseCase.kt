@@ -6,6 +6,8 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 class SaveLmuWindowsVehicleApproachEnabledStateUseCase(
     private val repository: LmuWindowsVehicleApproachPreferencesRepository,
 ) {
-    suspend operator fun invoke(key: ReadoutItemKey, enabled: Boolean) =
-        repository.saveEnabledState(key, enabled)
+    suspend operator fun invoke(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) = repository.saveEnabledState(key, enabled)
 }

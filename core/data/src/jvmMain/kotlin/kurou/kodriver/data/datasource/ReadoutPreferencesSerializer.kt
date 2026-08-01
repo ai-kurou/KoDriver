@@ -22,7 +22,10 @@ internal object ReadoutPreferencesSerializer : Serializer<ReadoutPreferences> {
             throw CorruptionException("Cannot read ReadoutPreferences.", e)
         }
 
-    override suspend fun writeTo(t: ReadoutPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: ReadoutPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(ReadoutPreferences.serializer(), t))
     }
 }

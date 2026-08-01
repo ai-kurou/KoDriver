@@ -6,6 +6,8 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 class SaveLmuWindowsTyreTemperatureEnabledStateUseCase(
     private val repository: LmuWindowsTyreTemperaturePreferencesRepository,
 ) {
-    suspend operator fun invoke(key: ReadoutItemKey, enabled: Boolean) =
-        repository.saveEnabledState(key, enabled)
+    suspend operator fun invoke(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) = repository.saveEnabledState(key, enabled)
 }

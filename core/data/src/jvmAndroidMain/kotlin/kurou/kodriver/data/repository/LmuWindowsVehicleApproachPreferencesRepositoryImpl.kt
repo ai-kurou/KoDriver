@@ -12,8 +12,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleApproachPreferences>,
 ) : LmuWindowsVehicleApproachPreferencesRepository {
-    override fun observeSkipFirstLap(): Flow<Boolean> =
-        dataStore.data.map { it.skipFirstLap }
+    override fun observeSkipFirstLap(): Flow<Boolean> = dataStore.data.map { it.skipFirstLap }
 
     override suspend fun saveSkipFirstLap(skip: Boolean) {
         dataStore.updateData { it.copy(skipFirstLap = skip) }
@@ -40,7 +39,10 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
                 .toMap()
         }
 
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 }

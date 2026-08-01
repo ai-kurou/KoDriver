@@ -22,7 +22,10 @@ internal interface TelemetryLogDao {
         LIMIT 1
         """,
     )
-    fun observePreviousTelemetryLog(createdAt: Long, id: Long): Flow<TelemetryLogEntity?>
+    fun observePreviousTelemetryLog(
+        createdAt: Long,
+        id: Long,
+    ): Flow<TelemetryLogEntity?>
 
     @Insert
     suspend fun insert(log: TelemetryLogEntity)

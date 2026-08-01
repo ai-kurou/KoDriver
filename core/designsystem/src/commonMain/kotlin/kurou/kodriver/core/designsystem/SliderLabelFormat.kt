@@ -16,8 +16,7 @@ private val PRINTF_PLACEHOLDER_REGEX = Regex("""%(?!%)(?:\d+\$)?[#+ 0,(<-]*\d*(?
  * 本アプリのスライダーラベルで実際に使用しているプレースホルダー・エスケープ（`%%` → `%`）のみを
  * サポートする簡易実装。
  */
-fun String.formatSliderLabel(value: Int): String =
-    replaceSupportedPlaceholders(INT_PLACEHOLDER_REGEX) { value.toString() }
+fun String.formatSliderLabel(value: Int): String = replaceSupportedPlaceholders(INT_PLACEHOLDER_REGEX) { value.toString() }
 
 /**
  * strings.xml の printf 形式プレースホルダー（`%1$.1f` 相当）を含むテンプレート文字列へ小数値を埋め込む。
@@ -66,7 +65,10 @@ private fun String.replaceSupportedPlaceholders(
  * 固定小数点表記へ変換する。小数点は常に `.`（ロケール非依存）を用いる。
  * `NaN`・`Infinity`・`-Infinity` は Kotlin 標準の [Float.toString] と同じ表記を返す。
  */
-private fun formatFixedPoint(value: Float, decimals: Int): String {
+private fun formatFixedPoint(
+    value: Float,
+    decimals: Int,
+): String {
     if (value.isNaN()) return "NaN"
     if (value.isInfinite()) return if (value > 0) "Infinity" else "-Infinity"
     val sign = if (value < 0) "-" else ""

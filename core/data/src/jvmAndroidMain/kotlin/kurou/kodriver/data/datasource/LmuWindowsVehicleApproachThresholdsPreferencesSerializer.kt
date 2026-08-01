@@ -24,7 +24,10 @@ internal object LmuWindowsVehicleApproachThresholdsPreferencesSerializer :
             throw CorruptionException("Cannot read LmuWindowsVehicleApproachThresholdsPreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsVehicleApproachThresholdsPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsVehicleApproachThresholdsPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsVehicleApproachThresholdsPreferences.serializer(), t))
     }
 }
