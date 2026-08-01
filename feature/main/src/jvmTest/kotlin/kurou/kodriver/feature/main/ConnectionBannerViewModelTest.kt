@@ -316,9 +316,13 @@ private class FakeConsoleAddressPreferencesRepository(initial: String?) : Consol
 
     override fun consoleAddress(): Flow<String?> = flow
 
-    override suspend fun saveConsoleAddress(address: String) { flow.update { address } }
+    override suspend fun saveConsoleAddress(address: String) {
+        flow.update { address }
+    }
 
-    fun save(address: String?) { flow.update { address } }
+    fun save(address: String?) {
+        flow.update { address }
+    }
 }
 
 private class FakeGt7Ps5Repository(
@@ -343,5 +347,7 @@ private class FakeSimulatorPreferencesRepository(
 
     override fun selectedSimulator(): Flow<Simulator?> = flow
 
-    override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
+    override suspend fun saveSelectedSimulator(simulator: Simulator) {
+        flow.update { simulator }
+    }
 }

@@ -31,7 +31,9 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = false
             }
 
-            data object Sustained : VehicleApproach { override val value = "lmu_windows_vehicle_approach_sustained" }
+            data object Sustained : VehicleApproach {
+                override val value = "lmu_windows_vehicle_approach_sustained"
+            }
 
             data object StartReadout : VehicleApproach {
                 override val value = "lmu_windows_vehicle_approach_start_readout"
@@ -51,13 +53,21 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
 
-            data object BlueFlag : Flag { override val value = "lmu_windows_blue_flag" }
+            data object BlueFlag : Flag {
+                override val value = "lmu_windows_blue_flag"
+            }
 
-            data object SectorYellowFlag : Flag { override val value = "lmu_windows_sector_yellow_flag" }
+            data object SectorYellowFlag : Flag {
+                override val value = "lmu_windows_sector_yellow_flag"
+            }
 
-            data object FullCourseYellow : Flag { override val value = "lmu_windows_full_course_yellow" }
+            data object FullCourseYellow : Flag {
+                override val value = "lmu_windows_full_course_yellow"
+            }
 
-            data object RedFlag : Flag { override val value = "lmu_windows_red_flag" }
+            data object RedFlag : Flag {
+                override val value = "lmu_windows_red_flag"
+            }
         }
 
         sealed interface VehicleDamage : LmuWindows {
@@ -66,7 +76,9 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
 
-            data object Overheat : VehicleDamage { override val value = "lmu_windows_overheat" }
+            data object Overheat : VehicleDamage {
+                override val value = "lmu_windows_overheat"
+            }
         }
 
         sealed interface TyreTemperature : LmuWindows {
@@ -140,25 +152,45 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
 
-            data object WhiteFlag : Flag { override val value = "ace_windows_white_flag" }
+            data object WhiteFlag : Flag {
+                override val value = "ace_windows_white_flag"
+            }
 
-            data object GreenFlag : Flag { override val value = "ace_windows_green_flag" }
+            data object GreenFlag : Flag {
+                override val value = "ace_windows_green_flag"
+            }
 
-            data object RedFlag : Flag { override val value = "ace_windows_red_flag" }
+            data object RedFlag : Flag {
+                override val value = "ace_windows_red_flag"
+            }
 
-            data object BlueFlag : Flag { override val value = "ace_windows_blue_flag" }
+            data object BlueFlag : Flag {
+                override val value = "ace_windows_blue_flag"
+            }
 
-            data object YellowFlag : Flag { override val value = "ace_windows_yellow_flag" }
+            data object YellowFlag : Flag {
+                override val value = "ace_windows_yellow_flag"
+            }
 
-            data object BlackFlag : Flag { override val value = "ace_windows_black_flag" }
+            data object BlackFlag : Flag {
+                override val value = "ace_windows_black_flag"
+            }
 
-            data object BlackWhiteFlag : Flag { override val value = "ace_windows_black_white_flag" }
+            data object BlackWhiteFlag : Flag {
+                override val value = "ace_windows_black_white_flag"
+            }
 
-            data object CheckeredFlag : Flag { override val value = "ace_windows_checkered_flag" }
+            data object CheckeredFlag : Flag {
+                override val value = "ace_windows_checkered_flag"
+            }
 
-            data object OrangeCircleFlag : Flag { override val value = "ace_windows_orange_circle_flag" }
+            data object OrangeCircleFlag : Flag {
+                override val value = "ace_windows_orange_circle_flag"
+            }
 
-            data object RedYellowStripesFlag : Flag { override val value = "ace_windows_red_yellow_stripes_flag" }
+            data object RedYellowStripesFlag : Flag {
+                override val value = "ace_windows_red_yellow_stripes_flag"
+            }
         }
 
         sealed interface RemainingFuel : AceWindows {

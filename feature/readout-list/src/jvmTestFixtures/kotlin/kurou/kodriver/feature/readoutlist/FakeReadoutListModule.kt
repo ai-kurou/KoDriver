@@ -32,7 +32,9 @@ private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepos
 
     override fun selectedSimulator(): Flow<Simulator?> = flow
 
-    override suspend fun saveSelectedSimulator(simulator: Simulator) { flow.update { simulator } }
+    override suspend fun saveSelectedSimulator(simulator: Simulator) {
+        flow.update { simulator }
+    }
 }
 
 private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
@@ -47,9 +49,13 @@ private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
 
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> = sustainedApproachDurationSeconds
 
-    override suspend fun saveLateralThresholdMeters(meters: Double) { lateral.update { meters } }
+    override suspend fun saveLateralThresholdMeters(meters: Double) {
+        lateral.update { meters }
+    }
 
-    override suspend fun saveLongitudinalThresholdMeters(meters: Double) { longitudinal.update { meters } }
+    override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
+        longitudinal.update { meters }
+    }
 
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
         sustainedApproachDurationSeconds.update { seconds }

@@ -21,5 +21,7 @@ class FakeReadoutStartSoundPreferencesRepository : ReadoutStartSoundPreferencesR
 
     override fun observeType(): Flow<ReadoutStartSoundType> = flow
 
-    override suspend fun saveType(type: ReadoutStartSoundType) { flow.update { type } }
+    override suspend fun saveType(type: ReadoutStartSoundType) {
+        flow.update { type }
+    }
 }

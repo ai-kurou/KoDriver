@@ -16,7 +16,11 @@ class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
     private var currentPlayer: MediaPlayer? = null
 
     override val isPlaying: Boolean
-        get() = try { currentPlayer?.isPlaying == true } catch (_: Exception) { false }
+        get() = try {
+            currentPlayer?.isPlaying == true
+        } catch (_: Exception) {
+            false
+        }
 
     override suspend fun play(bytes: ByteArray, volume: Int) {
         val temp = withContext(Dispatchers.IO) {

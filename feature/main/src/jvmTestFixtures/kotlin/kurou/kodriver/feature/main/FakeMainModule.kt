@@ -29,7 +29,9 @@ class FakeExitConfirmationEnabledRepository : ExitConfirmationEnabledRepository 
 
     override fun exitConfirmationEnabled(): Flow<Boolean> = flow
 
-    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) { flow.update { enabled } }
+    override suspend fun saveExitConfirmationEnabled(enabled: Boolean) {
+        flow.update { enabled }
+    }
 }
 
 class FakeKeepScreenOnEnabledRepository : KeepScreenOnEnabledRepository {
@@ -37,5 +39,7 @@ class FakeKeepScreenOnEnabledRepository : KeepScreenOnEnabledRepository {
 
     override fun keepScreenOn(): Flow<Boolean> = flow
 
-    override suspend fun saveKeepScreenOn(enabled: Boolean) { flow.update { enabled } }
+    override suspend fun saveKeepScreenOn(enabled: Boolean) {
+        flow.update { enabled }
+    }
 }

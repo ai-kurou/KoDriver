@@ -20,5 +20,7 @@ class FakeThemePreferencesRepository : ThemePreferencesRepository {
 
     override fun observeThemeMode(): Flow<ThemeMode> = flow
 
-    override suspend fun saveThemeMode(themeMode: ThemeMode) { flow.update { themeMode } }
+    override suspend fun saveThemeMode(themeMode: ThemeMode) {
+        flow.update { themeMode }
+    }
 }
