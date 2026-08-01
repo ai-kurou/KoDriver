@@ -8,7 +8,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLE
 /**
  * Windows file mapping API へアクセスする JNA interface。
  */
-@Suppress("FunctionNaming")
+@Suppress("FunctionNaming", "ktlint:standard:function-naming")
 interface Kernel32FileMapping : Library {
     companion object {
         val INSTANCE: Kernel32FileMapping by lazy {
