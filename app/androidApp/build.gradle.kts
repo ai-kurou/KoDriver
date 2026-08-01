@@ -65,7 +65,7 @@ android {
     val localProps =
         Properties().apply {
             val f = rootProject.file("local.properties")
-            if (f.exists()) load(f.inputStream())
+            if (f.exists()) f.inputStream().use { load(it) }
         }
     val storeFile = System.getenv("STORE_FILE") ?: localProps.getProperty("STORE_FILE")
     val storePassword = System.getenv("STORE_PASSWORD") ?: localProps.getProperty("STORE_PASSWORD")
