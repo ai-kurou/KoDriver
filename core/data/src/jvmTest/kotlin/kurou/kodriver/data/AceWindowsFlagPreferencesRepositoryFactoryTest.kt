@@ -11,7 +11,8 @@ import kotlin.test.assertTrue
 class AceWindowsFlagPreferencesRepositoryFactoryTest {
 
     @Test
-    fun `createAceWindowsFlagPreferencesRepository は保存と取得が正常に動作する`() = runBlocking {
+    fun `createAceWindowsFlagPreferencesRepository は保存と取得が正常に動作する`() =
+        runBlocking {
         val tempDir = Files.createTempDirectory("kodriver_ace_flag_pref_factory_test").toFile()
         try {
             val repo = createAceWindowsFlagPreferencesRepository(tempDir.absolutePath)

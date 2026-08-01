@@ -22,7 +22,8 @@ import kotlin.test.assertEquals
 class LmuWindowsWavNarratorEngineTest {
 
     @Test
-    fun `再生中は音声を再生しない`() = runTest {
+    fun `再生中は音声を再生しない`() =
+        runTest {
         val player = FakeSoundPlayer(isPlaying = true)
         val engine = createEngine(player)
         runCurrent()
@@ -34,9 +35,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `イベント音声が未ロードなら音声を再生しない`() = runTest {
+    fun `イベント音声が未ロードなら音声を再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { error("load failed") },
         )
@@ -49,7 +52,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音とイベント音声を順番に再生する`() = runTest {
+    fun `開始音とイベント音声を順番に再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -63,9 +67,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() = runTest {
+    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE),
         )
@@ -80,9 +86,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `LeftApproach は左接近音声を再生する`() = runTest {
+    fun `LeftApproach は左接近音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == LEFT_APPROACH_PATH) LEFT_APPROACH_SOUND else EVENT_SOUND
@@ -99,9 +107,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `MyBestLapFormal は自己ベストラップ通常音声を再生する`() = runTest {
+    fun `MyBestLapFormal は自己ベストラップ通常音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == MY_BEST_LAP_FORMAL_PATH) MY_BEST_LAP_FORMAL_SOUND else EVENT_SOUND
@@ -118,9 +128,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `MyBestLapCasual は自己ベストラップカジュアル音声を再生する`() = runTest {
+    fun `MyBestLapCasual は自己ベストラップカジュアル音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == MY_BEST_LAP_CASUAL_PATH) MY_BEST_LAP_CASUAL_SOUND else EVENT_SOUND
@@ -137,7 +149,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `queue true の speak は前の音声が終わってから再生する`() = runTest {
+    fun `queue true の speak は前の音声が終わってから再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -154,9 +167,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音が未ロードでもイベント音声を再生する`() = runTest {
+    fun `開始音が未ロードでもイベント音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             startSoundResourceLoader = { error("load failed") },
         )
@@ -170,7 +185,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `volumeFlowで指定した音量で開始音とイベント音声を再生する`() = runTest {
+    fun `volumeFlowで指定した音量で開始音とイベント音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player, volumeFlow = flowOf(50))
         runCurrent()
@@ -182,7 +198,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `音量変化後のspeakは新しい音量で再生する`() = runTest {
+    fun `音量変化後のspeakは新しい音量で再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val volumeFlow = MutableStateFlow(80)
         val engine = createEngine(player, volumeFlow = volumeFlow)
@@ -201,7 +218,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() = runTest {
+    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val startSoundTypeFlow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
         val engine = createEngine(player, startSoundTypeFlow = startSoundTypeFlow)
@@ -224,7 +242,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
+    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -237,7 +256,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `stop後にspeakすると正常に再生できる`() = runTest {
+    fun `stop後にspeakすると正常に再生できる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -252,7 +272,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `stopはキュー待機中のジョブも含めて全てキャンセルする`() = runTest {
+    fun `stopはキュー待機中のジョブも含めて全てキャンセルする`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -266,7 +287,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() = runTest {
+    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -282,7 +304,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `stop後のqueue speakは正常に再生できる`() = runTest {
+    fun `stop後のqueue speakは正常に再生できる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -297,7 +320,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは開始音のみを再生する`() = runTest {
+    fun `previewStartSoundは開始音のみを再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -310,9 +334,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() = runTest {
+    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             startSoundResourceLoader = { error("load failed") },
         )
@@ -325,7 +351,8 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは再生中なら何も再生しない`() = runTest {
+    fun `previewStartSoundは再生中なら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer(isPlaying = true)
         val engine = createEngine(player)
         runCurrent()
@@ -337,9 +364,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreOverheat はリソースから読み込んだ音声を再生する`() = runTest {
+    fun `TyreOverheat はリソースから読み込んだ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == TYRE_OVERHEAT_PATH) TYRE_OVERHEAT_SOUND else EVENT_SOUND
@@ -356,9 +385,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreOverheat のリソースが未ロードなら何も再生しない`() = runTest {
+    fun `TyreOverheat のリソースが未ロードなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { error("load failed") },
         )
@@ -371,9 +402,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreCold はリソースから読み込んだ音声を再生する`() = runTest {
+    fun `TyreCold はリソースから読み込んだ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == TYRE_COLD_PATH) TYRE_COLD_SOUND else EVENT_SOUND
@@ -390,9 +423,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreCold のリソースが未ロードなら何も再生しない`() = runTest {
+    fun `TyreCold のリソースが未ロードなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { error("load failed") },
         )
@@ -405,9 +440,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreWearWarning はリソースから読み込んだ音声を再生する`() = runTest {
+    fun `TyreWearWarning はリソースから読み込んだ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == TYRE_WEAR_WARNING_PATH) TYRE_WEAR_WARNING_SOUND else EVENT_SOUND
@@ -424,9 +461,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `TyreWearWarning のリソースが未ロードなら何も再生しない`() = runTest {
+    fun `TyreWearWarning のリソースが未ロードなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { error("load failed") },
         )
@@ -439,9 +478,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `RemainingVirtualEnergyWarning はリソースから読み込んだ音声を再生する`() = runTest {
+    fun `RemainingVirtualEnergyWarning はリソースから読み込んだ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == REMAINING_VIRTUAL_ENERGY_WARNING_PATH) {
@@ -462,9 +503,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `RemainingVirtualEnergyWarning のリソースが未ロードなら何も再生しない`() = runTest {
+    fun `RemainingVirtualEnergyWarning のリソースが未ロードなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { error("load failed") },
         )
@@ -477,9 +520,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `PitTimingWarning は周回数ごとのリソースから読み込んだ音声を再生する`() = runTest {
+    fun `PitTimingWarning は周回数ごとのリソースから読み込んだ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == PIT_TIMING_LAPS_2_PATH) {
@@ -500,9 +545,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `KeepLeft はキープレフト音声を再生する`() = runTest {
+    fun `KeepLeft はキープレフト音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == KEEP_LEFT_PATH) KEEP_LEFT_SOUND else EVENT_SOUND
@@ -519,9 +566,11 @@ class LmuWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `LeftSustained は左側維持音声を再生する`() = runTest {
+    fun `LeftSustained は左側維持音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == LEFT_SUSTAINED_PATH) LEFT_SUSTAINED_SOUND else EVENT_SOUND
@@ -554,7 +603,8 @@ class LmuWindowsWavNarratorEngineTest {
                 else -> FORMULA_RADIO_SOUND
             }
         },
-    ): LmuWindowsWavNarratorEngine = LmuWindowsWavNarratorEngine(
+    ): LmuWindowsWavNarratorEngine =
+        LmuWindowsWavNarratorEngine(
         soundPlayer = player,
         volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,

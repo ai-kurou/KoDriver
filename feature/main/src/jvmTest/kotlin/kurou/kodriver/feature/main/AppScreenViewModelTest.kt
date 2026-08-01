@@ -87,7 +87,8 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
+    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() =
+        runTest {
         val (viewModel) = createViewModel(tagName = "v9.9.9")
 
         viewModel.checkUpdate()
@@ -99,7 +100,8 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
+    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() =
+        runTest {
         val (viewModel) = createViewModel(tagName = "v1.0.0")
 
         viewModel.checkUpdate()
@@ -111,7 +113,8 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalse`() = runTest {
+    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalse`() =
+        runTest {
         val (viewModel) = createViewModel(tagName = "v9.9.9")
 
         assertFalse(viewModel.uiState.first().hasAppUpdate)
@@ -120,7 +123,8 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `currentVersionが空文字の場合hasAppUpdateがfalseのまま`() = runTest {
+    fun `currentVersionが空文字の場合hasAppUpdateがfalseのまま`() =
+        runTest {
         val (viewModel) = createViewModel(tagName = "v9.9.9", version = "")
 
         viewModel.checkUpdate()
@@ -132,7 +136,8 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() = runTest {
+    fun `リリース情報が取得できない場合hasAppUpdateがfalseになる`() =
+        runTest {
         val (viewModel) = createViewModel(tagName = null)
 
         viewModel.checkUpdate()
@@ -144,21 +149,24 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `終了確認が有効な場合exitConfirmationEnabledがtrueになる`() = runTest {
+    fun `終了確認が有効な場合exitConfirmationEnabledがtrueになる`() =
+        runTest {
         val (viewModel) = createViewModel(exitConfirmationEnabled = true)
 
         assertTrue(viewModel.uiState.first().exitConfirmationEnabled)
     }
 
     @Test
-    fun `終了確認が無効な場合exitConfirmationEnabledがfalseになる`() = runTest {
+    fun `終了確認が無効な場合exitConfirmationEnabledがfalseになる`() =
+        runTest {
         val (viewModel) = createViewModel(exitConfirmationEnabled = false)
 
         assertFalse(viewModel.uiState.first().exitConfirmationEnabled)
     }
 
     @Test
-    fun `saveExitConfirmationEnabledを呼ぶとリポジトリに保存される`() = runTest {
+    fun `saveExitConfirmationEnabledを呼ぶとリポジトリに保存される`() =
+        runTest {
         val (viewModel, exitConfirmationEnabledFlow) = createViewModel(exitConfirmationEnabled = true)
 
         viewModel.saveExitConfirmationEnabled(false)
@@ -172,7 +180,8 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `saveExitConfirmationEnabledをfalseで呼ぶとuiStateのexitConfirmationEnabledがfalseになる`() = runTest {
+    fun `saveExitConfirmationEnabledをfalseで呼ぶとuiStateのexitConfirmationEnabledがfalseになる`() =
+        runTest {
         val (viewModel) = createViewModel(exitConfirmationEnabled = true)
 
         viewModel.saveExitConfirmationEnabled(false)
@@ -186,14 +195,16 @@ class AppScreenViewModelTest {
     }
 
     @Test
-    fun `Dynamic Colorが有効な場合dynamicColorEnabledがtrueになる`() = runTest {
+    fun `Dynamic Colorが有効な場合dynamicColorEnabledがtrueになる`() =
+        runTest {
         val (viewModel) = createViewModel(dynamicColorEnabled = true)
 
         assertTrue(viewModel.uiState.first().dynamicColorEnabled)
     }
 
     @Test
-    fun `Dynamic Colorが無効な場合dynamicColorEnabledがfalseになる`() = runTest {
+    fun `Dynamic Colorが無効な場合dynamicColorEnabledがfalseになる`() =
+        runTest {
         val (viewModel) = createViewModel(dynamicColorEnabled = false)
 
         assertFalse(viewModel.uiState.first().dynamicColorEnabled)

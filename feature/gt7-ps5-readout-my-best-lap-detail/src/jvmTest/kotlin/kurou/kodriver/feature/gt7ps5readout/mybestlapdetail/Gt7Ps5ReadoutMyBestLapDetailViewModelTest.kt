@@ -54,14 +54,16 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = Gt7Ps5ReadoutMyBestLapDetailViewModel(
+    private fun createViewModel() =
+        Gt7Ps5ReadoutMyBestLapDetailViewModel(
         observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
         saveMyBestLapVoiceType = SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態は voiceType=FORMAL の UiState を返す`() = runTest {
+    fun `初期状態は voiceType=FORMAL の UiState を返す`() =
+        runTest {
         every { repository.observeVoiceType() } returns voiceTypeFlow
         val viewModel = createViewModel()
 
@@ -71,7 +73,8 @@ class Gt7Ps5ReadoutMyBestLapDetailViewModelTest {
     }
 
     @Test
-    fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() = runTest {
+    fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() =
+        runTest {
         every { repository.observeVoiceType() } returns voiceTypeFlow
         coEvery { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) } answers {
             voiceTypeFlow.update { MyBestLapVoiceType.CASUAL }

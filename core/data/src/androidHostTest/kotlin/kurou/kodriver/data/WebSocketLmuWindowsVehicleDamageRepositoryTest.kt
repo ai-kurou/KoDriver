@@ -38,22 +38,26 @@ class WebSocketVehicleDamageRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsVehicleDamageRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsVehicleDamageRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときvehicleDamageStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときvehicleDamageStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().vehicleDamageStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときVehicleDamageDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときVehicleDamageDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -75,7 +79,8 @@ class WebSocketVehicleDamageRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -96,7 +101,8 @@ class WebSocketVehicleDamageRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -140,7 +146,8 @@ private class FakeServerIpPreferencesRepositoryForDamage(
     }
 }
 
-private val DAMAGE_JSON = """
+private val DAMAGE_JSON =
+    """
     {
         "overheating": true,
         "partDetached": false,

@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class DebugStateCardOrderPreferencesDataStoreFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory("kodriver_debug_state_card_order_preferences_factory_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +24,8 @@ class DebugStateCardOrderPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `debug_state_card_order_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `debug_state_card_order_preferences設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createDebugStateCardOrderPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(cardOrder = listOf("SESSION")) }
 

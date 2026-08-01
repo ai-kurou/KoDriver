@@ -16,11 +16,12 @@ class OtherConsoleIpDetailPaneContentTest {
     val rule = createComposeRule()
 
     private data class ContentParams(
-        val uiState: OtherConsoleIpDetailUiState = OtherConsoleIpDetailUiState(
+        val uiState: OtherConsoleIpDetailUiState =
+            OtherConsoleIpDetailUiState(
             inputAddress = "192.168.1.1",
             isInputValid = true,
         ),
-        val onPortSelected: (Int) -> Unit = {},
+            val onPortSelected: (Int) -> Unit = {},
         val onSave: () -> Unit = {},
         val onDismiss: () -> Unit = {},
         val onBack: () -> Unit = {},

@@ -32,7 +32,8 @@ import kurou.kodriver.domain.model.WheelIndex
 import org.junit.Rule
 import org.junit.Test
 
-private val sampleRaceFlags = LmuWindowsRaceFlagsData(
+private val sampleRaceFlags =
+    LmuWindowsRaceFlagsData(
     gamePhase = SessionPhase.GREEN_FLAG,
     yellowFlagState = SessionYellowFlagState.NONE,
     sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
@@ -45,7 +46,8 @@ private val sampleRaceFlags = LmuWindowsRaceFlagsData(
 
 private val sampleVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = 10)
 
-private fun sampleWheel(surfaceTemperatureCelsius: Double) = LmuWindowsTyreWheelData(
+private fun sampleWheel(surfaceTemperatureCelsius: Double) =
+    LmuWindowsTyreWheelData(
     surfaceTemperatureK = surfaceTemperatureCelsius + 273.15,
     carcassTemperatureK = 0.0,
     brakeTemperatureC = 0.0,
@@ -53,20 +55,24 @@ private fun sampleWheel(surfaceTemperatureCelsius: Double) = LmuWindowsTyreWheel
     wear = 0.0,
 )
 
-private val sampleLmuWindowsTelemetry = LmuWindowsTelemetryData(
+private val sampleLmuWindowsTelemetry =
+    LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-    tyres = LmuWindowsTyreData(
-        wheels = mapOf(
+    tyres =
+        LmuWindowsTyreData(
+        wheels =
+            mapOf(
             WheelIndex.FRONT_LEFT to sampleWheel(85.0),
             WheelIndex.FRONT_RIGHT to sampleWheel(86.0),
             WheelIndex.REAR_LEFT to sampleWheel(87.0),
             WheelIndex.REAR_RIGHT to sampleWheel(88.0),
         ),
-    ),
-    fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-    timing = LmuWindowsTimingData(
+            ),
+        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+    timing =
+        LmuWindowsTimingData(
         currentLapTimeMs = 0L,
         lastLapTimeMs = 0L,
         bestLapTimeMs = 83_456L,
@@ -75,7 +81,8 @@ private val sampleLmuWindowsTelemetry = LmuWindowsTelemetryData(
         currentLap = 3,
         maxLaps = 0,
     ),
-    vehicle = LmuWindowsVehicleData(
+        vehicle =
+            LmuWindowsVehicleData(
         localVelocityX = 0.0,
         localVelocityY = 0.0,
         localVelocityZ = 0.0,
@@ -83,9 +90,10 @@ private val sampleLmuWindowsTelemetry = LmuWindowsTelemetryData(
         positionY = 0.0,
         positionZ = 0.0,
     ),
-)
+            )
 
-private val sampleGt7Ps5Telemetry = Gt7Ps5TelemetryData(
+private val sampleGt7Ps5Telemetry =
+    Gt7Ps5TelemetryData(
     lapCount = 3,
     lapsInRace = 0,
     bestLapTimeMs = 90_000,
@@ -93,7 +101,8 @@ private val sampleGt7Ps5Telemetry = Gt7Ps5TelemetryData(
     gasCapacity = 0f,
 )
 
-private val sampleVehicleApproach = LmuWindowsVehicleApproachData(
+private val sampleVehicleApproach =
+    LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(4),
     sideBySideRightVehicleIds = setOf(7),
     lateralDistanceLeftMeters = 2.0,
@@ -123,7 +132,8 @@ class DebugStateDetailPaneScreenshotTest {
         rule.onRoot().captureRoboImage()
     }
 
-    private val allCardsFilledUiState = DebugStateDetailUiState(
+    private val allCardsFilledUiState =
+        DebugStateDetailUiState(
         selectedSimulator = Simulator.LmuWindows,
         raceFlags = sampleRaceFlags,
         virtualEnergy = sampleVirtualEnergy,

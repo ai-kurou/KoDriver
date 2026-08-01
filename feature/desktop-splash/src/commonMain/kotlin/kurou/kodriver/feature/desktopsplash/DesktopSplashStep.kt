@@ -26,7 +26,8 @@ enum class DesktopSplashStep {
  * 表示名はこの拡張プロパティ側に持たせる。
  */
 val DesktopSplashStep.displayName: String
-    get() = when (this) {
+    get() =
+        when (this) {
         DesktopSplashStep.INITIALIZING_MODULES -> "モジュールを初期化しています…"
         DesktopSplashStep.STARTING_SERVER -> "サーバーを起動しています…"
         DesktopSplashStep.READY -> "起動が完了しました"

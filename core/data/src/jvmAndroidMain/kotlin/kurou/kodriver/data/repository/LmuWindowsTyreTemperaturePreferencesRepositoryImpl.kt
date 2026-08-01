@@ -40,7 +40,8 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
         }
 
     override suspend fun saveLowWarningPhases(phases: Set<SessionPhase>) {
-        val explicitPhases = lmuWindowsTyreTemperatureLowWarningSelectablePhases
+        val explicitPhases =
+            lmuWindowsTyreTemperatureLowWarningSelectablePhases
             .associate { phase -> phase.rawValue to (phase in phases) }
         dataStore.updateData { it.copy(lowWarningPhases = explicitPhases) }
     }

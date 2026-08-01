@@ -23,7 +23,8 @@ import kotlin.test.assertEquals
 class AceWindowsWavNarratorEngineTest {
 
     @Test
-    fun `再生中は音声を再生しない`() = runTest {
+    fun `再生中は音声を再生しない`() =
+        runTest {
         val player = FakeSoundPlayer(isPlaying = true)
         val engine = createEngine(player)
         runCurrent()
@@ -35,7 +36,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `イベント音声が未ロードなら音声を再生しない`() = runTest {
+    fun `イベント音声が未ロードなら音声を再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player = player, resourceLoader = { error("load failed") })
         runCurrent()
@@ -47,7 +49,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音とイベント音声を順番に再生する`() = runTest {
+    fun `開始音とイベント音声を順番に再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -61,7 +64,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() = runTest {
+    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player = player, startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE))
         runCurrent()
@@ -75,7 +79,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音が未ロードでもイベント音声を再生する`() = runTest {
+    fun `開始音が未ロードでもイベント音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player = player, startSoundResourceLoader = { error("load failed") })
         runCurrent()
@@ -88,7 +93,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() = runTest {
+    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val startSoundTypeFlow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
         val engine = createEngine(player, startSoundTypeFlow = startSoundTypeFlow)
@@ -111,7 +117,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `queue=trueで呼ぶと前の音声の後に続けて再生する`() = runTest {
+    fun `queue=trueで呼ぶと前の音声の後に続けて再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -124,7 +131,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
+    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -137,7 +145,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `stop後にspeakすると正常に再生できる`() = runTest {
+    fun `stop後にspeakすると正常に再生できる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -150,7 +159,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `volumeFlowの音量で再生する`() = runTest {
+    fun `volumeFlowの音量で再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player, volumeFlow = flowOf(50))
         runCurrent()
@@ -162,7 +172,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは開始音のみを再生する`() = runTest {
+    fun `previewStartSoundは開始音のみを再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -175,7 +186,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() = runTest {
+    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player = player, startSoundResourceLoader = { error("load failed") })
         runCurrent()
@@ -187,7 +199,8 @@ class AceWindowsWavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは再生中なら何も再生しない`() = runTest {
+    fun `previewStartSoundは再生中なら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer(isPlaying = true)
         val engine = createEngine(player)
         runCurrent()
@@ -210,7 +223,8 @@ class AceWindowsWavNarratorEngineTest {
                 else -> FORMULA_RADIO_SOUND
             }
         },
-    ): AceWindowsWavNarratorEngine = AceWindowsWavNarratorEngine(
+    ): AceWindowsWavNarratorEngine =
+        AceWindowsWavNarratorEngine(
         soundPlayer = player,
         volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,

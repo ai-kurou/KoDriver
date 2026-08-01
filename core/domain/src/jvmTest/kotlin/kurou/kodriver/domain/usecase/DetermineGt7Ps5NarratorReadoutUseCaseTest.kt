@@ -13,7 +13,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `初回の自己ベスト値では読み上げない`() {
-        val decision = useCase.determineMyBestLap(
+        val decision =
+            useCase.determineMyBestLap(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(bestLapTimeMs = 90_000),
             settings = settings(),
@@ -25,12 +26,14 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `自己ベストが更新されたら設定された声種別で読み上げる`() {
-        val initialDecision = useCase.determineMyBestLap(
+        val initialDecision =
+            useCase.determineMyBestLap(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(bestLapTimeMs = 90_000),
             settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
         )
-        val decision = useCase.determineMyBestLap(
+        val decision =
+            useCase.determineMyBestLap(
             state = initialDecision.state,
             telemetry = telemetry(bestLapTimeMs = 89_000),
             settings = settings(myBestLapVoiceType = MyBestLapVoiceType.CASUAL),
@@ -42,12 +45,14 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `自己ベストの読み上げが無効なら読み上げない`() {
-        val initialDecision = useCase.determineMyBestLap(
+        val initialDecision =
+            useCase.determineMyBestLap(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(bestLapTimeMs = 90_000),
             settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
         )
-        val decision = useCase.determineMyBestLap(
+        val decision =
+            useCase.determineMyBestLap(
             state = initialDecision.state,
             telemetry = telemetry(bestLapTimeMs = 89_000),
             settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to false)),
@@ -59,19 +64,22 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残り周回数は最速ラップの30秒前を過ぎて閾値以下になったら読み上げる`() {
-        val firstLapDecision = useCase.determineRemainingFuelLaps(
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
             settings = settings(),
             observedAtMs = 0L,
         )
-        val nextLapDecision = useCase.determineRemainingFuelLaps(
+        val nextLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = firstLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
             settings = settings(remainingFuelLapsThreshold = 3),
             observedAtMs = 100_000L,
         )
-        val decision = useCase.determineRemainingFuelLaps(
+        val decision =
+            useCase.determineRemainingFuelLaps(
             state = nextLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
             settings = settings(remainingFuelLapsThreshold = 3),
@@ -85,19 +93,22 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残り周回数は読み上げタイミング前なら読み上げない`() {
-        val firstLapDecision = useCase.determineRemainingFuelLaps(
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
             settings = settings(),
             observedAtMs = 0L,
         )
-        val nextLapDecision = useCase.determineRemainingFuelLaps(
+        val nextLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = firstLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
             settings = settings(),
             observedAtMs = 100_000L,
         )
-        val decision = useCase.determineRemainingFuelLaps(
+        val decision =
+            useCase.determineRemainingFuelLaps(
             state = nextLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
             settings = settings(),
@@ -110,19 +121,22 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残り周回数が無効なら評価済みラップだけ更新して読み上げない`() {
-        val firstLapDecision = useCase.determineRemainingFuelLaps(
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
             settings = settings(remainingFuelLapsEnabled = false),
             observedAtMs = 0L,
         )
-        val nextLapDecision = useCase.determineRemainingFuelLaps(
+        val nextLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = firstLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
             settings = settings(remainingFuelLapsEnabled = false),
             observedAtMs = 100_000L,
         )
-        val decision = useCase.determineRemainingFuelLaps(
+        val decision =
+            useCase.determineRemainingFuelLaps(
             state = nextLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
             settings = settings(remainingFuelLapsEnabled = false),
@@ -135,37 +149,43 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `給油後は同じ燃料残り周回数でも再度読み上げる`() {
-        val firstLapDecision = useCase.determineRemainingFuelLaps(
+        val firstLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
             settings = settings(),
             observedAtMs = 0L,
         )
-        val secondLapDecision = useCase.determineRemainingFuelLaps(
+        val secondLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = firstLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
             settings = settings(),
             observedAtMs = 100_000L,
         )
-        val firstWarningDecision = useCase.determineRemainingFuelLaps(
+        val firstWarningDecision =
+            useCase.determineRemainingFuelLaps(
             state = secondLapDecision.state,
             telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 30f),
             settings = settings(),
             observedAtMs = 160_000L,
         )
-        val refueledDecision = useCase.determineRemainingFuelLaps(
+        val refueledDecision =
+            useCase.determineRemainingFuelLaps(
             state = firstWarningDecision.state,
             telemetry = telemetry(lapCount = 3, bestLapTimeMs = 90_000, gasLevel = 80f),
             settings = settings(),
             observedAtMs = 200_000L,
         )
-        val fourthLapDecision = useCase.determineRemainingFuelLaps(
+        val fourthLapDecision =
+            useCase.determineRemainingFuelLaps(
             state = refueledDecision.state,
             telemetry = telemetry(lapCount = 4, bestLapTimeMs = 90_000, gasLevel = 20f),
             settings = settings(),
             observedAtMs = 300_000L,
         )
-        val secondWarningDecision = useCase.determineRemainingFuelLaps(
+        val secondWarningDecision =
+            useCase.determineRemainingFuelLaps(
             state = fourthLapDecision.state,
             telemetry = telemetry(lapCount = 4, bestLapTimeMs = 90_000, gasLevel = 20f),
             settings = settings(),
@@ -181,19 +201,22 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `ラップ数が戻ったら燃料残り周回数の読み上げ履歴をリセットする`() {
-        val state = Gt7Ps5NarratorState(
+        val state =
+            Gt7Ps5NarratorState(
             lastAnnouncedRemainingLaps = 2,
             lastFuelEvaluationLap = 5,
-            fuelTrackingState = Gt7Ps5FuelTrackingState(
+            fuelTrackingState =
+                Gt7Ps5FuelTrackingState(
                 raceStartFuel = 100f,
                 raceStartLap = 1,
                 currentLap = 5,
                 currentGasLevel = 20f,
                 bestLapTimeMs = 90_000,
             ),
-        )
+                )
 
-        val decision = useCase.determineRemainingFuelLaps(
+        val decision =
+            useCase.determineRemainingFuelLaps(
             state = state,
             telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
             settings = settings(),
@@ -208,7 +231,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残量が閾値以下になると読み上げる`() {
-        val decision = useCase.determineRemainingFuel(
+        val decision =
+            useCase.determineRemainingFuel(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(gasLevel = 30f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),
@@ -220,7 +244,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残量が閾値ちょうどなら読み上げる`() {
-        val decision = useCase.determineRemainingFuel(
+        val decision =
+            useCase.determineRemainingFuel(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(gasLevel = 15f, gasCapacity = 50f),
             settings = settings(remainingFuelThresholdPercentage = 30),
@@ -231,7 +256,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残量の警告状態が継続しても再度読み上げない`() {
-        val decision = useCase.determineRemainingFuel(
+        val decision =
+            useCase.determineRemainingFuel(
             state = Gt7Ps5NarratorState(remainingFuelWarned = true),
             telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),
@@ -243,19 +269,22 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残量が閾値より上に戻ると再度読み上げ可能になる`() {
-        val warnedState = useCase
+        val warnedState =
+            useCase
             .determineRemainingFuel(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),
         ).state
-        val recoveredState = useCase
+        val recoveredState =
+            useCase
             .determineRemainingFuel(
             state = warnedState,
             telemetry = telemetry(gasLevel = 50f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),
         ).state
-        val rewarnedDecision = useCase.determineRemainingFuel(
+        val rewarnedDecision =
+            useCase.determineRemainingFuel(
             state = recoveredState,
             telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
             settings = settings(remainingFuelThresholdPercentage = 30),
@@ -267,7 +296,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残量が無効なら読み上げない`() {
-        val decision = useCase.determineRemainingFuel(
+        val decision =
+            useCase.determineRemainingFuel(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
             settings = settings(remainingFuelEnabled = false),
@@ -279,7 +309,8 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料容量が0以下なら燃料残量は読み上げない`() {
-        val decision = useCase.determineRemainingFuel(
+        val decision =
+            useCase.determineRemainingFuel(
             state = Gt7Ps5NarratorState(),
             telemetry = telemetry(gasLevel = 0f, gasCapacity = 0f),
             settings = settings(),

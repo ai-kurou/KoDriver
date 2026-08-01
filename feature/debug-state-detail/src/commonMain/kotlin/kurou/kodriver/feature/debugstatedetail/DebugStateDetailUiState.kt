@@ -10,7 +10,8 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 
-internal val defaultDebugStateCardOrder = listOf(
+internal val defaultDebugStateCardOrder =
+    listOf(
     DebugStateCardKey.SIMULATOR,
     DebugStateCardKey.FLAG_INFO,
     DebugStateCardKey.GAME_PHASE,

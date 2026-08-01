@@ -26,7 +26,8 @@ class AndroidExitConfirmationEnabledRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("exit_confirmation_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
+        val dataStore =
+            PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
@@ -39,19 +40,22 @@ class AndroidExitConfirmationEnabledRepositoryTest {
     }
 
     @Test
-    fun `初期状態はtrueを返す`() = runTest(testDispatcher) {
+    fun `初期状態はtrueを返す`() =
+        runTest(testDispatcher) {
         assertTrue(repository.exitConfirmationEnabled().first())
     }
 
     @Test
-    fun `saveExitConfirmationEnabled falseの後にfalseを返す`() = runTest(testDispatcher) {
+    fun `saveExitConfirmationEnabled falseの後にfalseを返す`() =
+        runTest(testDispatcher) {
         repository.saveExitConfirmationEnabled(false)
 
         assertFalse(repository.exitConfirmationEnabled().first())
     }
 
     @Test
-    fun `saveExitConfirmationEnabled trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
+    fun `saveExitConfirmationEnabled trueで上書きするとtrueを返す`() =
+        runTest(testDispatcher) {
         repository.saveExitConfirmationEnabled(false)
         repository.saveExitConfirmationEnabled(true)
 

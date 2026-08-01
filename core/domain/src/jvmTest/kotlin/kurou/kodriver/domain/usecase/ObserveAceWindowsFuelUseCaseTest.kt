@@ -28,7 +28,8 @@ class ObserveAceWindowsFuelUseCaseTest {
     }
 
     @Test
-    fun `invoke はリポジトリの fuelStream を返す`() = runBlocking {
+    fun `invoke はリポジトリの fuelStream を返す`() =
+        runBlocking {
         val expected = AceWindowsFuelData(remainingPercent = 50.0)
         every { repo.fuelStream() } returns flowOf(expected)
         val useCase = ObserveAceWindowsFuelUseCase(repo)
@@ -41,7 +42,8 @@ class ObserveAceWindowsFuelUseCaseTest {
     }
 
     @Test
-    fun `invoke は空のフローをそのまま返す`() = runBlocking {
+    fun `invoke は空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.fuelStream() } returns flowOf()
         val useCase = ObserveAceWindowsFuelUseCase(repo)
 
@@ -53,7 +55,8 @@ class ObserveAceWindowsFuelUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = AceWindowsFuelData(remainingPercent = 80.0)
         val data2 = AceWindowsFuelData(remainingPercent = 50.0)
         val data3 = AceWindowsFuelData(remainingPercent = 20.0)

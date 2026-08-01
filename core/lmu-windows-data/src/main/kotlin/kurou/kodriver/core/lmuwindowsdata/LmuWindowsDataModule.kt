@@ -37,7 +37,8 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * UseCase が get() で解決する各 LmuWindows*Repository を提供する。共有メモリ読み取りは Windows 専用のため、
  * 非 Windows では空 Flow を返す No-Op 実装（下部の private class 群）にフォールバックする。
  */
-val lmuWindowsDataModule = module {
+val lmuWindowsDataModule =
+    module {
     // 共有メモリのポーリングを回すスコープとデータソース
     single { CoroutineScope(SupervisorJob()) }
     single { LmuWindowsSharedMemorySource(scope = get()) }

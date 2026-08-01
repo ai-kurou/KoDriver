@@ -21,12 +21,14 @@ class Gt7Ps5RemainingFuelLapsPreferencesSerializerTest {
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() = runTest {
+    fun `書き込んだ値を読み出せる`() =
+        runTest {
         val original = Gt7Ps5RemainingFuelLapsPreferences(remainingFuelLaps = 5)
         val output = ByteArrayOutputStream()
         Gt7Ps5RemainingFuelLapsPreferencesSerializer.writeTo(original, output)
 
-        val restored = Gt7Ps5RemainingFuelLapsPreferencesSerializer.readFrom(
+        val restored =
+            Gt7Ps5RemainingFuelLapsPreferencesSerializer.readFrom(
             ByteArrayInputStream(output.toByteArray()),
         )
 
@@ -34,7 +36,8 @@ class Gt7Ps5RemainingFuelLapsPreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列で CorruptionException が発生する`() = runTest {
+    fun `不正なバイト列で CorruptionException が発生する`() =
+        runTest {
         val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
         assertFailsWith<CorruptionException> {

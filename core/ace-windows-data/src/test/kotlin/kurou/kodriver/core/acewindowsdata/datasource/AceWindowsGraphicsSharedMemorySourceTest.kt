@@ -34,7 +34,8 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `open 成功後に bufferFlow がバッファを emit する`() = runBlocking<Unit> {
+    fun `open 成功後に bufferFlow がバッファを emit する`() =
+        runBlocking<Unit> {
         val reader = FakeSharedMemoryReader(initialOpen = true)
         val source = makeSource(reader)
 
@@ -42,7 +43,8 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     }
 
     @Test
-    fun `open 失敗中は bufferFlow が emit しない`() = runBlocking {
+    fun `open 失敗中は bufferFlow が emit しない`() =
+        runBlocking {
         val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
         val source = makeSource(reader)
         var emitCount = 0
@@ -55,7 +57,8 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     }
 
     @Test
-    fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() = runBlocking {
+    fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() =
+        runBlocking {
         val reader = FakeSharedMemoryReader(initialOpen = true)
         val source = makeSource(reader)
 
@@ -73,21 +76,24 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `open に成功しバッファを読み取れるとき isConnected は true を返す`() = runBlocking {
+    fun `open に成功しバッファを読み取れるとき isConnected は true を返す`() =
+        runBlocking {
         val source = makeSource(reader = FakeSharedMemoryReader(openResult = true))
 
         assertTrue(source.isConnected())
     }
 
     @Test
-    fun `open に失敗するとき isConnected は false を返す`() = runBlocking {
+    fun `open に失敗するとき isConnected は false を返す`() =
+        runBlocking {
         val source = makeSource(reader = FakeSharedMemoryReader(openResult = false))
 
         assertFalse(source.isConnected())
     }
 
     @Test
-    fun `isConnected は reader を close してから open する`() = runBlocking {
+    fun `isConnected は reader を close してから open する`() =
+        runBlocking {
         val reader = FakeSharedMemoryReader(openResult = true)
         val source = makeSource(reader = reader)
 
@@ -97,14 +103,16 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     }
 
     @Test
-    fun `バッファを読み取れないとき isConnected は false を返す`() = runBlocking {
+    fun `バッファを読み取れないとき isConnected は false を返す`() =
+        runBlocking {
         val source = makeSource(reader = FakeSharedMemoryReader(openResult = true, returnNullBuffer = true))
 
         assertFalse(source.isConnected())
     }
 
     @Test
-    fun `packetId が閾値以内に変化し続けるとき isConnected は true を返す`() = runBlocking {
+    fun `packetId が閾値以内に変化し続けるとき isConnected は true を返す`() =
+        runBlocking {
         var fakeTime = 0L
         val reader = FakeSharedMemoryReader(openResult = true, packetId = 1)
         val source = makeSource(reader = reader, currentTimeMs = { fakeTime })
@@ -121,7 +129,8 @@ class AceWindowsGraphicsSharedMemorySourceTest {
     }
 
     @Test
-    fun `packetId が閾値以上変化しないとき isConnected は false を返す`() = runBlocking {
+    fun `packetId が閾値以上変化しないとき isConnected は false を返す`() =
+        runBlocking {
         var fakeTime = 0L
         val reader = FakeSharedMemoryReader(openResult = true, packetId = 500)
         val source = makeSource(reader = reader, currentTimeMs = { fakeTime })

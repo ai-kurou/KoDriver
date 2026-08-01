@@ -50,15 +50,18 @@ class TelemetryLogListViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = TelemetryLogListViewModel(
-        observeSortedTelemetryLogs = ObserveSortedTelemetryLogsUseCase(
+    private fun createViewModel() =
+        TelemetryLogListViewModel(
+        observeSortedTelemetryLogs =
+            ObserveSortedTelemetryLogsUseCase(
             ObserveTelemetryLogsUseCase(repository),
         ),
-        resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+            resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
     )
 
     @Test
-    fun `ログの更新を観測する`() = runTest(dispatcher) {
+    fun `ログの更新を観測する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -89,7 +92,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `selectLogで未選択のログIDを選択する`() = runTest(dispatcher) {
+    fun `selectLogで未選択のログIDを選択する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -102,7 +106,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `selectLogで選択済みのログIDを再選択すると選択状態を解除する`() = runTest(dispatcher) {
+    fun `selectLogで選択済みのログIDを再選択すると選択状態を解除する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -117,7 +122,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `clearSelectedLogで選択状態を解除する`() = runTest(dispatcher) {
+    fun `clearSelectedLogで選択状態を解除する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -132,7 +138,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `選択中のログが一覧から消えた場合は選択状態を解除する`() = runTest(dispatcher) {
+    fun `選択中のログが一覧から消えた場合は選択状態を解除する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -147,7 +154,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() = runTest(dispatcher) {
+    fun `resetDatabaseに成功するとisResettingがfalseに戻りresetSucceededがtrueになる`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
         val viewModel = createViewModel()
@@ -166,7 +174,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() = runTest(dispatcher) {
+    fun `resetDatabaseが失敗するとresetSucceededがfalseになる`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         coEvery { repository.deleteAllTelemetryLogs() } throws IllegalStateException("削除に失敗しました")
         val viewModel = createViewModel()
@@ -182,7 +191,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `onResetClickで確認ダイアログを表示する`() = runTest(dispatcher) {
+    fun `onResetClickで確認ダイアログを表示する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -194,7 +204,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `onResetDismissで確認ダイアログを閉じる`() = runTest(dispatcher) {
+    fun `onResetDismissで確認ダイアログを閉じる`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         val viewModel = createViewModel()
 
@@ -208,7 +219,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() = runTest(dispatcher) {
+    fun `onResetConfirmでダイアログを閉じてresetDatabaseを実行する`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
         val viewModel = createViewModel()
@@ -229,7 +241,8 @@ class TelemetryLogListViewModelTest {
     }
 
     @Test
-    fun `consumeResetResultでresetSucceededをnullに戻す`() = runTest(dispatcher) {
+    fun `consumeResetResultでresetSucceededをnullに戻す`() =
+        runTest(dispatcher) {
         every { repository.observeTelemetryLogs() } returns logsFlow
         coEvery { repository.deleteAllTelemetryLogs() } answers { logsFlow.update { emptyList() } }
         val viewModel = createViewModel()

@@ -20,7 +20,8 @@ class SaveExitConfirmationEnabledUseCaseTest {
     }
 
     @Test
-    fun `終了確認の有効状態を保存できる`() = runBlocking {
+    fun `終了確認の有効状態を保存できる`() =
+        runBlocking {
         SaveExitConfirmationEnabledUseCase(repository)(false)
 
         coVerify(exactly = 1) { repository.saveExitConfirmationEnabled(false) }

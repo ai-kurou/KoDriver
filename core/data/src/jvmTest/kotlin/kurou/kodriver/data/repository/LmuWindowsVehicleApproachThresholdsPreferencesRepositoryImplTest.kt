@@ -18,11 +18,13 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = LmuWindowsVehicleApproachThresholdsPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -35,7 +37,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
+    fun `縦方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
         assertEquals(
             LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
             repository.observeLongitudinalThresholdMeters().first(),
@@ -49,7 +52,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `横方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
+    fun `横方向閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
         assertEquals(
             LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
             repository.observeLateralThresholdMeters().first(),
@@ -63,7 +67,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `縦横の閾値は独立して保持される`() = testScope.runTest {
+    fun `縦横の閾値は独立して保持される`() =
+        testScope.runTest {
         repository.saveLongitudinalThresholdMeters(40.0)
         repository.saveLateralThresholdMeters(5.0)
 
@@ -72,7 +77,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `継続時間閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() = testScope.runTest {
+    fun `継続時間閾値の初期値はデフォルト値・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
         assertEquals(
             LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
             repository.observeSustainedApproachDurationSeconds().first(),

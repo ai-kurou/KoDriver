@@ -24,7 +24,8 @@ internal class LmuWindowsReadoutPitTimingDetailViewModel(
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<LmuWindowsReadoutPitTimingDetailUiState> = combine(
+    val uiState: StateFlow<LmuWindowsReadoutPitTimingDetailUiState> =
+        combine(
         observeLmuWindowsPitTimingVirtualEnergyLaps(),
         observeLmuWindowsPitTimingTyreWearLaps(),
     ) { virtualEnergyLaps, tyreWearLaps ->

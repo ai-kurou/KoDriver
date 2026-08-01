@@ -20,7 +20,8 @@ class SaveDynamicColorEnabledUseCaseTest {
     }
 
     @Test
-    fun `Repositoryへ保存する`() = runBlocking {
+    fun `Repositoryへ保存する`() =
+        runBlocking {
         SaveDynamicColorEnabledUseCase(repository)(true)
 
         coVerify(exactly = 1) { repository.saveDynamicColorEnabled(true) }

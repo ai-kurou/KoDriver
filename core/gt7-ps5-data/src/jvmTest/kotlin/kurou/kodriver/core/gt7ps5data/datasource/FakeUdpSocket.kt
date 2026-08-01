@@ -25,7 +25,8 @@ internal class FakeUdpSocket : UdpSocket {
 
     override fun receive(packet: DatagramPacket) {
         // 1ms 待機することで、キャンセル到着前のタイトループを防ぐ
-        val response = responses.poll(1L, TimeUnit.MILLISECONDS)
+        val response =
+            responses.poll(1L, TimeUnit.MILLISECONDS)
             ?: throw SocketTimeoutException("FakeUdpSocket: no more responses")
         when (response) {
             is FakeResponse.Packet -> {

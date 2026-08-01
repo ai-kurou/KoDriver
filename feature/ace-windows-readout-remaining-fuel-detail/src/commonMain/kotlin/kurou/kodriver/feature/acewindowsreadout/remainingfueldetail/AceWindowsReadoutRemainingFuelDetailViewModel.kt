@@ -19,7 +19,8 @@ internal class AceWindowsReadoutRemainingFuelDetailViewModel(
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<AceWindowsReadoutRemainingFuelDetailUiState> = observeThresholdPercentage()
+    val uiState: StateFlow<AceWindowsReadoutRemainingFuelDetailUiState> =
+        observeThresholdPercentage()
         .map { AceWindowsReadoutRemainingFuelDetailUiState(thresholdPercentage = it) }
         .stateIn(
             viewModelScope,

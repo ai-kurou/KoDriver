@@ -123,10 +123,11 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     }
 
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.tyre_temperature_description),
         )
@@ -135,7 +136,8 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
         val lowWarningPhasesHelpIconContentDescription =
             stringResource(Res.string.tyre_temperature_low_warning_phases_help_icon_content_description)
-        val phaseLabels = mapOf(
+        val phaseLabels =
+            mapOf(
             SessionPhase.GARAGE to stringResource(Res.string.tyre_temperature_low_warning_phase_garage),
             SessionPhase.WARM_UP to stringResource(Res.string.tyre_temperature_low_warning_phase_warm_up),
             SessionPhase.GRID_WALK to stringResource(Res.string.tyre_temperature_low_warning_phase_grid_walk),
@@ -231,7 +233,8 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                                 selected = selected,
                                 onClick = { onLowWarningPhaseToggled(phase) },
                                 label = { Text(text = label) },
-                                leadingIcon = if (selected) {
+                                leadingIcon =
+                                    if (selected) {
                                     {
                                         Icon(
                                             imageVector = Icons.Default.Check,
@@ -241,7 +244,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                                 } else {
                                     null
                                 },
-                            )
+                                    )
                         }
                     }
                 }

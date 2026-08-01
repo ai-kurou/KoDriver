@@ -68,7 +68,8 @@ class OtherListViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(currentVersion: String = "0.5.0") = OtherListViewModel(
+    private fun createViewModel(currentVersion: String = "0.5.0") =
+        OtherListViewModel(
         checkAppUpdateAvailable = CheckAppUpdateAvailableUseCase(appUpdateRepository),
         observeKeepScreenOn = ObserveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
         saveKeepScreenOn = SaveKeepScreenOnEnabledUseCase(keepScreenOnRepository),
@@ -81,7 +82,8 @@ class OtherListViewModelTest {
     )
 
     @Test
-    fun `初期状態では全項目が表示され選択項目はない`() = runTest {
+    fun `初期状態では全項目が表示され選択項目はない`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -98,7 +100,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `音量を選択すると選択状態になる`() = runTest {
+    fun `音量を選択すると選択状態になる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -114,7 +117,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `GitHubレポジトリまたはリリースページを選択しても状態は変わらない`() = runTest {
+    fun `GitHubレポジトリまたはリリースページを選択しても状態は変わらない`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -132,7 +136,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `onItemSelectedで項目を選択し再選択すると解除される`() = runTest {
+    fun `onItemSelectedで項目を選択し再選択すると解除される`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -150,7 +155,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() = runTest {
+    fun `selectItemで同じ項目を連続して選択しても選択状態が維持される`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -168,7 +174,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `clearSelectedItemで選択状態が解除される`() = runTest {
+    fun `clearSelectedItemで選択状態が解除される`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -185,7 +192,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `終了確認の有効状態を監視できる`() = runTest {
+    fun `終了確認の有効状態を監視できる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -201,7 +209,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `onExitConfirmationEnabledChangeで終了確認の有効状態を保存できる`() = runTest {
+    fun `onExitConfirmationEnabledChangeで終了確認の有効状態を保存できる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         coEvery { exitConfirmationRepository.saveExitConfirmationEnabled(false) } answers {
@@ -222,7 +231,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `画面スリープ無効の状態を監視できる`() = runTest {
+    fun `画面スリープ無効の状態を監視できる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -238,7 +248,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `onKeepScreenOnChangeで画面スリープ無効の状態を保存できる`() = runTest {
+    fun `onKeepScreenOnChangeで画面スリープ無効の状態を保存できる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         coEvery { keepScreenOnRepository.saveKeepScreenOn(false) } answers { keepScreenOnFlow.update { false } }
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
@@ -257,7 +268,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `Dynamic Colorの有効状態を監視・保存できる`() = runTest {
+    fun `Dynamic Colorの有効状態を監視・保存できる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -278,7 +290,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() = runTest {
+    fun `最新バージョンがある場合hasAppUpdateがtrueになる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -296,7 +309,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() = runTest {
+    fun `現在が最新バージョンの場合hasAppUpdateがfalseになる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -314,7 +328,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalseのまま`() = runTest {
+    fun `checkUpdateを呼ぶ前はhasAppUpdateがfalseのまま`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -328,7 +343,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `currentVersionが空の場合checkUpdateは何もしない`() = runTest {
+    fun `currentVersionが空の場合checkUpdateは何もしない`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
@@ -344,7 +360,8 @@ class OtherListViewModelTest {
     }
 
     @Test
-    fun `リリース情報がnullの場合hasAppUpdateがfalseになる`() = runTest {
+    fun `リリース情報がnullの場合hasAppUpdateがfalseになる`() =
+        runTest {
         every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
         every { exitConfirmationRepository.exitConfirmationEnabled() } returns exitConfirmationFlow
         every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow

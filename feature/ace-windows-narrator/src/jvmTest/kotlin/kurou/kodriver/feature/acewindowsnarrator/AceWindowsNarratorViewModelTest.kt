@@ -100,31 +100,36 @@ class AceWindowsNarratorViewModelTest {
         every { fuelRepository.fuelStream() } returns fuelChannel.receiveAsFlow()
         every { flagRepository.flagStream() } returns flagChannel.receiveAsFlow()
         return AceWindowsNarratorViewModel(
-            remainingFuelUseCases = RemainingFuelUseCases(
+            remainingFuelUseCases =
+                RemainingFuelUseCases(
                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(fuelRepository),
                 observeThresholdPercentage =
                     ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
             ),
-            readoutListUseCases = ReadoutListUseCases(
+                readoutListUseCases =
+                    ReadoutListUseCases(
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                 observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
             ),
-            flagUseCases = FlagUseCases(
+                    flagUseCases =
+                        FlagUseCases(
                 observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(flagRepository),
                 observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
             ),
-            eventProcessor = AceWindowsNarratorEventProcessor(
+                        eventProcessor =
+                            AceWindowsNarratorEventProcessor(
                 ttsEngine = ttsEngine,
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
             ),
-            currentTimeMs = currentTimeMs,
+                            currentTimeMs = currentTimeMs,
         )
     }
 
     @Test
-    fun `ACE非選択時は読み上げない`() = runTest(testDispatcher) {
+    fun `ACE非選択時は読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -150,7 +155,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `残量が閾値以下になると読み上げる`() = runTest(testDispatcher) {
+    fun `残量が閾値以下になると読み上げる`() =
+        runTest(testDispatcher) {
         val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -164,7 +170,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `給油後は残り燃料警告を再度読み上げる`() = runTest(testDispatcher) {
+    fun `給油後は残り燃料警告を再度読み上げる`() =
+        runTest(testDispatcher) {
         val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -184,7 +191,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `読み上げが発生したら現在と直前の燃料データを保存する`() = runTest(testDispatcher) {
+    fun `読み上げが発生したら現在と直前の燃料データを保存する`() =
+        runTest(testDispatcher) {
         val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val telemetryJsons = mutableListOf<String>()
@@ -210,7 +218,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `残り燃料項目が無効のときは読み上げない`() = runTest(testDispatcher) {
+    fun `残り燃料項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -259,7 +268,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `フラグが変化すると読み上げる`() = runTest(testDispatcher) {
+    fun `フラグが変化すると読み上げる`() =
+        runTest(testDispatcher) {
         val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -274,7 +284,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `フラグ項目が無効のときは読み上げない`() = runTest(testDispatcher) {
+    fun `フラグ項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
         val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
@@ -292,7 +303,8 @@ class AceWindowsNarratorViewModelTest {
     }
 
     @Test
-    fun `個別のフラグ項目が無効のときは読み上げない`() = runTest(testDispatcher) {
+    fun `個別のフラグ項目が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
         val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
         val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()

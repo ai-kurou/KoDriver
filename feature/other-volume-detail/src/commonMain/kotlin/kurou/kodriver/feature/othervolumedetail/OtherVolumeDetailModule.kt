@@ -11,7 +11,8 @@ import org.koin.dsl.module
  * 提供: OtherVolumeDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: SoundVolumePreferencesRepository（:core:data で登録）。
  */
-val otherVolumeDetailModule = module {
+val otherVolumeDetailModule =
+    module {
     // ViewModel
     viewModelOf(::OtherVolumeDetailViewModel)
 

@@ -13,7 +13,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: AceWindowsFlagPreferencesRepository（:core:data）、試聴用の
  *   named("ace_windows") の PlaySpeechEventUseCase（:feature:ace-windows-narrator で登録）。
  */
-val aceWindowsReadoutFlagDetailModule = module {
+val aceWindowsReadoutFlagDetailModule =
+    module {
     // ViewModel（get(named "ace_windows") は narrator モジュールの PlaySpeechEventUseCase を解決）
     viewModel { AceWindowsReadoutFlagDetailViewModel(get(), get(), get(named("ace_windows"))) }
 

@@ -12,9 +12,11 @@ import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 class LmuWindowsBannerConnectionChecker(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
 ) : LmuBannerConnectionChecker {
-    override fun statusFlow(): Flow<ConnectionBannerVmStatus> = flow {
+    override fun statusFlow(): Flow<ConnectionBannerVmStatus> =
+        flow {
         while (true) {
-            val isConnected = try {
+            val isConnected =
+                try {
                 checkLmuWindowsConnection()
             } catch (e: CancellationException) {
                 throw e

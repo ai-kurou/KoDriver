@@ -30,7 +30,8 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU/GT7 と区別するため named("ace_windows") で登録している。
  */
-val aceWindowsNarratorModule: Module = module {
+val aceWindowsNarratorModule: Module =
+    module {
     // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
     viewModel { AceWindowsNarratorViewModel(get(), get(), get(), get()) }
 

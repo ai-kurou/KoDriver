@@ -21,7 +21,8 @@ class SaveLmuWindowsFlagEnabledStateUseCaseTest {
     }
 
     @Test
-    fun `指定したフラグの有効状態が保存される`() = runBlocking {
+    fun `指定したフラグの有効状態が保存される`() =
+        runBlocking {
         SaveLmuWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
 
         coVerify(exactly = 1) {

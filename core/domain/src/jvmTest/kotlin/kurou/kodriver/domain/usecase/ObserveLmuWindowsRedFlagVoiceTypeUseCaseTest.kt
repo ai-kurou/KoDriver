@@ -25,7 +25,8 @@ class ObserveLmuWindowsRedFlagVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `保存済みの赤旗音声タイプを返す`() = runBlocking {
+    fun `保存済みの赤旗音声タイプを返す`() =
+        runBlocking {
         every { repository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.RED_FLAG)
         val useCase = ObserveLmuWindowsRedFlagVoiceTypeUseCase(repository)
 

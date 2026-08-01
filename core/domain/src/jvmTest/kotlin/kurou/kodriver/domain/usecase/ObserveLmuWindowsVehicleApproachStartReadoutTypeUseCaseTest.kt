@@ -25,7 +25,8 @@ class ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
     }
 
     @Test
-    fun `接近開始時読み上げ種別を監視できる`() = runBlocking {
+    fun `接近開始時読み上げ種別を監視できる`() =
+        runBlocking {
         every { repository.observeStartReadoutType() } returns
             MutableStateFlow(VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH)
         val useCase = ObserveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)

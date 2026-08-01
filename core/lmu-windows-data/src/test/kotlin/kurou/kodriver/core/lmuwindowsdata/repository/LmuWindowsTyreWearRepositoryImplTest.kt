@@ -32,17 +32,20 @@ class LmuWindowsTyreWearRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから4輪のタイヤ摩耗を読み取る`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
+    fun `共有メモリから4輪のタイヤ摩耗を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeTyreWearMemoryReader(
             buildTyreWearBuffer(
                 TyreWearBufferConfig(
-                    wearFractions = mapOf(
+                    wearFractions =
+                        mapOf(
                         WheelIndex.FRONT_LEFT to 0.95,
                         WheelIndex.FRONT_RIGHT to 0.94,
                         WheelIndex.REAR_LEFT to 0.93,
                         WheelIndex.REAR_RIGHT to 0.92,
                     ),
-                ),
+                        ),
             ),
         )
         val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
@@ -56,8 +59,10 @@ class LmuWindowsTyreWearRepositoryImplTest {
     }
 
     @Test
-    fun `playerIndexに応じた車両スロットからタイヤ摩耗を読み取る`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
+    fun `playerIndexに応じた車両スロットからタイヤ摩耗を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeTyreWearMemoryReader(
             buildTyreWearBuffer(
                 TyreWearBufferConfig(
                     activeVehicles = 2,
@@ -74,8 +79,10 @@ class LmuWindowsTyreWearRepositoryImplTest {
     }
 
     @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeTyreWearMemoryReader(
             buildTyreWearBuffer(TyreWearBufferConfig(activeVehicles = 0)),
         )
         val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
@@ -89,8 +96,10 @@ class LmuWindowsTyreWearRepositoryImplTest {
     }
 
     @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeTyreWearMemoryReader(
             buildTyreWearBuffer(TyreWearBufferConfig(activeVehicles = 1, playerIdx = 1)),
         )
         val repo = LmuWindowsTyreWearRepositoryImpl(source = makeSource(reader))
@@ -104,8 +113,10 @@ class LmuWindowsTyreWearRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeTyreWearMemoryReader(
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+        val reader =
+            FakeTyreWearMemoryReader(
             buffer = buildTyreWearBuffer(),
             openResult = false,
         )

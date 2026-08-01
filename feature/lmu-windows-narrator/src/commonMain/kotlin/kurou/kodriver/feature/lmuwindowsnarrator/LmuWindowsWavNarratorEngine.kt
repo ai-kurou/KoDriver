@@ -52,7 +52,8 @@ internal class LmuWindowsWavNarratorEngine(
     override val currentReadoutItemKey: ReadoutItemKey?
         get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
-    private val eventToFile: Map<SpeechEvent, String> = buildMap {
+    private val eventToFile: Map<SpeechEvent, String> =
+        buildMap {
         put(SpeechEvent.CarLeft, "files/car_left.wav")
         put(SpeechEvent.CarRight, "files/car_right.wav")
         put(SpeechEvent.LeftApproach, "files/left_approach.wav")
@@ -78,7 +79,8 @@ internal class LmuWindowsWavNarratorEngine(
         }
     }
 
-    private val startSoundTypeToFile = mapOf(
+    private val startSoundTypeToFile =
+        mapOf(
         ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
         ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
     )
@@ -116,7 +118,8 @@ internal class LmuWindowsWavNarratorEngine(
         val mainSound = sounds[event] ?: return
         if (queue) {
             val previousJob = playJob
-            playJob = scope.launch(playbackParent) {
+            playJob =
+                scope.launch(playbackParent) {
                 previousJob?.join()
                 play(event, mainSound)
             }

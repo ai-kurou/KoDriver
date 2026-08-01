@@ -23,7 +23,8 @@ class TelemetryLogListViewModel internal constructor(
     private val _resetState = MutableStateFlow(ResetState())
     private val _showResetConfirmDialog = MutableStateFlow(false)
 
-    val uiState: StateFlow<TelemetryLogListUiState> = combine(
+    val uiState: StateFlow<TelemetryLogListUiState> =
+        combine(
         observeSortedTelemetryLogs(),
         _selectedLogId,
         _resetState,
@@ -53,7 +54,8 @@ class TelemetryLogListViewModel internal constructor(
     fun resetDatabase() {
         viewModelScope.launch {
             _resetState.update { it.copy(isResetting = true, resetSucceeded = null) }
-            val succeeded = try {
+            val succeeded =
+                try {
                 resetTelemetryLogDatabase()
                 true
             } catch (e: CancellationException) {

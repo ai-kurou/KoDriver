@@ -18,8 +18,10 @@ internal class JmdnsWindowsServerDiscovery(
     private val jmdnsFactory: () -> JmDNS = { JmDNS.create(InetAddress.getLocalHost()) },
 ) : WindowsServerDiscovery {
 
-    override fun discover(): Flow<List<DiscoveredServer>> = callbackFlow {
-        val instance = try {
+    override fun discover(): Flow<List<DiscoveredServer>> =
+        callbackFlow {
+        val instance =
+            try {
             jmdnsFactory()
         } catch (e: IOException) {
             close()
@@ -27,7 +29,8 @@ internal class JmdnsWindowsServerDiscovery(
         }
 
         val servers = mutableMapOf<String, DiscoveredServer>()
-        val listener = object : ServiceListener {
+        val listener =
+            object : ServiceListener {
             override fun serviceAdded(event: ServiceEvent) {
                 instance.requestServiceInfo(event.type, event.name)
             }
@@ -56,6 +59,7 @@ internal class JmdnsWindowsServerDiscovery(
     }
 }
 
-internal actual val platformWindowsServerDiscoveryModule: Module = module {
+internal actual val platformWindowsServerDiscoveryModule: Module =
+    module {
     factory<WindowsServerDiscovery> { JmdnsWindowsServerDiscovery() }
 }

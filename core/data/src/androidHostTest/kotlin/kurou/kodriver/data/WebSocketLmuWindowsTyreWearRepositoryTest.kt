@@ -43,22 +43,26 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsTyreWearRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsTyreWearRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときtyreWearStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときtyreWearStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().tyreWearStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときTyreWearDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときTyreWearDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -81,7 +85,8 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -102,17 +107,20 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
     }
 
     @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() = runTest {
+    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
+        runTest {
         val closedPort = server.port
         server.shutdown()
         fakeIpRepository.setIp("127.0.0.1")
-        val repository = WebSocketLmuWindowsTyreWearRepository(
+        val repository =
+            WebSocketLmuWindowsTyreWearRepository(
             serverIpRepository = fakeIpRepository,
             port = closedPort,
             retryDelayMs = 0L,
         )
 
-        val result = withTimeoutOrNull(300) {
+        val result =
+            withTimeoutOrNull(300) {
             repository.tyreWearStream().first()
         }
 
@@ -120,7 +128,8 @@ class WebSocketLmuWindowsTyreWearRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -164,7 +173,8 @@ private class FakeServerIpPreferencesRepositoryForTyreWear(
     }
 }
 
-private val TYRE_WEAR_JSON = """
+private val TYRE_WEAR_JSON =
+    """
     {
         "wheels": {
             "FRONT_LEFT": 0.8,

@@ -22,12 +22,14 @@ class LmuWindowsTyreWearPreferencesSerializerTest {
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() = runTest {
+    fun `書き込んだ値を読み出せる`() =
+        runTest {
         val original = LmuWindowsTyreWearPreferences(thresholdPercentage = 30)
         val output = ByteArrayOutputStream()
         LmuWindowsTyreWearPreferencesSerializer.writeTo(original, output)
 
-        val restored = LmuWindowsTyreWearPreferencesSerializer.readFrom(
+        val restored =
+            LmuWindowsTyreWearPreferencesSerializer.readFrom(
             ByteArrayInputStream(output.toByteArray()),
         )
 
@@ -35,7 +37,8 @@ class LmuWindowsTyreWearPreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列で CorruptionException が発生する`() = runTest {
+    fun `不正なバイト列で CorruptionException が発生する`() =
+        runTest {
         val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
         assertFailsWith<CorruptionException> {

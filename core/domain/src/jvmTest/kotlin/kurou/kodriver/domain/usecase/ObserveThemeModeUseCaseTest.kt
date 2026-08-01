@@ -25,7 +25,8 @@ class ObserveThemeModeUseCaseTest {
     }
 
     @Test
-    fun `テーマモードを監視できる`() = runBlocking {
+    fun `テーマモードを監視できる`() =
+        runBlocking {
         every { repository.observeThemeMode() } returns MutableStateFlow(ThemeMode.DARK)
         val useCase = ObserveThemeModeUseCase(repository)
 

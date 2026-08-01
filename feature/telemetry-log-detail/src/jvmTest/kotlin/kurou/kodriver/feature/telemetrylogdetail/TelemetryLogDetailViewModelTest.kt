@@ -40,7 +40,8 @@ class TelemetryLogDetailViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         Dispatchers.setMain(testDispatcher)
-        viewModel = TelemetryLogDetailViewModel(
+        viewModel =
+            TelemetryLogDetailViewModel(
             observeTelemetryLogDetail = ObserveTelemetryLogDetailUseCase(repository),
         )
     }
@@ -51,13 +52,15 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `uiStateの初期値は空の項目を持つ`() = runTest {
+    fun `uiStateの初期値は空の項目を持つ`() =
+        runTest {
         assertEquals(TelemetryLogDetailUiState(), viewModel.uiState.first())
         confirmVerified(repository)
     }
 
     @Test
-    fun `setLogIdでログIDを保持する`() = runTest {
+    fun `setLogIdでログIDを保持する`() =
+        runTest {
         every { repository.observeTelemetryLogDetail(10L) } returns flowOf(null)
 
         viewModel.setLogId(10)
@@ -71,7 +74,8 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `選択したログと一つ前のログのJSONを表示項目に変換する`() = runTest {
+    fun `選択したログと一つ前のログのJSONを表示項目に変換する`() =
+        runTest {
         val current = telemetryLog(id = 2L, createdAt = 200L, telemetryJson = """{"speed":120}""")
         val previous = telemetryLog(id = 1L, createdAt = 100L, telemetryJson = """{"speed":118}""")
         every { repository.observeTelemetryLogDetail(2L) } returns
@@ -82,7 +86,8 @@ class TelemetryLogDetailViewModelTest {
         assertEquals(
             TelemetryLogDetailUiState(
                 logId = 2L,
-                items = listOf(
+                items =
+                    listOf(
                     TelemetryLogDetailItemUiState(
                         title = "選択したログ",
                         telemetryJson = """{"speed":120}""",
@@ -92,7 +97,7 @@ class TelemetryLogDetailViewModelTest {
                         telemetryJson = """{"speed":118}""",
                     ),
                 ),
-            ),
+                    ),
             viewModel.uiState.first { it.items.size == 2 },
         )
         verify(exactly = 1) { repository.observeTelemetryLogDetail(2L) }
@@ -100,8 +105,10 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `ログの更新を観測する`() = runTest {
-        val detailFlow = MutableStateFlow(
+    fun `ログの更新を観測する`() =
+        runTest {
+        val detailFlow =
+            MutableStateFlow(
             TelemetryLogDetail(
                 current = telemetryLog(id = 1L, createdAt = 100L, telemetryJson = """{"speed":118}"""),
                 previous = null,
@@ -136,7 +143,8 @@ class TelemetryLogDetailViewModelTest {
     }
 
     @Test
-    fun `選択したログが存在しない場合は項目を空にする`() = runTest {
+    fun `選択したログが存在しない場合は項目を空にする`() =
+        runTest {
         every { repository.observeTelemetryLogDetail(999L) } returns flowOf(null)
 
         viewModel.setLogId(999L)

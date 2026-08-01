@@ -36,17 +36,19 @@ internal class AceWindowsConnectionViewModel(
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<AceWindowsConnectionUiState> = observeSelectedSimulator()
+    val uiState: StateFlow<AceWindowsConnectionUiState> =
+        observeSelectedSimulator()
         .flatMapLatest { simulator ->
             if (simulator is Simulator.AceWindows) {
                 observeAceWindowsConnection().map { state ->
                     AceWindowsConnectionUiState(
-                        connectionStatus = if (state.isConnected) {
+                        connectionStatus =
+                            if (state.isConnected) {
                             AceWindowsConnectionStatus.CONNECTED
                         } else {
                             AceWindowsConnectionStatus.DISCONNECTED
                         },
-                        fuelRemainingPercent = state.fuel?.remainingPercent,
+                            fuelRemainingPercent = state.fuel?.remainingPercent,
                     )
                 }
             } else {

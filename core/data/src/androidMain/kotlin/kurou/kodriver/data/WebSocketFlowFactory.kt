@@ -24,7 +24,8 @@ internal fun <T> HttpClient.webSocketFlow(
     path: String,
     retryDelayMs: Long,
     decode: (String) -> T,
-): Flow<T> = flow {
+): Flow<T> =
+    flow {
     while (true) {
         try {
             webSocket(host = host, port = port, path = path) {

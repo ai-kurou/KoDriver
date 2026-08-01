@@ -22,7 +22,8 @@ class AceWindowsFuelRepositoryImplTest {
     )
 
     @Test
-    fun `reader が open 済みのときデータを emit する`() = runBlocking<Unit> {
+    fun `reader が open 済みのときデータを emit する`() =
+        runBlocking<Unit> {
         val fake = FakeSharedMemoryReader(initialOpen = true)
         val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
@@ -30,7 +31,8 @@ class AceWindowsFuelRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できるとき isConnected は true を返す`() = runBlocking {
+    fun `reader が open できるとき isConnected は true を返す`() =
+        runBlocking {
         val fake = FakeSharedMemoryReader(openResults = listOf(true))
         val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
@@ -38,7 +40,8 @@ class AceWindowsFuelRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できないとき isConnected は false を返す`() = runBlocking {
+    fun `reader が open できないとき isConnected は false を返す`() =
+        runBlocking {
         val fake = FakeSharedMemoryReader(openResults = listOf(false))
         val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 

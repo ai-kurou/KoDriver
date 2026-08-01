@@ -32,7 +32,8 @@ class AppScreenViewModel(
 
     private val _hasAppUpdate = MutableStateFlow(false)
 
-    val uiState: StateFlow<AppScreenUiState> = combine(
+    val uiState: StateFlow<AppScreenUiState> =
+        combine(
         _hasAppUpdate,
         observeKeepScreenOn(),
         observeExitConfirmationEnabled(),

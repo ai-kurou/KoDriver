@@ -18,7 +18,8 @@ import kotlin.test.assertNull
 
 class TelemetryLogRepositoryImplTest {
     @Test
-    fun `saveTelemetryLogはEntityへ変換して保存する`() = runTest {
+    fun `saveTelemetryLogはEntityへ変換して保存する`() =
+        runTest {
         val dao = FakeTelemetryLogDao()
         val repository = TelemetryLogRepositoryImpl(dao)
 
@@ -43,8 +44,10 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
-    fun `deleteAllTelemetryLogsは全てのログを削除する`() = runTest {
-        val dao = FakeTelemetryLogDao(
+    fun `deleteAllTelemetryLogsは全てのログを削除する`() =
+        runTest {
+        val dao =
+            FakeTelemetryLogDao(
             initialLogs = listOf(telemetryLogEntity(id = 1L, createdAt = 1000L)),
         )
         val repository = TelemetryLogRepositoryImpl(dao)
@@ -55,9 +58,12 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
-    fun `observeTelemetryLogsはDomainへ変換して観測する`() = runTest {
-        val dao = FakeTelemetryLogDao(
-            initialLogs = listOf(
+    fun `observeTelemetryLogsはDomainへ変換して観測する`() =
+        runTest {
+        val dao =
+            FakeTelemetryLogDao(
+            initialLogs =
+                listOf(
                 TelemetryLogEntity(
                     id = 1L,
                     createdAt = 2000L,
@@ -66,7 +72,7 @@ class TelemetryLogRepositoryImplTest {
                     telemetryJson = """{"currentLap":2}""",
                 ),
             ),
-        )
+                )
         val repository = TelemetryLogRepositoryImpl(dao)
 
         assertEquals(
@@ -84,11 +90,13 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
-    fun `observeTelemetryLogDetailは指定idのログとその一つ前のログをDomainへ変換して観測する`() = runTest {
+    fun `observeTelemetryLogDetailは指定idのログとその一つ前のログをDomainへ変換して観測する`() =
+        runTest {
         val latest = telemetryLogEntity(id = 4L, createdAt = 3000L)
         val current = telemetryLogEntity(id = 3L, createdAt = 2000L)
         val previous = telemetryLogEntity(id = 2L, createdAt = 1000L)
-        val dao = FakeTelemetryLogDao(
+        val dao =
+            FakeTelemetryLogDao(
             initialLogs = listOf(previous, current, latest),
         )
         val repository = TelemetryLogRepositoryImpl(dao)
@@ -103,11 +111,13 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
-    fun `observeTelemetryLogDetailは同じcreatedAtの場合idが小さい直近ログをpreviousとして観測する`() = runTest {
+    fun `observeTelemetryLogDetailは同じcreatedAtの場合idが小さい直近ログをpreviousとして観測する`() =
+        runTest {
         val latest = telemetryLogEntity(id = 4L, createdAt = 2000L)
         val current = telemetryLogEntity(id = 3L, createdAt = 2000L)
         val previous = telemetryLogEntity(id = 2L, createdAt = 2000L)
-        val dao = FakeTelemetryLogDao(
+        val dao =
+            FakeTelemetryLogDao(
             initialLogs = listOf(previous, current, latest),
         )
         val repository = TelemetryLogRepositoryImpl(dao)
@@ -122,14 +132,17 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
-    fun `observeTelemetryLogDetailは指定idのログが最も古い場合previousにnullを返す`() = runTest {
+    fun `observeTelemetryLogDetailは指定idのログが最も古い場合previousにnullを返す`() =
+        runTest {
         val current = telemetryLogEntity(id = 1L, createdAt = 1000L)
-        val dao = FakeTelemetryLogDao(
-            initialLogs = listOf(
+        val dao =
+            FakeTelemetryLogDao(
+            initialLogs =
+                listOf(
                 current,
                 telemetryLogEntity(id = 2L, createdAt = 2000L),
             ),
-        )
+                )
         val repository = TelemetryLogRepositoryImpl(dao)
 
         assertEquals(
@@ -142,8 +155,10 @@ class TelemetryLogRepositoryImplTest {
     }
 
     @Test
-    fun `observeTelemetryLogDetailは指定idのログがない場合nullを返す`() = runTest {
-        val dao = FakeTelemetryLogDao(
+    fun `observeTelemetryLogDetailは指定idのログがない場合nullを返す`() =
+        runTest {
+        val dao =
+            FakeTelemetryLogDao(
             initialLogs = listOf(telemetryLogEntity(id = 1L, createdAt = 1000L)),
         )
         val repository = TelemetryLogRepositoryImpl(dao)
@@ -189,7 +204,8 @@ private fun telemetryLogEntity(
     telemetryJson = """{"id":$id}""",
 )
 
-private fun TelemetryLogEntity.toDomainLog() = TelemetryLog(
+private fun TelemetryLogEntity.toDomainLog() =
+    TelemetryLog(
     id = id,
     createdAt = createdAt,
     simulator = Simulator.fromId(simulatorId) ?: error("Unknown simulatorId: $simulatorId"),

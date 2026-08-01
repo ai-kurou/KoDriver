@@ -24,14 +24,16 @@ class ReadoutStartSoundPreferencesRepositoryTest {
     }
 
     @Test
-    fun `デフォルト値は FORMULA_RADIO`() = testScope.runTest {
+    fun `デフォルト値は FORMULA_RADIO`() =
+        testScope.runTest {
         val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
         assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
     }
 
     @Test
-    fun `saveType した値を observeType で取得できる`() = testScope.runTest {
+    fun `saveType した値を observeType で取得できる`() =
+        testScope.runTest {
         val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
         repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
@@ -40,7 +42,8 @@ class ReadoutStartSoundPreferencesRepositoryTest {
     }
 
     @Test
-    fun `readout_start_sound_preferences_pb に書き込まれる`() = testScope.runTest {
+    fun `readout_start_sound_preferences_pb に書き込まれる`() =
+        testScope.runTest {
         val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
         repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE)
         repository.observeType().first()
@@ -49,7 +52,8 @@ class ReadoutStartSoundPreferencesRepositoryTest {
     }
 
     @Test
-    fun `異なる種別を連続して保存できる`() = testScope.runTest {
+    fun `異なる種別を連続して保存できる`() =
+        testScope.runTest {
         val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
         repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)

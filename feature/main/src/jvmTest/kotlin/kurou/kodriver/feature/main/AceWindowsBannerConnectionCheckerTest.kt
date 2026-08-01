@@ -26,7 +26,8 @@ class AceWindowsBannerConnectionCheckerTest {
     }
 
     @Test
-    fun `接続確認に成功するとCONNECTEDを返す`() = runTest {
+    fun `接続確認に成功するとCONNECTEDを返す`() =
+        runTest {
         coEvery { repository.isConnected() } returns true
         val checker = AceWindowsBannerConnectionChecker(CheckAceWindowsConnectionUseCase(repository))
 
@@ -38,7 +39,8 @@ class AceWindowsBannerConnectionCheckerTest {
     }
 
     @Test
-    fun `接続確認に失敗するとDISCONNECTEDを返す`() = runTest {
+    fun `接続確認に失敗するとDISCONNECTEDを返す`() =
+        runTest {
         coEvery { repository.isConnected() } returns false
         val checker = AceWindowsBannerConnectionChecker(CheckAceWindowsConnectionUseCase(repository))
 
@@ -50,7 +52,8 @@ class AceWindowsBannerConnectionCheckerTest {
     }
 
     @Test
-    fun `接続確認で例外が発生してもDISCONNECTEDとして監視を継続する`() = runTest {
+    fun `接続確認で例外が発生してもDISCONNECTEDとして監視を継続する`() =
+        runTest {
         coEvery { repository.isConnected() } throws RuntimeException("connection check failed") andThen true
         val checker = AceWindowsBannerConnectionChecker(CheckAceWindowsConnectionUseCase(repository))
 

@@ -39,17 +39,19 @@ internal class Gt7Ps5ConnectionViewModel(
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<Gt7Ps5ConnectionUiState> = observeSelectedSimulator()
+    val uiState: StateFlow<Gt7Ps5ConnectionUiState> =
+        observeSelectedSimulator()
         .flatMapLatest { simulator ->
             if (simulator is Simulator.Gt7Ps5) {
                 observeGt7Ps5Connection().map { state ->
                     Gt7Ps5ConnectionUiState(
-                        connectionStatus = if (state.isConnected) {
+                        connectionStatus =
+                            if (state.isConnected) {
                             Gt7Ps5ConnectionStatus.CONNECTED
                         } else {
                             Gt7Ps5ConnectionStatus.DISCONNECTED
                         },
-                        fuelLevel = state.telemetry?.gasLevel,
+                            fuelLevel = state.telemetry?.gasLevel,
                         fuelCapacity = state.telemetry?.gasCapacity,
                         currentLap = state.telemetry?.lapCount,
                         totalLaps = state.telemetry?.lapsInRace,

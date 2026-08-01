@@ -13,7 +13,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: Gt7Ps5RemainingFuelLapsPreferencesRepository（:core:data）、試聴用の
  *   named("gt7_ps5") の TextToSpeechEngine（:feature:gt7-ps5-narrator で登録）。
  */
-val gt7Ps5ReadoutRemainingFuelLapsDetailModule = module {
+val gt7Ps5ReadoutRemainingFuelLapsDetailModule =
+    module {
     // ViewModel（get(named "gt7_ps5") は narrator モジュールの TextToSpeechEngine を解決）
     viewModel { Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(get(), get(), get(named("gt7_ps5"))) }
 

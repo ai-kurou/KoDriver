@@ -61,7 +61,8 @@ class JvmSoundPlayer : SoundPlayer {
     private fun applyVolume(line: SourceDataLine, volume: Int) {
         if (!line.isControlSupported(FloatControl.Type.MASTER_GAIN)) return
         val gainControl = line.getControl(FloatControl.Type.MASTER_GAIN) as FloatControl
-        val gainDb = if (volume <= 0) {
+        val gainDb =
+            if (volume <= 0) {
             gainControl.minimum
         } else {
             (20.0 * kotlin.math.log10(volume / 100.0))

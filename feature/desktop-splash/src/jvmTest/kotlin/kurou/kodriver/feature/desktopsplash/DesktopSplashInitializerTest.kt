@@ -9,7 +9,8 @@ import kotlin.test.assertFailsWith
 class DesktopSplashInitializerTest {
 
     @Test
-    fun `フェーズを順に進めて最後にREADYへ遷移する`() = runTest {
+    fun `フェーズを順に進めて最後にREADYへ遷移する`() =
+        runTest {
         val progress = DesktopSplashProgress()
         val observedSteps = mutableListOf<DesktopSplashStep>()
 
@@ -26,7 +27,8 @@ class DesktopSplashInitializerTest {
     }
 
     @Test
-    fun `initializeModules が失敗した場合は例外を伝播しREADYへ遷移しない`() = runTest {
+    fun `initializeModules が失敗した場合は例外を伝播しREADYへ遷移しない`() =
+        runTest {
         val progress = DesktopSplashProgress()
 
         assertFailsWith<IllegalStateException> {
@@ -40,7 +42,8 @@ class DesktopSplashInitializerTest {
     }
 
     @Test
-    fun `startServer が失敗した場合は例外を伝播しSTARTING_SERVERで停止する`() = runTest {
+    fun `startServer が失敗した場合は例外を伝播しSTARTING_SERVERで停止する`() =
+        runTest {
         val progress = DesktopSplashProgress()
 
         assertFailsWith<IllegalStateException> {

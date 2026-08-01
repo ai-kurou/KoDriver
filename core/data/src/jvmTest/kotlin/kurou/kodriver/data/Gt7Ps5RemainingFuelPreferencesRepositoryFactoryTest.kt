@@ -23,8 +23,10 @@ class Gt7Ps5RemainingFuelPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は30パーセント`() = testScope.runTest {
-        val repository = createGt7Ps5RemainingFuelPreferencesRepository(
+    fun `デフォルト値は30パーセント`() =
+        testScope.runTest {
+        val repository =
+            createGt7Ps5RemainingFuelPreferencesRepository(
             directory = tempDir.absolutePath,
         )
 
@@ -35,8 +37,10 @@ class Gt7Ps5RemainingFuelPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `保存した燃料残量閾値を読み出せる`() = testScope.runTest {
-        val repository = createGt7Ps5RemainingFuelPreferencesRepository(
+    fun `保存した燃料残量閾値を読み出せる`() =
+        testScope.runTest {
+        val repository =
+            createGt7Ps5RemainingFuelPreferencesRepository(
             directory = tempDir.absolutePath,
         )
 

@@ -32,17 +32,20 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから4輪のカーカス温度を読み取る`() = runBlocking {
-        val reader = FakeTyreCarcassTemperatureMemoryReader(
+    fun `共有メモリから4輪のカーカス温度を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeTyreCarcassTemperatureMemoryReader(
             buildTyreCarcassTemperatureBuffer(
                 TyreCarcassTemperatureBufferConfig(
-                    temperatures = mapOf(
+                    temperatures =
+                        mapOf(
                         WheelIndex.FRONT_LEFT to 350.0,
                         WheelIndex.FRONT_RIGHT to 351.0,
                         WheelIndex.REAR_LEFT to 352.0,
                         WheelIndex.REAR_RIGHT to 353.0,
                     ),
-                ),
+                        ),
             ),
         )
         val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
@@ -56,8 +59,10 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
     }
 
     @Test
-    fun `playerIndexに応じた車両スロットからカーカス温度を読み取る`() = runBlocking {
-        val reader = FakeTyreCarcassTemperatureMemoryReader(
+    fun `playerIndexに応じた車両スロットからカーカス温度を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeTyreCarcassTemperatureMemoryReader(
             buildTyreCarcassTemperatureBuffer(
                 TyreCarcassTemperatureBufferConfig(
                     activeVehicles = 2,
@@ -74,8 +79,10 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
     }
 
     @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeTyreCarcassTemperatureMemoryReader(
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeTyreCarcassTemperatureMemoryReader(
             buildTyreCarcassTemperatureBuffer(TyreCarcassTemperatureBufferConfig(activeVehicles = 0)),
         )
         val repo = LmuWindowsTyreCarcassTemperatureRepositoryImpl(source = makeSource(reader))
@@ -89,8 +96,10 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
     }
 
     @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeTyreCarcassTemperatureMemoryReader(
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeTyreCarcassTemperatureMemoryReader(
             buildTyreCarcassTemperatureBuffer(
                 TyreCarcassTemperatureBufferConfig(activeVehicles = 1, playerIdx = 1),
             ),
@@ -106,8 +115,10 @@ class LmuWindowsTyreCarcassTemperatureRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeTyreCarcassTemperatureMemoryReader(
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+        val reader =
+            FakeTyreCarcassTemperatureMemoryReader(
             buffer = buildTyreCarcassTemperatureBuffer(),
             openResult = false,
         )

@@ -29,7 +29,8 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> = combine(
+    val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
+        combine(
         observeHighThreshold(),
         observeEnabledStates(),
         observeLowWarningPhases(),

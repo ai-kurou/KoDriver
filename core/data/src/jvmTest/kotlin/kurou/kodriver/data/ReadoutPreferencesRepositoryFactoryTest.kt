@@ -23,7 +23,8 @@ class ReadoutPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `readout設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `readout設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
 

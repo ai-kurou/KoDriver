@@ -60,11 +60,12 @@ class OtherConsoleIpDetailPaneScreenshotTest {
             KoDriverTheme {
                 Surface {
                     OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(
+                        uiState =
+                            OtherConsoleIpDetailUiState(
                             inputAddress = "192.168.1.100",
                             saveFailed = true,
                         ),
-                    )
+                            )
                 }
             }
         }

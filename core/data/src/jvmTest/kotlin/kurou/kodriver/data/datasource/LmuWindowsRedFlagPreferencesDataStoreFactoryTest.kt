@@ -22,7 +22,8 @@ class LmuWindowsRedFlagPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `LMU赤旗設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `LMU赤旗設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createLmuWindowsRedFlagPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(voiceType = "red_flag") }
 

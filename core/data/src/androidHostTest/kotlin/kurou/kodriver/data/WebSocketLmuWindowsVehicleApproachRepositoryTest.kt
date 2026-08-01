@@ -38,22 +38,26 @@ class WebSocketVehicleApproachRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsVehicleApproachRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsVehicleApproachRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときvehicleApproachStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときvehicleApproachStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().vehicleApproachStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときVehicleApproachDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときVehicleApproachDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -74,7 +78,8 @@ class WebSocketVehicleApproachRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -95,7 +100,8 @@ class WebSocketVehicleApproachRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -139,7 +145,8 @@ private class FakeServerIpPreferencesRepositoryForVehicleApproach(
     }
 }
 
-private val VEHICLE_APPROACH_JSON = """
+private val VEHICLE_APPROACH_JSON =
+    """
     {
         "sideBySideLeftVehicleIds": [3],
         "sideBySideRightVehicleIds": [],

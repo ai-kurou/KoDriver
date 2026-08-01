@@ -66,7 +66,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = telemetry,
@@ -74,7 +75,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousTelemetry = telemetry
@@ -94,7 +95,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = vehicleApproach,
@@ -102,7 +104,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousVehicleApproach = vehicleApproach
@@ -122,7 +124,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = vehicleDamage,
@@ -130,7 +133,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousVehicleDamage = vehicleDamage
@@ -150,7 +153,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = raceFlags,
@@ -158,7 +162,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousRaceFlags = raceFlags
@@ -178,7 +182,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = tyreWear,
@@ -186,7 +191,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousTyreWear = tyreWear
@@ -206,7 +211,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = remainingVirtualEnergy,
@@ -214,7 +220,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousRemainingVirtualEnergy = remainingVirtualEnergy
@@ -234,7 +240,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         tyreCarcassTemperature = tyreCarcassTemperature,
                         raceFlags = raceFlags,
@@ -243,7 +250,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         overheatState = logContext.overheatState,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
     }
@@ -261,7 +268,8 @@ internal class LmuWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildPitTimingTelemetryLogJson(
+                    telemetryJson =
+                        buildPitTimingTelemetryLogJson(
                         state = logContext.state,
                         telemetry = snapshot.telemetry,
                         virtualEnergy = snapshot.virtualEnergy,
@@ -270,7 +278,7 @@ internal class LmuWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
     }

@@ -13,7 +13,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory(
         "kodriver_lmu_windows_vehicle_approach_preferences_repository_factory_test",
     ).toFile()
@@ -25,14 +26,16 @@ class LmuWindowsVehicleApproachPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は skipFirstLap が true`() = testScope.runTest {
+    fun `デフォルト値は skipFirstLap が true`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleApproachPreferencesRepository(tempDir.absolutePath)
 
         assertEquals(true, repository.observeSkipFirstLap().first())
     }
 
     @Test
-    fun `保存した skipFirstLap を読み出せる`() = testScope.runTest {
+    fun `保存した skipFirstLap を読み出せる`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleApproachPreferencesRepository(tempDir.absolutePath)
 
         repository.saveSkipFirstLap(true)

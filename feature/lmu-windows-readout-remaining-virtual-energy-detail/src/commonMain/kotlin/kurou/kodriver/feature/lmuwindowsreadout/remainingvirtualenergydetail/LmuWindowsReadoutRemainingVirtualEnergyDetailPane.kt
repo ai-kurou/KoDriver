@@ -64,10 +64,11 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_virtual_energy_description),
         )

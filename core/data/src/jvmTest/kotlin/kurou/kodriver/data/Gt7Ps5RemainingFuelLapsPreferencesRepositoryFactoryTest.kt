@@ -14,7 +14,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory(
         "kodriver_gt7_remaining_fuel_laps_preferences_repository_factory_test",
     ).toFile()
@@ -26,8 +27,10 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は3周`() = testScope.runTest {
-        val repository = createGt7Ps5RemainingFuelLapsPreferencesRepository(
+    fun `デフォルト値は3周`() =
+        testScope.runTest {
+        val repository =
+            createGt7Ps5RemainingFuelLapsPreferencesRepository(
             directory = tempDir.absolutePath,
         )
 
@@ -35,8 +38,10 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `保存した燃料残り周回数を読み出せる`() = testScope.runTest {
-        val repository = createGt7Ps5RemainingFuelLapsPreferencesRepository(
+    fun `保存した燃料残り周回数を読み出せる`() =
+        testScope.runTest {
+        val repository =
+            createGt7Ps5RemainingFuelLapsPreferencesRepository(
             directory = tempDir.absolutePath,
         )
 

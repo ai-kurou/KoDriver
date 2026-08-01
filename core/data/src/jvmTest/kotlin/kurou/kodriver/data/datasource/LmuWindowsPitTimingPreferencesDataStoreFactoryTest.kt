@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsPitTimingPreferencesDataStoreFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory("kodriver_lmu_windows_pit_timing_preferences_factory_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +24,8 @@ class LmuWindowsPitTimingPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `lmu_windows_pit_timing_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `lmu_windows_pit_timing_preferences設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createLmuWindowsPitTimingPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(virtualEnergyLaps = 5) }
 

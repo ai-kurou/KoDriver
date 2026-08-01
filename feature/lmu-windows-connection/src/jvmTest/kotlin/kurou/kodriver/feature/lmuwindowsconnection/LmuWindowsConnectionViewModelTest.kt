@@ -52,13 +52,15 @@ class LmuWindowsConnectionViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsConnectionViewModel(
+    private fun createViewModel() =
+        LmuWindowsConnectionViewModel(
         checkLmuWindowsConnection = CheckLmuWindowsConnectionUseCase(connectionRepository),
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     )
 
     @Test
-    fun `LMU選択時に接続確認結果を反映する`() = runTest {
+    fun `LMU選択時に接続確認結果を反映する`() =
+        runTest {
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
         val viewModel = createViewModel()
@@ -74,7 +76,8 @@ class LmuWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `LMU非選択時は未接続・未確認状態を返す`() = runTest {
+    fun `LMU非選択時は未接続・未確認状態を返す`() =
+        runTest {
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         val viewModel = createViewModel()
@@ -90,7 +93,8 @@ class LmuWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `LMU選択前は未確認状態とする`() = runTest {
+    fun `LMU選択前は未確認状態とする`() =
+        runTest {
         coEvery { connectionRepository.isConnected() } returns false
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         val viewModel = createViewModel()
@@ -102,7 +106,8 @@ class LmuWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `LMU選択に切り替えると接続確認を開始する`() = runTest {
+    fun `LMU選択に切り替えると接続確認を開始する`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -126,7 +131,8 @@ class LmuWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() = runTest {
+    fun `LMUから別シミュレータへ切り替えると未接続にリセットされる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -146,7 +152,8 @@ class LmuWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `LMU選択時に一定間隔で接続状態を更新する`() = runTest {
+    fun `LMU選択時に一定間隔で接続状態を更新する`() =
+        runTest {
         val connectedFlow = MutableStateFlow(false)
         coEvery { connectionRepository.isConnected() } answers { connectedFlow.value }
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
@@ -167,7 +174,8 @@ class LmuWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
+    fun `接続確認で例外が発生しても未接続として監視を継続する`() =
+        runTest {
         val connectedFlow = MutableStateFlow(false)
         var remainingFailures = 1
         coEvery { connectionRepository.isConnected() } answers {

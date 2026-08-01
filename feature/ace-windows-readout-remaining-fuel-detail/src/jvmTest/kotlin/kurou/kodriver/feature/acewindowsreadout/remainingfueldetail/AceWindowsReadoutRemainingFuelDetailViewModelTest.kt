@@ -51,14 +51,16 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = AceWindowsReadoutRemainingFuelDetailViewModel(
+    private fun createViewModel() =
+        AceWindowsReadoutRemainingFuelDetailViewModel(
         observeThresholdPercentage = ObserveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
         saveThresholdPercentage = SaveAceWindowsRemainingFuelThresholdPercentageUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() = runTest {
+    fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
+        runTest {
         every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
         val viewModel = createViewModel()
 
@@ -71,7 +73,8 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
     }
 
     @Test
-    fun `onThresholdChangedを呼ぶとuiStateのthresholdPercentageが更新される`() = runTest {
+    fun `onThresholdChangedを呼ぶとuiStateのthresholdPercentageが更新される`() =
+        runTest {
         val thresholdFlow = MutableStateFlow(30)
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
@@ -86,7 +89,8 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
     }
 
     @Test
-    fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値30に戻る`() = runTest {
+    fun `onThresholdResetを呼ぶとthresholdPercentageがデフォルト値30に戻る`() =
+        runTest {
         val thresholdFlow = MutableStateFlow(30)
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         coEvery { repository.saveThresholdPercentage(50) } answers { thresholdFlow.update { 50 } }
@@ -104,7 +108,8 @@ class AceWindowsReadoutRemainingFuelDetailViewModelTest {
     }
 
     @Test
-    fun `onPreviewClickedを呼ぶと残り燃料警告イベントが再生される`() = runTest {
+    fun `onPreviewClickedを呼ぶと残り燃料警告イベントが再生される`() =
+        runTest {
         every { repository.observeThresholdPercentage() } returns MutableStateFlow(30)
         val viewModel = createViewModel()
 

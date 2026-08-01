@@ -45,7 +45,8 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す・保存済みの値を返す`() = runBlocking {
+    fun `初期値を返す・保存済みの値を返す`() =
+        runBlocking {
         val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
 
@@ -62,8 +63,10 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
     }
 
     @Test
-    fun `一部のフェーズだけ保存されている場合は保存済みの値がデフォルトより優先される`() = runBlocking {
-        val repo = createLmuWindowsTyreTemperaturePreferencesRepository(
+    fun `一部のフェーズだけ保存されている場合は保存済みの値がデフォルトより優先される`() =
+        runBlocking {
+        val repo =
+            createLmuWindowsTyreTemperaturePreferencesRepository(
             repository,
             initialLowWarningPhases = mapOf(SessionPhase.GARAGE to true),
         )

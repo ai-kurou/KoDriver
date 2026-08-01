@@ -15,14 +15,16 @@ import java.nio.ByteBuffer
 internal class AceWindowsGraphicsSharedMemorySource(
     pollingIntervalMs: Long = 16L,
     reconnectIntervalMs: Long = 1_000L,
-    internal val reader: SharedMemoryReader = WindowsSharedMemoryReader(
+    internal val reader: SharedMemoryReader =
+        WindowsSharedMemoryReader(
         segmentName = "Local\\acevo_pmf_graphics",
         sizeBytes = GRAPHICS_SEGMENT_SIZE_BYTES,
     ),
-    private val currentTimeMs: () -> Long = System::currentTimeMillis,
+        private val currentTimeMs: () -> Long = System::currentTimeMillis,
     scope: CoroutineScope,
 ) {
-    private val pollingSource = SharedMemoryPollingSource(
+    private val pollingSource =
+        SharedMemoryPollingSource(
         reader = reader,
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
@@ -33,7 +35,8 @@ internal class AceWindowsGraphicsSharedMemorySource(
 
     val bufferFlow: Flow<ByteBuffer> = pollingSource.bufferFlow
 
-    suspend fun isConnected(): Boolean = pollingSource.withReaderLock { reader ->
+    suspend fun isConnected(): Boolean =
+        pollingSource.withReaderLock { reader ->
         // LmuWindowsSharedMemorySource と同様、他プロセスの参照によってセクションが
         // 生き残っているケースに対応するため、まず close してから開き直す。
         reader.close()

@@ -36,7 +36,8 @@ class WebSocketFlowFactoryTest {
     }
 
     @Test
-    fun `有効なフレームを受信したときdecodeした値をemitする`() = runTest {
+    fun `有効なフレームを受信したときdecodeした値をemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -49,7 +50,8 @@ class WebSocketFlowFactoryTest {
         )
         val client = createWebSocketHttpClient()
 
-        val result = client
+        val result =
+            client
             .webSocketFlow(
             host = "127.0.0.1",
             port = server.port,
@@ -63,7 +65,8 @@ class WebSocketFlowFactoryTest {
     }
 
     @Test
-    fun `decodeがSerializationExceptionを投げたフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `decodeがSerializationExceptionを投げたフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -77,7 +80,8 @@ class WebSocketFlowFactoryTest {
         )
         val client = createWebSocketHttpClient()
 
-        val result = client
+        val result =
+            client
             .webSocketFlow(
             host = "127.0.0.1",
             port = server.port,
@@ -91,7 +95,8 @@ class WebSocketFlowFactoryTest {
     }
 
     @Test
-    fun `接続に失敗した場合はretryDelayMs後にリトライして再接続する`() = runTest {
+    fun `接続に失敗した場合はretryDelayMs後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -113,7 +118,8 @@ class WebSocketFlowFactoryTest {
         )
         val client = createWebSocketHttpClient()
 
-        val result = client
+        val result =
+            client
             .webSocketFlow(
             host = "127.0.0.1",
             port = server.port,
@@ -127,13 +133,15 @@ class WebSocketFlowFactoryTest {
     }
 
     @Test
-    fun `接続自体が例外を投げてもクラッシュせずリトライを継続する`() = runTest {
+    fun `接続自体が例外を投げてもクラッシュせずリトライを継続する`() =
+        runTest {
         val unusedPort = server.port
         server.shutdown()
         val client = createWebSocketHttpClient()
         var emitted = false
 
-        val job = launch {
+        val job =
+            launch {
             client
                 .webSocketFlow(
                 host = "127.0.0.1",

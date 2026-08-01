@@ -21,7 +21,8 @@ class SaveReadoutStartSoundTypeUseCaseTest {
     }
 
     @Test
-    fun `読み上げ開始音種別を保存できる`() = runBlocking {
+    fun `読み上げ開始音種別を保存できる`() =
+        runBlocking {
         SaveReadoutStartSoundTypeUseCase(repository)(ReadoutStartSoundType.FORMULA_RADIO)
 
         coVerify(exactly = 1) { repository.saveType(ReadoutStartSoundType.FORMULA_RADIO) }

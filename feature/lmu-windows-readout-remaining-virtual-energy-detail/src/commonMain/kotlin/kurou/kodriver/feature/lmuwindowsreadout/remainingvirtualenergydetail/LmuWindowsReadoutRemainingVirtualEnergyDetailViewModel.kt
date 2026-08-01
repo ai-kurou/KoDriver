@@ -19,7 +19,8 @@ internal class LmuWindowsReadoutRemainingVirtualEnergyDetailViewModel(
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<LmuWindowsReadoutRemainingVirtualEnergyDetailUiState> = observeThresholdPercentage()
+    val uiState: StateFlow<LmuWindowsReadoutRemainingVirtualEnergyDetailUiState> =
+        observeThresholdPercentage()
         .map { LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(thresholdPercentage = it) }
         .stateIn(
             viewModelScope,

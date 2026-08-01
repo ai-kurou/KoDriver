@@ -42,11 +42,12 @@ class OtherReadoutStartSoundDetailDialogContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherReadoutStartSoundDetailDialogContent(
-                            uiState = OtherReadoutStartSoundDetailUiState(
+                            uiState =
+                                OtherReadoutStartSoundDetailUiState(
                                 selectedType = ReadoutStartSoundType.FORMULA_RADIO,
                                 pendingType = ReadoutStartSoundType.ELECTRONIC_NOISE,
                             ),
-                        )
+                                )
                     }
                 }
             }

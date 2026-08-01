@@ -54,7 +54,8 @@ class JmdnsWindowsServerDiscoveryTest {
     }
 
     @Test
-    fun `サービスが解決されるとホスト名とIPアドレスを含むリストを送信する`() = runTest(testDispatcher) {
+    fun `サービスが解決されるとホスト名とIPアドレスを含むリストを送信する`() =
+        runTest(testDispatcher) {
         val listenerSlot = slot<ServiceListener>()
         every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
@@ -73,7 +74,8 @@ class JmdnsWindowsServerDiscoveryTest {
     }
 
     @Test
-    fun `サービスが削除されると一覧から除かれる`() = runTest(testDispatcher) {
+    fun `サービスが削除されると一覧から除かれる`() =
+        runTest(testDispatcher) {
         val listenerSlot = slot<ServiceListener>()
         every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
@@ -95,7 +97,8 @@ class JmdnsWindowsServerDiscoveryTest {
     }
 
     @Test
-    fun `serviceAddedでrequestServiceInfoが呼ばれる`() = runTest(testDispatcher) {
+    fun `serviceAddedでrequestServiceInfoが呼ばれる`() =
+        runTest(testDispatcher) {
         val listenerSlot = slot<ServiceListener>()
         every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
@@ -115,7 +118,8 @@ class JmdnsWindowsServerDiscoveryTest {
     }
 
     @Test
-    fun `キャンセルされるとリスナーの解除とJmDNSのクローズが行われる`() = runTest(testDispatcher) {
+    fun `キャンセルされるとリスナーの解除とJmDNSのクローズが行われる`() =
+        runTest(testDispatcher) {
         val listenerSlot = slot<ServiceListener>()
         every { jmdns.addServiceListener(SERVICE_TYPE, capture(listenerSlot)) } returns Unit
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
@@ -130,7 +134,8 @@ class JmdnsWindowsServerDiscoveryTest {
     }
 
     @Test
-    fun `JmDNSの生成に失敗しても例外を伝播せず空のフローになる`() = runTest(testDispatcher) {
+    fun `JmDNSの生成に失敗しても例外を伝播せず空のフローになる`() =
+        runTest(testDispatcher) {
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { throw IOException("network unavailable") })
 
         val results = mutableListOf<List<DiscoveredServer>>()
@@ -140,7 +145,8 @@ class JmdnsWindowsServerDiscoveryTest {
     }
 
     @Test
-    fun `キャンセル時にJmDNSのクローズが失敗しても例外を伝播しない`() = runTest(testDispatcher) {
+    fun `キャンセル時にJmDNSのクローズが失敗しても例外を伝播しない`() =
+        runTest(testDispatcher) {
         every { jmdns.close() } throws IOException("close failed")
         val discovery = JmdnsWindowsServerDiscovery(jmdnsFactory = { jmdns })
 

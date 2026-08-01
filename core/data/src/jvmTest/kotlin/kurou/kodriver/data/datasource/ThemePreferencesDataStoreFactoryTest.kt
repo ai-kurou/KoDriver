@@ -17,7 +17,8 @@ class ThemePreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `theme_preferences_pbを作成してデフォルト値を読み込める`() = runBlocking {
+    fun `theme_preferences_pbを作成してデフォルト値を読み込める`() =
+        runBlocking {
         val dataStore = createThemePreferencesDataStore(tempDir.absolutePath)
 
         assertEquals("system", dataStore.data.first().mode)

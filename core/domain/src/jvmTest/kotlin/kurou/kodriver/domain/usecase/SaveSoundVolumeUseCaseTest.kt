@@ -23,7 +23,8 @@ class SaveSoundVolumeUseCaseTest {
     }
 
     @Test
-    fun `0から100の値を保存できる`() = runBlocking {
+    fun `0から100の値を保存できる`() =
+        runBlocking {
         val useCase = SaveSoundVolumeUseCase(repository)
 
         useCase(SOUND_VOLUME_MIN)
@@ -37,14 +38,16 @@ class SaveSoundVolumeUseCaseTest {
     }
 
     @Test
-    fun `0未満はIllegalArgumentExceptionをスローする`() = runBlocking {
+    fun `0未満はIllegalArgumentExceptionをスローする`() =
+        runBlocking {
         assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(SOUND_VOLUME_MIN - 1) }
 
         confirmVerified(repository)
     }
 
     @Test
-    fun `100超はIllegalArgumentExceptionをスローする`() = runBlocking {
+    fun `100超はIllegalArgumentExceptionをスローする`() =
+        runBlocking {
         assertFailsWith<IllegalArgumentException> { SaveSoundVolumeUseCase(repository)(SOUND_VOLUME_MAX + 1) }
 
         confirmVerified(repository)

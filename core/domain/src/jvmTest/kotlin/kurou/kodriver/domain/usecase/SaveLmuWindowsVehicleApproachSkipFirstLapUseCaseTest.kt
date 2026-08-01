@@ -20,7 +20,8 @@ class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
     }
 
     @Test
-    fun `スキップ設定を保存できる`() = runBlocking {
+    fun `スキップ設定を保存できる`() =
+        runBlocking {
         SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)(false)
 
         coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }

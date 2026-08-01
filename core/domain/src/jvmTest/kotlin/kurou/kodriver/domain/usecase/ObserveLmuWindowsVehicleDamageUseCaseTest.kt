@@ -28,7 +28,8 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
     }
 
     @Test
-    fun `invoke はリポジトリの vehicleDamageStream を返す`() = runBlocking {
+    fun `invoke はリポジトリの vehicleDamageStream を返す`() =
+        runBlocking {
         val expected = LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 12.3)
         every { repo.vehicleDamageStream() } returns flowOf(expected)
         val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
@@ -41,7 +42,8 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
     }
 
     @Test
-    fun `invoke は空のフローをそのまま返す`() = runBlocking {
+    fun `invoke は空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.vehicleDamageStream() } returns flowOf()
         val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
 
@@ -53,7 +55,8 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = LmuWindowsVehicleDamageData(overheating = false, partDetached = false, lastImpactMagnitude = 0.0)
         val data2 = LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 5.0)
         val data3 = LmuWindowsVehicleDamageData(overheating = true, partDetached = true, lastImpactMagnitude = 20.0)

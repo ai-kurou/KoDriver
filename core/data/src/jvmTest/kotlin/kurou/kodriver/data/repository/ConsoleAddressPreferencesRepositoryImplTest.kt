@@ -23,12 +23,14 @@ class ConsoleAddressPreferencesRepositoryImplTest {
         tempDir.deleteRecursively()
     }
 
-    private fun createRepository() = ConsoleAddressPreferencesRepositoryImpl(
+    private fun createRepository() =
+        ConsoleAddressPreferencesRepositoryImpl(
         dataStore = createConsoleAddressDataStore(tempDir.absolutePath),
     )
 
     @Test
-    fun `アドレスを保存して取得できる`() = testScope.runTest {
+    fun `アドレスを保存して取得できる`() =
+        testScope.runTest {
         val repository = createRepository()
         repository.saveConsoleAddress("192.168.1.100")
 
@@ -36,14 +38,16 @@ class ConsoleAddressPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `未保存の場合はnullを返す`() = testScope.runTest {
+    fun `未保存の場合はnullを返す`() =
+        testScope.runTest {
         val repository = createRepository()
 
         assertNull(repository.consoleAddress().first())
     }
 
     @Test
-    fun `アドレスを上書き保存できる`() = testScope.runTest {
+    fun `アドレスを上書き保存できる`() =
+        testScope.runTest {
         val repository = createRepository()
         repository.saveConsoleAddress("192.168.1.1")
         repository.saveConsoleAddress("10.0.0.50")
@@ -52,7 +56,8 @@ class ConsoleAddressPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `console_address_pbに書き込まれる`() = testScope.runTest {
+    fun `console_address_pbに書き込まれる`() =
+        testScope.runTest {
         val repository = createRepository()
         repository.saveConsoleAddress("192.168.0.1")
 

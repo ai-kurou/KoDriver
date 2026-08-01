@@ -24,7 +24,8 @@ class Gt7Ps5RepositoryImplTest {
     }
 
     @Test
-    fun `telemetryStreamはパケットをGt7Ps5TelemetryDataに変換して流す`() = runBlocking {
+    fun `telemetryStreamはパケットをGt7Ps5TelemetryDataに変換して流す`() =
+        runBlocking {
         val packet = makePacket(lapCount = 3, lapsInRace = 10)
         val source = FakeGt7Ps5PacketSource(flowOf(packet))
         val repo = Gt7Ps5RepositoryImpl(source)
@@ -35,7 +36,8 @@ class Gt7Ps5RepositoryImplTest {
     }
 
     @Test
-    fun `telemetryStreamは複数パケットを順番通りに流す`() = runBlocking {
+    fun `telemetryStreamは複数パケットを順番通りに流す`() =
+        runBlocking {
         val p1 = makePacket(lapCount = 1)
         val p2 = makePacket(lapCount = 2)
         val source = FakeGt7Ps5PacketSource(flowOf(p1, p2))
@@ -47,7 +49,8 @@ class Gt7Ps5RepositoryImplTest {
     }
 
     @Test
-    fun `最終パケット受信からタイムアウト未満であれば接続中と判定する`() = runBlocking {
+    fun `最終パケット受信からタイムアウト未満であれば接続中と判定する`() =
+        runBlocking {
         val now = 10_000L
         val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = now - 4_999L)
         val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { now })
@@ -56,7 +59,8 @@ class Gt7Ps5RepositoryImplTest {
     }
 
     @Test
-    fun `最終パケット受信からタイムアウト以上経過していれば未接続と判定する`() = runBlocking {
+    fun `最終パケット受信からタイムアウト以上経過していれば未接続と判定する`() =
+        runBlocking {
         val now = 10_000L
         val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = now - 5_000L)
         val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { now })
@@ -65,7 +69,8 @@ class Gt7Ps5RepositoryImplTest {
     }
 
     @Test
-    fun `パケットを一度も受信していなければ未接続と判定する`() = runBlocking {
+    fun `パケットを一度も受信していなければ未接続と判定する`() =
+        runBlocking {
         val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = 0L)
         val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { 10_000L })
 

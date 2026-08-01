@@ -21,7 +21,8 @@ class SaveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `LMU自己ベストラップ音声タイプを保存する`() = runBlocking {
+    fun `LMU自己ベストラップ音声タイプを保存する`() =
+        runBlocking {
         SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
 
         coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }

@@ -21,7 +21,8 @@ class SaveThemeModeUseCaseTest {
     }
 
     @Test
-    fun `テーマモードを保存できる`() = runBlocking {
+    fun `テーマモードを保存できる`() =
+        runBlocking {
         SaveThemeModeUseCase(repository)(ThemeMode.LIGHT)
 
         coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.LIGHT) }

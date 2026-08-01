@@ -22,7 +22,8 @@ class SaveServerIpUseCaseTest {
     }
 
     @Test
-    fun `IPアドレスを保存できる`() = runBlocking {
+    fun `IPアドレスを保存できる`() =
+        runBlocking {
         SaveServerIpUseCase(repository)("192.168.1.10")
 
         coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
@@ -30,7 +31,8 @@ class SaveServerIpUseCaseTest {
     }
 
     @Test
-    fun `上書き保存で最新のIPアドレスが返る`() = runBlocking {
+    fun `上書き保存で最新のIPアドレスが返る`() =
+        runBlocking {
         val useCase = SaveServerIpUseCase(repository)
 
         useCase("192.168.1.10")

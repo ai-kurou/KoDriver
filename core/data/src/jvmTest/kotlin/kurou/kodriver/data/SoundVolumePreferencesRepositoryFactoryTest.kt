@@ -23,14 +23,16 @@ class SoundVolumePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は100`() = testScope.runTest {
+    fun `デフォルト値は100`() =
+        testScope.runTest {
         val repository = createSoundVolumePreferencesRepository(tempDir.absolutePath)
 
         assertEquals(100, repository.volume().first())
     }
 
     @Test
-    fun `保存した音量を読み出せる`() = testScope.runTest {
+    fun `保存した音量を読み出せる`() =
+        testScope.runTest {
         val repository = createSoundVolumePreferencesRepository(tempDir.absolutePath)
         repository.saveVolume(55)
 

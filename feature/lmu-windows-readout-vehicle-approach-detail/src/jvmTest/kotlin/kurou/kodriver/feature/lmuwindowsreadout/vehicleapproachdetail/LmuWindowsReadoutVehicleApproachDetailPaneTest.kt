@@ -43,11 +43,12 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
                         startReadoutEnabled = true,
                         startReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
                     ),
-                    onStartReadoutTypeChanged = { changedType = it },
+                        onStartReadoutTypeChanged = { changedType = it },
                 )
             }
         }
@@ -174,11 +175,12 @@ class LmuWindowsReadoutVehicleApproachDetailPaneTest {
         rule.setContent {
             MaterialTheme(colorScheme = lightColorScheme()) {
                 LmuWindowsReadoutVehicleApproachDetailPaneContent(
-                    uiState = LmuWindowsReadoutVehicleApproachDetailUiState(
+                    uiState =
+                        LmuWindowsReadoutVehicleApproachDetailUiState(
                         sustainedReadoutEnabled = true,
                         sustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
                     ),
-                    onSustainedReadoutTypeChanged = { changedType = it },
+                        onSustainedReadoutTypeChanged = { changedType = it },
                 )
             }
         }

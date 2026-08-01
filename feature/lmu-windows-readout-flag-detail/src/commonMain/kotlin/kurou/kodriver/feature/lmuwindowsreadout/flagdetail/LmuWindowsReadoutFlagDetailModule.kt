@@ -16,7 +16,8 @@ import org.koin.dsl.module
  *   （:core:data）、試聴用の named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator
  *   で登録）。
  */
-val lmuWindowsReadoutFlagDetailModule = module {
+val lmuWindowsReadoutFlagDetailModule =
+    module {
     // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
     viewModel { LmuWindowsReadoutFlagDetailViewModel(get(), get(), get(), get(), get(named("lmu_windows"))) }
 

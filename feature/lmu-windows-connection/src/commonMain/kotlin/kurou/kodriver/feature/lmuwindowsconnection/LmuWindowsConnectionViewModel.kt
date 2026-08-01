@@ -37,7 +37,8 @@ internal class LmuWindowsConnectionViewModel(
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<LmuWindowsConnectionUiState> = observeSelectedSimulator()
+    val uiState: StateFlow<LmuWindowsConnectionUiState> =
+        observeSelectedSimulator()
         .flatMapLatest { simulator ->
             if (simulator is Simulator.LmuWindows) {
                 connectionCheckFlow()
@@ -50,9 +51,11 @@ internal class LmuWindowsConnectionViewModel(
             initialValue = LmuWindowsConnectionUiState(),
         )
 
-    private fun connectionCheckFlow() = flow {
+    private fun connectionCheckFlow() =
+        flow {
         while (true) {
-            val isConnected = try {
+            val isConnected =
+                try {
                 checkLmuWindowsConnection()
             } catch (e: CancellationException) {
                 throw e
@@ -61,12 +64,13 @@ internal class LmuWindowsConnectionViewModel(
             }
             emit(
                 LmuWindowsConnectionUiState(
-                    connectionStatus = if (isConnected) {
+                    connectionStatus =
+                        if (isConnected) {
                         LmuWindowsConnectionStatus.CONNECTED
                     } else {
                         LmuWindowsConnectionStatus.DISCONNECTED
                     },
-                ),
+                        ),
             )
             delay(CONNECTION_CHECK_INTERVAL_MS)
         }

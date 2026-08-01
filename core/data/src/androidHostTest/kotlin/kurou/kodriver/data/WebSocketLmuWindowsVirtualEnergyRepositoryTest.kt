@@ -42,22 +42,26 @@ class WebSocketVirtualEnergyRepositoryTest {
         }
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsVirtualEnergyRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsVirtualEnergyRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときvirtualEnergyStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときvirtualEnergyStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().virtualEnergyStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときLmuWindowsVirtualEnergyDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときLmuWindowsVirtualEnergyDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -77,7 +81,8 @@ class WebSocketVirtualEnergyRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -98,17 +103,20 @@ class WebSocketVirtualEnergyRepositoryTest {
     }
 
     @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() = runTest {
+    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
+        runTest {
         val closedPort = server.port
         server.shutdown()
         fakeIpRepository.setIp("127.0.0.1")
-        val repository = WebSocketLmuWindowsVirtualEnergyRepository(
+        val repository =
+            WebSocketLmuWindowsVirtualEnergyRepository(
             serverIpRepository = fakeIpRepository,
             port = closedPort,
             retryDelayMs = 0L,
         )
 
-        val result = withTimeoutOrNull(300) {
+        val result =
+            withTimeoutOrNull(300) {
             repository.virtualEnergyStream().first()
         }
 
@@ -116,7 +124,8 @@ class WebSocketVirtualEnergyRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -160,7 +169,8 @@ private class FakeServerIpPreferencesRepositoryForVirtualEnergy(
     }
 }
 
-private val VIRTUAL_ENERGY_JSON = """
+private val VIRTUAL_ENERGY_JSON =
+    """
     {
         "remainingRatio": 0.5
     }

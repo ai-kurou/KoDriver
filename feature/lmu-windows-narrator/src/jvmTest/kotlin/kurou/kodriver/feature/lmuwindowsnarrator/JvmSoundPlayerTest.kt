@@ -14,18 +14,21 @@ class JvmSoundPlayerTest {
     }
 
     @Test
-    fun `不正なバイト列を渡しても例外が発生しない`() = runTest {
+    fun `不正なバイト列を渡しても例外が発生しない`() =
+        runTest {
         player.play(ByteArray(0))
     }
 
     @Test
-    fun `AudioSystem が利用できない環境で play しても isPlaying は false のまま`() = runTest {
+    fun `AudioSystem が利用できない環境で play しても isPlaying は false のまま`() =
+        runTest {
         player.play(ByteArray(0))
         assertFalse(player.isPlaying)
     }
 
     @Test
-    fun `音量0を指定しても例外が発生しない`() = runTest {
+    fun `音量0を指定しても例外が発生しない`() =
+        runTest {
         player.play(ByteArray(0), volume = 0)
     }
 }

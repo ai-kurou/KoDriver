@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 
 class TelemetryLogRepositoryFactoryTest {
     @Test
-    fun `Roomに保存したテレメトリログを観測できる`() = runTest {
+    fun `Roomに保存したテレメトリログを観測できる`() =
+        runTest {
         val directory = Files.createTempDirectory("kodriver_telemetry_log_test").toFile()
         val repository = createTelemetryLogRepository(directory.absolutePath)
 

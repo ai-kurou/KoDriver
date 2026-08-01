@@ -51,7 +51,8 @@ class ConnectionBannerViewModel(
 ) : ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<ConnectionBannerVmUiState> = observeSelectedSimulator()
+    val uiState: StateFlow<ConnectionBannerVmUiState> =
+        observeSelectedSimulator()
         .flatMapLatest { simulator ->
             when (simulator) {
                 is Simulator.LmuWindows -> {
@@ -81,7 +82,8 @@ class ConnectionBannerViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun gt7ConnectionFlow(simulator: Simulator) = observeConsoleAddress()
+    private fun gt7ConnectionFlow(simulator: Simulator) =
+        observeConsoleAddress()
         .flatMapLatest { address ->
             if (address == null) {
                 flowOf(ConnectionBannerVmUiState(ConnectionBannerVmStatus.IP_NOT_CONFIGURED, simulator))
@@ -90,9 +92,11 @@ class ConnectionBannerViewModel(
             }
         }
 
-    private fun connectionCheckFlow(simulator: Simulator, check: suspend () -> Boolean) = flow {
+    private fun connectionCheckFlow(simulator: Simulator, check: suspend () -> Boolean) =
+        flow {
         while (true) {
-            val isConnected = try {
+            val isConnected =
+                try {
                 check()
             } catch (e: CancellationException) {
                 throw e
@@ -101,12 +105,13 @@ class ConnectionBannerViewModel(
             }
             emit(
                 ConnectionBannerVmUiState(
-                    connectionStatus = if (isConnected) {
+                    connectionStatus =
+                        if (isConnected) {
                         ConnectionBannerVmStatus.CONNECTED
                     } else {
                         ConnectionBannerVmStatus.DISCONNECTED
                     },
-                    selectedSimulator = simulator,
+                        selectedSimulator = simulator,
                 ),
             )
             delay(CONNECTION_CHECK_INTERVAL_MS)

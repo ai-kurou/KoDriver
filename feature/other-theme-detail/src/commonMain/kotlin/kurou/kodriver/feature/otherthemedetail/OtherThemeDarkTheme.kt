@@ -23,7 +23,8 @@ fun rememberOtherThemeDarkTheme(
 internal fun resolveDarkTheme(
     themeMode: ThemeMode,
     systemDarkTheme: Boolean,
-): Boolean = when (themeMode) {
+): Boolean =
+    when (themeMode) {
     ThemeMode.SYSTEM -> systemDarkTheme
     ThemeMode.LIGHT -> false
     ThemeMode.DARK -> true

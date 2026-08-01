@@ -30,7 +30,8 @@ class SaveQueueEnabledStateUseCaseTest {
     }
 
     @Test
-    fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
+    fun `保存するとFlowに値が反映され・上書きで更新される`() =
+        runBlocking {
         val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeQueueEnabledStates() } returns states
         coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {

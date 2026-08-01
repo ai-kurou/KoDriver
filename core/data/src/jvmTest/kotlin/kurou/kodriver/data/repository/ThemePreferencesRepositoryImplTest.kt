@@ -18,7 +18,8 @@ class ThemePreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_theme_preferences_repo_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = ThemePreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -31,19 +32,22 @@ class ThemePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `themeModeの初期値はSYSTEM`() = testScope.runTest {
+    fun `themeModeの初期値はSYSTEM`() =
+        testScope.runTest {
         assertEquals(ThemeMode.SYSTEM, repository.observeThemeMode().first())
     }
 
     @Test
-    fun `saveThemeModeで保存した値をobserveThemeModeで取得できる`() = testScope.runTest {
+    fun `saveThemeModeで保存した値をobserveThemeModeで取得できる`() =
+        testScope.runTest {
         repository.saveThemeMode(ThemeMode.LIGHT)
 
         assertEquals(ThemeMode.LIGHT, repository.observeThemeMode().first())
     }
 
     @Test
-    fun `saveThemeModeを複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+    fun `saveThemeModeを複数回呼ぶと最後の値で上書きされる`() =
+        testScope.runTest {
         repository.saveThemeMode(ThemeMode.LIGHT)
         repository.saveThemeMode(ThemeMode.DARK)
 
@@ -51,7 +55,8 @@ class ThemePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `themeModeが未知のIDのときSYSTEMを返す`() = testScope.runTest {
+    fun `themeModeが未知のIDのときSYSTEMを返す`() =
+        testScope.runTest {
         dataStore.updateData { it.copy(mode = "unknown") }
 
         assertEquals(ThemeMode.SYSTEM, repository.observeThemeMode().first())

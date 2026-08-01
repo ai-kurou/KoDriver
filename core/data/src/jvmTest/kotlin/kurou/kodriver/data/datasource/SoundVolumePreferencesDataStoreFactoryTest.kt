@@ -21,7 +21,8 @@ class SoundVolumePreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `音量設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `音量設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createSoundVolumePreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(volume = 60) }
 

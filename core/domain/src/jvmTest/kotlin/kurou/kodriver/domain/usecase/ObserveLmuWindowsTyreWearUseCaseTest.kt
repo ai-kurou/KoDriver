@@ -29,8 +29,10 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
     }
 
     @Test
-    fun `invoke はリポジトリの tyreWearStream を返す`() = runBlocking {
-        val expected = LmuWindowsTyreWearData(
+    fun `invoke はリポジトリの tyreWearStream を返す`() =
+        runBlocking {
+        val expected =
+            LmuWindowsTyreWearData(
             wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8),
         )
         every { repo.tyreWearStream() } returns flowOf(expected)
@@ -44,7 +46,8 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
     }
 
     @Test
-    fun `invoke は空のフローをそのまま返す`() = runBlocking {
+    fun `invoke は空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.tyreWearStream() } returns flowOf()
         val useCase = ObserveLmuWindowsTyreWearUseCase(repo)
 
@@ -56,7 +59,8 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 1.0))
         val data2 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 0.9))
         val data3 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8))

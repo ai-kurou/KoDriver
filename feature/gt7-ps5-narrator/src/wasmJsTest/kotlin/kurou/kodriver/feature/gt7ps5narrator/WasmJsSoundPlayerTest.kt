@@ -16,12 +16,14 @@ class WasmJsSoundPlayerTest {
     }
 
     @Test
-    fun `play を呼んでも例外が発生しない`() = runTest {
+    fun `play を呼んでも例外が発生しない`() =
+        runTest {
         player.play(ByteArray(0))
     }
 
     @Test
-    fun `音量0を指定しても例外が発生しない`() = runTest {
+    fun `音量0を指定しても例外が発生しない`() =
+        runTest {
         player.play(ByteArray(0), volume = 0)
     }
 }

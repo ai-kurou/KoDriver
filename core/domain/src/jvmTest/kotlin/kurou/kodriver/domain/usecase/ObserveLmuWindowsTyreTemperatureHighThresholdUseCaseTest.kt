@@ -27,7 +27,8 @@ class ObserveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す・保存済みの値を返す`() = runBlocking {
+    fun `初期値を返す・保存済みの値を返す`() =
+        runBlocking {
         val state = MutableStateFlow(90)
         every { repo.observeHighThresholdCelsius() } returns state
         coEvery { repo.saveHighThresholdCelsius(110) } answers { state.update { 110 } }

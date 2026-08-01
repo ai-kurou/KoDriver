@@ -42,17 +42,19 @@ private fun createReadoutPreferencesRepository(
         }
     }
     listOf(
-        "lmu_windows" to listOf(
+        "lmu_windows" to
+            listOf(
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
         ),
-        "lmu_windows" to listOf(
+            "lmu_windows" to
+                listOf(
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
         ),
-        "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
     ).forEach { (simulator, newOrder) ->
         coEvery { repository.saveReadoutOrder(simulator, newOrder) } answers {
             order.update { all -> all + (simulator to newOrder) }
@@ -72,7 +74,8 @@ class ObserveReadoutOrderUseCaseTest {
     }
 
     @Test
-    fun `初期値は空リスト・保存済みの順序を返す・シミュレーターごとに独立している`() = runBlocking {
+    fun `初期値は空リスト・保存済みの順序を返す・シミュレーターごとに独立している`() =
+        runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutOrderUseCase(repo)
 

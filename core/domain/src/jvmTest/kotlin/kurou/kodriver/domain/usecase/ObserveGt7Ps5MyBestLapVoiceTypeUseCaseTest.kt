@@ -25,7 +25,8 @@ class ObserveGt7Ps5MyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `音声タイプを監視できる`() = runBlocking {
+    fun `音声タイプを監視できる`() =
+        runBlocking {
         every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
         val useCase = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(repository)
 

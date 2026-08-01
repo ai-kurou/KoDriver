@@ -59,7 +59,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutFlagDetailViewModel(
+    private fun createViewModel() =
+        LmuWindowsReadoutFlagDetailViewModel(
         observeFlagEnabledStates = ObserveLmuWindowsFlagEnabledStatesUseCase(repository),
         observeRedFlagVoiceType = ObserveLmuWindowsRedFlagVoiceTypeUseCase(redFlagRepository),
         saveFlagEnabledState = SaveLmuWindowsFlagEnabledStateUseCase(repository),
@@ -68,7 +69,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     )
 
     @Test
-    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() = runTest {
+    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() =
+        runTest {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         every { redFlagRepository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         val viewModel = createViewModel()
@@ -85,7 +87,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     }
 
     @Test
-    fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
+    fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() =
+        runTest {
         val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeFlagEnabledStates() } returns statesFlow
         coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.BlueFlag, false) } answers {
@@ -104,7 +107,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     }
 
     @Test
-    fun `onRedFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
+    fun `onRedFlagEnabledChanged を呼ぶと UiState が更新される`() =
+        runTest {
         val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeFlagEnabledStates() } returns statesFlow
         coEvery { repository.saveFlagEnabledState(ReadoutItemKey.LmuWindows.Flag.RedFlag, false) } answers {
@@ -123,7 +127,8 @@ class LmuWindowsReadoutFlagDetailViewModelTest {
     }
 
     @Test
-    fun `onRedFlagVoiceTypeChanged を呼ぶと UiState が更新される`() = runTest {
+    fun `onRedFlagVoiceTypeChanged を呼ぶと UiState が更新される`() =
+        runTest {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         val voiceTypeFlow = MutableStateFlow(RedFlagVoiceType.SESSION_STOP)
         every { redFlagRepository.observeVoiceType() } returns voiceTypeFlow

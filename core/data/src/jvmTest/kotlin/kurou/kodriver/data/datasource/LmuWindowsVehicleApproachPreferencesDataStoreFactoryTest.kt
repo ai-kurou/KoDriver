@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachPreferencesDataStoreFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory("kodriver_lmu_windows_vehicle_approach_preferences_factory_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -23,7 +24,8 @@ class LmuWindowsVehicleApproachPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `lmu_windows_vehicle_approach_preferences設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `lmu_windows_vehicle_approach_preferences設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createLmuWindowsVehicleApproachPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(skipFirstLap = false) }
 

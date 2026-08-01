@@ -25,12 +25,14 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() = runTest {
+    fun `書き込んだ値を読み出せる`() =
+        runTest {
         val original = LmuWindowsPitTimingPreferences(virtualEnergyLaps = 5, tyreWearLaps = 1)
         val output = ByteArrayOutputStream()
         LmuWindowsPitTimingPreferencesSerializer.writeTo(original, output)
 
-        val restored = LmuWindowsPitTimingPreferencesSerializer.readFrom(
+        val restored =
+            LmuWindowsPitTimingPreferencesSerializer.readFrom(
             ByteArrayInputStream(output.toByteArray()),
         )
 
@@ -38,7 +40,8 @@ class LmuWindowsPitTimingPreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列で CorruptionException が発生する`() = runTest {
+    fun `不正なバイト列で CorruptionException が発生する`() =
+        runTest {
         val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
         assertFailsWith<CorruptionException> {

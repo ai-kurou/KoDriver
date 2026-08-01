@@ -29,15 +29,17 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
         checkedIps: MutableList<String> = mutableListOf(),
     ) = SaveServerIpWithConnectivityCheckUseCase(
         validateServerIpAddress = ValidateServerIpAddressUseCase(),
-        connectivityChecker = ServerConnectivityChecker { ip ->
+        connectivityChecker =
+            ServerConnectivityChecker { ip ->
             checkedIps += ip
             reachable
         },
-        saveServerIp = SaveServerIpUseCase(repository),
+            saveServerIp = SaveServerIpUseCase(repository),
     )
 
     @Test
-    fun `接続可能な有効IPは保存する`() = runTest {
+    fun `接続可能な有効IPは保存する`() =
+        runTest {
         coEvery { repository.saveServerIp("192.168.1.10") } returns Unit
         val checkedIps = mutableListOf<String>()
 
@@ -50,7 +52,8 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
     }
 
     @Test
-    fun `不正なIPは接続確認も保存もしない`() = runTest {
+    fun `不正なIPは接続確認も保存もしない`() =
+        runTest {
         val checkedIps = mutableListOf<String>()
 
         val result = createUseCase(checkedIps = checkedIps)("invalid")
@@ -61,7 +64,8 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
     }
 
     @Test
-    fun `接続できないIPは保存しない`() = runTest {
+    fun `接続できないIPは保存しない`() =
+        runTest {
         val result = createUseCase(reachable = false)("192.168.1.10")
 
         assertEquals(SaveServerIpResult.Unreachable, result)
@@ -69,11 +73,13 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
     }
 
     @Test
-    fun `強制保存では接続確認を行わない`() = runTest {
+    fun `強制保存では接続確認を行わない`() =
+        runTest {
         coEvery { repository.saveServerIp("192.168.1.10") } returns Unit
         val checkedIps = mutableListOf<String>()
 
-        val result = createUseCase(reachable = false, checkedIps = checkedIps)(
+        val result =
+            createUseCase(reachable = false, checkedIps = checkedIps)(
             ip = "192.168.1.10",
             checkConnectivity = false,
         )
@@ -85,7 +91,8 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
     }
 
     @Test
-    fun `保存例外はSaveFailedを返す`() = runTest {
+    fun `保存例外はSaveFailedを返す`() =
+        runTest {
         coEvery { repository.saveServerIp("192.168.1.10") } throws IOException("保存失敗")
 
         val result = createUseCase()("192.168.1.10")
@@ -96,7 +103,8 @@ class SaveServerIpWithConnectivityCheckUseCaseTest {
     }
 
     @Test
-    fun `保存中のキャンセルは再送出する`() = runTest {
+    fun `保存中のキャンセルは再送出する`() =
+        runTest {
         coEvery { repository.saveServerIp("192.168.1.10") } throws CancellationException("cancelled")
 
         assertFailsWith<CancellationException> {

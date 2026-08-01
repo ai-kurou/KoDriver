@@ -20,7 +20,8 @@ class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー予想残り周回数を保存できる`() = runBlocking {
+    fun `バーチャルエナジー予想残り周回数を保存できる`() =
+        runBlocking {
         SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)(1)
 
         coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(1) }

@@ -35,7 +35,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-private fun flagItemDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when (flag) {
+private fun flagItemDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String =
+    when (flag) {
     is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.item_flag)
     is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.item_blue_flag)
     is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.item_sector_yellow_flag)
@@ -44,7 +45,8 @@ private fun flagItemDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = 
 }
 
 @Composable
-private fun aceFlagItemDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String = when (flag) {
+private fun aceFlagItemDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String =
+    when (flag) {
     is ReadoutItemKey.AceWindows.Flag.Root -> {
         stringResource(Res.string.item_flag)
     }
@@ -130,7 +132,8 @@ private fun vehicleDamageItemDisplayName(vehicleDamage: ReadoutItemKey.LmuWindow
     }
 
 @Composable
-internal fun itemDisplayName(itemId: ReadoutItemKey): String = when (itemId) {
+internal fun itemDisplayName(itemId: ReadoutItemKey): String =
+    when (itemId) {
     is ReadoutItemKey.LmuWindows.VehicleApproach -> {
         vehicleApproachItemDisplayName(itemId)
     }

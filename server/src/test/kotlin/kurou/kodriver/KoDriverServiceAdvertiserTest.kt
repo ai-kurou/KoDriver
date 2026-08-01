@@ -26,7 +26,8 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `startするとホスト名でmDNSサービスを登録する`() {
-        val advertiser = KoDriverServiceAdvertiser(
+        val advertiser =
+            KoDriverServiceAdvertiser(
             jmdnsFactory = { jmdns },
             hostNameProvider = { "my-pc" },
         )
@@ -62,7 +63,8 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `FQDNのホスト名はドット以降を除去してサービス名に使う`() {
-        val advertiser = KoDriverServiceAdvertiser(
+        val advertiser =
+            KoDriverServiceAdvertiser(
             jmdnsFactory = { jmdns },
             hostNameProvider = { "my-pc.local" },
         )
@@ -82,7 +84,8 @@ class KoDriverServiceAdvertiserTest {
     @Test
     fun `startを2回呼ぶと前のインスタンスを解除してから新規登録する`() {
         var callCount = 0
-        val advertiser = KoDriverServiceAdvertiser(
+        val advertiser =
+            KoDriverServiceAdvertiser(
             jmdnsFactory = { if (callCount++ == 0) jmdns else secondJmdns },
             hostNameProvider = { "my-pc" },
         )
@@ -116,7 +119,8 @@ class KoDriverServiceAdvertiserTest {
 
     @Test
     fun `startでIOExceptionが発生しても例外を伝播しない`() {
-        val advertiser = KoDriverServiceAdvertiser(
+        val advertiser =
+            KoDriverServiceAdvertiser(
             jmdnsFactory = { throw IOException("network unavailable") },
             hostNameProvider = { "my-pc" },
         )

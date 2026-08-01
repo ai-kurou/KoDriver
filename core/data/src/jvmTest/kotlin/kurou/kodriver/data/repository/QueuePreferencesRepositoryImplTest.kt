@@ -19,7 +19,8 @@ class QueuePreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_queue_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = QueuePreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -32,7 +33,8 @@ class QueuePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は空Map・保存した値を返す・上書きで更新される`() = testScope.runTest {
+    fun `初期値は空Map・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
         assertTrue(repository.observeQueueEnabledStates().first().isEmpty())
 
         repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
@@ -49,7 +51,8 @@ class QueuePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `複数項目を独立して保存・取得できる`() = testScope.runTest {
+    fun `複数項目を独立して保存・取得できる`() =
+        testScope.runTest {
         repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true)
         repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.Root, false)
         repository.saveQueueEnabledState(ReadoutItemKey.Gt7Ps5.MyBestLap.Root, true)

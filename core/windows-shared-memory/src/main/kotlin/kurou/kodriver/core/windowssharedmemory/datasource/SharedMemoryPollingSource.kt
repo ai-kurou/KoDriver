@@ -27,10 +27,12 @@ class SharedMemoryPollingSource(
 ) {
     private val readerMutex = Mutex()
 
-    val bufferFlow: Flow<ByteBuffer> = flow {
+    val bufferFlow: Flow<ByteBuffer> =
+        flow {
         try {
             while (true) {
-                val buffer = readerMutex.withLock {
+                val buffer =
+                    readerMutex.withLock {
                     if (!reader.isOpen() && !reader.open()) {
                         null
                     } else {

@@ -14,7 +14,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: ConsoleAddressPreferencesRepository・Gt7Ps5UdpPortPreferencesRepository
  *   （いずれも :core:data で登録）。
  */
-val otherConsoleIpDetailModule = module {
+val otherConsoleIpDetailModule =
+    module {
     // ViewModel
     viewModelOf(::OtherConsoleIpDetailViewModel)
 

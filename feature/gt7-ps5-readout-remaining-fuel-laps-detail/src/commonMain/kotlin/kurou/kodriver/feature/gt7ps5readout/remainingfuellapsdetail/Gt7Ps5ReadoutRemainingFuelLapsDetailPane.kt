@@ -60,16 +60,18 @@ internal fun Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(
 ) {
     val sliderLabel = stringResource(Res.string.remaining_fuel_laps_slider_label)
     val resetToDefaultLabel = stringResource(Res.string.remaining_fuel_laps_reset_to_default)
-    val voiceTypeLabel = stringResource(
+    val voiceTypeLabel =
+        stringResource(
         Res.string.remaining_fuel_laps_voice_type,
         uiState.remainingFuelLaps,
     )
 
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_fuel_laps_description),
         )

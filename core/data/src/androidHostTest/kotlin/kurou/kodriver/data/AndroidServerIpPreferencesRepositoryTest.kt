@@ -26,7 +26,8 @@ class AndroidServerIpPreferencesRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("server_ip_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
+        val dataStore =
+            PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
@@ -39,7 +40,8 @@ class AndroidServerIpPreferencesRepositoryTest {
     }
 
     @Test
-    fun `serverIpは初期状態でnullを返し保存後にIPアドレスを返す`() = runTest(testDispatcher) {
+    fun `serverIpは初期状態でnullを返し保存後にIPアドレスを返す`() =
+        runTest(testDispatcher) {
         assertNull(repository.serverIp().first())
 
         repository.saveServerIp("192.168.1.10")

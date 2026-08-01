@@ -40,7 +40,8 @@ private val kodriverDirectory = "${System.getProperty("user.home")}/.kodriver"
  * 大半は `~/.kodriver` 配下の DataStore バインド。例外は AppUpdate（GitHub ネットワーク）・
  * KeepScreenOn（プラットフォーム実装）・TelemetryLog（Room DB）。Android 版は AndroidDataModule を参照。
  */
-val desktopDataModule = module {
+val desktopDataModule =
+    module {
     // 設定永続化（DataStore。ファイルは ~/.kodriver 配下）
     single<SimulatorPreferencesRepository> {
         createSimulatorPreferencesRepository(directory = kodriverDirectory)

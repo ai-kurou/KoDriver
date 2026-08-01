@@ -42,7 +42,8 @@ import org.koin.core.module.Module
  * `:app:shared` は `:core:*` へ依存できない（moduleGraphAssert の `:app:shared -X> :core:.*`）ため、
  * このリストは feature only になる。
  */
-val featureModules: List<Module> = listOf(
+val featureModules: List<Module> =
+    listOf(
     mainModule,
     mainPlatformModule,
     lmuWindowsConnectionModule,

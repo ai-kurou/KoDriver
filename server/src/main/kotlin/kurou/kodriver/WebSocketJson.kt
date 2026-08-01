@@ -10,24 +10,28 @@ import kotlinx.coroutines.selects.select
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-internal val serverJson = Json {
+internal val serverJson =
+    Json {
     encodeDefaults = true
 }
 
 internal suspend inline fun <reified T> DefaultWebSocketServerSession.sendJsonMessages(
     messages: Flow<T>,
 ) = coroutineScope {
-    val outgoingJob = launch {
+    val outgoingJob =
+        launch {
         messages.collect { message ->
             send(Frame.Text(serverJson.encodeToString(message)))
         }
     }
-    val incomingJob = launch {
+    val incomingJob =
+        launch {
         for (frame in incoming) {
             // Consume close/control frames so client initiated close cancels the sender promptly.
         }
     }
-    val closeReasonJob = launch {
+    val closeReasonJob =
+        launch {
         closeReason.await()
     }
 

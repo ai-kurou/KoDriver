@@ -23,7 +23,8 @@ import org.koin.dsl.module
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
-val debugStateDetailModule = module {
+val debugStateDetailModule =
+    module {
     viewModel {
         DebugStateDetailViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
     }

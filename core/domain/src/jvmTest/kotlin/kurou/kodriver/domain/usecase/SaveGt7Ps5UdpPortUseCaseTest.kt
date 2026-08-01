@@ -23,7 +23,8 @@ class SaveGt7Ps5UdpPortUseCaseTest {
     }
 
     @Test
-    fun `33740を保存できる`() = runBlocking {
+    fun `33740を保存できる`() =
+        runBlocking {
         SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_DEFAULT)
 
         coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_DEFAULT) }
@@ -31,7 +32,8 @@ class SaveGt7Ps5UdpPortUseCaseTest {
     }
 
     @Test
-    fun `33741を保存できる`() = runBlocking {
+    fun `33741を保存できる`() =
+        runBlocking {
         SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_ALTERNATE)
 
         coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE) }
@@ -39,7 +41,8 @@ class SaveGt7Ps5UdpPortUseCaseTest {
     }
 
     @Test
-    fun `33740でも33741でもない値はIllegalArgumentExceptionをスローする`() = runBlocking {
+    fun `33740でも33741でもない値はIllegalArgumentExceptionをスローする`() =
+        runBlocking {
         val useCase = SaveGt7Ps5UdpPortUseCase(repository)
 
         assertFailsWith<IllegalArgumentException> { useCase(33739) }

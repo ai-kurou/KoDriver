@@ -51,14 +51,16 @@ class OtherReadoutStartSoundDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = OtherReadoutStartSoundDetailViewModel(
+    private fun createViewModel() =
+        OtherReadoutStartSoundDetailViewModel(
         observeReadoutStartSoundType = ObserveReadoutStartSoundTypeUseCase(repository),
         saveReadoutStartSoundType = SaveReadoutStartSoundTypeUseCase(repository),
         previewStartSound = PreviewStartSoundUseCase(ttsEngine),
     )
 
     @Test
-    fun `保存済みの種別を UiState で返す`() = runTest(dispatcher) {
+    fun `保存済みの種別を UiState で返す`() =
+        runTest(dispatcher) {
         every { repository.observeType() } returns typeFlow
 
         val viewModel = createViewModel()
@@ -71,7 +73,8 @@ class OtherReadoutStartSoundDetailViewModelTest {
     }
 
     @Test
-    fun `onPendingTypeSelected で pendingType が更新されプレビュー再生される`() = runTest(dispatcher) {
+    fun `onPendingTypeSelected で pendingType が更新されプレビュー再生される`() =
+        runTest(dispatcher) {
         every { repository.observeType() } returns typeFlow
         every { ttsEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit
         val viewModel = createViewModel()
@@ -87,7 +90,8 @@ class OtherReadoutStartSoundDetailViewModelTest {
     }
 
     @Test
-    fun `onConfirm で pendingType がリポジトリに保存される`() = runTest(dispatcher) {
+    fun `onConfirm で pendingType がリポジトリに保存される`() =
+        runTest(dispatcher) {
         every { repository.observeType() } returns typeFlow
         every { ttsEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit
         coEvery { repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE) } answers {
@@ -108,7 +112,8 @@ class OtherReadoutStartSoundDetailViewModelTest {
     }
 
     @Test
-    fun `onConfirm は pendingType が未選択のとき何もしない`() = runTest(dispatcher) {
+    fun `onConfirm は pendingType が未選択のとき何もしない`() =
+        runTest(dispatcher) {
         every { repository.observeType() } returns typeFlow
         val viewModel = createViewModel()
 
@@ -121,7 +126,8 @@ class OtherReadoutStartSoundDetailViewModelTest {
     }
 
     @Test
-    fun `onDismiss で pendingType がリセットされる`() = runTest(dispatcher) {
+    fun `onDismiss で pendingType がリセットされる`() =
+        runTest(dispatcher) {
         every { repository.observeType() } returns typeFlow
         every { ttsEngine.previewStartSound(ReadoutStartSoundType.ELECTRONIC_NOISE) } returns Unit
         val viewModel = createViewModel()
@@ -137,7 +143,8 @@ class OtherReadoutStartSoundDetailViewModelTest {
     }
 
     @Test
-    fun `リポジトリの種別が変わると selectedType に反映される`() = runTest(dispatcher) {
+    fun `リポジトリの種別が変わると selectedType に反映される`() =
+        runTest(dispatcher) {
         every { repository.observeType() } returns typeFlow
         val viewModel = createViewModel()
 

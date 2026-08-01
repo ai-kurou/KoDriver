@@ -196,7 +196,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         }
         val carLeftRightChipLabel = stringResource(Res.string.vehicle_approach_car_left_right_chip_label)
         val leftRightApproachChipLabel = stringResource(Res.string.vehicle_approach_left_right_approach_chip_label)
-        val startReadoutTypeLabels = mapOf(
+        val startReadoutTypeLabels =
+            mapOf(
             VehicleApproachStartReadoutType.CAR_LEFT_RIGHT to carLeftRightChipLabel,
             VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH to leftRightApproachChipLabel,
         )
@@ -221,7 +222,8 @@ internal fun LmuWindowsReadoutVehicleApproachDetailPaneContent(
         )
         val keepLeftRightChipLabel = stringResource(Res.string.vehicle_approach_keep_left_right_chip_label)
         val leftRightSustainedChipLabel = stringResource(Res.string.vehicle_approach_left_right_sustained_chip_label)
-        val sustainedReadoutTypeLabels = mapOf(
+        val sustainedReadoutTypeLabels =
+            mapOf(
             VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT to keepLeftRightChipLabel,
             VehicleApproachSustainedReadoutType.LEFT_RIGHT_SUSTAINED to leftRightSustainedChipLabel,
         )

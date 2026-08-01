@@ -18,7 +18,8 @@ class ConsoleAddressDataStoreFactoryTest {
     }
 
     @Test
-    fun `console_address_pbにデータを保存できる`() = runTest {
+    fun `console_address_pbにデータを保存できる`() =
+        runTest {
         val dataStore = createConsoleAddressDataStore(tempDir.absolutePath)
         val expected = ConsoleAddressPreferences(address = "192.168.1.1")
 
@@ -28,7 +29,8 @@ class ConsoleAddressDataStoreFactoryTest {
     }
 
     @Test
-    fun `ファイルパスはdirectory配下のconsole_address_pbである`() = runTest {
+    fun `ファイルパスはdirectory配下のconsole_address_pbである`() =
+        runTest {
         val dataStore = createConsoleAddressDataStore(tempDir.absolutePath)
 
         dataStore.updateData { ConsoleAddressPreferences(address = "192.168.1.1") }

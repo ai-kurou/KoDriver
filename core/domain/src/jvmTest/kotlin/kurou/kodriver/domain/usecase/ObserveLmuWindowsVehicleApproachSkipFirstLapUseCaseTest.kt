@@ -25,7 +25,8 @@ class ObserveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
     }
 
     @Test
-    fun `保存されたskipFirstLapがtrueのときtrueを返す`() = runBlocking {
+    fun `保存されたskipFirstLapがtrueのときtrueを返す`() =
+        runBlocking {
         every { repository.observeSkipFirstLap() } returns MutableStateFlow(true)
         val useCase = ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)
 
@@ -35,7 +36,8 @@ class ObserveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
     }
 
     @Test
-    fun `保存されたskipFirstLapがfalseのときfalseを返す`() = runBlocking {
+    fun `保存されたskipFirstLapがfalseのときfalseを返す`() =
+        runBlocking {
         every { repository.observeSkipFirstLap() } returns MutableStateFlow(false)
         val useCase = ObserveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)
 

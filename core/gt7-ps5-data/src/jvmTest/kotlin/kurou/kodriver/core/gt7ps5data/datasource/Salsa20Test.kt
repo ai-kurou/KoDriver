@@ -17,7 +17,8 @@ class Salsa20Test {
 
         // First 4 bytes of the expected keystream for this key/iv (verified against spec)
         // The decrypt of zeros equals the keystream itself
-        val firstWord = (ciphertext[0].toInt() and 0xFF) or
+        val firstWord =
+            (ciphertext[0].toInt() and 0xFF) or
             ((ciphertext[1].toInt() and 0xFF) shl 8) or
             ((ciphertext[2].toInt() and 0xFF) shl 16) or
             ((ciphertext[3].toInt() and 0xFF) shl 24)

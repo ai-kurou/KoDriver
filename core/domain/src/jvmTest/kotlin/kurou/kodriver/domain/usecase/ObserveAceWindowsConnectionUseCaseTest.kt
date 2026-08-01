@@ -32,7 +32,8 @@ class ObserveAceWindowsConnectionUseCaseTest {
     }
 
     @Test
-    fun `接続確認結果と燃料データを返す`() = runBlocking {
+    fun `接続確認結果と燃料データを返す`() =
+        runBlocking {
         val fuel = AceWindowsFuelData(remainingPercent = 42.0)
         every { repository.fuelStream() } returns MutableStateFlow(fuel)
         coEvery { repository.isConnected() } returns true
@@ -48,7 +49,8 @@ class ObserveAceWindowsConnectionUseCaseTest {
     }
 
     @Test
-    fun `接続確認で例外が発生した場合は未接続として監視を継続する`() = runBlocking {
+    fun `接続確認で例外が発生した場合は未接続として監視を継続する`() =
+        runBlocking {
         every { repository.fuelStream() } returns emptyFlow()
         coEvery { repository.isConnected() } throws RuntimeException("connection check failed") andThen true
         val useCase = createUseCase(repository)
@@ -65,7 +67,8 @@ class ObserveAceWindowsConnectionUseCaseTest {
         confirmVerified(repository)
     }
 
-    private fun createUseCase(repository: AceWindowsFuelRepository) = ObserveAceWindowsConnectionUseCase(
+    private fun createUseCase(repository: AceWindowsFuelRepository) =
+        ObserveAceWindowsConnectionUseCase(
         checkAceWindowsConnection = CheckAceWindowsConnectionUseCase(repository),
         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
     )

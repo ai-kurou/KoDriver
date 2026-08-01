@@ -50,7 +50,8 @@ internal class Gt7Ps5UdpSource(
 
     override fun lastPacketReceivedAt(): Long = _lastPacketReceivedAt.get()
 
-    override val packetFlow: Flow<ByteBuffer> = combine(consoleAddressFlow, listenPortFlow) { address, port ->
+    override val packetFlow: Flow<ByteBuffer> =
+        combine(consoleAddressFlow, listenPortFlow) { address, port ->
         address to port
     }.flatMapLatest { (address, port) ->
             if (address.isNullOrBlank()) {
@@ -60,7 +61,8 @@ internal class Gt7Ps5UdpSource(
             }
         }.shareIn(scope, SharingStarted.WhileSubscribed(), replay = 0)
 
-    private fun udpPacketFlow(ps5Address: String, listenPort: Int): Flow<ByteBuffer> = flow {
+    private fun udpPacketFlow(ps5Address: String, listenPort: Int): Flow<ByteBuffer> =
+        flow {
         socketFactory(listenPort).use { socket ->
             socket.send(HEARTBEAT_PAYLOAD, ps5Address, sendPort)
             var heartbeatCounter = 0

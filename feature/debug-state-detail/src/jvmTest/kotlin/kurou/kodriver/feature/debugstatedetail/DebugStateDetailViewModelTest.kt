@@ -104,7 +104,8 @@ class DebugStateDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = DebugStateDetailViewModel(
+    private fun createViewModel() =
+        DebugStateDetailViewModel(
         observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
         observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(flagRepository),
         observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
@@ -118,7 +119,8 @@ class DebugStateDetailViewModelTest {
         saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
     )
 
-    private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) = LmuWindowsVehicleApproachData(
+    private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
+        LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = leftVehicleIds,
         sideBySideRightVehicleIds = emptySet(),
         lateralDistanceLeftMeters = if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0,
@@ -126,7 +128,8 @@ class DebugStateDetailViewModelTest {
     )
 
     @Test
-    fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() = runTest {
+    fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -166,7 +169,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `フラグ情報を購読すると uiState に反映される`() = runTest {
+    fun `フラグ情報を購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         val flagsFlow = MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.GARAGE))
         every { flagRepository.flagStream() } returns flagsFlow
@@ -207,7 +211,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `選択中シミュレータを購読すると uiState に反映される`() = runTest {
+    fun `選択中シミュレータを購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -247,7 +252,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `バーチャルエナジー情報を購読すると uiState に反映される`() = runTest {
+    fun `バーチャルエナジー情報を購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -287,7 +293,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `LMUテレメトリを購読すると uiState に反映される`() = runTest {
+    fun `LMUテレメトリを購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -327,7 +334,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `GT7テレメトリを購読すると uiState に反映される`() = runTest {
+    fun `GT7テレメトリを購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -367,7 +375,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `ACEフラッグ情報を購読すると uiState に反映される`() = runTest {
+    fun `ACEフラッグ情報を購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -408,7 +417,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `並走車両情報を購読すると uiState に反映される`() = runTest {
+    fun `並走車両情報を購読すると uiState に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -448,7 +458,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `初期状態のcardOrderはデフォルト順序`() = runTest {
+    fun `初期状態のcardOrderはデフォルト順序`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -504,7 +515,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `永続化された順序があればそれを初期値として使う`() = runTest {
+    fun `永続化された順序があればそれを初期値として使う`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -561,7 +573,8 @@ class DebugStateDetailViewModelTest {
     }
 
     @Test
-    fun `moveCardで順序を入れ替えるとuiStateへ即座に反映される`() = runTest {
+    fun `moveCardで順序を入れ替えるとuiStateへ即座に反映される`() =
+        runTest {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { flagRepository.flagStream() } returns
             MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
@@ -636,7 +649,8 @@ class DebugStateDetailViewModelTest {
     }
 }
 
-private fun sampleRaceFlags(gamePhase: SessionPhase) = LmuWindowsRaceFlagsData(
+private fun sampleRaceFlags(gamePhase: SessionPhase) =
+    LmuWindowsRaceFlagsData(
     gamePhase = gamePhase,
     yellowFlagState = SessionYellowFlagState.NONE,
     sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.CLEAR, SectorFlagState.CLEAR),
@@ -649,13 +663,15 @@ private fun sampleRaceFlags(gamePhase: SessionPhase) = LmuWindowsRaceFlagsData(
 
 private fun sampleVirtualEnergy(session: Int) = LmuWindowsVirtualEnergyData(remainingRatio = 0.5, session = session)
 
-private fun sampleLmuWindowsTelemetry(currentLap: Int) = LmuWindowsTelemetryData(
+private fun sampleLmuWindowsTelemetry(currentLap: Int) =
+    LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
     tyres = LmuWindowsTyreData(wheels = emptyMap()),
     fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-    timing = LmuWindowsTimingData(
+    timing =
+        LmuWindowsTimingData(
         currentLapTimeMs = 0L,
         lastLapTimeMs = 0L,
         bestLapTimeMs = 0L,
@@ -664,7 +680,8 @@ private fun sampleLmuWindowsTelemetry(currentLap: Int) = LmuWindowsTelemetryData
         currentLap = currentLap,
         maxLaps = 0,
     ),
-    vehicle = LmuWindowsVehicleData(
+        vehicle =
+            LmuWindowsVehicleData(
         localVelocityX = 0.0,
         localVelocityY = 0.0,
         localVelocityZ = 0.0,
@@ -672,9 +689,10 @@ private fun sampleLmuWindowsTelemetry(currentLap: Int) = LmuWindowsTelemetryData
         positionY = 0.0,
         positionZ = 0.0,
     ),
-)
+            )
 
-private fun sampleGt7Ps5Telemetry(lapCount: Int) = Gt7Ps5TelemetryData(
+private fun sampleGt7Ps5Telemetry(lapCount: Int) =
+    Gt7Ps5TelemetryData(
     lapCount = lapCount,
     lapsInRace = 0,
     bestLapTimeMs = 0,

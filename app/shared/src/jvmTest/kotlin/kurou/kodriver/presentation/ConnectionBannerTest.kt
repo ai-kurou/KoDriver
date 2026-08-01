@@ -19,12 +19,13 @@ class ConnectionBannerTest {
     fun `CONNECTED状態でメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.CONNECTED,
                     message = "接続済み",
                     iconType = ConnectionBannerIconType.NETWORK,
                 ),
-            )
+                    )
         }
 
         composeRule.onNodeWithText("接続済み").assertIsDisplayed()
@@ -34,12 +35,13 @@ class ConnectionBannerTest {
     fun `DISCONNECTED状態でメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.DISCONNECTED,
                     message = "切断中",
                     iconType = ConnectionBannerIconType.NETWORK,
                 ),
-            )
+                    )
         }
 
         composeRule.onNodeWithText("切断中").assertIsDisplayed()
@@ -49,12 +51,13 @@ class ConnectionBannerTest {
     fun `UNCHECKED状態でメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.UNCHECKED,
                     message = "確認中",
                     iconType = ConnectionBannerIconType.NETWORK,
                 ),
-            )
+                    )
         }
 
         composeRule.onNodeWithText("確認中").assertIsDisplayed()
@@ -64,12 +67,13 @@ class ConnectionBannerTest {
     fun `SIMULATORアイコンタイプかつCONNECTEDでメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.CONNECTED,
                     message = "LMU接続済み",
                     iconType = ConnectionBannerIconType.SIMULATOR,
                 ),
-            )
+                    )
         }
 
         composeRule.onNodeWithText("LMU接続済み").assertIsDisplayed()
@@ -79,12 +83,13 @@ class ConnectionBannerTest {
     fun `SIMULATORアイコンタイプかつDISCONNECTEDでメッセージが表示される`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.DISCONNECTED,
                     message = "LMU未接続",
                     iconType = ConnectionBannerIconType.SIMULATOR,
                 ),
-            )
+                    )
         }
 
         composeRule.onNodeWithText("LMU未接続").assertIsDisplayed()
@@ -95,13 +100,14 @@ class ConnectionBannerTest {
         var clicked = false
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.UNCHECKED,
                     message = "IPアドレスが未設定です",
                     iconType = ConnectionBannerIconType.NETWORK,
                     isTappable = true,
                 ),
-                onClick = { clicked = true },
+                    onClick = { clicked = true },
             )
         }
 
@@ -114,13 +120,14 @@ class ConnectionBannerTest {
     fun `isTappableがfalseの場合はタップ不可でシェブロンが表示されない`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.UNCHECKED,
                     message = "確認中",
                     iconType = ConnectionBannerIconType.NETWORK,
                     isTappable = false,
                 ),
-                onClick = {},
+                    onClick = {},
             )
         }
 
@@ -131,13 +138,14 @@ class ConnectionBannerTest {
     fun `isTappableがtrueでもonClickがnullの場合はタップ不可`() {
         composeRule.setContent {
             ConnectionBannerContent(
-                uiState = ConnectionBannerUiState(
+                uiState =
+                    ConnectionBannerUiState(
                     status = ConnectionBannerStatus.UNCHECKED,
                     message = "確認中",
                     iconType = ConnectionBannerIconType.NETWORK,
                     isTappable = true,
                 ),
-                onClick = null,
+                    onClick = null,
             )
         }
 

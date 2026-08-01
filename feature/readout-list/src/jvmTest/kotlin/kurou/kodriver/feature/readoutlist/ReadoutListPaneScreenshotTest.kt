@@ -44,10 +44,11 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
+                            uiState =
+                                ReadoutListUiState(
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                             ),
-                            onSimulatorSelected = {},
+                                onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
                             onQueueEnabledChanged = { _, _ -> },
@@ -70,13 +71,14 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
+                            uiState =
+                                ReadoutListUiState(
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                                 selectedSimulator = Simulator.LmuWindows,
                                 items = ReadoutListItemType.defaultOrder(Simulator.LmuWindows),
                                 readoutEnabledStates = enabledStates,
                             ),
-                            onSimulatorSelected = {},
+                                onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
                             onQueueEnabledChanged = { _, _ -> },
@@ -101,13 +103,14 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
+                            uiState =
+                                ReadoutListUiState(
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5),
                                 selectedSimulator = Simulator.Gt7Ps5,
                                 items = ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
                                 readoutEnabledStates = enabledStates,
                             ),
-                            onSimulatorSelected = {},
+                                onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
                             onQueueEnabledChanged = { _, _ -> },
@@ -129,12 +132,13 @@ class ReadoutListPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
                         ReadoutListPane(
-                            uiState = ReadoutListUiState(
+                            uiState =
+                                ReadoutListUiState(
                                 simulators = listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows),
                                 selectedSimulator = Simulator.AceWindows,
                                 items = ReadoutListItemType.defaultOrder(Simulator.AceWindows),
                             ),
-                            onSimulatorSelected = {},
+                                onSimulatorSelected = {},
                             onMove = { _, _ -> },
                             onReadoutEnabledChanged = { _, _ -> },
                             onQueueEnabledChanged = { _, _ -> },

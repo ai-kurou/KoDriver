@@ -27,7 +27,8 @@ class SharedMemoryPollingSourceTest {
     )
 
     @Test
-    fun `open 成功後に bufferFlow がバッファを emit する`() = runBlocking<Unit> {
+    fun `open 成功後に bufferFlow がバッファを emit する`() =
+        runBlocking<Unit> {
         val reader = FakeSharedMemoryReader(initialOpen = true)
         val source = makeSource(reader)
 
@@ -35,7 +36,8 @@ class SharedMemoryPollingSourceTest {
     }
 
     @Test
-    fun `open 失敗中は bufferFlow が emit しない`() = runBlocking {
+    fun `open 失敗中は bufferFlow が emit しない`() =
+        runBlocking {
         val reader = FakeSharedMemoryReader(initialOpen = false, openResult = false)
         val source = makeSource(reader)
         var emitCount = 0
@@ -48,7 +50,8 @@ class SharedMemoryPollingSourceTest {
     }
 
     @Test
-    fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() = runBlocking {
+    fun `bufferFlow がキャンセルされると reader の close が呼ばれる`() =
+        runBlocking {
         val reader = FakeSharedMemoryReader(initialOpen = true)
         val source = makeSource(reader)
 
@@ -62,7 +65,8 @@ class SharedMemoryPollingSourceTest {
     }
 
     @Test
-    fun `withReaderLock は reader を渡して block を実行する`() = runBlocking {
+    fun `withReaderLock は reader を渡して block を実行する`() =
+        runBlocking {
         val reader = FakeSharedMemoryReader(initialOpen = true)
         val source = makeSource(reader)
 

@@ -42,17 +42,19 @@ private fun createReadoutPreferencesRepository(
         }
     }
     listOf(
-        "lmu_windows" to listOf(
+        "lmu_windows" to
+            listOf(
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
         ),
-        "lmu_windows" to listOf(
+            "lmu_windows" to
+                listOf(
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
         ),
-        "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                "rFactor 2" to listOf(ReadoutItemKey.LmuWindows.Flag.Root),
     ).forEach { (simulator, newOrder) ->
         coEvery { repository.saveReadoutOrder(simulator, newOrder) } answers {
             order.update { all -> all + (simulator to newOrder) }
@@ -72,7 +74,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はデフォルト定義のない未知のシミュレーターでは空Mapを返す`() = runBlocking {
+    fun `初期値はデフォルト定義のない未知のシミュレーターでは空Mapを返す`() =
+        runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -82,7 +85,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `lmu_windowsは保存済みの値がなくてもデフォルト値が反映される`() = runBlocking {
+    fun `lmu_windowsは保存済みの値がなくてもデフォルト値が反映される`() =
+        runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -104,7 +108,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() = runBlocking {
+    fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() =
+        runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -121,7 +126,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `ace_windowsは保存済みの値がなくてもデフォルトのtrueが反映される`() = runBlocking {
+    fun `ace_windowsは保存済みの値がなくてもデフォルトのtrueが反映される`() =
+        runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -137,7 +143,8 @@ class ObserveReadoutEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `保存済みの値はデフォルトより優先され・シミュレーターごとに独立している`() = runBlocking {
+    fun `保存済みの値はデフォルトより優先され・シミュレーターごとに独立している`() =
+        runBlocking {
         val repo = createReadoutPreferencesRepository(repository)
         val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 

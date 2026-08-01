@@ -56,11 +56,13 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() = runBlocking {
+    fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() =
+        runBlocking {
         val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
-        val expected = mapOf<ReadoutItemKey, Boolean>(
+        val expected =
+            mapOf<ReadoutItemKey, Boolean>(
             ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to true,
             ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         )
@@ -70,13 +72,15 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
         val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
         repo.saveEnabledState(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)
 
-        val expected = mapOf<ReadoutItemKey, Boolean>(
+        val expected =
+            mapOf<ReadoutItemKey, Boolean>(
             ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning to false,
             ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning to true,
         )
@@ -89,7 +93,8 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
+    fun `デフォルトにないキーを保存した場合そのエントリも返す`() =
+        runBlocking {
         val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 

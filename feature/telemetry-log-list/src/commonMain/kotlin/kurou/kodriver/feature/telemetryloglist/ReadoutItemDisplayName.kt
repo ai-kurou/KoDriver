@@ -35,7 +35,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when (flag) {
+private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String =
+    when (flag) {
     is ReadoutItemKey.LmuWindows.Flag.Root -> stringResource(Res.string.readout_item_flag)
     is ReadoutItemKey.LmuWindows.Flag.BlueFlag -> stringResource(Res.string.readout_item_blue_flag)
     is ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag -> stringResource(Res.string.readout_item_sector_yellow_flag)
@@ -44,7 +45,8 @@ private fun flagDisplayName(flag: ReadoutItemKey.LmuWindows.Flag): String = when
 }
 
 @Composable
-private fun aceFlagDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String = when (flag) {
+private fun aceFlagDisplayName(flag: ReadoutItemKey.AceWindows.Flag): String =
+    when (flag) {
     is ReadoutItemKey.AceWindows.Flag.Root -> {
         stringResource(Res.string.readout_item_flag)
     }

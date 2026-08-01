@@ -16,7 +16,8 @@ import kotlin.test.assertFailsWith
 class ThemePreferencesSerializerTest {
 
     @Test
-    fun `readFromでThemePreferencesを復元できる`() = runTest {
+    fun `readFromでThemePreferencesを復元できる`() =
+        runTest {
         val original = ThemePreferences(mode = "dark")
         val bytes = ProtoBuf.encodeToByteArray(ThemePreferences.serializer(), original)
 
@@ -26,8 +27,10 @@ class ThemePreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列はCorruptionExceptionになる`() = runTest {
-        val exception = assertFailsWith<CorruptionException> {
+    fun `不正なバイト列はCorruptionExceptionになる`() =
+        runTest {
+        val exception =
+            assertFailsWith<CorruptionException> {
             ThemePreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(1, 2, 3)))
         }
 
@@ -35,7 +38,8 @@ class ThemePreferencesSerializerTest {
     }
 
     @Test
-    fun `writeToでThemePreferencesを書き込める`() = runTest {
+    fun `writeToでThemePreferencesを書き込める`() =
+        runTest {
         val original = ThemePreferences(mode = "light")
         val output = ByteArrayOutputStream()
 

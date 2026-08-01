@@ -21,7 +21,8 @@ class SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
     }
 
     @Test
-    fun `任意のフェーズ集合を保存できる`() = runBlocking {
+    fun `任意のフェーズ集合を保存できる`() =
+        runBlocking {
         val useCase = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository)
         val phases = setOf(SessionPhase.WARM_UP, SessionPhase.FORMATION)
 

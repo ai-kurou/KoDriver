@@ -16,7 +16,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesSerializerTest {
 
     @Test
     fun `デフォルト値は縦方向5m・横方向5m・継続時間7秒`() {
-        val expected = LmuWindowsVehicleApproachThresholdsPreferences(
+        val expected =
+            LmuWindowsVehicleApproachThresholdsPreferences(
             longitudinalThresholdMeters = LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT,
             lateralThresholdMeters = LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT,
             sustainedApproachDurationSeconds = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
@@ -25,8 +26,10 @@ class LmuWindowsVehicleApproachThresholdsPreferencesSerializerTest {
     }
 
     @Test
-    fun `書き込んだ値を読み出せる`() = runTest {
-        val original = LmuWindowsVehicleApproachThresholdsPreferences(
+    fun `書き込んだ値を読み出せる`() =
+        runTest {
+        val original =
+            LmuWindowsVehicleApproachThresholdsPreferences(
             longitudinalThresholdMeters = 25.0,
             lateralThresholdMeters = 4.5,
             sustainedApproachDurationSeconds = 8,
@@ -34,7 +37,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesSerializerTest {
         val output = ByteArrayOutputStream()
         LmuWindowsVehicleApproachThresholdsPreferencesSerializer.writeTo(original, output)
 
-        val restored = LmuWindowsVehicleApproachThresholdsPreferencesSerializer.readFrom(
+        val restored =
+            LmuWindowsVehicleApproachThresholdsPreferencesSerializer.readFrom(
             ByteArrayInputStream(output.toByteArray()),
         )
 
@@ -42,7 +46,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列で CorruptionException が発生する`() = runTest {
+    fun `不正なバイト列で CorruptionException が発生する`() =
+        runTest {
         val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
 
         assertFailsWith<CorruptionException> {

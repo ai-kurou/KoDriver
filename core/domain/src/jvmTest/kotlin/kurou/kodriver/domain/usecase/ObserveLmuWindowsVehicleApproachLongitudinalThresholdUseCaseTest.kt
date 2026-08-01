@@ -39,8 +39,10 @@ class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+    fun `初期値を返す`() =
+        runBlocking {
+        val repo =
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
             repository,
             initialLongitudinal = 10.0,
         )
@@ -53,8 +55,10 @@ class ObserveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
     }
 
     @Test
-    fun `保存済みの縦方向閾値をそのまま返す`() = runBlocking {
-        val repo = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+    fun `保存済みの縦方向閾値をそのまま返す`() =
+        runBlocking {
+        val repo =
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
             repository,
             initialLongitudinal = 10.0,
         )

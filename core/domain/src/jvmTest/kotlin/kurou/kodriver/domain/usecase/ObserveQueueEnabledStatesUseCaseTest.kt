@@ -30,7 +30,8 @@ class ObserveQueueEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() = runBlocking {
+    fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() =
+        runBlocking {
         every { repository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
@@ -56,7 +57,8 @@ class ObserveQueueEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
         val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeQueueEnabledStates() } returns states
         coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {

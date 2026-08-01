@@ -61,17 +61,20 @@ class ServerConnectionViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(appVersion: String = "1.0.0") = ServerConnectionViewModel(
-        observeKoDriverServerConnection = ObserveKoDriverServerConnectionUseCase(
+    private fun createViewModel(appVersion: String = "1.0.0") =
+        ServerConnectionViewModel(
+        observeKoDriverServerConnection =
+            ObserveKoDriverServerConnectionUseCase(
             fetchServerVersion = FetchServerVersionUseCase(versionRepository),
             observeServerIp = ObserveServerIpUseCase(serverIpRepository),
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
         ),
-        appVersion = appVersion,
+            appVersion = appVersion,
     )
 
     @Test
-    fun `IP設定済みで接続成功時に接続済み状態を返す`() = runTest {
+    fun `IP設定済みで接続成功時に接続済み状態を返す`() =
+        runTest {
         val ipFlow = MutableStateFlow("192.168.1.1")
         every { serverIpRepository.serverIp() } returns ipFlow
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
@@ -90,7 +93,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `IP未設定時はNOT_CONFIGUREDを返す`() = runTest {
+    fun `IP未設定時はNOT_CONFIGUREDを返す`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         val viewModel = createViewModel()
@@ -106,7 +110,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `選択シミュレータがuiStateに反映される`() = runTest {
+    fun `選択シミュレータがuiStateに反映される`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
@@ -124,7 +129,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `IP設定後に接続確認を開始する`() = runTest {
+    fun `IP設定後に接続確認を開始する`() =
+        runTest {
         val ipFlow = MutableStateFlow<String?>(null)
         every { serverIpRepository.serverIp() } returns ipFlow
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
@@ -150,7 +156,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `一定間隔で接続状態を更新する`() = runTest {
+    fun `一定間隔で接続状態を更新する`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany
@@ -172,7 +179,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
+    fun `接続確認で例外が発生しても未接続として監視を継続する`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returnsMany
@@ -194,7 +202,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `LMU選択時はrequiresKoDriverServerがtrueになる`() = runTest {
+    fun `LMU選択時はrequiresKoDriverServerがtrueになる`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
@@ -212,7 +221,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `シミュレータ未選択時はrequiresKoDriverServerがfalseになる`() = runTest {
+    fun `シミュレータ未選択時はrequiresKoDriverServerがfalseになる`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         val viewModel = createViewModel()
@@ -228,7 +238,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `シミュレータ未選択時はnullを返す`() = runTest {
+    fun `シミュレータ未選択時はnullを返す`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         val viewModel = createViewModel()
@@ -244,7 +255,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `接続成功時にサーバーバージョンがuiStateに反映される`() = runTest {
+    fun `接続成功時にサーバーバージョンがuiStateに反映される`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
@@ -262,7 +274,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `未接続時はサーバーバージョンがnullになる`() = runTest {
+    fun `未接続時はサーバーバージョンがnullになる`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.failure(RuntimeException("error"))
@@ -280,7 +293,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `バージョン不一致時にボトムシートを表示する`() = runTest {
+    fun `バージョン不一致時にボトムシートを表示する`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
@@ -298,7 +312,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `バージョン一致時はボトムシートを表示しない`() = runTest {
+    fun `バージョン一致時はボトムシートを表示しない`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
@@ -316,7 +331,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `ボトムシートをdismissするとshowVersionMismatchBottomSheetがfalseになる`() = runTest {
+    fun `ボトムシートをdismissするとshowVersionMismatchBottomSheetがfalseになる`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
@@ -337,7 +353,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `バージョン不一致のボトムシートはdismiss後に再ポーリングで再表示されない`() = runTest {
+    fun `バージョン不一致のボトムシートはdismiss後に再ポーリングで再表示されない`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")
@@ -359,7 +376,8 @@ class ServerConnectionViewModelTest {
     }
 
     @Test
-    fun `バージョン不一致のボトムシートはdismiss後に再購読しても再表示されない`() = runTest {
+    fun `バージョン不一致のボトムシートはdismiss後に再購読しても再表示されない`() =
+        runTest {
         every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")

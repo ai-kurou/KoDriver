@@ -27,7 +27,8 @@ class ObserveLmuWindowsTyreWearThresholdPercentageUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す・保存済みの値を返す`() = runBlocking {
+    fun `初期値を返す・保存済みの値を返す`() =
+        runBlocking {
         val state = MutableStateFlow(50)
         every { repo.observeThresholdPercentage() } returns state
         coEvery { repo.saveThresholdPercentage(30) } answers { state.update { 30 } }

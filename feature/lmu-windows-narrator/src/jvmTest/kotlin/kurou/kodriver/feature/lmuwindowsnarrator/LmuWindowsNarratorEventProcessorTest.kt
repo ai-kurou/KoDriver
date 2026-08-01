@@ -45,7 +45,8 @@ class LmuWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `読み上げたイベントを直前と現在の接近データとともに保存する`() = runTest {
+    fun `読み上げたイベントを直前と現在の接近データとともに保存する`() =
+        runTest {
         val telemetryJsonSlot = slot<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         every { ttsEngine.speak(SpeechEvent.CarLeft, queue = false) } just Runs
@@ -96,7 +97,8 @@ class LmuWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() = runTest {
+    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() =
+        runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val newEvent = SpeechEvent.CarLeft
         every { ttsEngine.currentReadoutItemKey } returns currentKey
@@ -105,11 +107,12 @@ class LmuWindowsNarratorEventProcessorTest {
         processor.processVehicleApproach(
             vehicleApproach = leftVehicleApproach(),
             events = listOf(newEvent),
-            readoutOrder = listOf(
+            readoutOrder =
+                listOf(
                 currentKey,
                 newEvent.readoutItemKey,
             ),
-            queueEnabledStates = emptyMap(),
+                queueEnabledStates = emptyMap(),
             observedAtMs = 0L,
             logContext = logContext(),
         )
@@ -122,7 +125,8 @@ class LmuWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
+    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
+        runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val newEvent = SpeechEvent.CarLeft
         every { ttsEngine.speak(newEvent, queue = true) } just Runs
@@ -159,7 +163,8 @@ class LmuWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
+    fun `優先度の低い項目を再生中なら停止して読み上げる`() =
+        runTest {
         val currentKey = ReadoutItemKey.LmuWindows.TyreWear.Root
         val newEvent = SpeechEvent.CarLeft
         every { ttsEngine.currentReadoutItemKey } returns currentKey
@@ -199,7 +204,8 @@ class LmuWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `ログ保存に失敗しても次の読み上げは継続する`() = runTest {
+    fun `ログ保存に失敗しても次の読み上げは継続する`() =
+        runTest {
         val spokenEvents = mutableListOf<SpeechEvent>()
         var saveCount = 0
         every { ttsEngine.currentReadoutItemKey } returns null
@@ -265,15 +271,18 @@ class LmuWindowsNarratorEventProcessorTest {
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
-    private fun createProcessor() = LmuWindowsNarratorEventProcessor(
+    private fun createProcessor() =
+        LmuWindowsNarratorEventProcessor(
         ttsEngine = ttsEngine,
         saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
     )
 }
 
-private fun logContext() = LmuWindowsTelemetryLogContext(
+private fun logContext() =
+    LmuWindowsTelemetryLogContext(
     state = LmuWindowsNarratorState(),
-    settings = LmuWindowsNarratorReadoutSettings(
+    settings =
+        LmuWindowsNarratorReadoutSettings(
         enabledStates = mapOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root to true),
         myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
@@ -289,10 +298,11 @@ private fun logContext() = LmuWindowsTelemetryLogContext(
         pitTimingVirtualEnergyLapsThreshold = 3,
         pitTimingTyreWearLapsThreshold = 3,
     ),
-    finalState = LmuWindowsNarratorState(),
+        finalState = LmuWindowsNarratorState(),
 )
 
-private fun leftVehicleApproach(distance: Double = 3.0) = LmuWindowsVehicleApproachData(
+private fun leftVehicleApproach(distance: Double = 3.0) =
+    LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(1),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = distance,

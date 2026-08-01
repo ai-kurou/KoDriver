@@ -7,17 +7,20 @@ import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.RoborazziOptions
 import io.github.takahirom.roborazzi.captureRoboImage
 
-private val defaultOptions = RoborazziOptions(
-    compareOptions = RoborazziOptions.CompareOptions(
+private val defaultOptions =
+    RoborazziOptions(
+    compareOptions =
+        RoborazziOptions.CompareOptions(
         changeThreshold = 0.001f,
     ),
-)
+        )
 
 internal fun SemanticsNodeInteraction.captureRoboImage() =
     captureRoboImage(roborazziOptions = defaultOptions)
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal val twoPaneDirective = PaneScaffoldDirective(
+internal val twoPaneDirective =
+    PaneScaffoldDirective(
     maxHorizontalPartitions = 2,
     horizontalPartitionSpacerSize = 16.dp,
     maxVerticalPartitions = 1,
@@ -27,7 +30,8 @@ internal val twoPaneDirective = PaneScaffoldDirective(
 )
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-internal val singlePaneDirective = PaneScaffoldDirective(
+internal val singlePaneDirective =
+    PaneScaffoldDirective(
     maxHorizontalPartitions = 1,
     horizontalPartitionSpacerSize = 0.dp,
     maxVerticalPartitions = 1,

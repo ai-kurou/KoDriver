@@ -38,7 +38,8 @@ internal class AceWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildFlagTelemetryLogJson(
+                    telemetryJson =
+                        buildFlagTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = flag,
@@ -46,7 +47,7 @@ internal class AceWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousFlag = flag
@@ -66,7 +67,8 @@ internal class AceWindowsNarratorEventProcessor(
                 saveTelemetryLogSafely(
                     createdAt = observedAtMs,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = fuel,
@@ -74,7 +76,7 @@ internal class AceWindowsNarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousFuel = fuel

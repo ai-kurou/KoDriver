@@ -58,16 +58,19 @@ class AceWindowsConnectionViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = AceWindowsConnectionViewModel(
-        observeAceWindowsConnection = ObserveAceWindowsConnectionUseCase(
+    private fun createViewModel() =
+        AceWindowsConnectionViewModel(
+        observeAceWindowsConnection =
+            ObserveAceWindowsConnectionUseCase(
             checkAceWindowsConnection = CheckAceWindowsConnectionUseCase(connectionRepository),
             observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(connectionRepository),
         ),
-        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     )
 
     @Test
-    fun `ACE選択時に接続確認結果を反映する`() = runTest {
+    fun `ACE選択時に接続確認結果を反映する`() =
+        runTest {
         every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
@@ -85,7 +88,8 @@ class AceWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `ACE選択時に燃料残量を保持する`() = runTest {
+    fun `ACE選択時に燃料残量を保持する`() =
+        runTest {
         val fuelFlow = MutableStateFlow(AceWindowsFuelData(remainingPercent = 32.5))
         every { connectionRepository.fuelStream() } returns fuelFlow
         coEvery { connectionRepository.isConnected() } returns true
@@ -109,7 +113,8 @@ class AceWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `ACE非選択時は未確認状態を返す`() = runTest {
+    fun `ACE非選択時は未確認状態を返す`() =
+        runTest {
         every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
@@ -129,7 +134,8 @@ class AceWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `ACE選択前は未確認状態とする`() = runTest {
+    fun `ACE選択前は未確認状態とする`() =
+        runTest {
         every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
         coEvery { connectionRepository.isConnected() } returns false
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
@@ -143,7 +149,8 @@ class AceWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `ACEから別シミュレータへ切り替えると未確認にリセットされる`() = runTest {
+    fun `ACEから別シミュレータへ切り替えると未確認にリセットされる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.AceWindows)
         every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
         coEvery { connectionRepository.isConnected() } returns true
@@ -167,7 +174,8 @@ class AceWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `ACE選択時に一定間隔で接続状態を更新する`() = runTest {
+    fun `ACE選択時に一定間隔で接続状態を更新する`() =
+        runTest {
         val connectedFlow = MutableStateFlow(false)
         every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)
         coEvery { connectionRepository.isConnected() } answers { connectedFlow.value }
@@ -190,7 +198,8 @@ class AceWindowsConnectionViewModelTest {
     }
 
     @Test
-    fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
+    fun `接続確認で例外が発生しても未接続として監視を継続する`() =
+        runTest {
         val connectedFlow = MutableStateFlow(false)
         var remainingFailures = 1
         every { connectionRepository.fuelStream() } returns MutableStateFlow(defaultFuel)

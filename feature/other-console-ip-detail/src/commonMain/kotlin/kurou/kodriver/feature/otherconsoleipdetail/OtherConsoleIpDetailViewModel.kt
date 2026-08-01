@@ -31,16 +31,19 @@ internal class OtherConsoleIpDetailViewModel(
         val userSelectedPort: Int? = null,
     )
 
-    private val savedAddress: StateFlow<String> = observeConsoleAddress()
+    private val savedAddress: StateFlow<String> =
+        observeConsoleAddress()
         .map { it ?: "" }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "")
 
-    private val savedPort: StateFlow<Int> = observeGt7Ps5UdpPort()
+    private val savedPort: StateFlow<Int> =
+        observeGt7Ps5UdpPort()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GT7_PS5_UDP_PORT_DEFAULT)
 
     private val _mutable: MutableStateFlow<MutableState> = MutableStateFlow(MutableState())
 
-    val uiState: StateFlow<OtherConsoleIpDetailUiState> = combine(
+    val uiState: StateFlow<OtherConsoleIpDetailUiState> =
+        combine(
         savedAddress,
         savedPort,
         _mutable,

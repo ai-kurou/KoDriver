@@ -11,8 +11,10 @@ import kotlin.test.assertTrue
 class GitHubAppReleaseRepositoryTest {
 
     @Test
-    fun `tag_nameを含むJSONのときAppUpdateとして返す`() = runBlocking {
-        val repository = GitHubAppReleaseRepository(
+    fun `tag_nameを含むJSONのときAppUpdateとして返す`() =
+        runBlocking {
+        val repository =
+            GitHubAppReleaseRepository(
             fetch = { """{"tag_name":"v1.2.3","name":"Release 1.2.3"}""" },
         )
 
@@ -22,15 +24,18 @@ class GitHubAppReleaseRepositoryTest {
     }
 
     @Test
-    fun `fetchがnullを返すときnullを返す`() = runBlocking {
+    fun `fetchがnullを返すときnullを返す`() =
+        runBlocking {
         val repository = GitHubAppReleaseRepository(fetch = { null })
 
         assertNull(repository.getLatestRelease())
     }
 
     @Test
-    fun `tag_nameが含まれないJSONのときnullを返す`() = runBlocking {
-        val repository = GitHubAppReleaseRepository(
+    fun `tag_nameが含まれないJSONのときnullを返す`() =
+        runBlocking {
+        val repository =
+            GitHubAppReleaseRepository(
             fetch = { """{"message":"Not Found"}""" },
         )
 
@@ -38,7 +43,8 @@ class GitHubAppReleaseRepositoryTest {
     }
 
     @Test
-    fun `fetchが例外をスローするときnullを返す`() = runBlocking {
+    fun `fetchが例外をスローするときnullを返す`() =
+        runBlocking {
         val repository = GitHubAppReleaseRepository(fetch = { error("network error") })
 
         assertNull(repository.getLatestRelease())
@@ -53,7 +59,8 @@ class GitHubAppReleaseRepositoryTest {
 
     @Test
     fun `GitHubの最新リリースURL以外は許可しない`() {
-        val uris = listOf(
+        val uris =
+            listOf(
             URI("http://api.github.com/repos/ai-kurou/KoDriver/releases/latest"),
             URI("https://example.com/repos/ai-kurou/KoDriver/releases/latest"),
             URI("https://api.github.com/repos/ai-kurou/KoDriver/releases/latest?redirect=https://example.com"),

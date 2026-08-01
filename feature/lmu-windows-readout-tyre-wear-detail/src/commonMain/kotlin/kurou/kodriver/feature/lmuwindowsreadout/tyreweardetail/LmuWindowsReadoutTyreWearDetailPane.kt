@@ -63,10 +63,11 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.tyre_wear_description),
         )

@@ -90,8 +90,10 @@ internal fun ReadoutContent(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = when {
+    val navigator =
+        rememberListDetailPaneScaffoldNavigator<Nothing>(
+        scaffoldDirective =
+            when {
             uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
             }
@@ -105,7 +107,8 @@ internal fun ReadoutContent(
                 scaffoldDirective
             }
         },
-        initialDestinationHistory = if (uiState.selectedItem != null) {
+            initialDestinationHistory =
+                if (uiState.selectedItem != null) {
             listOf(
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
@@ -113,7 +116,7 @@ internal fun ReadoutContent(
         } else {
             listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
         },
-    )
+                )
     val scope = rememberCoroutineScope()
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
@@ -121,7 +124,8 @@ internal fun ReadoutContent(
         scope.launch { navigator.navigateBack() }
         onClearSelectedItem()
     }
-    val paneExpansionState = rememberPaneExpansionState(
+    val paneExpansionState =
+        rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,
     )
@@ -170,7 +174,8 @@ internal fun ReadoutContent(
 }
 
 @Composable
-private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when (selectedItem) {
+private fun selectedItemTitle(selectedItem: ReadoutListItemType): String =
+    when (selectedItem) {
     ReadoutListItemType.LmuWindows.VehicleApproach -> {
         stringResource(Res.string.item_vehicle_approach)
     }
@@ -228,18 +233,20 @@ private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = when 
 @Composable
 private fun ReadoutContentPreview() {
     ReadoutContent(
-        uiState = ReadoutListUiState(
+        uiState =
+            ReadoutListUiState(
             simulators = listOf(Simulator.LmuWindows),
             selectedSimulator = Simulator.LmuWindows,
-            items = listOf(
+            items =
+                listOf(
                 ReadoutItemKey.LmuWindows.VehicleApproach.Root,
                 ReadoutItemKey.LmuWindows.Flag.Root,
                 ReadoutItemKey.LmuWindows.VehicleDamage.Root,
                 ReadoutItemKey.LmuWindows.TyreTemperature.Root,
                 ReadoutItemKey.LmuWindows.MyBestLap.Root,
             ),
-        ),
-        onSimulatorSelected = {},
+                ),
+            onSimulatorSelected = {},
         onMove = { _, _ -> },
         onReadoutEnabledChanged = { _, _ -> },
         onQueueEnabledChanged = { _, _ -> },

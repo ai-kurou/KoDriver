@@ -14,7 +14,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: ReadoutStartSoundPreferencesRepository（:core:data）、および試聴用の
  *   named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
-val otherReadoutStartSoundDetailModule = module {
+val otherReadoutStartSoundDetailModule =
+    module {
     // ViewModel
     viewModelOf(::OtherReadoutStartSoundDetailViewModel)
 

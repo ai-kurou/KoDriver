@@ -34,8 +34,10 @@ class LmuWindowsFlagRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリからセッション旗とプレイヤー旗を読み取る`() = runBlocking {
-        val reader = FakeStaticSharedMemoryReader(
+    fun `共有メモリからセッション旗とプレイヤー旗を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeStaticSharedMemoryReader(
             buildFlagsBuffer(
                 FlagBufferConfig(
                     gamePhase = 4,
@@ -64,7 +66,8 @@ class LmuWindowsFlagRepositoryImplTest {
     }
 
     @Test
-    fun `player が見つからない間は emit しない`() = runBlocking {
+    fun `player が見つからない間は emit しない`() =
+        runBlocking {
         val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer(FlagBufferConfig(hasPlayer = false)))
         val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
         val emitCount = AtomicInteger(0)
@@ -77,8 +80,10 @@ class LmuWindowsFlagRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeStaticSharedMemoryReader(
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+        val reader =
+            FakeStaticSharedMemoryReader(
             buffer = buildFlagsBuffer(),
             initialOpen = false,
             openResult = false,
@@ -94,7 +99,8 @@ class LmuWindowsFlagRepositoryImplTest {
     }
 
     @Test
-    fun `フローがキャンセルされると reader の close が呼ばれる`() = runBlocking {
+    fun `フローがキャンセルされると reader の close が呼ばれる`() =
+        runBlocking {
         val reader = FakeStaticSharedMemoryReader(buildFlagsBuffer())
         val repo = LmuWindowsFlagRepositoryImpl(source = makeSource(reader))
 

@@ -49,10 +49,11 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
 ) {
     val voiceTypeLabels = MyBestLapVoiceType.entries.map { type -> type to type.displayName() }
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.my_best_lap_description),
         )
@@ -62,11 +63,12 @@ internal fun LmuWindowsReadoutMyBestLapDetailPaneContent(
             bottomContent = {
                 DetailPaneCardChips(
                     chipLabels = voiceTypeLabels.map { (_, label) -> label },
-                    selectedChipLabels = voiceTypeLabels
+                    selectedChipLabels =
+                        voiceTypeLabels
                         .filter { (type, _) -> type == uiState.voiceType }
                         .map { (_, label) -> label }
                         .toSet(),
-                    chipEnabled = true,
+                        chipEnabled = true,
                     onChipClick = { label ->
                         val type = voiceTypeLabels.first { (_, typeLabel) -> typeLabel == label }.first
                         onVoiceTypeChanged(type)
@@ -87,7 +89,8 @@ private fun LmuWindowsReadoutMyBestLapDetailPanePreview() {
 }
 
 @Composable
-private fun MyBestLapVoiceType.displayName(): String = when (this) {
+private fun MyBestLapVoiceType.displayName(): String =
+    when (this) {
     MyBestLapVoiceType.FORMAL -> stringResource(Res.string.my_best_lap_voice_type_formal)
     MyBestLapVoiceType.CASUAL -> stringResource(Res.string.my_best_lap_voice_type_casual)
 }

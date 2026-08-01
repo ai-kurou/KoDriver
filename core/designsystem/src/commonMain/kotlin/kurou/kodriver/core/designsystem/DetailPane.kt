@@ -58,11 +58,12 @@ fun DetailPaneSubtitle(
         modifier = modifier.height(64.dp).padding(vertical = 8.dp),
     ) {
         Box(
-            modifier = Modifier
+            modifier =
+                Modifier
                 .width(2.dp)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.secondary),
-        )
+                )
         Text(
             text = text,
             style = MaterialTheme.typography.titleMedium,

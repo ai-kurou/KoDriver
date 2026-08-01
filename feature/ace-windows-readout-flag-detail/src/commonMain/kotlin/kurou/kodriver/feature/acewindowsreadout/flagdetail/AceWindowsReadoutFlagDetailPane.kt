@@ -44,10 +44,11 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.flag_description),
         )
@@ -76,8 +77,9 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
 @Composable
 private fun AceWindowsReadoutFlagDetailPanePreview() {
     AceWindowsReadoutFlagDetailPaneContent(
-        uiState = AceWindowsReadoutFlagDetailUiState(
+        uiState =
+            AceWindowsReadoutFlagDetailUiState(
             enabledStates = FlagReadoutItem.entries.associate { it.key to true },
         ),
-    )
+            )
 }

@@ -24,7 +24,8 @@ class ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
     }
 
     @Test
-    fun `バーチャルエナジー予想残り周回数を監視できる`() = runBlocking {
+    fun `バーチャルエナジー予想残り周回数を監視できる`() =
+        runBlocking {
         every { repository.observeVirtualEnergyLaps() } returns MutableStateFlow(5)
         val useCase = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)
 

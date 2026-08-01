@@ -52,16 +52,18 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     ) = OtherServerIpDetailViewModel(
         observeServerIp = ObserveServerIpUseCase(repository),
         validateServerIpAddress = ValidateServerIpAddressUseCase(),
-        saveServerIpWithConnectivityCheck = SaveServerIpWithConnectivityCheckUseCase(
+        saveServerIpWithConnectivityCheck =
+            SaveServerIpWithConnectivityCheckUseCase(
             validateServerIpAddress = ValidateServerIpAddressUseCase(),
             connectivityChecker = ServerConnectivityChecker { true },
             saveServerIp = SaveServerIpUseCase(repository),
         ),
-        windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
+            windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
     )
 
     @Test
-    fun `Windows版KoDriverが検出されると検出ダイアログが表示される`() = runTest {
+    fun `Windows版KoDriverが検出されると検出ダイアログが表示される`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         val viewModel = createViewModel(discoveredServers = listOf(server))
@@ -75,7 +77,8 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     }
 
     @Test
-    fun `検出ダイアログで選択するとIP入力欄へ自動入力されダイアログが閉じる`() = runTest {
+    fun `検出ダイアログで選択するとIP入力欄へ自動入力されダイアログが閉じる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         val viewModel = createViewModel(discoveredServers = listOf(server))
@@ -91,7 +94,8 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     }
 
     @Test
-    fun `複数検出時にサーバーを選択すると選択中サーバーが変わる`() = runTest {
+    fun `複数検出時にサーバーを選択すると選択中サーバーが変わる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val serverA = DiscoveredServer(hostName = "DESKTOP-A", ipAddress = "192.168.1.10")
         val serverB = DiscoveredServer(hostName = "DESKTOP-B", ipAddress = "192.168.1.20")
@@ -106,7 +110,8 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     }
 
     @Test
-    fun `検出ダイアログをキャンセルすると閉じたままになる`() = runTest {
+    fun `検出ダイアログをキャンセルすると閉じたままになる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         val viewModel = createViewModel(discoveredServers = listOf(server))
@@ -121,7 +126,8 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     }
 
     @Test
-    fun `検出ダイアログを閉じた後onShowDiscoveredServersで再表示できる`() = runTest {
+    fun `検出ダイアログを閉じた後onShowDiscoveredServersで再表示できる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val server = DiscoveredServer(hostName = "DESKTOP-ABC", ipAddress = "192.168.1.50")
         val viewModel = createViewModel(discoveredServers = listOf(server))
@@ -135,7 +141,8 @@ class OtherServerIpDetailDiscoveryViewModelTest {
     }
 
     @Test
-    fun `検出結果がない場合は検出ダイアログを表示しない`() = runTest {
+    fun `検出結果がない場合は検出ダイアログを表示しない`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel(discoveredServers = emptyList())
 

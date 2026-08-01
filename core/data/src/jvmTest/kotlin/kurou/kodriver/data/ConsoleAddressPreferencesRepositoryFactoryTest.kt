@@ -27,14 +27,16 @@ class ConsoleAddressPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `初期状態はnullを返す`() = runTest {
+    fun `初期状態はnullを返す`() =
+        runTest {
         val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
         assertNull(repository.consoleAddress().first())
     }
 
     @Test
-    fun `保存したアドレスを取得できる`() = runTest {
+    fun `保存したアドレスを取得できる`() =
+        runTest {
         val repository = createConsoleAddressPreferencesRepository(tempDir.absolutePath)
 
         repository.saveConsoleAddress("10.0.0.1")

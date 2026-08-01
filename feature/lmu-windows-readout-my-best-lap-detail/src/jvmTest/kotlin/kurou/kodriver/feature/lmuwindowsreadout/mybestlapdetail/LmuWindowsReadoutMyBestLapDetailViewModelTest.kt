@@ -54,14 +54,16 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutMyBestLapDetailViewModel(
+    private fun createViewModel() =
+        LmuWindowsReadoutMyBestLapDetailViewModel(
         observeMyBestLapVoiceType = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
         saveMyBestLapVoiceType = SaveLmuWindowsMyBestLapVoiceTypeUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態は voiceType=FORMAL の UiState を返す`() = runTest {
+    fun `初期状態は voiceType=FORMAL の UiState を返す`() =
+        runTest {
         every { repository.observeVoiceType() } returns voiceTypeFlow
         val viewModel = createViewModel()
 
@@ -71,7 +73,8 @@ class LmuWindowsReadoutMyBestLapDetailViewModelTest {
     }
 
     @Test
-    fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() = runTest {
+    fun `onVoiceTypeChanged に CASUAL を渡すと voiceType=CASUAL になる`() =
+        runTest {
         every { repository.observeVoiceType() } returns voiceTypeFlow
         coEvery { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) } answers {
             voiceTypeFlow.update { MyBestLapVoiceType.CASUAL }

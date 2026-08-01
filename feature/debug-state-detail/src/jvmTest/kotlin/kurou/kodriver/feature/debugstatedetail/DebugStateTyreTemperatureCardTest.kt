@@ -43,18 +43,21 @@ class DebugStateTyreTemperatureCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
-                            wheels = mapOf(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
+                            wheels =
+                                mapOf(
                                 WheelIndex.FRONT_LEFT to sampleWheel(85.0),
                                 WheelIndex.FRONT_RIGHT to sampleWheel(86.0),
                                 WheelIndex.REAR_LEFT to sampleWheel(87.0),
                                 WheelIndex.REAR_RIGHT to sampleWheel(88.0),
                             ),
-                        ),
-                    ),
-                    canNavigateBack = true,
+                                ),
+                            ),
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -71,14 +74,16 @@ class DebugStateTyreTemperatureCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
                             wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -92,14 +97,16 @@ class DebugStateTyreTemperatureCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = null,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
                             wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -113,14 +120,16 @@ class DebugStateTyreTemperatureCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
                             wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -129,7 +138,8 @@ class DebugStateTyreTemperatureCardTest {
         rule.onNodeWithText("FR -℃").assertIsDisplayed()
     }
 
-    private fun sampleWheel(surfaceTemperatureCelsius: Double) = LmuWindowsTyreWheelData(
+    private fun sampleWheel(surfaceTemperatureCelsius: Double) =
+        LmuWindowsTyreWheelData(
         surfaceTemperatureK = surfaceTemperatureCelsius + 273.15,
         carcassTemperatureK = 0.0,
         brakeTemperatureC = 0.0,
@@ -137,13 +147,15 @@ class DebugStateTyreTemperatureCardTest {
         wear = 0.0,
     )
 
-    private fun sampleLmuWindowsTelemetry(wheels: Map<WheelIndex, LmuWindowsTyreWheelData>) = LmuWindowsTelemetryData(
+    private fun sampleLmuWindowsTelemetry(wheels: Map<WheelIndex, LmuWindowsTyreWheelData>) =
+        LmuWindowsTelemetryData(
         timestampMs = 0L,
         engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
         inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
         tyres = LmuWindowsTyreData(wheels = wheels),
         fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing = LmuWindowsTimingData(
+        timing =
+            LmuWindowsTimingData(
             currentLapTimeMs = 0L,
             lastLapTimeMs = 0L,
             bestLapTimeMs = 0L,
@@ -152,7 +164,8 @@ class DebugStateTyreTemperatureCardTest {
             currentLap = 0,
             maxLaps = 0,
         ),
-        vehicle = LmuWindowsVehicleData(
+            vehicle =
+                LmuWindowsVehicleData(
             localVelocityX = 0.0,
             localVelocityY = 0.0,
             localVelocityZ = 0.0,
@@ -160,5 +173,5 @@ class DebugStateTyreTemperatureCardTest {
             positionY = 0.0,
             positionZ = 0.0,
         ),
-    )
+                )
 }

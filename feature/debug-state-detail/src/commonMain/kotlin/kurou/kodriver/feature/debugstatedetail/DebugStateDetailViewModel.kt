@@ -58,10 +58,12 @@ internal class DebugStateDetailViewModel(
     private val saveCardOrder: SaveDebugStateCardOrderUseCase,
 ) : ViewModel() {
 
-    private val _selectedSimulator: StateFlow<Simulator?> = observeSelectedSimulator()
+    private val _selectedSimulator: StateFlow<Simulator?> =
+        observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val _raceState: StateFlow<RaceState> = combine(
+    private val _raceState: StateFlow<RaceState> =
+        combine(
         observeLmuWindowsRaceFlags(),
         observeLmuWindowsVirtualEnergy(),
         observeLmuWindowsVehicleApproach(),
@@ -70,7 +72,8 @@ internal class DebugStateDetailViewModel(
 
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<DebugStateCardKey>?>(null)
-    private val _cardOrder: StateFlow<List<DebugStateCardKey>> = combine(
+    private val _cardOrder: StateFlow<List<DebugStateCardKey>> =
+        combine(
         observeCardOrder(),
         _localCardOrder,
     ) { persisted, local ->
@@ -79,7 +82,8 @@ internal class DebugStateDetailViewModel(
 
     // LMU / GT7 いずれか片方しか実際には接続されないため、combine の必須ソースにはせず
     // 初期値 null を持つ StateFlow 化して uiState 全体がブロックされないようにする。
-    private val _optionalTelemetry: StateFlow<OptionalTelemetry> = combine(
+    private val _optionalTelemetry: StateFlow<OptionalTelemetry> =
+        combine(
         observeLmuWindowsTelemetry().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
         observeGt7Ps5Telemetry().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
         observeAceWindowsFuel().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
@@ -87,7 +91,8 @@ internal class DebugStateDetailViewModel(
     ) { lmu, gt7, aceWindowsFuel, aceWindowsFlag -> OptionalTelemetry(lmu, gt7, aceWindowsFuel, aceWindowsFlag) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null, null))
 
-    val uiState: StateFlow<DebugStateDetailUiState> = combine(
+    val uiState: StateFlow<DebugStateDetailUiState> =
+        combine(
         _selectedSimulator,
         _raceState,
         _cardOrder,

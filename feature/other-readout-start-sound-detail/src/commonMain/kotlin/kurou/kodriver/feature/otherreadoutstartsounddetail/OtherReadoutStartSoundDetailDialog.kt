@@ -67,7 +67,8 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
             Column {
                 Spacer(modifier = Modifier.height(4.dp))
                 ReadoutStartSoundType.entries.forEach { type ->
-                    val label = when (type) {
+                    val label =
+                        when (type) {
                         ReadoutStartSoundType.ELECTRONIC_NOISE -> {
                             stringResource(Res.string.readout_start_sound_electronic_noise)
                         }
@@ -78,10 +79,11 @@ internal fun OtherReadoutStartSoundDetailDialogContent(
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
+                        modifier =
+                            Modifier
                             .fillMaxWidth()
                             .clickable { onTypeSelected(type) },
-                    ) {
+                            ) {
                         RadioButton(
                             selected = uiState.pendingType == type,
                             onClick = { onTypeSelected(type) },

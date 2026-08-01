@@ -75,9 +75,11 @@ private fun TelemetryLogDetailItem(
 @Composable
 private fun TelemetryLogDetailContentPreview() {
     TelemetryLogDetailContent(
-        uiState = TelemetryLogDetailUiState(
+        uiState =
+            TelemetryLogDetailUiState(
             logId = 1L,
-            items = listOf(
+            items =
+                listOf(
                 TelemetryLogDetailItemUiState(
                     title = "選択したログ",
                     telemetryJson = """{"speed":120,"gear":4}""",
@@ -87,6 +89,6 @@ private fun TelemetryLogDetailContentPreview() {
                     telemetryJson = """{"speed":118,"gear":4}""",
                 ),
             ),
-        ),
-    )
+                ),
+            )
 }

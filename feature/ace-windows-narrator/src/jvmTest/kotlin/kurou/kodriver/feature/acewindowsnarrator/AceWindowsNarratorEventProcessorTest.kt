@@ -39,7 +39,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `直前の燃料データがないイベントはnullとして保存する`() = runTest {
+    fun `直前の燃料データがないイベントはnullとして保存する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
@@ -68,7 +69,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `読み上げたイベントを直前と現在の燃料データとともに保存する`() = runTest {
+    fun `読み上げたイベントを直前と現在の燃料データとともに保存する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val processor = createProcessor()
@@ -101,7 +103,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() = runTest {
+    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() =
+        runTest {
         val currentKey = ReadoutItemKey.AceWindows.RemainingFuel.Root
         val otherKey = ReadoutItemKey.LmuWindows.Flag.Root
         every { ttsEngine.currentReadoutItemKey } returns currentKey
@@ -122,7 +125,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
+    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
+        runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
         val telemetryJsons = mutableListOf<String>()
@@ -150,7 +154,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
+    fun `優先度の低い項目を再生中なら停止して読み上げる`() =
+        runTest {
         val currentKey = ReadoutItemKey.LmuWindows.Flag.Root
         val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
         val telemetryJsons = mutableListOf<String>()
@@ -181,7 +186,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `テレメトリログの保存に失敗しても例外を投げない`() = runTest {
+    fun `テレメトリログの保存に失敗しても例外を投げない`() =
+        runTest {
         every { ttsEngine.currentReadoutItemKey } returns null
         val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
         every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
@@ -205,7 +211,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `直前のフラグデータがないイベントはnullとして保存する`() = runTest {
+    fun `直前のフラグデータがないイベントはnullとして保存する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val key = ReadoutItemKey.AceWindows.Flag.Root
@@ -234,7 +241,8 @@ class AceWindowsNarratorEventProcessorTest {
     }
 
     @Test
-    fun `読み上げたフラグイベントを直前と現在のフラグデータとともに保存する`() = runTest {
+    fun `読み上げたフラグイベントを直前と現在のフラグデータとともに保存する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val processor = createProcessor()
@@ -274,19 +282,22 @@ class AceWindowsNarratorEventProcessorTest {
 
     private fun flag(flagType: AceWindowsFlagType) = AceWindowsFlagData(flag = flagType)
 
-    private fun createProcessor() = AceWindowsNarratorEventProcessor(
+    private fun createProcessor() =
+        AceWindowsNarratorEventProcessor(
         ttsEngine = ttsEngine,
         saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
     )
 
     private fun fuel(remainingPercent: Double) = AceWindowsFuelData(remainingPercent = remainingPercent)
 
-    private fun logContext() = AceWindowsTelemetryLogContext(
+    private fun logContext() =
+        AceWindowsTelemetryLogContext(
         state = AceWindowsNarratorState(),
-        settings = AceWindowsNarratorReadoutSettings(
+        settings =
+            AceWindowsNarratorReadoutSettings(
             enabledStates = emptyMap(),
             remainingFuelThresholdPercentage = 0,
         ),
-        finalState = AceWindowsNarratorState(),
+            finalState = AceWindowsNarratorState(),
     )
 }

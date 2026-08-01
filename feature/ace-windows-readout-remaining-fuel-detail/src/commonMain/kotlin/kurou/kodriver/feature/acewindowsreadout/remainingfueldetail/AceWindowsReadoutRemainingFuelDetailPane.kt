@@ -66,10 +66,11 @@ internal fun AceWindowsReadoutRemainingFuelDetailPaneContent(
     val previewLabel = stringResource(Res.string.remaining_fuel_preview_label)
 
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.remaining_fuel_description),
         )

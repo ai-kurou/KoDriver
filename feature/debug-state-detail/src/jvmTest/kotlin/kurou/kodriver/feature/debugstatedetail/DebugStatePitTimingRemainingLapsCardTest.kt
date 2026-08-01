@@ -44,16 +44,18 @@ class DebugStatePitTimingRemainingLapsCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
-                        lmuWindowsTelemetry = sampleLmuTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuTelemetry(
                             currentLap = 5,
                             wheels = mapOf(WheelIndex.FRONT_LEFT to 0.6),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -68,11 +70,12 @@ class DebugStatePitTimingRemainingLapsCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
                         cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -86,11 +89,12 @@ class DebugStatePitTimingRemainingLapsCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -100,12 +104,15 @@ class DebugStatePitTimingRemainingLapsCardTest {
         rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
     }
 
-    private fun sampleLmuTelemetry(currentLap: Int, wheels: Map<WheelIndex, Double>) = LmuWindowsTelemetryData(
+    private fun sampleLmuTelemetry(currentLap: Int, wheels: Map<WheelIndex, Double>) =
+        LmuWindowsTelemetryData(
         timestampMs = 0L,
         engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
         inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-        tyres = LmuWindowsTyreData(
-            wheels = wheels.mapValues { (_, wear) ->
+        tyres =
+            LmuWindowsTyreData(
+            wheels =
+                wheels.mapValues { (_, wear) ->
                 LmuWindowsTyreWheelData(
                     surfaceTemperatureK = 0.0,
                     carcassTemperatureK = 0.0,
@@ -114,9 +121,10 @@ class DebugStatePitTimingRemainingLapsCardTest {
                     wear = wear,
                 )
             },
-        ),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing = LmuWindowsTimingData(
+                ),
+            fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        timing =
+            LmuWindowsTimingData(
             currentLapTimeMs = 0L,
             lastLapTimeMs = 0L,
             bestLapTimeMs = 0L,
@@ -125,7 +133,8 @@ class DebugStatePitTimingRemainingLapsCardTest {
             currentLap = currentLap,
             maxLaps = 0,
         ),
-        vehicle = LmuWindowsVehicleData(
+            vehicle =
+                LmuWindowsVehicleData(
             localVelocityX = 0.0,
             localVelocityY = 0.0,
             localVelocityZ = 0.0,
@@ -133,5 +142,5 @@ class DebugStatePitTimingRemainingLapsCardTest {
             positionY = 0.0,
             positionZ = 0.0,
         ),
-    )
+                )
 }

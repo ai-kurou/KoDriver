@@ -12,9 +12,11 @@ import kurou.kodriver.domain.usecase.CheckAceWindowsConnectionUseCase
 class AceWindowsBannerConnectionChecker(
     private val checkAceWindowsConnection: CheckAceWindowsConnectionUseCase,
 ) : AceBannerConnectionChecker {
-    override fun statusFlow(): Flow<ConnectionBannerVmStatus> = flow {
+    override fun statusFlow(): Flow<ConnectionBannerVmStatus> =
+        flow {
         while (true) {
-            val isConnected = try {
+            val isConnected =
+                try {
                 checkAceWindowsConnection()
             } catch (e: CancellationException) {
                 throw e

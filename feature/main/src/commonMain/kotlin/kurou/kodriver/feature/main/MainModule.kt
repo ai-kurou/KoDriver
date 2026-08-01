@@ -20,7 +20,8 @@ import org.koin.dsl.module
  *   KeepScreenOnEnabledRepository（:core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  * プラットフォーム別の登録は [mainPlatformModule]（expect/actual）に分離している。
  */
-val mainModule = module {
+val mainModule =
+    module {
     // ViewModel
     viewModel { AppScreenViewModel(get(), currentAppVersion(), get(), get(), get(), get()) }
     viewModelOf(::ConnectionBannerViewModel)

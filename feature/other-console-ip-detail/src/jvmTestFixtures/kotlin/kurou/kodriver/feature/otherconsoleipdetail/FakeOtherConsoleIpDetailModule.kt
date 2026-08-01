@@ -11,7 +11,8 @@ import org.koin.dsl.module
  * ConsoleAddressPreferencesRepository の Fake 実装をバインドし、実DataStore
  * （`~/.kodriver`）への書き込みを避ける。
  */
-val fakeOtherConsoleIpDetailModule = module {
+val fakeOtherConsoleIpDetailModule =
+    module {
     single<ConsoleAddressPreferencesRepository> { FakeConsoleAddressPreferencesRepository() }
 }
 

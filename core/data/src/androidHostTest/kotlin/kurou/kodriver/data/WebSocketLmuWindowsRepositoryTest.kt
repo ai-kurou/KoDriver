@@ -38,22 +38,26 @@ class WebSocketLmuWindowsRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときtelemetryStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときtelemetryStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().telemetryStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときtimingを反映したLmuWindowsTelemetryDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときtimingを反映したLmuWindowsTelemetryDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -74,7 +78,8 @@ class WebSocketLmuWindowsRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -94,7 +99,8 @@ class WebSocketLmuWindowsRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -122,7 +128,8 @@ class WebSocketLmuWindowsRepositoryTest {
     }
 
     @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() = runTest {
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -146,12 +153,14 @@ class WebSocketLmuWindowsRepositoryTest {
     }
 
     @Test
-    fun `isConnectedは常にfalseを返す`() = runTest {
+    fun `isConnectedは常にfalseを返す`() =
+        runTest {
         assertEquals(false, buildRepository().isConnected())
     }
 
     @Test
-    fun `disconnectは何もしない`() = runTest {
+    fun `disconnectは何もしない`() =
+        runTest {
         buildRepository().disconnect()
     }
 }
@@ -172,7 +181,8 @@ private class FakeServerIpPreferencesRepositoryForMyBestLap(
     }
 }
 
-private val TIMING_JSON = """
+private val TIMING_JSON =
+    """
     {
         "currentLapTimeMs": 30000,
         "lastLapTimeMs": 61000,

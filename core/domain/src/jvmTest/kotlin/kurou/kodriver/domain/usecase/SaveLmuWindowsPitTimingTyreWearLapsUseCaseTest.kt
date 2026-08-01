@@ -20,7 +20,8 @@ class SaveLmuWindowsPitTimingTyreWearLapsUseCaseTest {
     }
 
     @Test
-    fun `タイヤ摩耗予想残り周回数を保存できる`() = runBlocking {
+    fun `タイヤ摩耗予想残り周回数を保存できる`() =
+        runBlocking {
         SaveLmuWindowsPitTimingTyreWearLapsUseCase(repository)(2)
 
         coVerify(exactly = 1) { repository.saveTyreWearLaps(2) }

@@ -45,7 +45,8 @@ class Gt7Ps5ConnectionViewModelTest {
     @MockK
     private lateinit var simulatorRepository: SimulatorPreferencesRepository
 
-    private val defaultTelemetry = Gt7Ps5TelemetryData(
+    private val defaultTelemetry =
+        Gt7Ps5TelemetryData(
         lapCount = 0,
         lapsInRace = 0,
         bestLapTimeMs = 0,
@@ -64,16 +65,19 @@ class Gt7Ps5ConnectionViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = Gt7Ps5ConnectionViewModel(
-        observeGt7Ps5Connection = ObserveGt7Ps5ConnectionUseCase(
+    private fun createViewModel() =
+        Gt7Ps5ConnectionViewModel(
+        observeGt7Ps5Connection =
+            ObserveGt7Ps5ConnectionUseCase(
             checkGt7Ps5Connection = CheckGt7Ps5ConnectionUseCase(connectionRepository),
             observeGt7Ps5 = ObserveGt7Ps5UseCase(connectionRepository),
         ),
-        observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
+            observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
     )
 
     @Test
-    fun `GT7選択時に接続確認結果を反映する`() = runTest {
+    fun `GT7選択時に接続確認結果を反映する`() =
+        runTest {
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
@@ -91,8 +95,10 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `GT7選択時に燃料と周回数を保持する`() = runTest {
-        val telemetryFlow = MutableStateFlow(
+    fun `GT7選択時に燃料と周回数を保持する`() =
+        runTest {
+        val telemetryFlow =
+            MutableStateFlow(
             Gt7Ps5TelemetryData(
                 lapCount = 4,
                 lapsInRace = 12,
@@ -137,7 +143,8 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `GT7非選択時は未確認状態を返す`() = runTest {
+    fun `GT7非選択時は未確認状態を返す`() =
+        runTest {
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns true
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
@@ -160,7 +167,8 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `GT7選択前は未確認状態とする`() = runTest {
+    fun `GT7選択前は未確認状態とする`() =
+        runTest {
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns false
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
@@ -174,7 +182,8 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `GT7選択に切り替えると接続確認を開始する`() = runTest {
+    fun `GT7選択に切り替えると接続確認を開始する`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.LmuWindows)
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns true
@@ -200,7 +209,8 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `GT7から別シミュレータへ切り替えると未確認にリセットされる`() = runTest {
+    fun `GT7から別シミュレータへ切り替えると未確認にリセットされる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.Gt7Ps5)
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } returns true
@@ -227,7 +237,8 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `GT7選択時に一定間隔で接続状態を更新する`() = runTest {
+    fun `GT7選択時に一定間隔で接続状態を更新する`() =
+        runTest {
         val connectedFlow = MutableStateFlow(false)
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)
         coEvery { connectionRepository.isConnected() } answers { connectedFlow.value }
@@ -250,7 +261,8 @@ class Gt7Ps5ConnectionViewModelTest {
     }
 
     @Test
-    fun `接続確認で例外が発生しても未接続として監視を継続する`() = runTest {
+    fun `接続確認で例外が発生しても未接続として監視を継続する`() =
+        runTest {
         val connectedFlow = MutableStateFlow(false)
         var remainingFailures = 1
         every { connectionRepository.telemetryStream() } returns MutableStateFlow(defaultTelemetry)

@@ -25,7 +25,8 @@ class ObserveLmuWindowsMyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `保存済みのLMU自己ベストラップ音声タイプを返す`() = runBlocking {
+    fun `保存済みのLMU自己ベストラップ音声タイプを返す`() =
+        runBlocking {
         every { repository.observeVoiceType() } returns MutableStateFlow(MyBestLapVoiceType.CASUAL)
         val useCase = ObserveLmuWindowsMyBestLapVoiceTypeUseCase(repository)
 

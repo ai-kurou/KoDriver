@@ -20,7 +20,8 @@ class SaveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
     }
 
     @Test
-    fun `保存した継続時間閾値がFlowに反映される`() = runBlocking {
+    fun `保存した継続時間閾値がFlowに反映される`() =
+        runBlocking {
         SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)(8)
 
         coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
@@ -28,7 +29,8 @@ class SaveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
     }
 
     @Test
-    fun `上書き保存すると最新値がFlowに反映される`() = runBlocking {
+    fun `上書き保存すると最新値がFlowに反映される`() =
+        runBlocking {
         val useCase = SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)
 
         useCase(8)

@@ -20,7 +20,8 @@ internal class TelemetryLogDetailViewModel(
     private val selectedLogId = MutableStateFlow<Long?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val uiState: StateFlow<TelemetryLogDetailUiState> = selectedLogId
+    val uiState: StateFlow<TelemetryLogDetailUiState> =
+        selectedLogId
         .flatMapLatest { id ->
             if (id == null) {
                 flowOf(TelemetryLogDetailUiState())

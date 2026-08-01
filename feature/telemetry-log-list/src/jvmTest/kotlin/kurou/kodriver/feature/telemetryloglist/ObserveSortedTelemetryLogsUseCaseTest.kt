@@ -33,9 +33,11 @@ class ObserveSortedTelemetryLogsUseCaseTest {
     }
 
     @Test
-    fun `createdAtの降順かつ同時刻ではidの降順で返す`() = runTest {
+    fun `createdAtの降順かつ同時刻ではidの降順で返す`() =
+        runTest {
         every { repository.observeTelemetryLogs() } returns logs
-        logs.value = listOf(
+        logs.value =
+            listOf(
             telemetryLog(id = 1, createdAt = 100),
             telemetryLog(id = 2, createdAt = 200),
             telemetryLog(id = 3, createdAt = 200),
@@ -47,7 +49,8 @@ class ObserveSortedTelemetryLogsUseCaseTest {
     }
 
     @Test
-    fun `空の一覧を返す`() = runTest {
+    fun `空の一覧を返す`() =
+        runTest {
         every { repository.observeTelemetryLogs() } returns logs
 
         assertEquals(emptyList(), useCase().first())
@@ -56,14 +59,16 @@ class ObserveSortedTelemetryLogsUseCaseTest {
     }
 
     @Test
-    fun `ログの更新を並び替えて観測する`() = runTest {
+    fun `ログの更新を並び替えて観測する`() =
+        runTest {
         every { repository.observeTelemetryLogs() } returns logs
         val result = useCase()
 
         logs.value = listOf(telemetryLog(id = 1, createdAt = 100))
         assertEquals(listOf(1L), result.first().map { it.id })
 
-        logs.value = listOf(
+        logs.value =
+            listOf(
             telemetryLog(id = 1, createdAt = 100),
             telemetryLog(id = 2, createdAt = 300),
         )

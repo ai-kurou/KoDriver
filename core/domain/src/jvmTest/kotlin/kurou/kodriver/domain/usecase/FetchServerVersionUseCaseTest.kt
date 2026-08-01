@@ -23,7 +23,8 @@ class FetchServerVersionUseCaseTest {
     }
 
     @Test
-    fun `バージョン取得成功時にResultSuccessを返す`() = runBlocking {
+    fun `バージョン取得成功時にResultSuccessを返す`() =
+        runBlocking {
         coEvery { repository.fetchVersion("192.168.1.1") } returns Result.success("1.2.3")
         val useCase = FetchServerVersionUseCase(repository)
 
@@ -35,7 +36,8 @@ class FetchServerVersionUseCaseTest {
     }
 
     @Test
-    fun `バージョン取得失敗時にResultFailureを返す`() = runBlocking {
+    fun `バージョン取得失敗時にResultFailureを返す`() =
+        runBlocking {
         coEvery { repository.fetchVersion("192.168.1.1") } returns Result.failure(RuntimeException("network error"))
         val useCase = FetchServerVersionUseCase(repository)
 

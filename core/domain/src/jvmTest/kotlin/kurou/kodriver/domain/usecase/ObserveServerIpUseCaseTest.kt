@@ -41,7 +41,8 @@ class ObserveServerIpUseCaseTest {
     }
 
     @Test
-    fun `初期状態でnullを返す`() = runBlocking {
+    fun `初期状態でnullを返す`() =
+        runBlocking {
         val repo = createServerIpPreferencesRepository(repository)
         val useCase = ObserveServerIpUseCase(repo)
 
@@ -52,7 +53,8 @@ class ObserveServerIpUseCaseTest {
     }
 
     @Test
-    fun `保存後にIPアドレスを返す`() = runBlocking {
+    fun `保存後にIPアドレスを返す`() =
+        runBlocking {
         val repo = createServerIpPreferencesRepository(repository)
         val useCase = ObserveServerIpUseCase(repo)
 

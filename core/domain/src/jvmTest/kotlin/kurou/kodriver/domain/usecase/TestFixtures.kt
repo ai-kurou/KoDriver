@@ -15,7 +15,8 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 
-internal fun fakeGt7Ps5TelemetryData(lapCount: Int = 0) = Gt7Ps5TelemetryData(
+internal fun fakeGt7Ps5TelemetryData(lapCount: Int = 0) =
+    Gt7Ps5TelemetryData(
     lapCount = lapCount,
     lapsInRace = 0,
     bestLapTimeMs = -1,
@@ -38,13 +39,15 @@ internal fun fakeRaceFlagsData(
     playerCountLapFlag = CountLapFlag.DO_NOT_COUNT_LAP_OR_TIME,
 )
 
-internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) = LmuWindowsTelemetryData(
+internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) =
+    LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
     tyres = LmuWindowsTyreData(wheels = emptyMap()),
     fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-    timing = LmuWindowsTimingData(
+    timing =
+        LmuWindowsTimingData(
         currentLapTimeMs = 0L,
         lastLapTimeMs = 0L,
         bestLapTimeMs = 0L,
@@ -53,7 +56,8 @@ internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) = LmuWindowsTelem
         currentLap = 0,
         maxLaps = 0,
     ),
-    vehicle = LmuWindowsVehicleData(
+        vehicle =
+            LmuWindowsVehicleData(
         localVelocityX = speedX,
         localVelocityY = 0.0,
         localVelocityZ = 0.0,
@@ -61,4 +65,4 @@ internal fun fakeLmuWindowsTelemetryData(speedX: Double = 0.0) = LmuWindowsTelem
         positionY = 0.0,
         positionZ = 0.0,
     ),
-)
+            )

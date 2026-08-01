@@ -13,7 +13,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsVehicleDamagePreferencesRepository（:core:data）、試聴用の
  *   named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
-val lmuWindowsReadoutVehicleDamageDetailModule = module {
+val lmuWindowsReadoutVehicleDamageDetailModule =
+    module {
     // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
     viewModel { LmuWindowsReadoutVehicleDamageDetailViewModel(get(), get(), get(named("lmu_windows"))) }
 

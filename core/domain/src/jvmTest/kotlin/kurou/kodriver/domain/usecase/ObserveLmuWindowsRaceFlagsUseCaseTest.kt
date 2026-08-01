@@ -28,8 +28,10 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
     }
 
     @Test
-    fun `invokeはリポジトリのflagStreamを返す`() = runBlocking {
-        val expected = fakeRaceFlagsData(
+    fun `invokeはリポジトリのflagStreamを返す`() =
+        runBlocking {
+        val expected =
+            fakeRaceFlagsData(
             gamePhase = SessionPhase.GREEN_FLAG,
             yellowFlagState = SessionYellowFlagState.PIT_CLOSED,
             playerFlag = PrimaryFlag.BLUE,
@@ -45,7 +47,8 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
     }
 
     @Test
-    fun `invokeは空のフローをそのまま返す`() = runBlocking {
+    fun `invokeは空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.flagStream() } returns flowOf()
         val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
@@ -57,7 +60,8 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = fakeRaceFlagsData(gamePhase = SessionPhase.WARM_UP)
         val data2 = fakeRaceFlagsData(gamePhase = SessionPhase.GRID_WALK)
         val data3 = fakeRaceFlagsData(gamePhase = SessionPhase.FORMATION)

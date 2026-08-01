@@ -33,8 +33,10 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリから overheating と partDetached と lastImpactMagnitude を読み取る`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
+    fun `共有メモリから overheating と partDetached と lastImpactMagnitude を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeDamageMemoryReader(
             buildDamageBuffer(
                 DamageBufferConfig(
                     overheating = true,
@@ -53,8 +55,10 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
     }
 
     @Test
-    fun `overheating と partDetached が false のとき false を返す`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
+    fun `overheating と partDetached が false のとき false を返す`() =
+        runBlocking {
+        val reader =
+            FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(overheating = false, partDetached = false)),
         )
         val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
@@ -66,8 +70,10 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
     }
 
     @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(activeVehicles = 0)),
         )
         val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
@@ -81,8 +87,10 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
     }
 
     @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeDamageMemoryReader(
             buildDamageBuffer(DamageBufferConfig(activeVehicles = 1, playerIdx = 1)),
         )
         val repo = LmuWindowsVehicleDamageRepositoryImpl(source = makeSource(reader))
@@ -96,8 +104,10 @@ class LmuWindowsVehicleDamageRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeDamageMemoryReader(
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+        val reader =
+            FakeDamageMemoryReader(
             buffer = buildDamageBuffer(),
             openResult = false,
         )

@@ -59,42 +59,50 @@ internal class Gt7Ps5NarratorViewModel(
     private val currentTimeMs: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : ViewModel() {
 
-    private val selectedSimulator = readoutListUseCases
+    private val selectedSimulator =
+        readoutListUseCases
         .observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // GT7にはdetailPaneのサブトグルが存在しないため、listPaneの状態のみで完結する。
-    private val listEnabledStates = selectedSimulator
+    private val listEnabledStates =
+        selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    private val readoutOrder = selectedSimulator
+    private val readoutOrder =
+        selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutOrder(simulator.id)
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // キューに追加して読み上げるかどうか（ReadoutItemKey.TopLevel 単位）。
-    private val queueEnabledStates = readoutListUseCases
+    private val queueEnabledStates =
+        readoutListUseCases
         .observeQueueEnabledStates()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap<ReadoutItemKey, Boolean>())
 
-    private val voiceType = myBestLapUseCases
+    private val voiceType =
+        myBestLapUseCases
         .observeMyBestLapVoiceType()
         .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
 
-    private val fuelThreshold = remainingFuelLapsUseCases
+    private val fuelThreshold =
+        remainingFuelLapsUseCases
         .observeRemainingFuelLapsThreshold()
         .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
 
-    private val remainingFuelThreshold = remainingFuelUseCases
+    private val remainingFuelThreshold =
+        remainingFuelUseCases
         .observeRemainingFuelThresholdPercentage()
         .stateIn(viewModelScope, SharingStarted.Eagerly, GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
 
     private var narratorState = Gt7Ps5NarratorState()
 
     private val currentSettings: Gt7Ps5NarratorReadoutSettings
-        get() = Gt7Ps5NarratorReadoutSettings(
+        get() =
+            Gt7Ps5NarratorReadoutSettings(
             enabledStates = listEnabledStates.value,
             myBestLapVoiceType = voiceType.value,
             remainingFuelLapsThreshold = fuelThreshold.value,
@@ -104,7 +112,8 @@ internal class Gt7Ps5NarratorViewModel(
         )
 
     @Suppress("UnusedPrivateProperty")
-    private val readoutJob = selectedSimulator
+    private val readoutJob =
+        selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator !is Simulator.Gt7Ps5)
                 emptyFlow()
@@ -114,7 +123,8 @@ internal class Gt7Ps5NarratorViewModel(
             val observedAtMs = currentTimeMs()
             val settings = currentSettings
             val initialState = narratorState
-            val myBestLapDecision = determineGt7Ps5NarratorReadout.determineMyBestLap(
+            val myBestLapDecision =
+                determineGt7Ps5NarratorReadout.determineMyBestLap(
                 state = initialState,
                 telemetry = telemetry,
                 settings = settings,
@@ -126,13 +136,15 @@ internal class Gt7Ps5NarratorViewModel(
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
-                logContext = Gt7Ps5TelemetryLogContext(
+                logContext =
+                    Gt7Ps5TelemetryLogContext(
                     state = initialState,
                     settings = settings,
                     finalState = myBestLapDecision.state,
                 ),
-            )
-            val remainingFuelLapsDecision = determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
+                    )
+            val remainingFuelLapsDecision =
+                determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
                 state = myBestLapDecision.state,
                 telemetry = telemetry,
                 settings = settings,
@@ -146,13 +158,15 @@ internal class Gt7Ps5NarratorViewModel(
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
-                logContext = Gt7Ps5TelemetryLogContext(
+                logContext =
+                    Gt7Ps5TelemetryLogContext(
                     state = myBestLapDecision.state,
                     settings = settings,
                     finalState = remainingFuelLapsDecision.state,
                 ),
-            )
-            val remainingFuelDecision = determineGt7Ps5NarratorReadout.determineRemainingFuel(
+                    )
+            val remainingFuelDecision =
+                determineGt7Ps5NarratorReadout.determineRemainingFuel(
                 state = remainingFuelLapsDecision.state,
                 telemetry = telemetry,
                 settings = settings,
@@ -165,11 +179,12 @@ internal class Gt7Ps5NarratorViewModel(
                 readoutOrder = readoutOrder.value,
                 queueEnabledStates = queueEnabledStates.value,
                 observedAtMs = observedAtMs,
-                logContext = Gt7Ps5TelemetryLogContext(
+                logContext =
+                    Gt7Ps5TelemetryLogContext(
                     state = remainingFuelLapsDecision.state,
                     settings = settings,
                     finalState = remainingFuelDecision.state,
                 ),
-            )
+                    )
         }.launchIn(viewModelScope)
 }

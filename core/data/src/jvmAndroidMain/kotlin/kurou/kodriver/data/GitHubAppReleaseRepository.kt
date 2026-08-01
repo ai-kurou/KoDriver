@@ -20,10 +20,12 @@ internal class GitHubAppReleaseRepository(
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    override suspend fun getLatestRelease(): AppUpdate? = withContext(Dispatchers.IO) {
+    override suspend fun getLatestRelease(): AppUpdate? =
+        withContext(Dispatchers.IO) {
         try {
             val body = fetch() ?: return@withContext null
-            val tagName = json
+            val tagName =
+                json
                 .parseToJsonElement(body)
                 .jsonObject["tag_name"]
                 ?.jsonPrimitive

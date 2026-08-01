@@ -31,8 +31,10 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     )
 
     @Test
-    fun `共有メモリからバーチャルエナジー残量割合を読み取る`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
+    fun `共有メモリからバーチャルエナジー残量割合を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeVirtualEnergyMemoryReader(
             buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(remainingRatio = 0.75f, session = 10)),
         )
         val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
@@ -44,8 +46,10 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     }
 
     @Test
-    fun `playerIndexに応じた車両スロットからバーチャルエナジー残量割合を読み取る`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
+    fun `playerIndexに応じた車両スロットからバーチャルエナジー残量割合を読み取る`() =
+        runBlocking {
+        val reader =
+            FakeVirtualEnergyMemoryReader(
             buildVirtualEnergyBuffer(
                 VirtualEnergyBufferConfig(activeVehicles = 2, playerIdx = 1, remainingRatio = 0.3f),
             ),
@@ -58,8 +62,10 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     }
 
     @Test
-    fun `activeVehicles が 0 のとき emit しない`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
+    fun `activeVehicles が 0 のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeVirtualEnergyMemoryReader(
             buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 0)),
         )
         val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
@@ -73,8 +79,10 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     }
 
     @Test
-    fun `playerIdxがactiveVehicles以上のとき emit しない`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
+    fun `playerIdxがactiveVehicles以上のとき emit しない`() =
+        runBlocking {
+        val reader =
+            FakeVirtualEnergyMemoryReader(
             buildVirtualEnergyBuffer(VirtualEnergyBufferConfig(activeVehicles = 1, playerIdx = 1)),
         )
         val repo = LmuWindowsVirtualEnergyRepositoryImpl(source = makeSource(reader))
@@ -88,8 +96,10 @@ class LmuWindowsVirtualEnergyRepositoryImplTest {
     }
 
     @Test
-    fun `reader が open できない間は emit しない`() = runBlocking {
-        val reader = FakeVirtualEnergyMemoryReader(
+    fun `reader が open できない間は emit しない`() =
+        runBlocking {
+        val reader =
+            FakeVirtualEnergyMemoryReader(
             buffer = buildVirtualEnergyBuffer(),
             openResult = false,
         )

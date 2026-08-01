@@ -57,16 +57,18 @@ class OtherServerIpDetailViewModelTest {
     ) = OtherServerIpDetailViewModel(
         observeServerIp = ObserveServerIpUseCase(repository),
         validateServerIpAddress = ValidateServerIpAddressUseCase(),
-        saveServerIpWithConnectivityCheck = SaveServerIpWithConnectivityCheckUseCase(
+        saveServerIpWithConnectivityCheck =
+            SaveServerIpWithConnectivityCheckUseCase(
             validateServerIpAddress = ValidateServerIpAddressUseCase(),
             connectivityChecker = ServerConnectivityChecker { reachable },
             saveServerIp = SaveServerIpUseCase(repository),
         ),
-        windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
+            windowsServerDiscovery = WindowsServerDiscovery { flowOf(discoveredServers) },
     )
 
     @Test
-    fun `保存済みのIPアドレスをUiStateで返す`() = runTest {
+    fun `保存済みのIPアドレスをUiStateで返す`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel()
 
@@ -77,7 +79,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `IPアドレスを変更するとUiStateが更新される`() = runTest {
+    fun `IPアドレスを変更するとUiStateが更新される`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel()
 
@@ -89,7 +92,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `不正なIPアドレスを入力するとisInputValidがfalseになる`() = runTest {
+    fun `不正なIPアドレスを入力するとisInputValidがfalseになる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel()
 
@@ -101,7 +105,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `サーバーに到達可能な場合は保存されisSavedがtrueになる`() = runTest {
+    fun `サーバーに到達可能な場合は保存されisSavedがtrueになる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp("10.0.0.2") } answers { ipFlow.update { "10.0.0.2" } }
         val viewModel = createViewModel(reachable = true)
@@ -117,7 +122,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `不正なIPアドレスは保存されない`() = runTest {
+    fun `不正なIPアドレスは保存されない`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel(reachable = true)
 
@@ -130,7 +136,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `サーバーに到達不可能な場合は警告が表示されisSavedはfalseのまま`() = runTest {
+    fun `サーバーに到達不可能な場合は警告が表示されisSavedはfalseのまま`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel(reachable = false)
 
@@ -144,7 +151,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `到達不可能でもonSaveAnywayで保存できる`() = runTest {
+    fun `到達不可能でもonSaveAnywayで保存できる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp("10.0.0.1") } answers { ipFlow.update { "10.0.0.1" } }
         val viewModel = createViewModel(reachable = false)
@@ -161,10 +169,12 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `検出済みサーバーがあっても保存済みになったら検出ダイアログを表示しない`() = runTest {
+    fun `検出済みサーバーがあっても保存済みになったら検出ダイアログを表示しない`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp("10.0.0.1") } answers { ipFlow.update { "10.0.0.1" } }
-        val viewModel = createViewModel(
+        val viewModel =
+            createViewModel(
             reachable = false,
             discoveredServers = listOf(DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10")),
         )
@@ -182,7 +192,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `onDismissで入力内容と警告がリセットされる`() = runTest {
+    fun `onDismissで入力内容と警告がリセットされる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel(reachable = false)
 
@@ -199,7 +210,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `保存済みIPがない場合は空文字を返す`() = runTest {
+    fun `保存済みIPがない場合は空文字を返す`() =
+        runTest {
         every { repository.serverIp() } returns MutableStateFlow(null)
         val viewModel = createViewModel()
 
@@ -209,7 +221,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `255を超える値を持つIPアドレスは不正と判定される`() = runTest {
+    fun `255を超える値を持つIPアドレスは不正と判定される`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel()
 
@@ -221,7 +234,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `境界値の255は有効と判定される`() = runTest {
+    fun `境界値の255は有効と判定される`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         val viewModel = createViewModel()
 
@@ -233,7 +247,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `保存に失敗するとsaveFailedがtrueになる`() = runTest {
+    fun `保存に失敗するとsaveFailedがtrueになる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp("10.0.0.1") } throws IOException("保存失敗")
         val viewModel = createViewModel(reachable = true)
@@ -248,7 +263,8 @@ class OtherServerIpDetailViewModelTest {
     }
 
     @Test
-    fun `保存失敗後に再度保存が成功するとsaveFailedがfalseにリセットされる`() = runTest {
+    fun `保存失敗後に再度保存が成功するとsaveFailedがfalseにリセットされる`() =
+        runTest {
         every { repository.serverIp() } returns ipFlow
         coEvery { repository.saveServerIp("10.0.0.1") } throws IOException("保存失敗") andThenAnswer {
             ipFlow.update { "10.0.0.1" }

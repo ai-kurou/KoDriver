@@ -65,7 +65,8 @@ class ObserveTelemetryLogsUseCaseTest {
     }
 
     @Test
-    fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() = runBlocking {
+    fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() =
+        runBlocking {
         val repository = createTelemetryLogRepository(repository)
         val useCase = ObserveTelemetryLogsUseCase(repository)
 

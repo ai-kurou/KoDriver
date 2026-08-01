@@ -71,26 +71,31 @@ import kotlin.test.assertNotNull
 class ApplicationTest {
 
     @Test
-    fun `バージョンエンドポイントはアプリバージョンをJSONで返す`() = testApplication {
+    fun `バージョンエンドポイントはアプリバージョンをJSONで返す`() =
+        testApplication {
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -101,26 +106,31 @@ class ApplicationTest {
     }
 
     @Test
-    fun `ルートはサーバーの応答を返す`() = testApplication {
+    fun `ルートはサーバーの応答を返す`() =
+        testApplication {
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -131,27 +141,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `フラッグ情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `フラッグ情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsFlagRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -163,7 +178,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/flags") {
             repository.emit(greenFlagData)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(
@@ -176,27 +192,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `フラッグ情報の同一値は重複して送信されない`() = testApplication {
+    fun `フラッグ情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsFlagRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -219,27 +240,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする`() = testApplication {
+    fun `フラッグWebSocketはクライアント切断時に送信Flowをキャンセルする`() =
+        testApplication {
         val repository = CancellableLmuWindowsFlagRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(repository),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -260,25 +286,29 @@ class ApplicationTest {
     }
 
     @Test
-    fun `近接情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `近接情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsVehicleApproachRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                    observeLmuWindowsVehicleDamage =
+                        ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                            observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -290,7 +320,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/vehicle_approach") {
             repository.emit(vehicleApproachDataLeft)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(
@@ -302,25 +333,29 @@ class ApplicationTest {
     }
 
     @Test
-    fun `近接情報の同一値は重複して送信されない`() = testApplication {
+    fun `近接情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsVehicleApproachRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
                     observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(repository),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                    observeLmuWindowsVehicleDamage =
+                        ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                            observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -343,25 +378,29 @@ class ApplicationTest {
     }
 
     @Test
-    fun `車両故障情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `車両故障情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsVehicleDamageRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                    observeLmuWindowsTyreCarcassTemperature =
+                        ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -373,7 +412,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/damage") {
             repository.emit(overheatingDamage)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(
@@ -384,25 +424,29 @@ class ApplicationTest {
     }
 
     @Test
-    fun `車両故障情報の同一値は重複して送信されない`() = testApplication {
+    fun `車両故障情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsVehicleDamageRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(repository),
+                    observeLmuWindowsTyreCarcassTemperature =
+                        ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -425,27 +469,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `カーカス温度情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `カーカス温度情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         repository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -457,7 +506,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/tyre_carcass_temperature") {
             repository.emit(tyreCarcassTemperatureData1)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(TYRE_CARCASS_TEMPERATURE_JSON_1, message)
@@ -465,27 +515,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `カーカス温度情報の同一値は重複して送信されない`() = testApplication {
+    fun `カーカス温度情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsTyreCarcassTemperatureRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         repository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -508,27 +563,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `摩耗情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `摩耗情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsTyreWearRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -540,7 +600,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/tyre_wear") {
             repository.emit(tyreWearData1)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(TYRE_WEAR_JSON_1, message)
@@ -548,27 +609,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `摩耗情報の同一値は重複して送信されない`() = testApplication {
+    fun `摩耗情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsTyreWearRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(repository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -591,22 +657,26 @@ class ApplicationTest {
     }
 
     @Test
-    fun `バーチャルエナジー残量をJSONでWebSocketへ送信する`() = testApplication {
+    fun `バーチャルエナジー残量をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsVirtualEnergyRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                     observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
@@ -621,7 +691,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/virtual_energy") {
             repository.emit(virtualEnergyData1)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(VIRTUAL_ENERGY_JSON_1, message)
@@ -629,22 +700,26 @@ class ApplicationTest {
     }
 
     @Test
-    fun `バーチャルエナジー残量の同一値は重複して送信されない`() = testApplication {
+    fun `バーチャルエナジー残量の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsVirtualEnergyRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
                     observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                     observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
@@ -670,27 +745,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `ACE燃料残量をJSONでWebSocketへ送信する`() = testApplication {
+    fun `ACE燃料残量をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeAceWindowsFuelRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -702,7 +782,8 @@ class ApplicationTest {
         }.webSocket("/ws/ace_windows/fuel") {
             repository.emit(aceFuelData1)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(ACE_FUEL_JSON_1, message)
@@ -710,27 +791,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `ACE燃料残量の同一値は重複して送信されない`() = testApplication {
+    fun `ACE燃料残量の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeAceWindowsFuelRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -753,27 +839,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `ACEフラッグ情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `ACEフラッグ情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeAceWindowsFlagRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(repository),
                 ),
             )
@@ -785,7 +876,8 @@ class ApplicationTest {
         }.webSocket("/ws/ace_windows/flags") {
             repository.emit(aceFlagData1)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(ACE_FLAG_JSON_1, message)
@@ -793,27 +885,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `ACEフラッグ情報の同一値は重複して送信されない`() = testApplication {
+    fun `ACEフラッグ情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeAceWindowsFlagRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(repository),
                 ),
             )
@@ -838,27 +935,33 @@ class ApplicationTest {
     @Test
     fun `KoDriverServerはstartで起動しstopで停止する`() {
         val port = ServerSocket(0).use { it.localPort }
-        val server = KoDriverServer(
-            useCases = KoDriverServerUseCases(
+        val server =
+            KoDriverServer(
+            useCases =
+                KoDriverServerUseCases(
                 observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                observeLmuWindowsVehicleApproach =
+                    ObserveLmuWindowsVehicleApproachUseCase(
                     EmptyLmuWindowsVehicleApproachRepository,
                 ),
-                observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                    observeLmuWindowsVehicleDamage =
+                        ObserveLmuWindowsVehicleDamageUseCase(
                     EmptyLmuWindowsVehicleDamageRepository,
                 ),
-                observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                     EmptyLmuWindowsTyreCarcassTemperatureRepository,
                 ),
-                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                            observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
-                observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                observeLmuWindowsVirtualEnergy =
+                    ObserveLmuWindowsVirtualEnergyUseCase(
                     EmptyLmuWindowsVirtualEnergyRepository,
                 ),
-                observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
             ),
-            port = port,
+                port = port,
             host = "127.0.0.1",
         )
         server.serviceAdvertiser = KoDriverServiceAdvertiser(jmdnsFactory = { throw IOException("test") })
@@ -872,27 +975,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `タイミング情報をJSONでWebSocketへ送信する`() = testApplication {
+    fun `タイミング情報をJSONでWebSocketへ送信する`() =
+        testApplication {
         val repository = FakeLmuWindowsRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -904,7 +1012,8 @@ class ApplicationTest {
         }.webSocket("/ws/lmu_windows/my_best_lap") {
             repository.emit(timingTelemetryData1)
 
-            val message = withTimeout(1_000) {
+            val message =
+                withTimeout(1_000) {
                 (incoming.receive() as Frame.Text).readText()
             }
             assertEquals(TIMING_JSON_1, message)
@@ -912,27 +1021,32 @@ class ApplicationTest {
     }
 
     @Test
-    fun `タイミング情報の同一値は重複して送信されない`() = testApplication {
+    fun `タイミング情報の同一値は重複して送信されない`() =
+        testApplication {
         val repository = FakeLmuWindowsRepository()
         application {
             module(
                 KoDriverServerUseCases(
                     observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
-                    observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(
+                    observeLmuWindowsVehicleApproach =
+                        ObserveLmuWindowsVehicleApproachUseCase(
                         EmptyLmuWindowsVehicleApproachRepository,
                     ),
-                    observeLmuWindowsVehicleDamage = ObserveLmuWindowsVehicleDamageUseCase(
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
                         EmptyLmuWindowsVehicleDamageRepository,
                     ),
-                    observeLmuWindowsTyreCarcassTemperature = ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                            observeLmuWindowsTyreCarcassTemperature =
+                                ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
                     ),
-                    observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                                observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                     observeLmuWindows = ObserveLmuWindowsUseCase(repository),
-                    observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(
+                    observeLmuWindowsVirtualEnergy =
+                        ObserveLmuWindowsVirtualEnergyUseCase(
                         EmptyLmuWindowsVirtualEnergyRepository,
                     ),
-                    observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
                 ),
             )
@@ -956,7 +1070,8 @@ class ApplicationTest {
 
     @Test
     fun `createKoDriverServerはKoinから依存を解決してKoDriverServerを生成する`() {
-        val koin = startKoin {
+        val koin =
+            startKoin {
             modules(
                 module {
                     single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
@@ -984,7 +1099,8 @@ class ApplicationTest {
 
 // --- テストデータ ---
 
-private val greenFlagData = LmuWindowsRaceFlagsData(
+private val greenFlagData =
+    LmuWindowsRaceFlagsData(
     gamePhase = SessionPhase.GREEN_FLAG,
     yellowFlagState = SessionYellowFlagState.NONE,
     sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
@@ -995,7 +1111,8 @@ private val greenFlagData = LmuWindowsRaceFlagsData(
     playerCountLapFlag = CountLapFlag.COUNT_LAP_AND_TIME,
 )
 
-private val yellowFlagData = LmuWindowsRaceFlagsData(
+private val yellowFlagData =
+    LmuWindowsRaceFlagsData(
     gamePhase = SessionPhase.FULL_COURSE_YELLOW,
     yellowFlagState = SessionYellowFlagState.PENDING,
     sectorFlags = listOf(SectorFlagState.YELLOW, SectorFlagState.YELLOW, SectorFlagState.YELLOW),
@@ -1016,14 +1133,16 @@ private const val YELLOW_FLAG_JSON =
         """"startLight":0,"numRedLights":0,"playerFlag":"UNKNOWN","playerUnderYellow":true,""" +
         """"playerCountLapFlag":"DO_NOT_COUNT_LAP_OR_TIME"}"""
 
-private val vehicleApproachDataLeft = LmuWindowsVehicleApproachData(
+private val vehicleApproachDataLeft =
+    LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = setOf(3),
     sideBySideRightVehicleIds = emptySet(),
     lateralDistanceLeftMeters = 1.5,
     lateralDistanceRightMeters = Double.MAX_VALUE,
 )
 
-private val vehicleApproachDataRight = LmuWindowsVehicleApproachData(
+private val vehicleApproachDataRight =
+    LmuWindowsVehicleApproachData(
     sideBySideLeftVehicleIds = emptySet(),
     sideBySideRightVehicleIds = setOf(5),
     lateralDistanceLeftMeters = Double.MAX_VALUE,
@@ -1038,13 +1157,15 @@ private const val VEHICLE_APPROACH_RIGHT_JSON =
     """{"sideBySideLeftVehicleIds":[],"sideBySideRightVehicleIds":[5],""" +
         """"lateralDistanceLeftMeters":1.7976931348623157E308,"lateralDistanceRightMeters":2.0}"""
 
-private val overheatingDamage = LmuWindowsVehicleDamageData(
+private val overheatingDamage =
+    LmuWindowsVehicleDamageData(
     overheating = true,
     partDetached = false,
     lastImpactMagnitude = 0.5,
 )
 
-private val partDetachedDamage = LmuWindowsVehicleDamageData(
+private val partDetachedDamage =
+    LmuWindowsVehicleDamageData(
     overheating = false,
     partDetached = true,
     lastImpactMagnitude = 1.2,
@@ -1056,23 +1177,27 @@ private const val OVERHEATING_DAMAGE_JSON =
 private const val PART_DETACHED_DAMAGE_JSON =
     """{"overheating":false,"partDetached":true,"lastImpactMagnitude":1.2}"""
 
-private val tyreCarcassTemperatureData1 = LmuWindowsTyreCarcassTemperatureData(
-    wheels = mapOf(
+private val tyreCarcassTemperatureData1 =
+    LmuWindowsTyreCarcassTemperatureData(
+    wheels =
+        mapOf(
         WheelIndex.FRONT_LEFT to 80.0,
         WheelIndex.FRONT_RIGHT to 82.0,
         WheelIndex.REAR_LEFT to 85.0,
         WheelIndex.REAR_RIGHT to 87.0,
     ),
-)
+        )
 
-private val tyreCarcassTemperatureData2 = LmuWindowsTyreCarcassTemperatureData(
-    wheels = mapOf(
+private val tyreCarcassTemperatureData2 =
+    LmuWindowsTyreCarcassTemperatureData(
+    wheels =
+        mapOf(
         WheelIndex.FRONT_LEFT to 90.0,
         WheelIndex.FRONT_RIGHT to 91.0,
         WheelIndex.REAR_LEFT to 92.0,
         WheelIndex.REAR_RIGHT to 93.0,
     ),
-)
+        )
 
 private const val TYRE_CARCASS_TEMPERATURE_JSON_1 =
     """{"wheels":{"FRONT_LEFT":80.0,"FRONT_RIGHT":82.0,"REAR_LEFT":85.0,"REAR_RIGHT":87.0}}"""
@@ -1080,23 +1205,27 @@ private const val TYRE_CARCASS_TEMPERATURE_JSON_1 =
 private const val TYRE_CARCASS_TEMPERATURE_JSON_2 =
     """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
 
-private val tyreWearData1 = LmuWindowsTyreWearData(
-    wheels = mapOf(
+private val tyreWearData1 =
+    LmuWindowsTyreWearData(
+    wheels =
+        mapOf(
         WheelIndex.FRONT_LEFT to 0.8,
         WheelIndex.FRONT_RIGHT to 0.82,
         WheelIndex.REAR_LEFT to 0.85,
         WheelIndex.REAR_RIGHT to 0.87,
     ),
-)
+        )
 
-private val tyreWearData2 = LmuWindowsTyreWearData(
-    wheels = mapOf(
+private val tyreWearData2 =
+    LmuWindowsTyreWearData(
+    wheels =
+        mapOf(
         WheelIndex.FRONT_LEFT to 0.5,
         WheelIndex.FRONT_RIGHT to 0.51,
         WheelIndex.REAR_LEFT to 0.52,
         WheelIndex.REAR_RIGHT to 0.53,
     ),
-)
+        )
 
 private const val TYRE_WEAR_JSON_1 =
     """{"wheels":{"FRONT_LEFT":0.8,"FRONT_RIGHT":0.82,"REAR_LEFT":0.85,"REAR_RIGHT":0.87}}"""
@@ -1119,7 +1248,8 @@ private class FakeLmuWindowsFlagRepository : LmuWindowsFlagRepository {
 private class CancellableLmuWindowsFlagRepository : LmuWindowsFlagRepository {
     val cancelled = CompletableDeferred<Unit>()
 
-    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = flow {
+    override fun flagStream(): Flow<LmuWindowsRaceFlagsData> =
+        flow {
         try {
             awaitCancellation()
         } finally {
@@ -1208,13 +1338,15 @@ private class FakeLmuWindowsRepository : LmuWindowsRepository {
 
 private val emptyWheels = WheelIndex.entries.associateWith { LmuWindowsTyreWheelData(0.0, 0.0, 0.0, 0.0, 0.0) }
 
-private val timingTelemetryData1 = LmuWindowsTelemetryData(
+private val timingTelemetryData1 =
+    LmuWindowsTelemetryData(
     timestampMs = 0L,
     engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
     inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
     tyres = LmuWindowsTyreData(wheels = emptyWheels),
     fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-    timing = LmuWindowsTimingData(
+    timing =
+        LmuWindowsTimingData(
         currentLapTimeMs = 65_000L,
         lastLapTimeMs = 90_000L,
         bestLapTimeMs = 88_000L,
@@ -1223,7 +1355,8 @@ private val timingTelemetryData1 = LmuWindowsTelemetryData(
         currentLap = 3,
         maxLaps = 10,
     ),
-    vehicle = LmuWindowsVehicleData(
+        vehicle =
+            LmuWindowsVehicleData(
         localVelocityX = 0.0,
         localVelocityY = 0.0,
         localVelocityZ = 0.0,
@@ -1231,10 +1364,12 @@ private val timingTelemetryData1 = LmuWindowsTelemetryData(
         positionY = 0.0,
         positionZ = 0.0,
     ),
-)
+            )
 
-private val timingTelemetryData2 = timingTelemetryData1.copy(
-    timing = LmuWindowsTimingData(
+private val timingTelemetryData2 =
+    timingTelemetryData1.copy(
+    timing =
+        LmuWindowsTimingData(
         currentLapTimeMs = 70_000L,
         lastLapTimeMs = 91_000L,
         bestLapTimeMs = 88_000L,
@@ -1243,7 +1378,7 @@ private val timingTelemetryData2 = timingTelemetryData1.copy(
         currentLap = 4,
         maxLaps = 10,
     ),
-)
+        )
 
 private const val TIMING_JSON_1 =
     """{"currentLapTimeMs":65000,"lastLapTimeMs":90000,"bestLapTimeMs":88000,""" +

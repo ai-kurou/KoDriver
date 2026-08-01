@@ -22,7 +22,8 @@ class AceWindowsRemainingFuelPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `残り燃料設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `残り燃料設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createAceWindowsRemainingFuelPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(thresholdPercentage = 50) }
 

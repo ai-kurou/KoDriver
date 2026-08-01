@@ -22,7 +22,8 @@ import kotlin.test.assertEquals
 class Gt7Ps5WavNarratorEngineTest {
 
     @Test
-    fun `再生中は音声を再生しない`() = runTest {
+    fun `再生中は音声を再生しない`() =
+        runTest {
         val player = FakeSoundPlayer(isPlaying = true)
         val engine = createEngine(player)
         runCurrent()
@@ -34,9 +35,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `イベント音声が未ロードなら音声を再生しない`() = runTest {
+    fun `イベント音声が未ロードなら音声を再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { error("load failed") },
         )
@@ -49,7 +52,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音とイベント音声を順番に再生する`() = runTest {
+    fun `開始音とイベント音声を順番に再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -63,9 +67,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `MyBestLapCasual は casual 音声を再生する`() = runTest {
+    fun `MyBestLapCasual は casual 音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 if (path == MY_BEST_LAP_CASUAL_PATH) MY_BEST_LAP_CASUAL_SOUND else EVENT_SOUND
@@ -82,9 +88,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() = runTest {
+    fun `電子ノイズを選択したとき電子ノイズ音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             startSoundTypeFlow = flowOf(ReadoutStartSoundType.ELECTRONIC_NOISE),
         )
@@ -99,9 +107,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音が未ロードでもイベント音声を再生する`() = runTest {
+    fun `開始音が未ロードでもイベント音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             startSoundResourceLoader = { error("load failed") },
         )
@@ -115,7 +125,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() = runTest {
+    fun `開始音タイプ変化後のspeakは新しい開始音で再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val startSoundTypeFlow = MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
         val engine = createEngine(player, startSoundTypeFlow = startSoundTypeFlow)
@@ -138,9 +149,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `RemainingFuelLapsWarningを再生する`() = runTest {
+    fun `RemainingFuelLapsWarningを再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 when (path) {
@@ -160,9 +173,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `Gt7Ps5RemainingFuelWarningを再生する`() = runTest {
+    fun `Gt7Ps5RemainingFuelWarningを再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 when (path) {
@@ -182,9 +197,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `queue=trueで呼ぶと前の音声の後に続けて再生する`() = runTest {
+    fun `queue=trueで呼ぶと前の音声の後に続けて再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             resourceLoader = { path ->
                 when (path) {
@@ -208,7 +225,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() = runTest {
+    fun `stopを呼ぶと再生中のジョブがキャンセルされる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -221,7 +239,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `stop後にspeakすると正常に再生できる`() = runTest {
+    fun `stop後にspeakすると正常に再生できる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -236,7 +255,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `stopはキュー待機中のジョブも含めて全てキャンセルする`() = runTest {
+    fun `stopはキュー待機中のジョブも含めて全てキャンセルする`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -250,7 +270,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() = runTest {
+    fun `queue false の speak は待機中のキューを破棄して新しい音声を再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -266,7 +287,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `stop後のqueue speakは正常に再生できる`() = runTest {
+    fun `stop後のqueue speakは正常に再生できる`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -281,7 +303,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `volumeFlowの音量で再生する`() = runTest {
+    fun `volumeFlowの音量で再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player, volumeFlow = flowOf(50))
         runCurrent()
@@ -293,7 +316,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは開始音のみを再生する`() = runTest {
+    fun `previewStartSoundは開始音のみを再生する`() =
+        runTest {
         val player = FakeSoundPlayer()
         val engine = createEngine(player)
         runCurrent()
@@ -306,9 +330,11 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() = runTest {
+    fun `previewStartSoundは未ロードの開始音タイプなら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer()
-        val engine = createEngine(
+        val engine =
+            createEngine(
             player = player,
             startSoundResourceLoader = { error("load failed") },
         )
@@ -321,7 +347,8 @@ class Gt7Ps5WavNarratorEngineTest {
     }
 
     @Test
-    fun `previewStartSoundは再生中なら何も再生しない`() = runTest {
+    fun `previewStartSoundは再生中なら何も再生しない`() =
+        runTest {
         val player = FakeSoundPlayer(isPlaying = true)
         val engine = createEngine(player)
         runCurrent()
@@ -350,7 +377,8 @@ class Gt7Ps5WavNarratorEngineTest {
                 else -> FORMULA_RADIO_SOUND
             }
         },
-    ): Gt7Ps5WavNarratorEngine = Gt7Ps5WavNarratorEngine(
+    ): Gt7Ps5WavNarratorEngine =
+        Gt7Ps5WavNarratorEngine(
         soundPlayer = player,
         volumeFlow = volumeFlow,
         startSoundTypeFlow = startSoundTypeFlow,

@@ -37,7 +37,8 @@ class Gt7Ps5UdpSourceTest {
         nonce.writeIntLE(0, iv2)
         nonce.writeIntLE(4, iv1)
 
-        val keystream = Salsa20.decrypt(
+        val keystream =
+            Salsa20.decrypt(
             Gt7Ps5UdpSource.GT7_KEY,
             nonce,
             ByteArray(Gt7Ps5UdpSource.PACKET_MIN_SIZE),
@@ -48,7 +49,8 @@ class Gt7Ps5UdpSourceTest {
         plainBuf.putInt(Gt7Ps5UdpSource.MAGIC_OFFSET, magic)
         plainBuf.putShort(0x74, lapCount)
 
-        val encrypted = ByteArray(Gt7Ps5UdpSource.PACKET_MIN_SIZE) { i ->
+        val encrypted =
+            ByteArray(Gt7Ps5UdpSource.PACKET_MIN_SIZE) { i ->
             (plain[i].toInt() xor keystream[i].toInt()).toByte()
         }
         // 復号側が iv1 として読み取る位置に iv1 を平文で埋め込む
@@ -62,7 +64,8 @@ class Gt7Ps5UdpSourceTest {
         currentTimeMillis: () -> Long = System::currentTimeMillis,
         address: String = "192.168.1.100",
         listenPort: Int = Gt7Ps5UdpSource.LISTEN_PORT,
-    ): Gt7Ps5UdpSource = Gt7Ps5UdpSource(
+    ): Gt7Ps5UdpSource =
+        Gt7Ps5UdpSource(
         consoleAddressFlow = flowOf(address),
         listenPortFlow = flowOf(listenPort),
         socketFactory = { socket },
@@ -71,7 +74,8 @@ class Gt7Ps5UdpSourceTest {
     )
 
     @Test
-    fun `起動時にハートビートを送信する`() = runBlocking {
+    fun `起動時にハートビートを送信する`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket())
         val source = makeSource(socket)
@@ -85,7 +89,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `正常パケットを受信するとByteBufferをemitする`() = runBlocking {
+    fun `正常パケットを受信するとByteBufferをemitする`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket(lapCount = 3))
         val source = makeSource(socket)
@@ -97,7 +102,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `マジックバイト不一致のパケットはemitしない`() = runBlocking {
+    fun `マジックバイト不一致のパケットはemitしない`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket(magic = 0xDEADBEEF.toInt()))
         socket.enqueuePacket(makeEncryptedPacket(lapCount = 5))
@@ -109,7 +115,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `パケットサイズが不足している場合はemitしない`() = runBlocking {
+    fun `パケットサイズが不足している場合はemitしない`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(ByteArray(10))
         socket.enqueuePacket(makeEncryptedPacket(lapCount = 7))
@@ -121,11 +128,13 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `BindException以外のIOException発生時も再接続してパケット受信を再開する`() = runBlocking {
+    fun `BindException以外のIOException発生時も再接続してパケット受信を再開する`() =
+        runBlocking {
         val workingSocket = FakeUdpSocket()
         workingSocket.enqueuePacket(makeEncryptedPacket(lapCount = 11))
         var callCount = 0
-        val source = Gt7Ps5UdpSource(
+        val source =
+            Gt7Ps5UdpSource(
             consoleAddressFlow = flowOf("192.168.1.100"),
             socketFactory = {
                 callCount++
@@ -142,7 +151,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `タイムアウト発生時にハートビートを再送する`() = runBlocking {
+    fun `タイムアウト発生時にハートビートを再送する`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueueTimeout()
         socket.enqueuePacket(makeEncryptedPacket())
@@ -158,7 +168,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `HEARTBEAT_INTERVAL_PACKETSごとにハートビートを再送する`() = runBlocking {
+    fun `HEARTBEAT_INTERVAL_PACKETSごとにハートビートを再送する`() =
+        runBlocking {
         val interval = Gt7Ps5UdpSource.HEARTBEAT_INTERVAL_PACKETS
         val socket = FakeUdpSocket()
         repeat(interval + 1) { i ->
@@ -173,7 +184,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `正常パケット受信時にlastPacketReceivedAtを更新する`() = runBlocking {
+    fun `正常パケット受信時にlastPacketReceivedAtを更新する`() =
+        runBlocking {
         val fixedTime = 12_345_678L
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket())
@@ -185,7 +197,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `マジック不一致のパケット受信ではlastPacketReceivedAtを更新しない`() = runBlocking {
+    fun `マジック不一致のパケット受信ではlastPacketReceivedAtを更新しない`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket(magic = 0xDEADBEEF.toInt()))
         socket.enqueuePacket(makeEncryptedPacket(lapCount = 1))
@@ -198,7 +211,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `flowキャンセル時にソケットがcloseされる`() = runBlocking {
+    fun `flowキャンセル時にソケットがcloseされる`() =
+        runBlocking {
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket())
         val source = makeSource(socket)
@@ -215,11 +229,13 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `アドレスがnullの間はパケットを受信しない`() = runBlocking {
+    fun `アドレスがnullの間はパケットを受信しない`() =
+        runBlocking {
         val addressFlow = MutableStateFlow<String?>(null)
         val socket = FakeUdpSocket()
         socket.enqueuePacket(makeEncryptedPacket(lapCount = 1))
-        val source = Gt7Ps5UdpSource(
+        val source =
+            Gt7Ps5UdpSource(
             consoleAddressFlow = addressFlow,
             socketFactory = { socket },
             scope = CoroutineScope(SupervisorJob()),
@@ -229,7 +245,8 @@ class Gt7Ps5UdpSourceTest {
     }
 
     @Test
-    fun `listenPortFlowが変化するとsocketFactoryに新しいポートが渡される`() = runBlocking {
+    fun `listenPortFlowが変化するとsocketFactoryに新しいポートが渡される`() =
+        runBlocking {
         val portFlow = MutableStateFlow(33740)
         val receivedPorts = mutableListOf<Int>()
         val socket1 = FakeUdpSocket()
@@ -241,7 +258,8 @@ class Gt7Ps5UdpSourceTest {
         var callCount = 0
 
         val collectScope = CoroutineScope(SupervisorJob())
-        val source = Gt7Ps5UdpSource(
+        val source =
+            Gt7Ps5UdpSource(
             consoleAddressFlow = flowOf("192.168.1.100"),
             listenPortFlow = portFlow,
             socketFactory = { port ->

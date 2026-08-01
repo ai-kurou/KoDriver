@@ -32,7 +32,8 @@ class WebSocketHttpClientFactoryTest {
     }
 
     @Test
-    fun `生成したクライアントでWebSocket接続してフレームを受信できる`() = runTest {
+    fun `生成したクライアントでWebSocket接続してフレームを受信できる`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {

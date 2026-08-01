@@ -10,7 +10,8 @@ import org.koin.dsl.module
  * 提供: TelemetryLogDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: TelemetryLogRepository（:core:data で登録）。
  */
-val telemetryLogDetailModule = module {
+val telemetryLogDetailModule =
+    module {
     // ViewModel
     viewModelOf(::TelemetryLogDetailViewModel)
 

@@ -22,7 +22,8 @@ class Gt7Ps5UdpPortPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `gt7_udp_port_preferences_pbに書き込まれる`() = testScope.runTest {
+    fun `gt7_udp_port_preferences_pbに書き込まれる`() =
+        testScope.runTest {
         val repository = createGt7Ps5UdpPortPreferencesRepository(tempDir.absolutePath)
         repository.savePort(33741)
 

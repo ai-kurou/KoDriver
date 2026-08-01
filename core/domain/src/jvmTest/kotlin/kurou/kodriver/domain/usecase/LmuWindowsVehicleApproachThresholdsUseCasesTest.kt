@@ -54,8 +54,10 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `observeLongitudinalThresholdMeters はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+    fun `observeLongitudinalThresholdMeters はリポジトリの設定を返す`() =
+        runBlocking {
+        val repository =
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
             repository,
             initialLongitudinal = 10.0,
         )
@@ -67,7 +69,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `saveLongitudinalThresholdMeters は縦方向閾値を保存する`() = runBlocking {
+    fun `saveLongitudinalThresholdMeters は縦方向閾値を保存する`() =
+        runBlocking {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
         val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
@@ -80,8 +83,10 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `observeLateralThresholdMeters はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+    fun `observeLateralThresholdMeters はリポジトリの設定を返す`() =
+        runBlocking {
+        val repository =
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
             repository,
             initialLateral = 5.0,
         )
@@ -93,7 +98,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `saveLateralThresholdMeters は横方向閾値を保存する`() = runBlocking {
+    fun `saveLateralThresholdMeters は横方向閾値を保存する`() =
+        runBlocking {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
         val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 
@@ -106,8 +112,10 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `observeSustainedApproachDurationSeconds はリポジトリの設定を返す`() = runBlocking {
-        val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
+    fun `observeSustainedApproachDurationSeconds はリポジトリの設定を返す`() =
+        runBlocking {
+        val repository =
+            createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
             repository,
             initialSustainedDuration = 4,
         )
@@ -119,7 +127,8 @@ class LmuWindowsVehicleApproachThresholdsUseCasesTest {
     }
 
     @Test
-    fun `saveSustainedApproachDurationSeconds は継続時間閾値を保存する`() = runBlocking {
+    fun `saveSustainedApproachDurationSeconds は継続時間閾値を保存する`() =
+        runBlocking {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(repository)
         val useCases = LmuWindowsVehicleApproachThresholdsUseCases(repository)
 

@@ -58,7 +58,8 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutTyreTemperatureDetailViewModel(
+    private fun createViewModel() =
+        LmuWindowsReadoutTyreTemperatureDetailViewModel(
         observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
         observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
         observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
@@ -69,7 +70,8 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     )
 
     @Test
-    fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() = runTest {
+    fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
+        runTest {
         every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
@@ -86,7 +88,8 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() = runTest {
+    fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() =
+        runTest {
         every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeEnabledStates() } returns enabledStatesFlow
@@ -111,7 +114,8 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() = runTest {
+    fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() =
+        runTest {
         val highThresholdFlow = MutableStateFlow(90)
         every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -130,7 +134,8 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値95に戻る`() = runTest {
+    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値95に戻る`() =
+        runTest {
         val highThresholdFlow = MutableStateFlow(90)
         every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -195,7 +200,8 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() = runTest {
+    fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() =
+        runTest {
         every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeEnabledStates() } returns enabledStatesFlow
@@ -220,10 +226,12 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() = runTest {
+    fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() =
+        runTest {
         every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        val lowWarningPhasesFlow = MutableStateFlow(
+        val lowWarningPhasesFlow =
+            MutableStateFlow(
             mapOf(
                 SessionPhase.GARAGE to false,
                 SessionPhase.WARM_UP to false,
@@ -256,10 +264,12 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     }
 
     @Test
-    fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() = runTest {
+    fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() =
+        runTest {
         every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-        val defaultPhases = mapOf(
+        val defaultPhases =
+            mapOf(
             SessionPhase.GARAGE to false,
             SessionPhase.WARM_UP to true,
             SessionPhase.GRID_WALK to true,

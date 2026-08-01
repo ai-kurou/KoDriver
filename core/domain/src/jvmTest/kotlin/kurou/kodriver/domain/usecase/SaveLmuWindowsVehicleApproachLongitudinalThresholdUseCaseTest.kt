@@ -20,7 +20,8 @@ class SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCaseTest {
     }
 
     @Test
-    fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() = runBlocking {
+    fun `縦方向閾値を保存するとFlowに反映され上書きで更新される`() =
+        runBlocking {
         val useCase = SaveLmuWindowsVehicleApproachLongitudinalThresholdUseCase(repository)
 
         useCase(50.0)

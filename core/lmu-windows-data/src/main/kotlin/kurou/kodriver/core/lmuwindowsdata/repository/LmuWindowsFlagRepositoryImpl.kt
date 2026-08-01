@@ -26,19 +26,21 @@ internal class LmuWindowsFlagRepositoryImpl(
         return LmuWindowsRaceFlagsData(
             gamePhase = SessionPhase.fromRaw(buffer.get(SCORING_BASE + OFF_GAME_PHASE).toInt() and 0xFF),
             yellowFlagState = SessionYellowFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_YELLOW_FLAG_STATE).toInt()),
-            sectorFlags = listOf(
+            sectorFlags =
+                listOf(
                 SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS).toInt()),
                 SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 1).toInt()),
                 SectorFlagState.fromRaw(buffer.get(SCORING_BASE + OFF_SECTOR_FLAGS + 2).toInt()),
             ),
-            startLight = buffer.get(SCORING_BASE + OFF_START_LIGHT).toInt() and 0xFF,
+                startLight = buffer.get(SCORING_BASE + OFF_START_LIGHT).toInt() and 0xFF,
             numRedLights = buffer.get(SCORING_BASE + OFF_NUM_RED_LIGHTS).toInt() and 0xFF,
             playerFlag = PrimaryFlag.fromRaw(buffer.get(playerVehicleBase + OFF_PLAYER_FLAG).toInt() and 0xFF),
             playerUnderYellow = buffer.get(playerVehicleBase + OFF_PLAYER_UNDER_YELLOW).toInt() != 0,
-            playerCountLapFlag = CountLapFlag.fromRaw(
+            playerCountLapFlag =
+                CountLapFlag.fromRaw(
                 buffer.get(playerVehicleBase + OFF_PLAYER_COUNT_LAP_FLAG).toInt() and 0xFF,
             ),
-        )
+                )
     }
 
     private fun findPlayerVehicleBase(buffer: ByteBuffer, vehicleCount: Int): Int? {

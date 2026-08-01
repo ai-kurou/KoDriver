@@ -65,10 +65,13 @@ class ResetTelemetryLogDatabaseUseCaseTest {
     }
 
     @Test
-    fun `全てのログを削除する`() = runBlocking {
-        val repository = createTelemetryLogRepository(
+    fun `全てのログを削除する`() =
+        runBlocking {
+        val repository =
+            createTelemetryLogRepository(
             repository,
-            initialLogs = listOf(
+            initialLogs =
+                listOf(
                 TelemetryLog(
                     id = 1L,
                     createdAt = 1000L,
@@ -77,7 +80,7 @@ class ResetTelemetryLogDatabaseUseCaseTest {
                     telemetryJson = """{"lapCount":1}""",
                 ),
             ),
-        )
+                )
         val resetUseCase = ResetTelemetryLogDatabaseUseCase(repository)
         val observeUseCase = ObserveTelemetryLogsUseCase(repository)
 

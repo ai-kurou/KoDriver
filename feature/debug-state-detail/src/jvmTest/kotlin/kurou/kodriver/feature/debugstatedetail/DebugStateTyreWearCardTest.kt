@@ -43,18 +43,21 @@ class DebugStateTyreWearCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
-                            wheels = mapOf(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
+                            wheels =
+                                mapOf(
                                 WheelIndex.FRONT_LEFT to sampleWheel(0.8),
                                 WheelIndex.FRONT_RIGHT to sampleWheel(0.75),
                                 WheelIndex.REAR_LEFT to sampleWheel(0.7),
                                 WheelIndex.REAR_RIGHT to sampleWheel(0.65),
                             ),
-                        ),
-                    ),
-                    canNavigateBack = true,
+                                ),
+                            ),
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -71,14 +74,16 @@ class DebugStateTyreWearCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
                             wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -92,14 +97,16 @@ class DebugStateTyreWearCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = null,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
                             wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -113,12 +120,13 @@ class DebugStateTyreWearCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         lmuWindowsTelemetry = null,
                         cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -132,14 +140,16 @@ class DebugStateTyreWearCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
-                        lmuWindowsTelemetry = sampleLmuWindowsTelemetry(
+                        lmuWindowsTelemetry =
+                            sampleLmuWindowsTelemetry(
                             wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
                         ),
-                        cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -148,7 +158,8 @@ class DebugStateTyreWearCardTest {
         rule.onNodeWithText("FR -%").assertIsDisplayed()
     }
 
-    private fun sampleWheel(wear: Double) = LmuWindowsTyreWheelData(
+    private fun sampleWheel(wear: Double) =
+        LmuWindowsTyreWheelData(
         surfaceTemperatureK = 0.0,
         carcassTemperatureK = 0.0,
         brakeTemperatureC = 0.0,
@@ -156,13 +167,15 @@ class DebugStateTyreWearCardTest {
         wear = wear,
     )
 
-    private fun sampleLmuWindowsTelemetry(wheels: Map<WheelIndex, LmuWindowsTyreWheelData>) = LmuWindowsTelemetryData(
+    private fun sampleLmuWindowsTelemetry(wheels: Map<WheelIndex, LmuWindowsTyreWheelData>) =
+        LmuWindowsTelemetryData(
         timestampMs = 0L,
         engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
         inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
         tyres = LmuWindowsTyreData(wheels = wheels),
         fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing = LmuWindowsTimingData(
+        timing =
+            LmuWindowsTimingData(
             currentLapTimeMs = 0L,
             lastLapTimeMs = 0L,
             bestLapTimeMs = 0L,
@@ -171,7 +184,8 @@ class DebugStateTyreWearCardTest {
             currentLap = 0,
             maxLaps = 0,
         ),
-        vehicle = LmuWindowsVehicleData(
+            vehicle =
+                LmuWindowsVehicleData(
             localVelocityX = 0.0,
             localVelocityY = 0.0,
             localVelocityZ = 0.0,
@@ -179,5 +193,5 @@ class DebugStateTyreWearCardTest {
             positionY = 0.0,
             positionZ = 0.0,
         ),
-    )
+                )
 }

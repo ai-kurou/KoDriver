@@ -34,7 +34,8 @@ class DetermineActiveRaceFlagsTest {
 
     @Test
     fun `sectorFlagsにYELLOWが含まれる場合はYELLOWを含む`() {
-        val raceFlags = sampleRaceFlags(
+        val raceFlags =
+            sampleRaceFlags(
             sectorFlags = listOf(SectorFlagState.CLEAR, SectorFlagState.YELLOW, SectorFlagState.CLEAR),
         )
 
@@ -57,12 +58,13 @@ class DetermineActiveRaceFlagsTest {
 
     private fun sampleRaceFlags(
         gamePhase: SessionPhase = SessionPhase.GREEN_FLAG,
-        sectorFlags: List<SectorFlagState> = listOf(
+        sectorFlags: List<SectorFlagState> =
+            listOf(
             SectorFlagState.CLEAR,
             SectorFlagState.CLEAR,
             SectorFlagState.CLEAR,
         ),
-        playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
+            playerFlag: PrimaryFlag = PrimaryFlag.GREEN,
         playerUnderYellow: Boolean = false,
     ) = LmuWindowsRaceFlagsData(
         gamePhase = gamePhase,

@@ -54,14 +54,16 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
+    private fun createViewModel() =
+        Gt7Ps5ReadoutRemainingFuelLapsDetailViewModel(
         observeGt7Ps5RemainingFuelLaps = ObserveGt7Ps5RemainingFuelLapsUseCase(repository),
         saveGt7Ps5RemainingFuelLaps = SaveGt7Ps5RemainingFuelLapsUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態は燃料残り周回数3のUiStateを返す`() = runTest {
+    fun `初期状態は燃料残り周回数3のUiStateを返す`() =
+        runTest {
         every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
         val viewModel = createViewModel()
 
@@ -71,7 +73,8 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
     }
 
     @Test
-    fun `onRemainingFuelLapsChangedに1を渡すと燃料残り周回数が1になる`() = runTest {
+    fun `onRemainingFuelLapsChangedに1を渡すと燃料残り周回数が1になる`() =
+        runTest {
         every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
         coEvery { repository.saveRemainingFuelLaps(1) } answers { remainingFuelLapsFlow.update { 1 } }
         val viewModel = createViewModel()
@@ -85,7 +88,8 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
     }
 
     @Test
-    fun `onResetRemainingFuelLapsを呼ぶと燃料残り周回数が3になる`() = runTest {
+    fun `onResetRemainingFuelLapsを呼ぶと燃料残り周回数が3になる`() =
+        runTest {
         remainingFuelLapsFlow.update { 5 }
         every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
         coEvery { repository.saveRemainingFuelLaps(GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT) } answers {
@@ -102,7 +106,8 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailViewModelTest {
     }
 
     @Test
-    fun `onPreviewClickedを呼ぶと設定中の燃料残り周回数イベントが再生される`() = runTest {
+    fun `onPreviewClickedを呼ぶと設定中の燃料残り周回数イベントが再生される`() =
+        runTest {
         remainingFuelLapsFlow.update { 4 }
         every { repository.observeRemainingFuelLaps() } returns remainingFuelLapsFlow
         val viewModel = createViewModel()

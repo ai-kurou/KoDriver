@@ -18,7 +18,8 @@ class ObserveGt7Ps5ConnectionUseCase(
     private val checkGt7Ps5Connection: CheckGt7Ps5ConnectionUseCase,
     private val observeGt7Ps5: ObserveGt7Ps5UseCase,
 ) {
-    operator fun invoke(): Flow<Gt7Ps5ConnectionState> = connectionCheckFlow().combine(
+    operator fun invoke(): Flow<Gt7Ps5ConnectionState> =
+        connectionCheckFlow().combine(
         observeGt7Ps5()
             .map<Gt7Ps5TelemetryData, Gt7Ps5TelemetryData?> { telemetry -> telemetry }
             .onStart { emit(null) },
@@ -29,9 +30,11 @@ class ObserveGt7Ps5ConnectionUseCase(
         )
     }
 
-    private fun connectionCheckFlow() = flow {
+    private fun connectionCheckFlow() =
+        flow {
         while (true) {
-            val isConnected = try {
+            val isConnected =
+                try {
                 checkGt7Ps5Connection()
             } catch (e: CancellationException) {
                 throw e

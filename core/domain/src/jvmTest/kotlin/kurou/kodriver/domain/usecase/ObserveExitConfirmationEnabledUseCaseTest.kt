@@ -24,7 +24,8 @@ class ObserveExitConfirmationEnabledUseCaseTest {
     }
 
     @Test
-    fun `終了確認の有効状態を監視できる`() = runBlocking {
+    fun `終了確認の有効状態を監視できる`() =
+        runBlocking {
         every { repository.exitConfirmationEnabled() } returns MutableStateFlow(true)
         val useCase = ObserveExitConfirmationEnabledUseCase(repository)
 

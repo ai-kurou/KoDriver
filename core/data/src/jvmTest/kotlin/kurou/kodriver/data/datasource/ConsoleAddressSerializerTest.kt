@@ -15,7 +15,8 @@ import kotlin.test.assertFailsWith
 class ConsoleAddressSerializerTest {
 
     @Test
-    fun `正常なバイト列をデシリアライズできる`() = runTest {
+    fun `正常なバイト列をデシリアライズできる`() =
+        runTest {
         val original = ConsoleAddressPreferences(address = "192.168.1.100")
         val bytes = ProtoBuf.encodeToByteArray(ConsoleAddressPreferences.serializer(), original)
 
@@ -25,7 +26,8 @@ class ConsoleAddressSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列はCorruptionExceptionをスローする`() = runTest {
+    fun `不正なバイト列はCorruptionExceptionをスローする`() =
+        runTest {
         val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
 
         assertFailsWith<CorruptionException> {
@@ -34,7 +36,8 @@ class ConsoleAddressSerializerTest {
     }
 
     @Test
-    fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
+    fun `writeToしたバイト列をreadFromで復元できる`() =
+        runTest {
         val original = ConsoleAddressPreferences(address = "10.0.0.1")
         val output = ByteArrayOutputStream()
         ConsoleAddressSerializer.writeTo(original, output)

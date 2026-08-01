@@ -19,7 +19,8 @@ class FuelConsumptionCalculatorTest {
 
     @Test
     fun `LMU 5周消費後の残量50パーセントなら1周あたり10パーセント消費で残り5周`() {
-        val result = calculateLmuVirtualEnergyConsumption(
+        val result =
+            calculateLmuVirtualEnergyConsumption(
             virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
             telemetry = sampleLmuTelemetry(currentLap = 5),
         )
@@ -68,7 +69,8 @@ class FuelConsumptionCalculatorTest {
 
     @Test
     fun `GT7 3周で30L消費し残り40Lなら1周あたり10Lで残り4周`() {
-        val result = calculateGt7FuelConsumption(
+        val result =
+            calculateGt7FuelConsumption(
             sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
         )
 
@@ -116,7 +118,8 @@ class FuelConsumptionCalculatorTest {
 
     @Test
     fun `タイヤ摩耗 5周で最も摩耗した輪の残溝が50パーセントなら1周あたり10パーセント摩耗で残り5周`() {
-        val result = calculateLmuTyreWearRemainingLaps(
+        val result =
+            calculateLmuTyreWearRemainingLaps(
             sampleLmuTelemetry(
                 currentLap = 5,
                 wheels = mapOf(WheelIndex.FRONT_LEFT to 0.5, WheelIndex.FRONT_RIGHT to 0.8),
@@ -161,8 +164,10 @@ class FuelConsumptionCalculatorTest {
         timestampMs = 0L,
         engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
         inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
-        tyres = LmuWindowsTyreData(
-            wheels = wheels.mapValues { (_, wear) ->
+        tyres =
+            LmuWindowsTyreData(
+            wheels =
+                wheels.mapValues { (_, wear) ->
                 LmuWindowsTyreWheelData(
                     surfaceTemperatureK = 0.0,
                     carcassTemperatureK = 0.0,
@@ -171,9 +176,10 @@ class FuelConsumptionCalculatorTest {
                     wear = wear,
                 )
             },
-        ),
-        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing = LmuWindowsTimingData(
+                ),
+            fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        timing =
+            LmuWindowsTimingData(
             currentLapTimeMs = 0L,
             lastLapTimeMs = 0L,
             bestLapTimeMs = 0L,
@@ -182,7 +188,8 @@ class FuelConsumptionCalculatorTest {
             currentLap = currentLap,
             maxLaps = 0,
         ),
-        vehicle = LmuWindowsVehicleData(
+            vehicle =
+                LmuWindowsVehicleData(
             localVelocityX = 0.0,
             localVelocityY = 0.0,
             localVelocityZ = 0.0,
@@ -190,9 +197,10 @@ class FuelConsumptionCalculatorTest {
             positionY = 0.0,
             positionZ = 0.0,
         ),
-    )
+                )
 
-    private fun sampleGt7Telemetry(lapCount: Int, gasLevel: Float, gasCapacity: Float) = Gt7Ps5TelemetryData(
+    private fun sampleGt7Telemetry(lapCount: Int, gasLevel: Float, gasCapacity: Float) =
+        Gt7Ps5TelemetryData(
         lapCount = lapCount,
         lapsInRace = 0,
         bestLapTimeMs = 0,

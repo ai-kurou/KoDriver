@@ -22,7 +22,8 @@ class SaveTelemetryLogUseCaseTest {
     }
 
     @Test
-    fun `ログを保存する`() = runBlocking {
+    fun `ログを保存する`() =
+        runBlocking {
         SaveTelemetryLogUseCase(repository)(
             createdAt = 1000L,
             simulator = Simulator.Gt7Ps5,

@@ -129,23 +129,27 @@ internal object LmuWindowsMapper {
 
         return LmuWindowsTelemetryData(
             timestampMs = System.currentTimeMillis(),
-            engine = LmuWindowsEngineData(
+            engine =
+                LmuWindowsEngineData(
                 rpm = buffer.getDouble(vehicleBase + OFF_ENGINE_RPM),
                 maxRpm = buffer.getDouble(vehicleBase + OFF_ENGINE_MAX_RPM),
                 gear = buffer.getInt(vehicleBase + OFF_GEAR),
             ),
-            inputs = LmuWindowsInputsData(
+                inputs =
+                    LmuWindowsInputsData(
                 throttle = buffer.getDouble(vehicleBase + OFF_UNFILTERED_THROTTLE),
                 brake = buffer.getDouble(vehicleBase + OFF_UNFILTERED_BRAKE),
                 clutch = buffer.getDouble(vehicleBase + OFF_UNFILTERED_CLUTCH),
                 steering = buffer.getDouble(vehicleBase + OFF_UNFILTERED_STEERING),
             ),
-            tyres = mapTyres(buffer, vehicleBase),
-            fuel = LmuWindowsFuelData(
+                    tyres = mapTyres(buffer, vehicleBase),
+            fuel =
+                LmuWindowsFuelData(
                 currentLiters = buffer.getDouble(vehicleBase + OFF_FUEL),
                 capacityLiters = buffer.getDouble(vehicleBase + OFF_FUEL_CAPACITY),
             ),
-            timing = LmuWindowsTimingData(
+                timing =
+                    LmuWindowsTimingData(
                 currentLapTimeMs = currentLapTimeMs(buffer, vehicleScoringBase),
                 lastLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_LAST_LAP_TIME),
                 bestLapTimeMs = vehicleScoringBase.readDoubleSecondsAsMillis(buffer, OFF_SCORING_BEST_LAP_TIME),
@@ -154,7 +158,8 @@ internal object LmuWindowsMapper {
                 currentLap = buffer.getInt(vehicleBase + OFF_LAP_NUMBER),
                 maxLaps = buffer.getInt(SCORING_BASE + OFF_SCORING_MAX_LAPS),
             ),
-            vehicle = LmuWindowsVehicleData(
+                    vehicle =
+                        LmuWindowsVehicleData(
                 localVelocityX = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_X),
                 localVelocityY = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_Y),
                 localVelocityZ = buffer.getDouble(vehicleBase + OFF_LOCAL_VEL_Z),
@@ -162,7 +167,7 @@ internal object LmuWindowsMapper {
                 positionY = buffer.getDouble(vehicleBase + OFF_POS_Y),
                 positionZ = buffer.getDouble(vehicleBase + OFF_POS_Z),
             ),
-        )
+                        )
     }
 
     /**
@@ -230,7 +235,8 @@ internal object LmuWindowsMapper {
         }
 
     private fun mapTyres(buffer: ByteBuffer, vehicleBase: Int): LmuWindowsTyreData {
-        val wheels = WheelIndex.entries.associateWith { wheel ->
+        val wheels =
+            WheelIndex.entries.associateWith { wheel ->
             val offset = vehicleBase + OFF_WHEELS + (wheel.ordinal * WHEEL_STRIDE)
             val surfaceTempK = buffer.getDouble(offset + OFF_WHEEL_TEMPERATURE + 8)
             LmuWindowsTyreWheelData(

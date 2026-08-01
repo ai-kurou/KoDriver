@@ -11,7 +11,8 @@ import kotlin.test.assertTrue
 class LmuWindowsFlagPreferencesRepositoryFactoryTest {
 
     @Test
-    fun `createLmuWindowsFlagPreferencesRepository は保存と取得が正常に動作する`() = runBlocking {
+    fun `createLmuWindowsFlagPreferencesRepository は保存と取得が正常に動作する`() =
+        runBlocking {
         val tempDir = Files.createTempDirectory("kodriver_flag_pref_factory_test").toFile()
         try {
             val repo = createLmuWindowsFlagPreferencesRepository(tempDir.absolutePath)

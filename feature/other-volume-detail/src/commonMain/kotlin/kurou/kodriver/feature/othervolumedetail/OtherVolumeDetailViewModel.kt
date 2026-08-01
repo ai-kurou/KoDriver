@@ -15,7 +15,8 @@ internal class OtherVolumeDetailViewModel(
     private val saveSoundVolume: SaveSoundVolumeUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<OtherVolumeDetailUiState> = observeSoundVolume()
+    val uiState: StateFlow<OtherVolumeDetailUiState> =
+        observeSoundVolume()
         .map { OtherVolumeDetailUiState(volume = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), OtherVolumeDetailUiState())
 

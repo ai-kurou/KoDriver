@@ -14,7 +14,8 @@ import org.koin.dsl.module
  * テスト用の Fake Koin モジュール（testFixtures）。:core:data の TelemetryLogRepository を
  * インメモリの Fake 実装に差し替える。
  */
-val fakeTelemetryLogListModule = module {
+val fakeTelemetryLogListModule =
+    module {
     single<TelemetryLogRepository> { fakeTelemetryLogRepository }
 }
 
@@ -25,9 +26,11 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
 
     override fun observeTelemetryLogs() = logs
 
-    override fun observeTelemetryLogDetail(id: Long) = logs.map { logs ->
+    override fun observeTelemetryLogDetail(id: Long) =
+        logs.map { logs ->
         val current = logs.firstOrNull { it.id == id } ?: return@map null
-        val previous = logs
+        val previous =
+            logs
             .filter { it.createdAt < current.createdAt || (it.createdAt == current.createdAt && it.id < current.id) }
             .maxWithOrNull(compareBy<TelemetryLog> { it.createdAt }.thenBy { it.id })
         TelemetryLogDetail(current = current, previous = previous)
@@ -41,14 +44,15 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
     ) {
         val nextId = (logs.value.maxOfOrNull { it.id } ?: 0) + 1
         emit(
-            logs.value + TelemetryLog(
+            logs.value +
+                TelemetryLog(
                 id = nextId,
                 createdAt = createdAt,
                 simulator = simulator,
                 readoutItemKey = readoutItemKey,
                 telemetryJson = telemetryJson,
             ),
-        )
+                )
     }
 
     override suspend fun deleteAllTelemetryLogs() {

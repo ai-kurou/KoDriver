@@ -11,7 +11,8 @@ data class LmuWindowsVehicleData(
     val positionZ: Double,
 ) {
     val speedMs: Double
-        get() = sqrt(
+        get() =
+            sqrt(
             localVelocityX * localVelocityX +
                 localVelocityY * localVelocityY +
                 localVelocityZ * localVelocityZ,

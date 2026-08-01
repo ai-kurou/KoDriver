@@ -15,7 +15,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_repository_factory_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
@@ -26,7 +27,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は縦方向5m・横方向5m`() = testScope.runTest {
+    fun `デフォルト値は縦方向5m・横方向5m`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
         assertEquals(
@@ -40,7 +42,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `保存した閾値を読み出せる`() = testScope.runTest {
+    fun `保存した閾値を読み出せる`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
         repository.saveLongitudinalThresholdMeters(0.5)
@@ -51,7 +54,8 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `縦横の閾値は独立して保持される`() = testScope.runTest {
+    fun `縦横の閾値は独立して保持される`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
         repository.saveLongitudinalThresholdMeters(0.3)

@@ -21,7 +21,8 @@ class SaveGt7Ps5MyBestLapVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `音声タイプを保存できる`() = runBlocking {
+    fun `音声タイプを保存できる`() =
+        runBlocking {
         SaveGt7Ps5MyBestLapVoiceTypeUseCase(repository)(MyBestLapVoiceType.CASUAL)
 
         coVerify(exactly = 1) { repository.saveVoiceType(MyBestLapVoiceType.CASUAL) }

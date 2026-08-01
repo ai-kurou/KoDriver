@@ -59,7 +59,8 @@ private val Context.dynamicColorDataStore by preferencesDataStore("dynamic_color
  * LMU の走行データを Windows 共有メモリではなく **KoDriver サーバーへの WebSocket** から取得する点。
  * 大半は DataStore バインドで、ServerVersion/AppUpdate はネットワーク、TelemetryLog は Room DB。
  */
-fun androidDataModule(context: Context) = module {
+fun androidDataModule(context: Context) =
+    module {
     single<Context> { context }
 
     // 設定永続化（DataStore。ファイルは context.filesDir 配下）
@@ -165,7 +166,8 @@ fun androidDataModule(context: Context) = module {
 /**
  * androidDataModule から分離した閾値系 DataStore バインドと TelemetryLog（LongMethod 対策）。
  */
-private fun androidDataModuleThresholdPreferences(context: Context) = module {
+private fun androidDataModuleThresholdPreferences(context: Context) =
+    module {
     single<LmuWindowsTyreTemperaturePreferencesRepository> {
         createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
     }

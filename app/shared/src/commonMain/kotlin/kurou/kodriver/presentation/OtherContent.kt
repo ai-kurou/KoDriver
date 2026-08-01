@@ -127,8 +127,10 @@ internal fun OtherContent(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit) -> Unit = { _, _, _ -> },
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = when {
+    val navigator =
+        rememberListDetailPaneScaffoldNavigator<Nothing>(
+        scaffoldDirective =
+            when {
             uiState.selectedItem == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
             }
@@ -142,7 +144,8 @@ internal fun OtherContent(
                 scaffoldDirective
             }
         },
-        initialDestinationHistory = if (uiState.selectedItem != null) {
+            initialDestinationHistory =
+                if (uiState.selectedItem != null) {
             listOf(
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
@@ -150,7 +153,7 @@ internal fun OtherContent(
         } else {
             listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
         },
-    )
+                )
     val scope = rememberCoroutineScope()
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
@@ -161,7 +164,8 @@ internal fun OtherContent(
         }
         Unit
     }
-    val paneExpansionState = rememberPaneExpansionState(
+    val paneExpansionState =
+        rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,
     )

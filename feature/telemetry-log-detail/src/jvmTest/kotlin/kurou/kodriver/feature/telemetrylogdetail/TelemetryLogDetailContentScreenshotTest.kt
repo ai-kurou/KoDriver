@@ -23,9 +23,11 @@ class TelemetryLogDetailContentScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         TelemetryLogDetailContent(
-                            uiState = TelemetryLogDetailUiState(
+                            uiState =
+                                TelemetryLogDetailUiState(
                                 logId = 2L,
-                                items = listOf(
+                                items =
+                                    listOf(
                                     TelemetryLogDetailItemUiState(
                                         title = "選択したログ",
                                         telemetryJson = """{"speed":120,"gear":4}""",
@@ -35,8 +37,8 @@ class TelemetryLogDetailContentScreenshotTest {
                                         telemetryJson = """{"speed":118,"gear":4}""",
                                     ),
                                 ),
-                            ),
-                        )
+                                    ),
+                                )
                     }
                 }
             }

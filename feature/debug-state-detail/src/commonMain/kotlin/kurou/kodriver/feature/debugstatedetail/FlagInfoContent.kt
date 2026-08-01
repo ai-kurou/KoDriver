@@ -37,7 +37,8 @@ internal enum class ActiveRaceFlag(
     RED(Res.string.debug_state_flag_red),
 }
 
-internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<ActiveRaceFlag> = buildList {
+internal fun determineActiveRaceFlags(raceFlags: LmuWindowsRaceFlagsData): List<ActiveRaceFlag> =
+    buildList {
     if (raceFlags.playerFlag == PrimaryFlag.BLUE) add(ActiveRaceFlag.BLUE)
     if (raceFlags.playerUnderYellow || raceFlags.sectorFlags.any { it == SectorFlagState.YELLOW }) {
         add(ActiveRaceFlag.YELLOW)
@@ -57,7 +58,8 @@ internal fun FlagInfoContent(
 
         is Simulator.AceWindows -> AceFlagInfoContent(aceWindowsFlag)
 
-        is Simulator.Gt7Ps5, null -> Text(
+        is Simulator.Gt7Ps5, null ->
+            Text(
             text = stringResource(Res.string.debug_state_flag_info_unavailable),
             style = MaterialTheme.typography.bodyMedium,
         )
@@ -89,7 +91,8 @@ private fun LmuFlagInfoContent(raceFlags: LmuWindowsRaceFlagsData?) {
 }
 
 @Composable
-private fun aceFlagDisplayName(flag: AceWindowsFlagType): String = when (flag) {
+private fun aceFlagDisplayName(flag: AceWindowsFlagType): String =
+    when (flag) {
     AceWindowsFlagType.NO_FLAG -> stringResource(Res.string.debug_state_flag_none)
     AceWindowsFlagType.WHITE_FLAG -> stringResource(Res.string.debug_state_flag_white)
     AceWindowsFlagType.GREEN_FLAG -> stringResource(Res.string.debug_state_flag_green)

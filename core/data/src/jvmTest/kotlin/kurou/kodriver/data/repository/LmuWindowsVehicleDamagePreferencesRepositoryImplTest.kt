@@ -20,7 +20,8 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_lmu_windows_vehicle_damage_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = LmuWindowsVehicleDamagePreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -33,12 +34,14 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `enabledStates の初期値は空Map`() = testScope.runTest {
+    fun `enabledStates の初期値は空Map`() =
+        testScope.runTest {
         assertEquals(emptyMap(), repository.observeEnabledStates().first())
     }
 
     @Test
-    fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() = testScope.runTest {
+    fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
+        testScope.runTest {
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
 
         assertEquals(
@@ -48,7 +51,8 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+    fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
+        testScope.runTest {
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, false)
 
@@ -59,7 +63,8 @@ class LmuWindowsVehicleDamagePreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `異なるキーで保存した値がすべて保持される`() = testScope.runTest {
+    fun `異なるキーで保存した値がすべて保持される`() =
+        testScope.runTest {
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Root, false)
 

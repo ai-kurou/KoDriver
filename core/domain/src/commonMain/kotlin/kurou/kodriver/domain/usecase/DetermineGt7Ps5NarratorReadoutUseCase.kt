@@ -77,7 +77,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 
-        val event = when (settings.myBestLapVoiceType) {
+        val event =
+            when (settings.myBestLapVoiceType) {
             MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
             MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
         }
@@ -94,14 +95,17 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         observedAtMs: Long,
     ): Gt7Ps5NarratorReadoutDecision {
         val fuelTrackingState = trackFuel(state.fuelTrackingState, telemetry, observedAtMs)
-        val stateAfterTracking = when {
-            fuelTrackingState.isNewSession -> state.copy(
+        val stateAfterTracking =
+            when {
+            fuelTrackingState.isNewSession ->
+                state.copy(
                 lastAnnouncedRemainingLaps = -1,
                 lastFuelEvaluationLap = -1,
                 fuelTrackingState = fuelTrackingState,
             )
 
-            fuelTrackingState.hasRefueled -> state.copy(
+            fuelTrackingState.hasRefueled ->
+                state.copy(
                 lastAnnouncedRemainingLaps = -1,
                 fuelTrackingState = fuelTrackingState,
             )
@@ -110,7 +114,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         }
         val evaluation = calculateRemainingFuelLaps(stateAfterTracking, settings)
         val stateAfterEvaluation = stateAfterTracking.copy(lastFuelEvaluationLap = evaluation.evaluatedLap)
-        val remainingLaps = evaluation.remainingLaps ?: return Gt7Ps5NarratorReadoutDecision(
+        val remainingLaps =
+            evaluation.remainingLaps ?: return Gt7Ps5NarratorReadoutDecision(
             stateAfterEvaluation,
             emptyList(),
         )
@@ -171,7 +176,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
 
             else -> {
                 val refueled = (telemetry.gasLevel - state.currentGasLevel).coerceAtLeast(0f)
-                val currentLapStartedAtMs = if (telemetry.lapCount != state.currentLap) {
+                val currentLapStartedAtMs =
+                    if (telemetry.lapCount != state.currentLap) {
                     observedAtMs
                 } else {
                     state.currentLapStartedAtMs

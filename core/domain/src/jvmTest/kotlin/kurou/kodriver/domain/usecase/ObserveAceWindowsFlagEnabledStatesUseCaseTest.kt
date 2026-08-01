@@ -28,12 +28,14 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `永続化された値がない場合は全フラグがデフォルトで有効になる`() = runBlocking {
+    fun `永続化された値がない場合は全フラグがデフォルトで有効になる`() =
+        runBlocking {
         every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap<ReadoutItemKey, Boolean>())
 
         val result: Map<ReadoutItemKey, Boolean> = useCase().first()
 
-        val expected: Map<ReadoutItemKey, Boolean> = mapOf(
+        val expected: Map<ReadoutItemKey, Boolean> =
+            mapOf(
             ReadoutItemKey.AceWindows.Flag.WhiteFlag to true,
             ReadoutItemKey.AceWindows.Flag.GreenFlag to true,
             ReadoutItemKey.AceWindows.Flag.RedFlag to true,
@@ -51,8 +53,10 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `永続化された値がデフォルトより優先される`() = runBlocking {
-        every { repository.observeFlagEnabledStates() } returns flowOf(
+    fun `永続化された値がデフォルトより優先される`() =
+        runBlocking {
+        every { repository.observeFlagEnabledStates() } returns
+            flowOf(
             mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),
         )
 

@@ -71,11 +71,12 @@ class OtherServerIpDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         OtherServerIpDetailPaneContent(
-                            uiState = OtherServerIpDetailUiState(
+                            uiState =
+                                OtherServerIpDetailUiState(
                                 inputIp = "192.168.1.100",
                                 isCheckingConnectivity = true,
                             ),
-                        )
+                                )
                     }
                 }
             }
@@ -90,11 +91,12 @@ class OtherServerIpDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         OtherServerIpDetailPaneContent(
-                            uiState = OtherServerIpDetailUiState(
+                            uiState =
+                                OtherServerIpDetailUiState(
                                 inputIp = "192.168.1.100",
                                 connectivityWarning = true,
                             ),
-                        )
+                                )
                     }
                 }
             }
@@ -109,11 +111,12 @@ class OtherServerIpDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         OtherServerIpDetailPaneContent(
-                            uiState = OtherServerIpDetailUiState(
+                            uiState =
+                                OtherServerIpDetailUiState(
                                 inputIp = "192.168.1.100",
                                 discoveredServers = emptyList(),
                             ),
-                        )
+                                )
                     }
                 }
             }
@@ -128,14 +131,16 @@ class OtherServerIpDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
                         OtherServerIpDetailPaneContent(
-                            uiState = OtherServerIpDetailUiState(
+                            uiState =
+                                OtherServerIpDetailUiState(
                                 inputIp = "192.168.1.100",
-                                discoveredServers = listOf(
+                                discoveredServers =
+                                    listOf(
                                     DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
                                 ),
-                                isDiscoveryDialogVisible = false,
+                                    isDiscoveryDialogVisible = false,
                             ),
-                        )
+                                )
                     }
                 }
             }

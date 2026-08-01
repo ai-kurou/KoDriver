@@ -29,7 +29,8 @@ class ObserveAceWindowsFlagUseCaseTest {
     }
 
     @Test
-    fun `invoke はリポジトリの flagStream を返す`() = runBlocking {
+    fun `invoke はリポジトリの flagStream を返す`() =
+        runBlocking {
         val expected = AceWindowsFlagData(flag = AceWindowsFlagType.BLUE_FLAG)
         every { repo.flagStream() } returns flowOf(expected)
         val useCase = ObserveAceWindowsFlagUseCase(repo)
@@ -42,7 +43,8 @@ class ObserveAceWindowsFlagUseCaseTest {
     }
 
     @Test
-    fun `invoke は空のフローをそのまま返す`() = runBlocking {
+    fun `invoke は空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.flagStream() } returns flowOf()
         val useCase = ObserveAceWindowsFlagUseCase(repo)
 
@@ -54,7 +56,8 @@ class ObserveAceWindowsFlagUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG)
         val data2 = AceWindowsFlagData(flag = AceWindowsFlagType.YELLOW_FLAG)
         val data3 = AceWindowsFlagData(flag = AceWindowsFlagType.CHECKERED_FLAG)

@@ -48,14 +48,16 @@ class ReadoutListViewModel(
     private val saveQueueEnabledState: SaveQueueEnabledStateUseCase,
 ) : ViewModel() {
 
-    private val _selectedSimulator: StateFlow<Simulator?> = observeSelectedSimulator()
+    private val _selectedSimulator: StateFlow<Simulator?> =
+        observeSelectedSimulator()
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     // ドラッグ操作後のインメモリ順序（DataStore 反映前の即時 UI 更新用）
     private val _localOrder = MutableStateFlow(LocalOrderState(null, emptyList()))
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _persistedOrder: StateFlow<List<ReadoutItemKey>> = _selectedSimulator
+    private val _persistedOrder: StateFlow<List<ReadoutItemKey>> =
+        _selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != null)
                 observeReadoutOrder(simulator.id)
@@ -64,17 +66,20 @@ class ReadoutListViewModel(
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = _selectedSimulator
+    private val _readoutEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
+        _selectedSimulator
         .flatMapLatest { simulator ->
             if (simulator != null) observeReadoutEnabledStates(simulator.id) else flowOf(emptyMap())
         }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
-    private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> = observeQueueEnabledStates()
+    private val _queueEnabledStates: StateFlow<Map<ReadoutItemKey, Boolean>> =
+        observeQueueEnabledStates()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _selectedItem = MutableStateFlow<ReadoutListItemType?>(null)
 
-    private val _effectiveOrder: StateFlow<List<ReadoutItemKey>> = combine(
+    private val _effectiveOrder: StateFlow<List<ReadoutItemKey>> =
+        combine(
         _selectedSimulator,
         _persistedOrder,
         _localOrder,
@@ -88,7 +93,8 @@ class ReadoutListViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val uiState: StateFlow<ReadoutListUiState> = combine(
+    val uiState: StateFlow<ReadoutListUiState> =
+        combine(
         _selectedSimulator,
         _effectiveOrder,
         _readoutEnabledStates,
@@ -117,7 +123,8 @@ class ReadoutListViewModel(
 
     fun moveItem(fromIndex: Int, toIndex: Int) {
         val selected = _selectedSimulator.value ?: return
-        val newItems = _effectiveOrder.value
+        val newItems =
+            _effectiveOrder.value
             .toMutableList()
             .also { it.add(toIndex, it.removeAt(fromIndex)) }
         _localOrder.update { LocalOrderState(selected, newItems) }

@@ -27,7 +27,8 @@ class AndroidSimulatorPreferencesRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("simulator_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
+        val dataStore =
+            PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
@@ -40,7 +41,8 @@ class AndroidSimulatorPreferencesRepositoryTest {
     }
 
     @Test
-    fun `selectedSimulatorは初期状態でnullを返し保存後に選択したシミュレータを返す`() = runTest(testDispatcher) {
+    fun `selectedSimulatorは初期状態でnullを返し保存後に選択したシミュレータを返す`() =
+        runTest(testDispatcher) {
         assertNull(repository.selectedSimulator().first())
 
         repository.saveSelectedSimulator(Simulator.LmuWindows)

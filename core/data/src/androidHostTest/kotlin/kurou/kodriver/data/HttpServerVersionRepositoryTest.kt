@@ -29,7 +29,8 @@ class HttpServerVersionRepositoryTest {
     private fun buildRepository() = HttpServerVersionRepository(port = server.port)
 
     @Test
-    fun `バージョンエンドポイントが正常なJSONを返すときResultSuccessを返す`() = runTest {
+    fun `バージョンエンドポイントが正常なJSONを返すときResultSuccessを返す`() =
+        runTest {
         server.enqueue(
             MockResponse()
                 .setResponseCode(200)
@@ -41,21 +42,24 @@ class HttpServerVersionRepositoryTest {
     }
 
     @Test
-    fun `サーバーが404を返すときResultFailureを返す`() = runTest {
+    fun `サーバーが404を返すときResultFailureを返す`() =
+        runTest {
         server.enqueue(MockResponse().setResponseCode(404))
         val result = buildRepository().fetchVersion("127.0.0.1")
         assertTrue(result.isFailure)
     }
 
     @Test
-    fun `到達不能なサーバーのときResultFailureを返す`() = runTest {
+    fun `到達不能なサーバーのときResultFailureを返す`() =
+        runTest {
         server.shutdown()
         val result = buildRepository().fetchVersion("127.0.0.1")
         assertTrue(result.isFailure)
     }
 
     @Test
-    fun `予期しないJSONのときResultFailureを返す`() = runTest {
+    fun `予期しないJSONのときResultFailureを返す`() =
+        runTest {
         server.enqueue(
             MockResponse()
                 .setResponseCode(200)

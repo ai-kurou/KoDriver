@@ -9,7 +9,8 @@ import kotlin.test.assertEquals
 class TelemetryLogEntityTest {
     @Test
     fun `toDomainはEntityをDomainに変換する`() {
-        val entity = TelemetryLogEntity(
+        val entity =
+            TelemetryLogEntity(
             id = 1L,
             createdAt = 1000L,
             simulatorId = Simulator.Gt7Ps5.id,

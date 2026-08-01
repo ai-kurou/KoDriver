@@ -21,7 +21,8 @@ class Gt7Ps5UdpPortPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `UDPポート設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `UDPポート設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createGt7Ps5UdpPortPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(port = 33741) }
 

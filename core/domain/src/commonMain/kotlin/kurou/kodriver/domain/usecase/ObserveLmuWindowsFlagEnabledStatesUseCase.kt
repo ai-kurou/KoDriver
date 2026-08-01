@@ -7,7 +7,8 @@ import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 
 // detailPane（LmuWindowsReadoutFlagDetailViewModel）・Narrator（LmuWindowsNarratorViewModel）が
 // 同じデフォルト値を参照できるよう、この一箇所にのみ定義する。
-private val flagEnabledStateDefaults: Map<ReadoutItemKey, Boolean> = mapOf(
+private val flagEnabledStateDefaults: Map<ReadoutItemKey, Boolean> =
+    mapOf(
     ReadoutItemKey.LmuWindows.Flag.BlueFlag to true,
     ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to true,
     ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to true,

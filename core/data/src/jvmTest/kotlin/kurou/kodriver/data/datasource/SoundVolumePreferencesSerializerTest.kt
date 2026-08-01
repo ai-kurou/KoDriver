@@ -15,7 +15,8 @@ import kotlin.test.assertFailsWith
 class SoundVolumePreferencesSerializerTest {
 
     @Test
-    fun `正常なバイト列をデシリアライズできる`() = runTest {
+    fun `正常なバイト列をデシリアライズできる`() =
+        runTest {
         val original = SoundVolumePreferences(volume = 75)
         val bytes = ProtoBuf.encodeToByteArray(SoundVolumePreferences.serializer(), original)
 
@@ -25,7 +26,8 @@ class SoundVolumePreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列はCorruptionExceptionをスローする`() = runTest {
+    fun `不正なバイト列はCorruptionExceptionをスローする`() =
+        runTest {
         val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
 
         assertFailsWith<CorruptionException> {
@@ -34,7 +36,8 @@ class SoundVolumePreferencesSerializerTest {
     }
 
     @Test
-    fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
+    fun `writeToしたバイト列をreadFromで復元できる`() =
+        runTest {
         val original = SoundVolumePreferences(volume = 42)
         val output = ByteArrayOutputStream()
         SoundVolumePreferencesSerializer.writeTo(original, output)

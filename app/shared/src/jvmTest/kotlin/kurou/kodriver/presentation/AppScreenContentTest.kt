@@ -18,7 +18,8 @@ class AppScreenContentTest {
 
     @Test
     fun `expanded幅ではNavigationRailを使用する`() {
-        val layoutType = WindowSizeClass(
+        val layoutType =
+            WindowSizeClass(
             minWidthDp = WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
             minHeightDp = 0,
         ).resolveNavigationSuiteType()
@@ -28,7 +29,8 @@ class AppScreenContentTest {
 
     @Test
     fun `medium幅ではNavigationRailを使用する`() {
-        val layoutType = WindowSizeClass(
+        val layoutType =
+            WindowSizeClass(
             minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND,
             minHeightDp = 0,
         ).resolveNavigationSuiteType()
@@ -38,7 +40,8 @@ class AppScreenContentTest {
 
     @Test
     fun `compact幅ではNavigationBarを使用する`() {
-        val layoutType = WindowSizeClass(
+        val layoutType =
+            WindowSizeClass(
             minWidthDp = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND - 1,
             minHeightDp = 0,
         ).resolveNavigationSuiteType()

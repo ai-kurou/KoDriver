@@ -24,7 +24,8 @@ class ObserveDynamicColorEnabledUseCaseTest {
     }
 
     @Test
-    fun `Repositoryの値を返す`() = runBlocking {
+    fun `Repositoryの値を返す`() =
+        runBlocking {
         every { repository.dynamicColorEnabled() } returns flowOf(true)
 
         assertTrue(ObserveDynamicColorEnabledUseCase(repository)().first())

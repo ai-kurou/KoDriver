@@ -42,12 +42,13 @@ class DebugStateBestLapCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.LmuWindows,
                         lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
                         gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -61,12 +62,13 @@ class DebugStateBestLapCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
                         lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
                         gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -80,12 +82,13 @@ class DebugStateBestLapCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.Gt7Ps5,
                         gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = -1),
                         cardOrder = listOf(DebugStateCardKey.BEST_LAP),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -99,13 +102,14 @@ class DebugStateBestLapCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = Simulator.AceWindows,
                         lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
                         gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
                         cardOrder = listOf(DebugStateCardKey.BEST_LAP),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -119,13 +123,14 @@ class DebugStateBestLapCardTest {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(
+                    uiState =
+                        DebugStateDetailUiState(
                         selectedSimulator = null,
                         lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
                         gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
                         cardOrder = listOf(DebugStateCardKey.BEST_LAP),
                     ),
-                    canNavigateBack = true,
+                        canNavigateBack = true,
                     onBack = {},
                 )
             }
@@ -134,13 +139,15 @@ class DebugStateBestLapCardTest {
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
-    private fun sampleLmuWindowsTelemetry(bestLapTimeMs: Long) = LmuWindowsTelemetryData(
+    private fun sampleLmuWindowsTelemetry(bestLapTimeMs: Long) =
+        LmuWindowsTelemetryData(
         timestampMs = 0L,
         engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
         inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
         tyres = LmuWindowsTyreData(wheels = emptyMap()),
         fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
-        timing = LmuWindowsTimingData(
+        timing =
+            LmuWindowsTimingData(
             currentLapTimeMs = 0L,
             lastLapTimeMs = 0L,
             bestLapTimeMs = bestLapTimeMs,
@@ -149,7 +156,8 @@ class DebugStateBestLapCardTest {
             currentLap = 0,
             maxLaps = 0,
         ),
-        vehicle = LmuWindowsVehicleData(
+            vehicle =
+                LmuWindowsVehicleData(
             localVelocityX = 0.0,
             localVelocityY = 0.0,
             localVelocityZ = 0.0,
@@ -157,9 +165,10 @@ class DebugStateBestLapCardTest {
             positionY = 0.0,
             positionZ = 0.0,
         ),
-    )
+                )
 
-    private fun sampleGt7Ps5Telemetry(bestLapTimeMs: Int) = Gt7Ps5TelemetryData(
+    private fun sampleGt7Ps5Telemetry(bestLapTimeMs: Int) =
+        Gt7Ps5TelemetryData(
         lapCount = 0,
         lapsInRace = 0,
         bestLapTimeMs = bestLapTimeMs,

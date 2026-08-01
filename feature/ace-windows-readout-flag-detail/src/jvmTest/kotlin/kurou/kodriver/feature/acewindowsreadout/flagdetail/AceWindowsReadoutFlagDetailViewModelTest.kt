@@ -50,14 +50,16 @@ class AceWindowsReadoutFlagDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = AceWindowsReadoutFlagDetailViewModel(
+    private fun createViewModel() =
+        AceWindowsReadoutFlagDetailViewModel(
         observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(repository),
         saveFlagEnabledState = SaveAceWindowsFlagEnabledStateUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() = runTest {
+    fun `初期状態はすべてのフラグが enabled=true の UiState を返す`() =
+        runTest {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel()
 
@@ -71,7 +73,8 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     }
 
     @Test
-    fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() = runTest {
+    fun `onFlagEnabledChanged を呼ぶと UiState が更新される`() =
+        runTest {
         val statesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeFlagEnabledStates() } returns statesFlow
         coEvery { repository.saveFlagEnabledState(ReadoutItemKey.AceWindows.Flag.BlueFlag, false) } answers {
@@ -90,7 +93,8 @@ class AceWindowsReadoutFlagDetailViewModelTest {
     @Test
     fun `onPreviewClicked を呼ぶと各フラグに対応する SpeechEvent が再生される`() {
         every { repository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
-        val eventByItem = mapOf(
+        val eventByItem =
+            mapOf(
             FlagReadoutItem.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag,
             FlagReadoutItem.GreenFlag to SpeechEvent.AceWindowsGreenFlag,
             FlagReadoutItem.RedFlag to SpeechEvent.AceWindowsRedFlag,

@@ -15,16 +15,19 @@ internal class NsdWindowsServerDiscovery(
     private val context: Context,
 ) : WindowsServerDiscovery {
 
-    override fun discover(): Flow<List<DiscoveredServer>> = callbackFlow {
+    override fun discover(): Flow<List<DiscoveredServer>> =
+        callbackFlow {
         val nsdManager = context.getSystemService(Context.NSD_SERVICE) as NsdManager
         val servers = mutableMapOf<String, DiscoveredServer>()
 
-        fun createResolveListener(): NsdManager.ResolveListener = object : NsdManager.ResolveListener {
+        fun createResolveListener(): NsdManager.ResolveListener =
+            object : NsdManager.ResolveListener {
             override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) = Unit
 
             override fun onServiceResolved(serviceInfo: NsdServiceInfo) {
                 val address = serviceInfo.host?.hostAddress ?: return
-                servers[serviceInfo.serviceName] = DiscoveredServer(
+                servers[serviceInfo.serviceName] =
+                    DiscoveredServer(
                     hostName = serviceInfo.serviceName,
                     ipAddress = address,
                 )
@@ -32,7 +35,8 @@ internal class NsdWindowsServerDiscovery(
             }
         }
 
-        val discoveryListener = object : NsdManager.DiscoveryListener {
+        val discoveryListener =
+            object : NsdManager.DiscoveryListener {
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
 
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
@@ -59,6 +63,7 @@ internal class NsdWindowsServerDiscovery(
     }
 }
 
-internal actual val platformWindowsServerDiscoveryModule: Module = module {
+internal actual val platformWindowsServerDiscoveryModule: Module =
+    module {
     factory<WindowsServerDiscovery> { NsdWindowsServerDiscovery(get<Context>()) }
 }

@@ -14,7 +14,8 @@ internal class RealUdpSocket(
     listenPort: Int,
     timeoutMs: Int,
 ) : UdpSocket {
-    private val socket = DatagramSocket(null).apply {
+    private val socket =
+        DatagramSocket(null).apply {
         reuseAddress = true
         bind(java.net.InetSocketAddress(listenPort))
         soTimeout = timeoutMs

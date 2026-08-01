@@ -38,22 +38,26 @@ class WebSocketAceWindowsFuelRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketAceWindowsFuelRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketAceWindowsFuelRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときfuelStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときfuelStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().fuelStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときAceWindowsFuelDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときAceWindowsFuelDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -73,7 +77,8 @@ class WebSocketAceWindowsFuelRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -93,7 +98,8 @@ class WebSocketAceWindowsFuelRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -121,7 +127,8 @@ class WebSocketAceWindowsFuelRepositoryTest {
     }
 
     @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() = runTest {
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -145,7 +152,8 @@ class WebSocketAceWindowsFuelRepositoryTest {
     }
 
     @Test
-    fun `isConnectedは常にfalseを返す`() = runTest {
+    fun `isConnectedは常にfalseを返す`() =
+        runTest {
         assertFalse(buildRepository().isConnected())
     }
 }

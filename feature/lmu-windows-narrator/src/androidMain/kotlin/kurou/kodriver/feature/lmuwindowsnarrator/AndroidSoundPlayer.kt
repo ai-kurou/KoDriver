@@ -19,7 +19,8 @@ class AndroidSoundPlayer(
     private val context: Context,
 ) : SoundPlayer {
 
-    private val soundPool = SoundPool
+    private val soundPool =
+        SoundPool
         .Builder()
         .setMaxStreams(2)
         .setAudioAttributes(
@@ -42,7 +43,8 @@ class AndroidSoundPlayer(
         get() = currentStreamId != 0
 
     override suspend fun play(bytes: ByteArray, volume: Int) {
-        val temp = withContext(Dispatchers.IO) {
+        val temp =
+            withContext(Dispatchers.IO) {
             File.createTempFile("snd_", ".wav", context.cacheDir).also { it.writeBytes(bytes) }
         }
         try {
@@ -87,7 +89,8 @@ class AndroidSoundPlayer(
         return soundId
     }
 
-    private suspend fun awaitLoad(path: String): Int = suspendCancellableCoroutine { cont ->
+    private suspend fun awaitLoad(path: String): Int =
+        suspendCancellableCoroutine { cont ->
         // load() より先にリスナーを登録する。逆順だと、小さい WAV のロードが
         // リスナー登録前に完了して onLoadComplete が捨てられ、永久にサスペンドする。
         // リスナーは別スレッドから soundId 代入前に発火しうるため loadLock で待ち合わせる。

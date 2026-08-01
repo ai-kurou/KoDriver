@@ -21,14 +21,17 @@ class SaveReadoutOrderUseCaseTest {
     }
 
     @Test
-    fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
+    fun `保存するとFlowに値が反映され・上書きで更新される`() =
+        runBlocking {
         val useCase = SaveReadoutOrderUseCase(repository)
-        val firstOrder = listOf(
+        val firstOrder =
+            listOf(
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
         )
-        val secondOrder = listOf(
+        val secondOrder =
+            listOf(
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,

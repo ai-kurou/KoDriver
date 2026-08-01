@@ -28,7 +28,8 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     }
 
     @Test
-    fun `invoke はリポジトリの virtualEnergyStream を返す`() = runBlocking {
+    fun `invoke はリポジトリの virtualEnergyStream を返す`() =
+        runBlocking {
         val expected = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
         every { repo.virtualEnergyStream() } returns flowOf(expected)
         val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
@@ -41,7 +42,8 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     }
 
     @Test
-    fun `invoke は空のフローをそのまま返す`() = runBlocking {
+    fun `invoke は空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.virtualEnergyStream() } returns flowOf()
         val useCase = ObserveLmuWindowsVirtualEnergyUseCase(repo)
 
@@ -53,7 +55,8 @@ class ObserveLmuWindowsVirtualEnergyUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = LmuWindowsVirtualEnergyData(remainingRatio = 0.8)
         val data2 = LmuWindowsVirtualEnergyData(remainingRatio = 0.5)
         val data3 = LmuWindowsVirtualEnergyData(remainingRatio = 0.2)

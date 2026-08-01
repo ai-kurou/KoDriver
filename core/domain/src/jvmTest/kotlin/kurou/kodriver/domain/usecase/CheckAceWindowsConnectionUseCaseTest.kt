@@ -23,7 +23,8 @@ class CheckAceWindowsConnectionUseCaseTest {
     }
 
     @Test
-    fun `Repositoryが接続済みならtrueを返す`() = runBlocking {
+    fun `Repositoryが接続済みならtrueを返す`() =
+        runBlocking {
         coEvery { repository.isConnected() } returns true
         val useCase = CheckAceWindowsConnectionUseCase(repository)
 
@@ -33,7 +34,8 @@ class CheckAceWindowsConnectionUseCaseTest {
     }
 
     @Test
-    fun `Repositoryが未接続ならfalseを返す`() = runBlocking {
+    fun `Repositoryが未接続ならfalseを返す`() =
+        runBlocking {
         coEvery { repository.isConnected() } returns false
         val useCase = CheckAceWindowsConnectionUseCase(repository)
 

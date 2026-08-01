@@ -92,10 +92,11 @@ internal fun LmuWindowsReadoutPitTimingDetailPaneContent(
     val lapsHelpSheetState = rememberModalBottomSheetState()
 
     Column(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-    ) {
+            ) {
         DetailPaneDescription(
             text = stringResource(Res.string.pit_timing_description),
         )

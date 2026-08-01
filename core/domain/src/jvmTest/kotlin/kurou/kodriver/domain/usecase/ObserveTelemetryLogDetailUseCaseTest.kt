@@ -30,7 +30,8 @@ private fun createTelemetryLogRepository(
     listOf(1L, 2L, 999L).forEach { id ->
         every { repository.observeTelemetryLogDetail(id) } answers {
             logs.map { currentLogs ->
-                val sortedLogs = currentLogs.sortedWith(
+                val sortedLogs =
+                    currentLogs.sortedWith(
                     compareByDescending<TelemetryLog> { it.createdAt }.thenByDescending { it.id },
                 )
                 val index = sortedLogs.indexOfFirst { it.id == id }
@@ -85,11 +86,13 @@ class ObserveTelemetryLogDetailUseCaseTest {
     }
 
     @Test
-    fun `指定したidのログとその一つ前のログを返す`() = runBlocking {
+    fun `指定したidのログとその一つ前のログを返す`() =
+        runBlocking {
         val latest = telemetryLog(id = 3L, createdAt = 3000L)
         val current = telemetryLog(id = 2L, createdAt = 2000L)
         val previous = telemetryLog(id = 1L, createdAt = 1000L)
-        val repository = createTelemetryLogRepository(
+        val repository =
+            createTelemetryLogRepository(
             repository,
             initialLogs = listOf(previous, current, latest),
         )
@@ -107,8 +110,10 @@ class ObserveTelemetryLogDetailUseCaseTest {
     }
 
     @Test
-    fun `指定したidのログがない場合はnullを返す`() = runBlocking {
-        val repository = createTelemetryLogRepository(
+    fun `指定したidのログがない場合はnullを返す`() =
+        runBlocking {
+        val repository =
+            createTelemetryLogRepository(
             repository,
             initialLogs = listOf(telemetryLog(id = 1L, createdAt = 1000L)),
         )
@@ -120,15 +125,18 @@ class ObserveTelemetryLogDetailUseCaseTest {
     }
 
     @Test
-    fun `指定したidのログが最も古い場合はpreviousにnullを返す`() = runBlocking {
+    fun `指定したidのログが最も古い場合はpreviousにnullを返す`() =
+        runBlocking {
         val current = telemetryLog(id = 1L, createdAt = 1000L)
-        val repository = createTelemetryLogRepository(
+        val repository =
+            createTelemetryLogRepository(
             repository,
-            initialLogs = listOf(
+            initialLogs =
+                listOf(
                 current,
                 telemetryLog(id = 2L, createdAt = 2000L),
             ),
-        )
+                )
         val useCase = ObserveTelemetryLogDetailUseCase(repository)
 
         assertEquals(

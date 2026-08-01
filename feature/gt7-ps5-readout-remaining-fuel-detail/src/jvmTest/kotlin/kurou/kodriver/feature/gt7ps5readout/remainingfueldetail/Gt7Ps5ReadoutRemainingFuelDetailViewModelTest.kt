@@ -54,14 +54,16 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = Gt7Ps5ReadoutRemainingFuelDetailViewModel(
+    private fun createViewModel() =
+        Gt7Ps5ReadoutRemainingFuelDetailViewModel(
         observeThresholdPercentage = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
         saveThresholdPercentage = SaveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態は燃料残量閾値30パーセントのUiStateを返す`() = runTest {
+    fun `初期状態は燃料残量閾値30パーセントのUiStateを返す`() =
+        runTest {
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         val viewModel = createViewModel()
 
@@ -71,7 +73,8 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
     }
 
     @Test
-    fun `onThresholdChangedに45を渡すと燃料残量閾値が45パーセントになる`() = runTest {
+    fun `onThresholdChangedに45を渡すと燃料残量閾値が45パーセントになる`() =
+        runTest {
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         coEvery { repository.saveThresholdPercentage(45) } answers { thresholdFlow.update { 45 } }
         val viewModel = createViewModel()
@@ -85,7 +88,8 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
     }
 
     @Test
-    fun `onThresholdResetを呼ぶと燃料残量閾値が30パーセントになる`() = runTest {
+    fun `onThresholdResetを呼ぶと燃料残量閾値が30パーセントになる`() =
+        runTest {
         thresholdFlow.update { 60 }
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         coEvery {
@@ -106,7 +110,8 @@ class Gt7Ps5ReadoutRemainingFuelDetailViewModelTest {
     }
 
     @Test
-    fun `onPreviewClickedを呼ぶと燃料残量警告を読み上げる`() = runTest {
+    fun `onPreviewClickedを呼ぶと燃料残量警告を読み上げる`() =
+        runTest {
         every { repository.observeThresholdPercentage() } returns thresholdFlow
         every { ttsEngine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning, false) } returns Unit
         val viewModel = createViewModel()

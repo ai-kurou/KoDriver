@@ -24,7 +24,8 @@ class ObserveGt7Ps5RemainingFuelThresholdPercentageUseCaseTest {
     }
 
     @Test
-    fun `リポジトリの燃料残量閾値を返す`() = runBlocking {
+    fun `リポジトリの燃料残量閾値を返す`() =
+        runBlocking {
         val threshold = MutableStateFlow(30)
         every { repository.observeThresholdPercentage() } returns threshold
         val useCase = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository)

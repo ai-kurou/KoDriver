@@ -16,7 +16,8 @@ import org.koin.dsl.module
  *   SimulatorPreferencesRepository（:core:data）、named("appVersion") のバージョン定数
  *   （app エントリーポイントで登録）。
  */
-val serverConnectionModule = module {
+val serverConnectionModule =
+    module {
     // ViewModel（get(named "appVersion") は app エントリーポイントで束ねるバージョン定数を解決）
     viewModel { ServerConnectionViewModel(get(), get(named("appVersion"))) }
 

@@ -19,7 +19,8 @@ internal class LmuWindowsReadoutVehicleDamageDetailViewModel(
     private val playSpeechEvent: PlaySpeechEventUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> = observeEnabledStates()
+    val uiState: StateFlow<LmuWindowsReadoutVehicleDamageDetailUiState> =
+        observeEnabledStates()
         .map { states ->
             LmuWindowsReadoutVehicleDamageDetailUiState(
                 overheatEnabled = states.getValue(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat),

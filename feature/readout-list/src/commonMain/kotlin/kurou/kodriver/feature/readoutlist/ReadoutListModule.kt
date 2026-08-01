@@ -19,7 +19,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: SimulatorPreferencesRepository・ReadoutPreferencesRepository・
  *   QueuePreferencesRepository（いずれも :core:data で登録）。
  */
-val readoutListModule = module {
+val readoutListModule =
+    module {
     // ViewModel
     viewModelOf(::ReadoutListViewModel)
 

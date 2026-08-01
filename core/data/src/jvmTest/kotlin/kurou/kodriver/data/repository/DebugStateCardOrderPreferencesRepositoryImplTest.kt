@@ -16,11 +16,13 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class DebugStateCardOrderPreferencesRepositoryImplTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory("kodriver_debug_state_card_order_preferences_test")
         .toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = DebugStateCardOrderPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -33,7 +35,8 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値は空リスト・保存した順序を読み出せる・上書きで更新される`() = testScope.runTest {
+    fun `初期値は空リスト・保存した順序を読み出せる・上書きで更新される`() =
+        testScope.runTest {
         assertEquals(emptyList(), repository.observeCardOrder().first())
 
         repository.saveCardOrder(listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR))
@@ -50,7 +53,8 @@ class DebugStateCardOrderPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `存在しないキー名は無視される`() = testScope.runTest {
+    fun `存在しないキー名は無視される`() =
+        testScope.runTest {
         dataStore.updateData { it.copy(cardOrder = listOf("SESSION", "REMOVED_KEY", "SIMULATOR")) }
 
         assertEquals(

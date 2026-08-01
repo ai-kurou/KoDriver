@@ -21,7 +21,8 @@ class SaveDebugStateCardOrderUseCaseTest {
     }
 
     @Test
-    fun `保存すると上書きで更新される`() = runBlocking {
+    fun `保存すると上書きで更新される`() =
+        runBlocking {
         val useCase = SaveDebugStateCardOrderUseCase(repository)
         val firstOrder = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
         val secondOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SESSION)

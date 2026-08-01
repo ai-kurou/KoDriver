@@ -71,11 +71,12 @@ class OtherConsoleIpDetailPaneScreenshotTest {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
                         OtherConsoleIpDetailPaneContent(
-                            uiState = OtherConsoleIpDetailUiState(
+                            uiState =
+                                OtherConsoleIpDetailUiState(
                                 inputAddress = "192.168.1.100",
                                 saveFailed = true,
                             ),
-                        )
+                                )
                     }
                 }
             }

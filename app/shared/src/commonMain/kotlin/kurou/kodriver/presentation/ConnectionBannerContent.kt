@@ -48,18 +48,22 @@ private data class BannerColors(
 )
 
 @Composable
-private fun bannerColors(status: ConnectionBannerStatus): BannerColors = when (status) {
-    ConnectionBannerStatus.CONNECTED -> BannerColors(
+private fun bannerColors(status: ConnectionBannerStatus): BannerColors =
+    when (status) {
+    ConnectionBannerStatus.CONNECTED ->
+        BannerColors(
         background = MaterialTheme.colorScheme.secondaryContainer,
         content = MaterialTheme.colorScheme.onSecondaryContainer,
     )
 
-    ConnectionBannerStatus.DISCONNECTED -> BannerColors(
+    ConnectionBannerStatus.DISCONNECTED ->
+        BannerColors(
         background = Color(0xFFFFF9C4),
         content = Color(0xFF5F4B00),
     )
 
-    ConnectionBannerStatus.UNCHECKED -> BannerColors(
+    ConnectionBannerStatus.UNCHECKED ->
+        BannerColors(
         background = MaterialTheme.colorScheme.errorContainer,
         content = MaterialTheme.colorScheme.onErrorContainer,
     )
@@ -87,11 +91,12 @@ private fun Modifier.pulseWhile(enabled: Boolean): Modifier {
     val progress by transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
-        animationSpec = infiniteRepeatable(
+        animationSpec =
+            infiniteRepeatable(
             animation = tween(durationMillis = ICON_PULSE_DURATION_MILLIS, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse,
         ),
-        label = "connectionBannerIconPulseProgress",
+            label = "connectionBannerIconPulseProgress",
     )
     return graphicsLayer(scaleX = pulseScale(progress), scaleY = pulseScale(progress), alpha = pulseAlpha(progress))
 }
@@ -110,7 +115,8 @@ fun ConnectionBannerContent(
     val isTappable = uiState.isTappable && onClick != null
 
     Box(
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxWidth()
             .background(colors.background)
             .then(
@@ -120,7 +126,7 @@ fun ConnectionBannerContent(
                     Modifier
                 },
             ).padding(horizontal = 16.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center,
     ) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -130,10 +136,11 @@ fun ConnectionBannerContent(
                 imageVector = icon,
                 contentDescription = null,
                 tint = colors.content,
-                modifier = Modifier
+                modifier =
+                    Modifier
                     .size(18.dp)
                     .pulseWhile(enabled = uiState.status == ConnectionBannerStatus.DISCONNECTED),
-            )
+                    )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = uiState.message,
@@ -146,16 +153,18 @@ fun ConnectionBannerContent(
                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                 contentDescription = null,
                 tint = colors.content,
-                modifier = Modifier
+                modifier =
+                    Modifier
                     .size(18.dp)
                     .align(Alignment.CenterEnd),
-            )
+                    )
         }
     }
 }
 
 private class ConnectionBannerContentPreviewParameterProvider : PreviewParameterProvider<ConnectionBannerUiState> {
-    override val values = sequenceOf(
+    override val values =
+        sequenceOf(
         ConnectionBannerUiState(
             status = ConnectionBannerStatus.CONNECTED,
             message = "シミュレータに接続中",

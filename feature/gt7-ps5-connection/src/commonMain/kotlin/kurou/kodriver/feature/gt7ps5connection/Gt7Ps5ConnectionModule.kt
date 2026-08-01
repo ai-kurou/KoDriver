@@ -13,7 +13,8 @@ import org.koin.dsl.module
  * 提供: Gt7Ps5ConnectionViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: Gt7Ps5Repository（:core:gt7-ps5-data）・SimulatorPreferencesRepository（:core:data）。
  */
-val gt7Ps5ConnectionModule = module {
+val gt7Ps5ConnectionModule =
+    module {
     // ViewModel
     viewModelOf(::Gt7Ps5ConnectionViewModel)
 

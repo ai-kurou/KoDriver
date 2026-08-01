@@ -49,7 +49,8 @@ private val AppNeutralVariant60 = Color(0xFF938F99)
 private val AppNeutralVariant80 = Color(0xFFCAC4D0)
 private val AppNeutralVariant90 = Color(0xFFE7E0EC)
 
-private val AppLightColorScheme = lightColorScheme(
+private val AppLightColorScheme =
+    lightColorScheme(
     primary = AppYellow40,
     onPrimary = AppNeutral99,
     primaryContainer = AppYellow90,
@@ -79,7 +80,8 @@ private val AppLightColorScheme = lightColorScheme(
     surfaceContainerHigh = AppNeutralVariant90,
 )
 
-private val AppDarkColorScheme = darkColorScheme(
+private val AppDarkColorScheme =
+    darkColorScheme(
     primary = AppYellow80,
     onPrimary = AppYellow20,
     primaryContainer = AppYellow30,
@@ -122,7 +124,8 @@ fun AppTheme(
     content: @Composable () -> Unit,
 ) {
     val fallbackColorScheme = if (darkTheme) AppDarkColorScheme else AppLightColorScheme
-    val colorScheme = if (dynamicColor) {
+    val colorScheme =
+        if (dynamicColor) {
         dynamicAppColorScheme(darkTheme) ?: fallbackColorScheme
     } else {
         fallbackColorScheme

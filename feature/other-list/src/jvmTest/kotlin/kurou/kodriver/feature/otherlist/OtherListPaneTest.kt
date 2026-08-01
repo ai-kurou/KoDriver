@@ -30,10 +30,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.Volume),
                 ),
-                onItemClick = { clickedItem = it },
+                    onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -51,11 +52,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.KeepScreenOn),
                     keepScreenOn = true,
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -73,11 +75,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.KeepScreenOn),
                     keepScreenOn = false,
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -95,11 +98,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.ExitConfirmation),
                     exitConfirmationEnabled = true,
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onDynamicColorEnabledChange = {},
@@ -117,11 +121,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.ExitConfirmation),
                     exitConfirmationEnabled = false,
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onDynamicColorEnabledChange = {},
@@ -139,11 +144,12 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.DynamicColor),
                     dynamicColorEnabled = true,
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
@@ -161,14 +167,16 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(
+                uiState =
+                    OtherListUiState(
+                    items =
+                        listOf(
                         OtherListItemType.KeepScreenOn,
                         OtherListItemType.ExitConfirmation,
                         OtherListItemType.DynamicColor,
                     ),
-                ),
-                onItemClick = { clickedItem = it },
+                        ),
+                    onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -186,12 +194,13 @@ class OtherListPaneTest {
     fun `アプリバージョンが設定されているとバージョン行を表示する`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = emptyList(),
                     appVersionLabel = "Android版KoDriverバージョン",
                     appVersion = "1.2.3",
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -208,10 +217,11 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.DebugState),
                 ),
-                onItemClick = { clickedItem = it },
+                    onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -229,12 +239,13 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = emptyList(),
                     appVersionLabel = "Android版KoDriverバージョン",
                     appVersion = "1.2.3",
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -255,12 +266,13 @@ class OtherListPaneTest {
 
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = emptyList(),
                     appVersionLabel = "Android版KoDriverバージョン",
                     appVersion = "1.2.3",
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -279,15 +291,17 @@ class OtherListPaneTest {
     fun `表示項目に応じたセクション見出しを表示する`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
-                    items = listOf(
+                uiState =
+                    OtherListUiState(
+                    items =
+                        listOf(
                         OtherListItemType.ConsoleIp,
                         OtherListItemType.Volume,
                         OtherListItemType.ExitConfirmation,
                         OtherListItemType.License,
                     ),
-                ),
-                onItemClick = {},
+                        ),
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -304,10 +318,11 @@ class OtherListPaneTest {
     fun `項目がないセクション見出しは表示しない`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.Volume),
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -324,10 +339,11 @@ class OtherListPaneTest {
     fun `テーマ項目をアプリ設定セクションに表示する`() {
         rule.setContent {
             OtherListPane(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     items = listOf(OtherListItemType.Theme),
                 ),
-                onItemClick = {},
+                    onItemClick = {},
                 onKeepScreenOnChange = {},
                 onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
@@ -345,8 +361,10 @@ class OtherListPaneTest {
         rule.setContent {
             Box(modifier = Modifier.height(160.dp)) {
                 OtherListPane(
-                    uiState = OtherListUiState(
-                        items = listOf(
+                    uiState =
+                        OtherListUiState(
+                        items =
+                            listOf(
                             OtherListItemType.ConsoleIp,
                             OtherListItemType.Volume,
                             OtherListItemType.ReadoutStartSound,
@@ -357,8 +375,8 @@ class OtherListPaneTest {
                             OtherListItemType.ReleasePage,
                             OtherListItemType.License,
                         ),
-                    ),
-                    onItemClick = {},
+                            ),
+                        onItemClick = {},
                     onKeepScreenOnChange = {},
                     onExitConfirmationEnabledChange = {},
                     onDynamicColorEnabledChange = {},

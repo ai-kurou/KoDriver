@@ -78,7 +78,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータ未選択時はアイテムが空で選択後に読み込まれる`() = runTest {
+    fun `シミュレータ未選択時はアイテムが空で選択後に読み込まれる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         val orderFlow = MutableStateFlow<List<ReadoutItemKey>>(emptyList())
@@ -119,7 +120,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `moveItemでアイテムの順序を変更できる`() = runTest {
+    fun `moveItemでアイテムの順序を変更できる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -128,7 +130,8 @@ class ReadoutListViewModelTest {
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-        val movedOrder = listOf(
+        val movedOrder =
+            listOf(
             ReadoutItemKey.LmuWindows.TyreTemperature.Root,
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
@@ -183,7 +186,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータ未選択時はmoveItemで順序を保存しない`() = runTest {
+    fun `シミュレータ未選択時はmoveItemで順序を保存しない`() =
+        runTest {
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
@@ -195,7 +199,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() = runTest {
+    fun `onReadoutEnabledChangedでON_OFF状態がRepositoryに保存される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -239,7 +244,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータ未選択時はON_OFF状態を保存しない`() = runTest {
+    fun `シミュレータ未選択時はON_OFF状態を保存しない`() =
+        runTest {
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
@@ -251,7 +257,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() = runTest {
+    fun `シミュレータを選択するとRepositoryから永続化済みのON_OFF状態が読み込まれる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -269,7 +276,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータを選択するとRepositoryから永続化済みの順序が読み込まれる`() = runTest {
+    fun `シミュレータを選択するとRepositoryから永続化済みの順序が読み込まれる`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -277,7 +285,8 @@ class ReadoutListViewModelTest {
         }
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
-        every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(
+        every { readoutRepository.observeReadoutOrder("lmu_windows") } returns
+            MutableStateFlow(
             listOf(ReadoutItemKey.LmuWindows.Flag.Root, ReadoutItemKey.LmuWindows.VehicleApproach.Root),
         )
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
@@ -301,7 +310,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `moveItemで変更した順序がRepositoryに保存される`() = runTest {
+    fun `moveItemで変更した順序がRepositoryに保存される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         val orderFlow = MutableStateFlow<List<ReadoutItemKey>>(emptyList())
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
@@ -311,7 +321,8 @@ class ReadoutListViewModelTest {
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("lmu_windows") } returns orderFlow
-        val movedOrder = listOf(
+        val movedOrder =
+            listOf(
             ReadoutItemKey.LmuWindows.TyreTemperature.Root,
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
@@ -346,7 +357,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `連続moveItemではRepository更新より最後のmoveItem結果を優先して表示する`() = runTest {
+    fun `連続moveItemではRepository更新より最後のmoveItem結果を優先して表示する`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -355,7 +367,8 @@ class ReadoutListViewModelTest {
         every { readoutRepository.observeReadoutEnabledStates("lmu_windows") } returns
             MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("lmu_windows") } returns MutableStateFlow(emptyList())
-        val firstMovedOrder = listOf(
+        val firstMovedOrder =
+            listOf(
             ReadoutItemKey.LmuWindows.TyreTemperature.Root,
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
@@ -365,7 +378,8 @@ class ReadoutListViewModelTest {
             ReadoutItemKey.LmuWindows.VehicleDamage.Root,
             ReadoutItemKey.LmuWindows.MyBestLap.Root,
         )
-        val secondMovedOrder = listOf(
+        val secondMovedOrder =
+            listOf(
             ReadoutItemKey.LmuWindows.Flag.Root,
             ReadoutItemKey.LmuWindows.TyreTemperature.Root,
             ReadoutItemKey.LmuWindows.VehicleApproach.Root,
@@ -400,7 +414,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `onItemSelectedでアイテムが選択される`() = runTest {
+    fun `onItemSelectedでアイテムが選択される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -419,7 +434,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータ未選択時はonItemSelectedで選択状態は変わらない`() = runTest {
+    fun `シミュレータ未選択時はonItemSelectedで選択状態は変わらない`() =
+        runTest {
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
@@ -430,7 +446,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() = runTest {
+    fun `シミュレータに属さないアイテムを選択しても選択状態は変わらない`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -449,7 +466,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `同じアイテムを再度選択すると選択解除される`() = runTest {
+    fun `同じアイテムを再度選択すると選択解除される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.LmuWindows) } answers {
@@ -469,7 +487,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `clearSelectedItemで選択状態が解除される`() = runTest {
+    fun `clearSelectedItemで選択状態が解除される`() =
+        runTest {
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel(simulatorRepository, readoutRepository, queueRepository)
@@ -481,7 +500,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5を選択するとGT7用の読み上げアイテムが表示される`() = runTest {
+    fun `gt7_ps5を選択するとGT7用の読み上げアイテムが表示される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
@@ -507,7 +527,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `gt7_ps5を選択すると共通Repositoryから燃料残り周回数の保存済みON_OFF状態が表示される`() = runTest {
+    fun `gt7_ps5を選択すると共通Repositoryから燃料残り周回数の保存済みON_OFF状態が表示される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.Gt7Ps5) } answers {
@@ -528,7 +549,8 @@ class ReadoutListViewModelTest {
     }
 
     @Test
-    fun `ON_OFF状態はシミュレータと項目ごとに共通Repositoryへ保存される`() = runTest {
+    fun `ON_OFF状態はシミュレータと項目ごとに共通Repositoryへ保存される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         val gt7EnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         val lmuEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())

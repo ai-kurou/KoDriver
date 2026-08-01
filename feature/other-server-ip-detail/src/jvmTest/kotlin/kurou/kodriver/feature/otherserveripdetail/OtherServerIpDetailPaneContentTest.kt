@@ -47,12 +47,13 @@ class OtherServerIpDetailPaneContentTest {
     fun `このまま保存ボタンをクリックするとonSaveAnywayが呼ばれる`() {
         var saveAnywayCount = 0
         setContent(
-            uiState = OtherServerIpDetailUiState(
+            uiState =
+                OtherServerIpDetailUiState(
                 inputIp = "192.168.1.1",
                 isInputValid = true,
                 connectivityWarning = true,
             ),
-            onSaveAnyway = { saveAnywayCount++ },
+                onSaveAnyway = { saveAnywayCount++ },
         )
 
         rule.onNodeWithText("このまま保存").performClick()

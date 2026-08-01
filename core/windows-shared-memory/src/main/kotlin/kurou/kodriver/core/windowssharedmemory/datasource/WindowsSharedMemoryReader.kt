@@ -22,13 +22,15 @@ class WindowsSharedMemoryReader(
         if (!isWindows) return false
         if (isOpen()) return true
 
-        val h = kernel32.OpenFileMappingA(
+        val h =
+            kernel32.OpenFileMappingA(
             Kernel32FileMapping.FILE_MAP_READ,
             false,
             segmentName,
         ) ?: return false
 
-        val ptr = kernel32.MapViewOfFile(
+        val ptr =
+            kernel32.MapViewOfFile(
             h,
             Kernel32FileMapping.FILE_MAP_READ,
             0,

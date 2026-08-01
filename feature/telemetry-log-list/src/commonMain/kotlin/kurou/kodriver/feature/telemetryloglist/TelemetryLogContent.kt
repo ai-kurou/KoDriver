@@ -87,8 +87,10 @@ internal fun TelemetryLogContentScaffold(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (Long) -> Unit = {},
 ) {
-    val navigator = rememberListDetailPaneScaffoldNavigator<Nothing>(
-        scaffoldDirective = when {
+    val navigator =
+        rememberListDetailPaneScaffoldNavigator<Nothing>(
+        scaffoldDirective =
+            when {
             uiState.selectedLogId == null && scaffoldDirective.maxHorizontalPartitions > 1 -> {
                 scaffoldDirective.copy(maxHorizontalPartitions = 1)
             }
@@ -102,7 +104,8 @@ internal fun TelemetryLogContentScaffold(
                 scaffoldDirective
             }
         },
-        initialDestinationHistory = if (uiState.selectedLogId != null) {
+            initialDestinationHistory =
+                if (uiState.selectedLogId != null) {
             listOf(
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List),
                 ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.Detail),
@@ -110,8 +113,9 @@ internal fun TelemetryLogContentScaffold(
         } else {
             listOf(ThreePaneScaffoldDestinationItem(ListDetailPaneScaffoldRole.List))
         },
-    )
-    val paneExpansionState = rememberPaneExpansionState(
+                )
+    val paneExpansionState =
+        rememberPaneExpansionState(
         anchors = listOf(PaneExpansionAnchor.Offset.fromStart(350.dp)),
         initialAnchoredIndex = 0,
     )
@@ -190,8 +194,10 @@ private fun TelemetryLogContentPreview() {
     )
 }
 
-internal val previewTelemetryLogListUiState = TelemetryLogListUiState(
-    logs = listOf(
+internal val previewTelemetryLogListUiState =
+    TelemetryLogListUiState(
+    logs =
+        listOf(
         TelemetryLog(
             id = 2,
             createdAt = 1_820_000,
@@ -207,4 +213,4 @@ internal val previewTelemetryLogListUiState = TelemetryLogListUiState(
             telemetryJson = """{"remainingFuelLaps":3.6,"fuelPercent":18.2}""",
         ),
     ),
-)
+        )

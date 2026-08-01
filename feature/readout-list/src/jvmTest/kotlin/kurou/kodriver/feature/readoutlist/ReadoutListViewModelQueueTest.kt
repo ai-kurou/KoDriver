@@ -77,7 +77,8 @@ class ReadoutListViewModelQueueTest {
     }
 
     @Test
-    fun `キューのデフォルト値にRepositoryの永続化済み状態がマージされて表示される`() = runTest {
+    fun `キューのデフォルト値にRepositoryの永続化済み状態がマージされて表示される`() =
+        runTest {
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
         every { queueRepository.observeQueueEnabledStates() } returns
             MutableStateFlow(mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.LmuWindows.Flag.Root to true))
@@ -92,7 +93,8 @@ class ReadoutListViewModelQueueTest {
     }
 
     @Test
-    fun `onQueueEnabledChangedでキューのON_OFF状態がRepositoryに保存される`() = runTest {
+    fun `onQueueEnabledChangedでキューのON_OFF状態がRepositoryに保存される`() =
+        runTest {
         every { simulatorRepository.selectedSimulator() } returns MutableStateFlow<Simulator?>(null)
         val queueEnabledFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { queueRepository.observeQueueEnabledStates() } returns queueEnabledFlow

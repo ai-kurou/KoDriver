@@ -21,7 +21,8 @@ class SaveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
     }
 
     @Test
-    fun `接近開始時読み上げ種別を保存できる`() = runBlocking {
+    fun `接近開始時読み上げ種別を保存できる`() =
+        runBlocking {
         SaveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)(
             VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
         )

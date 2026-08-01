@@ -14,7 +14,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory(
         "kodriver_lmu_windows_tyre_temperature_preferences_repository_factory_test",
     ).toFile()
@@ -26,7 +27,8 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は highThresholdCelsius が 95`() = testScope.runTest {
+    fun `デフォルト値は highThresholdCelsius が 95`() =
+        testScope.runTest {
         val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 
         assertEquals(
@@ -36,7 +38,8 @@ class LmuWindowsTyreTemperaturePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `保存した highThresholdCelsius を読み出せる`() = testScope.runTest {
+    fun `保存した highThresholdCelsius を読み出せる`() =
+        testScope.runTest {
         val repository = createLmuWindowsTyreTemperaturePreferencesRepository(tempDir.absolutePath)
 
         repository.saveHighThresholdCelsius(105)

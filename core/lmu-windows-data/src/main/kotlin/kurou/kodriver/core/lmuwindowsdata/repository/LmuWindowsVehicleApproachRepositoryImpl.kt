@@ -35,9 +35,11 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
     private fun rawVehicleApproachFlow(
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
-    ): Flow<LmuWindowsVehicleApproachData> = source.bufferFlow.mapNotNull { buffer ->
+    ): Flow<LmuWindowsVehicleApproachData> =
+        source.bufferFlow.mapNotNull { buffer ->
         val maxCount = maxVehicleCount(buffer)
-        val activeVehicles = (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
+        val activeVehicles =
+            (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
             .coerceAtMost(maxCount)
         val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
         if (activeVehicles > 0 && playerIdx < activeVehicles) {
@@ -57,7 +59,8 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
         val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
         val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
-        val plrOriYaw = atan2(
+        val plrOriYaw =
+            atan2(
             buffer.getDouble(plrBase + OFF_ORI_ROW2_X),
             buffer.getDouble(plrBase + OFF_ORI_ROW2_Z),
         ) - PI

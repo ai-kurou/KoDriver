@@ -22,7 +22,8 @@ class LmuWindowsTyreWearPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `タイヤ摩耗設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `タイヤ摩耗設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createLmuWindowsTyreWearPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(thresholdPercentage = 30) }
 

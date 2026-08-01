@@ -35,7 +35,8 @@ import org.koin.dsl.module
  * テスト用の Fake Koin モジュール（testFixtures）。:core:lmu-windows-data / :core:data の代わりに
  * LMU 系 Repository と SoundPlayer の Fake/No-Op 実装をバインドする。
  */
-val fakeLmuWindowsNarratorModule = module {
+val fakeLmuWindowsNarratorModule =
+    module {
     single<LmuWindowsVehicleApproachRepository> { FakeLmuWindowsVehicleApproachRepository() }
     single<LmuWindowsFlagRepository> { FakeLmuWindowsFlagRepository() }
     single<LmuWindowsRepository> { FakeLmuWindowsRepository() }

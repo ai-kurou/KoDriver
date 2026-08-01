@@ -20,7 +20,8 @@ class SaveConsoleAddressUseCaseTest {
     }
 
     @Test
-    fun `アドレスを保存する`() = runBlocking {
+    fun `アドレスを保存する`() =
+        runBlocking {
         SaveConsoleAddressUseCase(repository)("192.168.1.50")
 
         coVerify(exactly = 1) { repository.saveConsoleAddress("192.168.1.50") }

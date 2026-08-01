@@ -19,7 +19,8 @@ class SimulatorPreferencesRepositoryImplTest {
 
     private val tempDir = Files.createTempDirectory("kodriver_simulator_prefs_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = SimulatorPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -32,7 +33,8 @@ class SimulatorPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `初期値はnull・保存した値を返す・上書きで更新される`() = testScope.runTest {
+    fun `初期値はnull・保存した値を返す・上書きで更新される`() =
+        testScope.runTest {
         assertNull(repository.selectedSimulator().first())
 
         repository.saveSelectedSimulator(Simulator.LmuWindows)

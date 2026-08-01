@@ -61,7 +61,8 @@ class ReadoutListViewModelAceWindowsTest {
     }
 
     @Test
-    fun `ace_windowsを選択するとlistPaneにフラッグと燃料残量アイテムが表示される`() = runTest {
+    fun `ace_windowsを選択するとlistPaneにフラッグと燃料残量アイテムが表示される`() =
+        runTest {
         val simulatorFlow = MutableStateFlow<Simulator?>(null)
         every { simulatorRepository.selectedSimulator() } returns simulatorFlow
         coEvery { simulatorRepository.saveSelectedSimulator(Simulator.AceWindows) } answers {
@@ -70,7 +71,8 @@ class ReadoutListViewModelAceWindowsTest {
         every { readoutRepository.observeReadoutEnabledStates("ace_windows") } returns MutableStateFlow(emptyMap())
         every { readoutRepository.observeReadoutOrder("ace_windows") } returns MutableStateFlow(emptyList())
         every { queueRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-        val viewModel = ReadoutListViewModel(
+        val viewModel =
+            ReadoutListViewModel(
             observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorRepository),
             saveSelectedSimulator = SaveSelectedSimulatorUseCase(simulatorRepository),
             observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutRepository),

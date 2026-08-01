@@ -24,9 +24,11 @@ class TelemetryLogDetailContentTest {
     fun `2つのテレメトリーデータJSONを表示する`() {
         rule.setContent {
             TelemetryLogDetailContent(
-                uiState = TelemetryLogDetailUiState(
+                uiState =
+                    TelemetryLogDetailUiState(
                     logId = 2L,
-                    items = listOf(
+                    items =
+                        listOf(
                         TelemetryLogDetailItemUiState(
                             title = "選択したログ",
                             telemetryJson = """{"speed":120}""",
@@ -36,8 +38,8 @@ class TelemetryLogDetailContentTest {
                             telemetryJson = """{"speed":118}""",
                         ),
                     ),
-                ),
-            )
+                        ),
+                    )
         }
 
         rule.onNodeWithText("選択したログ").assertExists()

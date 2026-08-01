@@ -20,7 +20,8 @@ class AceWindowsFlagRepositoryImplTest {
     )
 
     @Test
-    fun `reader が open 済みのときデータを emit する`() = runBlocking<Unit> {
+    fun `reader が open 済みのときデータを emit する`() =
+        runBlocking<Unit> {
         val fake = FakeSharedMemoryReader(initialOpen = true)
         val repo = AceWindowsFlagRepositoryImpl(source = makeSource(fake))
 

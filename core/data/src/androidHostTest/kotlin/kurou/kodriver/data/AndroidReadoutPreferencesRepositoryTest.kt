@@ -26,7 +26,8 @@ class AndroidReadoutPreferencesRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("readout_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
+        val dataStore =
+            PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
@@ -39,7 +40,8 @@ class AndroidReadoutPreferencesRepositoryTest {
     }
 
     @Test
-    fun `enabledStatesは初期状態で空を返し保存後にON_OFF状態を返す`() = runTest(testDispatcher) {
+    fun `enabledStatesは初期状態で空を返し保存後にON_OFF状態を返す`() =
+        runTest(testDispatcher) {
         assertEquals(emptyMap(), repository.observeReadoutEnabledStates("lmu_windows").first())
 
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
@@ -53,7 +55,8 @@ class AndroidReadoutPreferencesRepositoryTest {
     }
 
     @Test
-    fun `orderは初期状態で空を返し保存後に順序を返す`() = runTest(testDispatcher) {
+    fun `orderは初期状態で空を返し保存後に順序を返す`() =
+        runTest(testDispatcher) {
         assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
 
         repository.saveReadoutOrder(
@@ -76,14 +79,16 @@ class AndroidReadoutPreferencesRepositoryTest {
     }
 
     @Test
-    fun `空のorderを保存すると空リストを返す`() = runTest(testDispatcher) {
+    fun `空のorderを保存すると空リストを返す`() =
+        runTest(testDispatcher) {
         repository.saveReadoutOrder("lmu_windows", emptyList())
 
         assertEquals(emptyList(), repository.observeReadoutOrder("lmu_windows").first())
     }
 
     @Test
-    fun `異なるシミュレータのデータは互いに影響しない`() = runTest(testDispatcher) {
+    fun `異なるシミュレータのデータは互いに影響しない`() =
+        runTest(testDispatcher) {
         repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
         repository.saveReadoutOrder("lmu_windows", listOf(ReadoutItemKey.LmuWindows.VehicleApproach.Root))
 

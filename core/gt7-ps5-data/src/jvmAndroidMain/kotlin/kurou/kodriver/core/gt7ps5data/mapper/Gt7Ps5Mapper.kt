@@ -15,7 +15,8 @@ import java.nio.ByteBuffer
  */
 internal object Gt7Ps5Mapper {
 
-    fun map(packet: ByteBuffer): Gt7Ps5TelemetryData = Gt7Ps5TelemetryData(
+    fun map(packet: ByteBuffer): Gt7Ps5TelemetryData =
+        Gt7Ps5TelemetryData(
         lapCount = packet.getShort(LAP_COUNT_OFFSET).toInt(),
         lapsInRace = packet.getShort(LAPS_IN_RACE_OFFSET).toInt(),
         bestLapTimeMs = packet.getInt(BEST_LAP_TIME_OFFSET),

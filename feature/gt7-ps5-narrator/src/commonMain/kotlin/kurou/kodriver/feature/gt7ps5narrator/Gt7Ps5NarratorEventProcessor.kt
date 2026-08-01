@@ -29,9 +29,11 @@ internal class Gt7Ps5NarratorEventProcessor(
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
-        logContext: Gt7Ps5TelemetryLogContext = Gt7Ps5TelemetryLogContext(
+        logContext: Gt7Ps5TelemetryLogContext =
+            Gt7Ps5TelemetryLogContext(
             state = Gt7Ps5NarratorState(),
-            settings = Gt7Ps5NarratorReadoutSettings(
+            settings =
+                Gt7Ps5NarratorReadoutSettings(
                 enabledStates = emptyMap(),
                 myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
                 remainingFuelLapsThreshold = 0,
@@ -39,9 +41,9 @@ internal class Gt7Ps5NarratorEventProcessor(
                 remainingFuelThresholdPercentage = 0,
                 remainingFuelEnabled = false,
             ),
-            finalState = Gt7Ps5NarratorState(),
+                finalState = Gt7Ps5NarratorState(),
         ),
-    ) {
+            ) {
         val previous = previousTelemetry[sourceKey]
         events.forEach { event ->
             if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
@@ -49,7 +51,8 @@ internal class Gt7Ps5NarratorEventProcessor(
                     createdAt = observedAtMs,
                     simulator = Simulator.Gt7Ps5,
                     readoutItemKey = event.readoutItemKey,
-                    telemetryJson = buildTelemetryLogJson(
+                    telemetryJson =
+                        buildTelemetryLogJson(
                         state = logContext.state,
                         previous = previous,
                         current = telemetry,
@@ -57,7 +60,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                         observedAtMs = observedAtMs,
                         finalState = logContext.finalState,
                     ),
-                )
+                        )
             }
         }
         previousTelemetry[sourceKey] = telemetry

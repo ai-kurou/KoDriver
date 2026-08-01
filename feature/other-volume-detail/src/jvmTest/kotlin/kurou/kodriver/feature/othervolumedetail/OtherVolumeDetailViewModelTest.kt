@@ -47,13 +47,15 @@ class OtherVolumeDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = OtherVolumeDetailViewModel(
+    private fun createViewModel() =
+        OtherVolumeDetailViewModel(
         observeSoundVolume = ObserveSoundVolumeUseCase(repository),
         saveSoundVolume = SaveSoundVolumeUseCase(repository),
     )
 
     @Test
-    fun `保存済みの音量をUiStateで返す`() = runTest {
+    fun `保存済みの音量をUiStateで返す`() =
+        runTest {
         every { repository.volume() } returns volumeFlow
         val viewModel = createViewModel()
 
@@ -63,7 +65,8 @@ class OtherVolumeDetailViewModelTest {
     }
 
     @Test
-    fun `音量を変更するとUiStateが更新される`() = runTest {
+    fun `音量を変更するとUiStateが更新される`() =
+        runTest {
         every { repository.volume() } returns volumeFlow
         coEvery { repository.saveVolume(40) } answers { volumeFlow.update { 40 } }
         val viewModel = createViewModel()

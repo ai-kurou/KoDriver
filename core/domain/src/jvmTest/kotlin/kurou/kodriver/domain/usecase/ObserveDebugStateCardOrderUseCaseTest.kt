@@ -25,7 +25,8 @@ class ObserveDebugStateCardOrderUseCaseTest {
     }
 
     @Test
-    fun `Repositoryが返す順序をそのまま返す`() = runBlocking {
+    fun `Repositoryが返す順序をそのまま返す`() =
+        runBlocking {
         val order = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
         every { repository.observeCardOrder() } returns MutableStateFlow(order)
         val useCase = ObserveDebugStateCardOrderUseCase(repository)

@@ -22,7 +22,8 @@ class LmuWindowsTyreTemperaturePreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `タイヤ温度設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `タイヤ温度設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createLmuWindowsTyreTemperaturePreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(highThresholdCelsius = 100) }
 

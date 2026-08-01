@@ -33,7 +33,8 @@ data class ServerConnectionUiState(
 ) {
     val isConnected: Boolean get() = connectionStatus == ServerConnectionStatus.CONNECTED
     val isConnectionChecked: Boolean
-        get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
+        get() =
+            connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
             connectionStatus != ServerConnectionStatus.CHECKING
     val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
 }
@@ -49,7 +50,8 @@ class ServerConnectionViewModel(
     private val showVersionMismatchBottomSheetFlow = MutableStateFlow(false)
     private var versionMismatchWarningShown = false
 
-    private val connectionStateFlow = observeKoDriverServerConnection(appVersion)
+    private val connectionStateFlow =
+        observeKoDriverServerConnection(appVersion)
         .onEach { state ->
             if (state.isVersionMismatch && !versionMismatchWarningShown) {
                 versionMismatchWarningShown = true
@@ -61,7 +63,8 @@ class ServerConnectionViewModel(
             replay = 1,
         )
 
-    private val baseUiStateFlow = connectionStateFlow
+    private val baseUiStateFlow =
+        connectionStateFlow
         .map { state ->
             ServerConnectionUiState(
                 connectionStatus = state.connectionStatus.toUiStatus(),
@@ -71,7 +74,8 @@ class ServerConnectionViewModel(
             )
         }
 
-    val uiState: StateFlow<ServerConnectionUiState> = combine(
+    val uiState: StateFlow<ServerConnectionUiState> =
+        combine(
         baseUiStateFlow,
         showVersionMismatchBottomSheetFlow,
     ) { base, showBottomSheet ->
@@ -87,7 +91,8 @@ class ServerConnectionViewModel(
     }
 }
 
-private fun KoDriverServerConnectionStatus.toUiStatus(): ServerConnectionStatus = when (this) {
+private fun KoDriverServerConnectionStatus.toUiStatus(): ServerConnectionStatus =
+    when (this) {
     KoDriverServerConnectionStatus.NOT_CONFIGURED -> ServerConnectionStatus.NOT_CONFIGURED
     KoDriverServerConnectionStatus.CHECKING -> ServerConnectionStatus.CHECKING
     KoDriverServerConnectionStatus.CONNECTED -> ServerConnectionStatus.CONNECTED

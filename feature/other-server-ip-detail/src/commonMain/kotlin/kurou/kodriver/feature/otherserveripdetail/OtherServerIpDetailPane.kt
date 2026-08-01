@@ -112,11 +112,12 @@ fun OtherServerIpDetailPaneContent(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier
+            modifier =
+                Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-        ) {
+                ) {
             Text(stringResource(Res.string.server_ip_description))
             Spacer(modifier = Modifier.height(12.dp))
             TextField(
@@ -125,12 +126,13 @@ fun OtherServerIpDetailPaneContent(
                 label = { Text(stringResource(Res.string.server_ip_label)) },
                 placeholder = { Text(stringResource(Res.string.server_ip_placeholder)) },
                 isError = !uiState.isInputValid,
-                supportingText = if (!uiState.isInputValid) {
+                supportingText =
+                    if (!uiState.isInputValid) {
                     { Text(stringResource(Res.string.server_ip_invalid)) }
                 } else {
                     null
                 },
-                singleLine = true,
+                    singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (uiState.connectivityWarning) {
@@ -239,13 +241,15 @@ private fun OtherServerIpDetailPaneDiscoveringPreview() {
 @Composable
 private fun OtherServerIpDetailPaneDiscoveredServersPreview() {
     OtherServerIpDetailPaneContent(
-        uiState = OtherServerIpDetailUiState(
+        uiState =
+            OtherServerIpDetailUiState(
             inputIp = "192.168.1.100",
-            discoveredServers = listOf(
+            discoveredServers =
+                listOf(
                 DiscoveredServer(hostName = "DESKTOP-ABC123", ipAddress = "192.168.1.10"),
                 DiscoveredServer(hostName = "DESKTOP-XYZ999", ipAddress = "192.168.1.20"),
             ),
-            isDiscoveryDialogVisible = false,
+                isDiscoveryDialogVisible = false,
         ),
-    )
+            )
 }

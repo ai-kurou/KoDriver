@@ -25,7 +25,8 @@ class ObserveReadoutStartSoundTypeUseCaseTest {
     }
 
     @Test
-    fun `読み上げ開始音種別を監視できる`() = runBlocking {
+    fun `読み上げ開始音種別を監視できる`() =
+        runBlocking {
         every { repository.observeType() } returns MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
         val useCase = ObserveReadoutStartSoundTypeUseCase(repository)
 

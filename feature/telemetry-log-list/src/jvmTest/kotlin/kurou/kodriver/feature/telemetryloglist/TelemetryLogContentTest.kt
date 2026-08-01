@@ -36,7 +36,8 @@ class TelemetryLogContentTest {
 
     private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
 
-    private val singlePaneDirective = PaneScaffoldDirective(
+    private val singlePaneDirective =
+        PaneScaffoldDirective(
         maxHorizontalPartitions = 1,
         horizontalPartitionSpacerSize = 0.dp,
         maxVerticalPartitions = 1,
@@ -64,8 +65,10 @@ class TelemetryLogContentTest {
     fun `ace_windowsのログもアイコン付きで一覧に表示する`() {
         rule.setContent {
             TelemetryLogContentScaffold(
-                uiState = TelemetryLogListUiState(
-                    logs = listOf(
+                uiState =
+                    TelemetryLogListUiState(
+                    logs =
+                        listOf(
                         TelemetryLog(
                             id = 1,
                             createdAt = 1_800_000,
@@ -74,8 +77,8 @@ class TelemetryLogContentTest {
                             telemetryJson = """{"flag":"green"}""",
                         ),
                     ),
-                ),
-            )
+                        ),
+                    )
         }
 
         rule.onNodeWithText("フラッグ").assertExists()
@@ -148,7 +151,8 @@ class TelemetryLogContentTest {
 
     @Test
     fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
-        val expectedDisplayNames = listOf(
+        val expectedDisplayNames =
+            listOf(
             ReadoutItemKey.LmuWindows.VehicleApproach.Root to "車両接近",
             ReadoutItemKey.LmuWindows.Flag.Root to "フラッグ",
             ReadoutItemKey.LmuWindows.Flag.BlueFlag to "ブルーフラッグ",
@@ -319,15 +323,17 @@ class TelemetryLogContentTest {
     }
 }
 
-private fun createTelemetryLogs(): List<TelemetryLog> = (30 downTo 1).map { id ->
+private fun createTelemetryLogs(): List<TelemetryLog> =
+    (30 downTo 1).map { id ->
     createTelemetryLog(
         id = id.toLong(),
-        readoutItemKey = when (id) {
+        readoutItemKey =
+            when (id) {
             30 -> ReadoutItemKey.LmuWindows.TyreWear.Root
             20 -> ReadoutItemKey.LmuWindows.VehicleDamage.Overheat
             else -> ReadoutItemKey.LmuWindows.Flag.Root
         },
-    )
+            )
 }
 
 private fun createTelemetryLog(

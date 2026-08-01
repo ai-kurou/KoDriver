@@ -38,7 +38,8 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
     }
 
     @Test
-    fun `invokeはリポジトリのvehicleApproachStreamを返す`() = runBlocking {
+    fun `invokeはリポジトリのvehicleApproachStreamを返す`() =
+        runBlocking {
         val expected = fakeVehicleApproachData(isSideBySideLeft = true)
         every { repo.vehicleApproachStream() } returns flowOf(expected)
         val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
@@ -51,7 +52,8 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
     }
 
     @Test
-    fun `invokeは空のフローをそのまま返す`() = runBlocking {
+    fun `invokeは空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.vehicleApproachStream() } returns flowOf()
         val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
 
@@ -63,7 +65,8 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = fakeVehicleApproachData(isSideBySideLeft = false, isSideBySideRight = false)
         val data2 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = false)
         val data3 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = true)

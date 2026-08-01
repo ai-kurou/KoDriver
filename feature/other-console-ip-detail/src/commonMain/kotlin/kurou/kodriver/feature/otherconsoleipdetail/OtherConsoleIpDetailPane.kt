@@ -107,11 +107,12 @@ fun OtherConsoleIpDetailPaneContent(
         modifier = modifier,
     ) {
         Column(
-            modifier = Modifier
+            modifier =
+                Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
-        ) {
+                ) {
             Text(stringResource(Res.string.console_ip_description))
             Spacer(modifier = Modifier.height(12.dp))
             TextField(
@@ -120,12 +121,13 @@ fun OtherConsoleIpDetailPaneContent(
                 label = { Text(stringResource(Res.string.console_ip_label)) },
                 placeholder = { Text(stringResource(Res.string.console_ip_placeholder)) },
                 isError = !uiState.isInputValid,
-                supportingText = if (!uiState.isInputValid) {
+                supportingText =
+                    if (!uiState.isInputValid) {
                     { Text(stringResource(Res.string.console_ip_invalid)) }
                 } else {
                     null
                 },
-                singleLine = true,
+                    singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(16.dp))

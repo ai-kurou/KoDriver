@@ -38,7 +38,8 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         settings: AceWindowsNarratorReadoutSettings,
     ): AceWindowsNarratorReadoutDecision {
         val isLow = data.remainingPercent > 0.0 && data.remainingPercent <= settings.remainingFuelThresholdPercentage
-        val shouldAnnounce = !state.remainingFuelWarned && isLow &&
+        val shouldAnnounce =
+            !state.remainingFuelWarned && isLow &&
             settings.enabledStates.getValue(ReadoutItemKey.AceWindows.RemainingFuel.Root)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
@@ -58,14 +59,16 @@ class DetermineAceWindowsNarratorReadoutUseCase {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         if (data.flag == previous) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
-        val event = flagEvent(data.flag)
+        val event =
+            flagEvent(data.flag)
             ?.takeIf { (itemKey, _) ->
             settings.enabledStates.getValue(itemKey)
         }?.second
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
     }
 
-    private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, SpeechEvent>? = when (flag) {
+    private fun flagEvent(flag: AceWindowsFlagType): Pair<ReadoutItemKey, SpeechEvent>? =
+        when (flag) {
         AceWindowsFlagType.WHITE_FLAG -> {
             ReadoutItemKey.AceWindows.Flag.WhiteFlag to SpeechEvent.AceWindowsWhiteFlag
         }

@@ -48,7 +48,8 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はOverheatのデフォルトtrueを返す`() = runBlocking {
+    fun `初期値はOverheatのデフォルトtrueを返す`() =
+        runBlocking {
         val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
@@ -59,7 +60,8 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
         val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
@@ -75,7 +77,8 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `デフォルトにないキーを保存した場合そのエントリも返す`() = runBlocking {
+    fun `デフォルトにないキーを保存した場合そのエントリも返す`() =
+        runBlocking {
         val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
         val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 

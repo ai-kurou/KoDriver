@@ -21,7 +21,8 @@ class DisconnectLmuWindowsUseCaseTest {
     }
 
     @Test
-    fun `invokeはリポジトリのdisconnectを呼ぶ`() = runBlocking {
+    fun `invokeはリポジトリのdisconnectを呼ぶ`() =
+        runBlocking {
         coEvery { repo.disconnect() } returns Unit
         val useCase = DisconnectLmuWindowsUseCase(repo)
 

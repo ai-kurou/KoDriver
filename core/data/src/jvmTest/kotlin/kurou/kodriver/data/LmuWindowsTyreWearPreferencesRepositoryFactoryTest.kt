@@ -13,7 +13,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsTyreWearPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory(
         "kodriver_lmu_windows_tyre_wear_preferences_repository_factory_test",
     ).toFile()
@@ -25,14 +26,16 @@ class LmuWindowsTyreWearPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は thresholdPercentage が 50`() = testScope.runTest {
+    fun `デフォルト値は thresholdPercentage が 50`() =
+        testScope.runTest {
         val repository = createLmuWindowsTyreWearPreferencesRepository(tempDir.absolutePath)
 
         assertEquals(50, repository.observeThresholdPercentage().first())
     }
 
     @Test
-    fun `保存した thresholdPercentage を読み出せる`() = testScope.runTest {
+    fun `保存した thresholdPercentage を読み出せる`() =
+        testScope.runTest {
         val repository = createLmuWindowsTyreWearPreferencesRepository(tempDir.absolutePath)
 
         repository.saveThresholdPercentage(30)

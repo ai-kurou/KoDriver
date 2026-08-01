@@ -14,7 +14,8 @@ import org.koin.dsl.module
  *   （プラットフォーム実装を [platformWindowsServerDiscoveryModule] で解決）。
  * 消費（get で解決）: ServerIpPreferencesRepository（:core:data で登録）。
  */
-val otherServerIpDetailModule = module {
+val otherServerIpDetailModule =
+    module {
     // ViewModel
     viewModelOf(::OtherServerIpDetailViewModel)
 

@@ -31,7 +31,8 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU と区別するため named("gt7_ps5") で登録している。
  */
-val gt7Ps5NarratorModule: Module = module {
+val gt7Ps5NarratorModule: Module =
+    module {
     // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
     viewModel { Gt7Ps5NarratorViewModel(get(), get(), get(), get(), get(), get()) }
 

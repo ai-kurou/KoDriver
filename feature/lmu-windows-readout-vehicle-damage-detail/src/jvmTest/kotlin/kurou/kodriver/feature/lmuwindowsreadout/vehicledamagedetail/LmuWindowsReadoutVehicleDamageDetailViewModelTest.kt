@@ -52,14 +52,16 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutVehicleDamageDetailViewModel(
+    private fun createViewModel() =
+        LmuWindowsReadoutVehicleDamageDetailViewModel(
         observeEnabledStates = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repository),
         saveEnabledState = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository),
         playSpeechEvent = PlaySpeechEventUseCase(ttsEngine),
     )
 
     @Test
-    fun `初期状態はリポジトリが空のとき overheatEnabled がデフォルト値 true の UiState を返す`() = runTest {
+    fun `初期状態はリポジトリが空のとき overheatEnabled がデフォルト値 true の UiState を返す`() =
+        runTest {
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         val viewModel = createViewModel()
 
@@ -69,7 +71,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     }
 
     @Test
-    fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() = runTest {
+    fun `リポジトリに overheat=false が保存済みのとき overheatEnabled が false の UiState を返す`() =
+        runTest {
         every { repository.observeEnabledStates() } returns
             MutableStateFlow(mapOf(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to false))
         val viewModel = createViewModel()
@@ -80,7 +83,8 @@ class LmuWindowsReadoutVehicleDamageDetailViewModelTest {
     }
 
     @Test
-    fun `onOverheatEnabledChanged を呼ぶと UiState の overheatEnabled が更新される`() = runTest {
+    fun `onOverheatEnabledChanged を呼ぶと UiState の overheatEnabled が更新される`() =
+        runTest {
         val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
         every { repository.observeEnabledStates() } returns enabledStatesFlow
         coEvery {

@@ -15,7 +15,8 @@ import kotlin.test.assertFailsWith
 class SimulatorPreferencesSerializerTest {
 
     @Test
-    fun `正常なバイト列をデシリアライズできる`() = runTest {
+    fun `正常なバイト列をデシリアライズできる`() =
+        runTest {
         val original = SimulatorPreferences(selectedSimulator = "lmu_windows")
         val bytes = ProtoBuf.encodeToByteArray(SimulatorPreferences.serializer(), original)
 
@@ -25,7 +26,8 @@ class SimulatorPreferencesSerializerTest {
     }
 
     @Test
-    fun `不正なバイト列はCorruptionExceptionをスローする`() = runTest {
+    fun `不正なバイト列はCorruptionExceptionをスローする`() =
+        runTest {
         val invalidBytes = byteArrayOf(0xFF.toByte(), 0xFE.toByte(), 0x00, 0x01)
 
         assertFailsWith<CorruptionException> {
@@ -34,7 +36,8 @@ class SimulatorPreferencesSerializerTest {
     }
 
     @Test
-    fun `writeToしたバイト列をreadFromで復元できる`() = runTest {
+    fun `writeToしたバイト列をreadFromで復元できる`() =
+        runTest {
         val original = SimulatorPreferences(selectedSimulator = "rFactor 2")
         val output = ByteArrayOutputStream()
         SimulatorPreferencesSerializer.writeTo(original, output)

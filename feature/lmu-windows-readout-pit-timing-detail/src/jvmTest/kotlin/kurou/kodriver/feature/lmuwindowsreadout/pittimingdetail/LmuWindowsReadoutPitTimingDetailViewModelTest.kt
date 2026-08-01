@@ -56,7 +56,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = LmuWindowsReadoutPitTimingDetailViewModel(
+    private fun createViewModel() =
+        LmuWindowsReadoutPitTimingDetailViewModel(
         observeLmuWindowsPitTimingVirtualEnergyLaps = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
         observeLmuWindowsPitTimingTyreWearLaps = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository),
         saveLmuWindowsPitTimingVirtualEnergyLaps = SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository),
@@ -65,7 +66,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     )
 
     @Test
-    fun `初期状態は両方とも3周のUiStateを返す`() = runTest {
+    fun `初期状態は両方とも3周のUiStateを返す`() =
+        runTest {
         every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
         every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
         val viewModel = createViewModel()
@@ -80,7 +82,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     }
 
     @Test
-    fun `onVirtualEnergyLapsChangedに5を渡すと保存されvirtualEnergyLapsが5になる`() = runTest {
+    fun `onVirtualEnergyLapsChangedに5を渡すと保存されvirtualEnergyLapsが5になる`() =
+        runTest {
         every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
         every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
         coEvery { repository.saveVirtualEnergyLaps(5) } answers { virtualEnergyLapsFlow.update { 5 } }
@@ -96,7 +99,8 @@ class LmuWindowsReadoutPitTimingDetailViewModelTest {
     }
 
     @Test
-    fun `onTyreWearLapsChangedに1を渡すと保存されtyreWearLapsが1になる`() = runTest {
+    fun `onTyreWearLapsChangedに1を渡すと保存されtyreWearLapsが1になる`() =
+        runTest {
         every { repository.observeVirtualEnergyLaps() } returns virtualEnergyLapsFlow
         every { repository.observeTyreWearLaps() } returns tyreWearLapsFlow
         coEvery { repository.saveTyreWearLaps(1) } answers { tyreWearLapsFlow.update { 1 } }

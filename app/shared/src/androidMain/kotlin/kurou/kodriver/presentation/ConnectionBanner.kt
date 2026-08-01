@@ -38,28 +38,35 @@ actual fun rememberConnectionBannerUiState(): ConnectionBannerUiState {
     val isGt7 = uiState.isGt7Ps5
     val isAceWindows = uiState.isAceWindows
 
-    val connectedMessage = stringResource(
+    val connectedMessage =
+        stringResource(
         if (isGt7) Res.string.banner_simulator_connected else Res.string.banner_server_connected,
     )
-    val disconnectedMessage = stringResource(
+    val disconnectedMessage =
+        stringResource(
         if (isGt7) Res.string.banner_simulator_disconnected else Res.string.banner_server_disconnected,
     )
-    val ipNotConfiguredMessage = stringResource(
+    val ipNotConfiguredMessage =
+        stringResource(
         if (isGt7) Res.string.banner_console_ip_not_configured else Res.string.banner_server_ip_not_configured,
     )
-    val snackbarConnectedMessage = stringResource(
+    val snackbarConnectedMessage =
+        stringResource(
         connectionBannerSnackbarConnectedMessageRes(isGt7, isAceWindows),
     )
-    val snackbarDisconnectedMessage = stringResource(
+    val snackbarDisconnectedMessage =
+        stringResource(
         connectionBannerSnackbarDisconnectedMessageRes(isGt7, isAceWindows),
     )
 
     val vmStatus = uiState.connectionStatus
-    val tapNavigationTarget = connectionBannerNavigationTarget(
+    val tapNavigationTarget =
+        connectionBannerNavigationTarget(
         isGt7 = isGt7,
         supportsLmuServerIpNavigation = true,
     )
-    val message = when (vmStatus) {
+    val message =
+        when (vmStatus) {
         ConnectionBannerVmStatus.CONNECTED -> connectedMessage
 
         ConnectionBannerVmStatus.IP_NOT_CONFIGURED -> ipNotConfiguredMessage

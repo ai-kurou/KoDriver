@@ -76,7 +76,8 @@ class Gt7Ps5MapperTest {
 
     @Test
     fun `全フィールドを同時に正しくマッピングする`() {
-        val packet = packetWith(
+        val packet =
+            packetWith(
             lapCount = 3,
             lapsInRace = 15,
             bestLapTimeMs = 85_432,

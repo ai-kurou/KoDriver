@@ -10,14 +10,16 @@ import java.nio.ByteBuffer
 internal class LmuWindowsSharedMemorySource(
     pollingIntervalMs: Long = 16L,
     reconnectIntervalMs: Long = 1_000L,
-    internal val reader: SharedMemoryReader = WindowsSharedMemoryReader(
+    internal val reader: SharedMemoryReader =
+        WindowsSharedMemoryReader(
         segmentName = "LMU_Data",
         sizeBytes = 324_820,
     ),
-    private val currentTimeMs: () -> Long = System::currentTimeMillis,
+        private val currentTimeMs: () -> Long = System::currentTimeMillis,
     scope: CoroutineScope,
 ) {
-    private val pollingSource = SharedMemoryPollingSource(
+    private val pollingSource =
+        SharedMemoryPollingSource(
         reader = reader,
         pollingIntervalMs = pollingIntervalMs,
         reconnectIntervalMs = reconnectIntervalMs,
@@ -28,7 +30,8 @@ internal class LmuWindowsSharedMemorySource(
 
     val bufferFlow: Flow<ByteBuffer> = pollingSource.bufferFlow
 
-    suspend fun isConnected(): Boolean = pollingSource.withReaderLock { reader ->
+    suspend fun isConnected(): Boolean =
+        pollingSource.withReaderLock { reader ->
         // Releasing our mapping before probing is essential: if LMU has exited,
         // our MapViewOfFile is the last reference keeping the section alive.
         // Closing first drops that reference, so OpenFileMappingA will fail when

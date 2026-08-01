@@ -18,7 +18,8 @@ internal const val WEB_SOCKET_PING_INTERVAL_MS = 15_000L
  */
 internal fun createWebSocketHttpClient(
     pingIntervalMs: Long = WEB_SOCKET_PING_INTERVAL_MS,
-): HttpClient = HttpClient(OkHttp) {
+): HttpClient =
+    HttpClient(OkHttp) {
     engine {
         config {
             pingInterval(pingIntervalMs, TimeUnit.MILLISECONDS)

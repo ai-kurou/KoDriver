@@ -29,8 +29,10 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
     }
 
     @Test
-    fun `invoke はリポジトリの tyreCarcassTemperatureStream を返す`() = runBlocking {
-        val expected = LmuWindowsTyreCarcassTemperatureData(
+    fun `invoke はリポジトリの tyreCarcassTemperatureStream を返す`() =
+        runBlocking {
+        val expected =
+            LmuWindowsTyreCarcassTemperatureData(
             wheels = mapOf(WheelIndex.FRONT_LEFT to 350.0),
         )
         every { repo.tyreCarcassTemperatureStream() } returns flowOf(expected)
@@ -44,7 +46,8 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
     }
 
     @Test
-    fun `invoke は空のフローをそのまま返す`() = runBlocking {
+    fun `invoke は空のフローをそのまま返す`() =
+        runBlocking {
         every { repo.tyreCarcassTemperatureStream() } returns flowOf()
         val useCase = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repo)
 
@@ -56,7 +59,8 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
     }
 
     @Test
-    fun `複数のデータを順番通りに流す`() = runBlocking {
+    fun `複数のデータを順番通りに流す`() =
+        runBlocking {
         val data1 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 330.0))
         val data2 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 340.0))
         val data3 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 350.0))

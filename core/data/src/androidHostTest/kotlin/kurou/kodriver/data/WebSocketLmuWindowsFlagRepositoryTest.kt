@@ -39,22 +39,26 @@ class WebSocketFlagRepositoryTest {
         server.shutdown()
     }
 
-    private fun buildRepository(retryDelayMs: Long = 0L) = WebSocketLmuWindowsFlagRepository(
+    private fun buildRepository(retryDelayMs: Long = 0L) =
+        WebSocketLmuWindowsFlagRepository(
         serverIpRepository = fakeIpRepository,
         port = server.port,
         retryDelayMs = retryDelayMs,
     )
 
     @Test
-    fun `ipがnullのときflagStreamは何もemitしない`() = runTest {
-        val result = withTimeoutOrNull(300) {
+    fun `ipがnullのときflagStreamは何もemitしない`() =
+        runTest {
+        val result =
+            withTimeoutOrNull(300) {
             buildRepository().flagStream().first()
         }
         assertNull(result)
     }
 
     @Test
-    fun `有効なJSONフレームを受信したときRaceFlagsDataをemitする`() = runTest {
+    fun `有効なJSONフレームを受信したときRaceFlagsDataをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -75,7 +79,8 @@ class WebSocketFlagRepositoryTest {
     }
 
     @Test
-    fun `不正なJSONフレームは無視されて次のフレームが処理される`() = runTest {
+    fun `不正なJSONフレームは無視されて次のフレームが処理される`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -95,7 +100,8 @@ class WebSocketFlagRepositoryTest {
     }
 
     @Test
-    fun `接続切断後にリトライして再接続する`() = runTest {
+    fun `接続切断後にリトライして再接続する`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -123,7 +129,8 @@ class WebSocketFlagRepositoryTest {
     }
 
     @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() = runTest {
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
+        runTest {
         server.enqueue(
             MockResponse().withWebSocketUpgrade(
                 object : WebSocketListener() {
@@ -163,7 +170,8 @@ private class FakeServerIpPreferencesRepository(
     }
 }
 
-private val GREEN_FLAG_JSON = """
+private val GREEN_FLAG_JSON =
+    """
     {
         "gamePhase": "GREEN_FLAG",
         "yellowFlagState": "NONE",
@@ -176,7 +184,8 @@ private val GREEN_FLAG_JSON = """
     }
 """.trimIndent()
 
-private val RED_FLAG_JSON = """
+private val RED_FLAG_JSON =
+    """
     {
         "gamePhase": "RED_FLAG",
         "yellowFlagState": "NONE",

@@ -35,7 +35,8 @@ internal class Gt7Ps5ReadoutMyBestLapDetailViewModel(
     }
 
     fun onPreviewClicked(type: MyBestLapVoiceType) {
-        val event = when (type) {
+        val event =
+            when (type) {
             MyBestLapVoiceType.FORMAL -> SpeechEvent.Gt7Ps5MyBestLapFormal
             MyBestLapVoiceType.CASUAL -> SpeechEvent.Gt7Ps5MyBestLapCasual
         }

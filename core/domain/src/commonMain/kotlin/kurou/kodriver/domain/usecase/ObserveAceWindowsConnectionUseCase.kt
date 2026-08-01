@@ -18,7 +18,8 @@ class ObserveAceWindowsConnectionUseCase(
     private val checkAceWindowsConnection: CheckAceWindowsConnectionUseCase,
     private val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
 ) {
-    operator fun invoke(): Flow<AceWindowsConnectionState> = connectionCheckFlow().combine(
+    operator fun invoke(): Flow<AceWindowsConnectionState> =
+        connectionCheckFlow().combine(
         observeAceWindowsFuel()
             .map<AceWindowsFuelData, AceWindowsFuelData?> { fuel -> fuel }
             .onStart { emit(null) },
@@ -29,9 +30,11 @@ class ObserveAceWindowsConnectionUseCase(
         )
     }
 
-    private fun connectionCheckFlow() = flow {
+    private fun connectionCheckFlow() =
+        flow {
         while (true) {
-            val isConnected = try {
+            val isConnected =
+                try {
                 checkAceWindowsConnection()
             } catch (e: CancellationException) {
                 throw e

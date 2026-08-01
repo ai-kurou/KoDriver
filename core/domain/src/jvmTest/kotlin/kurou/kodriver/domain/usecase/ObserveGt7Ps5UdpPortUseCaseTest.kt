@@ -27,7 +27,8 @@ class ObserveGt7Ps5UdpPortUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す・保存済みの値を返す`() = runBlocking {
+    fun `初期値を返す・保存済みの値を返す`() =
+        runBlocking {
         val state = MutableStateFlow(33740)
         every { repo.port() } returns state
         listOf(33740, 33741).forEach { port ->

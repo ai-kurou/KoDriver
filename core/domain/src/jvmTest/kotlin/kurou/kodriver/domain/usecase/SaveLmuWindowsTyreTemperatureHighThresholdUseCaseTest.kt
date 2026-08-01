@@ -20,7 +20,8 @@ class SaveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
     }
 
     @Test
-    fun `任意の値を保存できる`() = runBlocking {
+    fun `任意の値を保存できる`() =
+        runBlocking {
         val useCase = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository)
 
         useCase(100)

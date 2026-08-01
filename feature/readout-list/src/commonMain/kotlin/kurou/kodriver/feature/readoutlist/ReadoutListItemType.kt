@@ -46,13 +46,15 @@ sealed class ReadoutListItemType(
     }
 
     companion object {
-        fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? = when (simulator) {
+        fun fromId(simulator: Simulator, id: ReadoutItemKey): ReadoutListItemType? =
+            when (simulator) {
             is Simulator.LmuWindows -> lmuWindowsFromId(id)
             is Simulator.Gt7Ps5 -> gt7Ps5FromId(id)
             is Simulator.AceWindows -> aceWindowsFromId(id)
         }
 
-        private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? = when (id) {
+        private fun lmuWindowsFromId(id: ReadoutItemKey): LmuWindows? =
+            when (id) {
             ReadoutItemKey.LmuWindows.VehicleApproach.Root -> LmuWindows.VehicleApproach
             ReadoutItemKey.LmuWindows.Flag.Root -> LmuWindows.Flag
             ReadoutItemKey.LmuWindows.VehicleDamage.Root -> LmuWindows.VehicleDamage
@@ -64,20 +66,23 @@ sealed class ReadoutListItemType(
             else -> null
         }
 
-        private fun gt7Ps5FromId(id: ReadoutItemKey): Gt7Ps5? = when (id) {
+        private fun gt7Ps5FromId(id: ReadoutItemKey): Gt7Ps5? =
+            when (id) {
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
             ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Gt7Ps5.RemainingFuel
             else -> null
         }
 
-        private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? = when (id) {
+        private fun aceWindowsFromId(id: ReadoutItemKey): AceWindows? =
+            when (id) {
             ReadoutItemKey.AceWindows.Flag.Root -> AceWindows.Flag
             ReadoutItemKey.AceWindows.RemainingFuel.Root -> AceWindows.RemainingFuel
             else -> null
         }
 
-        fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> = when (simulator) {
+        fun defaultOrder(simulator: Simulator): List<ReadoutItemKey> =
+            when (simulator) {
             is Simulator.LmuWindows -> {
                 ReadoutItemKey.entries
                     .filterIsInstance<ReadoutItemKey.LmuWindows.TopLevel>()
@@ -99,7 +104,8 @@ sealed class ReadoutListItemType(
 
         // listPane のトップレベル項目のみ並び順を持つ。
         // 新しい TopLevel を追加した際、ここで対応を判断しないとコンパイルが通らない。
-        private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int = when (key) {
+        private fun lmuWindowsOrderIndex(key: ReadoutItemKey.LmuWindows.TopLevel): Int =
+            when (key) {
             ReadoutItemKey.LmuWindows.Flag.Root -> 0
             ReadoutItemKey.LmuWindows.TyreTemperature.Root -> 1
             ReadoutItemKey.LmuWindows.VehicleApproach.Root -> 2
@@ -110,13 +116,15 @@ sealed class ReadoutListItemType(
             ReadoutItemKey.LmuWindows.MyBestLap.Root -> 7
         }
 
-        private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int = when (key) {
+        private fun gt7Ps5OrderIndex(key: ReadoutItemKey.Gt7Ps5.TopLevel): Int =
+            when (key) {
             ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
             ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> 1
             ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 2
         }
 
-        private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int = when (key) {
+        private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int =
+            when (key) {
             ReadoutItemKey.AceWindows.Flag.Root -> 0
             ReadoutItemKey.AceWindows.RemainingFuel.Root -> 1
         }

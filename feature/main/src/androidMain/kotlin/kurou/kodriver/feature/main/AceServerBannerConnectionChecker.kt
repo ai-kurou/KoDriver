@@ -17,7 +17,8 @@ class AceServerBannerConnectionChecker(
     private val observeServerIp: ObserveServerIpUseCase,
 ) : AceBannerConnectionChecker {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun statusFlow(): Flow<ConnectionBannerVmStatus> = observeServerIp()
+    override fun statusFlow(): Flow<ConnectionBannerVmStatus> =
+        observeServerIp()
         .flatMapLatest { ip ->
             if (ip == null) {
                 flowOf(ConnectionBannerVmStatus.IP_NOT_CONFIGURED)

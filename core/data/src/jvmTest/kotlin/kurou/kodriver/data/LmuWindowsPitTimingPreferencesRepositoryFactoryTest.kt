@@ -15,7 +15,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory(
         "kodriver_lmu_windows_pit_timing_preferences_repository_factory_test",
     ).toFile()
@@ -27,7 +28,8 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は両方とも3周`() = testScope.runTest {
+    fun `デフォルト値は両方とも3周`() =
+        testScope.runTest {
         val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
 
         assertEquals(LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT, repository.observeVirtualEnergyLaps().first())
@@ -35,7 +37,8 @@ class LmuWindowsPitTimingPreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `保存した予想残り周回数を読み出せる`() = testScope.runTest {
+    fun `保存した予想残り周回数を読み出せる`() =
+        testScope.runTest {
         val repository = createLmuWindowsPitTimingPreferencesRepository(directory = tempDir.absolutePath)
 
         repository.saveVirtualEnergyLaps(5)

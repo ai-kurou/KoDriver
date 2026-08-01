@@ -47,7 +47,8 @@ internal class Gt7Ps5WavNarratorEngine(
     override val currentReadoutItemKey: ReadoutItemKey?
         get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
 
-    private val eventToFile: Map<SpeechEvent, String> = buildMap {
+    private val eventToFile: Map<SpeechEvent, String> =
+        buildMap {
         put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
         put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
         put(SpeechEvent.Gt7Ps5RemainingFuelWarning, "files/remaining_fuel_caution.wav")
@@ -56,7 +57,8 @@ internal class Gt7Ps5WavNarratorEngine(
         }
     }
 
-    private val startSoundTypeToFile = mapOf(
+    private val startSoundTypeToFile =
+        mapOf(
         ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
         ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
     )
@@ -94,7 +96,8 @@ internal class Gt7Ps5WavNarratorEngine(
         val mainSound = sounds[event] ?: return
         if (queue) {
             val previousJob = playJob
-            playJob = scope.launch(playbackParent) {
+            playJob =
+                scope.launch(playbackParent) {
                 previousJob?.join()
                 play(event, mainSound)
             }

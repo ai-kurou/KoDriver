@@ -29,7 +29,8 @@ class ObserveSelectedSimulatorUseCaseTest {
     }
 
     @Test
-    fun `初期値がnullのときnullを返し・保存済みの値をそのまま返す`() = runBlocking {
+    fun `初期値がnullのときnullを返し・保存済みの値をそのまま返す`() =
+        runBlocking {
         val state = MutableStateFlow<Simulator?>(null)
         every { repo.selectedSimulator() } returns state
         listOf(Simulator.LmuWindows).forEach { simulator ->

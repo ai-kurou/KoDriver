@@ -74,14 +74,16 @@ private enum class OtherListSection {
     Information,
 }
 
-private val otherListSections = listOf(
+private val otherListSections =
+    listOf(
     OtherListSection.ConnectionSettings,
     OtherListSection.ReadoutSettings,
     OtherListSection.AppSettings,
     OtherListSection.Information,
 )
 
-private fun OtherListItemType.section(): OtherListSection = when (this) {
+private fun OtherListItemType.section(): OtherListSection =
+    when (this) {
     OtherListItemType.ServerIp,
     OtherListItemType.ConsoleIp,
     -> OtherListSection.ConnectionSettings
@@ -105,7 +107,8 @@ private fun OtherListItemType.section(): OtherListSection = when (this) {
 }
 
 @Composable
-private fun otherItemDisplayName(itemType: OtherListItemType): String = when (itemType) {
+private fun otherItemDisplayName(itemType: OtherListItemType): String =
+    when (itemType) {
     OtherListItemType.ServerIp -> stringResource(Res.string.item_server_ip)
     OtherListItemType.ConsoleIp -> stringResource(Res.string.item_console_ip)
     OtherListItemType.Volume -> stringResource(Res.string.item_volume)
@@ -121,7 +124,8 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String = when (it
 }
 
 @Composable
-private fun otherListSectionTitle(section: OtherListSection): String = when (section) {
+private fun otherListSectionTitle(section: OtherListSection): String =
+    when (section) {
     OtherListSection.ConnectionSettings -> stringResource(Res.string.section_connection_settings)
     OtherListSection.ReadoutSettings -> stringResource(Res.string.section_readout_settings)
     OtherListSection.AppSettings -> stringResource(Res.string.section_app_settings)
@@ -149,7 +153,8 @@ private fun OtherListItemLeadingIcon(itemType: OtherListItemType, hasAppUpdate: 
 
         OtherListItemType.GitHubRepository -> Icon(imageVector = Icons.Outlined.Code, contentDescription = null)
 
-        OtherListItemType.ReleasePage -> BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
+        OtherListItemType.ReleasePage ->
+            BadgedBox(badge = { if (hasAppUpdate) Badge() }) {
             Icon(imageVector = Icons.Outlined.NewReleases, contentDescription = null)
         }
 
@@ -206,10 +211,11 @@ fun OtherListPane(
 
     LazyColumn(
         state = listState,
-        modifier = modifier
+        modifier =
+            modifier
             .fillMaxSize()
             .padding(vertical = 8.dp),
-    ) {
+            ) {
         val groupedItems = uiState.items.groupBy { it.section() }
         otherListSections.forEach { section ->
             val sectionItems = groupedItems[section].orEmpty()
@@ -262,10 +268,11 @@ private fun OtherListSectionHeader(section: OtherListSection) {
         text = otherListSectionTitle(section),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
+        modifier =
+            Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 4.dp),
-    )
+            )
 }
 
 @Composable
@@ -279,30 +286,33 @@ private fun OtherListItem(
 ) {
     val isSelected = item == uiState.selectedItem
     val containerColor by animateColorAsState(
-        targetValue = if (isSelected) {
+        targetValue =
+            if (isSelected) {
             MaterialTheme.colorScheme.secondaryContainer
         } else {
             MaterialTheme.colorScheme.surface
         },
-        animationSpec = tween(durationMillis = 500),
+            animationSpec = tween(durationMillis = 500),
         label = "otherListItemContainerColor",
     )
     val headlineColor by animateColorAsState(
-        targetValue = if (isSelected) {
+        targetValue =
+            if (isSelected) {
             MaterialTheme.colorScheme.onSecondaryContainer
         } else {
             MaterialTheme.colorScheme.onSurface
         },
-        animationSpec = tween(durationMillis = 500),
+            animationSpec = tween(durationMillis = 500),
         label = "otherListItemHeadlineColor",
     )
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) {
+        targetValue =
+            if (isSelected) {
             MaterialTheme.colorScheme.onSecondaryContainer
         } else {
             MaterialTheme.colorScheme.onSurfaceVariant
         },
-        animationSpec = tween(durationMillis = 500),
+            animationSpec = tween(durationMillis = 500),
         label = "otherListItemIconColor",
     )
 
@@ -311,17 +321,20 @@ private fun OtherListItem(
         leadingContent = { OtherListItemLeadingIcon(item, uiState.hasAppUpdate) },
         trailingContent = {
             when (item) {
-                OtherListItemType.KeepScreenOn -> Switch(
+                OtherListItemType.KeepScreenOn ->
+                    Switch(
                     checked = uiState.keepScreenOn,
                     onCheckedChange = onKeepScreenOnChange,
                 )
 
-                OtherListItemType.ExitConfirmation -> Switch(
+                OtherListItemType.ExitConfirmation ->
+                    Switch(
                     checked = uiState.exitConfirmationEnabled,
                     onCheckedChange = onExitConfirmationEnabledChange,
                 )
 
-                OtherListItemType.DynamicColor -> Switch(
+                OtherListItemType.DynamicColor ->
+                    Switch(
                     checked = uiState.dynamicColorEnabled,
                     onCheckedChange = onDynamicColorEnabledChange,
                 )
@@ -338,13 +351,15 @@ private fun OtherListItem(
                 -> OtherListItemTrailingIcon(item)
             }
         },
-        colors = ListItemDefaults.colors(
+        colors =
+            ListItemDefaults.colors(
             containerColor = containerColor,
             headlineColor = headlineColor,
             leadingIconColor = iconColor,
             trailingIconColor = iconColor,
         ),
-        modifier = Modifier
+            modifier =
+                Modifier
             .fillMaxWidth()
             .semantics { selected = isSelected }
             .clickable {
@@ -375,7 +390,7 @@ private fun OtherListItem(
                     }
                 }
             },
-    )
+                )
 }
 
 private const val DEBUG_STATE_TAP_THRESHOLD = 5
@@ -406,18 +421,21 @@ private fun OtherAppVersionListItem(
                 style = MaterialTheme.typography.bodyMedium,
             )
         },
-        colors = ListItemDefaults.colors(
+        colors =
+            ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surface,
             headlineColor = MaterialTheme.colorScheme.onSurface,
             leadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        modifier = Modifier
+            modifier =
+                Modifier
             .fillMaxWidth()
             .clickable {
                 val now = TimeSource.Monotonic.markNow()
                 val elapsedSinceLastTap = lastTapMark?.elapsedNow()
-                tapCount = if (elapsedSinceLastTap != null && elapsedSinceLastTap < DEBUG_STATE_TAP_TIMEOUT) {
+                tapCount =
+                    if (elapsedSinceLastTap != null && elapsedSinceLastTap < DEBUG_STATE_TAP_TIMEOUT) {
                     tapCount + 1
                 } else {
                     1
@@ -428,7 +446,7 @@ private fun OtherAppVersionListItem(
                     onAppVersionTapped()
                 }
             },
-    )
+                )
 }
 
 @Preview(showBackground = true)

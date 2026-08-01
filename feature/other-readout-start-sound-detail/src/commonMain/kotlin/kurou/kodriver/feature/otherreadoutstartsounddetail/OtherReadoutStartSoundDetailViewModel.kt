@@ -21,7 +21,8 @@ internal class OtherReadoutStartSoundDetailViewModel(
 
     private val pendingType = MutableStateFlow<ReadoutStartSoundType?>(null)
 
-    val uiState = combine(observeReadoutStartSoundType(), pendingType) { saved, pending ->
+    val uiState =
+        combine(observeReadoutStartSoundType(), pendingType) { saved, pending ->
         OtherReadoutStartSoundDetailUiState(
             selectedType = saved,
             pendingType = pending ?: saved,

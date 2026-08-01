@@ -14,7 +14,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: AceWindowsFuelRepository（:core:ace-windows-data / :core:data）・
  *   SimulatorPreferencesRepository（:core:data）。
  */
-val aceWindowsConnectionModule = module {
+val aceWindowsConnectionModule =
+    module {
     // ViewModel
     viewModelOf(::AceWindowsConnectionViewModel)
 

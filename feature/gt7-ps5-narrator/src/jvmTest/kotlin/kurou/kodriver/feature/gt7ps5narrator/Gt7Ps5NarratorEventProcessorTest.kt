@@ -35,7 +35,8 @@ class Gt7Ps5NarratorEventProcessorTest {
     }
 
     @Test
-    fun `直前のテレメトリがないイベントはnullとして保存する`() = runTest {
+    fun `直前のテレメトリがないイベントはnullとして保存する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
@@ -69,7 +70,8 @@ class Gt7Ps5NarratorEventProcessorTest {
     }
 
     @Test
-    fun `読み上げたイベントを直前と現在のテレメトリとともに保存する`() = runTest {
+    fun `読み上げたイベントを直前と現在のテレメトリとともに保存する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val processor = createProcessor()
@@ -119,7 +121,8 @@ class Gt7Ps5NarratorEventProcessorTest {
     }
 
     @Test
-    fun `機能ごとに直前のテレメトリを保持する`() = runTest {
+    fun `機能ごとに直前のテレメトリを保持する`() =
+        runTest {
         val telemetryJsons = mutableListOf<String>()
         every { ttsEngine.currentReadoutItemKey } returns null
         val processor = createProcessor()
@@ -161,7 +164,8 @@ class Gt7Ps5NarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() = runTest {
+    fun `優先度の高い項目を再生中なら読み上げも保存もしない`() =
+        runTest {
         val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
         every { ttsEngine.currentReadoutItemKey } returns currentKey
@@ -182,7 +186,8 @@ class Gt7Ps5NarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() = runTest {
+    fun `優先度で本来無視される項目でもキュー設定が有効ならキュー再生する`() =
+        runTest {
         val currentKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
         val newEvent = SpeechEvent.RemainingFuelLapsWarning(2)
         val telemetryJsons = mutableListOf<String>()
@@ -220,7 +225,8 @@ class Gt7Ps5NarratorEventProcessorTest {
     }
 
     @Test
-    fun `優先度の低い項目を再生中なら停止して読み上げる`() = runTest {
+    fun `優先度の低い項目を再生中なら停止して読み上げる`() =
+        runTest {
         val currentKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
         val newEvent = SpeechEvent.Gt7Ps5MyBestLapFormal
         val telemetryJsons = mutableListOf<String>()
@@ -260,12 +266,14 @@ class Gt7Ps5NarratorEventProcessorTest {
         confirmVerified(telemetryLogRepository, ttsEngine)
     }
 
-    private fun createProcessor() = Gt7Ps5NarratorEventProcessor(
+    private fun createProcessor() =
+        Gt7Ps5NarratorEventProcessor(
         ttsEngine = ttsEngine,
         saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
     )
 
-    private fun telemetry(bestLapTimeMs: Int = 60_000) = Gt7Ps5TelemetryData(
+    private fun telemetry(bestLapTimeMs: Int = 60_000) =
+        Gt7Ps5TelemetryData(
         lapCount = 0,
         lapsInRace = 5,
         bestLapTimeMs = bestLapTimeMs,

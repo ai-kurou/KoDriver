@@ -27,14 +27,16 @@ class JvmExitConfirmationEnabledRepositoryTest {
     }
 
     @Test
-    fun `デフォルト値はtrueを返す`() = testScope.runTest {
+    fun `デフォルト値はtrueを返す`() =
+        testScope.runTest {
         val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
 
         assertTrue(repository.exitConfirmationEnabled().first())
     }
 
     @Test
-    fun `falseを保存するとfalseを返す`() = testScope.runTest {
+    fun `falseを保存するとfalseを返す`() =
+        testScope.runTest {
         val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
 
         repository.saveExitConfirmationEnabled(false)
@@ -43,7 +45,8 @@ class JvmExitConfirmationEnabledRepositoryTest {
     }
 
     @Test
-    fun `trueを保存するとtrueを返す`() = testScope.runTest {
+    fun `trueを保存するとtrueを返す`() =
+        testScope.runTest {
         val repository = createExitConfirmationEnabledRepository(tempDir.absolutePath)
         repository.saveExitConfirmationEnabled(false)
 
@@ -53,7 +56,8 @@ class JvmExitConfirmationEnabledRepositoryTest {
     }
 
     @Test
-    fun `DataStoreがIOエラーを起こした場合はデフォルト値trueを返す`() = testScope.runTest {
+    fun `DataStoreがIOエラーを起こした場合はデフォルト値trueを返す`() =
+        testScope.runTest {
         val repository = JvmExitConfirmationEnabledRepository(BrokenDataStore())
 
         assertTrue(repository.exitConfirmationEnabled().first())

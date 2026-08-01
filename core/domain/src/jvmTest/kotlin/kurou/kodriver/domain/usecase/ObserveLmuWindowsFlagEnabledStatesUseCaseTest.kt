@@ -49,7 +49,8 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `初期値はフラグ4種のデフォルトtrueを返す`() = runBlocking {
+    fun `初期値はフラグ4種のデフォルトtrueを返す`() =
+        runBlocking {
         val repo = createLmuWindowsFlagPreferencesRepository(repository)
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
@@ -67,7 +68,8 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
     }
 
     @Test
-    fun `保存済みの値はデフォルトより優先される`() = runBlocking {
+    fun `保存済みの値はデフォルトより優先される`() =
+        runBlocking {
         val repo = createLmuWindowsFlagPreferencesRepository(repository)
         val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 

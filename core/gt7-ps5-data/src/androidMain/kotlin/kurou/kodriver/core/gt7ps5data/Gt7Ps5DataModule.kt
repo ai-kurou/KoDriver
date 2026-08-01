@@ -21,7 +21,8 @@ private const val GT7_PS5_SCOPE_QUALIFIER = "gt7_ps5_scope"
  * get() で解決する Gt7Ps5Repository を提供する。UDP 受信は専用の CoroutineScope 上で行う。
  * jvmMain 版との違いは設定ファイルの保存先（context.filesDir）のみ。
  */
-val gt7Ps5DataModule = module {
+val gt7Ps5DataModule =
+    module {
     // UDP 受信を回す専用スコープ（named で他スコープと分離）
     single(named(GT7_PS5_SCOPE_QUALIFIER)) { CoroutineScope(SupervisorJob()) }
 

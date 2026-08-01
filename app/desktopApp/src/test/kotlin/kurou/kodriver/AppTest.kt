@@ -56,7 +56,8 @@ class AppTest {
                 // :core:lmu-windows-data の lmuWindowsDataModule は含めない。LMU/GT7の各Repositoryは
                 // fakeLmuWindowsNarratorModule / fakeGt7Ps5DataModule が最後に上書きするため実質未使用になる。
                 modules(
-                    listOf(desktopDataModule, aceWindowsDataModule) + featureModules + listOf(
+                    listOf(desktopDataModule, aceWindowsDataModule) + featureModules +
+                        listOf(
                         fakeGt7Ps5DataModule,
                         fakeLmuWindowsNarratorModule,
                         fakeReadoutListModule,
@@ -66,7 +67,7 @@ class AppTest {
                         fakeOtherReadoutStartSoundDetailModule,
                         fakeOtherConsoleIpDetailModule,
                     ),
-                )
+                        )
             }
         }
 

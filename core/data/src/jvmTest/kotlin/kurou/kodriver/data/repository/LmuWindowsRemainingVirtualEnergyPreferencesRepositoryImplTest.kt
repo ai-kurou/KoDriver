@@ -20,7 +20,8 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
     private val tempDir =
         Files.createTempDirectory("kodriver_lmu_windows_remaining_virtual_energy_preferences_test").toFile()
     private val testScope = TestScope(UnconfinedTestDispatcher())
-    private val dataStore = DataStoreFactory.create(
+    private val dataStore =
+        DataStoreFactory.create(
         serializer = LmuWindowsRemainingVirtualEnergyPreferencesSerializer,
         scope = testScope,
         produceFile = { tempDir.resolve("test.pb") },
@@ -33,18 +34,21 @@ class LmuWindowsRemainingVirtualEnergyPreferencesRepositoryImplTest {
     }
 
     @Test
-    fun `thresholdPercentage の初期値は 30`() = testScope.runTest {
+    fun `thresholdPercentage の初期値は 30`() =
+        testScope.runTest {
         assertEquals(30, repository.observeThresholdPercentage().first())
     }
 
     @Test
-    fun `saveThresholdPercentage で保存した値を observeThresholdPercentage で取得できる`() = testScope.runTest {
+    fun `saveThresholdPercentage で保存した値を observeThresholdPercentage で取得できる`() =
+        testScope.runTest {
         repository.saveThresholdPercentage(50)
         assertEquals(50, repository.observeThresholdPercentage().first())
     }
 
     @Test
-    fun `saveThresholdPercentage を複数回呼ぶと最後の値で上書きされる`() = testScope.runTest {
+    fun `saveThresholdPercentage を複数回呼ぶと最後の値で上書きされる`() =
+        testScope.runTest {
         repository.saveThresholdPercentage(80)
         repository.saveThresholdPercentage(50)
         assertEquals(50, repository.observeThresholdPercentage().first())

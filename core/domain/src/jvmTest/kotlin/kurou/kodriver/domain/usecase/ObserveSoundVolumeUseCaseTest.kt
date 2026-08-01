@@ -27,7 +27,8 @@ class ObserveSoundVolumeUseCaseTest {
     }
 
     @Test
-    fun `初期値を返す・保存済みの値を返す`() = runBlocking {
+    fun `初期値を返す・保存済みの値を返す`() =
+        runBlocking {
         val state = MutableStateFlow(80)
         every { repo.volume() } returns state
         listOf(50).forEach { volume ->

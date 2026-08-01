@@ -23,7 +23,8 @@ class SaveLmuWindowsTyreTemperatureEnabledStateUseCaseTest {
     }
 
     @Test
-    fun `保存するとFlowに値が反映され・上書きで更新される`() = runBlocking {
+    fun `保存するとFlowに値が反映され・上書きで更新される`() =
+        runBlocking {
         val useCase = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository)
 
         useCase(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning, false)

@@ -22,7 +22,8 @@ class LmuWindowsMyBestLapPreferencesDataStoreFactoryTest {
     }
 
     @Test
-    fun `LMU自己ベストラップ設定が正しいファイルに書き込まれる`() = testScope.runTest {
+    fun `LMU自己ベストラップ設定が正しいファイルに書き込まれる`() =
+        testScope.runTest {
         val dataStore = createLmuWindowsMyBestLapPreferencesDataStore(tempDir.absolutePath)
         dataStore.updateData { it.copy(voiceType = "casual") }
 

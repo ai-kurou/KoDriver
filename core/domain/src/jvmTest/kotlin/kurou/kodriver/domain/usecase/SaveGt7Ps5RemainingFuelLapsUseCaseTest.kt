@@ -20,7 +20,8 @@ class SaveGt7Ps5RemainingFuelLapsUseCaseTest {
     }
 
     @Test
-    fun `燃料残り周回数を保存できる`() = runBlocking {
+    fun `燃料残り周回数を保存できる`() =
+        runBlocking {
         SaveGt7Ps5RemainingFuelLapsUseCase(repository)(1)
 
         coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }

@@ -21,7 +21,8 @@ class SaveLmuWindowsRedFlagVoiceTypeUseCaseTest {
     }
 
     @Test
-    fun `赤旗音声タイプを保存する`() = runBlocking {
+    fun `赤旗音声タイプを保存する`() =
+        runBlocking {
         SaveLmuWindowsRedFlagVoiceTypeUseCase(repository)(RedFlagVoiceType.RED_FLAG)
 
         coVerify(exactly = 1) { repository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }

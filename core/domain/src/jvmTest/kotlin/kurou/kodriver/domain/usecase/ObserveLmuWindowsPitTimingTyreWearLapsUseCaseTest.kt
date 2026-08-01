@@ -24,7 +24,8 @@ class ObserveLmuWindowsPitTimingTyreWearLapsUseCaseTest {
     }
 
     @Test
-    fun `タイヤ摩耗予想残り周回数を監視できる`() = runBlocking {
+    fun `タイヤ摩耗予想残り周回数を監視できる`() =
+        runBlocking {
         every { repository.observeTyreWearLaps() } returns MutableStateFlow(2)
         val useCase = ObserveLmuWindowsPitTimingTyreWearLapsUseCase(repository)
 

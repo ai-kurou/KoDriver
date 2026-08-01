@@ -28,7 +28,8 @@ private val emptyEngine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0
 private val emptyInputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0)
 private val emptyTyres = LmuWindowsTyreData(wheels = emptyMap())
 private val emptyFuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0)
-private val emptyVehicle = LmuWindowsVehicleData(
+private val emptyVehicle =
+    LmuWindowsVehicleData(
     localVelocityX = 0.0,
     localVelocityY = 0.0,
     localVelocityZ = 0.0,

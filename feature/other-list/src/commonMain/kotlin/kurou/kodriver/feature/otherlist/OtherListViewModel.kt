@@ -33,13 +33,15 @@ class OtherListViewModel(
     appVersionLabel: String,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
+    private val _uiState =
+        MutableStateFlow(
         OtherListUiState(
             appVersionLabel = appVersionLabel,
             appVersion = currentVersion,
         ),
     )
-    val uiState: StateFlow<OtherListUiState> = combine(
+    val uiState: StateFlow<OtherListUiState> =
+        combine(
         _uiState,
         observeKeepScreenOn(),
         observeExitConfirmationEnabled(),

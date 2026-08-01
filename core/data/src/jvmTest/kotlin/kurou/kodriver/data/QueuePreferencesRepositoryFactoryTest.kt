@@ -11,7 +11,8 @@ import kotlin.test.assertTrue
 class QueuePreferencesRepositoryFactoryTest {
 
     @Test
-    fun `createQueuePreferencesRepository は保存と取得が正常に動作する`() = runBlocking {
+    fun `createQueuePreferencesRepository は保存と取得が正常に動作する`() =
+        runBlocking {
         val tempDir = Files.createTempDirectory("kodriver_queue_pref_factory_test").toFile()
         try {
             val repo = createQueuePreferencesRepository(tempDir.absolutePath)

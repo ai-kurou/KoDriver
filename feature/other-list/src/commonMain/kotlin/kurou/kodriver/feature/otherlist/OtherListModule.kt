@@ -10,7 +10,8 @@ import org.koin.dsl.module
  * 消費（get で解決）: OtherListViewModel が使う UseCase 群（:core:domain。実体の Repository は
  *   :core:data で登録）。アプリバージョンはビルド生成値を直接渡す。
  */
-val otherListModule = module {
+val otherListModule =
+    module {
     // ViewModel
     viewModel {
         OtherListViewModel(

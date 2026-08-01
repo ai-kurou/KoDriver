@@ -23,14 +23,16 @@ class ThemePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値はSYSTEM`() = testScope.runTest {
+    fun `デフォルト値はSYSTEM`() =
+        testScope.runTest {
         val repository = createThemePreferencesRepository(tempDir.absolutePath)
 
         assertEquals(ThemeMode.SYSTEM, repository.observeThemeMode().first())
     }
 
     @Test
-    fun `保存したテーマモードを読み出せる`() = testScope.runTest {
+    fun `保存したテーマモードを読み出せる`() =
+        testScope.runTest {
         val repository = createThemePreferencesRepository(tempDir.absolutePath)
 
         repository.saveThemeMode(ThemeMode.DARK)

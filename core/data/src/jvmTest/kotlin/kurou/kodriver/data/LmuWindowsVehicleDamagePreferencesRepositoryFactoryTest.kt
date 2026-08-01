@@ -16,7 +16,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
 
-    private val tempDir = Files
+    private val tempDir =
+        Files
         .createTempDirectory(
         "kodriver_lmu_windows_vehicle_damage_preferences_repository_factory_test",
     ).toFile()
@@ -28,14 +29,16 @@ class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
     }
 
     @Test
-    fun `デフォルト値は enabledStates が空Map`() = testScope.runTest {
+    fun `デフォルト値は enabledStates が空Map`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
         assertEquals(emptyMap(), repository.observeEnabledStates().first())
     }
 
     @Test
-    fun `保存した enabledStates を読み出せる`() = testScope.runTest {
+    fun `保存した enabledStates を読み出せる`() =
+        testScope.runTest {
         val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
         repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)

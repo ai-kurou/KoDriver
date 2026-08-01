@@ -50,7 +50,8 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は GT7 と区別するため named("lmu_windows") で登録している。
  */
-val lmuWindowsNarratorModule: Module = module {
+val lmuWindowsNarratorModule: Module =
+    module {
     // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
     viewModel { LmuWindowsNarratorViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
 

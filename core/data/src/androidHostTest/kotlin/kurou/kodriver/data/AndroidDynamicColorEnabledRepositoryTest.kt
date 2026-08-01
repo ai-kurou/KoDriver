@@ -26,7 +26,8 @@ class AndroidDynamicColorEnabledRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("dynamic_color_enabled_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
+        val dataStore =
+            PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
@@ -39,19 +40,22 @@ class AndroidDynamicColorEnabledRepositoryTest {
     }
 
     @Test
-    fun `初期状態はfalseを返す`() = runTest(testDispatcher) {
+    fun `初期状態はfalseを返す`() =
+        runTest(testDispatcher) {
         assertFalse(repository.dynamicColorEnabled().first())
     }
 
     @Test
-    fun `saveDynamicColorEnabled trueの後にtrueを返す`() = runTest(testDispatcher) {
+    fun `saveDynamicColorEnabled trueの後にtrueを返す`() =
+        runTest(testDispatcher) {
         repository.saveDynamicColorEnabled(true)
 
         assertTrue(repository.dynamicColorEnabled().first())
     }
 
     @Test
-    fun `saveDynamicColorEnabled falseで上書きするとfalseを返す`() = runTest(testDispatcher) {
+    fun `saveDynamicColorEnabled falseで上書きするとfalseを返す`() =
+        runTest(testDispatcher) {
         repository.saveDynamicColorEnabled(true)
         repository.saveDynamicColorEnabled(false)
 

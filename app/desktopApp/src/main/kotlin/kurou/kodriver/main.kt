@@ -62,7 +62,8 @@ fun main() {
                 DesktopSplashHost(
                     initializeModules = {
                         withContext(Dispatchers.Default) {
-                            koin = startKoin {
+                            koin =
+                                startKoin {
                                 // composition root: データ層モジュール（:core:*data）＋ 全 feature の Koin モジュール
                                 // （featureModules）＋ アプリバージョン定数（named("appVersion")。server-connection 等が
                                 // get で解決）を束ねる。

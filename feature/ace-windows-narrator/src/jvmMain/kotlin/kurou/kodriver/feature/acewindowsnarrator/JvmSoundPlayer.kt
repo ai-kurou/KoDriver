@@ -17,7 +17,8 @@ class JvmSoundPlayer : SoundPlayer {
     override val isPlaying: Boolean
         get() = currentClip?.isRunning == true
 
-    override suspend fun play(bytes: ByteArray, volume: Int) = suspendCancellableCoroutine { cont ->
+    override suspend fun play(bytes: ByteArray, volume: Int) =
+        suspendCancellableCoroutine { cont ->
         try {
             val stream = AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes))
             val clip = AudioSystem.getClip()
@@ -42,7 +43,8 @@ class JvmSoundPlayer : SoundPlayer {
     private fun applyVolume(clip: javax.sound.sampled.Clip, volume: Int) {
         if (!clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) return
         val gainControl = clip.getControl(FloatControl.Type.MASTER_GAIN) as FloatControl
-        val gainDb = if (volume <= 0) {
+        val gainDb =
+            if (volume <= 0) {
             gainControl.minimum
         } else {
             (20.0 * log10(volume / 100.0)).toFloat().coerceIn(gainControl.minimum, gainControl.maximum)

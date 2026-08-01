@@ -27,7 +27,8 @@ class OtherContentTest {
 
     private val compactWindowSizeClass = WindowSizeClass.compute(400f, 800f)
 
-    private val singlePaneDirective = PaneScaffoldDirective(
+    private val singlePaneDirective =
+        PaneScaffoldDirective(
         maxHorizontalPartitions = 1,
         horizontalPartitionSpacerSize = 0.dp,
         maxVerticalPartitions = 1,
@@ -50,7 +51,8 @@ class OtherContentTest {
 
         rule.setContent {
             OtherContent(
-                uiState = OtherListUiState(
+                uiState =
+                    OtherListUiState(
                     selectedItem = selectedItem,
                     keepScreenOn = keepScreenOn,
                     exitConfirmationEnabled = exitConfirmationEnabled,
@@ -59,7 +61,7 @@ class OtherContentTest {
                     appVersionLabel = "Windows版KoDriverバージョン",
                     appVersion = "1.2.3",
                 ),
-                onItemSelected = { selectedItem = it },
+                    onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { githubRepositoryOpened = true },
                 onOpenReleasePage = { releasePageOpened = true },
                 onOpenThemeDialog = { themeDialogOpened = true },

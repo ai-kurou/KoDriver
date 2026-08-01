@@ -102,34 +102,40 @@ class Gt7Ps5NarratorViewModelTest {
     ): Gt7Ps5NarratorViewModel {
         every { telemetryRepository.telemetryStream() } returns telemetryChannel.receiveAsFlow()
         return Gt7Ps5NarratorViewModel(
-            myBestLapUseCases = MyBestLapUseCases(
+            myBestLapUseCases =
+                MyBestLapUseCases(
                 observeGt7Ps5 = ObserveGt7Ps5UseCase(telemetryRepository),
                 observeMyBestLapVoiceType = ObserveGt7Ps5MyBestLapVoiceTypeUseCase(myBestLapPreferencesRepository),
             ),
-            readoutListUseCases = ReadoutListUseCases(
+                readoutListUseCases =
+                    ReadoutListUseCases(
                 observeSelectedSimulator = ObserveSelectedSimulatorUseCase(simulatorPreferencesRepository),
                 observeReadoutEnabledStates = ObserveReadoutEnabledStatesUseCase(readoutPreferencesRepository),
                 observeReadoutOrder = ObserveReadoutOrderUseCase(readoutPreferencesRepository),
                 observeQueueEnabledStates = ObserveQueueEnabledStatesUseCase(queuePreferencesRepository),
             ),
-            remainingFuelLapsUseCases = RemainingFuelLapsUseCases(
+                    remainingFuelLapsUseCases =
+                        RemainingFuelLapsUseCases(
                 observeRemainingFuelLapsThreshold =
                     ObserveGt7Ps5RemainingFuelLapsUseCase(remainingFuelLapsPreferencesRepository),
             ),
-            remainingFuelUseCases = RemainingFuelUseCases(
+                        remainingFuelUseCases =
+                            RemainingFuelUseCases(
                 observeRemainingFuelThresholdPercentage =
                     ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(remainingFuelPreferencesRepository),
             ),
-            eventProcessor = Gt7Ps5NarratorEventProcessor(
+                            eventProcessor =
+                                Gt7Ps5NarratorEventProcessor(
                 ttsEngine = ttsEngine,
                 saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
             ),
-            currentTimeMs = currentTimeMs,
+                                currentTimeMs = currentTimeMs,
         )
     }
 
     @Test
-    fun `GT7非選択時は読み上げない`() = runTest(testDispatcher) {
+    fun `GT7非選択時は読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -156,7 +162,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `起動直後の最初のemitではベストラップが設定済みでもアナウンスしない`() = runTest(testDispatcher) {
+    fun `起動直後の最初のemitではベストラップが設定済みでもアナウンスしない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -169,7 +176,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `自己ベストラップの声種別設定を反映して読み上げる`() = runTest(testDispatcher) {
+    fun `自己ベストラップの声種別設定を反映して読み上げる`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -183,7 +191,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+    fun `読み上げが発生したら現在と直前のテレメトリを保存する`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val telemetryJsons = mutableListOf<String>()
@@ -233,7 +242,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `自己ベストラップが無効のときは読み上げない`() = runTest(testDispatcher) {
+    fun `自己ベストラップが無効のときは読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -247,7 +257,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `燃料残り周回数の閾値設定を反映して読み上げる`() = runTest(testDispatcher) {
+    fun `燃料残り周回数の閾値設定を反映して読み上げる`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -262,7 +273,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `給油やラップ数戻り後は燃料残り周回数を再度読み上げる`() = runTest(testDispatcher) {
+    fun `給油やラップ数戻り後は燃料残り周回数を再度読み上げる`() =
+        runTest(testDispatcher) {
         suspend fun runRemainingFuelLapsSequence(
             spokenTexts: MutableList<SpeechEvent>,
             telemetry: List<Gt7Ps5TelemetryData>,
@@ -285,7 +297,8 @@ class Gt7Ps5NarratorViewModelTest {
         val refuelSpokenTexts = mutableListOf<SpeechEvent>()
         runRemainingFuelLapsSequence(
             spokenTexts = refuelSpokenTexts,
-            telemetry = listOf(
+            telemetry =
+                listOf(
                 gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
                 gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
                 gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
@@ -293,7 +306,7 @@ class Gt7Ps5NarratorViewModelTest {
                 gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
                 gt7Telemetry(lapCount = 4, gasLevel = 20f, gasCapacity = 100f, bestLapTimeMs = 90_000),
             ),
-        )
+                )
         assertEquals(
             listOf<SpeechEvent>(
                 SpeechEvent.RemainingFuelLapsWarning(0),
@@ -305,7 +318,8 @@ class Gt7Ps5NarratorViewModelTest {
         val lapResetSpokenTexts = mutableListOf<SpeechEvent>()
         runRemainingFuelLapsSequence(
             spokenTexts = lapResetSpokenTexts,
-            telemetry = listOf(
+            telemetry =
+                listOf(
                 gt7Telemetry(lapCount = 1, gasLevel = 100f, gasCapacity = 100f, bestLapTimeMs = 90_000),
                 gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
                 gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
@@ -313,7 +327,7 @@ class Gt7Ps5NarratorViewModelTest {
                 gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
                 gt7Telemetry(lapCount = 2, gasLevel = 30f, gasCapacity = 100f, bestLapTimeMs = 90_000),
             ),
-        )
+                )
         assertEquals(
             listOf<SpeechEvent>(
                 SpeechEvent.RemainingFuelLapsWarning(0),
@@ -324,7 +338,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `燃料残り周回数が無効のときは読み上げない`() = runTest(testDispatcher) {
+    fun `燃料残り周回数が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -342,7 +357,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `燃料残量の閾値設定を反映して読み上げる`() = runTest(testDispatcher) {
+    fun `燃料残量の閾値設定を反映して読み上げる`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -357,7 +373,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `燃料残量が無効のときは読み上げない`() = runTest(testDispatcher) {
+    fun `燃料残量が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val ttsEngine = mockTts(spokenTexts)
@@ -373,7 +390,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `燃料残量の読み上げが発生したら現在と直前のテレメトリを保存する`() = runTest(testDispatcher) {
+    fun `燃料残量の読み上げが発生したら現在と直前のテレメトリを保存する`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
         val telemetryJsons = mutableListOf<String>()
@@ -407,10 +425,12 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `優先度の高いアイテム読み上げ中にベストラップが来ても読み上げない`() = runTest(testDispatcher) {
+    fun `優先度の高いアイテム読み上げ中にベストラップが来ても読み上げない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockPriorityAwareTts(
+        val ttsEngine =
+            mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
@@ -431,10 +451,12 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `優先度制御で読み上げなかったイベントは保存しない`() = runTest(testDispatcher) {
+    fun `優先度制御で読み上げなかったイベントは保存しない`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockPriorityAwareTts(
+        val ttsEngine =
+            mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
@@ -450,10 +472,12 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `優先度の低いアイテム読み上げ中にベストラップが来ると割り込む`() = runTest(testDispatcher) {
+    fun `優先度の低いアイテム読み上げ中にベストラップが来ると割り込む`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockPriorityAwareTts(
+        val ttsEngine =
+            mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
@@ -470,10 +494,12 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() = runTest(testDispatcher) {
+    fun `再生中の項目が優先度リストにないときは新しい読み上げで割り込む`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockPriorityAwareTts(
+        val ttsEngine =
+            mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
@@ -488,10 +514,12 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `キュー設定が有効なら優先度で本来無視される項目もキュー再生する`() = runTest(testDispatcher) {
+    fun `キュー設定が有効なら優先度で本来無視される項目もキュー再生する`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockPriorityAwareTts(
+        val ttsEngine =
+            mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
@@ -509,10 +537,12 @@ class Gt7Ps5NarratorViewModelTest {
     }
 
     @Test
-    fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() = runTest(testDispatcher) {
+    fun `新しい項目が優先度リストにないときは再生中の読み上げを優先する`() =
+        runTest(testDispatcher) {
         val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
         val spokenTexts = mutableListOf<SpeechEvent>()
-        val ttsEngine = mockPriorityAwareTts(
+        val ttsEngine =
+            mockPriorityAwareTts(
             spokenTexts = spokenTexts,
             initialKey = ReadoutItemKey.LmuWindows.Flag.Root,
         )
@@ -611,7 +641,8 @@ class Gt7Ps5NarratorViewModelTest {
     }
 }
 
-private fun gt7Telemetry(bestLapTimeMs: Int) = Gt7Ps5TelemetryData(
+private fun gt7Telemetry(bestLapTimeMs: Int) =
+    Gt7Ps5TelemetryData(
     lapCount = 0,
     lapsInRace = 0,
     bestLapTimeMs = bestLapTimeMs,

@@ -26,7 +26,8 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
     @BeforeTest
     fun setUp() {
         tempFile = File.createTempFile("keep_screen_on_test", ".preferences_pb")
-        val dataStore = PreferenceDataStoreFactory.create(
+        val dataStore =
+            PreferenceDataStoreFactory.create(
             scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = { tempFile },
         )
@@ -39,19 +40,22 @@ class AndroidKeepScreenOnEnabledRepositoryTest {
     }
 
     @Test
-    fun `初期状態はtrueを返す`() = runTest(testDispatcher) {
+    fun `初期状態はtrueを返す`() =
+        runTest(testDispatcher) {
         assertTrue(repository.keepScreenOn().first())
     }
 
     @Test
-    fun `saveKeepScreenOn falseの後にfalseを返す`() = runTest(testDispatcher) {
+    fun `saveKeepScreenOn falseの後にfalseを返す`() =
+        runTest(testDispatcher) {
         repository.saveKeepScreenOn(false)
 
         assertFalse(repository.keepScreenOn().first())
     }
 
     @Test
-    fun `saveKeepScreenOn trueで上書きするとtrueを返す`() = runTest(testDispatcher) {
+    fun `saveKeepScreenOn trueで上書きするとtrueを返す`() =
+        runTest(testDispatcher) {
         repository.saveKeepScreenOn(false)
         repository.saveKeepScreenOn(true)
 

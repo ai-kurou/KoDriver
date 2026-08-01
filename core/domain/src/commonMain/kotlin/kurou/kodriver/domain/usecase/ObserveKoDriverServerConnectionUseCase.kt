@@ -30,7 +30,8 @@ class ObserveKoDriverServerConnectionUseCase(
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(appVersion: String): Flow<KoDriverServerConnectionState> = combine(
+    operator fun invoke(appVersion: String): Flow<KoDriverServerConnectionState> =
+        combine(
         observeServerIp(),
         observeSelectedSimulator(),
     ) { ip, simulator -> ip to simulator }
@@ -72,12 +73,13 @@ class ObserveKoDriverServerConnectionUseCase(
             val serverVersion = versionResult.getOrNull()
             emit(
                 KoDriverServerConnectionState(
-                    connectionStatus = if (versionResult.isSuccess) {
+                    connectionStatus =
+                        if (versionResult.isSuccess) {
                         KoDriverServerConnectionStatus.CONNECTED
                     } else {
                         KoDriverServerConnectionStatus.DISCONNECTED
                     },
-                    requiresKoDriverServer = requiresServer,
+                        requiresKoDriverServer = requiresServer,
                     selectedSimulator = simulator,
                     serverVersion = serverVersion,
                     isVersionMismatch = serverVersion != null && appVersion.isNotEmpty() && serverVersion != appVersion,

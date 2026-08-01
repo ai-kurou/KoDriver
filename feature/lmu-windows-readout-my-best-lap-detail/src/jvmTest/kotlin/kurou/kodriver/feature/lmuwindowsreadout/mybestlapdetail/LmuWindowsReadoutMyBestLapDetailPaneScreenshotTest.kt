@@ -25,10 +25,11 @@ class LmuWindowsReadoutMyBestLapDetailPaneScreenshotTest {
     @Test
     fun `casual選択`() {
         capturePane(
-            uiState = LmuWindowsReadoutMyBestLapDetailUiState(
+            uiState =
+                LmuWindowsReadoutMyBestLapDetailUiState(
                 voiceType = MyBestLapVoiceType.CASUAL,
             ),
-        )
+                )
     }
 
     private fun capturePane(

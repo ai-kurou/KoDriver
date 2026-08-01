@@ -24,7 +24,8 @@ class ObserveGt7Ps5RemainingFuelLapsUseCaseTest {
     }
 
     @Test
-    fun `燃料残り周回数を監視できる`() = runBlocking {
+    fun `燃料残り周回数を監視できる`() =
+        runBlocking {
         every { repository.observeRemainingFuelLaps() } returns MutableStateFlow(5)
         val useCase = ObserveGt7Ps5RemainingFuelLapsUseCase(repository)
 

@@ -56,21 +56,24 @@ class AppThemeModeAndroidTest {
     }
 
     @Test
-    fun `LIGHT設定ではシステムのダーク状態に関係なくfalseを返す`() = runTest {
+    fun `LIGHT設定ではシステムのダーク状態に関係なくfalseを返す`() =
+        runTest {
         repository.saveThemeMode(ThemeMode.LIGHT)
 
         assertFalse(captureAppDarkTheme())
     }
 
     @Test
-    fun `DARK設定ではシステムのダーク状態に関係なくtrueを返す`() = runTest {
+    fun `DARK設定ではシステムのダーク状態に関係なくtrueを返す`() =
+        runTest {
         repository.saveThemeMode(ThemeMode.DARK)
 
         assertTrue(captureAppDarkTheme())
     }
 
     @Test
-    fun `SYSTEM設定ではAndroidのシステムダーク状態を使う`() = runTest {
+    fun `SYSTEM設定ではAndroidのシステムダーク状態を使う`() =
+        runTest {
         repository.saveThemeMode(ThemeMode.SYSTEM)
 
         assertTrue(captureAppDarkTheme())
@@ -78,7 +81,8 @@ class AppThemeModeAndroidTest {
 
     @Test
     @Config(sdk = [36], qualifiers = "notnight")
-    fun `SYSTEM設定ではAndroidのシステムライト状態を使う`() = runTest {
+    fun `SYSTEM設定ではAndroidのシステムライト状態を使う`() =
+        runTest {
         repository.saveThemeMode(ThemeMode.SYSTEM)
 
         assertFalse(captureAppDarkTheme())
