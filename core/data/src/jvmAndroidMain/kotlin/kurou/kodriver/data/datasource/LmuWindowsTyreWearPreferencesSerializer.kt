@@ -22,7 +22,10 @@ internal object LmuWindowsTyreWearPreferencesSerializer : Serializer<LmuWindowsT
             throw CorruptionException("Cannot read LmuWindowsTyreWearPreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsTyreWearPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsTyreWearPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsTyreWearPreferences.serializer(), t))
     }
 }

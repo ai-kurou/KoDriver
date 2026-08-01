@@ -22,7 +22,10 @@ internal object ReadoutStartSoundPreferencesSerializer : Serializer<ReadoutStart
             throw CorruptionException("Cannot read ReadoutStartSoundPreferences.", e)
         }
 
-    override suspend fun writeTo(t: ReadoutStartSoundPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: ReadoutStartSoundPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(ReadoutStartSoundPreferences.serializer(), t))
     }
 }

@@ -26,7 +26,10 @@ class VersionMismatchBottomSheetScreenshotTest {
         capture(windowsKoDriverVersion = "1.0.0", appVersion = "2.0.0")
     }
 
-    private fun capture(windowsKoDriverVersion: String, appVersion: String) {
+    private fun capture(
+        windowsKoDriverVersion: String,
+        appVersion: String,
+    ) {
         rule.setContent {
             AppTheme {
                 Surface {

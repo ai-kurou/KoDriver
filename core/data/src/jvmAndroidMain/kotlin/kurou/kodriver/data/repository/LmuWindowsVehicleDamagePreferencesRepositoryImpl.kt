@@ -17,7 +17,10 @@ internal class LmuWindowsVehicleDamagePreferencesRepositoryImpl(
                 .toMap()
         }
 
-    override suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 }

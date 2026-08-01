@@ -25,7 +25,10 @@ internal object AceWindowsRemainingFuelPreferencesSerializer : Serializer<AceWin
             throw CorruptionException("Cannot read AceWindowsRemainingFuelPreferences.", e)
         }
 
-    override suspend fun writeTo(t: AceWindowsRemainingFuelPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: AceWindowsRemainingFuelPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(AceWindowsRemainingFuelPreferences.serializer(), t))
     }
 }

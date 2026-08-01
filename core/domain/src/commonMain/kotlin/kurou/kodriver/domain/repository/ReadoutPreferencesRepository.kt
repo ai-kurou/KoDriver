@@ -14,11 +14,18 @@ interface ReadoutPreferencesRepository {
     fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>>
 
     /** 指定シミュレータの読み上げ有効状態を 1 件保存する。 */
-    suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean)
+    suspend fun saveReadoutEnabledState(
+        simulator: String,
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    )
 
     /** 指定シミュレータの読み上げ一覧表示順を購読する。未保存または欠落キーは domain の既定順で補完する。 */
     fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>>
 
     /** 指定シミュレータの読み上げ一覧表示順を保存する。 */
-    suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>)
+    suspend fun saveReadoutOrder(
+        simulator: String,
+        order: List<ReadoutItemKey>,
+    )
 }

@@ -12,7 +12,11 @@ internal class FakeKernel32FileMapping(
     var closeHandleCallCount = 0
     var unmapViewOfFileCalled = false
 
-    override fun OpenFileMappingA(dwDesiredAccess: Int, bInheritHandle: Boolean, lpName: String): HANDLE? {
+    override fun OpenFileMappingA(
+        dwDesiredAccess: Int,
+        bInheritHandle: Boolean,
+        lpName: String,
+    ): HANDLE? {
         openFileMappingCallCount++
         return openFileMappingResult
     }

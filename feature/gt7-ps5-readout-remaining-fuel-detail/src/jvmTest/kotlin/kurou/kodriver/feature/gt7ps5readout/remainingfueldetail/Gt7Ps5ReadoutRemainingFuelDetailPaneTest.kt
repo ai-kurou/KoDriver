@@ -62,10 +62,10 @@ class Gt7Ps5ReadoutRemainingFuelDetailPaneTest {
 
         rule
             .onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 30f, range = 5f..90f, steps = 84)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) {
-            it(60f)
-        }
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 30f, range = 5f..90f, steps = 84)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) {
+                it(60f)
+            }
 
         assertEquals(60, changedPercentage)
     }

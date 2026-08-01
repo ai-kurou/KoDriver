@@ -66,7 +66,10 @@ private fun String.replaceSupportedPlaceholders(
  * 固定小数点表記へ変換する。小数点は常に `.`（ロケール非依存）を用いる。
  * `NaN`・`Infinity`・`-Infinity` は Kotlin 標準の [Float.toString] と同じ表記を返す。
  */
-private fun formatFixedPoint(value: Float, decimals: Int): String {
+private fun formatFixedPoint(
+    value: Float,
+    decimals: Int,
+): String {
     if (value.isNaN()) return "NaN"
     if (value.isInfinite()) return if (value > 0) "Infinity" else "-Infinity"
     val sign = if (value < 0) "-" else ""

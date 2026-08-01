@@ -22,7 +22,10 @@ internal object Gt7Ps5RemainingFuelLapsPreferencesSerializer : Serializer<Gt7Ps5
             throw CorruptionException("Cannot read Gt7Ps5RemainingFuelLapsPreferences.", e)
         }
 
-    override suspend fun writeTo(t: Gt7Ps5RemainingFuelLapsPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: Gt7Ps5RemainingFuelLapsPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(Gt7Ps5RemainingFuelLapsPreferences.serializer(), t))
     }
 }

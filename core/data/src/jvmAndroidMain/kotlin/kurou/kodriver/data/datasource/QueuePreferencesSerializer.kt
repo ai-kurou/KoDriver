@@ -22,7 +22,10 @@ internal object QueuePreferencesSerializer : Serializer<QueuePreferences> {
             throw CorruptionException("Cannot read QueuePreferences.", e)
         }
 
-    override suspend fun writeTo(t: QueuePreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: QueuePreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(QueuePreferences.serializer(), t))
     }
 }

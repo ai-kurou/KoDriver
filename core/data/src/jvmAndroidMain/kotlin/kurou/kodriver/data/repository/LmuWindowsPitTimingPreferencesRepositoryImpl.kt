@@ -9,15 +9,13 @@ import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 internal class LmuWindowsPitTimingPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsPitTimingPreferences>,
 ) : LmuWindowsPitTimingPreferencesRepository {
-    override fun observeVirtualEnergyLaps(): Flow<Int> =
-        dataStore.data.map { it.virtualEnergyLaps }
+    override fun observeVirtualEnergyLaps(): Flow<Int> = dataStore.data.map { it.virtualEnergyLaps }
 
     override suspend fun saveVirtualEnergyLaps(laps: Int) {
         dataStore.updateData { it.copy(virtualEnergyLaps = laps) }
     }
 
-    override fun observeTyreWearLaps(): Flow<Int> =
-        dataStore.data.map { it.tyreWearLaps }
+    override fun observeTyreWearLaps(): Flow<Int> = dataStore.data.map { it.tyreWearLaps }
 
     override suspend fun saveTyreWearLaps(laps: Int) {
         dataStore.updateData { it.copy(tyreWearLaps = laps) }

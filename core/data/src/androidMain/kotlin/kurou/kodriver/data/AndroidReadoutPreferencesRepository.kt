@@ -13,11 +13,12 @@ import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 internal class AndroidReadoutPreferencesRepository(
     private val dataStore: DataStore<Preferences>,
 ) : ReadoutPreferencesRepository {
-    private fun enabledKey(simulator: String, key: ReadoutItemKey) =
-        booleanPreferencesKey("${simulator}_${key.value}_enabled")
+    private fun enabledKey(
+        simulator: String,
+        key: ReadoutItemKey,
+    ) = booleanPreferencesKey("${simulator}_${key.value}_enabled")
 
-    private fun orderKey(simulator: String) =
-        stringPreferencesKey("${simulator}_order")
+    private fun orderKey(simulator: String) = stringPreferencesKey("${simulator}_order")
 
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
         dataStore.data.map { prefs ->
@@ -33,7 +34,11 @@ internal class AndroidReadoutPreferencesRepository(
                 .toMap()
         }
 
-    override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveReadoutEnabledState(
+        simulator: String,
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.edit { it[enabledKey(simulator, key)] = enabled }
     }
 
@@ -46,7 +51,10 @@ internal class AndroidReadoutPreferencesRepository(
                 ?: emptyList()
         }
 
-    override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) {
+    override suspend fun saveReadoutOrder(
+        simulator: String,
+        order: List<ReadoutItemKey>,
+    ) {
         dataStore.edit { it[orderKey(simulator)] = order.joinToString(",") { key -> key.value } }
     }
 }

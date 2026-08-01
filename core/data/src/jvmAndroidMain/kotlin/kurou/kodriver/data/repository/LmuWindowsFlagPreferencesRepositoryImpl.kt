@@ -17,7 +17,10 @@ internal class LmuWindowsFlagPreferencesRepositoryImpl(
                 .toMap()
         }
 
-    override suspend fun saveFlagEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveFlagEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 }

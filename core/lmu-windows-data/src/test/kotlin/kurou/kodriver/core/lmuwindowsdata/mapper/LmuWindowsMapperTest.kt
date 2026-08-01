@@ -61,11 +61,9 @@ class LmuWindowsMapperTest {
             return buf
         }
 
-        fun vehicleBase(playerIdx: Int = 0) =
-            TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+        fun vehicleBase(playerIdx: Int = 0) = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
 
-        fun vehicleScoringBase(index: Int = 0) =
-            VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
+        fun vehicleScoringBase(index: Int = 0) = VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
     }
 
     @Test

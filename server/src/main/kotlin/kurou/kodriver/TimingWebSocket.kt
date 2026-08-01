@@ -8,9 +8,7 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 
-internal fun Route.timingWebSocket(
-    observeLmuWindows: ObserveLmuWindowsUseCase,
-) {
+internal fun Route.timingWebSocket(observeLmuWindows: ObserveLmuWindowsUseCase) {
     webSocket(KoDriverServerFeature.MY_BEST_LAP.webSocketPath(Simulator.LmuWindows)) {
         observeLmuWindows()
             .map { it.timing }

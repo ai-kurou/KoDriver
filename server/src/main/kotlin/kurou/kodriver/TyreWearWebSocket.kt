@@ -7,9 +7,7 @@ import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 
-internal fun Route.tyreWearWebSocket(
-    observeTyreWear: ObserveLmuWindowsTyreWearUseCase,
-) {
+internal fun Route.tyreWearWebSocket(observeTyreWear: ObserveLmuWindowsTyreWearUseCase) {
     webSocket(KoDriverServerFeature.TYRE_WEAR.webSocketPath(Simulator.LmuWindows)) {
         observeTyreWear()
             .distinctUntilChanged()

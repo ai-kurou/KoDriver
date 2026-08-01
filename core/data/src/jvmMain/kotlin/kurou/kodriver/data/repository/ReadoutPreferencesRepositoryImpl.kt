@@ -19,7 +19,11 @@ internal class ReadoutPreferencesRepositoryImpl(
                 .toReadoutItemKeyMap()
         }
 
-    override suspend fun saveReadoutEnabledState(simulator: String, key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveReadoutEnabledState(
+        simulator: String,
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.updateData { prefs ->
             val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
             val newState = current.copy(enabledStates = current.enabledStates + (key.value to enabled))
@@ -35,7 +39,10 @@ internal class ReadoutPreferencesRepositoryImpl(
                 .mapNotNull(ReadoutItemKey::fromValue)
         }
 
-    override suspend fun saveReadoutOrder(simulator: String, order: List<ReadoutItemKey>) {
+    override suspend fun saveReadoutOrder(
+        simulator: String,
+        order: List<ReadoutItemKey>,
+    ) {
         dataStore.updateData { prefs ->
             val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
             val newState = current.copy(itemOrder = order.map { it.value })

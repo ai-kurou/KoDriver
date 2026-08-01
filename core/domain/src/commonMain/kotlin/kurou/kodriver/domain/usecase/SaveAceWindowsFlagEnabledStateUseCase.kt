@@ -6,6 +6,8 @@ import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 class SaveAceWindowsFlagEnabledStateUseCase(
     private val repository: AceWindowsFlagPreferencesRepository,
 ) {
-    suspend operator fun invoke(key: ReadoutItemKey, enabled: Boolean) =
-        repository.saveFlagEnabledState(key, enabled)
+    suspend operator fun invoke(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) = repository.saveFlagEnabledState(key, enabled)
 }

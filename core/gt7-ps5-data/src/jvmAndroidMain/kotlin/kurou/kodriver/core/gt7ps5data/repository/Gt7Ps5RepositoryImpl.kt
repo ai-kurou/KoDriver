@@ -11,8 +11,7 @@ internal class Gt7Ps5RepositoryImpl(
     private val source: Gt7Ps5PacketSource,
     private val currentTimeMillis: () -> Long = System::currentTimeMillis,
 ) : Gt7Ps5Repository {
-    override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> =
-        source.packetFlow.map { Gt7Ps5Mapper.map(it) }
+    override fun telemetryStream(): Flow<Gt7Ps5TelemetryData> = source.packetFlow.map { Gt7Ps5Mapper.map(it) }
 
     override suspend fun isConnected(): Boolean =
         currentTimeMillis() - source.lastPacketReceivedAt() < CONNECTION_TIMEOUT_MS

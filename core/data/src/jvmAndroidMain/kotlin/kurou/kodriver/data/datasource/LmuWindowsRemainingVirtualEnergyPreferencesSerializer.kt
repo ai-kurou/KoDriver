@@ -27,7 +27,10 @@ internal object LmuWindowsRemainingVirtualEnergyPreferencesSerializer :
             throw CorruptionException("Cannot read LmuWindowsRemainingVirtualEnergyPreferences.", e)
         }
 
-    override suspend fun writeTo(t: LmuWindowsRemainingVirtualEnergyPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: LmuWindowsRemainingVirtualEnergyPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(LmuWindowsRemainingVirtualEnergyPreferences.serializer(), t))
     }
 }

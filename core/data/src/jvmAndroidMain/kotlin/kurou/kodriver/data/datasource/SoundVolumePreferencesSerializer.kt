@@ -22,7 +22,10 @@ internal object SoundVolumePreferencesSerializer : Serializer<SoundVolumePrefere
             throw CorruptionException("Cannot read SoundVolumePreferences.", e)
         }
 
-    override suspend fun writeTo(t: SoundVolumePreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: SoundVolumePreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(SoundVolumePreferences.serializer(), t))
     }
 }

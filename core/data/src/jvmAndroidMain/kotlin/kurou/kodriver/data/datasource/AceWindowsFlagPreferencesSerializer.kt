@@ -22,7 +22,10 @@ internal object AceWindowsFlagPreferencesSerializer : Serializer<AceWindowsFlagP
             throw CorruptionException("Cannot read AceWindowsFlagPreferences.", e)
         }
 
-    override suspend fun writeTo(t: AceWindowsFlagPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: AceWindowsFlagPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(AceWindowsFlagPreferences.serializer(), t))
     }
 }

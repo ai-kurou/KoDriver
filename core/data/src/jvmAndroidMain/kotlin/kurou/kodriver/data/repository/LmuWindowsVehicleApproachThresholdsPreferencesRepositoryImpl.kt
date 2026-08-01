@@ -12,8 +12,7 @@ internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
     override fun observeLongitudinalThresholdMeters(): Flow<Double> =
         dataStore.data.map { it.longitudinalThresholdMeters }
 
-    override fun observeLateralThresholdMeters(): Flow<Double> =
-        dataStore.data.map { it.lateralThresholdMeters }
+    override fun observeLateralThresholdMeters(): Flow<Double> = dataStore.data.map { it.lateralThresholdMeters }
 
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> =
         dataStore.data.map { it.sustainedApproachDurationSeconds }

@@ -54,18 +54,20 @@ class SliderLabelFormatTest {
 
     @Test
     fun `未対応の整数プレースホルダーを含むテンプレートは例外になる`() {
-        val exception = assertFailsWith<IllegalArgumentException> {
-            "値: %2\$d".formatSliderLabel(3)
-        }
+        val exception =
+            assertFailsWith<IllegalArgumentException> {
+                "値: %2\$d".formatSliderLabel(3)
+            }
 
         assertEquals("Unsupported slider label placeholder: %2\$d in template: 値: %2\$d", exception.message)
     }
 
     @Test
     fun `未対応の小数プレースホルダーを含むテンプレートは例外になる`() {
-        val exception = assertFailsWith<IllegalArgumentException> {
-            "値: %1\$02.1f".formatSliderLabel(1.2f)
-        }
+        val exception =
+            assertFailsWith<IllegalArgumentException> {
+                "値: %1\$02.1f".formatSliderLabel(1.2f)
+            }
 
         assertEquals("Unsupported slider label placeholder: %1\$02.1f in template: 値: %1\$02.1f", exception.message)
     }

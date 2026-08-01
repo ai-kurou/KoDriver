@@ -222,7 +222,10 @@ class MainActivityTest {
         navigateBack()
     }
 
-    private fun clickItemAndVerifyDescription(itemText: String, descriptionText: String) {
+    private fun clickItemAndVerifyDescription(
+        itemText: String,
+        descriptionText: String,
+    ) {
         scrollToItem(itemText)
         clickReadoutItem(itemText)
         waitUntilDisplayed(descriptionText)

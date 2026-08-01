@@ -9,8 +9,7 @@ import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesReposi
 internal class AceWindowsRemainingFuelPreferencesRepositoryImpl(
     private val dataStore: DataStore<AceWindowsRemainingFuelPreferences>,
 ) : AceWindowsRemainingFuelPreferencesRepository {
-    override fun observeThresholdPercentage(): Flow<Int> =
-        dataStore.data.map { it.thresholdPercentage }
+    override fun observeThresholdPercentage(): Flow<Int> = dataStore.data.map { it.thresholdPercentage }
 
     override suspend fun saveThresholdPercentage(percentage: Int) {
         dataStore.updateData { it.copy(thresholdPercentage = percentage) }

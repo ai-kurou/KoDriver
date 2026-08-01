@@ -17,7 +17,10 @@ internal class QueuePreferencesRepositoryImpl(
                 .toMap()
         }
 
-    override suspend fun saveQueueEnabledState(key: ReadoutItemKey, enabled: Boolean) {
+    override suspend fun saveQueueEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
         dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
     }
 }

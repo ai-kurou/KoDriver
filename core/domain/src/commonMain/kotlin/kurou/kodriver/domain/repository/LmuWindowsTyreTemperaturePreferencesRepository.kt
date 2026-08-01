@@ -11,7 +11,10 @@ interface LmuWindowsTyreTemperaturePreferencesRepository {
 
     fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>>
 
-    suspend fun saveEnabledState(key: ReadoutItemKey, enabled: Boolean)
+    suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    )
 
     fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>>
 

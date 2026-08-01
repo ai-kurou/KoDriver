@@ -1,7 +1,11 @@
 package kurou.kodriver.core.gt7ps5data.datasource
 
 internal object Salsa20 {
-    fun decrypt(key: ByteArray, iv: ByteArray, data: ByteArray): ByteArray {
+    fun decrypt(
+        key: ByteArray,
+        iv: ByteArray,
+        data: ByteArray,
+    ): ByteArray {
         require(key.size == 32) { "Key must be 32 bytes" }
         require(iv.size == 8) { "IV must be 8 bytes" }
 
@@ -85,7 +89,10 @@ internal object Salsa20 {
         x[15] = x[15] xor rotl(x[14] + x[13], 18)
     }
 
-    private fun rotl(v: Int, n: Int): Int = (v shl n) or (v ushr (32 - n))
+    private fun rotl(
+        v: Int,
+        n: Int,
+    ): Int = (v shl n) or (v ushr (32 - n))
 
     private fun ByteArray.leInt(offset: Int): Int =
         (this[offset].toInt() and 0xFF) or

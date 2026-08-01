@@ -22,7 +22,10 @@ internal object SimulatorPreferencesSerializer : Serializer<SimulatorPreferences
             throw CorruptionException("Cannot read SimulatorPreferences.", e)
         }
 
-    override suspend fun writeTo(t: SimulatorPreferences, output: OutputStream) {
+    override suspend fun writeTo(
+        t: SimulatorPreferences,
+        output: OutputStream,
+    ) {
         output.write(ProtoBuf.encodeToByteArray(SimulatorPreferences.serializer(), t))
     }
 }

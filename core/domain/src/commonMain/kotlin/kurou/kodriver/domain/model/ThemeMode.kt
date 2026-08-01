@@ -9,7 +9,6 @@ enum class ThemeMode(
     ;
 
     companion object {
-        fun fromId(id: String): ThemeMode =
-            entries.firstOrNull { it.id == id } ?: THEME_MODE_DEFAULT
+        fun fromId(id: String): ThemeMode = entries.firstOrNull { it.id == id } ?: THEME_MODE_DEFAULT
     }
 }

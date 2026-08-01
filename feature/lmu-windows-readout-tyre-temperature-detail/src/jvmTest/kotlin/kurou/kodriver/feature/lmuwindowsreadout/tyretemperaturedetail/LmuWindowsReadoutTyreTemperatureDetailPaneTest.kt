@@ -63,8 +63,8 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         rule
             .onNode(
-            hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 90f, range = 90f..100f, steps = 9)),
-        ).performSemanticsAction(SemanticsActions.SetProgress) { it(95f) }
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 90f, range = 90f..100f, steps = 9)),
+            ).performSemanticsAction(SemanticsActions.SetProgress) { it(95f) }
 
         assertEquals(95, changedValue)
     }
