@@ -77,14 +77,14 @@ subprojects {
         autoCorrect = !isCI
     }
     extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        version.set("1.8.0")
+        version.set(rootProject.libs.versions.ktlintCore.get())
     }
     tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask>().configureEach {
-        exclude { it.file.path.contains("/build/generated/") }
+        exclude { it.file.path.replace(File.separatorChar, '/').contains("/build/generated/") }
     }
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         ignoreFailures = false
-        exclude { it.file.absolutePath.contains("/build/generated/") }
+        exclude { it.file.absolutePath.replace(File.separatorChar, '/').contains("/build/generated/") }
     }
     // KMP では commonMain のソースセットは detektMetadataCommonMain タスクで解析される。
     // detekt タスクがこれを依存に含めないと commonMain が未検査になるため明示的に追加する。
