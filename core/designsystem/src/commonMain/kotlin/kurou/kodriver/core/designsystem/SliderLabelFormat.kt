@@ -32,21 +32,34 @@ private fun String.replaceSupportedPlaceholders(
     replacement: (MatchResult) -> String,
 ): String {
     val template = this
-    return supportedPlaceholderRegex
-        .replace(template, replacement)
-        .requireSupportedPlaceholders(template)
-        .unescapePercent()
-}
+    val formatted = StringBuilder()
+    var index = 0
 
-private fun String.requireSupportedPlaceholders(template: String): String {
-    val unsupportedPlaceholder = PRINTF_PLACEHOLDER_REGEX.find(this)?.value
-    require(unsupportedPlaceholder == null) {
-        "Unsupported slider label placeholder: $unsupportedPlaceholder in template: $template"
+    while (index < template.length) {
+        if (template.startsWith("%%", startIndex = index)) {
+            formatted.append('%')
+            index += 2
+            continue
+        }
+
+        val supportedPlaceholder = supportedPlaceholderRegex.matchAt(template, index)
+        if (supportedPlaceholder != null) {
+            formatted.append(replacement(supportedPlaceholder))
+            index = supportedPlaceholder.range.last + 1
+            continue
+        }
+
+        val unsupportedPlaceholder = PRINTF_PLACEHOLDER_REGEX.matchAt(template, index)?.value
+        require(unsupportedPlaceholder == null) {
+            "Unsupported slider label placeholder: $unsupportedPlaceholder in template: $template"
+        }
+
+        formatted.append(template[index])
+        index++
     }
-    return this
-}
 
-private fun String.unescapePercent(): String = replace("%%", "%")
+    return formatted.toString()
+}
 
 /**
  * [value] を四捨五入（half-up、`String.format` の `%f` と同じ丸め方向）して [decimals] 桁の

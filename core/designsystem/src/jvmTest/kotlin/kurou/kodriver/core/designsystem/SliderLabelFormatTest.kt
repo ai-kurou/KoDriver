@@ -49,6 +49,11 @@ class SliderLabelFormatTest {
     }
 
     @Test
+    fun `エスケープされたパーセント記号に続く文字列は未対応プレースホルダーとして扱わない`() {
+        assertEquals("%2\$d", "%%2\$d".formatSliderLabel(3))
+    }
+
+    @Test
     fun `未対応の整数プレースホルダーを含むテンプレートは例外になる`() {
         val exception = assertFailsWith<IllegalArgumentException> {
             "値: %2\$d".formatSliderLabel(3)
