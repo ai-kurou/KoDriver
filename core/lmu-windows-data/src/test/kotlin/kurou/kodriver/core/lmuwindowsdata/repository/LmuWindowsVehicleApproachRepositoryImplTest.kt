@@ -464,7 +464,10 @@ private class MutableLmuWindowsVehicleApproachThresholdsPreferencesRepository(
     }
 }
 
-private data class VehiclePos(val posX: Double = 0.0, val posZ: Double = 0.0)
+private data class VehiclePos(
+    val posX: Double = 0.0,
+    val posZ: Double = 0.0,
+)
 
 private const val TELEMETRY_BASE = 128_464
 private const val OFF_ACTIVE_VEHICLES = 0

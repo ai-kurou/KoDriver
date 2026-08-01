@@ -145,7 +145,9 @@ class WebSocketAceWindowsFlagRepositoryTest {
     }
 }
 
-private class FakeAceFlagServerIpPreferencesRepository(initialIp: String?) : ServerIpPreferencesRepository {
+private class FakeAceFlagServerIpPreferencesRepository(
+    initialIp: String?,
+) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {

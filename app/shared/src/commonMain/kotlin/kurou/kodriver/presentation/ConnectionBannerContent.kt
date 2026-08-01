@@ -42,7 +42,10 @@ private const val ICON_PULSE_DURATION_MILLIS = 700
 private const val ICON_PULSE_MIN_SCALE = 0.85f
 private const val ICON_PULSE_MIN_ALPHA = 0.45f
 
-private data class BannerColors(val background: Color, val content: Color)
+private data class BannerColors(
+    val background: Color,
+    val content: Color,
+)
 
 @Composable
 private fun bannerColors(status: ConnectionBannerStatus): BannerColors = when (status) {

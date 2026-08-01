@@ -102,7 +102,9 @@ sealed interface SpeechEvent {
     }
 
     /** GT7 の燃料残量から推定した残り周回数を読み上げるイベント。 */
-    data class RemainingFuelLapsWarning(val laps: Int) : SpeechEvent {
+    data class RemainingFuelLapsWarning(
+        val laps: Int,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root
     }
 
@@ -111,7 +113,9 @@ sealed interface SpeechEvent {
     }
 
     /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。 */
-    data class PitTimingWarning(val laps: Int) : SpeechEvent {
+    data class PitTimingWarning(
+        val laps: Int,
+    ) : SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root
     }
 

@@ -134,7 +134,9 @@ class OtherConsoleIpDetailViewModelTest {
     }
 }
 
-private class FakeConsoleAddressPreferencesRepository(initial: String? = null) : ConsoleAddressPreferencesRepository {
+private class FakeConsoleAddressPreferencesRepository(
+    initial: String? = null,
+) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
 
     override fun consoleAddress(): Flow<String?> = flow
@@ -144,7 +146,9 @@ private class FakeConsoleAddressPreferencesRepository(initial: String? = null) :
     }
 }
 
-private class FakeGt7Ps5UdpPortPreferencesRepository(initial: Int = 33740) : Gt7Ps5UdpPortPreferencesRepository {
+private class FakeGt7Ps5UdpPortPreferencesRepository(
+    initial: Int = 33740,
+) : Gt7Ps5UdpPortPreferencesRepository {
     private val flow = MutableStateFlow(initial)
 
     override fun port(): Flow<Int> = flow

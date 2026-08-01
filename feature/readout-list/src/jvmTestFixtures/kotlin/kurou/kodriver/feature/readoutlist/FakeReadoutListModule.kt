@@ -37,8 +37,7 @@ private class FakeSimulatorPreferencesRepositoryImpl : SimulatorPreferencesRepos
     }
 }
 
-private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl :
-    LmuWindowsVehicleApproachThresholdsPreferencesRepository {
+private class FakeLmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     private val lateral = MutableStateFlow(5.0)
     private val longitudinal = MutableStateFlow(1.0)
     private val sustainedApproachDurationSeconds = MutableStateFlow(4)

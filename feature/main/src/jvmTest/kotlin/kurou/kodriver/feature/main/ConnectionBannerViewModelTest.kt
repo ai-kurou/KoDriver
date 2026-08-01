@@ -311,7 +311,9 @@ private class FakeAceBannerConnectionChecker(
     }
 }
 
-private class FakeConsoleAddressPreferencesRepository(initial: String?) : ConsoleAddressPreferencesRepository {
+private class FakeConsoleAddressPreferencesRepository(
+    initial: String?,
+) : ConsoleAddressPreferencesRepository {
     private val flow = MutableStateFlow(initial)
 
     override fun consoleAddress(): Flow<String?> = flow

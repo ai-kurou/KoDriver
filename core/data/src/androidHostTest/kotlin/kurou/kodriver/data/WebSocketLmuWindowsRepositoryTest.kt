@@ -156,7 +156,9 @@ class WebSocketLmuWindowsRepositoryTest {
     }
 }
 
-private class FakeServerIpPreferencesRepositoryForMyBestLap(initialIp: String?) : ServerIpPreferencesRepository {
+private class FakeServerIpPreferencesRepositoryForMyBestLap(
+    initialIp: String?,
+) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {

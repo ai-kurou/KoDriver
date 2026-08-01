@@ -52,10 +52,16 @@ internal class FakeUdpSocket : UdpSocket {
     }
 
     sealed interface FakeResponse {
-        data class Packet(val data: ByteArray) : FakeResponse
+        data class Packet(
+            val data: ByteArray,
+        ) : FakeResponse
 
         data object Timeout : FakeResponse
     }
 
-    data class SentPacket(val data: ByteArray, val address: String, val port: Int)
+    data class SentPacket(
+        val data: ByteArray,
+        val address: String,
+        val port: Int,
+    )
 }

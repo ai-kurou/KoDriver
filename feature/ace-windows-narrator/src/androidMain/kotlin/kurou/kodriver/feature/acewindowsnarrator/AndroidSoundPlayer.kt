@@ -12,7 +12,9 @@ import kotlin.coroutines.resume
 /**
  * WAV 音声を再生する Android 向け実装。
  */
-class AndroidSoundPlayer(private val context: Context) : SoundPlayer {
+class AndroidSoundPlayer(
+    private val context: Context,
+) : SoundPlayer {
     private var currentPlayer: MediaPlayer? = null
 
     override val isPlaying: Boolean

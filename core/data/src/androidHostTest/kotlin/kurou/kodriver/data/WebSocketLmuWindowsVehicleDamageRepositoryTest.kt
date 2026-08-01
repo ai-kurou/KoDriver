@@ -124,7 +124,9 @@ class WebSocketVehicleDamageRepositoryTest {
     }
 }
 
-private class FakeServerIpPreferencesRepositoryForDamage(initialIp: String?) : ServerIpPreferencesRepository {
+private class FakeServerIpPreferencesRepositoryForDamage(
+    initialIp: String?,
+) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {
