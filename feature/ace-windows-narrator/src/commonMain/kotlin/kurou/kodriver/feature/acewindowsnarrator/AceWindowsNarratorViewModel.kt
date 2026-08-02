@@ -127,7 +127,7 @@ internal class AceWindowsNarratorViewModel(
         get() = currentStatus.value?.status == AceWindowsStatusType.LIVE
 
     @Suppress("UnusedPrivateProperty")
-    private val readoutJob =
+    private val fuelJob =
         fuelFlow
             .onEach { fuel ->
                 if (!isLive) return@onEach
