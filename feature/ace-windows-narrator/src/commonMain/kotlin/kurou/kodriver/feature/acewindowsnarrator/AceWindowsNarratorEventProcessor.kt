@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagData
@@ -122,6 +124,12 @@ internal class AceWindowsNarratorEventProcessor(
     }
 }
 
+/**
+ * ACE の燃料残量判定入力（[AceWindowsFuelData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineRemainingFuel]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
 private fun buildTelemetryLogJson(
     state: AceWindowsNarratorState,
     previous: AceWindowsFuelData?,
@@ -132,8 +140,8 @@ private fun buildTelemetryLogJson(
 ): String =
     "{" +
         """"state":${state.toJsonString()},""" +
-        """"previousFuel":${previous?.toJson() ?: "null"},""" +
-        """"fuel":${current.toJson()},""" +
+        """"previousFuel":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"fuel":${telemetryLogJson.encodeToString(current)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
@@ -143,7 +151,16 @@ private fun AceWindowsNarratorReadoutSettings.toJsonString(): String = """{"raw"
 
 private fun AceWindowsNarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
-private fun AceWindowsFuelData.toJson(): String = """{"remainingPercent":$remainingPercent}"""
+/**
+ * NaN/Infinity を含む可能性のある燃料残量（[AceWindowsFuelData.remainingPercent]）を
+ * encode 失敗させないため、非有限値の encode を許可する。
+ */
+private val telemetryLogJson =
+    Json {
+        encodeDefaults = true
+        explicitNulls = true
+        allowSpecialFloatingPointValues = true
+    }
 
 private fun buildFlagTelemetryLogJson(
     state: AceWindowsNarratorState,

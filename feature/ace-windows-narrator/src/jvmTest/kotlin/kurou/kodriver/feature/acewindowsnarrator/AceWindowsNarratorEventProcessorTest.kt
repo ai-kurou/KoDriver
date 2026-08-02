@@ -210,6 +210,35 @@ class AceWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `燃料残量がNaNでも保存に失敗しない`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val key = ReadoutItemKey.AceWindows.RemainingFuel.Root
+            every { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, capture(telemetryJsons))
+            } just Runs
+
+            createProcessor().processRemainingFuel(
+                fuel = fuel(Double.NaN),
+                events = listOf(SpeechEvent.AceWindowsRemainingFuelWarning),
+                readoutOrder = listOf(key),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = logContext(),
+            )
+
+            assertEquals(true, telemetryJsons.single().contains(""""fuel":{"remainingPercent":NaN}"""))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.AceWindowsRemainingFuelWarning, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.AceWindows, key, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `直前のフラグデータがないイベントはnullとして保存する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
