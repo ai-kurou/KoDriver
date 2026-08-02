@@ -18,6 +18,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.CountLapFlag
@@ -215,7 +216,7 @@ class LmuWindowsNarratorEventProcessorTest {
             val root = Json.parseToJsonElement(telemetryJson).jsonObject
             assertEquals("GREEN", root["previousRaceFlags"]!!.jsonObject["playerFlag"]!!.jsonPrimitive.content)
             assertEquals("BLUE", root["raceFlags"]!!.jsonObject["playerFlag"]!!.jsonPrimitive.content)
-            assertContains(telemetryJson, """"observedAtMs":200""")
+            assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.BlueFlag, false) }
             coVerify(exactly = 1) {
