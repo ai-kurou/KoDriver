@@ -11,6 +11,7 @@ enum class KoDriverServerFeature(
     MY_BEST_LAP(pathSegment = "my_best_lap"),
     VIRTUAL_ENERGY(pathSegment = "virtual_energy"),
     FUEL(pathSegment = "fuel"),
+    STATUS(pathSegment = "status"),
     ;
 
     fun webSocketPath(simulator: Simulator): String = "/ws/${simulator.id}/$pathSegment"

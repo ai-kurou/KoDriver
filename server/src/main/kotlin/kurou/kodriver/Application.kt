@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -22,6 +23,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -31,6 +33,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
@@ -56,6 +59,7 @@ data class KoDriverServerUseCases(
     val observeLmuWindowsVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     val observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     val observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
+    val observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
 )
 
 fun main() {
@@ -83,6 +87,7 @@ fun main() {
                     ),
                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                 observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
             ),
     ).start(wait = true)
 }
@@ -167,6 +172,7 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ),
                 observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(koin.get<AceWindowsFuelRepository>()),
                 observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(koin.get<AceWindowsFlagRepository>()),
+                observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(koin.get<AceWindowsStatusRepository>()),
             ),
     )
 
@@ -205,6 +211,7 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         virtualEnergyWebSocket(useCases.observeLmuWindowsVirtualEnergy)
         aceWindowsFuelWebSocket(useCases.observeAceWindowsFuel)
         aceWindowsFlagWebSocket(useCases.observeAceWindowsFlag)
+        aceWindowsStatusWebSocket(useCases.observeAceWindowsStatus)
     }
 }
 
@@ -248,4 +255,8 @@ private object EmptyAceWindowsFuelRepository : AceWindowsFuelRepository {
 
 private object EmptyAceWindowsFlagRepository : AceWindowsFlagRepository {
     override fun flagStream(): Flow<AceWindowsFlagData> = emptyFlow()
+}
+
+private object EmptyAceWindowsStatusRepository : AceWindowsStatusRepository {
+    override fun statusStream(): Flow<AceWindowsStatusData> = emptyFlow()
 }
