@@ -162,6 +162,12 @@ private val telemetryLogJson =
         allowSpecialFloatingPointValues = true
     }
 
+/**
+ * ACE のフラグ判定入力（[AceWindowsFlagData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase.determineFlag]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
 private fun buildFlagTelemetryLogJson(
     state: AceWindowsNarratorState,
     previous: AceWindowsFlagData?,
@@ -172,14 +178,12 @@ private fun buildFlagTelemetryLogJson(
 ): String =
     "{" +
         """"state":${state.toJsonString()},""" +
-        """"previousFlag":${previous?.toJson() ?: "null"},""" +
-        """"flag":${current.toJson()},""" +
+        """"previousFlag":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"flag":${telemetryLogJson.encodeToString(current)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
         "}"
-
-private fun AceWindowsFlagData.toJson(): String = """{"flag":"${flag.name}"}"""
 
 private fun String.toJsonStringLiteral(): String =
     buildString {
