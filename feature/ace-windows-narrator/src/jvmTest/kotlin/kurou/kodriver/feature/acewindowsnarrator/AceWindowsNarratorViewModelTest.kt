@@ -193,6 +193,47 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `ACEを離れて戻した際に古いLIVE状態が残らない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val statusChannel = Channel<AceWindowsStatusData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.AceWindows)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns simulatorFlow
+            every {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
+            } returns MutableStateFlow(listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root))
+            every {
+                remainingFuelPreferencesRepository.observeThresholdPercentage()
+            } returns MutableStateFlow(30)
+            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { statusRepository.statusStream() } returns statusChannel.receiveAsFlow()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    any(),
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    any(),
+                )
+            } just Runs
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine)
+
+            statusChannel.send(AceWindowsStatusData(status = AceWindowsStatusType.LIVE))
+            simulatorFlow.value = null
+            simulatorFlow.value = Simulator.AceWindows
+
+            fuelChannel.send(fuel(50.0))
+            fuelChannel.send(fuel(20.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
     fun `残量が閾値以下になると読み上げる`() =
         runTest(testDispatcher) {
             val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)

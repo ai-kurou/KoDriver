@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -117,10 +118,13 @@ internal class AceWindowsNarratorViewModel(
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
     // レース中（LIVE）以外はメニュー・リプレイ・ポーズ中とみなし、読み上げそのものを行わない。
+    // ACE以外に切り替わった際はflowOf(null)で明示的にリセットする。emptyFlow()ではstateInが
+    // 直前の値を保持し続けてしまい、ACEへ戻した際に新しいstatusStream()の値が届くまで
+    // 古いLIVE状態が残ってしまう。
     private val currentStatus =
         selectedSimulator
             .flatMapLatest { simulator ->
-                if (simulator !is Simulator.AceWindows) emptyFlow() else observeAceWindowsStatus()
+                if (simulator !is Simulator.AceWindows) flowOf(null) else observeAceWindowsStatus()
             }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val isLive: Boolean
