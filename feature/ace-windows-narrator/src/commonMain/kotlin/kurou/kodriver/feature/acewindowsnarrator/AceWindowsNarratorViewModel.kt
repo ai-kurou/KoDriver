@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
@@ -21,6 +22,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -50,6 +52,7 @@ internal class AceWindowsNarratorViewModel(
     remainingFuelUseCases: RemainingFuelUseCases,
     readoutListUseCases: ReadoutListUseCases,
     flagUseCases: FlagUseCases,
+    observeAceWindowsStatus: ObserveAceWindowsStatusUseCase,
     private val eventProcessor: AceWindowsNarratorEventProcessor,
     private val determineAceWindowsNarratorReadout: DetermineAceWindowsNarratorReadoutUseCase =
         DetermineAceWindowsNarratorReadoutUseCase(),
@@ -113,10 +116,21 @@ internal class AceWindowsNarratorViewModel(
                 if (simulator !is Simulator.AceWindows) emptyFlow() else flagUseCases.observeAceWindowsFlag()
             }.shareIn(viewModelScope, SharingStarted.Eagerly)
 
+    // レース中（LIVE）以外はメニュー・リプレイ・ポーズ中とみなし、読み上げそのものを行わない。
+    private val currentStatus =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.AceWindows) emptyFlow() else observeAceWindowsStatus()
+            }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    private val isLive: Boolean
+        get() = currentStatus.value?.status == AceWindowsStatusType.LIVE
+
     @Suppress("UnusedPrivateProperty")
     private val readoutJob =
         fuelFlow
             .onEach { fuel ->
+                if (!isLive) return@onEach
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -146,6 +160,7 @@ internal class AceWindowsNarratorViewModel(
     private val flagJob =
         flagFlow
             .onEach { flag ->
+                if (!isLive) return@onEach
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
