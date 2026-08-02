@@ -621,7 +621,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -635,7 +635,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = state,
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -649,7 +649,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = LmuWindowsNarratorState(),
-                    data = tyreTemperature(fl = 95.0),
+                    input = tyreTemperatureInput(fl = 95.0),
                     settings = settings(tyreTemperatureHighThresholdCelsius = 90),
                 ).state
 
@@ -657,14 +657,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = overheatState,
-                    data = tyreTemperature(fl = 85.0),
+                    input = tyreTemperatureInput(fl = 85.0),
                     settings = settings(tyreTemperatureHighThresholdCelsius = 90),
                 ).state
 
         val reovertState =
             useCase.determineTyreTemperatureOverheat(
                 state = cooledState,
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -677,7 +677,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings =
                     settings(
                         tyreTemperatureHighThresholdCelsius = 90,
@@ -696,7 +696,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = LmuWindowsNarratorState(),
-                    data = tyreTemperature(fl = 95.0),
+                    input = tyreTemperatureInput(fl = 95.0),
                     settings =
                         settings(
                             tyreTemperatureHighThresholdCelsius = 90,
@@ -708,7 +708,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val reenabledDecision =
             useCase.determineTyreTemperatureOverheat(
                 state = disabledState,
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -720,7 +720,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings =
                     settings(
                         tyreTemperatureHighThresholdCelsius = 90,
@@ -889,7 +889,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
-                data = tyreTemperature(fl = 95.0),
+                input = tyreTemperatureInput(fl = 95.0),
                 settings =
                     settings(
                         tyreTemperatureHighThresholdCelsius = 90,
@@ -911,7 +911,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureOverheat(
                 state = LmuWindowsNarratorState(),
-                data = tyreTemperature(fl = 90.0),
+                input = tyreTemperatureInput(fl = 90.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -924,21 +924,21 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = LmuWindowsNarratorState(),
-                    data = tyreTemperature(fl = 95.0),
+                    input = tyreTemperatureInput(fl = 95.0),
                     settings = settings(tyreTemperatureHighThresholdCelsius = 90),
                 ).state
 
         val bandState =
             useCase.determineTyreTemperatureOverheat(
                 state = overheatState,
-                data = tyreTemperature(fl = 87.0),
+                input = tyreTemperatureInput(fl = 87.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
         val reheatedDecision =
             useCase.determineTyreTemperatureOverheat(
                 state = bandState.state,
-                data = tyreTemperature(fl = 91.0),
+                input = tyreTemperatureInput(fl = 91.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -953,14 +953,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
             useCase
                 .determineTyreTemperatureOverheat(
                     state = LmuWindowsNarratorState(),
-                    data = tyreTemperature(fl = 95.0),
+                    input = tyreTemperatureInput(fl = 95.0),
                     settings = settings(tyreTemperatureHighThresholdCelsius = 90),
                 ).state
 
         val cooledState =
             useCase.determineTyreTemperatureOverheat(
                 state = overheatState,
-                data = tyreTemperature(fl = 85.0),
+                input = tyreTemperatureInput(fl = 85.0),
                 settings = settings(tyreTemperatureHighThresholdCelsius = 90),
             )
 
@@ -972,8 +972,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
                 settings = settings(),
             )
 
@@ -986,8 +985,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
                 settings = settings(),
             )
 
@@ -999,8 +997,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.COUNTDOWN),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.COUNTDOWN)),
                 settings = settings(),
             )
 
@@ -1012,8 +1009,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GARAGE),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
                 settings = settings(),
             )
 
@@ -1025,8 +1021,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 60.0, fr = 80.0, rl = 80.0, rr = 80.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.WARM_UP),
+                input =
+                    tyreTemperatureInput(
+                        fl = 60.0,
+                        fr = 80.0,
+                        rl = 80.0,
+                        rr = 80.0,
+                        raceFlags = clearFlags(gamePhase = SessionPhase.WARM_UP),
+                    ),
                 settings = settings(),
             )
 
@@ -1038,8 +1040,14 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 61.0, fr = 80.0, rl = 80.0, rr = 80.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.WARM_UP),
+                input =
+                    tyreTemperatureInput(
+                        fl = 61.0,
+                        fr = 80.0,
+                        rl = 80.0,
+                        rr = 80.0,
+                        raceFlags = clearFlags(gamePhase = SessionPhase.WARM_UP),
+                    ),
                 settings = settings(),
             )
 
@@ -1051,8 +1059,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
                 settings =
                     settings().copy(
                         tyreTemperatureLowWarningPhases =
@@ -1072,8 +1079,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
                 settings =
                     settings(
                         enabledStates =
@@ -1092,8 +1098,7 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
         val decision =
             useCase.determineTyreTemperatureLow(
                 state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
-                data = tyreTemperature(fl = 55.0),
-                raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
                 settings =
                     settings(
                         enabledStates =
@@ -1643,6 +1648,17 @@ private fun damage(overheating: Boolean) =
         partDetached = false,
         lastImpactMagnitude = 0.0,
     )
+
+private fun tyreTemperatureInput(
+    fl: Double = 20.0,
+    fr: Double = 20.0,
+    rl: Double = 20.0,
+    rr: Double = 20.0,
+    raceFlags: LmuWindowsRaceFlagsData = clearFlags(),
+) = TyreTemperatureReadoutInput(
+    tyreCarcassTemperature = tyreTemperature(fl, fr, rl, rr),
+    raceFlags = raceFlags,
+)
 
 private fun tyreTemperature(
     fl: Double = 20.0,
