@@ -107,7 +107,7 @@ class Gt7Ps5NarratorEventProcessorTest {
                 true,
                 telemetryJsons.single().contains(
                     """"telemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":59000,""" +
-                        """"gasLevel":20.0,"gasCapacity":100.0}""",
+                        """"gasLevel":20.0,"gasCapacity":100.0},"settings":""",
                 ),
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
