@@ -120,6 +120,40 @@ class Gt7Ps5NarratorEventProcessorTest {
         }
 
     @Test
+    fun `テレメトリがNaNでも保存に失敗しない`() =
+        runTest {
+            val telemetryJsons = mutableListOf<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            val sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root
+            every { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    sourceKey,
+                    capture(telemetryJsons),
+                )
+            } just Runs
+
+            createProcessor().process(
+                sourceKey = sourceKey,
+                telemetry = telemetry(gasLevel = Float.NaN),
+                events = listOf(SpeechEvent.Gt7Ps5MyBestLapFormal),
+                readoutOrder = listOf(sourceKey),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+            )
+
+            assertEquals(true, telemetryJsons.single().contains("\"gasLevel\":NaN"))
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(0L, Simulator.Gt7Ps5, sourceKey, telemetryJsons.single())
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `機能ごとに直前のテレメトリを保持する`() =
         runTest {
             val telemetryJsons = mutableListOf<String>()
@@ -271,12 +305,14 @@ class Gt7Ps5NarratorEventProcessorTest {
             saveTelemetryLog = SaveTelemetryLogUseCase(telemetryLogRepository),
         )
 
-    private fun telemetry(bestLapTimeMs: Int = 60_000) =
-        Gt7Ps5TelemetryData(
-            lapCount = 0,
-            lapsInRace = 5,
-            bestLapTimeMs = bestLapTimeMs,
-            gasLevel = 20f,
-            gasCapacity = 100f,
-        )
+    private fun telemetry(
+        bestLapTimeMs: Int = 60_000,
+        gasLevel: Float = 20f,
+    ) = Gt7Ps5TelemetryData(
+        lapCount = 0,
+        lapsInRace = 5,
+        bestLapTimeMs = bestLapTimeMs,
+        gasLevel = gasLevel,
+        gasCapacity = 100f,
+    )
 }

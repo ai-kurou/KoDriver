@@ -119,11 +119,14 @@ private fun Gt7Ps5NarratorState.toJsonString(): String = """{"raw":${toString().
 /**
  * ログフォーマットが kotlinx.serialization のデフォルト設定変更に暗黙的に追従しないよう、
  * テレメトリログ用の設定を明示する。
+ * UDP テレメトリの Float フィールド（gasLevel/gasCapacity 等）が NaN/Infinity を
+ * 取りうるため、通常は encode を拒否する非有限値もログ記録できるよう許可する。
  */
 private val telemetryLogJson =
     Json {
         encodeDefaults = true
         explicitNulls = true
+        allowSpecialFloatingPointValues = true
     }
 
 private fun String.toJsonStringLiteral(): String =
