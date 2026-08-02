@@ -1,11 +1,14 @@
 package kurou.kodriver.domain.model
 
+import kotlinx.serialization.Serializable
+
 /**
  * GT7 の PS5 UDP パケットから抽出した読み上げ用テレメトリ。
  *
  * 燃料量はゲーム内の fuel unit をそのまま保持し、残量割合は
  * [gasLevel] / [gasCapacity] で求める。ラップタイムは milliseconds。
  */
+@Serializable
 data class Gt7Ps5TelemetryData(
     /** 現在の周回数。セッション切り替わり検出にも使う。 */
     val lapCount: Int,
