@@ -1,6 +1,7 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
 import kurou.kodriver.domain.model.AceWindowsFlagType
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
@@ -8,6 +9,7 @@ import kotlin.test.assertEquals
 
 class AceWindowsMapperTest {
     private companion object {
+        const val OFF_STATUS = 4
         const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
         const val OFF_FLAG = 2404
         const val BUFFER_SIZE = 8_192
@@ -21,6 +23,11 @@ class AceWindowsMapperTest {
     private fun flagBuffer(flagRawValue: Int): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putInt(OFF_FLAG, flagRawValue)
+        }
+
+    private fun statusBuffer(statusRawValue: Int): ByteBuffer =
+        ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
+            it.putInt(OFF_STATUS, statusRawValue)
         }
 
     @Test
@@ -73,5 +80,29 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapFlag(flagBuffer(-1))
 
         assertEquals(AceWindowsFlagType.UNKNOWN, result.flag)
+    }
+
+    @Test
+    fun `status は全てのACEVO_STATUSの値を取得できる`() {
+        val expected =
+            mapOf(
+                0 to AceWindowsStatusType.OFF,
+                1 to AceWindowsStatusType.REPLAY,
+                2 to AceWindowsStatusType.LIVE,
+                3 to AceWindowsStatusType.PAUSE,
+            )
+
+        expected.forEach { (rawValue, statusType) ->
+            val result = AceWindowsMapper.mapStatus(statusBuffer(rawValue))
+
+            assertEquals(statusType, result.status, "rawValue=$rawValue")
+        }
+    }
+
+    @Test
+    fun `status が未知の値のとき UNKNOWN を返す`() {
+        val result = AceWindowsMapper.mapStatus(statusBuffer(-1))
+
+        assertEquals(AceWindowsStatusType.UNKNOWN, result.status)
     }
 }

@@ -28,6 +28,12 @@
 - **課題**: 起動直後など、ゲーム側がまだ共有メモリにテレメトリを書き込んでいない区間はゼロクリアされた値になりうるが、Mapper はそれをそのまま有効な値として返している（ACEの残燃料が起動直後に `0.0%` になり誤読み上げが発生した不具合はこれが原因の一つ）。
   **改善案**: `AceWindowsMapper` / `LmuWindowsMapper` 側で `status` 等の「有効なテレメトリが書き込まれたか」を示すフィールドを見て、無効なテレメトリをフィルタする仕組みの導入を検討する。
 
+## AceWindowsNarratorViewModelがACEVO_STATUSを見ておらず、走行中以外でも読み上げが発生する
+
+- **対象**: `feature:ace-windows-narrator`（`AceWindowsNarratorViewModel`, `DetermineAceWindowsNarratorReadoutUseCase`）
+- **課題**: `AceWindowsNarratorViewModel`はACEの共有メモリ由来データ（燃料・フラグ）が取得できていれば読み上げを行っており、`graphics.status`（`ACEVO_STATUS`: OFF/REPLAY/LIVE/PAUSE）を判定に使っていない。そのため、メニュー画面・リプレイ視聴中・ポーズ中などゲーム内走行中でない時にも読み上げが発生してしまう。`AceWindowsStatusRepository`/`ObserveAceWindowsStatusUseCase`（`core:domain`, `core:ace-windows-data`）は実装済みだが、Narrator側への配線はまだ行っていない。
+  **改善案**: `AceWindowsNarratorViewModel`に`ObserveAceWindowsStatusUseCase`を追加し、`status == LIVE`のときのみ読み上げ対象にするゲート処理を`DetermineAceWindowsNarratorReadoutUseCase`または`AceWindowsNarratorViewModel`側に追加する。
+
 ## Narrator の読み上げ判定入力とテレメトリログ記録内容が別々にハードコードされている
 
 - **対象**: `feature:lmu-windows-narrator`（`DetermineLmuWindowsNarratorReadoutUseCase.kt`, `LmuWindowsNarratorEventProcessor.kt` の各 `buildTelemetryLogJson`/`buildPitTimingTelemetryLogJson`）
