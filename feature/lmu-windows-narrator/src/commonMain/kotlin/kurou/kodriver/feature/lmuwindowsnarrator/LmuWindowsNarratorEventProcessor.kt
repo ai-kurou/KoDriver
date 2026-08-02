@@ -467,6 +467,12 @@ private fun LmuWindowsVehicleDamageData.toJson(): String =
         """"lastImpactMagnitude":$lastImpactMagnitude""" +
         "}"
 
+/**
+ * フラグ判定入力（[LmuWindowsRaceFlagsData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRaceFlags]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,
     previous: LmuWindowsRaceFlagsData?,
@@ -477,23 +483,11 @@ private fun buildTelemetryLogJson(
 ): String =
     "{" +
         """"state":${state.toJsonString()},""" +
-        """"previousRaceFlags":${previous?.toJson() ?: "null"},""" +
-        """"raceFlags":${current.toJson()},""" +
+        """"previousRaceFlags":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"raceFlags":${telemetryLogJson.encodeToString(current)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsRaceFlagsData.toJson(): String =
-    "{" +
-        """"gamePhase":"$gamePhase",""" +
-        """"yellowFlagState":"$yellowFlagState",""" +
-        """"sectorFlags":[${sectorFlags.joinToString(",") { """"$it"""" }}],""" +
-        """"startLight":$startLight,""" +
-        """"numRedLights":$numRedLights,""" +
-        """"playerFlag":"$playerFlag",""" +
-        """"playerUnderYellow":$playerUnderYellow,""" +
-        """"playerCountLapFlag":"$playerCountLapFlag"""" +
         "}"
 
 /**
