@@ -13,10 +13,23 @@ import io.mockk.just
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LmuWindowsEngineData
+import kurou.kodriver.domain.model.LmuWindowsFuelData
+import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTimingData
+import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleData
+import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
@@ -131,8 +144,21 @@ class LmuWindowsNarratorEventProcessorTest {
             )
 
             val telemetryJson = telemetryJsonSlot.captured
-            assertContains(telemetryJson, """"previousTyreWear":{"wheels":{"FRONT_LEFT":0.9""")
-            assertContains(telemetryJson, """"tyreWear":{"wheels":{"FRONT_LEFT":0.4""")
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertWheelValues(
+                root["previousTyreWear"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 0.9,
+                frontRight = 0.9,
+                rearLeft = 0.9,
+                rearRight = 0.9,
+            )
+            assertWheelValues(
+                root["tyreWear"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 0.4,
+                frontRight = 0.9,
+                rearLeft = 0.9,
+                rearRight = 0.9,
+            )
             assertContains(telemetryJson, """"observedAtMs":200""")
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning, false) }
@@ -141,6 +167,53 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げたピットタイミングイベントにタイヤ摩耗データがシリアライズされて保存される`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2), queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor()
+
+            processor.processPitTiming(
+                snapshot = pitTimingSnapshot(tyreWear = tyreWear(frontLeft = 0.3)),
+                events = listOf(SpeechEvent.PitTimingWarning(laps = 2)),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.PitTiming.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 0L,
+                logContext = pitTimingLogContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertWheelValues(
+                root["tyreWear"]!!.jsonObject["wheels"]!!.jsonObject,
+                frontLeft = 0.3,
+                frontRight = 0.9,
+                rearLeft = 0.9,
+                rearRight = 0.9,
+            )
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2), false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 0L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.PitTiming.Root,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -368,5 +441,76 @@ private fun tyreWear(frontLeft: Double) =
                 WheelIndex.FRONT_RIGHT to 0.9,
                 WheelIndex.REAR_LEFT to 0.9,
                 WheelIndex.REAR_RIGHT to 0.9,
+            ),
+    )
+
+private fun assertWheelValues(
+    wheels: JsonObject,
+    frontLeft: Double,
+    frontRight: Double,
+    rearLeft: Double,
+    rearRight: Double,
+) {
+    assertEquals(frontLeft, wheels["FRONT_LEFT"]!!.jsonPrimitive.double)
+    assertEquals(frontRight, wheels["FRONT_RIGHT"]!!.jsonPrimitive.double)
+    assertEquals(rearLeft, wheels["REAR_LEFT"]!!.jsonPrimitive.double)
+    assertEquals(rearRight, wheels["REAR_RIGHT"]!!.jsonPrimitive.double)
+}
+
+private fun pitTimingLogContext() =
+    LmuWindowsPitTimingLogContext(
+        state = LmuWindowsNarratorState(),
+        settings =
+            LmuWindowsNarratorReadoutSettings(
+                enabledStates = mapOf(ReadoutItemKey.LmuWindows.PitTiming.Root to true),
+                myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
+                redFlagVoiceType = RedFlagVoiceType.SESSION_STOP,
+                currentLap = 1,
+                skipFirstLap = false,
+                vehicleApproachStartReadoutType = VehicleApproachStartReadoutType.CAR_LEFT_RIGHT,
+                vehicleApproachSustainedApproachDurationSeconds = 7,
+                vehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
+                tyreTemperatureHighThresholdCelsius = 95,
+                tyreTemperatureLowWarningPhases = emptySet(),
+                tyreWearThresholdPercentage = 50,
+                remainingVirtualEnergyThresholdPercentage = 50,
+                pitTimingVirtualEnergyLapsThreshold = 3,
+                pitTimingTyreWearLapsThreshold = 3,
+            ),
+        finalState = LmuWindowsNarratorState(),
+    )
+
+private fun pitTimingSnapshot(tyreWear: LmuWindowsTyreWearData) =
+    LmuWindowsPitTimingSnapshot(
+        telemetry = fakeTelemetryData(),
+        virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+        tyreWear = tyreWear,
+    )
+
+private fun fakeTelemetryData() =
+    LmuWindowsTelemetryData(
+        timestampMs = 0L,
+        engine = LmuWindowsEngineData(rpm = 0.0, maxRpm = 0.0, gear = 0),
+        inputs = LmuWindowsInputsData(throttle = 0.0, brake = 0.0, clutch = 0.0, steering = 0.0),
+        tyres = LmuWindowsTyreData(wheels = emptyMap()),
+        fuel = LmuWindowsFuelData(currentLiters = 0.0, capacityLiters = 0.0),
+        timing =
+            LmuWindowsTimingData(
+                currentLapTimeMs = 0L,
+                lastLapTimeMs = 0L,
+                bestLapTimeMs = 0L,
+                sector1Ms = 0L,
+                sector1And2Ms = 0L,
+                currentLap = 0,
+                maxLaps = 0,
+            ),
+        vehicle =
+            LmuWindowsVehicleData(
+                localVelocityX = 0.0,
+                localVelocityY = 0.0,
+                localVelocityZ = 0.0,
+                positionX = 0.0,
+                positionY = 0.0,
+                positionZ = 0.0,
             ),
     )
