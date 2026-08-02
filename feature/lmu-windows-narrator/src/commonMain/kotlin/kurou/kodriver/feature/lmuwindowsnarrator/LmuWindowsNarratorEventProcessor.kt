@@ -418,6 +418,12 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
+/**
+ * バーチャルエナジー残量判定入力（[LmuWindowsVirtualEnergyData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRemainingVirtualEnergy]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,
     previous: LmuWindowsVirtualEnergyData?,
@@ -428,17 +434,11 @@ private fun buildTelemetryLogJson(
 ): String =
     "{" +
         """"state":${state.toJsonString()},""" +
-        """"previousRemainingVirtualEnergy":${previous?.toJson() ?: "null"},""" +
-        """"remainingVirtualEnergy":${current.toJson()},""" +
+        """"previousRemainingVirtualEnergy":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"remainingVirtualEnergy":${telemetryLogJson.encodeToString(current)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsVirtualEnergyData.toJson(): String =
-    "{" +
-        """"remainingRatio":$remainingRatio,""" +
-        """"session":$session""" +
         "}"
 
 private fun buildPitTimingTelemetryLogJson(
@@ -453,7 +453,7 @@ private fun buildPitTimingTelemetryLogJson(
     "{" +
         """"state":${state.toJsonString()},""" +
         """"telemetry":${telemetry.toJson()},""" +
-        """"virtualEnergy":${virtualEnergy.toJson()},""" +
+        """"virtualEnergy":${telemetryLogJson.encodeToString(virtualEnergy)},""" +
         """"tyreWear":${telemetryLogJson.encodeToString(tyreWear)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
