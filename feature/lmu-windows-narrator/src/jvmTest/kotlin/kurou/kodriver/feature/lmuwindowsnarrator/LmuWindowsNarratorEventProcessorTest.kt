@@ -15,6 +15,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -22,6 +23,7 @@ import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
@@ -89,6 +91,56 @@ class LmuWindowsNarratorEventProcessorTest {
                     createdAt = 200L,
                     simulator = Simulator.LmuWindows,
                     readoutItemKey = ReadoutItemKey.LmuWindows.VehicleApproach.Root,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
+    fun `読み上げたタイヤ摩耗イベントを直前と現在のタイヤ摩耗データとともに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.TyreWearWarning, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor()
+
+            processor.processTyreWear(
+                tyreWear = tyreWear(frontLeft = 0.9),
+                events = emptyList(),
+                readoutOrder = emptyList(),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processTyreWear(
+                tyreWear = tyreWear(frontLeft = 0.4),
+                events = listOf(SpeechEvent.TyreWearWarning),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.TyreWear.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            assertContains(telemetryJson, """"previousTyreWear":{"wheels":{"FRONT_LEFT":0.9""")
+            assertContains(telemetryJson, """"tyreWear":{"wheels":{"FRONT_LEFT":0.4""")
+            assertContains(telemetryJson, """"observedAtMs":200""")
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.TyreWearWarning, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.TyreWear.Root,
                     telemetryJson = telemetryJson,
                 )
             }
@@ -306,4 +358,15 @@ private fun leftVehicleApproach(distance: Double = 3.0) =
         sideBySideRightVehicleIds = emptySet(),
         lateralDistanceLeftMeters = distance,
         lateralDistanceRightMeters = Double.MAX_VALUE,
+    )
+
+private fun tyreWear(frontLeft: Double) =
+    LmuWindowsTyreWearData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to frontLeft,
+                WheelIndex.FRONT_RIGHT to 0.9,
+                WheelIndex.REAR_LEFT to 0.9,
+                WheelIndex.REAR_RIGHT to 0.9,
+            ),
     )
