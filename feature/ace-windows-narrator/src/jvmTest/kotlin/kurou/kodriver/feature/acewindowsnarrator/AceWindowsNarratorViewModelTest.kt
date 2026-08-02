@@ -24,12 +24,15 @@ import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
@@ -38,6 +41,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsRemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveReadoutOrderUseCase
@@ -75,6 +79,9 @@ class AceWindowsNarratorViewModelTest {
 
     @MockK
     private lateinit var flagPreferencesRepository: AceWindowsFlagPreferencesRepository
+
+    @MockK
+    private lateinit var statusRepository: AceWindowsStatusRepository
 
     @MockK
     private lateinit var ttsEngine: TextToSpeechEngine
@@ -117,6 +124,7 @@ class AceWindowsNarratorViewModelTest {
                     observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(flagRepository),
                     observeFlagEnabledStates = ObserveAceWindowsFlagEnabledStatesUseCase(flagPreferencesRepository),
                 ),
+            observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(statusRepository),
             eventProcessor =
                 AceWindowsNarratorEventProcessor(
                     ttsEngine = ttsEngine,
@@ -151,6 +159,78 @@ class AceWindowsNarratorViewModelTest {
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             confirmVerified(simulatorPreferencesRepository)
+        }
+
+    @Test
+    fun `レース中(LIVE)以外は残量が閾値以下でも読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30, status = AceWindowsStatusType.PAUSE)
+            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+
+            channel.send(fuel(50.0))
+            channel.send(fuel(20.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `レース中(LIVE)以外はフラグが変化しても読み上げない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(thresholdPercentage = 30, status = AceWindowsStatusType.REPLAY)
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+
+            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `ACEを離れて戻した際に古いLIVE状態が残らない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val statusChannel = Channel<AceWindowsStatusData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            val simulatorFlow = MutableStateFlow<Simulator?>(Simulator.AceWindows)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns simulatorFlow
+            every {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.AceWindows.id)
+            } returns MutableStateFlow(emptyMap())
+            every {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.AceWindows.id)
+            } returns MutableStateFlow(listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root))
+            every {
+                remainingFuelPreferencesRepository.observeThresholdPercentage()
+            } returns MutableStateFlow(30)
+            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(emptyMap())
+            every { statusRepository.statusStream() } returns statusChannel.receiveAsFlow()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    any(),
+                    Simulator.AceWindows,
+                    ReadoutItemKey.AceWindows.RemainingFuel.Root,
+                    any(),
+                )
+            } just Runs
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine)
+
+            statusChannel.send(AceWindowsStatusData(status = AceWindowsStatusType.LIVE))
+            simulatorFlow.value = null
+            simulatorFlow.value = Simulator.AceWindows
+
+            fuelChannel.send(fuel(50.0))
+            fuelChannel.send(fuel(20.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
     @Test
@@ -246,6 +326,7 @@ class AceWindowsNarratorViewModelTest {
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
+        status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -259,6 +340,7 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(thresholdPercentage)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
+        every { statusRepository.statusStream() } returns MutableStateFlow(AceWindowsStatusData(status = status))
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),

@@ -7,6 +7,7 @@ import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
+import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
@@ -157,15 +158,27 @@ fun androidDataModule(context: Context) =
         single<DynamicColorEnabledRepository> {
             AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
         }
-        // ACE (Assetto Corsa EVO) の走行データは Windows 共有メモリ専用実装のみのため、
-        // Android は LMU 系と同様に KoDriver サーバーへの WebSocket クライアント実装を使う。
+        includes(androidDataModuleAceWindows())
+        includes(androidDataModuleThresholdPreferences(context))
+    }
+
+/**
+ * androidDataModule から分離した ACE (Assetto Corsa EVO) の走行データ取得用バインド（LongMethod 対策）。
+ *
+ * ACE の走行データは Windows 共有メモリ専用実装のみのため、Android は LMU 系と同様に
+ * KoDriver サーバーへの WebSocket クライアント実装を使う。
+ */
+private fun androidDataModuleAceWindows() =
+    module {
         single<AceWindowsFuelRepository> {
             WebSocketAceWindowsFuelRepository(serverIpRepository = get(), client = get())
         }
         single<AceWindowsFlagRepository> {
             WebSocketAceWindowsFlagRepository(serverIpRepository = get(), client = get())
         }
-        includes(androidDataModuleThresholdPreferences(context))
+        single<AceWindowsStatusRepository> {
+            WebSocketAceWindowsStatusRepository(serverIpRepository = get(), client = get())
+        }
     }
 
 /**

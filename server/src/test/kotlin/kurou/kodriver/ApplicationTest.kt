@@ -20,6 +20,8 @@ import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -42,6 +44,7 @@ import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -51,6 +54,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
@@ -96,6 +100,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -131,6 +136,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -167,6 +173,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -219,6 +226,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -267,6 +275,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -310,6 +319,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -357,6 +367,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -402,6 +413,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -448,6 +460,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -496,6 +509,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -542,6 +556,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -590,6 +605,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -636,6 +652,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -681,6 +698,7 @@ class ApplicationTest {
                         observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -724,6 +742,7 @@ class ApplicationTest {
                         observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(repository),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -772,6 +791,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -818,6 +838,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(repository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -866,6 +887,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(repository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -912,6 +934,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(repository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -929,6 +952,102 @@ class ApplicationTest {
 
                     assertEquals(ACE_FLAG_JSON_1, first)
                     assertEquals(ACE_FLAG_JSON_2, second)
+                }
+        }
+
+    @Test
+    fun `ACEステータスをJSONでWebSocketへ送信する`() =
+        testApplication {
+            val repository = FakeAceWindowsStatusRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(repository),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/status") {
+                    repository.emit(aceStatusData1)
+
+                    val message =
+                        withTimeout(1_000) {
+                            (incoming.receive() as Frame.Text).readText()
+                        }
+                    assertEquals(ACE_STATUS_JSON_1, message)
+                }
+        }
+
+    @Test
+    fun `ACEステータスの同一値は重複して送信されない`() =
+        testApplication {
+            val repository = FakeAceWindowsStatusRepository()
+            application {
+                module(
+                    KoDriverServerUseCases(
+                        observeLmuWindowsRaceFlags = ObserveLmuWindowsRaceFlagsUseCase(FakeLmuWindowsFlagRepository()),
+                        observeLmuWindowsVehicleApproach =
+                            ObserveLmuWindowsVehicleApproachUseCase(
+                                EmptyLmuWindowsVehicleApproachRepository,
+                            ),
+                        observeLmuWindowsVehicleDamage =
+                            ObserveLmuWindowsVehicleDamageUseCase(
+                                EmptyLmuWindowsVehicleDamageRepository,
+                            ),
+                        observeLmuWindowsTyreCarcassTemperature =
+                            ObserveLmuWindowsTyreCarcassTemperatureUseCase(
+                                EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                            ),
+                        observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
+                        observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
+                        observeLmuWindowsVirtualEnergy =
+                            ObserveLmuWindowsVirtualEnergyUseCase(
+                                EmptyLmuWindowsVirtualEnergyRepository,
+                            ),
+                        observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
+                        observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(repository),
+                    ),
+                )
+            }
+
+            client
+                .config {
+                    install(WebSockets)
+                }.webSocket("/ws/ace_windows/status") {
+                    repository.emit(aceStatusData1)
+                    repository.emit(aceStatusData1)
+                    repository.emit(aceStatusData2)
+
+                    val first = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+                    val second = withTimeout(1_000) { (incoming.receive() as Frame.Text).readText() }
+
+                    assertEquals(ACE_STATUS_JSON_1, first)
+                    assertEquals(ACE_STATUS_JSON_2, second)
                 }
         }
 
@@ -960,6 +1079,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 port = port,
                 host = "127.0.0.1",
@@ -1002,6 +1122,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -1048,6 +1169,7 @@ class ApplicationTest {
                             ),
                         observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(EmptyAceWindowsFuelRepository),
                         observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(EmptyAceWindowsFlagRepository),
+                        observeAceWindowsStatus = ObserveAceWindowsStatusUseCase(EmptyAceWindowsStatusRepository),
                     ),
                 )
             }
@@ -1085,6 +1207,7 @@ class ApplicationTest {
                         single<LmuWindowsVirtualEnergyRepository> { EmptyLmuWindowsVirtualEnergyRepository }
                         single<AceWindowsFuelRepository> { EmptyAceWindowsFuelRepository }
                         single<AceWindowsFlagRepository> { EmptyAceWindowsFlagRepository }
+                        single<AceWindowsStatusRepository> { EmptyAceWindowsStatusRepository }
                     },
                 )
             }.koin
@@ -1448,6 +1571,26 @@ private class FakeAceWindowsFlagRepository : AceWindowsFlagRepository {
     override fun flagStream(): Flow<AceWindowsFlagData> = channel.receiveAsFlow()
 
     fun emit(data: AceWindowsFlagData) {
+        channel.trySend(data).getOrThrow()
+    }
+}
+
+private val aceStatusData1 = AceWindowsStatusData(status = AceWindowsStatusType.LIVE)
+private val aceStatusData2 = AceWindowsStatusData(status = AceWindowsStatusType.PAUSE)
+
+private const val ACE_STATUS_JSON_1 = """{"status":"LIVE"}"""
+private const val ACE_STATUS_JSON_2 = """{"status":"PAUSE"}"""
+
+private object EmptyAceWindowsStatusRepository : AceWindowsStatusRepository {
+    override fun statusStream(): Flow<AceWindowsStatusData> = emptyFlow()
+}
+
+private class FakeAceWindowsStatusRepository : AceWindowsStatusRepository {
+    private val channel = Channel<AceWindowsStatusData>(capacity = Channel.UNLIMITED)
+
+    override fun statusStream(): Flow<AceWindowsStatusData> = channel.receiveAsFlow()
+
+    fun emit(data: AceWindowsStatusData) {
         channel.trySend(data).getOrThrow()
     }
 }
