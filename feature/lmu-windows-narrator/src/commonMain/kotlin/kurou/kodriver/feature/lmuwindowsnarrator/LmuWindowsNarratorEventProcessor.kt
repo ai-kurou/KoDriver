@@ -395,6 +395,12 @@ private fun buildTelemetryLogJson(
         """"finalState":${finalState.toJsonString()}""" +
         "}"
 
+/**
+ * タイヤ摩耗判定入力（[LmuWindowsTyreWearData]）は判定ロジック（
+ * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreWear]）と
+ * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
+ */
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,
     previous: LmuWindowsTyreWearData?,
@@ -405,15 +411,12 @@ private fun buildTelemetryLogJson(
 ): String =
     "{" +
         """"state":${state.toJsonString()},""" +
-        """"previousTyreWear":${previous?.toJson() ?: "null"},""" +
-        """"tyreWear":${current.toJson()},""" +
+        """"previousTyreWear":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"tyreWear":${telemetryLogJson.encodeToString(current)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
         "}"
-
-private fun LmuWindowsTyreWearData.toJson(): String =
-    """{"wheels":{${wheels.entries.joinToString(",") { (k, v) -> """"$k":$v""" }}}}"""
 
 private fun buildTelemetryLogJson(
     state: LmuWindowsNarratorState,
@@ -451,7 +454,7 @@ private fun buildPitTimingTelemetryLogJson(
         """"state":${state.toJsonString()},""" +
         """"telemetry":${telemetry.toJson()},""" +
         """"virtualEnergy":${virtualEnergy.toJson()},""" +
-        """"tyreWear":${tyreWear.toJson()},""" +
+        """"tyreWear":${telemetryLogJson.encodeToString(tyreWear)},""" +
         """"settings":${settings.toJsonString()},""" +
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
