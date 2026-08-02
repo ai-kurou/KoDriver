@@ -3,11 +3,13 @@ package kurou.kodriver.core.acewindowsdata.mapper
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import java.nio.ByteBuffer
 
 /**
  * Assetto Corsa EVO の Graphics 共有メモリ (`Local\acevo_pmf_graphics`, `SPageFileGraphicEvo`) の
- * ByteBuffer を AceWindowsFuelData / AceWindowsFlagData に変換する。
+ * ByteBuffer を AceWindowsFuelData / AceWindowsFlagData / AceWindowsStatusData に変換する。
  *
  * `SPageFileGraphicEvo` は `char[33]` / `bool` を含むため固定オフセットが文書化されておらず
  * (docs/ace-windows-telemetry.md 参照)、_pack_=4 のアライメント規則 (4バイト境界に整列、
@@ -51,8 +53,11 @@ import java.nio.ByteBuffer
  *   [+2396] last_laptime_ms (int32)
  *   [+2400] best_laptime_ms (int32)
  *   [+2404] flag (int32, ACEVO_FLAG_TYPE、自車提示) ← Flag 取得対象
+ *
+ * [+4] status (int32, ACEVO_STATUS) ← Status 取得対象
  */
 internal object AceWindowsMapper {
+    private const val OFF_STATUS = 4
     private const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
     private const val OFF_FLAG = 2404
     private const val PERCENT_MULTIPLIER = 100
@@ -69,5 +74,10 @@ internal object AceWindowsMapper {
     fun mapFlag(buffer: ByteBuffer): AceWindowsFlagData =
         AceWindowsFlagData(
             flag = AceWindowsFlagType.fromRaw(buffer.getInt(OFF_FLAG)),
+        )
+
+    fun mapStatus(buffer: ByteBuffer): AceWindowsStatusData =
+        AceWindowsStatusData(
+            status = AceWindowsStatusType.fromRaw(buffer.getInt(OFF_STATUS)),
         )
 }

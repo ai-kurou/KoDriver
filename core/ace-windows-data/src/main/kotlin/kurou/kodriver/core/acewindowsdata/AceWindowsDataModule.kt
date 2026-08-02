@@ -7,10 +7,13 @@ import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
+import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
+import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import org.koin.dsl.module
 
 private val isWindows = System.getProperty("os.name").lowercase().startsWith("windows")
@@ -33,6 +36,9 @@ val aceWindowsDataModule =
         single<AceWindowsFlagRepository> {
             if (isWindows) AceWindowsFlagRepositoryImpl(source = get()) else NoOpAceWindowsFlagRepository()
         }
+        single<AceWindowsStatusRepository> {
+            if (isWindows) AceWindowsStatusRepositoryImpl(source = get()) else NoOpAceWindowsStatusRepository()
+        }
     }
 
 private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
@@ -43,4 +49,8 @@ private class NoOpAceWindowsFuelRepository : AceWindowsFuelRepository {
 
 private class NoOpAceWindowsFlagRepository : AceWindowsFlagRepository {
     override fun flagStream(): Flow<AceWindowsFlagData> = emptyFlow()
+}
+
+private class NoOpAceWindowsStatusRepository : AceWindowsStatusRepository {
+    override fun statusStream(): Flow<AceWindowsStatusData> = emptyFlow()
 }
