@@ -65,6 +65,25 @@ class OtherFeedbackDetailViewModelTest {
         }
 
     @Test
+    fun `メールアドレスの形式が不正なら送信せずエラーを表示する`() =
+        runTest {
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("本文")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("invalid-email")
+            viewModel.onSend()
+
+            assertTrue(viewModel.uiState.value.showEmailError)
+            assertFalse(viewModel.uiState.value.showMessageError)
+            assertFalse(viewModel.uiState.value.showNameError)
+            coVerify(exactly = 0) { repository.send(any()) }
+            confirmVerified(repository)
+            collectionJob.cancel()
+        }
+
+    @Test
     fun `入力したフィードバックを送信できる`() =
         runTest {
             coEvery { repository.send(any()) } returns Result.success(Unit)
