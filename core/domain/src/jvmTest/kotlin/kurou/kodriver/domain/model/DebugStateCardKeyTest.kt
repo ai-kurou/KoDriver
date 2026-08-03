@@ -5,10 +5,11 @@ import kotlin.test.assertEquals
 
 class DebugStateCardKeyTest {
     @Test
-    fun `SIMULATOR等13種類が定義されている`() {
+    fun `SIMULATOR等14種類が定義されている`() {
         assertEquals(
             listOf(
                 DebugStateCardKey.SIMULATOR,
+                DebugStateCardKey.VEHICLE_CLASS,
                 DebugStateCardKey.FLAG_INFO,
                 DebugStateCardKey.GAME_PHASE,
                 DebugStateCardKey.SESSION,

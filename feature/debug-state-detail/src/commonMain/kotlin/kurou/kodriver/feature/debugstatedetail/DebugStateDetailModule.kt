@@ -8,6 +8,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -22,13 +23,14 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsFlagRepository・SimulatorPreferencesRepository・
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
- * DebugStateCardOrderPreferencesRepository
+ * LmuWindowsVehicleClassRepository・DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
 val debugStateDetailModule =
     module {
         viewModel {
             DebugStateDetailViewModel(
+                get(),
                 get(),
                 get(),
                 get(),
@@ -53,6 +55,7 @@ val debugStateDetailModule =
         factory { ObserveAceWindowsFlagUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleClassUseCase(get()) }
         factory { ObserveDebugStateCardOrderUseCase(get()) }
         factory { ResolveDebugStateCardOrderUseCase() }
         factory { SaveDebugStateCardOrderUseCase(get()) }

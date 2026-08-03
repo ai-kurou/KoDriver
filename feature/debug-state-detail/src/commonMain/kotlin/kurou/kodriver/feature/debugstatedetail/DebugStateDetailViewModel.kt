@@ -17,6 +17,7 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -27,6 +28,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ResolveDebugStateCardOrderUseCase
@@ -37,6 +39,7 @@ private data class RaceState(
     val virtualEnergy: LmuWindowsVirtualEnergyData?,
     val vehicleApproach: LmuWindowsVehicleApproachData?,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData?,
+    val vehicleClass: LmuWindowsVehicleClassData?,
 )
 
 private data class OptionalTelemetry(
@@ -57,6 +60,7 @@ internal class DebugStateDetailViewModel(
     observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
     observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     observeLmuWindowsTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
+    observeLmuWindowsVehicleClass: ObserveLmuWindowsVehicleClassUseCase,
     observeCardOrder: ObserveDebugStateCardOrderUseCase,
     private val resolveCardOrder: ResolveDebugStateCardOrderUseCase,
     private val saveCardOrder: SaveDebugStateCardOrderUseCase,
@@ -71,9 +75,10 @@ internal class DebugStateDetailViewModel(
             observeLmuWindowsVirtualEnergy(),
             observeLmuWindowsVehicleApproach(),
             observeLmuWindowsTyreCarcassTemperature(),
-        ) { raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature ->
-            RaceState(raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature)
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null, null))
+            observeLmuWindowsVehicleClass(),
+        ) { raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature, vehicleClass ->
+            RaceState(raceFlags, virtualEnergy, vehicleApproach, tyreCarcassTemperature, vehicleClass)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, RaceState(null, null, null, null, null))
 
     // ドラッグ操作中はローカルの並び順を即座に UI へ反映し、DataStore への保存は非同期で行う。
     private val _localCardOrder = MutableStateFlow<List<DebugStateCardKey>?>(null)
@@ -113,6 +118,7 @@ internal class DebugStateDetailViewModel(
                 aceWindowsFlag = optionalTelemetry.aceWindowsFlag,
                 vehicleApproach = raceState.vehicleApproach,
                 tyreCarcassTemperature = raceState.tyreCarcassTemperature,
+                vehicleClass = raceState.vehicleClass,
                 cardOrder = cardOrder,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())

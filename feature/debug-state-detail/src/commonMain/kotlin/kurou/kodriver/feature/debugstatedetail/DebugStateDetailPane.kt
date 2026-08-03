@@ -65,6 +65,7 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_t
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_carcass_temperature_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_title
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_class_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_last_lap
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_none
@@ -77,6 +78,7 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_y
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_unknown
 import kurou.kodriver.feature.debugstatedetail.generated.resources.navigate_back
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import sh.calvin.reorderable.ReorderableItem
@@ -156,153 +158,79 @@ internal fun DebugStateDetailPaneContent(
     }
 }
 
+private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
+    mapOf(
+        DebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
+        DebugStateCardKey.VEHICLE_CLASS to Res.string.debug_state_vehicle_class_title,
+        DebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
+        DebugStateCardKey.GAME_PHASE to Res.string.debug_state_game_phase_title,
+        DebugStateCardKey.SESSION to Res.string.debug_state_session_title,
+        DebugStateCardKey.YELLOW_FLAG_STATE to Res.string.debug_state_yellow_flag_state_title,
+        DebugStateCardKey.CURRENT_LAP to Res.string.debug_state_current_lap_title,
+        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to Res.string.debug_state_side_by_side_title,
+        DebugStateCardKey.BEST_LAP to Res.string.debug_state_best_lap_title,
+        DebugStateCardKey.TYRE_TEMPERATURE to Res.string.debug_state_tyre_temperature_title,
+        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to Res.string.debug_state_tyre_carcass_temperature_title,
+        DebugStateCardKey.TYRE_WEAR to Res.string.debug_state_tyre_wear_title,
+        DebugStateCardKey.FUEL_CONSUMPTION to Res.string.debug_state_fuel_consumption_title,
+        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to Res.string.debug_state_pit_timing_title,
+    )
+
+private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugStateDetailUiState) -> Unit> =
+    mapOf(
+        DebugStateCardKey.SIMULATOR to { uiState -> SimulatorInfoContent(uiState.selectedSimulator) },
+        DebugStateCardKey.VEHICLE_CLASS to
+            { uiState -> VehicleClassContent(uiState.selectedSimulator, uiState.vehicleClass) },
+        DebugStateCardKey.FLAG_INFO to
+            { uiState -> FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag) },
+        DebugStateCardKey.GAME_PHASE to { uiState -> GamePhaseContent(uiState.raceFlags) },
+        DebugStateCardKey.SESSION to { uiState -> SessionContent(uiState.virtualEnergy) },
+        DebugStateCardKey.YELLOW_FLAG_STATE to { uiState -> YellowFlagStateContent(uiState.raceFlags) },
+        DebugStateCardKey.CURRENT_LAP to { uiState ->
+            CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+        },
+        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES to
+            { uiState -> SideBySideVehiclesContent(uiState.vehicleApproach) },
+        DebugStateCardKey.BEST_LAP to { uiState ->
+            BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
+        },
+        DebugStateCardKey.TYRE_TEMPERATURE to
+            { uiState -> TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
+        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE to
+            { uiState -> TyreCarcassTemperatureContent(uiState.selectedSimulator, uiState.tyreCarcassTemperature) },
+        DebugStateCardKey.TYRE_WEAR to
+            { uiState -> TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry) },
+        DebugStateCardKey.FUEL_CONSUMPTION to { uiState ->
+            FuelConsumptionContent(
+                uiState.selectedSimulator,
+                uiState.virtualEnergy,
+                uiState.lmuWindowsTelemetry,
+                uiState.gt7Ps5Telemetry,
+                uiState.aceWindowsFuel,
+            )
+        },
+        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS to { uiState ->
+            PitTimingRemainingLapsContent(
+                uiState.selectedSimulator,
+                uiState.virtualEnergy,
+                uiState.lmuWindowsTelemetry,
+            )
+        },
+    )
+
 @Composable
 private fun DebugStateCard(
     cardKey: DebugStateCardKey,
     uiState: DebugStateDetailUiState,
     modifier: Modifier = Modifier,
 ) {
-    when (cardKey) {
-        DebugStateCardKey.SIMULATOR -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_simulator_info_title),
-                modifier = modifier,
-                bottomContent = {
-                    SimulatorInfoContent(uiState.selectedSimulator)
-                },
-            )
-        }
-
-        DebugStateCardKey.FLAG_INFO -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_flag_info_title),
-                modifier = modifier,
-                bottomContent = {
-                    FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag)
-                },
-            )
-        }
-
-        DebugStateCardKey.GAME_PHASE -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_game_phase_title),
-                modifier = modifier,
-                bottomContent = {
-                    GamePhaseContent(uiState.raceFlags)
-                },
-            )
-        }
-
-        DebugStateCardKey.SESSION -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_session_title),
-                modifier = modifier,
-                bottomContent = {
-                    SessionContent(uiState.virtualEnergy)
-                },
-            )
-        }
-
-        DebugStateCardKey.YELLOW_FLAG_STATE -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_yellow_flag_state_title),
-                modifier = modifier,
-                bottomContent = {
-                    YellowFlagStateContent(uiState.raceFlags)
-                },
-            )
-        }
-
-        DebugStateCardKey.CURRENT_LAP -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_current_lap_title),
-                modifier = modifier,
-                bottomContent = {
-                    CurrentLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
-                },
-            )
-        }
-
-        DebugStateCardKey.SIDE_BY_SIDE_VEHICLES -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_side_by_side_title),
-                modifier = modifier,
-                bottomContent = {
-                    SideBySideVehiclesContent(uiState.vehicleApproach)
-                },
-            )
-        }
-
-        DebugStateCardKey.BEST_LAP -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_best_lap_title),
-                modifier = modifier,
-                bottomContent = {
-                    BestLapContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry, uiState.gt7Ps5Telemetry)
-                },
-            )
-        }
-
-        DebugStateCardKey.TYRE_TEMPERATURE -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_tyre_temperature_title),
-                modifier = modifier,
-                bottomContent = {
-                    TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
-                },
-            )
-        }
-
-        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_tyre_carcass_temperature_title),
-                modifier = modifier,
-                bottomContent = {
-                    TyreCarcassTemperatureContent(uiState.selectedSimulator, uiState.tyreCarcassTemperature)
-                },
-            )
-        }
-
-        DebugStateCardKey.TYRE_WEAR -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_tyre_wear_title),
-                modifier = modifier,
-                bottomContent = {
-                    TyreWearContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
-                },
-            )
-        }
-
-        DebugStateCardKey.FUEL_CONSUMPTION -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_fuel_consumption_title),
-                modifier = modifier,
-                bottomContent = {
-                    FuelConsumptionContent(
-                        uiState.selectedSimulator,
-                        uiState.virtualEnergy,
-                        uiState.lmuWindowsTelemetry,
-                        uiState.gt7Ps5Telemetry,
-                        uiState.aceWindowsFuel,
-                    )
-                },
-            )
-        }
-
-        DebugStateCardKey.PIT_TIMING_REMAINING_LAPS -> {
-            DetailPaneCard(
-                title = stringResource(Res.string.debug_state_pit_timing_title),
-                modifier = modifier,
-                bottomContent = {
-                    PitTimingRemainingLapsContent(
-                        uiState.selectedSimulator,
-                        uiState.virtualEnergy,
-                        uiState.lmuWindowsTelemetry,
-                    )
-                },
-            )
-        }
-    }
+    DetailPaneCard(
+        title = stringResource(debugStateCardTitles.getValue(cardKey)),
+        modifier = modifier,
+        bottomContent = {
+            debugStateCardContents.getValue(cardKey)(uiState)
+        },
+    )
 }
 
 @Composable

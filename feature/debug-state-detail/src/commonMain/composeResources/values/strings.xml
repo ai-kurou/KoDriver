@@ -76,4 +76,5 @@
     <string name="debug_state_pit_timing_title">ピットタイミング予想残り周回数</string>
     <string name="debug_state_pit_timing_virtual_energy_remaining_laps">バーチャルエナジー: 残り %1$s周</string>
     <string name="debug_state_pit_timing_tyre_wear_remaining_laps">タイヤ摩耗: 残り %1$s周</string>
+    <string name="debug_state_vehicle_class_title">車両クラス</string>
 </resources>
