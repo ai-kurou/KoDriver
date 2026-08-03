@@ -50,6 +50,7 @@ import kodriver.feature.otherlist.generated.resources.item_console_ip
 import kodriver.feature.otherlist.generated.resources.item_debug_state
 import kodriver.feature.otherlist.generated.resources.item_dynamic_color
 import kodriver.feature.otherlist.generated.resources.item_exit_confirmation
+import kodriver.feature.otherlist.generated.resources.item_feedback
 import kodriver.feature.otherlist.generated.resources.item_github_repository
 import kodriver.feature.otherlist.generated.resources.item_keep_screen_on
 import kodriver.feature.otherlist.generated.resources.item_license
@@ -100,6 +101,7 @@ private fun OtherListItemType.section(): OtherListSection =
 
         OtherListItemType.GitHubRepository,
         OtherListItemType.ReleasePage,
+        OtherListItemType.Feedback,
         OtherListItemType.License,
         -> OtherListSection.Information
 
@@ -119,6 +121,7 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
         OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
         OtherListItemType.ReleasePage -> stringResource(Res.string.item_release_page)
+        OtherListItemType.Feedback -> stringResource(Res.string.item_feedback)
         OtherListItemType.License -> stringResource(Res.string.item_license)
         OtherListItemType.DebugState -> stringResource(Res.string.item_debug_state)
     }
@@ -180,7 +183,9 @@ private fun OtherListItemLeadingIcon(
             }
         }
 
-        OtherListItemType.License -> {
+        OtherListItemType.Feedback,
+        OtherListItemType.License,
+        -> {
             Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
         }
 
@@ -196,6 +201,7 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         OtherListItemType.ServerIp,
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
+        OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,
         -> Icon(imageVector = Icons.Outlined.ChevronRight, contentDescription = null)
@@ -375,6 +381,7 @@ private fun OtherListItem(
                 OtherListItemType.Theme,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
+                OtherListItemType.Feedback,
                 OtherListItemType.License,
                 OtherListItemType.DebugState,
                 -> {
@@ -414,6 +421,7 @@ private fun OtherListItem(
                         OtherListItemType.Theme,
                         OtherListItemType.GitHubRepository,
                         OtherListItemType.ReleasePage,
+                        OtherListItemType.Feedback,
                         OtherListItemType.License,
                         OtherListItemType.DebugState,
                         -> {
