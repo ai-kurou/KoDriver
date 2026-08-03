@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class RedFlagVoiceType(
     val id: String,
 ) {

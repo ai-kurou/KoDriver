@@ -12,6 +12,7 @@ import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.ReadoutItemKeyMapSerializer
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
@@ -24,6 +25,7 @@ import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
  * 旗、車両接近、自己ベスト、温度・摩耗・ピットタイミングなどの重複読み上げを避けるため、
  * 前回までの入力と判定結果を保持する。
  */
+@Serializable
 data class LmuWindowsNarratorState(
     val vehicleApproachState: LmuWindowsVehicleApproachState = LmuWindowsVehicleApproachState(),
     val previousRaceFlags: LmuWindowsRaceFlagsData? = null,
@@ -47,6 +49,7 @@ data class LmuWindowsNarratorState(
  * 直近に完走した（給油・タイヤ交換なしの）ラップの消費量を、次回以降の推定基準として使う
  * 直近完走ラップ基準の方式。
  */
+@Serializable
 data class LmuWindowsPitTimingTrackingState(
     val session: Int? = null,
     val currentLap: Int = -1,
@@ -63,12 +66,14 @@ data class LmuWindowsPitTimingTrackingState(
 )
 
 /** LMU の車両接近読み上げで、左右それぞれの接近継続状態を保持する。 */
+@Serializable
 data class LmuWindowsVehicleApproachState(
     val left: Map<Int, LmuWindowsApproachState> = emptyMap(),
     val right: Map<Int, LmuWindowsApproachState> = emptyMap(),
 )
 
 /** 1 台の周辺車両に対する接近開始時刻と読み上げ済み状態。 */
+@Serializable
 data class LmuWindowsApproachState(
     val startedAtMs: Long,
     val announced: Boolean,
@@ -82,7 +87,9 @@ private data class ApproachSideStatesResult(
 )
 
 /** LMU 向け読み上げ判定で参照するユーザー設定と現在周回情報。 */
+@Serializable
 data class LmuWindowsNarratorReadoutSettings(
+    @Serializable(with = ReadoutItemKeyMapSerializer::class)
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
     val redFlagVoiceType: RedFlagVoiceType,

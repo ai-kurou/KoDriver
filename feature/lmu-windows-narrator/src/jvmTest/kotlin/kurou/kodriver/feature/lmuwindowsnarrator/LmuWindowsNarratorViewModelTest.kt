@@ -617,14 +617,14 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(456L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.MyBestLap.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousTelemetry":{"currentLapTimeMs":0""")
             assertContains(log.telemetryJson, """"bestLapTimeMs":60000""")
             assertContains(log.telemetryJson, """"telemetry":{"currentLapTimeMs":0""")
             assertContains(log.telemetryJson, """"bestLapTimeMs":59000""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":456""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- 接近アナウンス ---
@@ -797,13 +797,13 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(123_456L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.VehicleApproach.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousVehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
             assertContains(log.telemetryJson, """"vehicleApproach":{"sideBySideLeftVehicleIds":[1]""")
             assertContains(log.telemetryJson, """"lateralDistanceLeftMeters":3.0""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123456""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- 優先度 ---
@@ -1057,13 +1057,13 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(789L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.Flag.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousRaceFlags":{"gamePhase":"GREEN_FLAG"""")
             assertContains(log.telemetryJson, """"raceFlags":{"gamePhase":"GREEN_FLAG"""")
             assertContains(log.telemetryJson, """"playerFlag":"BLUE"""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":789""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     @Test
@@ -1139,12 +1139,12 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(987L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.VehicleDamage.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousVehicleDamage":{"overheating":false""")
             assertContains(log.telemetryJson, """"vehicleDamage":{"overheating":true""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":987""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- タイヤ温度 ---
@@ -1318,16 +1318,16 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(123L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(
                 log.telemetryJson,
                 """"input":{"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":95.0,"FRONT_RIGHT":20.0,""" +
                     """"REAR_LEFT":20.0,"REAR_RIGHT":20.0}},"raceFlags":{""",
             )
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
-            assertContains(log.telemetryJson, """"overheatState":{"raw":"""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"overheatState":{""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- タイヤ摩耗 ---
@@ -1436,12 +1436,12 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(123L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.TyreWear.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousTyreWear":null""")
             assertContains(log.telemetryJson, """"tyreWear":{"wheels":{"FRONT_LEFT":0.4""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- バーチャルエナジー残量 ---
@@ -1550,12 +1550,12 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(123L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"previousRemainingVirtualEnergy":null""")
             assertContains(log.telemetryJson, """"remainingVirtualEnergy":{"remainingRatio":0.4""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- ピットタイミング ---
@@ -1879,13 +1879,13 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(150_000L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.PitTiming.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(log.telemetryJson, """"telemetry":{"currentLapTimeMs":0""")
             assertContains(log.telemetryJson, """"virtualEnergy":{"remainingRatio":0.05""")
             assertContains(log.telemetryJson, """"tyreWear":{"wheels":{"FRONT_LEFT":1.0""")
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":150000""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 
     // --- タイヤ低温警告 ---
@@ -2004,16 +2004,16 @@ class LmuWindowsNarratorViewModelTest {
             assertEquals(123L, log.createdAt)
             assertEquals(Simulator.LmuWindows, log.simulator)
             assertEquals(ReadoutItemKey.LmuWindows.TyreTemperature.Root, log.readoutItemKey)
-            assertContains(log.telemetryJson, """"state":{"raw":"""")
+            assertContains(log.telemetryJson, """"state":{""")
             assertContains(
                 log.telemetryJson,
                 """"input":{"tyreCarcassTemperature":{"wheels":{"FRONT_LEFT":55.0,"FRONT_RIGHT":20.0,""" +
                     """"REAR_LEFT":20.0,"REAR_RIGHT":20.0}},"raceFlags":{""",
             )
-            assertContains(log.telemetryJson, """"settings":{"raw":"""")
+            assertContains(log.telemetryJson, """"settings":{""")
             assertContains(log.telemetryJson, """"observedAtMs":123""")
-            assertContains(log.telemetryJson, """"overheatState":{"raw":"""")
-            assertContains(log.telemetryJson, """"finalState":{"raw":"""")
+            assertContains(log.telemetryJson, """"overheatState":{""")
+            assertContains(log.telemetryJson, """"finalState":{""")
         }
 }
 
