@@ -12,7 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kotlin.test.BeforeTest
@@ -52,7 +52,7 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はStartReadoutがtrue・Sustainedがfalseのデフォルトを返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsVehicleApproachPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(repo)
 
@@ -68,7 +68,7 @@ class ObserveLmuWindowsVehicleApproachEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsVehicleApproachPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleApproachEnabledStatesUseCase(repo)
 

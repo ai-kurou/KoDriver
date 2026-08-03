@@ -5,7 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -21,7 +21,7 @@ class DisconnectLmuWindowsUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのdisconnectを呼ぶ`() =
-        runBlocking {
+        runTest {
             coEvery { repo.disconnect() } returns Unit
             val useCase = DisconnectLmuWindowsUseCase(repo)
 

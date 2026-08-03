@@ -12,7 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kotlin.test.BeforeTest
@@ -49,7 +49,7 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はフラグ4種のデフォルトtrueを返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsFlagPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 
@@ -68,7 +68,7 @@ class ObserveLmuWindowsFlagEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsFlagPreferencesRepository(repository)
             val useCase = ObserveLmuWindowsFlagEnabledStatesUseCase(repo)
 

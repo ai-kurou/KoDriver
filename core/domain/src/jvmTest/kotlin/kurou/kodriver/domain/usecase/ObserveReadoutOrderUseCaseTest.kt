@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kotlin.test.BeforeTest
@@ -72,7 +72,7 @@ class ObserveReadoutOrderUseCaseTest {
 
     @Test
     fun `初期値は空リスト・保存済みの順序を返す・シミュレーターごとに独立している`() =
-        runBlocking {
+        runTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutOrderUseCase(repo)
 

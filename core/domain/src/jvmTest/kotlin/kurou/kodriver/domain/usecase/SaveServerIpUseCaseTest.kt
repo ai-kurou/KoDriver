@@ -6,7 +6,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -22,7 +22,7 @@ class SaveServerIpUseCaseTest {
 
     @Test
     fun `IPアドレスを保存できる`() =
-        runBlocking {
+        runTest {
             SaveServerIpUseCase(repository)("192.168.1.10")
 
             coVerify(exactly = 1) { repository.saveServerIp("192.168.1.10") }
@@ -31,7 +31,7 @@ class SaveServerIpUseCaseTest {
 
     @Test
     fun `上書き保存で最新のIPアドレスが返る`() =
-        runBlocking {
+        runTest {
             val useCase = SaveServerIpUseCase(repository)
 
             useCase("192.168.1.10")

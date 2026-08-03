@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class ObserveGt7Ps5RemainingFuelThresholdPercentageUseCaseTest {
 
     @Test
     fun `リポジトリの燃料残量閾値を返す`() =
-        runBlocking {
+        runTest {
             val threshold = MutableStateFlow(30)
             every { repository.observeThresholdPercentage() } returns threshold
             val useCase = ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(repository)

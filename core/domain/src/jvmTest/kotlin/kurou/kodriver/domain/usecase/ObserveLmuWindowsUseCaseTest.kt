@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -25,7 +25,7 @@ class ObserveLmuWindowsUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのtelemetryStreamを返す`() =
-        runBlocking {
+        runTest {
             val expected = fakeLmuWindowsTelemetryData(speedX = 10.0)
             every { repo.telemetryStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsUseCase(repo)
@@ -39,7 +39,7 @@ class ObserveLmuWindowsUseCaseTest {
 
     @Test
     fun `invokeは空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.telemetryStream() } returns flowOf()
             val useCase = ObserveLmuWindowsUseCase(repo)
 
@@ -52,7 +52,7 @@ class ObserveLmuWindowsUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = fakeLmuWindowsTelemetryData(speedX = 1.0)
             val data2 = fakeLmuWindowsTelemetryData(speedX = 2.0)
             val data3 = fakeLmuWindowsTelemetryData(speedX = 3.0)

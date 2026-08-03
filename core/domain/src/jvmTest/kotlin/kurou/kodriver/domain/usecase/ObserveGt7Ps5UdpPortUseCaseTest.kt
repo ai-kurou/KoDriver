@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,7 +27,7 @@ class ObserveGt7Ps5UdpPortUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
-        runBlocking {
+        runTest {
             val state = MutableStateFlow(33740)
             every { repo.port() } returns state
             listOf(33740, 33741).forEach { port ->

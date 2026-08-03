@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -29,7 +29,7 @@ class ObserveAceWindowsStatusUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの statusStream を返す`() =
-        runBlocking {
+        runTest {
             val expected = AceWindowsStatusData(status = AceWindowsStatusType.LIVE)
             every { repo.statusStream() } returns flowOf(expected)
             val useCase = ObserveAceWindowsStatusUseCase(repo)
@@ -43,7 +43,7 @@ class ObserveAceWindowsStatusUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.statusStream() } returns flowOf()
             val useCase = ObserveAceWindowsStatusUseCase(repo)
 
@@ -56,7 +56,7 @@ class ObserveAceWindowsStatusUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = AceWindowsStatusData(status = AceWindowsStatusType.OFF)
             val data2 = AceWindowsStatusData(status = AceWindowsStatusType.PAUSE)
             val data3 = AceWindowsStatusData(status = AceWindowsStatusType.LIVE)

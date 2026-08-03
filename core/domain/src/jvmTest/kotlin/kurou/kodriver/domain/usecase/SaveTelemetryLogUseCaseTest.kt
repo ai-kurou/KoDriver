@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.TelemetryLogRepository
@@ -22,7 +22,7 @@ class SaveTelemetryLogUseCaseTest {
 
     @Test
     fun `ログを保存する`() =
-        runBlocking {
+        runTest {
             SaveTelemetryLogUseCase(repository)(
                 createdAt = 1000L,
                 simulator = Simulator.Gt7Ps5,

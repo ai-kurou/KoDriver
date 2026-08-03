@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
 
     @Test
     fun `バーチャルエナジー予想残り周回数を監視できる`() =
-        runBlocking {
+        runTest {
             every { repository.observeVirtualEnergyLaps() } returns MutableStateFlow(5)
             val useCase = ObserveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)
 

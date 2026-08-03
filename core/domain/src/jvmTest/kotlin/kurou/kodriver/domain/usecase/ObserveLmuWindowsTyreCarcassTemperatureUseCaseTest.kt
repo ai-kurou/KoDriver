@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
@@ -29,7 +29,7 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの tyreCarcassTemperatureStream を返す`() =
-        runBlocking {
+        runTest {
             val expected =
                 LmuWindowsTyreCarcassTemperatureData(
                     wheels = mapOf(WheelIndex.FRONT_LEFT to 350.0),
@@ -46,7 +46,7 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.tyreCarcassTemperatureStream() } returns flowOf()
             val useCase = ObserveLmuWindowsTyreCarcassTemperatureUseCase(repo)
 
@@ -59,7 +59,7 @@ class ObserveLmuWindowsTyreCarcassTemperatureUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 330.0))
             val data2 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 340.0))
             val data3 = LmuWindowsTyreCarcassTemperatureData(wheels = mapOf(WheelIndex.FRONT_LEFT to 350.0))

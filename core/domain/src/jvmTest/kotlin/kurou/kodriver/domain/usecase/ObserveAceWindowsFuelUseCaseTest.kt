@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kotlin.test.BeforeTest
@@ -28,7 +28,7 @@ class ObserveAceWindowsFuelUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの fuelStream を返す`() =
-        runBlocking {
+        runTest {
             val expected = AceWindowsFuelData(remainingPercent = 50.0)
             every { repo.fuelStream() } returns flowOf(expected)
             val useCase = ObserveAceWindowsFuelUseCase(repo)
@@ -42,7 +42,7 @@ class ObserveAceWindowsFuelUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.fuelStream() } returns flowOf()
             val useCase = ObserveAceWindowsFuelUseCase(repo)
 
@@ -55,7 +55,7 @@ class ObserveAceWindowsFuelUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = AceWindowsFuelData(remainingPercent = 80.0)
             val data2 = AceWindowsFuelData(remainingPercent = 50.0)
             val data3 = AceWindowsFuelData(remainingPercent = 20.0)

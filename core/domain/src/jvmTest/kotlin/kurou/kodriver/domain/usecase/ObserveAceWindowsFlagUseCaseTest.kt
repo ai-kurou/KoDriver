@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
@@ -29,7 +29,7 @@ class ObserveAceWindowsFlagUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの flagStream を返す`() =
-        runBlocking {
+        runTest {
             val expected = AceWindowsFlagData(flag = AceWindowsFlagType.BLUE_FLAG)
             every { repo.flagStream() } returns flowOf(expected)
             val useCase = ObserveAceWindowsFlagUseCase(repo)
@@ -43,7 +43,7 @@ class ObserveAceWindowsFlagUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.flagStream() } returns flowOf()
             val useCase = ObserveAceWindowsFlagUseCase(repo)
 
@@ -56,7 +56,7 @@ class ObserveAceWindowsFlagUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = AceWindowsFlagData(flag = AceWindowsFlagType.GREEN_FLAG)
             val data2 = AceWindowsFlagData(flag = AceWindowsFlagType.YELLOW_FLAG)
             val data3 = AceWindowsFlagData(flag = AceWindowsFlagType.CHECKERED_FLAG)

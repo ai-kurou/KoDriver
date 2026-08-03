@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kotlin.test.BeforeTest
@@ -29,7 +29,7 @@ class ObserveSelectedSimulatorUseCaseTest {
 
     @Test
     fun `初期値がnullのときnullを返し・保存済みの値をそのまま返す`() =
-        runBlocking {
+        runTest {
             val state = MutableStateFlow<Simulator?>(null)
             every { repo.selectedSimulator() } returns state
             listOf(Simulator.LmuWindows).forEach { simulator ->

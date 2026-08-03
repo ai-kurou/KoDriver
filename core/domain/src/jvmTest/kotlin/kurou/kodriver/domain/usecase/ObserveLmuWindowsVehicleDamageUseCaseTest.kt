@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kotlin.test.BeforeTest
@@ -28,7 +28,7 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの vehicleDamageStream を返す`() =
-        runBlocking {
+        runTest {
             val expected =
                 LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 12.3)
             every { repo.vehicleDamageStream() } returns flowOf(expected)
@@ -43,7 +43,7 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.vehicleDamageStream() } returns flowOf()
             val useCase = ObserveLmuWindowsVehicleDamageUseCase(repo)
 
@@ -56,7 +56,7 @@ class ObserveLmuWindowsVehicleDamageUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 =
                 LmuWindowsVehicleDamageData(overheating = false, partDetached = false, lastImpactMagnitude = 0.0)
             val data2 = LmuWindowsVehicleDamageData(overheating = true, partDetached = false, lastImpactMagnitude = 5.0)

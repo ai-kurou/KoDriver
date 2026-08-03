@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveLmuWindowsTyreTemperatureHighThresholdUseCaseTest {
 
     @Test
     fun `任意の値を保存できる`() =
-        runBlocking {
+        runTest {
             val useCase = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository)
 
             useCase(100)

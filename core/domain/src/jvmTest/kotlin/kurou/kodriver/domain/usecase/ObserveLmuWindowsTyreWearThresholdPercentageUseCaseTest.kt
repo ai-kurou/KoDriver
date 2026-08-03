@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,7 +27,7 @@ class ObserveLmuWindowsTyreWearThresholdPercentageUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
-        runBlocking {
+        runTest {
             val state = MutableStateFlow(50)
             every { repo.observeThresholdPercentage() } returns state
             coEvery { repo.saveThresholdPercentage(30) } answers { state.update { 30 } }

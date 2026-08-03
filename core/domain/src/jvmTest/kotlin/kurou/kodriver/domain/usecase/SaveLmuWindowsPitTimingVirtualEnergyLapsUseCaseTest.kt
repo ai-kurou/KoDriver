@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveLmuWindowsPitTimingVirtualEnergyLapsUseCaseTest {
 
     @Test
     fun `バーチャルエナジー予想残り周回数を保存できる`() =
-        runBlocking {
+        runTest {
             SaveLmuWindowsPitTimingVirtualEnergyLapsUseCase(repository)(1)
 
             coVerify(exactly = 1) { repository.saveVirtualEnergyLaps(1) }

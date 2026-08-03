@@ -6,7 +6,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kotlin.test.BeforeTest
@@ -23,7 +23,7 @@ class SaveLmuWindowsVehicleDamageEnabledStateUseCaseTest {
 
     @Test
     fun `保存するとFlowに値が反映され・上書きで更新される`() =
-        runBlocking {
+        runTest {
             val useCase = SaveLmuWindowsVehicleDamageEnabledStateUseCase(repository)
 
             useCase(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)

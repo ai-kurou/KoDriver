@@ -12,7 +12,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -44,7 +43,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
 
     @Test
     fun `IP未設定時は未設定状態を返す`() =
-        runBlocking {
+        runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow(null)
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(Simulator.LmuWindows)
             val useCase = createUseCase()
@@ -63,7 +62,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
 
     @Test
     fun `接続成功時は接続済み状態とサーバーバージョンを返す`() =
-        runBlocking {
+        runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("1.0.0")
@@ -86,7 +85,7 @@ class ObserveKoDriverServerConnectionUseCaseTest {
 
     @Test
     fun `サーバーバージョンがアプリバージョンと異なる場合は不一致を返す`() =
-        runBlocking {
+        runTest {
             every { serverIpRepository.serverIp() } returns MutableStateFlow("192.168.1.1")
             every { simulatorRepository.selectedSimulator() } returns MutableStateFlow(null)
             coEvery { versionRepository.fetchVersion("192.168.1.1") } returns Result.success("2.0.0")

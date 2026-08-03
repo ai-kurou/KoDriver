@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kotlin.test.BeforeTest
@@ -28,7 +28,7 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
 
     @Test
     fun `永続化された値がない場合は全フラグがデフォルトで有効になる`() =
-        runBlocking {
+        runTest {
             every { repository.observeFlagEnabledStates() } returns flowOf(emptyMap<ReadoutItemKey, Boolean>())
 
             val result: Map<ReadoutItemKey, Boolean> = useCase().first()
@@ -53,7 +53,7 @@ class ObserveAceWindowsFlagEnabledStatesUseCaseTest {
 
     @Test
     fun `永続化された値がデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             every { repository.observeFlagEnabledStates() } returns
                 flowOf(
                     mapOf(ReadoutItemKey.AceWindows.Flag.BlueFlag to false),

@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveDebugStateCardOrderUseCaseTest {
 
     @Test
     fun `保存すると上書きで更新される`() =
-        runBlocking {
+        runTest {
             val useCase = SaveDebugStateCardOrderUseCase(repository)
             val firstOrder = listOf(DebugStateCardKey.SESSION, DebugStateCardKey.SIMULATOR)
             val secondOrder = listOf(DebugStateCardKey.SIMULATOR, DebugStateCardKey.SESSION)

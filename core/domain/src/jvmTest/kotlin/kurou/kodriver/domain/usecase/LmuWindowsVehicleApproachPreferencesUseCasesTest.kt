@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
@@ -52,7 +52,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `observeSkipFirstLap はリポジトリの設定を返す`() =
-        runBlocking {
+        runTest {
             val repository =
                 createLmuWindowsVehicleApproachPreferencesRepository(
                     repository,
@@ -67,7 +67,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `saveSkipFirstLap はスキップ設定を保存する`() =
-        runBlocking {
+        runTest {
             val repository = createLmuWindowsVehicleApproachPreferencesRepository(repository)
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
@@ -81,7 +81,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `observeStartReadoutType はリポジトリの設定を返す`() =
-        runBlocking {
+        runTest {
             val repository =
                 createLmuWindowsVehicleApproachPreferencesRepository(
                     repository,
@@ -99,7 +99,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `saveStartReadoutType は接近開始時読み上げ種別を保存する`() =
-        runBlocking {
+        runTest {
             val repository = createLmuWindowsVehicleApproachPreferencesRepository(repository)
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 
@@ -118,7 +118,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `observeSustainedReadoutType はリポジトリの設定を返す`() =
-        runBlocking {
+        runTest {
             val repository =
                 createLmuWindowsVehicleApproachPreferencesRepository(
                     repository,
@@ -136,7 +136,7 @@ class LmuWindowsVehicleApproachPreferencesUseCasesTest {
 
     @Test
     fun `saveSustainedReadoutType は接近継続時読み上げ種別を保存する`() =
-        runBlocking {
+        runTest {
             val repository = createLmuWindowsVehicleApproachPreferencesRepository(repository)
             val useCases = LmuWindowsVehicleApproachPreferencesUseCases(repository)
 

@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kotlin.test.BeforeTest
@@ -38,7 +38,7 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのvehicleApproachStreamを返す`() =
-        runBlocking {
+        runTest {
             val expected = fakeVehicleApproachData(isSideBySideLeft = true)
             every { repo.vehicleApproachStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
@@ -52,7 +52,7 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
 
     @Test
     fun `invokeは空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.vehicleApproachStream() } returns flowOf()
             val useCase = ObserveLmuWindowsVehicleApproachUseCase(repo)
 
@@ -65,7 +65,7 @@ class ObserveLmuWindowsVehicleApproachUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = fakeVehicleApproachData(isSideBySideLeft = false, isSideBySideRight = false)
             val data2 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = false)
             val data3 = fakeVehicleApproachData(isSideBySideLeft = true, isSideBySideRight = true)

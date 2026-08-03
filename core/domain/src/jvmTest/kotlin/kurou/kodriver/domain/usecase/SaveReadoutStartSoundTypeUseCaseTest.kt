@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveReadoutStartSoundTypeUseCaseTest {
 
     @Test
     fun `読み上げ開始音種別を保存できる`() =
-        runBlocking {
+        runTest {
             SaveReadoutStartSoundTypeUseCase(repository)(ReadoutStartSoundType.FORMULA_RADIO)
 
             coVerify(exactly = 1) { repository.saveType(ReadoutStartSoundType.FORMULA_RADIO) }

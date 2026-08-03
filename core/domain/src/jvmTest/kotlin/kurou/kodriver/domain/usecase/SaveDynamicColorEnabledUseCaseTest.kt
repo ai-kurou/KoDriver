@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveDynamicColorEnabledUseCaseTest {
 
     @Test
     fun `Repositoryへ保存する`() =
-        runBlocking {
+        runTest {
             SaveDynamicColorEnabledUseCase(repository)(true)
 
             coVerify(exactly = 1) { repository.saveDynamicColorEnabled(true) }

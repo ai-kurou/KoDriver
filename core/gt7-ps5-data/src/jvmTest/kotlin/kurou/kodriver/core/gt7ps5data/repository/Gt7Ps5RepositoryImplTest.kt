@@ -2,7 +2,7 @@ package kurou.kodriver.core.gt7ps5data.repository
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.gt7ps5data.mapper.Gt7Ps5Mapper
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -27,7 +27,7 @@ class Gt7Ps5RepositoryImplTest {
 
     @Test
     fun `telemetryStreamはパケットをGt7Ps5TelemetryDataに変換して流す`() =
-        runBlocking {
+        runTest {
             val packet = makePacket(lapCount = 3, lapsInRace = 10)
             val source = FakeGt7Ps5PacketSource(flowOf(packet))
             val repo = Gt7Ps5RepositoryImpl(source)
@@ -39,7 +39,7 @@ class Gt7Ps5RepositoryImplTest {
 
     @Test
     fun `telemetryStreamは複数パケットを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val p1 = makePacket(lapCount = 1)
             val p2 = makePacket(lapCount = 2)
             val source = FakeGt7Ps5PacketSource(flowOf(p1, p2))
@@ -52,7 +52,7 @@ class Gt7Ps5RepositoryImplTest {
 
     @Test
     fun `最終パケット受信からタイムアウト未満であれば接続中と判定する`() =
-        runBlocking {
+        runTest {
             val now = 10_000L
             val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = now - 4_999L)
             val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { now })
@@ -62,7 +62,7 @@ class Gt7Ps5RepositoryImplTest {
 
     @Test
     fun `最終パケット受信からタイムアウト以上経過していれば未接続と判定する`() =
-        runBlocking {
+        runTest {
             val now = 10_000L
             val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = now - 5_000L)
             val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { now })
@@ -72,7 +72,7 @@ class Gt7Ps5RepositoryImplTest {
 
     @Test
     fun `パケットを一度も受信していなければ未接続と判定する`() =
-        runBlocking {
+        runTest {
             val source = FakeGt7Ps5PacketSource(flowOf(), lastReceivedAt = 0L)
             val repo = Gt7Ps5RepositoryImpl(source, currentTimeMillis = { 10_000L })
 

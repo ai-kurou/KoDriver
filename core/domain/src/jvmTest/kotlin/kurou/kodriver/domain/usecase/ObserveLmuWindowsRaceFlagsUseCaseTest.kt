@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.PrimaryFlag
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
@@ -28,7 +28,7 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
 
     @Test
     fun `invokeはリポジトリのflagStreamを返す`() =
-        runBlocking {
+        runTest {
             val expected =
                 fakeRaceFlagsData(
                     gamePhase = SessionPhase.GREEN_FLAG,
@@ -47,7 +47,7 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
 
     @Test
     fun `invokeは空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.flagStream() } returns flowOf()
             val useCase = ObserveLmuWindowsRaceFlagsUseCase(repo)
 
@@ -60,7 +60,7 @@ class ObserveLmuWindowsRaceFlagsUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = fakeRaceFlagsData(gamePhase = SessionPhase.WARM_UP)
             val data2 = fakeRaceFlagsData(gamePhase = SessionPhase.GRID_WALK)
             val data3 = fakeRaceFlagsData(gamePhase = SessionPhase.FORMATION)

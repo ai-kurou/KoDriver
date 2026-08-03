@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveLmuWindowsRedFlagVoiceTypeUseCaseTest {
 
     @Test
     fun `赤旗音声タイプを保存する`() =
-        runBlocking {
+        runTest {
             SaveLmuWindowsRedFlagVoiceTypeUseCase(repository)(RedFlagVoiceType.RED_FLAG)
 
             coVerify(exactly = 1) { repository.saveVoiceType(RedFlagVoiceType.RED_FLAG) }
