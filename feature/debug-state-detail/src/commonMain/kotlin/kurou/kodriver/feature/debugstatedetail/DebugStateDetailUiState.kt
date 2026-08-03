@@ -8,12 +8,14 @@ import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 
 internal val defaultDebugStateCardOrder =
     listOf(
         DebugStateCardKey.SIMULATOR,
+        DebugStateCardKey.VEHICLE_CLASS,
         DebugStateCardKey.FLAG_INFO,
         DebugStateCardKey.GAME_PHASE,
         DebugStateCardKey.SESSION,
@@ -38,5 +40,6 @@ internal data class DebugStateDetailUiState(
     val aceWindowsFlag: AceWindowsFlagData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
+    val vehicleClass: LmuWindowsVehicleClassData? = null,
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )

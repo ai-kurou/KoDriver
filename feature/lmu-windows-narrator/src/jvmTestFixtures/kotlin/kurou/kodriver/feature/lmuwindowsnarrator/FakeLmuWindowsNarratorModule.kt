@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -25,6 +26,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
@@ -51,6 +53,7 @@ val fakeLmuWindowsNarratorModule =
         single<LmuWindowsTyreWearPreferencesRepository> { FakeLmuWindowsTyreWearPreferencesRepository() }
         single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
         single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
+        single<LmuWindowsVehicleClassRepository> { FakeLmuWindowsVehicleClassRepository() }
     }
 
 class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
@@ -192,4 +195,8 @@ class FakeLmuWindowsMyBestLapPreferencesRepository : LmuWindowsMyBestLapPreferen
 
 class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
+}
+
+class FakeLmuWindowsVehicleClassRepository : LmuWindowsVehicleClassRepository {
+    override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> = emptyFlow()
 }

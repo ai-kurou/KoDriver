@@ -22,6 +22,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.PrimaryFlag
@@ -113,6 +114,8 @@ private val sampleTyreCarcassTemperature =
             ),
     )
 
+private val sampleVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar")
+
 private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
@@ -152,6 +155,7 @@ class DebugStateDetailPaneScreenshotTest {
             gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
             vehicleApproach = sampleVehicleApproach,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
+            vehicleClass = sampleVehicleClass,
         )
 
     @Test

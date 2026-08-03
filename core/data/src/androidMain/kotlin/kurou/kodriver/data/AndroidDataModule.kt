@@ -33,6 +33,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
@@ -100,6 +101,9 @@ fun androidDataModule(context: Context) =
         }
         single<LmuWindowsTyreCarcassTemperatureRepository> {
             WebSocketLmuWindowsTyreCarcassTemperatureRepository(serverIpRepository = get(), client = get())
+        }
+        single<LmuWindowsVehicleClassRepository> {
+            WebSocketLmuWindowsVehicleClassRepository(serverIpRepository = get(), client = get())
         }
         single<LmuWindowsTyreWearRepository> {
             WebSocketLmuWindowsTyreWearRepository(serverIpRepository = get(), client = get())
