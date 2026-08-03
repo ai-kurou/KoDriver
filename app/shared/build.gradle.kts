@@ -65,6 +65,7 @@ kotlin {
             implementation(projects.feature.debugStateDetail)
             implementation(projects.feature.otherLicenseDetail)
             implementation(projects.feature.otherList)
+            implementation(projects.feature.otherFeedbackDetail)
             implementation(projects.feature.otherServerIpDetail)
             implementation(projects.feature.otherConsoleIpDetail)
             implementation(projects.feature.otherReadoutStartSoundDetail)

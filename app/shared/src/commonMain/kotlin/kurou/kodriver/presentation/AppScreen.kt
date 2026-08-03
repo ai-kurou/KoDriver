@@ -75,6 +75,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicleapproachdetail.LmuWindows
 import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.LmuWindowsReadoutVehicleDamageDetailPane
 import kurou.kodriver.feature.main.AppScreenViewModel
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPane
+import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPane
 import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListViewModel
@@ -205,6 +206,10 @@ private fun DefaultOtherContent(
                     OtherLicenseDetailPane(canNavigateBack, onBack)
                 }
 
+                OtherListItemType.Feedback -> {
+                    OtherFeedbackDetailPane(canNavigateBack, onBack)
+                }
+
                 OtherListItemType.DebugState -> {
                     DebugStateDetailPane(canNavigateBack, onBack)
                 }
@@ -214,7 +219,6 @@ private fun DefaultOtherContent(
                 OtherListItemType.ExitConfirmation,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
-                OtherListItemType.Feedback,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 -> {}

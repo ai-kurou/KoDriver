@@ -23,6 +23,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.lmuWindowsRe
 import kurou.kodriver.feature.main.mainModule
 import kurou.kodriver.feature.main.mainPlatformModule
 import kurou.kodriver.feature.otherconsoleipdetail.otherConsoleIpDetailModule
+import kurou.kodriver.feature.otherfeedbackdetail.otherFeedbackDetailModule
 import kurou.kodriver.feature.otherlist.otherListModule
 import kurou.kodriver.feature.otherreadoutstartsounddetail.otherReadoutStartSoundDetailModule
 import kurou.kodriver.feature.otherserveripdetail.otherServerIpDetailModule
@@ -54,6 +55,7 @@ val featureModules: List<Module> =
         gt7Ps5NarratorModule,
         aceWindowsNarratorModule,
         otherListModule,
+        otherFeedbackDetailModule,
         otherReadoutStartSoundDetailModule,
         otherThemeDetailModule,
         otherServerIpDetailModule,

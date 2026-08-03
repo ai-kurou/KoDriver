@@ -1,9 +1,26 @@
 plugins {
-    id("feature-compose")
+    id("feature-compose-screenshot")
 }
 
 kotlin {
     android {
         namespace = "kurou.kodriver.feature.otherfeedbackdetail"
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.core.designsystem)
+            implementation(projects.core.domain)
+        }
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+        }
+    }
+}
+
+compose.resources {
+    packageOfResClass = "kodriver.feature.otherfeedbackdetail.generated.resources"
 }
