@@ -19,6 +19,7 @@ class LmuWindowsMapperTest {
         const val OFF_SCORING_BEST_LAP_TIME = 144
         const val OFF_SCORING_LAST_LAP_TIME = 168
         const val OFF_SCORING_IS_PLAYER = 196
+        const val OFF_SCORING_VEHICLE_CLASS = 200
         const val OFF_SCORING_LAP_START_ET = 256
         const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
         const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
@@ -297,5 +298,46 @@ class LmuWindowsMapperTest {
         WheelIndex.entries.forEachIndexed { i, wheel ->
             assertEquals(345.0 + i * 10.0, result[wheel]!!, 1e-9)
         }
+    }
+
+    @Test
+    fun `findPlayerVehicleScoringBaseはmIsPlayerが立っている車両のオフセットを返す`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 1)
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 2)
+        buf.put(scoringBase + OFF_SCORING_IS_PLAYER, 1)
+
+        assertEquals(scoringBase, LmuWindowsMapper.findPlayerVehicleScoringBase(buf))
+    }
+
+    @Test
+    fun `findPlayerVehicleScoringBaseはmIsPlayerな車両が存在しない場合nullを返す`() {
+        val buf = emptyBuffer()
+        buf.putInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES, 2)
+
+        assertEquals(null, LmuWindowsMapper.findPlayerVehicleScoringBase(buf))
+    }
+
+    @Test
+    fun `readVehicleClassNameはmVehicleClassをnull終端でトリムした文字列で返す`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        "Hypercar".toByteArray(Charsets.US_ASCII).forEachIndexed { i, byte ->
+            buf.put(scoringBase + OFF_SCORING_VEHICLE_CLASS + i, byte)
+        }
+
+        val result = LmuWindowsMapper.readVehicleClassName(buf, scoringBase)
+
+        assertEquals("Hypercar", result)
+    }
+
+    @Test
+    fun `readVehicleClassNameはnullバイトのみの場合は空文字列を返す`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+
+        val result = LmuWindowsMapper.readVehicleClassName(buf, scoringBase)
+
+        assertEquals("", result)
     }
 }

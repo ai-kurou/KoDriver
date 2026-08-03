@@ -37,6 +37,7 @@ import kotlin.math.roundToLong
  *   mBestLapTime               : +144
  *   mLastLapTime               : +168
  *   mIsPlayer                  : +196
+ *   mVehicleClass (char[32])   : +200 （人間可読なクラス名。例: "Hypercar", "LMP2", "GTE", "LMGT3"）
  *   mLapStartET                : +256
  *   mBestLapSector1            : +576
  *   mBestLapSector2            : +580
@@ -84,6 +85,8 @@ internal object LmuWindowsMapper {
     private const val OFF_SCORING_BEST_LAP_TIME = 144
     private const val OFF_SCORING_LAST_LAP_TIME = 168
     private const val OFF_SCORING_IS_PLAYER = 196
+    private const val OFF_SCORING_VEHICLE_CLASS = 200
+    private const val VEHICLE_CLASS_LENGTH = 32
     private const val OFF_SCORING_LAP_START_ET = 256
     private const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
     private const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
@@ -209,7 +212,20 @@ internal object LmuWindowsMapper {
             buffer.getDouble(offset + OFF_WHEEL_WEAR)
         }
 
-    private fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
+    /** Scoring セグメントの mVehicleClass (char[32]) をトリムした文字列として返す。 */
+    internal fun readVehicleClassName(
+        buffer: ByteBuffer,
+        vehicleScoringBase: Int,
+    ): String {
+        val bytes = ByteArray(VEHICLE_CLASS_LENGTH)
+        for (i in 0 until VEHICLE_CLASS_LENGTH) {
+            bytes[i] = buffer.get(vehicleScoringBase + OFF_SCORING_VEHICLE_CLASS + i)
+        }
+        val nullIndex = bytes.indexOf(0).let { if (it < 0) bytes.size else it }
+        return String(bytes, 0, nullIndex, Charsets.US_ASCII)
+    }
+
+    internal fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)
         for (index in 0 until vehicleCount) {
             val vehicleBase = VEHICLE_SCORING_BASE + index * VEHICLE_SCORING_STRIDE
