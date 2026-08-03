@@ -85,6 +85,13 @@
   **課題**: ACE だけ `isLive`（`AceWindowsStatusType.LIVE`）でセッション状態をゲートして、メニュー・リプレイ・ポーズ中は読み上げない仕様になっている（#888）。LMU / GT7 には同等のゲートがない。意図的な差なのか、単に ACE から先に入れただけなのかがコードから読み取れない。
   **改善案**: LMU / GT7 にも同等のセッション状態ゲートが必要かを判断し、必要なら実装、不要ならその理由をコメントか CLAUDE.md に残す。
 
+- **対象**: `core:lmu-windows-data`（`LmuWindowsMapper.kt`）, `feature:lmu-windows-readout-tyre-temperature-detail`
+  **課題**: LMU のタイヤ温度アナウンス（高温閾値）は車両クラスによらず単一の閾値設定になっている。しかしクラスごとにタイヤ温度の実運用レンジが異なり、例えば GT3 は90℃に届かないままレースを終えることがある一方、GTE は90℃を超えた状態でレースを走り切ることがあり、同じ閾値では「GTEでは正常域なのに警告される／GT3では警告すべき水準に届く前に見逃す」というズレが起きうる（ユーザー報告、実測は未確認）。現在の LMU 車両クラスは Hypercar・LMP2・LMP3・GTE・LMGT3 の5クラスが確認できている。
+  現状 `LmuWindowsMapper` は車両クラス情報を一切パースしていない（`core/lmu-windows-data/src` に `VehicleClass`/`category` 関連の実装なし）。共有メモリ上にはクラス情報が2箇所ある。
+    - Scoring セグメント `rF2VehicleScoring.mVehicleClass[32]`（char配列、車両先頭 +200）: `"Hypercar"` `"LMP2"` `"GTE"` `"LMGT3"` のような人間可読な文字列。DLC追加で新クラスが増えても文字列判定の追加だけで対応できる。
+    - Telemetry セグメント `mVehicleClass`（uint8、車両先頭 +826）: 数値のクラス識別値だが、ID↔クラス名の対応表を示す公式ドキュメントが見当たらず、DLC追加時にID値がずれる/再割当てされるリスクがある。
+  **改善案**: 上記の理由から、Scoring側の `mVehicleClass[32]` 文字列フィールドを使う方針を推奨する。実装するとしたら、(1) `LmuWindowsMapper` に文字列読み取りを追加、(2) `domain/model` の車両データにクラス文字列を追加、(3) `feature:lmu-windows-readout-tyre-temperature-detail` の閾値設定をクラス文字列ごとに保持できるよう拡張（未知のクラス文字列は現行の単一閾値にフォールバック）、(4) `ReadoutItemKey` を追加する場合は CLAUDE.md の「ReadoutItemKey の配線」の手順に従い listPane/detailPane と Narrator 判定側の両方を確認、が必要になる。
+
 ---
 
 ## テスト
