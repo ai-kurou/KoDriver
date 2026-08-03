@@ -7,6 +7,7 @@
     <string name="item_dynamic_color">ダイナミックカラー</string>
     <string name="item_github_repository">GitHubレポジトリ</string>
     <string name="item_release_page">リリースページ</string>
+    <string name="item_feedback">フィードバックを送信</string>
     <string name="item_license">ライセンス</string>
     <string name="item_debug_state">デバッグ状態</string>
     <string name="item_server_ip">Windows版KoDriverへ接続するIPアドレス</string>

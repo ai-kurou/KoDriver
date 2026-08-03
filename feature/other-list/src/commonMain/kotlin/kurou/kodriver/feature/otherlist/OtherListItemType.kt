@@ -16,6 +16,7 @@ enum class OtherListItemType(
     DynamicColor("dynamic_color"),
     GitHubRepository("github_repository"),
     ReleasePage("release_page"),
+    Feedback("feedback"),
     License("license"),
     DebugState("debug_state"),
     ;

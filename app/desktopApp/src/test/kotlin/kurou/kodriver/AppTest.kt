@@ -201,6 +201,9 @@ class AppTest {
         clickItem("終了確認を表示")
         clickItem("テーマ")
         clickItem("キャンセル")
+        scrollToItem("フィードバックを送信")
+        clickItem("フィードバックを送信")
+        scrollToItem("ライセンス")
         clickItem("ライセンス")
     }
 

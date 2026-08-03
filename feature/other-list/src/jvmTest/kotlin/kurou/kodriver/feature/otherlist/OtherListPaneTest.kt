@@ -233,6 +233,28 @@ class OtherListPaneTest {
     }
 
     @Test
+    fun `フィードバック項目をクリックすると項目クリックコールバックを呼ぶ`() {
+        var clickedItem: OtherListItemType? = null
+
+        rule.setContent {
+            OtherListPane(
+                uiState =
+                    OtherListUiState(
+                        items = listOf(OtherListItemType.Feedback),
+                    ),
+                onItemClick = { clickedItem = it },
+                onKeepScreenOnChange = {},
+                onExitConfirmationEnabledChange = {},
+                onDynamicColorEnabledChange = {},
+            )
+        }
+
+        rule.onNode(hasText("フィードバックを送信")).performClick()
+
+        assertEquals(OtherListItemType.Feedback, clickedItem)
+    }
+
+    @Test
     fun `アプリバージョンを5回連続タップするとコールバックを呼ぶ`() {
         var tappedCount = 0
 
