@@ -1,4 +1,6 @@
 digraph G {
   rankdir=TB
+  ":app:shared" -> ":feature:other-feedback-detail"
   ":feature:other-feedback-detail" -> ":core:domain"
+  ":feature:other-feedback-detail" -> ":core:designsystem"
 }
