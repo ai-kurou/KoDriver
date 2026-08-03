@@ -121,6 +121,3 @@
   **課題**: `stateIn` の初期値に、対応する `*_DEFAULT` 定数があるのにリテラルを直書きしている箇所が8つある（LMU: `:207 FORMAL`, `:212 SESSION_STOP`, `:217 95`, `:251 true`, `:256 CAR_LEFT_RIGHT`, `:270 KEEP_LEFT_RIGHT` / GT7: `:89 FORMAL`, `:94 3`）。現状は値が一致しているため挙動上のバグはないが、Defaults 側だけを変更したときに Narrator の初期値が古いまま残る。CLAUDE.md の「デフォルト値は `:core:domain` の定数を参照する」に反する。
   **改善案**: すべて対応する定数参照に置き換える。同じ ViewModel 内でも `LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE` などは定数参照になっており、揃えるだけで済む。
 
-- **対象**: プロジェクト全体の `packageOfResClass`（feature 系 `kodriver.feature.*` と narrator 系・`core:designsystem` の `kurou.kodriver.*`）
-  **課題**: `packageOfResClass` の接頭辞がモジュール群によって `kodriver.feature.*` と `kurou.kodriver.*` の二系統に割れている（`feature:lmu-windows-readout-remaining-virtual-energy-detail` / `app:shared` の未設定2件は解決済み。対応する PR で修正）。
-  **改善案**: どちらの接頭辞に統一するか方針を決め、`docs/` にドキュメント化する。統一する場合は各モジュールの `packageOfResClass` とリソース import を一括で書き換える必要がある。

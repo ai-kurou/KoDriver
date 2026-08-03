@@ -2,13 +2,13 @@ package kurou.kodriver.core.designsystem
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.painter.Painter
-import kurou.kodriver.core.designsystem.generated.resources.Res
-import kurou.kodriver.core.designsystem.generated.resources.ace
-import kurou.kodriver.core.designsystem.generated.resources.gt7
-import kurou.kodriver.core.designsystem.generated.resources.lmu
-import kurou.kodriver.core.designsystem.generated.resources.simulator_name_ace_windows
-import kurou.kodriver.core.designsystem.generated.resources.simulator_name_gt7_ps5
-import kurou.kodriver.core.designsystem.generated.resources.simulator_name_lmu_windows
+import kodriver.core.designsystem.generated.resources.Res
+import kodriver.core.designsystem.generated.resources.ace
+import kodriver.core.designsystem.generated.resources.gt7
+import kodriver.core.designsystem.generated.resources.lmu
+import kodriver.core.designsystem.generated.resources.simulator_name_ace_windows
+import kodriver.core.designsystem.generated.resources.simulator_name_gt7_ps5
+import kodriver.core.designsystem.generated.resources.simulator_name_lmu_windows
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 

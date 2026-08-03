@@ -77,7 +77,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kurou.kodriver.core.designsystem.generated.resources"
+    packageOfResClass = "kodriver.core.designsystem.generated.resources"
     publicResClass = true
 }
 

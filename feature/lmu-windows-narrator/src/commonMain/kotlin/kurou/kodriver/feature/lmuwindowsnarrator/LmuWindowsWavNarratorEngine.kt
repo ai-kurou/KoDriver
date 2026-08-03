@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,6 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import kotlin.concurrent.Volatile
 

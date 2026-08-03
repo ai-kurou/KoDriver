@@ -33,5 +33,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kurou.kodriver.feature.acewindowsnarrator.generated.resources"
+    packageOfResClass = "kodriver.feature.acewindowsnarrator.generated.resources"
 }
