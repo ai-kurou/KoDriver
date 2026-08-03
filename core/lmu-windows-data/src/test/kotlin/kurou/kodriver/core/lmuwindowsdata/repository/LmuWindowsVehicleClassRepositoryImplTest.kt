@@ -61,37 +61,31 @@ class LmuWindowsVehicleClassRepositoryImplTest {
         }
 
     @Test
-    fun `numVehicles が 0 のとき emit しない`() =
+    fun `numVehicles が 0 のときは空文字列を emit する`() =
         runBlocking {
             val reader =
                 FakeVehicleClassMemoryReader(
                     buildVehicleClassBuffer(VehicleClassBufferConfig(numVehicles = 0)),
                 )
             val repo = LmuWindowsVehicleClassRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
 
-            val job = launch { repo.vehicleClassStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
+            val result = repo.vehicleClassStream().first()
 
-            assertEquals(0, emitCount.get())
+            assertEquals("", result.name)
         }
 
     @Test
-    fun `mIsPlayer な車両が存在しないとき emit しない`() =
+    fun `mIsPlayer な車両が存在しないときは空文字列を emit する`() =
         runBlocking {
             val reader =
                 FakeVehicleClassMemoryReader(
                     buildVehicleClassBuffer(VehicleClassBufferConfig(numVehicles = 2, playerIndex = -1)),
                 )
             val repo = LmuWindowsVehicleClassRepositoryImpl(source = makeSource(reader))
-            val emitCount = AtomicInteger(0)
 
-            val job = launch { repo.vehicleClassStream().collect { emitCount.incrementAndGet() } }
-            delay(50)
-            job.cancelAndJoin()
+            val result = repo.vehicleClassStream().first()
 
-            assertEquals(0, emitCount.get())
+            assertEquals("", result.name)
         }
 
     @Test

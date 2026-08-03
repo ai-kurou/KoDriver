@@ -19,6 +19,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
@@ -29,6 +30,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -39,6 +41,7 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseC
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
 import org.koin.core.Koin
@@ -54,6 +57,7 @@ data class KoDriverServerUseCases(
     val observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
     val observeLmuWindowsVehicleDamage: ObserveLmuWindowsVehicleDamageUseCase,
     val observeLmuWindowsTyreCarcassTemperature: ObserveLmuWindowsTyreCarcassTemperatureUseCase,
+    val observeLmuWindowsVehicleClass: ObserveLmuWindowsVehicleClassUseCase,
     val observeLmuWindowsTyreWear: ObserveLmuWindowsTyreWearUseCase,
     val observeLmuWindows: ObserveLmuWindowsUseCase,
     val observeLmuWindowsVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
@@ -78,6 +82,10 @@ fun main() {
                 observeLmuWindowsTyreCarcassTemperature =
                     ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         EmptyLmuWindowsTyreCarcassTemperatureRepository,
+                    ),
+                observeLmuWindowsVehicleClass =
+                    ObserveLmuWindowsVehicleClassUseCase(
+                        EmptyLmuWindowsVehicleClassRepository,
                     ),
                 observeLmuWindowsTyreWear = ObserveLmuWindowsTyreWearUseCase(EmptyLmuWindowsTyreWearRepository),
                 observeLmuWindows = ObserveLmuWindowsUseCase(EmptyLmuWindowsRepository),
@@ -161,6 +169,10 @@ fun createKoDriverServer(koin: Koin): KoDriverServer =
                     ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                         koin.get<LmuWindowsTyreCarcassTemperatureRepository>(),
                     ),
+                observeLmuWindowsVehicleClass =
+                    ObserveLmuWindowsVehicleClassUseCase(
+                        koin.get<LmuWindowsVehicleClassRepository>(),
+                    ),
                 observeLmuWindowsTyreWear =
                     ObserveLmuWindowsTyreWearUseCase(
                         koin.get<LmuWindowsTyreWearRepository>(),
@@ -206,6 +218,7 @@ fun Application.module(useCases: KoDriverServerUseCases) {
         vehicleApproachWebSocket(useCases.observeLmuWindowsVehicleApproach)
         vehicleDamageWebSocket(useCases.observeLmuWindowsVehicleDamage)
         tyreCarcassTemperatureWebSocket(useCases.observeLmuWindowsTyreCarcassTemperature)
+        vehicleClassWebSocket(useCases.observeLmuWindowsVehicleClass)
         tyreWearWebSocket(useCases.observeLmuWindowsTyreWear)
         timingWebSocket(useCases.observeLmuWindows)
         virtualEnergyWebSocket(useCases.observeLmuWindowsVirtualEnergy)
@@ -229,6 +242,10 @@ private object EmptyLmuWindowsVehicleDamageRepository : LmuWindowsVehicleDamageR
 
 private object EmptyLmuWindowsTyreCarcassTemperatureRepository : LmuWindowsTyreCarcassTemperatureRepository {
     override fun tyreCarcassTemperatureStream(): Flow<LmuWindowsTyreCarcassTemperatureData> = emptyFlow()
+}
+
+private object EmptyLmuWindowsVehicleClassRepository : LmuWindowsVehicleClassRepository {
+    override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> = emptyFlow()
 }
 
 private object EmptyLmuWindowsTyreWearRepository : LmuWindowsTyreWearRepository {
