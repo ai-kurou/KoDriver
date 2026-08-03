@@ -22,12 +22,6 @@
   **課題**: `Simulator` の表示名（`simulatorDisplayName`）とアイコン（`simulatorIcon`）を返す `when` 式が3モジュールにほぼ同一の内容で重複定義されている。文字列リソースも `feature:readout-list` と `feature:debug-state-detail` の `strings.xml` に同じキー（`simulator_name_lmu` など）が重複している。新しい `Simulator` を追加するたびに同じ分岐を複数箇所へ手作業で追加する必要があり、追加漏れがコンパイルエラーで検出される（網羅的 `when` のため）ものの、手間と重複が大きい。
   **改善案**: `Simulator` の表示名・アイコンを `core:designsystem` または `core:domain` に集約したユーティリティ（例: `Simulator.displayNameRes()` 拡張、共通の `SimulatorIconRepository` 的な仕組み）としてまとめ、各 feature モジュールから参照する形に統一する。ただし `core:designsystem` は Compose リソースを持つが `core:domain` は持たない現状の依存方向を踏まえた設計検討が必要。
 
-## 共有メモリのMapper層で「有効なテレメトリが書き込まれたか」を判定していない
-
-- **対象**: `core:ace-windows-data`（`AceWindowsMapper`）、`core:lmu-windows-data`
-- **課題**: 起動直後など、ゲーム側がまだ共有メモリにテレメトリを書き込んでいない区間はゼロクリアされた値になりうるが、Mapper はそれをそのまま有効な値として返している（ACEの残燃料が起動直後に `0.0%` になり誤読み上げが発生した不具合はこれが原因の一つ）。
-  **改善案**: `AceWindowsMapper` / `LmuWindowsMapper` 側で `status` 等の「有効なテレメトリが書き込まれたか」を示すフィールドを見て、無効なテレメトリをフィルタする仕組みの導入を検討する。
-
 ## Narrator の読み上げ判定入力とテレメトリログ記録内容が別々にハードコードされている
 
 - **対象**: `feature:lmu-windows-narrator`（`DetermineLmuWindowsNarratorReadoutUseCase.kt`, `LmuWindowsNarratorEventProcessor.kt` の各 `buildTelemetryLogJson`/`buildPitTimingTelemetryLogJson`）
