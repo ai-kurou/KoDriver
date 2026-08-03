@@ -1,0 +1,4 @@
+digraph G {
+  rankdir=TB
+  ":feature:other-feedback-detail" -> ":core:domain"
+}
