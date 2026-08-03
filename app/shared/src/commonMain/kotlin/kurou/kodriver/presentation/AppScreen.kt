@@ -214,6 +214,7 @@ private fun DefaultOtherContent(
                 OtherListItemType.ExitConfirmation,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
+                OtherListItemType.Feedback,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
                 -> {}

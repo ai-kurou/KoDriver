@@ -17,6 +17,7 @@ class OtherListItemsTest {
                 OtherListItemType.Theme,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
+                OtherListItemType.Feedback,
                 OtherListItemType.License,
             ),
             items,

@@ -100,6 +100,7 @@ private fun handleOtherItemClick(
         OtherListItemType.KeepScreenOn,
         OtherListItemType.ExitConfirmation,
         OtherListItemType.DynamicColor,
+        OtherListItemType.Feedback,
         OtherListItemType.License,
         OtherListItemType.DebugState,
         -> onItemSelected(itemType)
