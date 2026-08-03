@@ -6,7 +6,6 @@ import io.sentry.SentryLevel
 import io.sentry.UserFeedback
 import io.sentry.protocol.SentryId
 import kurou.kodriver.domain.model.Feedback
-import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.repository.FeedbackRepository
 
 internal class SentryFeedbackRepository(
@@ -33,12 +32,3 @@ internal class SentryFeedbackRepository(
             )
         }
 }
-
-private val FeedbackType.tagValue: String
-    get() =
-        when (this) {
-            FeedbackType.BugReport -> "bug_report"
-            FeedbackType.FeatureRequest -> "feature_request"
-            FeedbackType.Question -> "question"
-            FeedbackType.Other -> "other"
-        }

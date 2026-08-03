@@ -1,24 +1,33 @@
 package kurou.kodriver.domain.usecase
 
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
+import io.mockk.confirmVerified
+import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.runBlocking
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.repository.FeedbackRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SendFeedbackUseCaseTest {
-    private val repository = mockk<FeedbackRepository>()
-    private val useCase = SendFeedbackUseCase(repository)
+    @MockK
+    private lateinit var repository: FeedbackRepository
+
+    @BeforeTest
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
 
     @Test
     fun `入力値を正規化してRepositoryへ送信する`() =
-        runTest {
+        runBlocking {
             coEvery { repository.send(any()) } returns Result.success(Unit)
+            val useCase = SendFeedbackUseCase(repository)
 
             val result =
                 useCase(
@@ -32,7 +41,7 @@ class SendFeedbackUseCaseTest {
                 )
 
             assertTrue(result.isSuccess)
-            coVerify {
+            coVerify(exactly = 1) {
                 repository.send(
                     Feedback(
                         type = FeedbackType.BugReport,
@@ -43,12 +52,14 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
+            confirmVerified(repository)
         }
 
     @Test
     fun `任意項目が空文字ならnullとして送信する`() =
-        runTest {
+        runBlocking {
             coEvery { repository.send(any()) } returns Result.success(Unit)
+            val useCase = SendFeedbackUseCase(repository)
 
             val result =
                 useCase(
@@ -61,7 +72,7 @@ class SendFeedbackUseCaseTest {
                 )
 
             assertTrue(result.isSuccess)
-            coVerify {
+            coVerify(exactly = 1) {
                 repository.send(
                     Feedback(
                         type = FeedbackType.Other,
@@ -71,15 +82,19 @@ class SendFeedbackUseCaseTest {
                     ),
                 )
             }
+            confirmVerified(repository)
         }
 
     @Test
     fun `本文が空なら失敗してRepositoryへ送信しない`() =
-        runTest {
+        runBlocking {
+            val useCase = SendFeedbackUseCase(repository)
+
             val result = useCase(Feedback(type = FeedbackType.Question, message = "  "))
 
             assertTrue(result.isFailure)
             assertEquals("Feedback message must not be blank.", result.exceptionOrNull()?.message)
             coVerify(exactly = 0) { repository.send(any()) }
+            confirmVerified(repository)
         }
 }
