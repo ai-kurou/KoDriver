@@ -146,7 +146,6 @@ class MainActivityTest {
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")
-        clickScrollableItem("フィードバックを送信")
         clickItemAndNavigateBack("ライセンス")
     }
 
