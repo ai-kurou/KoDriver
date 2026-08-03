@@ -144,6 +144,36 @@ class OtherFeedbackDetailViewModelTest {
         }
 
     @Test
+    fun `送信中に想定外の例外が発生したらエラーを表示する`() =
+        runTest {
+            coEvery { repository.send(any()) } throws IllegalStateException("unexpected")
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("失敗します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+
+            assertFalse(viewModel.uiState.value.isSent)
+            assertFalse(viewModel.uiState.value.isSending)
+            assertTrue(viewModel.uiState.value.sendFailed)
+            coVerify(exactly = 1) {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "失敗します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            }
+            confirmVerified(repository)
+            collectionJob.cancel()
+        }
+
+    @Test
     fun `送信中に再送信してもRepositoryは1回だけ呼ばれる`() =
         runTest {
             val deferredResult = CompletableDeferred<Result<Unit>>()
