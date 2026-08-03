@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
@@ -23,7 +23,7 @@ class SaveGt7Ps5UdpPortUseCaseTest {
 
     @Test
     fun `33740を保存できる`() =
-        runBlocking {
+        runTest {
             SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_DEFAULT)
 
             coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_DEFAULT) }
@@ -32,7 +32,7 @@ class SaveGt7Ps5UdpPortUseCaseTest {
 
     @Test
     fun `33741を保存できる`() =
-        runBlocking {
+        runTest {
             SaveGt7Ps5UdpPortUseCase(repository)(GT7_PS5_UDP_PORT_ALTERNATE)
 
             coVerify(exactly = 1) { repository.savePort(GT7_PS5_UDP_PORT_ALTERNATE) }
@@ -41,7 +41,7 @@ class SaveGt7Ps5UdpPortUseCaseTest {
 
     @Test
     fun `33740でも33741でもない値はIllegalArgumentExceptionをスローする`() =
-        runBlocking {
+        runTest {
             val useCase = SaveGt7Ps5UdpPortUseCase(repository)
 
             assertFailsWith<IllegalArgumentException> { useCase(33739) }

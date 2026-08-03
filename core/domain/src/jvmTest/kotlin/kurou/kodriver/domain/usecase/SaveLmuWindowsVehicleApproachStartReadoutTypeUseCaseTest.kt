@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveLmuWindowsVehicleApproachStartReadoutTypeUseCaseTest {
 
     @Test
     fun `接近開始時読み上げ種別を保存できる`() =
-        runBlocking {
+        runTest {
             SaveLmuWindowsVehicleApproachStartReadoutTypeUseCase(repository)(
                 VehicleApproachStartReadoutType.LEFT_RIGHT_APPROACH,
             )

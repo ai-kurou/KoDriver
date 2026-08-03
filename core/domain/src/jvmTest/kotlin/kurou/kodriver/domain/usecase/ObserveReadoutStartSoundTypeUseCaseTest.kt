@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import kotlin.test.BeforeTest
@@ -25,7 +25,7 @@ class ObserveReadoutStartSoundTypeUseCaseTest {
 
     @Test
     fun `読み上げ開始音種別を監視できる`() =
-        runBlocking {
+        runTest {
             every { repository.observeType() } returns MutableStateFlow(ReadoutStartSoundType.FORMULA_RADIO)
             val useCase = ObserveReadoutStartSoundTypeUseCase(repository)
 

@@ -12,7 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,7 +41,7 @@ class ObserveServerIpUseCaseTest {
 
     @Test
     fun `初期状態でnullを返す`() =
-        runBlocking {
+        runTest {
             val repo = createServerIpPreferencesRepository(repository)
             val useCase = ObserveServerIpUseCase(repo)
 
@@ -53,7 +53,7 @@ class ObserveServerIpUseCaseTest {
 
     @Test
     fun `保存後にIPアドレスを返す`() =
-        runBlocking {
+        runTest {
             val repo = createServerIpPreferencesRepository(repository)
             val useCase = ObserveServerIpUseCase(repo)
 

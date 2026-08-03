@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveThemeModeUseCaseTest {
 
     @Test
     fun `テーマモードを保存できる`() =
-        runBlocking {
+        runTest {
             SaveThemeModeUseCase(repository)(ThemeMode.LIGHT)
 
             coVerify(exactly = 1) { repository.saveThemeMode(ThemeMode.LIGHT) }

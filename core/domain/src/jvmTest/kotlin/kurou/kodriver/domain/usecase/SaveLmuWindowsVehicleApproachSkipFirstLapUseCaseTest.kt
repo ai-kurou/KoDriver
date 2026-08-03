@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveLmuWindowsVehicleApproachSkipFirstLapUseCaseTest {
 
     @Test
     fun `スキップ設定を保存できる`() =
-        runBlocking {
+        runTest {
             SaveLmuWindowsVehicleApproachSkipFirstLapUseCase(repository)(false)
 
             coVerify(exactly = 1) { repository.saveSkipFirstLap(false) }

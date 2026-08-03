@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class ObserveDynamicColorEnabledUseCaseTest {
 
     @Test
     fun `Repositoryの値を返す`() =
-        runBlocking {
+        runTest {
             every { repository.dynamicColorEnabled() } returns flowOf(true)
 
             assertTrue(ObserveDynamicColorEnabledUseCase(repository)().first())

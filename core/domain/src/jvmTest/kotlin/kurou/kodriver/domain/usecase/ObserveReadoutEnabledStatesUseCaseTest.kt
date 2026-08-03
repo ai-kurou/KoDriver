@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 import kotlin.test.BeforeTest
@@ -72,7 +72,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はデフォルト定義のない未知のシミュレーターでは空Mapを返す`() =
-        runBlocking {
+        runTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -83,7 +83,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
     @Test
     fun `lmu_windowsは保存済みの値がなくてもデフォルト値が反映される`() =
-        runBlocking {
+        runTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -106,7 +106,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
     @Test
     fun `gt7_ps5は保存済みの値がなくてもデフォルトのtrueが反映される`() =
-        runBlocking {
+        runTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -124,7 +124,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
     @Test
     fun `ace_windowsは保存済みの値がなくてもデフォルトのtrueが反映される`() =
-        runBlocking {
+        runTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 
@@ -141,7 +141,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先され・シミュレーターごとに独立している`() =
-        runBlocking {
+        runTest {
             val repo = createReadoutPreferencesRepository(repository)
             val useCase = ObserveReadoutEnabledStatesUseCase(repo)
 

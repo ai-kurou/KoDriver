@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveGt7Ps5RemainingFuelLapsUseCaseTest {
 
     @Test
     fun `燃料残り周回数を保存できる`() =
-        runBlocking {
+        runTest {
             SaveGt7Ps5RemainingFuelLapsUseCase(repository)(1)
 
             coVerify(exactly = 1) { repository.saveRemainingFuelLaps(1) }

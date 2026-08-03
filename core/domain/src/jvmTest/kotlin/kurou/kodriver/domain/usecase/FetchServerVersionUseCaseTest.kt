@@ -5,7 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ServerVersionRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -23,7 +23,7 @@ class FetchServerVersionUseCaseTest {
 
     @Test
     fun `バージョン取得成功時にResultSuccessを返す`() =
-        runBlocking {
+        runTest {
             coEvery { repository.fetchVersion("192.168.1.1") } returns Result.success("1.2.3")
             val useCase = FetchServerVersionUseCase(repository)
 
@@ -36,7 +36,7 @@ class FetchServerVersionUseCaseTest {
 
     @Test
     fun `バージョン取得失敗時にResultFailureを返す`() =
-        runBlocking {
+        runTest {
             coEvery { repository.fetchVersion("192.168.1.1") } returns Result.failure(RuntimeException("network error"))
             val useCase = FetchServerVersionUseCase(repository)
 

@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,7 +27,7 @@ class ObserveSoundVolumeUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
-        runBlocking {
+        runTest {
             val state = MutableStateFlow(80)
             every { repo.volume() } returns state
             listOf(50).forEach { volume ->

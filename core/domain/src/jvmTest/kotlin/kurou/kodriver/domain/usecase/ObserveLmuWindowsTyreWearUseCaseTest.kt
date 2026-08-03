@@ -9,7 +9,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
@@ -29,7 +29,7 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
 
     @Test
     fun `invoke はリポジトリの tyreWearStream を返す`() =
-        runBlocking {
+        runTest {
             val expected =
                 LmuWindowsTyreWearData(
                     wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8),
@@ -46,7 +46,7 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
 
     @Test
     fun `invoke は空のフローをそのまま返す`() =
-        runBlocking {
+        runTest {
             every { repo.tyreWearStream() } returns flowOf()
             val useCase = ObserveLmuWindowsTyreWearUseCase(repo)
 
@@ -59,7 +59,7 @@ class ObserveLmuWindowsTyreWearUseCaseTest {
 
     @Test
     fun `複数のデータを順番通りに流す`() =
-        runBlocking {
+        runTest {
             val data1 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 1.0))
             val data2 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 0.9))
             val data3 = LmuWindowsTyreWearData(wheels = mapOf(WheelIndex.FRONT_LEFT to 0.8))

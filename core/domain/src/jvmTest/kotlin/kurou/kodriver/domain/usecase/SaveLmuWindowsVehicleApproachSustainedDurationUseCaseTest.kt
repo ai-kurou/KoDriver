@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
 
     @Test
     fun `保存した継続時間閾値がFlowに反映される`() =
-        runBlocking {
+        runTest {
             SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)(8)
 
             coVerify(exactly = 1) { repository.saveSustainedApproachDurationSeconds(8) }
@@ -29,7 +29,7 @@ class SaveLmuWindowsVehicleApproachSustainedDurationUseCaseTest {
 
     @Test
     fun `上書き保存すると最新値がFlowに反映される`() =
-        runBlocking {
+        runTest {
             val useCase = SaveLmuWindowsVehicleApproachSustainedDurationUseCase(repository)
 
             useCase(8)

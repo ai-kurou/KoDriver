@@ -3,7 +3,7 @@ package kurou.kodriver.core.acewindowsdata.repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -22,7 +22,7 @@ class AceWindowsFuelRepositoryImplTest {
 
     @Test
     fun `reader が open 済みのときデータを emit する`() =
-        runBlocking<Unit> {
+        runTest {
             val fake = FakeSharedMemoryReader(initialOpen = true)
             val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
@@ -31,7 +31,7 @@ class AceWindowsFuelRepositoryImplTest {
 
     @Test
     fun `reader が open できるとき isConnected は true を返す`() =
-        runBlocking {
+        runTest {
             val fake = FakeSharedMemoryReader(openResults = listOf(true))
             val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 
@@ -40,7 +40,7 @@ class AceWindowsFuelRepositoryImplTest {
 
     @Test
     fun `reader が open できないとき isConnected は false を返す`() =
-        runBlocking {
+        runTest {
             val fake = FakeSharedMemoryReader(openResults = listOf(false))
             val repo = AceWindowsFuelRepositoryImpl(source = makeSource(fake))
 

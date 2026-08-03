@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -39,7 +39,7 @@ class ObserveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
 
     @Test
     fun `初期値を返す`() =
-        runBlocking {
+        runTest {
             val repo =
                 createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
                     repository,
@@ -54,7 +54,7 @@ class ObserveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
 
     @Test
     fun `保存済みの横方向閾値をそのまま返す`() =
-        runBlocking {
+        runTest {
             val repo =
                 createLmuWindowsVehicleApproachThresholdsPreferencesRepository(
                     repository,

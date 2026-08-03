@@ -5,7 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -23,7 +23,7 @@ class CheckGt7Ps5ConnectionUseCaseTest {
 
     @Test
     fun `Repositoryが接続済みならtrueを返す`() =
-        runBlocking {
+        runTest {
             coEvery { repository.isConnected() } returns true
             val useCase = CheckGt7Ps5ConnectionUseCase(repository)
 
@@ -34,7 +34,7 @@ class CheckGt7Ps5ConnectionUseCaseTest {
 
     @Test
     fun `Repositoryが未接続ならfalseを返す`() =
-        runBlocking {
+        runTest {
             coEvery { repository.isConnected() } returns false
             val useCase = CheckGt7Ps5ConnectionUseCase(repository)
 

@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -45,7 +45,7 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
 
     @Test
     fun `初期値を返す・保存済みの値を返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repo)
 
@@ -63,7 +63,7 @@ class ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
 
     @Test
     fun `一部のフェーズだけ保存されている場合は保存済みの値がデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             val repo =
                 createLmuWindowsTyreTemperaturePreferencesRepository(
                     repository,

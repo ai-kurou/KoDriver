@@ -12,7 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kotlin.test.BeforeTest
@@ -30,7 +30,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はsupportsQueue対象項目のデフォルトfalseを返す`() =
-        runBlocking {
+        runTest {
             every { repository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             val useCase = ObserveQueueEnabledStatesUseCase(repository)
 
@@ -57,7 +57,7 @@ class ObserveQueueEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             val states = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeQueueEnabledStates() } returns states
             coEvery { repository.saveQueueEnabledState(ReadoutItemKey.LmuWindows.Flag.Root, true) } answers {

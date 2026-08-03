@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ThemeMode
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kotlin.test.BeforeTest
@@ -25,7 +25,7 @@ class ObserveThemeModeUseCaseTest {
 
     @Test
     fun `テーマモードを監視できる`() =
-        runBlocking {
+        runTest {
             every { repository.observeThemeMode() } returns MutableStateFlow(ThemeMode.DARK)
             val useCase = ObserveThemeModeUseCase(repository)
 

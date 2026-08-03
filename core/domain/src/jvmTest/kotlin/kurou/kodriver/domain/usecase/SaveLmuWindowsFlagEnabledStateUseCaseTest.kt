@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveLmuWindowsFlagEnabledStateUseCaseTest {
 
     @Test
     fun `指定したフラグの有効状態が保存される`() =
-        runBlocking {
+        runTest {
             SaveLmuWindowsFlagEnabledStateUseCase(repository)(ReadoutItemKey.LmuWindows.Flag.RedFlag, false)
 
             coVerify(exactly = 1) {

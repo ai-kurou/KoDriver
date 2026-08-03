@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class ObserveGt7Ps5RemainingFuelLapsUseCaseTest {
 
     @Test
     fun `燃料残り周回数を監視できる`() =
-        runBlocking {
+        runTest {
             every { repository.observeRemainingFuelLaps() } returns MutableStateFlow(5)
             val useCase = ObserveGt7Ps5RemainingFuelLapsUseCase(repository)
 

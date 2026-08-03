@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kotlin.test.BeforeTest
@@ -25,7 +25,7 @@ class ObserveLmuWindowsRedFlagVoiceTypeUseCaseTest {
 
     @Test
     fun `保存済みの赤旗音声タイプを返す`() =
-        runBlocking {
+        runTest {
             every { repository.observeVoiceType() } returns MutableStateFlow(RedFlagVoiceType.RED_FLAG)
             val useCase = ObserveLmuWindowsRedFlagVoiceTypeUseCase(repository)
 

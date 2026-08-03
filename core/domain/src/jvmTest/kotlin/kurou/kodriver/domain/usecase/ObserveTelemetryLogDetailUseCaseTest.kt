@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -86,7 +86,7 @@ class ObserveTelemetryLogDetailUseCaseTest {
 
     @Test
     fun `指定したidのログとその一つ前のログを返す`() =
-        runBlocking {
+        runTest {
             val latest = telemetryLog(id = 3L, createdAt = 3000L)
             val current = telemetryLog(id = 2L, createdAt = 2000L)
             val previous = telemetryLog(id = 1L, createdAt = 1000L)
@@ -110,7 +110,7 @@ class ObserveTelemetryLogDetailUseCaseTest {
 
     @Test
     fun `指定したidのログがない場合はnullを返す`() =
-        runBlocking {
+        runTest {
             val repository =
                 createTelemetryLogRepository(
                     repository,
@@ -125,7 +125,7 @@ class ObserveTelemetryLogDetailUseCaseTest {
 
     @Test
     fun `指定したidのログが最も古い場合はpreviousにnullを返す`() =
-        runBlocking {
+        runTest {
             val current = telemetryLog(id = 1L, createdAt = 1000L)
             val repository =
                 createTelemetryLogRepository(

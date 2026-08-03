@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCaseTest {
 
     @Test
     fun `任意のフェーズ集合を保存できる`() =
-        runBlocking {
+        runTest {
             val useCase = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository)
             val phases = setOf(SessionPhase.WARM_UP, SessionPhase.FORMATION)
 

@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 import kotlin.test.BeforeTest
@@ -21,7 +21,7 @@ class SaveSelectedSimulatorUseCaseTest {
 
     @Test
     fun `保存するとFlowに値が反映される`() =
-        runBlocking {
+        runTest {
             SaveSelectedSimulatorUseCase(repository)(Simulator.LmuWindows)
 
             coVerify(exactly = 1) { repository.saveSelectedSimulator(Simulator.LmuWindows) }

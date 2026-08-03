@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
@@ -34,7 +34,7 @@ class ObserveGt7Ps5ConnectionUseCaseTest {
 
     @Test
     fun `接続確認結果とテレメトリを返す`() =
-        runBlocking {
+        runTest {
             val telemetry =
                 Gt7Ps5TelemetryData(
                     lapCount = 3,
@@ -58,7 +58,7 @@ class ObserveGt7Ps5ConnectionUseCaseTest {
 
     @Test
     fun `接続確認で例外が発生した場合は未接続として監視を継続する`() =
-        runBlocking {
+        runTest {
             every { repository.telemetryStream() } returns emptyFlow()
             coEvery { repository.isConnected() } throws RuntimeException("connection check failed") andThen true
             val useCase = createUseCase(repository)

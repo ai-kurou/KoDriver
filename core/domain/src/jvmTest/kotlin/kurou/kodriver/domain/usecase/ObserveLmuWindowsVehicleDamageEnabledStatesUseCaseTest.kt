@@ -12,7 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kotlin.test.BeforeTest
@@ -48,7 +48,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はOverheatのデフォルトtrueを返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
@@ -60,7 +60,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 
@@ -77,7 +77,7 @@ class ObserveLmuWindowsVehicleDamageEnabledStatesUseCaseTest {
 
     @Test
     fun `デフォルトにないキーを保存した場合そのエントリも返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsVehicleDamagePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(repo)
 

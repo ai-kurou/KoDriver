@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
@@ -65,7 +65,7 @@ class ObserveTelemetryLogsUseCaseTest {
 
     @Test
     fun `初期値が空のとき空リストを返し・保存済みのログをそのまま返す`() =
-        runBlocking {
+        runTest {
             val repository = createTelemetryLogRepository(repository)
             val useCase = ObserveTelemetryLogsUseCase(repository)
 

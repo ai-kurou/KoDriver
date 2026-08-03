@@ -12,7 +12,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
@@ -56,7 +56,7 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
     @Test
     fun `初期値はOverheatWarningとLowWarningのデフォルトtrueを返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
@@ -72,7 +72,7 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
     @Test
     fun `保存済みの値はデフォルトより優先される`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 
@@ -93,7 +93,7 @@ class ObserveLmuWindowsTyreTemperatureEnabledStatesUseCaseTest {
 
     @Test
     fun `デフォルトにないキーを保存した場合そのエントリも返す`() =
-        runBlocking {
+        runTest {
             val repo = createLmuWindowsTyreTemperaturePreferencesRepository(repository)
             val useCase = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repo)
 

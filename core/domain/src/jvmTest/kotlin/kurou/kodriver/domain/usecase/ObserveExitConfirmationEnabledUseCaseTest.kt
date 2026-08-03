@@ -7,7 +7,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class ObserveExitConfirmationEnabledUseCaseTest {
 
     @Test
     fun `終了確認の有効状態を監視できる`() =
-        runBlocking {
+        runTest {
             every { repository.exitConfirmationEnabled() } returns MutableStateFlow(true)
             val useCase = ObserveExitConfirmationEnabledUseCase(repository)
 

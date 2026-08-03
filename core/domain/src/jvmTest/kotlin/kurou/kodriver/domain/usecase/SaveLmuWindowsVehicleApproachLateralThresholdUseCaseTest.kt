@@ -4,7 +4,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +20,7 @@ class SaveLmuWindowsVehicleApproachLateralThresholdUseCaseTest {
 
     @Test
     fun `横方向閾値を保存するとFlowに反映され上書きで更新される`() =
-        runBlocking {
+        runTest {
             val useCase = SaveLmuWindowsVehicleApproachLateralThresholdUseCase(repository)
 
             useCase(3.5)

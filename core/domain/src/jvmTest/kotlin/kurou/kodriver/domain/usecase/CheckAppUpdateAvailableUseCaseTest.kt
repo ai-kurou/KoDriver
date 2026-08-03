@@ -5,7 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kotlin.test.BeforeTest
@@ -29,7 +29,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `最新リリースがnullのとき新バージョンなしと判定する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(null)
 
             assertFalse(useCase("1.0.0"))
@@ -39,7 +39,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `最新バージョンが現在と同じとき新バージョンなしと判定する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v1.0.0"))
 
             assertFalse(useCase("1.0.0"))
@@ -49,7 +49,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `最新バージョンがパッチだけ上のとき新バージョンありと判定する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v1.0.1"))
 
             assertTrue(useCase("1.0.0"))
@@ -59,7 +59,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `最新バージョンがマイナーだけ上のとき新バージョンありと判定する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v1.1.0"))
 
             assertTrue(useCase("1.0.9"))
@@ -69,7 +69,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `最新バージョンがメジャーだけ上のとき新バージョンありと判定する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v2.0.0"))
 
             assertTrue(useCase("1.9.9"))
@@ -79,7 +79,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `最新バージョンが現在より古いとき新バージョンなしと判定する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v0.9.9"))
 
             assertFalse(useCase("1.0.0"))
@@ -89,7 +89,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `タグにvプレフィックスがない場合でも正しく比較する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("1.1.0"))
 
             assertTrue(useCase("1.0.0"))
@@ -99,7 +99,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `現在バージョンにvプレフィックスがある場合でも正しく比較する`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v1.1.0"))
 
             assertTrue(useCase("v1.0.0"))
@@ -109,7 +109,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `バージョンに数値以外のセグメントが含まれる場合は0として扱う`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v1.0.alpha"))
 
             assertFalse(useCase("1.0.0"))
@@ -119,7 +119,7 @@ class CheckAppUpdateAvailableUseCaseTest {
 
     @Test
     fun `バージョンのセグメントが3未満の場合は不足分を0として扱う`() =
-        runBlocking {
+        runTest {
             val useCase = createUseCase(AppUpdate("v2"))
 
             assertTrue(useCase("1"))

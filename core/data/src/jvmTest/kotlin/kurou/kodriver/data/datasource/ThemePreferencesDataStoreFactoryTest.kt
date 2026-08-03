@@ -1,7 +1,7 @@
 package kurou.kodriver.data.datasource
 
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -17,7 +17,7 @@ class ThemePreferencesDataStoreFactoryTest {
 
     @Test
     fun `theme_preferences_pbを作成してデフォルト値を読み込める`() =
-        runBlocking {
+        runTest {
             val dataStore = createThemePreferencesDataStore(tempDir.absolutePath)
 
             assertEquals("system", dataStore.data.first().mode)
