@@ -18,6 +18,7 @@ import kurou.kodriver.domain.model.LmuWindowsInputsData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
@@ -101,6 +102,17 @@ private val sampleGt7Ps5Telemetry =
         gasCapacity = 0f,
     )
 
+private val sampleTyreCarcassTemperature =
+    LmuWindowsTyreCarcassTemperatureData(
+        wheels =
+            mapOf(
+                WheelIndex.FRONT_LEFT to 95.0,
+                WheelIndex.FRONT_RIGHT to 96.0,
+                WheelIndex.REAR_LEFT to 97.0,
+                WheelIndex.REAR_RIGHT to 98.0,
+            ),
+    )
+
 private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
@@ -139,6 +151,7 @@ class DebugStateDetailPaneScreenshotTest {
             lmuWindowsTelemetry = sampleLmuWindowsTelemetry,
             gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
             vehicleApproach = sampleVehicleApproach,
+            tyreCarcassTemperature = sampleTyreCarcassTemperature,
         )
 
     @Test

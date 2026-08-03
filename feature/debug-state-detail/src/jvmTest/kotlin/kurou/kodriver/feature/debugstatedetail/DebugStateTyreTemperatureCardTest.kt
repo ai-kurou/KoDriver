@@ -23,7 +23,7 @@ class DebugStateTyreTemperatureCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `タイヤ温度カードのタイトルを表示する`() {
+    fun `タイヤ表面温度カードのタイトルを表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -34,7 +34,7 @@ class DebugStateTyreTemperatureCardTest {
             }
         }
 
-        rule.onNodeWithText("タイヤ温度").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
     }
 
     @Test

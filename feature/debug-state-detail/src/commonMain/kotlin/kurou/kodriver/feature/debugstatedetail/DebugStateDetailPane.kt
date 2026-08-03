@@ -62,6 +62,7 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_s
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_simulator_info_unselected
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_title
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_carcass_temperature_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
@@ -248,6 +249,16 @@ private fun DebugStateCard(
                 modifier = modifier,
                 bottomContent = {
                     TyreTemperatureContent(uiState.selectedSimulator, uiState.lmuWindowsTelemetry)
+                },
+            )
+        }
+
+        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE -> {
+            DetailPaneCard(
+                title = stringResource(Res.string.debug_state_tyre_carcass_temperature_title),
+                modifier = modifier,
+                bottomContent = {
+                    TyreCarcassTemperatureContent(uiState.selectedSimulator, uiState.tyreCarcassTemperature)
                 },
             )
         }

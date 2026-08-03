@@ -6,6 +6,7 @@ import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
@@ -21,6 +22,7 @@ internal val defaultDebugStateCardOrder =
         DebugStateCardKey.SIDE_BY_SIDE_VEHICLES,
         DebugStateCardKey.BEST_LAP,
         DebugStateCardKey.TYRE_TEMPERATURE,
+        DebugStateCardKey.TYRE_CARCASS_TEMPERATURE,
         DebugStateCardKey.TYRE_WEAR,
         DebugStateCardKey.FUEL_CONSUMPTION,
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
@@ -35,5 +37,6 @@ internal data class DebugStateDetailUiState(
     val aceWindowsFuel: AceWindowsFuelData? = null,
     val aceWindowsFlag: AceWindowsFlagData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
+    val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )
