@@ -32,6 +32,7 @@ KoDriver/
 │   ├── other-console-ip-detail/  その他画面のゲーム機 IP 設定ダイアログ
 │   ├── other-theme-detail/       その他画面のテーマ設定詳細
 │   ├── other-volume-detail/      その他画面の音量設定詳細
+│   ├── other-feedback-detail/    その他画面のフィードバック送信詳細
 │   ├── readout-list/             アナウンス設定の一覧 UI・状態管理
 │   ├── lmu-windows-readout-flag-detail/          フラグアナウンスの詳細設定
 │   ├── lmu-windows-readout-my-best-lap-detail/   LMU自己ベストラップアナウンスの詳細設定
