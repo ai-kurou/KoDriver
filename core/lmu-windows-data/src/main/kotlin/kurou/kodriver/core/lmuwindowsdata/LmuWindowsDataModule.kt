@@ -10,6 +10,7 @@ import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreWearRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleApproachRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleClassRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVirtualEnergyRepositoryImpl
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -17,6 +18,7 @@ import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -24,6 +26,7 @@ import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import org.koin.dsl.module
@@ -36,6 +39,9 @@ private val isWindows = System.getProperty("os.name").lowercase().startsWith("wi
  * デスクトップ版 app エントリーポイントで束ねられ、lmu-windows-connection / lmu-windows-narrator の
  * UseCase が get() で解決する各 LmuWindows*Repository を提供する。共有メモリ読み取りは Windows 専用のため、
  * 非 Windows では空 Flow を返す No-Op 実装（下部の private class 群）にフォールバックする。
+ *
+ * LmuWindowsVehicleClassRepository は Scoring セグメントの mVehicleClass（人間可読なクラス名文字列）を
+ * プレイヤー車両分だけ読み取る。
  */
 val lmuWindowsDataModule =
     module {
@@ -69,6 +75,9 @@ val lmuWindowsDataModule =
         }
         single<LmuWindowsTyreWearRepository> {
             if (isWindows) LmuWindowsTyreWearRepositoryImpl(source = get()) else NoOpTyreWearRepository()
+        }
+        single<LmuWindowsVehicleClassRepository> {
+            if (isWindows) LmuWindowsVehicleClassRepositoryImpl(source = get()) else NoOpVehicleClassRepository()
         }
         single<LmuWindowsVirtualEnergyRepository> {
             if (isWindows) LmuWindowsVirtualEnergyRepositoryImpl(source = get()) else NoOpVirtualEnergyRepository()
@@ -105,4 +114,8 @@ private class NoOpTyreWearRepository : LmuWindowsTyreWearRepository {
 
 private class NoOpVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository {
     override fun virtualEnergyStream(): Flow<LmuWindowsVirtualEnergyData> = emptyFlow()
+}
+
+private class NoOpVehicleClassRepository : LmuWindowsVehicleClassRepository {
+    override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> = emptyFlow()
 }
