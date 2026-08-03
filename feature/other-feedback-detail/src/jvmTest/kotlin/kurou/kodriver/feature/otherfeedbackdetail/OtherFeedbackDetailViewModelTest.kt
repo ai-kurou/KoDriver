@@ -7,8 +7,12 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -48,6 +52,7 @@ class OtherFeedbackDetailViewModelTest {
     fun `必須項目が空なら送信せずエラーを表示する`() =
         runTest {
             val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
             viewModel.onSend()
 
@@ -56,6 +61,7 @@ class OtherFeedbackDetailViewModelTest {
             assertTrue(viewModel.uiState.value.showEmailError)
             coVerify(exactly = 0) { repository.send(any()) }
             confirmVerified(repository)
+            collectionJob.cancel()
         }
 
     @Test
@@ -63,6 +69,7 @@ class OtherFeedbackDetailViewModelTest {
         runTest {
             coEvery { repository.send(any()) } returns Result.success(Unit)
             val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
             viewModel.onTypeSelected(FeedbackType.FeatureRequest)
             viewModel.onMessageChanged("改善してほしいです")
@@ -84,6 +91,7 @@ class OtherFeedbackDetailViewModelTest {
                 )
             }
             confirmVerified(repository)
+            collectionJob.cancel()
         }
 
     @Test
@@ -91,6 +99,7 @@ class OtherFeedbackDetailViewModelTest {
         runTest {
             coEvery { repository.send(any()) } returns Result.failure(IllegalStateException("failed"))
             val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
 
             viewModel.onMessageChanged("失敗します")
             viewModel.onNameChanged("Kurou")
@@ -112,5 +121,51 @@ class OtherFeedbackDetailViewModelTest {
                 )
             }
             confirmVerified(repository)
+            collectionJob.cancel()
         }
+
+    @Test
+    fun `送信中に再送信してもRepositoryは1回だけ呼ばれる`() =
+        runTest {
+            val deferredResult = CompletableDeferred<Result<Unit>>()
+            coEvery { repository.send(any()) } coAnswers { deferredResult.await() }
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("送信します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+            viewModel.onSend()
+
+            assertTrue(viewModel.uiState.value.isSending)
+            assertFalse(viewModel.uiState.value.canSend)
+            coVerify(exactly = 1) {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "送信します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
+            }
+            deferredResult.complete(Result.success(Unit))
+            confirmVerified(repository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `送信中なら送信できない`() {
+        val uiState =
+            OtherFeedbackDetailUiState(
+                message = "送信します",
+                name = "Kurou",
+                email = "user@example.com",
+                isSending = true,
+            )
+
+        assertFalse(uiState.canSend)
+    }
 }

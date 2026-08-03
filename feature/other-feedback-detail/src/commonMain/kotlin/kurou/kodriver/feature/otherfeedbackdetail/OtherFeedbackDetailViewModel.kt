@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.model.Feedback
@@ -15,7 +17,12 @@ internal class OtherFeedbackDetailViewModel(
     private val sendFeedback: SendFeedbackUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OtherFeedbackDetailUiState())
-    val uiState: StateFlow<OtherFeedbackDetailUiState> = _uiState
+    val uiState: StateFlow<OtherFeedbackDetailUiState> =
+        _uiState.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            OtherFeedbackDetailUiState(),
+        )
 
     fun onTypeSelected(type: FeedbackType) {
         _uiState.update { it.copy(type = type, isSent = false, sendFailed = false) }

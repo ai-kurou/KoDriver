@@ -86,6 +86,71 @@ class OtherFeedbackDetailPaneTest {
     }
 
     @Test
+    fun `必須項目エラーを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState =
+                        OtherFeedbackDetailUiState(
+                            showMessageError = true,
+                            showNameError = true,
+                            showEmailError = true,
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("内容を入力してください").assertExists()
+        rule.onNodeWithText("名前を入力してください").assertExists()
+        rule.onNodeWithText("メールアドレスを入力してください").assertExists()
+    }
+
+    @Test
+    fun `送信中を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState =
+                        OtherFeedbackDetailUiState(
+                            message = "本文",
+                            name = "Kurou",
+                            email = "user@example.com",
+                            isSending = true,
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("送信中").assertExists()
+    }
+
+    @Test
+    fun `送信成功を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState = OtherFeedbackDetailUiState(isSent = true),
+                )
+            }
+        }
+
+        rule.onNodeWithText("フィードバックを送信しました。").assertExists()
+    }
+
+    @Test
+    fun `送信失敗を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState = OtherFeedbackDetailUiState(sendFailed = true),
+                )
+            }
+        }
+
+        rule.onNodeWithText("送信に失敗しました。時間をおいてもう一度お試しください。").assertExists()
+    }
+
+    @Test
     fun `戻るボタンをタップするとonBackが呼ばれる`() {
         var backCount = 0
         rule.setContent {
