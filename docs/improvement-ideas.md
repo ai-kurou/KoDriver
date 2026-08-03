@@ -18,19 +18,23 @@
 
 ---
 
-## バグ（再現確認済み）
+## バグ
+
+各項目の末尾に、実測で再現を確認したものか、コードからの推定かを明記している。
 
 - **対象**: `feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator`（`*WavNarratorEngine.speak()` と `*NarratorEventProcessor.speakWithPriority()`）
-  **課題**: 優先度の高いイベントで割り込むとき、`speakWithPriority()` は `ttsEngine.stop()` → `ttsEngine.speak(event)` の順に呼ぶ（`LmuWindowsNarratorEventProcessor.kt:300-302`）。しかし `speak()` の先頭に `if (soundPlayer.isPlaying) return` があり（`LmuWindowsWavNarratorEngine.kt:130`）、`stop()` によるキャンセルは非同期なので、直後の `speak()` の時点では `soundPlayer.isPlaying` がまだ `true` のまま早期 return する。結果、低優先の音声は途中で切られ、高優先の音声は再生されない（＝赤旗などの重要なアナウンスが無音になる）。一時テストで実測し、割り込み後の再生履歴に高優先イベントが現れないことを確認済み。`speak()` は3エンジンとも完全に同一実装のため全シミュレータで発生する。
-  **改善案**: `speak(queue = false)` の `isPlaying` ガードを見直す（割り込み経路では `cancelPlayback()` の完了を待ってから再生する、あるいは `isPlaying` ガードを `playJob?.isActive` 側の判定に寄せる）。あわせて `LmuWindowsWavNarratorEngineTest` の `FakeSoundPlayer` が `isPlaying` をコンストラクタ固定値で返しており、再生中／非再生中の遷移を再現できないため、`play()` が完了するまで `isPlaying = true` を返す Fake に差し替えて割り込みの回帰テストを追加する。
+  **課題**: 優先度の高いイベントで割り込むとき、`speakWithPriority()` は `ttsEngine.stop()` → `ttsEngine.speak(event)` の順に呼ぶ（`LmuWindowsNarratorEventProcessor.kt:300-302`）。しかし `speak()` の先頭に `if (soundPlayer.isPlaying) return` があり（`LmuWindowsWavNarratorEngine.kt:130`）、`stop()` によるキャンセルは非同期なので、直後の `speak()` の時点では `soundPlayer.isPlaying` がまだ `true` のまま早期 return する。結果、低優先の音声は途中で途切れ、高優先の音声は再生されない（＝赤旗などの重要なアナウンスが無音になる）。一時テストで実測し、割り込み後の再生履歴に高優先イベントが現れないことを確認済み。`speak()` は3エンジンとも完全に同一実装のため全シミュレータで発生する。
+  **改善案**: 「停止 → 次の再生」を直列化した1つの経路にまとめ、前の再生ジョブのキャンセル完了（`SoundPlayer` の停止まで）を待ってから新しい再生を開始する。単に `isPlaying` ガードを `playJob?.isActive` へ置き換えるのは不可。`cancelPlayback()` は `playbackParent.cancel()` の直後に `playJob = null` としており（`LmuWindowsWavNarratorEngine.kt:139-143`）、`SoundPlayer` の停止は非同期なので、旧音声がまだ鳴っている間に新音声を開始して二重再生になる。あわせて `LmuWindowsWavNarratorEngineTest` の `FakeSoundPlayer` が `isPlaying` をコンストラクタ固定値で返しており、再生中／非再生中の遷移を再現できないため、`play()` が完了するまで `isPlaying = true` を返す Fake に差し替えて割り込みの回帰テストを追加する。
 
 - **対象**: `feature:*-narrator` の3つの `*NarratorViewModel` と `core:domain` の `Determine*NarratorReadoutUseCase`
   **課題**: 読み上げ判定は `enabledStates.getValue(key)` でユーザー設定を参照している（本番コードに29箇所）。`Map.getValue` はキーが無いと `NoSuchElementException` を投げるが、ViewModel 側は `stateIn(..., SharingStarted.Eagerly, emptyMap())` で初期化しているため、DataStore の初回読み込みが完了する前にテレメトリが届くと例外になる。特に `Gt7Ps5NarratorViewModel.kt:211,215` の `currentSettings` getter、`LmuWindowsNarratorViewModel.kt:385,446`（`determinePitTiming*` の `enabled=` 引数）、`DetermineLmuWindowsNarratorReadoutUseCase.kt:562,578`（車両接近）は毎 tick 無条件に評価される。一時テストで再現し、`java.util.NoSuchElementException: Key Root is missing in the map.` が発生して当該ジョブが恒久停止することを確認済み（Android では未捕捉例外としてクラッシュに至る）。`SharedMemoryPollingSource` は待機なしで最初のバッファを emit するため、LMU 起動済みの状態でデスクトップアプリを起動するケースが最も現実的な発生条件。
   **改善案**: `getValue` を `getOrDefault` / `?: default` に置き換えるか、`enabledStates` が空の間は判定自体をスキップするガードを入れる。デフォルト値は `READOUT_ENABLED_STATE_DEFAULT` など既存の Defaults に揃える。あわせて「設定未ロード中にテレメトリが届いても例外にならない」テストを各 Narrator ViewModel に追加する。
 
 - **対象**: `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator` の `JvmSoundPlayer`・`AndroidSoundPlayer`
-  **課題**: LMU 版の SoundPlayer だけが改善されており、GT7 / ACE は旧実装のまま取り残されている。JVM は LMU が `SourceDataLine` + Bluetooth A2DP 対策（末尾に 0.3 秒の無音を書き足す）なのに対し GT7 / ACE は `Clip`、Android は LMU が `SoundPool` + セッション維持なのに対し GT7 / ACE は `MediaPlayer`。そのため **Bluetooth ヘッドセット使用時に語尾が切れる不具合が GT7・ACE には残っている**。加えて GT7 / ACE の `JvmSoundPlayer` は `AudioSystem.getAudioInputStream(...)` で開いた `AudioInputStream` を一度も `close()` しておらずリークしている（LMU は `.use { }` で修正済み）。
-  **改善案**: 下記「Narrator 3モジュールの重複」の共通化とあわせて、LMU の実装へ統一する。
+  **課題**: LMU 版の SoundPlayer だけが改善されており、GT7 / ACE は旧実装のまま取り残されている。JVM は LMU が `SourceDataLine` + Bluetooth A2DP 対策（末尾に 0.3 秒の無音を書き足す）なのに対し GT7 / ACE は `Clip`、Android は LMU が `SoundPool` + セッション維持なのに対し GT7 / ACE は `MediaPlayer`。
+  そのため **Bluetooth ヘッドセット使用時の語尾切れが GT7 / ACE では JVM・Android とも再発する可能性が高い**。ただしこれは実機での再現を確認したものではなく、LMU 側にのみ A2DP 対策の実装とコメントが入っており GT7 / ACE には無いという、コード上の差分からの推定である（実機再現の確認は未実施）。
+  一方、GT7 / ACE の `JvmSoundPlayer` が `AudioSystem.getAudioInputStream(...)` で開いた `AudioInputStream` を一度も `close()` していない点は、コード上で確認できる確実なリーク（LMU は `.use { }` で修正済み）。
+  **改善案**: 下記「Narrator 3モジュールの重複」の共通化とあわせて、LMU の実装へ統一する。着手時はまず GT7 / ACE で実機の Bluetooth 再生を確認し、語尾切れが再現するかを記録する。
 
 ---
 
@@ -52,7 +56,10 @@
 - **対象**: `:server`（`FlagWebSocket.kt` ほか WebSocket ルーティング10ファイル）
   **課題**: 各ファイルが `webSocket(path) { flow.distinctUntilChanged().let { sendJsonMessages(it) } }` の写経で、内容の差はパスと UseCase だけ。加えて命名が非対称で、ACE 側は `AceWindowsFlagWebSocket.kt` / `aceWindowsFlagWebSocket()` と接頭辞付きなのに、LMU 側は `FlagWebSocket.kt` / `flagWebSocket()` と無印のまま。シミュレータが3種になった今、無印のファイル名・関数名はどのシムのものか読み取れない。
   **改善案**: `Route.telemetryWebSocket(feature: KoDriverServerFeature, simulator: Simulator, flow: Flow<T>)` のような汎用関数1つに集約する。集約しない場合でも、LMU 側のファイル名・関数名に `lmuWindows` 接頭辞を付けて ACE 側と揃える。
-  **ついでに**: `Application.kt` の `get("/") { call.respondText("Hello, Ktor!") }` は Ktor 雛形の残骸なので、削除するか `/version` と同様に意味のある応答へ変更したい。
+
+- **対象**: `:server`（`Application.kt` のルート `get("/")`）
+  **課題**: `get("/") { call.respondText("Hello, Ktor!") }` が Ktor 雛形の残骸のまま残っている。LAN 内に公開されるエンドポイントであり、実運用上の意味を持たない応答を返している。
+  **改善案**: 削除するか、`/version` と同様にサーバーの状態が分かる意味のある応答（稼働確認用のヘルスチェックなど）へ変更する。
 
 - **対象**: `core:data`（`datasource/*Serializer.kt`, `datasource/*DataStoreFactory.kt`, `*RepositoryFactory.kt`, `repository/*RepositoryImpl.kt`）
   **課題**: Preferences 1種類につき Serializer / DataStoreFactory / RepositoryFactory / RepositoryImpl の4点セットが必要で、現在それぞれ 22 / 23 / 25 / 24 ファイル、合計で約94ファイルの定型コードになっている。設定を1つ増やすたびに4ファイル追加と、それぞれのテスト追加が必要。
