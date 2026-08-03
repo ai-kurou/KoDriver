@@ -16,3 +16,7 @@ kotlin {
         }
     }
 }
+
+compose.resources {
+    packageOfResClass = "kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources"
+}
