@@ -180,6 +180,60 @@ class LmuWindowsNarratorEventProcessorTest {
         }
 
     @Test
+    fun `読み上げたバーチャルエナジー残量イベントを直前と現在の残量データとともに保存する`() =
+        runTest {
+            val telemetryJsonSlot = slot<String>()
+            every { ttsEngine.currentReadoutItemKey } returns null
+            every { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, queue = false) } just Runs
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    telemetryJson = capture(telemetryJsonSlot),
+                )
+            } just Runs
+            val processor = createProcessor()
+
+            processor.processRemainingVirtualEnergy(
+                remainingVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.8),
+                events = emptyList(),
+                readoutOrder = emptyList(),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 100L,
+                logContext = logContext(),
+            )
+            processor.processRemainingVirtualEnergy(
+                remainingVirtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.3),
+                events = listOf(SpeechEvent.RemainingVirtualEnergyWarning),
+                readoutOrder = listOf(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root),
+                queueEnabledStates = emptyMap(),
+                observedAtMs = 200L,
+                logContext = logContext(),
+            )
+
+            val telemetryJson = telemetryJsonSlot.captured
+            val root = Json.parseToJsonElement(telemetryJson).jsonObject
+            assertEquals(
+                0.8,
+                root["previousRemainingVirtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double,
+            )
+            assertEquals(0.3, root["remainingVirtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
+            assertEquals(200L, root["observedAtMs"]!!.jsonPrimitive.long)
+            verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
+            verify(exactly = 1) { ttsEngine.speak(SpeechEvent.RemainingVirtualEnergyWarning, false) }
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    createdAt = 200L,
+                    simulator = Simulator.LmuWindows,
+                    readoutItemKey = ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root,
+                    telemetryJson = telemetryJson,
+                )
+            }
+            confirmVerified(telemetryLogRepository, ttsEngine)
+        }
+
+    @Test
     fun `読み上げたフラグイベントを直前と現在のフラグデータとともに保存する`() =
         runTest {
             val telemetryJsonSlot = slot<String>()
@@ -264,6 +318,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 rearLeft = 0.9,
                 rearRight = 0.9,
             )
+            assertEquals(0.5, root["virtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2), false) }
             coVerify(exactly = 1) {
