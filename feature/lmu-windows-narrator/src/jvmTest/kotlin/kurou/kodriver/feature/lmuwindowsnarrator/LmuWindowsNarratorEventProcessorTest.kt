@@ -318,6 +318,7 @@ class LmuWindowsNarratorEventProcessorTest {
                 rearLeft = 0.9,
                 rearRight = 0.9,
             )
+            assertEquals(0.5, root["virtualEnergy"]!!.jsonObject["remainingRatio"]!!.jsonPrimitive.double)
             verify(exactly = 1) { ttsEngine.currentReadoutItemKey }
             verify(exactly = 1) { ttsEngine.speak(SpeechEvent.PitTimingWarning(laps = 2), false) }
             coVerify(exactly = 1) {
