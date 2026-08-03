@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherfeedbackdetail.generated.resources.Res
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_diagnostics_description
+import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_invalid
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_label
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_required
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_failed
@@ -173,7 +174,13 @@ fun OtherFeedbackDetailPaneContent(
                 isError = uiState.showEmailError,
                 supportingText =
                     if (uiState.showEmailError) {
-                        { Text(stringResource(Res.string.feedback_email_required)) }
+                        val messageRes =
+                            if (uiState.showEmailFormatError) {
+                                Res.string.feedback_email_invalid
+                            } else {
+                                Res.string.feedback_email_required
+                            }
+                        { Text(stringResource(messageRes)) }
                     } else {
                         null
                     },

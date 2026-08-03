@@ -106,6 +106,23 @@ class OtherFeedbackDetailPaneTest {
     }
 
     @Test
+    fun `メールアドレスの形式エラーを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState =
+                        OtherFeedbackDetailUiState(
+                            email = "invalid-email",
+                            showEmailError = true,
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("有効なメールアドレスを入力してください").assertExists()
+    }
+
+    @Test
     fun `送信中を表示する`() {
         rule.setContent {
             MaterialTheme {

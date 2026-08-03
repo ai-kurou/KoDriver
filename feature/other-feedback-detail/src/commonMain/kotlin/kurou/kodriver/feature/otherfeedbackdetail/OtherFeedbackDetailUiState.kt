@@ -2,6 +2,10 @@ package kurou.kodriver.feature.otherfeedbackdetail
 
 import kurou.kodriver.domain.model.FeedbackType
 
+private val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
+
+internal fun isValidEmail(email: String): Boolean = EMAIL_REGEX.matches(email)
+
 data class OtherFeedbackDetailUiState(
     val type: FeedbackType = FeedbackType.BugReport,
     val message: String = "",
@@ -15,5 +19,8 @@ data class OtherFeedbackDetailUiState(
     val showEmailError: Boolean = false,
 ) {
     val canSend: Boolean
-        get() = message.isNotBlank() && name.isNotBlank() && email.isNotBlank() && !isSending
+        get() = message.isNotBlank() && name.isNotBlank() && isValidEmail(email) && !isSending
+
+    val showEmailFormatError: Boolean
+        get() = showEmailError && email.isNotBlank()
 }

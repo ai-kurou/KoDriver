@@ -49,13 +49,14 @@ internal class OtherFeedbackDetailViewModel(
 
     fun onSend() {
         val current = _uiState.value
-        val hasInputError = current.message.isBlank() || current.name.isBlank() || current.email.isBlank()
+        val hasInputError =
+            current.message.isBlank() || current.name.isBlank() || !isValidEmail(current.email)
         if (hasInputError) {
             _uiState.update {
                 it.copy(
                     showMessageError = current.message.isBlank(),
                     showNameError = current.name.isBlank(),
-                    showEmailError = current.email.isBlank(),
+                    showEmailError = !isValidEmail(current.email),
                     isSent = false,
                     sendFailed = false,
                 )
