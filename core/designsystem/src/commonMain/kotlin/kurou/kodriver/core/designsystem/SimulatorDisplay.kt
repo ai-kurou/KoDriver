@@ -1,0 +1,40 @@
+package kurou.kodriver.core.designsystem
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.painter.Painter
+import kurou.kodriver.core.designsystem.generated.resources.Res
+import kurou.kodriver.core.designsystem.generated.resources.ace
+import kurou.kodriver.core.designsystem.generated.resources.gt7
+import kurou.kodriver.core.designsystem.generated.resources.lmu
+import kurou.kodriver.core.designsystem.generated.resources.simulator_name_ace_windows
+import kurou.kodriver.core.designsystem.generated.resources.simulator_name_gt7_ps5
+import kurou.kodriver.core.designsystem.generated.resources.simulator_name_lmu_windows
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+private const val LMU_WINDOWS_ID = "lmu_windows"
+private const val GT7_PS5_ID = "gt7_ps5"
+private const val ACE_WINDOWS_ID = "ace_windows"
+
+/**
+ * [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。
+ * このモジュールは core:domain に依存しないため、型ではなく文字列IDを引数にとる。
+ */
+@Composable
+fun simulatorDisplayName(simulatorId: String): String =
+    when (simulatorId) {
+        LMU_WINDOWS_ID -> stringResource(Res.string.simulator_name_lmu_windows)
+        GT7_PS5_ID -> stringResource(Res.string.simulator_name_gt7_ps5)
+        ACE_WINDOWS_ID -> stringResource(Res.string.simulator_name_ace_windows)
+        else -> error("未対応のsimulatorId: $simulatorId")
+    }
+
+/** [simulatorId] は `kurou.kodriver.domain.model.Simulator.id` の値と一致させる必要がある。 */
+@Composable
+fun simulatorIcon(simulatorId: String): Painter =
+    when (simulatorId) {
+        GT7_PS5_ID -> painterResource(Res.drawable.gt7)
+        LMU_WINDOWS_ID -> painterResource(Res.drawable.lmu)
+        ACE_WINDOWS_ID -> painterResource(Res.drawable.ace)
+        else -> error("未対応のsimulatorId: $simulatorId")
+    }
