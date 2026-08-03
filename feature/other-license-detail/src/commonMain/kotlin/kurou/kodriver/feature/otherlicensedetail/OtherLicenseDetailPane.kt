@@ -6,10 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
-import kodriver.feature.otherlicensedetail.generated.resources.Res
-import kodriver.feature.otherlicensedetail.generated.resources.license_title
-import kodriver.feature.otherlicensedetail.generated.resources.navigate_back
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
+import kurou.kodriver.feature.otherlicensedetail.generated.resources.Res
+import kurou.kodriver.feature.otherlicensedetail.generated.resources.license_title
+import kurou.kodriver.feature.otherlicensedetail.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 
 /**

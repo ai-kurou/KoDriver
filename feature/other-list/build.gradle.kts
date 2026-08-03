@@ -68,6 +68,6 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherlist.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.otherlist.generated.resources"
     publicResClass = true
 }

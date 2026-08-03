@@ -11,15 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.RedFlagVoiceType
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_description
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_red
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_session_stop
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

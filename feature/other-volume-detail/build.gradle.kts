@@ -30,5 +30,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.othervolumedetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.othervolumedetail.generated.resources"
 }

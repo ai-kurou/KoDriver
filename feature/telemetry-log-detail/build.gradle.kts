@@ -29,5 +29,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.telemetrylogdetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.telemetrylogdetail.generated.resources"
 }

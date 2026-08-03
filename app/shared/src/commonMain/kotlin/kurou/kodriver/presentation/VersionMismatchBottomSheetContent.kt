@@ -11,14 +11,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.version_mismatch_app_version
-import kodriver.app.shared.generated.resources.version_mismatch_body
-import kodriver.app.shared.generated.resources.version_mismatch_close
-import kodriver.app.shared.generated.resources.version_mismatch_title
-import kodriver.app.shared.generated.resources.version_mismatch_update_app
-import kodriver.app.shared.generated.resources.version_mismatch_update_windows
-import kodriver.app.shared.generated.resources.version_mismatch_windows_version
+import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_app_version
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_body
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_close
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_title
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_update_app
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_update_windows
+import kurou.kodriver.app.shared.generated.resources.version_mismatch_windows_version
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

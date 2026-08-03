@@ -54,11 +54,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.nav_log
-import kodriver.app.shared.generated.resources.nav_more
-import kodriver.app.shared.generated.resources.nav_readout
 import kotlinx.coroutines.CancellationException
+import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.nav_log
+import kurou.kodriver.app.shared.generated.resources.nav_more
+import kurou.kodriver.app.shared.generated.resources.nav_readout
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.AceWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.AceWindowsReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane

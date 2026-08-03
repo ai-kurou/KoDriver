@@ -31,5 +31,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.debugstatedetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.debugstatedetail.generated.resources"
 }

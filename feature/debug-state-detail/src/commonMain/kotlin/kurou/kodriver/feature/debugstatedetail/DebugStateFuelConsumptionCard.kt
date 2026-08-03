@@ -3,17 +3,17 @@ package kurou.kodriver.feature.debugstatedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kodriver.feature.debugstatedetail.generated.resources.Res
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_liters
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_ratio
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_laps
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_percent
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_liters
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_per_lap_ratio
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_laps
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_fuel_consumption_remaining_percent
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 

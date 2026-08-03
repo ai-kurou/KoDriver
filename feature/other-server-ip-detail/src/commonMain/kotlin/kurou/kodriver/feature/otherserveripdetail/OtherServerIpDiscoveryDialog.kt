@@ -15,10 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.feature.otherserveripdetail.generated.resources.Res
-import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_cancel
-import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_confirm
-import kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_title
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.Res
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_cancel
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_confirm
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_dialog_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

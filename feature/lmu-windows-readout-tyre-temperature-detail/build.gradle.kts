@@ -19,5 +19,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources"
 }

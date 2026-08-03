@@ -1,11 +1,11 @@
 package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow
-import kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_yellow
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow
+import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_yellow
 import org.jetbrains.compose.resources.StringResource
 
 internal enum class FlagReadoutItem(

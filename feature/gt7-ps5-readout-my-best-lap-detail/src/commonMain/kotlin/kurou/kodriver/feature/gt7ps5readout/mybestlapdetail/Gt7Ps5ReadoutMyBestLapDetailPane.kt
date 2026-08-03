@@ -11,15 +11,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.Res
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_description
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_enabled
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
-import kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.Res
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_description
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_enabled
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_casual
+import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.generated.resources.my_best_lap_voice_type_formal
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

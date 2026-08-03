@@ -33,7 +33,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.telemetryloglist.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.telemetryloglist.generated.resources"
 }
 
 dependencies {

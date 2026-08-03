@@ -1,12 +1,12 @@
 package kurou.kodriver.presentation
 
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.ace_connected
-import kodriver.app.shared.generated.resources.ace_disconnected
-import kodriver.app.shared.generated.resources.gt7_connected
-import kodriver.app.shared.generated.resources.gt7_disconnected
-import kodriver.app.shared.generated.resources.lmu_connected
-import kodriver.app.shared.generated.resources.lmu_disconnected
+import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.ace_connected
+import kurou.kodriver.app.shared.generated.resources.ace_disconnected
+import kurou.kodriver.app.shared.generated.resources.gt7_connected
+import kurou.kodriver.app.shared.generated.resources.gt7_disconnected
+import kurou.kodriver.app.shared.generated.resources.lmu_connected
+import kurou.kodriver.app.shared.generated.resources.lmu_disconnected
 import org.junit.Test
 import kotlin.test.assertEquals
 

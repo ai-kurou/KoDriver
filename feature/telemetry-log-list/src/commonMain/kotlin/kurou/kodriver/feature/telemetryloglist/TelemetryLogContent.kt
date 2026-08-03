@@ -28,15 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
-import kodriver.feature.telemetryloglist.generated.resources.Res
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_failure
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_success
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_failure
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_success
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

@@ -3,10 +3,10 @@ package kurou.kodriver.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.banner_console_ip_not_configured
-import kodriver.app.shared.generated.resources.banner_simulator_connected
-import kodriver.app.shared.generated.resources.banner_simulator_disconnected
+import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.banner_console_ip_not_configured
+import kurou.kodriver.app.shared.generated.resources.banner_simulator_connected
+import kurou.kodriver.app.shared.generated.resources.banner_simulator_disconnected
 import kurou.kodriver.feature.main.ConnectionBannerViewModel
 import kurou.kodriver.feature.main.ConnectionBannerVmStatus
 import org.jetbrains.compose.resources.stringResource

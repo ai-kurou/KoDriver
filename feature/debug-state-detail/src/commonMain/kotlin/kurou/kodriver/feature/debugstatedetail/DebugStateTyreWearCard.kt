@@ -7,16 +7,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kodriver.feature.debugstatedetail.generated.resources.Res
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_fl
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_fr
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_rl
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_rr
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_fl
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_fr
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_rl
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_rr
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

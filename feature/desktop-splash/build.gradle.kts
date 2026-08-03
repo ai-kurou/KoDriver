@@ -23,5 +23,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.desktopsplash.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.desktopsplash.generated.resources"
 }

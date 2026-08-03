@@ -19,9 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import kodriver.feature.desktopsplash.generated.resources.Res
-import kodriver.feature.desktopsplash.generated.resources.app_icon
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.feature.desktopsplash.generated.resources.Res
+import kurou.kodriver.feature.desktopsplash.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
 
 private const val APP_ICON_SIZE_DP = 96

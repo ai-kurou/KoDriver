@@ -150,4 +150,8 @@ dependencies {
     testFixturesApi(testFixtures(projects.feature.otherConsoleIpDetail))
 }
 
+compose.resources {
+    packageOfResClass = "kurou.kodriver.app.shared.generated.resources"
+}
+
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
