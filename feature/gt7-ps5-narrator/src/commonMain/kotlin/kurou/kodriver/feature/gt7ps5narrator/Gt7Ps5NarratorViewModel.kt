@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.MyBestLapVoiceType
@@ -99,6 +100,107 @@ internal class Gt7Ps5NarratorViewModel(
 
     private var narratorState = Gt7Ps5NarratorState()
 
+    private val telemetryFlow =
+        selectedSimulator
+            .flatMapLatest { simulator ->
+                if (simulator !is Simulator.Gt7Ps5) {
+                    emptyFlow()
+                } else {
+                    myBestLapUseCases.observeGt7Ps5()
+                }
+            }.shareIn(viewModelScope, SharingStarted.Eagerly)
+
+    @Suppress("UnusedPrivateProperty")
+    private val myBestLapJob =
+        telemetryFlow
+            .onEach { telemetry ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineGt7Ps5NarratorReadout.determineMyBestLap(
+                        state = state,
+                        telemetry = telemetry,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.process(
+                    sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    telemetry = telemetry,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        Gt7Ps5TelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val remainingFuelLapsJob =
+        telemetryFlow
+            .onEach { telemetry ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
+                        state = state,
+                        telemetry = telemetry,
+                        settings = settings,
+                        observedAtMs = observedAtMs,
+                    )
+                narratorState = decision.state
+                eventProcessor.process(
+                    sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
+                    telemetry = telemetry,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        Gt7Ps5TelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
+    @Suppress("UnusedPrivateProperty")
+    private val remainingFuelJob =
+        telemetryFlow
+            .onEach { telemetry ->
+                val observedAtMs = currentTimeMs()
+                val state = narratorState
+                val settings = currentSettings
+                val decision =
+                    determineGt7Ps5NarratorReadout.determineRemainingFuel(
+                        state = state,
+                        telemetry = telemetry,
+                        settings = settings,
+                    )
+                narratorState = decision.state
+                eventProcessor.process(
+                    sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    telemetry = telemetry,
+                    events = decision.events,
+                    readoutOrder = readoutOrder.value,
+                    queueEnabledStates = queueEnabledStates.value,
+                    observedAtMs = observedAtMs,
+                    logContext =
+                        Gt7Ps5TelemetryLogContext(
+                            state = state,
+                            settings = settings,
+                            finalState = decision.state,
+                        ),
+                )
+            }.launchIn(viewModelScope)
+
     private val currentSettings: Gt7Ps5NarratorReadoutSettings
         get() =
             Gt7Ps5NarratorReadoutSettings(
@@ -112,82 +214,4 @@ internal class Gt7Ps5NarratorViewModel(
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
                 remainingFuelEnabled = listEnabledStates.value.getValue(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
             )
-
-    @Suppress("UnusedPrivateProperty")
-    private val readoutJob =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator !is Simulator.Gt7Ps5) {
-                    emptyFlow()
-                } else {
-                    myBestLapUseCases.observeGt7Ps5()
-                }
-            }.onEach { telemetry ->
-                val observedAtMs = currentTimeMs()
-                val settings = currentSettings
-                val initialState = narratorState
-                val myBestLapDecision =
-                    determineGt7Ps5NarratorReadout.determineMyBestLap(
-                        state = initialState,
-                        telemetry = telemetry,
-                        settings = settings,
-                    )
-                eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
-                    telemetry = telemetry,
-                    events = myBestLapDecision.events,
-                    readoutOrder = readoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        Gt7Ps5TelemetryLogContext(
-                            state = initialState,
-                            settings = settings,
-                            finalState = myBestLapDecision.state,
-                        ),
-                )
-                val remainingFuelLapsDecision =
-                    determineGt7Ps5NarratorReadout.determineRemainingFuelLaps(
-                        state = myBestLapDecision.state,
-                        telemetry = telemetry,
-                        settings = settings,
-                        observedAtMs = observedAtMs,
-                    )
-                narratorState = remainingFuelLapsDecision.state
-                eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                    telemetry = telemetry,
-                    events = remainingFuelLapsDecision.events,
-                    readoutOrder = readoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        Gt7Ps5TelemetryLogContext(
-                            state = myBestLapDecision.state,
-                            settings = settings,
-                            finalState = remainingFuelLapsDecision.state,
-                        ),
-                )
-                val remainingFuelDecision =
-                    determineGt7Ps5NarratorReadout.determineRemainingFuel(
-                        state = remainingFuelLapsDecision.state,
-                        telemetry = telemetry,
-                        settings = settings,
-                    )
-                narratorState = remainingFuelDecision.state
-                eventProcessor.process(
-                    sourceKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
-                    telemetry = telemetry,
-                    events = remainingFuelDecision.events,
-                    readoutOrder = readoutOrder.value,
-                    queueEnabledStates = queueEnabledStates.value,
-                    observedAtMs = observedAtMs,
-                    logContext =
-                        Gt7Ps5TelemetryLogContext(
-                            state = remainingFuelLapsDecision.state,
-                            settings = settings,
-                            finalState = remainingFuelDecision.state,
-                        ),
-                )
-            }.launchIn(viewModelScope)
 }

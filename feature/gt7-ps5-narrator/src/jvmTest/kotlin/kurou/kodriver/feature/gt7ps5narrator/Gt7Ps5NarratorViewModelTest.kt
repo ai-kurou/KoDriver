@@ -282,11 +282,16 @@ class Gt7Ps5NarratorViewModelTest {
                 val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
                 val ttsEngine = mockTts(spokenTexts)
                 val currentTimeMsQueue = mutableListOf(0L, 100_000L, 160_000L, 200_000L, 300_000L, 360_000L)
+                var currentTimeMsCallCount = 0
                 stubReadoutDefaults(fuelThreshold = 3)
                 createViewModel(
                     telemetryChannel = channel,
                     ttsEngine = ttsEngine,
-                    currentTimeMs = { currentTimeMsQueue.removeAt(0) },
+                    currentTimeMs = {
+                        // myBestLapJob/remainingFuelLapsJob/remainingFuelJobがテレメトリ1回につき
+                        // それぞれ1回ずつ呼ぶため、3回ごとに1つのタイムスタンプへ進める。
+                        currentTimeMsQueue[currentTimeMsCallCount / 3].also { currentTimeMsCallCount++ }
+                    },
                 )
                 runCurrent()
 
