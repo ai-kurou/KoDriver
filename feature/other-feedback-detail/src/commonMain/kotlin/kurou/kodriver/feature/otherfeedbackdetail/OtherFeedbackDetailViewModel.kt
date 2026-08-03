@@ -33,21 +33,26 @@ internal class OtherFeedbackDetailViewModel(
     }
 
     fun onNameChanged(name: String) {
-        _uiState.update { it.copy(name = name, isSent = false, sendFailed = false) }
+        _uiState.update { it.copy(name = name, isSent = false, sendFailed = false, showNameError = false) }
     }
 
     fun onEmailChanged(email: String) {
-        _uiState.update { it.copy(email = email, isSent = false, sendFailed = false) }
-    }
-
-    fun onIncludesDiagnosticsChanged(includesDiagnostics: Boolean) {
-        _uiState.update { it.copy(includesDiagnostics = includesDiagnostics, isSent = false, sendFailed = false) }
+        _uiState.update { it.copy(email = email, isSent = false, sendFailed = false, showEmailError = false) }
     }
 
     fun onSend() {
         val current = _uiState.value
-        if (current.message.isBlank()) {
-            _uiState.update { it.copy(showMessageError = true, isSent = false, sendFailed = false) }
+        val hasInputError = current.message.isBlank() || current.name.isBlank() || current.email.isBlank()
+        if (hasInputError) {
+            _uiState.update {
+                it.copy(
+                    showMessageError = current.message.isBlank(),
+                    showNameError = current.name.isBlank(),
+                    showEmailError = current.email.isBlank(),
+                    isSent = false,
+                    sendFailed = false,
+                )
+            }
             return
         }
         if (current.isSending) return
@@ -61,7 +66,7 @@ internal class OtherFeedbackDetailViewModel(
                             message = current.message,
                             email = current.email,
                             name = current.name,
-                            includesDiagnostics = current.includesDiagnostics,
+                            includesDiagnostics = true,
                         ),
                     )
                 _uiState.update {

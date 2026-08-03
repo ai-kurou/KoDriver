@@ -7,12 +7,13 @@ data class OtherFeedbackDetailUiState(
     val message: String = "",
     val name: String = "",
     val email: String = "",
-    val includesDiagnostics: Boolean = false,
     val isSending: Boolean = false,
     val isSent: Boolean = false,
     val sendFailed: Boolean = false,
     val showMessageError: Boolean = false,
+    val showNameError: Boolean = false,
+    val showEmailError: Boolean = false,
 ) {
     val canSend: Boolean
-        get() = message.isNotBlank() && !isSending
+        get() = message.isNotBlank() && name.isNotBlank() && email.isNotBlank() && !isSending
 }

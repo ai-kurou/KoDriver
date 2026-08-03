@@ -45,13 +45,15 @@ class OtherFeedbackDetailViewModelTest {
     private fun createViewModel() = OtherFeedbackDetailViewModel(SendFeedbackUseCase(repository))
 
     @Test
-    fun `本文が空なら送信せずエラーを表示する`() =
+    fun `必須項目が空なら送信せずエラーを表示する`() =
         runTest {
             val viewModel = createViewModel()
 
             viewModel.onSend()
 
             assertTrue(viewModel.uiState.value.showMessageError)
+            assertTrue(viewModel.uiState.value.showNameError)
+            assertTrue(viewModel.uiState.value.showEmailError)
             coVerify(exactly = 0) { repository.send(any()) }
             confirmVerified(repository)
         }
@@ -66,7 +68,6 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onMessageChanged("改善してほしいです")
             viewModel.onNameChanged("Kurou")
             viewModel.onEmailChanged("user@example.com")
-            viewModel.onIncludesDiagnosticsChanged(true)
             viewModel.onSend()
 
             assertTrue(viewModel.uiState.value.isSent)
@@ -92,13 +93,23 @@ class OtherFeedbackDetailViewModelTest {
             val viewModel = createViewModel()
 
             viewModel.onMessageChanged("失敗します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
             assertFalse(viewModel.uiState.value.isSent)
             assertTrue(viewModel.uiState.value.sendFailed)
             assertEquals("失敗します", viewModel.uiState.value.message)
             coVerify(exactly = 1) {
-                repository.send(Feedback(type = FeedbackType.BugReport, message = "失敗します"))
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "失敗します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                    ),
+                )
             }
             confirmVerified(repository)
         }

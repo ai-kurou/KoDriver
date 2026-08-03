@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -28,13 +27,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kodriver.feature.otherfeedbackdetail.generated.resources.Res
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_diagnostics_description
-import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_diagnostics_label
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_label
+import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_required
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_failed
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_message_label
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_message_placeholder
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_message_required
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_name_label
+import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_name_required
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_send
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_sending
 import kodriver.feature.otherfeedbackdetail.generated.resources.feedback_sent
@@ -67,7 +67,6 @@ fun OtherFeedbackDetailPane(
         onMessageChanged = viewModel::onMessageChanged,
         onNameChanged = viewModel::onNameChanged,
         onEmailChanged = viewModel::onEmailChanged,
-        onIncludesDiagnosticsChanged = viewModel::onIncludesDiagnosticsChanged,
         onSend = viewModel::onSend,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
@@ -85,7 +84,6 @@ fun OtherFeedbackDetailPaneContent(
     onMessageChanged: (String) -> Unit = {},
     onNameChanged: (String) -> Unit = {},
     onEmailChanged: (String) -> Unit = {},
-    onIncludesDiagnosticsChanged: (Boolean) -> Unit = {},
     onSend: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
@@ -157,6 +155,13 @@ fun OtherFeedbackDetailPaneContent(
                 value = uiState.name,
                 onValueChange = onNameChanged,
                 label = { Text(stringResource(Res.string.feedback_name_label)) },
+                isError = uiState.showNameError,
+                supportingText =
+                    if (uiState.showNameError) {
+                        { Text(stringResource(Res.string.feedback_name_required)) }
+                    } else {
+                        null
+                    },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -165,30 +170,22 @@ fun OtherFeedbackDetailPaneContent(
                 value = uiState.email,
                 onValueChange = onEmailChanged,
                 label = { Text(stringResource(Res.string.feedback_email_label)) },
+                isError = uiState.showEmailError,
+                supportingText =
+                    if (uiState.showEmailError) {
+                        { Text(stringResource(Res.string.feedback_email_required)) }
+                    } else {
+                        null
+                    },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { onIncludesDiagnosticsChanged(!uiState.includesDiagnostics) },
-            ) {
-                Checkbox(
-                    checked = uiState.includesDiagnostics,
-                    onCheckedChange = onIncludesDiagnosticsChanged,
-                )
-                Column {
-                    Text(stringResource(Res.string.feedback_diagnostics_label))
-                    Text(
-                        text = stringResource(Res.string.feedback_diagnostics_description),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            Text(
+                text = stringResource(Res.string.feedback_diagnostics_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(modifier = Modifier.height(16.dp))
             FeedbackStatus(uiState)
             Button(

@@ -10,10 +10,11 @@
     <string name="feedback_message_label">内容</string>
     <string name="feedback_message_placeholder">気づいたことや困っていることを入力してください</string>
     <string name="feedback_message_required">内容を入力してください</string>
-    <string name="feedback_name_label">名前（任意）</string>
-    <string name="feedback_email_label">メールアドレス（任意）</string>
-    <string name="feedback_diagnostics_label">診断情報を含める</string>
-    <string name="feedback_diagnostics_description">アプリの状態を含めて原因を調べやすくします。</string>
+    <string name="feedback_name_label">名前</string>
+    <string name="feedback_name_required">名前を入力してください</string>
+    <string name="feedback_email_label">メールアドレス</string>
+    <string name="feedback_email_required">メールアドレスを入力してください</string>
+    <string name="feedback_diagnostics_description">原因調査のため、アプリの状態も送信されます。</string>
     <string name="feedback_send">送信</string>
     <string name="feedback_sending">送信中</string>
     <string name="feedback_sent">フィードバックを送信しました。</string>
