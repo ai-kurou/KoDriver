@@ -124,7 +124,3 @@
 - **対象**: `feature:lmu-windows-readout-remaining-virtual-energy-detail` / `app:shared` の `build.gradle.kts`
   **課題**: `composeResources` を持つのに `compose.resources { packageOfResClass = ... }` を設定していない2モジュール。前者は生成されるリソースパッケージがモジュール名由来の `kodriver.feature.lmu_windows_readout_remaining_virtual_energy_detail.generated.resources` となり、他24モジュールの `kodriver.feature.xxxdetail.generated.resources` 形式から1つだけ外れている。
   **改善案**: 他モジュールと同じ命名で `packageOfResClass` を明示する。あわせて、feature 系が `kodriver.feature.*` で narrator 系と `core:designsystem` が `kurou.kodriver.*` と接頭辞が二系統に割れている点も、どちらかへ寄せるか方針をドキュメント化したい。
-
-- **対象**: `settings.gradle.kts` と `CLAUDE.md`（モジュール構成のツリー）
-  **課題**: モジュールを追加した際、`CLAUDE.md` 冒頭のツリーへの追記が漏れやすい（`feature:other-feedback-detail` の記載漏れが実際に発生し、対応する PR で修正済み）。現状は手作業で気づく以外に検知手段がない。
-  **改善案**: `settings.gradle.kts` の `include()` 一覧と `CLAUDE.md` 記載のモジュール名を突き合わせるチェック（テストか Gradle タスク）を追加し、記載漏れを機械的に検出できるようにする。

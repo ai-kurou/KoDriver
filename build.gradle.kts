@@ -199,6 +199,68 @@ moduleGraphAssert {
     )
 }
 
+// CLAUDE.md 冒頭のモジュール構成ツリーへの記載漏れ（#911 で発生）を機械的に検出するタスク。
+// settings.gradle.kts の include() 一覧と CLAUDE.md のツリー内に列挙された、
+// 説明文付きの葉モジュール名（グループ見出しの core/ feature/ app/ 自体は対象外）を突き合わせる。
+tasks.register("assertClaudeMdModuleList") {
+    group = "verification"
+    description = "Verifies settings.gradle.kts modules and CLAUDE.md's module tree are in sync."
+
+    val settingsFile = layout.projectDirectory.file("settings.gradle.kts").asFile
+    val claudeMdFile = layout.projectDirectory.file("CLAUDE.md").asFile
+    inputs.file(settingsFile)
+    inputs.file(claudeMdFile)
+
+    doLast {
+        val settingsModules = settingsFile
+            .readLines()
+            .mapNotNull { line -> Regex("""include\("([^"]+)"\)""").find(line)?.groupValues?.get(1) }
+            .map { path -> path.substringAfterLast(":") }
+            .toSet()
+
+        val claudeMdLines = claudeMdFile.readLines()
+        val headingIndex = claudeMdLines.indexOfFirst { it.trim() == "## モジュール構成" }
+        val treeStart = claudeMdLines
+            .drop(headingIndex + 1)
+            .indexOfFirst { it.trim() == "```" }
+            .let { relativeIndex -> if (relativeIndex == -1) -1 else headingIndex + 1 + relativeIndex }
+        val treeEnd = claudeMdLines
+            .drop(treeStart + 1)
+            .indexOfFirst { it.trim() == "```" }
+            .let { relativeIndex -> if (relativeIndex == -1) -1 else treeStart + 1 + relativeIndex }
+        check(headingIndex != -1 && treeStart != -1 && treeEnd != -1) {
+            "CLAUDE.md の '## モジュール構成' コードブロックが見つかりません"
+        }
+
+        val treeDrawingChars = charArrayOf('│', '├', '└', '─', ' ')
+        val documentedModules = claudeMdLines
+            .subList(treeStart + 2, treeEnd) // "```" と先頭の "KoDriver/" 行を除く
+            .mapNotNull { line ->
+                val stripped = line.trimStart(*treeDrawingChars)
+                val slashIndex = stripped.indexOf('/')
+                if (slashIndex == -1) return@mapNotNull null
+                val name = stripped.substring(0, slashIndex)
+                val rest = stripped.substring(slashIndex + 1)
+                // グループ見出し（core/ feature/ app/）は説明文を持たないため除外する
+                name.takeIf { rest.isNotBlank() }
+            }.toSet()
+
+        val missingFromClaudeMd = settingsModules - documentedModules
+        val staleInClaudeMd = documentedModules - settingsModules
+        check(missingFromClaudeMd.isEmpty() && staleInClaudeMd.isEmpty()) {
+            buildString {
+                appendLine("CLAUDE.md のモジュール構成ツリーと settings.gradle.kts が一致していません。")
+                if (missingFromClaudeMd.isNotEmpty()) {
+                    appendLine("  CLAUDE.md に記載がないモジュール: ${missingFromClaudeMd.sorted()}")
+                }
+                if (staleInClaudeMd.isNotEmpty()) {
+                    appendLine("  settings.gradle.kts に存在しない記載: ${staleInClaudeMd.sorted()}")
+                }
+            }
+        }
+    }
+}
+
 tasks.register("generateModuleGraphImages") {
     group = "documentation"
     description = "Generates SVG module dependency graphs and updates each module's README.md"
@@ -372,6 +434,7 @@ val preMergeCheck = tasks.register("preMergeCheck") {
     description = "Runs all mandatory pre-merge checks (detekt, ktlint, module graph, tests with coverage, app builds)."
     dependsOn(
         ":assertModuleGraph",
+        ":assertClaudeMdModuleList",
         ":koverXmlReport",
         ":app:androidApp:assembleDebug",
         ":app:desktopApp:jar",
