@@ -21,6 +21,18 @@ class TemperatureFormatterTest {
         assertEquals("-", wheelTemperatureText(emptyMap(), WheelIndex.FRONT_LEFT))
     }
 
+    @Test
+    fun `カーカス温度は対象ホイールが存在する場合は摂氏をそのまま表示する`() {
+        val wheels = mapOf(WheelIndex.FRONT_LEFT to 92.5)
+
+        assertEquals("92.5", wheelCarcassTemperatureText(wheels, WheelIndex.FRONT_LEFT))
+    }
+
+    @Test
+    fun `カーカス温度は対象ホイールが存在しない場合はハイフンを表示する`() {
+        assertEquals("-", wheelCarcassTemperatureText(emptyMap(), WheelIndex.FRONT_LEFT))
+    }
+
     private fun sampleWheel(surfaceTemperatureK: Double) =
         LmuWindowsTyreWheelData(
             surfaceTemperatureK = surfaceTemperatureK,

@@ -59,7 +59,7 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onAllNodesWithText("未取得").assertCountEquals(11)
+        rule.onAllNodesWithText("未取得").assertCountEquals(12)
     }
 
     @Test
@@ -357,7 +357,7 @@ class DebugStateDetailPaneTest {
                 }
             }
 
-            rule.onAllNodesWithText("未取得").assertCountEquals(11)
+            rule.onAllNodesWithText("未取得").assertCountEquals(12)
         }
     }
 

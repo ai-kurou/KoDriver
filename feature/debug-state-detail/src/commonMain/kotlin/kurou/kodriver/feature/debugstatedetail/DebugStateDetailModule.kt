@@ -5,6 +5,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
@@ -20,13 +21,27 @@ import org.koin.dsl.module
  * 提供: DebugStateDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: LmuWindowsFlagRepository・SimulatorPreferencesRepository・
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
- * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・DebugStateCardOrderPreferencesRepository
+ * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
+ * DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
 val debugStateDetailModule =
     module {
         viewModel {
-            DebugStateDetailViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+            DebugStateDetailViewModel(
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get(),
+            )
         }
 
         factory { ObserveSelectedSimulatorUseCase(get()) }
@@ -37,6 +52,7 @@ val debugStateDetailModule =
         factory { ObserveAceWindowsFuelUseCase(get()) }
         factory { ObserveAceWindowsFlagUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
+        factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveDebugStateCardOrderUseCase(get()) }
         factory { ResolveDebugStateCardOrderUseCase() }
         factory { SaveDebugStateCardOrderUseCase(get()) }
