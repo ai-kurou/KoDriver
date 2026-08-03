@@ -5,7 +5,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.repository.FeedbackRepository
@@ -25,7 +25,7 @@ class SendFeedbackUseCaseTest {
 
     @Test
     fun `入力値を正規化してRepositoryへ送信する`() =
-        runBlocking {
+        runTest {
             coEvery { repository.send(any()) } returns Result.success(Unit)
             val useCase = SendFeedbackUseCase(repository)
 
@@ -57,7 +57,7 @@ class SendFeedbackUseCaseTest {
 
     @Test
     fun `任意項目が空文字ならnullとして送信する`() =
-        runBlocking {
+        runTest {
             coEvery { repository.send(any()) } returns Result.success(Unit)
             val useCase = SendFeedbackUseCase(repository)
 
@@ -87,7 +87,7 @@ class SendFeedbackUseCaseTest {
 
     @Test
     fun `本文が空なら失敗してRepositoryへ送信しない`() =
-        runBlocking {
+        runTest {
             val useCase = SendFeedbackUseCase(repository)
 
             val result = useCase(Feedback(type = FeedbackType.Question, message = "  "))
