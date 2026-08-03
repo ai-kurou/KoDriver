@@ -332,12 +332,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousVehicleApproach":${previous?.toJson() ?: "null"},""" +
-        """"vehicleApproach":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
+        """"previousVehicleApproach":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"vehicleApproach":${telemetryLogJson.encodeToString(current)},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 private fun buildTelemetryLogJson(
@@ -349,17 +349,13 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
         """"previousTelemetry":${previous?.toJson() ?: "null"},""" +
         """"telemetry":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
-
-private fun LmuWindowsNarratorReadoutSettings.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
-
-private fun LmuWindowsNarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
 private fun LmuWindowsTelemetryData.toJson(): String =
     "{" +
@@ -368,14 +364,6 @@ private fun LmuWindowsTelemetryData.toJson(): String =
         """"bestLapTimeMs":${timing.bestLapTimeMs},""" +
         """"currentLap":${timing.currentLap},""" +
         """"maxLaps":${timing.maxLaps}""" +
-        "}"
-
-private fun LmuWindowsVehicleApproachData.toJson(): String =
-    "{" +
-        """"sideBySideLeftVehicleIds":${sideBySideLeftVehicleIds.sorted()},""" +
-        """"sideBySideRightVehicleIds":${sideBySideRightVehicleIds.sorted()},""" +
-        """"lateralDistanceLeftMeters":$lateralDistanceLeftMeters,""" +
-        """"lateralDistanceRightMeters":$lateralDistanceRightMeters""" +
         "}"
 
 private fun buildTelemetryLogJson(
@@ -387,12 +375,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
-        """"previousVehicleDamage":${previous?.toJson() ?: "null"},""" +
-        """"vehicleDamage":${current.toJson()},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
+        """"previousVehicleDamage":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"vehicleDamage":${telemetryLogJson.encodeToString(current)},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
@@ -410,12 +398,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
         """"previousTyreWear":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
         """"tyreWear":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
@@ -433,12 +421,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
         """"previousRemainingVirtualEnergy":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
         """"remainingVirtualEnergy":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 private fun buildPitTimingTelemetryLogJson(
@@ -451,20 +439,13 @@ private fun buildPitTimingTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
         """"telemetry":${telemetry.toJson()},""" +
         """"virtualEnergy":${telemetryLogJson.encodeToString(virtualEnergy)},""" +
         """"tyreWear":${telemetryLogJson.encodeToString(tyreWear)},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
-        "}"
-
-private fun LmuWindowsVehicleDamageData.toJson(): String =
-    "{" +
-        """"overheating":$overheating,""" +
-        """"partDetached":$partDetached,""" +
-        """"lastImpactMagnitude":$lastImpactMagnitude""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
@@ -482,12 +463,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
         """"previousRaceFlags":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
         """"raceFlags":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
@@ -506,12 +487,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${state.toJsonString()},""" +
+        """"state":${telemetryLogJson.encodeToString(state)},""" +
         """"input":${telemetryLogJson.encodeToString(input)},""" +
-        """"settings":${settings.toJsonString()},""" +
+        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"overheatState":${overheatState.toJsonString()},""" +
-        """"finalState":${finalState.toJsonString()}""" +
+        """"overheatState":${telemetryLogJson.encodeToString(overheatState)},""" +
+        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
@@ -522,20 +503,4 @@ private val telemetryLogJson =
     Json {
         encodeDefaults = true
         explicitNulls = true
-    }
-
-private fun String.toJsonStringLiteral(): String =
-    buildString {
-        append('"')
-        this@toJsonStringLiteral.forEach { char ->
-            when (char) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                '\t' -> append("\\t")
-                else -> append(char)
-            }
-        }
-        append('"')
     }
