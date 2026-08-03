@@ -19,5 +19,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources"
 }

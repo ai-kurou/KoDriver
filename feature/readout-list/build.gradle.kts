@@ -28,7 +28,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.readoutlist.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.readoutlist.generated.resources"
 }
 
 dependencies {

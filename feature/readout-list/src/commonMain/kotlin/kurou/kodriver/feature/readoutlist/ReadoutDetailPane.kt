@@ -14,8 +14,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import kodriver.feature.readoutlist.generated.resources.Res
-import kodriver.feature.readoutlist.generated.resources.navigate_back
+import kurou.kodriver.feature.readoutlist.generated.resources.Res
+import kurou.kodriver.feature.readoutlist.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,18 +1,18 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black_white
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_blue
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_checkered
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_green
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_orange_circle
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_red
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_red_yellow_stripes
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_white
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_yellow
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black_white
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_blue
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_checkered
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_green
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_orange_circle
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_red
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_red_yellow_stripes
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_white
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_yellow
 import org.jetbrains.compose.resources.StringResource
 
 internal enum class FlagReadoutItem(

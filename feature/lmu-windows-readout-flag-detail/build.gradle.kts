@@ -18,5 +18,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources"
 }

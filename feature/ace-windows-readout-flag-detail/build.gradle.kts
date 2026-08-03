@@ -18,5 +18,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.acewindowsreadout.flagdetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources"
 }

@@ -1,6 +1,6 @@
 package kurou.kodriver.core.designsystem
 
-import kodriver.core.designsystem.generated.resources.Res
+import kurou.kodriver.core.designsystem.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)

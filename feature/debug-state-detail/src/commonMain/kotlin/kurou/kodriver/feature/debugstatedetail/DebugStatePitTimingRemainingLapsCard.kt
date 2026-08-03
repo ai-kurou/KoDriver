@@ -3,13 +3,13 @@ package kurou.kodriver.feature.debugstatedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kodriver.feature.debugstatedetail.generated.resources.Res
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_tyre_wear_remaining_laps
-import kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_virtual_energy_remaining_laps
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_tyre_wear_remaining_laps
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_virtual_energy_remaining_laps
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.round
 

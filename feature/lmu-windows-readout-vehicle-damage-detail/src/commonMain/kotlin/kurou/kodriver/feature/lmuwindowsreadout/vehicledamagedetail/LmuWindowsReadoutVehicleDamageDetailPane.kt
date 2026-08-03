@@ -11,13 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.Res
-import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_description
-import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_chip_label
-import kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.Res
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_description
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_chip_label
+import kurou.kodriver.feature.lmuwindowsreadout.vehicledamagedetail.generated.resources.vehicle_damage_overheat_switch_label
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

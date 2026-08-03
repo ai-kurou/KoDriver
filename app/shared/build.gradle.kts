@@ -151,7 +151,7 @@ dependencies {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.app.shared.generated.resources"
+    packageOfResClass = "kurou.kodriver.app.shared.generated.resources"
 }
 
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))

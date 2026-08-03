@@ -48,14 +48,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kodriver.feature.telemetryloglist.generated.resources.Res
-import kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
+import kurou.kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

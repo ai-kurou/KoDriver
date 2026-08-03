@@ -29,7 +29,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherconsoleipdetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.otherconsoleipdetail.generated.resources"
 }
 
 dependencies {

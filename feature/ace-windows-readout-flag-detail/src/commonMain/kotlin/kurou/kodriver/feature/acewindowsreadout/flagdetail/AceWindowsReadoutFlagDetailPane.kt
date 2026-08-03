@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
-import kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_description
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
+import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_description
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

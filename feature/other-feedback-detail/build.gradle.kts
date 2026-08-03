@@ -22,5 +22,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherfeedbackdetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.otherfeedbackdetail.generated.resources"
 }

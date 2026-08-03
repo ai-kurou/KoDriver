@@ -29,5 +29,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherlicensedetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.otherlicensedetail.generated.resources"
 }

@@ -41,7 +41,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.gt7ps5narrator.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.gt7ps5narrator.generated.resources"
 }
 
 dependencies {

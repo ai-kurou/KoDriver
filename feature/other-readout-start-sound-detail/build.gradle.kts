@@ -32,7 +32,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherreadoutstartsounddetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources"
 }
 
 dependencies {

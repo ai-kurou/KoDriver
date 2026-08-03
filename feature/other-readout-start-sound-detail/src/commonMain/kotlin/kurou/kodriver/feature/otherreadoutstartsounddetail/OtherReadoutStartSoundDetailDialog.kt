@@ -17,13 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.otherreadoutstartsounddetail.generated.resources.Res
-import kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_cancel
-import kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_electronic_noise
-import kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_formula_radio
-import kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_ok
-import kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_title
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.Res
+import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_cancel
+import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_electronic_noise
+import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_formula_radio
+import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_ok
+import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

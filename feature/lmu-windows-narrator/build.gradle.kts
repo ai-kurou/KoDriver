@@ -34,7 +34,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.lmuwindowsnarrator.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.lmuwindowsnarrator.generated.resources"
 }
 
 dependencies {

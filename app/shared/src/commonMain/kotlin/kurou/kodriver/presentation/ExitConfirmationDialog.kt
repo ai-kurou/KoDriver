@@ -19,12 +19,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kodriver.app.shared.generated.resources.Res
-import kodriver.app.shared.generated.resources.exit_confirmation_body
-import kodriver.app.shared.generated.resources.exit_confirmation_cancel
-import kodriver.app.shared.generated.resources.exit_confirmation_do_not_show_again
-import kodriver.app.shared.generated.resources.exit_confirmation_exit
-import kodriver.app.shared.generated.resources.exit_confirmation_title
+import kurou.kodriver.app.shared.generated.resources.Res
+import kurou.kodriver.app.shared.generated.resources.exit_confirmation_body
+import kurou.kodriver.app.shared.generated.resources.exit_confirmation_cancel
+import kurou.kodriver.app.shared.generated.resources.exit_confirmation_do_not_show_again
+import kurou.kodriver.app.shared.generated.resources.exit_confirmation_exit
+import kurou.kodriver.app.shared.generated.resources.exit_confirmation_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

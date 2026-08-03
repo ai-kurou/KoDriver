@@ -7,11 +7,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import kodriver.feature.telemetryloglist.generated.resources.Res
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_cancel_button
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_body
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_button
-import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_title
+import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_cancel_button
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_body
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_button
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_confirm_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

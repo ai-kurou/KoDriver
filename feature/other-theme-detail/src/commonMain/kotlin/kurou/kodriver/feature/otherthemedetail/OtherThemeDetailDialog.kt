@@ -17,14 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kodriver.feature.otherthemedetail.generated.resources.Res
-import kodriver.feature.otherthemedetail.generated.resources.theme_cancel
-import kodriver.feature.otherthemedetail.generated.resources.theme_dark
-import kodriver.feature.otherthemedetail.generated.resources.theme_light
-import kodriver.feature.otherthemedetail.generated.resources.theme_ok
-import kodriver.feature.otherthemedetail.generated.resources.theme_system
-import kodriver.feature.otherthemedetail.generated.resources.theme_title
 import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.feature.otherthemedetail.generated.resources.Res
+import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_cancel
+import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_dark
+import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_light
+import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_ok
+import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_system
+import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

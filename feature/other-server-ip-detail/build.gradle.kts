@@ -29,5 +29,5 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "kodriver.feature.otherserveripdetail.generated.resources"
+    packageOfResClass = "kurou.kodriver.feature.otherserveripdetail.generated.resources"
 }
