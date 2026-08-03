@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,14 +54,9 @@ import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
 import kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import kotlinx.coroutines.launch
-import kurou.kodriver.core.designsystem.generated.resources.ace
-import kurou.kodriver.core.designsystem.generated.resources.gt7
-import kurou.kodriver.core.designsystem.generated.resources.lmu
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import kurou.kodriver.core.designsystem.generated.resources.Res as DesignSystemRes
 
 @Composable
 internal fun TelemetryLogListPane(
@@ -342,7 +336,7 @@ private fun TelemetryLogListItem(
                 modifier = Modifier.size(width = 40.dp, height = 64.dp),
             ) {
                 Image(
-                    painter = simulatorIcon(log.simulator),
+                    painter = simulatorIcon(log.simulator.id),
                     contentDescription = null,
                     modifier =
                         Modifier
@@ -358,14 +352,6 @@ private fun TelemetryLogListItem(
                 .clickable(onClick = onClick),
     )
 }
-
-@Composable
-private fun simulatorIcon(simulator: Simulator): Painter =
-    when (simulator) {
-        Simulator.Gt7Ps5 -> painterResource(DesignSystemRes.drawable.gt7)
-        Simulator.LmuWindows -> painterResource(DesignSystemRes.drawable.lmu)
-        Simulator.AceWindows -> painterResource(DesignSystemRes.drawable.ace)
-    }
 
 internal fun formatTelemetryLogTime(
     createdAt: Long,
