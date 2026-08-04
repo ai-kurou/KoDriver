@@ -11,11 +11,16 @@ import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.AceWindowsCarLocation
+import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsPitState
+import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
@@ -117,6 +122,12 @@ private val sampleTyreCarcassTemperature =
 
 private val sampleVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar")
 
+private val sampleAceWindowsStatus =
+    AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = AceWindowsCarLocation.TRACK)
+
+private val sampleLmuWindowsPitStatus =
+    LmuWindowsPitStatusData(inPits = true, pitState = LmuWindowsPitState.ENTERING, inGarageStall = false)
+
 private val sampleVehicleApproach =
     LmuWindowsVehicleApproachData(
         sideBySideLeftVehicleIds = setOf(4),
@@ -157,6 +168,8 @@ class DebugStateDetailPaneScreenshotTest {
             vehicleApproach = sampleVehicleApproach,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
             lmuWindowsVehicleClass = sampleVehicleClass,
+            aceWindowsStatus = sampleAceWindowsStatus,
+            lmuWindowsPitStatus = sampleLmuWindowsPitStatus,
             enabledCardKeys = defaultDebugStateCardOrder.toSet(),
         )
 

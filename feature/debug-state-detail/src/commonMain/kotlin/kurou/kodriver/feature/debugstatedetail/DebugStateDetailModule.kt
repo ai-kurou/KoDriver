@@ -2,9 +2,11 @@ package kurou.kodriver.feature.debugstatedetail
 
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
+import kurou.kodriver.domain.usecase.ObserveAceWindowsStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsPitStatusUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -24,13 +26,16 @@ import org.koin.dsl.module
  * 消費（get で解決）: LmuWindowsFlagRepository・SimulatorPreferencesRepository・
  * LmuWindowsVirtualEnergyRepository・LmuWindowsRepository・Gt7Ps5Repository・AceWindowsFuelRepository・
  * AceWindowsFlagRepository・LmuWindowsVehicleApproachRepository・LmuWindowsTyreCarcassTemperatureRepository・
- * LmuWindowsVehicleClassRepository・DebugStateCardOrderPreferencesRepository
+ * LmuWindowsVehicleClassRepository・AceWindowsStatusRepository・LmuWindowsPitStatusRepository・
+ * DebugStateCardOrderPreferencesRepository
  * （:core:lmu-windows-data / :core:gt7-ps5-data / :core:ace-windows-data / :core:data）。
  */
 val debugStateDetailModule =
     module {
         viewModel {
             DebugStateDetailViewModel(
+                get(),
+                get(),
                 get(),
                 get(),
                 get(),
@@ -59,6 +64,8 @@ val debugStateDetailModule =
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }
         factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
         factory { ObserveLmuWindowsVehicleClassUseCase(get()) }
+        factory { ObserveAceWindowsStatusUseCase(get()) }
+        factory { ObserveLmuWindowsPitStatusUseCase(get()) }
         factory { ObserveDebugStateCardOrderUseCase(get()) }
         factory { ResolveDebugStateCardOrderUseCase() }
         factory { SaveDebugStateCardOrderUseCase(get()) }
