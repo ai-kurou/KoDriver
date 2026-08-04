@@ -177,7 +177,7 @@ moduleGraphAssert {
         ":core:.*windows.*data -> :core:windows-shared-memory",
         // narrator系featureモジュール → core:narrator（WAV音声再生・SoundPlayer・WavNarratorEngineの共通基盤。
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
-        ":feature:.*narrator.* -> :core:narrator",
+        ":feature:.*narrator -> :core:narrator",
         ":server -> :core:domain",
     )
     restricted = arrayOf(
