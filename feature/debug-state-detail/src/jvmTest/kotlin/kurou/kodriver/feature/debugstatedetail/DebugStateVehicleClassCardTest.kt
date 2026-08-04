@@ -49,14 +49,34 @@ class DebugStateVehicleClassCardTest {
     }
 
     @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
+    fun `selectedSimulatorがGT7の場合はクラス名を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            vehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            gt7VehicleClass = "Gr.3",
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("Gr.3").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7でクラス名が空文字列の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7VehicleClass = "",
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,

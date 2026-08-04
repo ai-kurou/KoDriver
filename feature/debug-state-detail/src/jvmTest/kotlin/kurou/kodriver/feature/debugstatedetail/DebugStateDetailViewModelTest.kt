@@ -54,6 +54,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -123,6 +124,7 @@ class DebugStateDetailViewModelTest {
             observeLmuWindowsVirtualEnergy = ObserveLmuWindowsVirtualEnergyUseCase(virtualEnergyRepository),
             observeLmuWindowsTelemetry = ObserveLmuWindowsUseCase(lmuWindowsRepository),
             observeGt7Ps5Telemetry = ObserveGt7Ps5UseCase(gt7Ps5Repository),
+            observeGt7Ps5VehicleClass = ObserveGt7Ps5VehicleClassUseCase(gt7Ps5Repository),
             observeAceWindowsFuel = ObserveAceWindowsFuelUseCase(aceWindowsFuelRepository),
             observeAceWindowsFlag = ObserveAceWindowsFlagUseCase(aceWindowsFlagRepository),
             observeLmuWindowsVehicleApproach = ObserveLmuWindowsVehicleApproachUseCase(vehicleApproachRepository),
@@ -133,18 +135,6 @@ class DebugStateDetailViewModelTest {
             resolveCardOrder = ResolveDebugStateCardOrderUseCase(),
             saveCardOrder = SaveDebugStateCardOrderUseCase(cardOrderRepository),
         )
-
-    private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
-        LmuWindowsVehicleApproachData(
-            sideBySideLeftVehicleIds = leftVehicleIds,
-            sideBySideRightVehicleIds = emptySet(),
-            lateralDistanceLeftMeters = if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0,
-            lateralDistanceRightMeters = Double.MAX_VALUE,
-        )
-
-    private fun sampleTyreCarcassTemperature() = LmuWindowsTyreCarcassTemperatureData(wheels = emptyMap())
-
-    private fun sampleVehicleClass() = LmuWindowsVehicleClassData(name = "Hypercar")
 
     @Test
     fun `フラグ情報を未取得の場合は uiState の raceFlags が null`() =
@@ -172,7 +162,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -221,7 +211,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -269,7 +259,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -317,7 +307,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -365,7 +355,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -413,7 +403,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -462,7 +452,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -510,7 +500,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -558,7 +548,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -607,7 +597,56 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                tyreCarcassTemperatureRepository,
+                vehicleClassRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `GT7車両クラス情報を購読すると uiState に反映される`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(null)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns
+                MutableStateFlow(sampleGt7Ps5Telemetry(0, carCategory = "Gr.3"))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            val state = viewModel.uiState.first()
+
+            assertEquals("Gr.3", state.gt7VehicleClass)
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -673,7 +712,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -740,7 +779,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -807,7 +846,7 @@ class DebugStateDetailViewModelTest {
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
             verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
-            verify(exactly = 1) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
             verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
             verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
             verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
@@ -892,14 +931,29 @@ private fun sampleLmuWindowsTelemetry(currentLap: Int) =
             ),
     )
 
-private fun sampleGt7Ps5Telemetry(lapCount: Int) =
-    Gt7Ps5TelemetryData(
-        lapCount = lapCount,
-        lapsInRace = 0,
-        bestLapTimeMs = 0,
-        gasLevel = 0f,
-        gasCapacity = 0f,
+private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
+    LmuWindowsVehicleApproachData(
+        sideBySideLeftVehicleIds = leftVehicleIds,
+        sideBySideRightVehicleIds = emptySet(),
+        lateralDistanceLeftMeters = if (leftVehicleIds.isEmpty()) Double.MAX_VALUE else 1.0,
+        lateralDistanceRightMeters = Double.MAX_VALUE,
     )
+
+private fun sampleTyreCarcassTemperature() = LmuWindowsTyreCarcassTemperatureData(wheels = emptyMap())
+
+private fun sampleVehicleClass() = LmuWindowsVehicleClassData(name = "Hypercar")
+
+private fun sampleGt7Ps5Telemetry(
+    lapCount: Int,
+    carCategory: String = "",
+) = Gt7Ps5TelemetryData(
+    lapCount = lapCount,
+    lapsInRace = 0,
+    bestLapTimeMs = 0,
+    gasLevel = 0f,
+    gasCapacity = 0f,
+    carCategory = carCategory,
+)
 
 private fun sampleAceWindowsFuel() = AceWindowsFuelData(remainingPercent = 50.0)
 

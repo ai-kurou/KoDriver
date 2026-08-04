@@ -12,9 +12,15 @@ import org.jetbrains.compose.resources.stringResource
 internal fun VehicleClassContent(
     selectedSimulator: Simulator?,
     vehicleClass: LmuWindowsVehicleClassData?,
+    gt7VehicleClass: String?,
 ) {
-    val name = vehicleClass?.name
-    if (selectedSimulator !is Simulator.LmuWindows || name.isNullOrEmpty()) {
+    val name =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> vehicleClass?.name
+            is Simulator.Gt7Ps5 -> gt7VehicleClass
+            else -> null
+        }
+    if (name.isNullOrEmpty()) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }

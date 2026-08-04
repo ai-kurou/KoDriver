@@ -24,6 +24,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -47,6 +48,7 @@ private data class OptionalTelemetry(
     val gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
     val aceWindowsFuel: AceWindowsFuelData?,
     val aceWindowsFlag: AceWindowsFlagData?,
+    val gt7VehicleClass: String?,
 )
 
 @Suppress("LongParameterList")
@@ -56,6 +58,7 @@ internal class DebugStateDetailViewModel(
     observeLmuWindowsVirtualEnergy: ObserveLmuWindowsVirtualEnergyUseCase,
     observeLmuWindowsTelemetry: ObserveLmuWindowsUseCase,
     observeGt7Ps5Telemetry: ObserveGt7Ps5UseCase,
+    observeGt7Ps5VehicleClass: ObserveGt7Ps5VehicleClassUseCase,
     observeAceWindowsFuel: ObserveAceWindowsFuelUseCase,
     observeAceWindowsFlag: ObserveAceWindowsFlagUseCase,
     observeLmuWindowsVehicleApproach: ObserveLmuWindowsVehicleApproachUseCase,
@@ -98,8 +101,10 @@ internal class DebugStateDetailViewModel(
             observeGt7Ps5Telemetry().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
             observeAceWindowsFuel().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
             observeAceWindowsFlag().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
-        ) { lmu, gt7, aceWindowsFuel, aceWindowsFlag -> OptionalTelemetry(lmu, gt7, aceWindowsFuel, aceWindowsFlag) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null, null))
+            observeGt7Ps5VehicleClass().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null),
+        ) { lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7VehicleClass ->
+            OptionalTelemetry(lmu, gt7, aceWindowsFuel, aceWindowsFlag, gt7VehicleClass)
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, OptionalTelemetry(null, null, null, null, null))
 
     val uiState: StateFlow<DebugStateDetailUiState> =
         combine(
@@ -119,6 +124,7 @@ internal class DebugStateDetailViewModel(
                 vehicleApproach = raceState.vehicleApproach,
                 tyreCarcassTemperature = raceState.tyreCarcassTemperature,
                 vehicleClass = raceState.vehicleClass,
+                gt7VehicleClass = optionalTelemetry.gt7VehicleClass,
                 cardOrder = cardOrder,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), DebugStateDetailUiState())

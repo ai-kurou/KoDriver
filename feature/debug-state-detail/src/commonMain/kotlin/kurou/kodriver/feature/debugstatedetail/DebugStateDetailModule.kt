@@ -4,6 +4,7 @@ import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFuelUseCase
 import kurou.kodriver.domain.usecase.ObserveDebugStateCardOrderUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5VehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRaceFlagsUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -43,6 +44,7 @@ val debugStateDetailModule =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
 
@@ -51,6 +53,7 @@ val debugStateDetailModule =
         factory { ObserveLmuWindowsVirtualEnergyUseCase(get()) }
         factory { ObserveLmuWindowsUseCase(get()) }
         factory { ObserveGt7Ps5UseCase(get()) }
+        factory { ObserveGt7Ps5VehicleClassUseCase(get()) }
         factory { ObserveAceWindowsFuelUseCase(get()) }
         factory { ObserveAceWindowsFlagUseCase(get()) }
         factory { ObserveLmuWindowsVehicleApproachUseCase(get()) }

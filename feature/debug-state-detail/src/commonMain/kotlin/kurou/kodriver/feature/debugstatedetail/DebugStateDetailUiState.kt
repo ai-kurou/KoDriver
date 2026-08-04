@@ -41,5 +41,6 @@ internal data class DebugStateDetailUiState(
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
     val vehicleClass: LmuWindowsVehicleClassData? = null,
+    val gt7VehicleClass: String? = null,
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )
