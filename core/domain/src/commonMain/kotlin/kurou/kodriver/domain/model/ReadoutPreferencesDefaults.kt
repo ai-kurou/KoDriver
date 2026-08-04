@@ -43,4 +43,4 @@ private val READOUT_ITEM_KEY_ENABLED_DEFAULT: Map<ReadoutItemKey, Boolean> =
  * 同様にデフォルト true にフォールバックする。
  */
 fun Map<ReadoutItemKey, Boolean>.readoutEnabled(key: ReadoutItemKey): Boolean =
-    this[key] ?: READOUT_ITEM_KEY_ENABLED_DEFAULT.getOrDefault(key, true)
+    this[key] ?: READOUT_ITEM_KEY_ENABLED_DEFAULT[key] ?: true
