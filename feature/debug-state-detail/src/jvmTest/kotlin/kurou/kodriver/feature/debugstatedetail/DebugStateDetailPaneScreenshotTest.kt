@@ -156,6 +156,7 @@ class DebugStateDetailPaneScreenshotTest {
             vehicleApproach = sampleVehicleApproach,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
             lmuWindowsVehicleClass = sampleVehicleClass,
+            enabledCardKeys = defaultDebugStateCardOrder.toSet(),
         )
 
     @Test

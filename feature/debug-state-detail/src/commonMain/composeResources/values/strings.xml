@@ -17,7 +17,7 @@
     <string name="debug_state_flag_red_yellow_stripes">レッド・イエローストライプフラッグ</string>
     <string name="debug_state_simulator_info_title">選択中のシミュレータ</string>
     <string name="debug_state_simulator_info_unselected">未選択</string>
-    <string name="debug_state_game_phase_title">mGamePhase</string>
+    <string name="debug_state_game_phase_title">ゲームフェーズ (LMUのみ)</string>
     <string name="debug_state_game_phase_garage">セッション開始前</string>
     <string name="debug_state_game_phase_warm_up">Reconnaissance laps（レースのみ）</string>
     <string name="debug_state_game_phase_grid_walk">GridWalk（グリッドウォーク、レースのみ）</string>
@@ -29,14 +29,14 @@
     <string name="debug_state_game_phase_session_over">SessionOver（セッション終了）</string>
     <string name="debug_state_game_phase_paused">Paused（ポーズ中。プラグインへのハートビート呼び出し）</string>
     <string name="debug_state_game_phase_unknown">不明</string>
-    <string name="debug_state_session_title">mSession</string>
+    <string name="debug_state_session_title">セッション (LMUのみ)</string>
     <string name="debug_state_session_test_day">Test Day（テスト走行）</string>
     <string name="debug_state_session_practice">Practice（練習走行）</string>
     <string name="debug_state_session_qualifying">Qualifying（予選）</string>
     <string name="debug_state_session_warmup">Warmup（ウォームアップ）</string>
     <string name="debug_state_session_race">Race（決勝）</string>
     <string name="debug_state_session_unknown">不明</string>
-    <string name="debug_state_yellow_flag_state_title">mYellowFlagState</string>
+    <string name="debug_state_yellow_flag_state_title">イエローフラッグ状態 (LMUのみ)</string>
     <string name="debug_state_yellow_flag_state_invalid">Invalid</string>
     <string name="debug_state_yellow_flag_state_none">None（グリーン）</string>
     <string name="debug_state_yellow_flag_state_pending">Pending（FCY 発動保留）</string>

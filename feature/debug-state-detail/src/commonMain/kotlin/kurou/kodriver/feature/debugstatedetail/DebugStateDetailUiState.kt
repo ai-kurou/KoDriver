@@ -43,5 +43,6 @@ internal data class DebugStateDetailUiState(
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
     val lmuWindowsVehicleClass: LmuWindowsVehicleClassData? = null,
     val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData? = null,
+    val enabledCardKeys: Set<DebugStateCardKey> = emptySet(),
     val cardOrder: List<DebugStateCardKey> = defaultDebugStateCardOrder,
 )
