@@ -18,16 +18,6 @@
 
 ---
 
-## バグ
-
-各項目の末尾に、実測で再現を確認したものか、コードからの推定かを明記している。
-
-- **対象**: `feature:*-narrator` の3つの `*NarratorViewModel` と `core:domain` の `Determine*NarratorReadoutUseCase`
-  **課題**: 読み上げ判定は `enabledStates.getValue(key)` でユーザー設定を参照している（本番コードに29箇所）。`Map.getValue` はキーが無いと `NoSuchElementException` を投げるが、ViewModel 側は `stateIn(..., SharingStarted.Eagerly, emptyMap())` で初期化しているため、DataStore の初回読み込みが完了する前にテレメトリが届くと例外になる。特に `Gt7Ps5NarratorViewModel.kt:211,215` の `currentSettings` getter、`LmuWindowsNarratorViewModel.kt:385,446`（`determinePitTiming*` の `enabled=` 引数）、`DetermineLmuWindowsNarratorReadoutUseCase.kt:562,578`（車両接近）は毎 tick 無条件に評価される。一時テストで再現し、`java.util.NoSuchElementException: Key Root is missing in the map.` が発生して当該ジョブが恒久停止することを確認済み（Android では未捕捉例外としてクラッシュに至る）。`SharedMemoryPollingSource` は待機なしで最初のバッファを emit するため、LMU 起動済みの状態でデスクトップアプリを起動するケースが最も現実的な発生条件。
-  **改善案**: `getValue` を `getOrDefault` / `?: default` に置き換えるか、`enabledStates` が空の間は判定自体をスキップするガードを入れる。デフォルト値は `READOUT_ENABLED_STATE_DEFAULT` など既存の Defaults に揃える。あわせて「設定未ロード中にテレメトリが届いても例外にならない」テストを各 Narrator ViewModel に追加する。
-
----
-
 ## 設計・重複
 
 - **対象**: `feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator`
