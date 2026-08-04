@@ -3,4 +3,5 @@ digraph G {
   ":app:shared" -> ":feature:gt7-ps5-narrator"
   ":feature:gt7-ps5-narrator" -> ":core:domain"
   ":feature:gt7-ps5-narrator" -> ":core:designsystem"
+  ":feature:gt7-ps5-narrator" -> ":core:narrator"
 }
