@@ -20,11 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `feature:ace-windows-narrator`（`AceWindowsNarratorViewModel.kt`）, `feature:lmu-windows-narrator`
-  **課題**: ACE の残り燃料警告は `AceWindowsStatusType.LIVE` かどうかのみで読み上げをゲートしているが、ACE の共有メモリ仕様上、ガレージ・ピットレーン等のメニュー外の状態も全て `status = LIVE` として報告されるため、レース開始前の燃料調整画面でも警告が誤って読み上げられる不具合が確認された。
-  今回、`AceWindowsStatusData.carLocation`（`AceWindowsCarLocation`: UNASSIGNED/PITLANE/PITENTRY/PITEXIT/TRACK）と、LMU の `LmuWindowsPitStatusData`（`inPits`/`pitState`/`inGarageStall`、`ObserveLmuWindowsPitStatusUseCase` 経由）を Repository/UseCase 層まで取得できるようにした。ただしこの時点では取得できるようにしただけで、Narrator 側のゲート判定（`AceWindowsNarratorViewModel` の `isLive` 判定、および LMU 側で同様の問題があれば `LmuWindowsNarratorViewModel`）には未配線。
-  **改善案**: `AceWindowsNarratorViewModel` の `isLive` 判定に `carLocation == AceWindowsCarLocation.TRACK` 等を組み合わせ、「実際にコース上を走行中か」を正しく判定できるようにする。LMU 側も `mInPits`/`mInGarageStall` を使って同様の誤読み上げが起きていないか確認し、必要なら `DetermineLmuWindowsNarratorReadoutUseCase` 等に配線する。
-
 - **対象**: `core:narrator`（`JvmSoundPlayer` / `AndroidSoundPlayer` / `WavNarratorEngine` を含む `TextToSpeechEngine` 実装群）
   **課題**: 3つの `TextToSpeechEngine`（LMU/GT7/ACEの `WavNarratorEngine` アダプタ経由）はいずれも `single` で、`init` ブロックで自モジュールの WAV を全て ByteArray としてロードする。そのため選択中でないシミュレータの音声（3モジュール合計で 46 ファイル・約 2.8MB）も常時メモリに載る。
   **改善案**: 選択中のシミュレータ分だけ遅延ロードする方式を検討する。narrator の共通化（`core:narrator` への切り出し）により実装箇所は1箇所に集約されたため、対応する場合の変更範囲は小さい。
