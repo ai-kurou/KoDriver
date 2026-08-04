@@ -3,6 +3,7 @@ package kurou.kodriver.feature.otherconsoleipdetail
 import androidx.compose.material3.Surface
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test

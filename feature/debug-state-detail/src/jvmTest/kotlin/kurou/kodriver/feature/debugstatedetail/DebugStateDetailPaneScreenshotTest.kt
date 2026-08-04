@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.CountLapFlag
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
