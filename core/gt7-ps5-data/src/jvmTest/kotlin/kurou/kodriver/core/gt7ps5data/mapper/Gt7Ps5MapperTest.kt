@@ -12,6 +12,7 @@ class Gt7Ps5MapperTest {
         const val BEST_LAP_TIME_OFFSET = 0x78
         const val GAS_LEVEL_OFFSET = 0x44
         const val GAS_CAPACITY_OFFSET = 0x48
+        const val CAR_CATEGORY_OFFSET = 0x16C
         const val PACKET_SIZE = 0x170
 
         fun packetWith(
@@ -20,6 +21,7 @@ class Gt7Ps5MapperTest {
             bestLapTimeMs: Int = -1,
             gasLevel: Float = 0f,
             gasCapacity: Float = 100f,
+            carCategory: String? = null,
         ): ByteBuffer {
             val buf = ByteBuffer.allocate(PACKET_SIZE).order(ByteOrder.LITTLE_ENDIAN)
             buf.putShort(LAP_COUNT_OFFSET, lapCount)
@@ -27,6 +29,9 @@ class Gt7Ps5MapperTest {
             buf.putInt(BEST_LAP_TIME_OFFSET, bestLapTimeMs)
             buf.putFloat(GAS_LEVEL_OFFSET, gasLevel)
             buf.putFloat(GAS_CAPACITY_OFFSET, gasCapacity)
+            carCategory?.let { value ->
+                value.forEachIndexed { index, char -> buf.put(CAR_CATEGORY_OFFSET + index, char.code.toByte()) }
+            }
             return buf
         }
     }
@@ -82,6 +87,7 @@ class Gt7Ps5MapperTest {
                 bestLapTimeMs = 85_432,
                 gasLevel = 30.2f,
                 gasCapacity = 80f,
+                carCategory = "GR3",
             )
         val result = Gt7Ps5Mapper.map(packet)
         assertEquals(3, result.lapCount)
@@ -89,5 +95,27 @@ class Gt7Ps5MapperTest {
         assertEquals(85_432, result.bestLapTimeMs)
         assertEquals(30.2f, result.gasLevel)
         assertEquals(80f, result.gasCapacity)
+        assertEquals("GR3", result.carCategory)
+    }
+
+    @Test
+    fun `CarCategoryをNULL終端でトリムしてマッピングする`() {
+        val packet = packetWith(carCategory = "GR3")
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals("GR3", result.carCategory)
+    }
+
+    @Test
+    fun `CarCategoryが4文字でNULL終端がない場合はそのままマッピングする`() {
+        val packet = packetWith(carCategory = "GRX4")
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals("GRX4", result.carCategory)
+    }
+
+    @Test
+    fun `CarCategoryが全てNULLバイトの場合は空文字列を返す`() {
+        val packet = packetWith(carCategory = null)
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals("", result.carCategory)
     }
 }

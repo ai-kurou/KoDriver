@@ -100,14 +100,14 @@ class Gt7Ps5NarratorEventProcessorTest {
                 true,
                 telemetryJsons.single().contains(
                     """"previousTelemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":60000,""" +
-                        """"gasLevel":20.0,"gasCapacity":100.0}""",
+                        """"gasLevel":20.0,"gasCapacity":100.0,"carCategory":""}""",
                 ),
             )
             assertEquals(
                 true,
                 telemetryJsons.single().contains(
                     """"telemetry":{"lapCount":0,"lapsInRace":5,"bestLapTimeMs":59000,""" +
-                        """"gasLevel":20.0,"gasCapacity":100.0},"settings":""",
+                        """"gasLevel":20.0,"gasCapacity":100.0,"carCategory":""},"settings":""",
                 ),
             )
             assertEquals(true, telemetryJsons.single().contains(""""observedAtMs":200"""))
