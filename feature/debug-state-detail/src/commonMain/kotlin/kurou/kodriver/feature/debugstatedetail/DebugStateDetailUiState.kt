@@ -2,9 +2,11 @@ package kurou.kodriver.feature.debugstatedetail
 
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.domain.model.AceWindowsStatusData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -17,6 +19,7 @@ internal val defaultDebugStateCardOrder =
     listOf(
         DebugStateCardKey.SIMULATOR,
         DebugStateCardKey.VEHICLE_CLASS,
+        DebugStateCardKey.VEHICLE_LOCATION,
         DebugStateCardKey.FLAG_INFO,
         DebugStateCardKey.GAME_PHASE,
         DebugStateCardKey.SESSION,
@@ -39,6 +42,8 @@ internal data class DebugStateDetailUiState(
     val gt7Ps5Telemetry: Gt7Ps5TelemetryData? = null,
     val aceWindowsFuel: AceWindowsFuelData? = null,
     val aceWindowsFlag: AceWindowsFlagData? = null,
+    val aceWindowsStatus: AceWindowsStatusData? = null,
+    val lmuWindowsPitStatus: LmuWindowsPitStatusData? = null,
     val vehicleApproach: LmuWindowsVehicleApproachData? = null,
     val tyreCarcassTemperature: LmuWindowsTyreCarcassTemperatureData? = null,
     val lmuWindowsVehicleClass: LmuWindowsVehicleClassData? = null,

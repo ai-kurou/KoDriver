@@ -67,6 +67,7 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_t
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_temperature_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_wear_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_class_title
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_title
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_invalid
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_last_lap
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_yellow_flag_state_none
@@ -165,6 +166,7 @@ private val debugStateCardTitles: Map<DebugStateCardKey, StringResource> =
     mapOf(
         DebugStateCardKey.SIMULATOR to Res.string.debug_state_simulator_info_title,
         DebugStateCardKey.VEHICLE_CLASS to Res.string.debug_state_vehicle_class_title,
+        DebugStateCardKey.VEHICLE_LOCATION to Res.string.debug_state_vehicle_location_title,
         DebugStateCardKey.FLAG_INFO to Res.string.debug_state_flag_info_title,
         DebugStateCardKey.GAME_PHASE to Res.string.debug_state_game_phase_title,
         DebugStateCardKey.SESSION to Res.string.debug_state_session_title,
@@ -188,6 +190,14 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
                     uiState.selectedSimulator,
                     uiState.lmuWindowsVehicleClass,
                     uiState.gt7Ps5VehicleClass,
+                )
+            },
+        DebugStateCardKey.VEHICLE_LOCATION to
+            { uiState ->
+                VehicleLocationContent(
+                    uiState.selectedSimulator,
+                    uiState.aceWindowsStatus,
+                    uiState.lmuWindowsPitStatus,
                 )
             },
         DebugStateCardKey.FLAG_INFO to

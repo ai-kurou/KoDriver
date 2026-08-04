@@ -22,6 +22,7 @@ import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsRemainingVirtualEnergyPreferencesRepository
@@ -167,6 +168,17 @@ fun androidDataModule(context: Context) =
         single<FeedbackRepository> { SentryFeedbackRepository() }
         includes(androidDataModuleAceWindows())
         includes(androidDataModuleThresholdPreferences(context))
+        includes(androidDataModuleLmuWindowsPitStatus())
+    }
+
+/**
+ * androidDataModule から分離した LMU のピット状態取得用バインド（LongMethod 対策）。
+ */
+private fun androidDataModuleLmuWindowsPitStatus() =
+    module {
+        single<LmuWindowsPitStatusRepository> {
+            WebSocketLmuWindowsPitStatusRepository(serverIpRepository = get(), client = get())
+        }
     }
 
 /**

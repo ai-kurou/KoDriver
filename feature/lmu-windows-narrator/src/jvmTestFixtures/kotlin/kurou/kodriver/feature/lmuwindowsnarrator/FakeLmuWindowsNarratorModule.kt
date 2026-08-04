@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
+import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -20,6 +21,7 @@ import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
@@ -56,6 +58,7 @@ val fakeLmuWindowsNarratorModule =
         single<LmuWindowsMyBestLapPreferencesRepository> { FakeLmuWindowsMyBestLapPreferencesRepository() }
         single<LmuWindowsVirtualEnergyRepository> { FakeLmuWindowsVirtualEnergyRepository() }
         single<LmuWindowsVehicleClassRepository> { FakeLmuWindowsVehicleClassRepository() }
+        single<LmuWindowsPitStatusRepository> { FakeLmuWindowsPitStatusRepository() }
     }
 
 class FakeLmuWindowsVehicleApproachRepository : LmuWindowsVehicleApproachRepository {
@@ -201,4 +204,8 @@ class FakeLmuWindowsVirtualEnergyRepository : LmuWindowsVirtualEnergyRepository 
 
 class FakeLmuWindowsVehicleClassRepository : LmuWindowsVehicleClassRepository {
     override fun vehicleClassStream(): Flow<LmuWindowsVehicleClassData> = emptyFlow()
+}
+
+class FakeLmuWindowsPitStatusRepository : LmuWindowsPitStatusRepository {
+    override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = emptyFlow()
 }

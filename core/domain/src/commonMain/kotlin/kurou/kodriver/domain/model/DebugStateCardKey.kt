@@ -3,6 +3,7 @@ package kurou.kodriver.domain.model
 enum class DebugStateCardKey {
     SIMULATOR,
     VEHICLE_CLASS,
+    VEHICLE_LOCATION,
     FLAG_INFO,
     GAME_PHASE,
     SESSION,

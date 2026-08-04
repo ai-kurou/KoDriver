@@ -77,4 +77,22 @@
     <string name="debug_state_pit_timing_virtual_energy_remaining_laps">バーチャルエナジー: 残り %1$s周</string>
     <string name="debug_state_pit_timing_tyre_wear_remaining_laps">タイヤ摩耗: 残り %1$s周</string>
     <string name="debug_state_vehicle_class_title">車両クラス</string>
+    <string name="debug_state_vehicle_location_title">車両位置</string>
+    <string name="debug_state_vehicle_location_ace_unassigned">Unassigned（未割当）</string>
+    <string name="debug_state_vehicle_location_ace_pitlane">PitLane（ピットレーン）</string>
+    <string name="debug_state_vehicle_location_ace_pitentry">PitEntry（ピット進入）</string>
+    <string name="debug_state_vehicle_location_ace_pitexit">PitExit（ピット退出）</string>
+    <string name="debug_state_vehicle_location_ace_track">Track（コース上）</string>
+    <string name="debug_state_vehicle_location_ace_unknown">不明</string>
+    <string name="debug_state_vehicle_location_in_pits">ピットレーン走行中: %1$s</string>
+    <string name="debug_state_vehicle_location_pit_state">ピット状態: %1$s</string>
+    <string name="debug_state_vehicle_location_in_garage_stall">ガレージ内: %1$s</string>
+    <string name="debug_state_vehicle_location_pit_state_none">None（ピット動作なし）</string>
+    <string name="debug_state_vehicle_location_pit_state_requested">Requested（ピット要求中）</string>
+    <string name="debug_state_vehicle_location_pit_state_entering">Entering（ピット進入中）</string>
+    <string name="debug_state_vehicle_location_pit_state_stopped">Stopped（ピット停止中）</string>
+    <string name="debug_state_vehicle_location_pit_state_exiting">Exiting（ピット退出中）</string>
+    <string name="debug_state_vehicle_location_pit_state_unknown">不明</string>
+    <string name="debug_state_vehicle_location_yes">はい</string>
+    <string name="debug_state_vehicle_location_no">いいえ</string>
 </resources>
