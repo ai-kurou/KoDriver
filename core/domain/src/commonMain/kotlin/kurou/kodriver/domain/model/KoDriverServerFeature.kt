@@ -13,6 +13,7 @@ enum class KoDriverServerFeature(
     VIRTUAL_ENERGY(pathSegment = "virtual_energy"),
     FUEL(pathSegment = "fuel"),
     STATUS(pathSegment = "status"),
+    PIT_STATUS(pathSegment = "pit_status"),
     ;
 
     fun webSocketPath(simulator: Simulator): String = "/ws/${simulator.id}/$pathSegment"

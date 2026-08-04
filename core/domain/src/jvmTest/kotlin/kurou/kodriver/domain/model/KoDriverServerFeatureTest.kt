@@ -26,5 +26,9 @@ class KoDriverServerFeatureTest {
         )
         assertEquals("/ws/ace_windows/fuel", KoDriverServerFeature.FUEL.webSocketPath(Simulator.AceWindows))
         assertEquals("/ws/ace_windows/status", KoDriverServerFeature.STATUS.webSocketPath(Simulator.AceWindows))
+        assertEquals(
+            "/ws/lmu_windows/pit_status",
+            KoDriverServerFeature.PIT_STATUS.webSocketPath(Simulator.LmuWindows),
+        )
     }
 }
