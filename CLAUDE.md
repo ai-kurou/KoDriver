@@ -17,7 +17,8 @@ KoDriver/
 │   ├── gt7-ps5-data/  GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装
 │   ├── ace-windows-data/ Assetto Corsa EVO Windows共有メモリ読み取り・リポジトリ実装
 │   ├── windows-shared-memory/ Windows共有メモリI/Oの汎用基盤（lmu-windows-data / ace-windows-data が共通利用）
-│   └── designsystem/  共通 Composable コンポーネント
+│   ├── designsystem/  共通 Composable コンポーネント
+│   └── narrator/      WAV音声再生の共通基盤（SoundPlayer・WavNarratorEngine。lmu/gt7/ace の各narrator featureが共通利用）
 ├── feature/
 │   ├── desktop-splash/           デスクトップ起動中スプラッシュの初期化進捗管理・画面表示
 │   ├── debug-state-detail/       走行データのデバッグ表示（燃料消費・タイヤ摩耗・タイヤ温度・ピットタイミング等）

@@ -1,6 +1,12 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
+import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.WavResources
+import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
@@ -14,6 +20,8 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.feature.gt7ps5narrator.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -31,6 +39,7 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU と区別するため named("gt7_ps5") で登録している。
  */
+@OptIn(ExperimentalResourceApi::class)
 val gt7Ps5NarratorModule: Module =
     module {
         // ViewModel（Gt7Ps5NarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
@@ -55,16 +64,43 @@ val gt7Ps5NarratorModule: Module =
         factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
-        // 音声再生（named "gt7_ps5" で LMU と分離。SoundPlayer は platformSoundModule が提供）
-        includes(platformSoundModule)
+        // 音声再生（named "gt7_ps5" で LMU/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
+        includes(platformSoundModule(named("gt7_ps5")))
         single<TextToSpeechEngine>(named("gt7_ps5")) {
             Gt7Ps5WavNarratorEngine(
-                soundPlayer = get(),
-                volumeFlow = ObserveSoundVolumeUseCase(get())(),
-                startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                WavNarratorEngine(
+                    soundPlayer = get(named("gt7_ps5")),
+                    resources =
+                        WavResources(
+                            eventToFile = gt7Ps5EventToFile,
+                            startSoundTypeToFile = gt7Ps5StartSoundTypeToFile,
+                            resourceLoader = Res::readBytes,
+                            startSoundResourceLoader = ::readStartSoundBytes,
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    volumeFlow = ObserveSoundVolumeUseCase(get())(),
+                    startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                ),
             )
         }
         factory(named("gt7_ps5")) { PlaySpeechEventUseCase(get(named("gt7_ps5"))) }
     }
 
-internal expect val platformSoundModule: Module
+private val gt7Ps5EventToFile: Map<SpeechEvent, String> =
+    buildMap {
+        put(SpeechEvent.Gt7Ps5MyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.Gt7Ps5MyBestLapCasual, "files/my_best_lap_casual.wav")
+        put(SpeechEvent.Gt7Ps5RemainingFuelWarning, "files/remaining_fuel_caution.wav")
+        for (laps in 0..MAX_REMAINING_FUEL_LAPS) {
+            put(SpeechEvent.RemainingFuelLapsWarning(laps), "files/remaining_fuel_laps_$laps.wav")
+        }
+    }
+
+private val gt7Ps5StartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
+    mapOf(
+        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+    )
+
+private const val MAX_REMAINING_FUEL_LAPS = 5

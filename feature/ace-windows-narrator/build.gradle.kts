@@ -9,14 +9,9 @@ kotlin {
     }
 
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.sentry)
-        }
-        jvmMain.dependencies {
-            implementation(libs.sentry)
-        }
         commonMain.dependencies {
             implementation(projects.core.designsystem)
+            implementation(projects.core.narrator)
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serialization.json)
         }

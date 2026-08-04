@@ -1,189 +1,27 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.ReadoutStartSoundType
-import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import kotlin.concurrent.Volatile
 
-@OptIn(ExperimentalResourceApi::class)
+/**
+ * `:core:narrator` の [WavNarratorEngine]（`SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を
+ * 知らない汎用実装）を [TextToSpeechEngine] として公開するための薄いアダプタ。
+ */
 internal class LmuWindowsWavNarratorEngine(
-    private val soundPlayer: SoundPlayer,
-    volumeFlow: Flow<Int> = flowOf(100),
-    startSoundTypeFlow: Flow<ReadoutStartSoundType> = flowOf(ReadoutStartSoundType.FORMULA_RADIO),
-    private val resourceLoader: suspend (String) -> ByteArray = Res::readBytes,
-    private val startSoundResourceLoader: suspend (String) -> ByteArray = ::readStartSoundBytes,
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
+    private val engine: WavNarratorEngine<SpeechEvent, ReadoutStartSoundType, ReadoutItemKey>,
 ) : TextToSpeechEngine {
-    @Volatile
-    private var currentVolume: Int = 100
-
-    @Volatile
-    private var currentStartSoundType: ReadoutStartSoundType = ReadoutStartSoundType.FORMULA_RADIO
-
-    // ロード完了後は不変のマップに差し替えるため、読み取り競合は無害
-    private var sounds: Map<SpeechEvent, ByteArray> = emptyMap()
-
-    private var startSounds: Map<ReadoutStartSoundType, ByteArray> = emptyMap()
-
-    private var playJob: Job? = null
-
-    // playJob はキューのチェーン最後尾しか指さないため、割り込み時に再生中・待機中の
-    // ジョブをまとめてキャンセルできるよう、全再生ジョブをこの親 Job にぶら下げる。
-    // queue=true の speak() は常にこの Job 配下へ launch するため、cancelPlayback() は
-    // 呼び出しのたびにここを生存中の新しい Job へ差し替える。
-    private var playbackParent: Job = SupervisorJob()
-
-    // 直前に cancelPlayback() でキャンセルした Job。SoundPlayer の停止処理は非同期なので、
-    // stop() の直後に speak()/previewStartSound() が呼ばれても、この Job が完了する
-    // （＝停止処理が完了する）まで新しい再生を始めない。
-    private var lastCancelledPlayback: Job = Job().also { it.complete() }
-
-    @Volatile
-    private var _currentReadoutItemKey: ReadoutItemKey? = null
-
-    // playJob がアクティブな間だけ再生中のキーを返す。
-    // キャンセル後に古いジョブが _currentReadoutItemKey を上書きしないよう playJob で二重確認する。
     override val currentReadoutItemKey: ReadoutItemKey?
-        get() = _currentReadoutItemKey.takeIf { playJob?.isActive == true }
-
-    private val eventToFile: Map<SpeechEvent, String> =
-        buildMap {
-            put(SpeechEvent.CarLeft, "files/car_left.wav")
-            put(SpeechEvent.CarRight, "files/car_right.wav")
-            put(SpeechEvent.LeftApproach, "files/left_approach.wav")
-            put(SpeechEvent.RightApproach, "files/right_approach.wav")
-            put(SpeechEvent.KeepLeft, "files/keep_left.wav")
-            put(SpeechEvent.KeepRight, "files/keep_right.wav")
-            put(SpeechEvent.LeftSustained, "files/left_sustained.wav")
-            put(SpeechEvent.RightSustained, "files/right_sustained.wav")
-            put(SpeechEvent.BlueFlag, "files/blue_flag.wav")
-            put(SpeechEvent.YellowFlag, "files/yellow_flag.wav")
-            put(SpeechEvent.FullCourseYellow, "files/full_course_yellow.wav")
-            put(SpeechEvent.SessionStop, "files/session_stopped.wav")
-            put(SpeechEvent.RedFlag, "files/red_flag.wav")
-            put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
-            put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
-            put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
-            put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
-            put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
-            put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
-            put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
-            for (laps in 0..MAX_PIT_TIMING_LAPS) {
-                put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
-            }
-        }
-
-    private val startSoundTypeToFile =
-        mapOf(
-            ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
-            ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
-        )
-
-    init {
-        scope.launch { volumeFlow.collect { currentVolume = it } }
-        scope.launch { startSoundTypeFlow.collect { currentStartSoundType = it } }
-        scope.launch {
-            val loaded = mutableMapOf<SpeechEvent, ByteArray>()
-            eventToFile.forEach { (event, path) ->
-                try {
-                    loaded[event] = resourceLoader(path)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    captureNarratorError(e)
-                }
-            }
-            sounds = loaded
-            val loadedStartSounds = mutableMapOf<ReadoutStartSoundType, ByteArray>()
-            startSoundTypeToFile.forEach { (type, path) ->
-                try {
-                    loadedStartSounds[type] = startSoundResourceLoader(path)
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    captureNarratorError(e)
-                }
-            }
-            startSounds = loadedStartSounds
-        }
-    }
+        get() = engine.currentKey
 
     override fun speak(
         event: SpeechEvent,
         queue: Boolean,
-    ) {
-        val mainSound = sounds[event] ?: return
-        if (queue) {
-            val previousJob = playJob
-            playJob =
-                scope.launch(playbackParent) {
-                    previousJob?.join()
-                    play(event, mainSound)
-                }
-            return
-        }
-        val barrier = lastCancelledPlayback
-        cancelPlayback()
-        playJob =
-            scope.launch(playbackParent) {
-                barrier.join()
-                play(event, mainSound)
-            }
-    }
+    ) = engine.speak(event, queue)
 
-    override fun stop() {
-        cancelPlayback()
-    }
+    override fun stop() = engine.stop()
 
-    // playbackParent.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
-    // 呼び出した時点では前の再生がまだ鳴っている。次に本当に再生を始めてよいタイミングは
-    // ここでキャンセルした Job（lastCancelledPlayback）が完了（＝停止処理が完了）した後なので、
-    // speak()/previewStartSound() は自分が呼ぶ前の lastCancelledPlayback を join() してから再生する。
-    // stop() 単独で呼ばれた場合も同じ経路を通るため、stop() の直後に speak() を呼ぶ
-    // 優先度割り込みパターン（speakWithPriority）でも正しい Job を待てる。
-    private fun cancelPlayback() {
-        val previousParent = playbackParent
-        previousParent.cancel()
-        lastCancelledPlayback = previousParent
-        playbackParent = SupervisorJob()
-        playJob = null
-    }
-
-    override fun previewStartSound(type: ReadoutStartSoundType) {
-        val sound = startSounds[type] ?: return
-        val barrier = lastCancelledPlayback
-        cancelPlayback()
-        playJob =
-            scope.launch(playbackParent) {
-                barrier.join()
-                soundPlayer.play(sound, currentVolume)
-            }
-    }
-
-    private suspend fun play(
-        event: SpeechEvent,
-        mainSound: ByteArray,
-    ) {
-        _currentReadoutItemKey = event.readoutItemKey
-        val vol = currentVolume
-        startSounds[currentStartSoundType]?.let { soundPlayer.play(it, vol) }
-        soundPlayer.play(mainSound, vol)
-        _currentReadoutItemKey = null
-    }
-
-    internal companion object {
-        const val MAX_PIT_TIMING_LAPS = 5
-    }
+    override fun previewStartSound(type: ReadoutStartSoundType) = engine.previewStartSound(type)
 }

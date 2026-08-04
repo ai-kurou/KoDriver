@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -31,6 +32,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesReposi
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 import kurou.kodriver.domain.repository.SoundVolumePreferencesRepository
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -45,7 +47,7 @@ val fakeLmuWindowsNarratorModule =
         single<LmuWindowsVehicleApproachPreferencesRepository> { FakeLmuWindowsVehicleApproachPreferencesRepository() }
         single<LmuWindowsVehicleDamagePreferencesRepository> { FakeLmuWindowsVehicleDamagePreferencesRepository() }
         single<LmuWindowsVehicleDamageRepository> { FakeLmuWindowsVehicleDamageRepository() }
-        single<SoundPlayer> { NoOpSoundPlayer() }
+        single<SoundPlayer>(named("lmu_windows")) { NoOpSoundPlayer() }
         single<SoundVolumePreferencesRepository> { FakeSoundVolumePreferencesRepository() }
         single<LmuWindowsTyreCarcassTemperatureRepository> { FakeLmuWindowsTyreCarcassTemperatureRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> { FakeLmuWindowsTyreTemperaturePreferencesRepository() }

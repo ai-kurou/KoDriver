@@ -175,6 +175,9 @@ moduleGraphAssert {
         ":core:.*data -> :core:domain",
         // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
         ":core:.*windows.*data -> :core:windows-shared-memory",
+        // narrator系featureモジュール → core:narrator（WAV音声再生・SoundPlayer・WavNarratorEngineの共通基盤。
+        // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
+        ":feature:.*narrator.* -> :core:narrator",
         ":server -> :core:domain",
     )
     restricted = arrayOf(
@@ -479,6 +482,7 @@ dependencies {
     kover(project(":core:ace-windows-data"))
     kover(project(":core:windows-shared-memory"))
     kover(project(":core:designsystem"))
+    kover(project(":core:narrator"))
     kover(project(":feature:desktop-splash"))
     kover(project(":feature:lmu-windows-connection"))
     kover(project(":feature:main"))
@@ -524,6 +528,7 @@ dependencies {
     dokka(project(":core:ace-windows-data"))
     dokka(project(":core:windows-shared-memory"))
     dokka(project(":core:designsystem"))
+    dokka(project(":core:narrator"))
     dokka(project(":feature:desktop-splash"))
     dokka(project(":feature:lmu-windows-connection"))
     dokka(project(":feature:main"))
