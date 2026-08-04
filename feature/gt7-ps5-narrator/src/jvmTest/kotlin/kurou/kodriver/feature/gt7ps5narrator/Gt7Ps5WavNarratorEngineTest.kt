@@ -4,6 +4,7 @@ package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
@@ -21,7 +22,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5WavNarratorEngineTest {
     @Test
-    fun `再生中は音声を再生しない`() =
+    fun `soundPlayer isPlaying が true でも実行中のジョブがなければ音声を再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
             val engine = createEngine(player)
@@ -30,7 +31,30 @@ class Gt7Ps5WavNarratorEngineTest {
             engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
             runCurrent()
 
-            assertEquals(emptyList(), player.playedSounds)
+            assertEquals(2, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(MY_BEST_LAP_FORMAL_SOUND, player.playedSounds[1])
+        }
+
+    @Test
+    fun `優先度の高い音声は前の再生の停止処理が完了してから再生される`() =
+        runTest {
+            val player = FakeSoundPlayer(blockingSound = MY_BEST_LAP_FORMAL_SOUND)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(SpeechEvent.Gt7Ps5MyBestLapFormal)
+            runCurrent()
+
+            engine.stop()
+            engine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning)
+            advanceUntilIdle()
+
+            assertEquals(4, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(MY_BEST_LAP_FORMAL_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+            assertContentEquals(EVENT_SOUND, player.playedSounds[3])
         }
 
     @Test
@@ -346,7 +370,7 @@ class Gt7Ps5WavNarratorEngineTest {
         }
 
     @Test
-    fun `previewStartSoundは再生中なら何も再生しない`() =
+    fun `previewStartSoundはsoundPlayer isPlayingが trueでも実行中のジョブがなければ再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
             val engine = createEngine(player)
@@ -355,7 +379,8 @@ class Gt7Ps5WavNarratorEngineTest {
             engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
             runCurrent()
 
-            assertEquals(emptyList(), player.playedSounds)
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
         }
 
     private fun TestScope.createEngine(
@@ -407,6 +432,7 @@ class Gt7Ps5WavNarratorEngineTest {
 
 private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
+    private val blockingSound: ByteArray? = null,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
     val playedVolumes = mutableListOf<Int>()
@@ -417,5 +443,8 @@ private class FakeSoundPlayer(
     ) {
         playedSounds += bytes
         playedVolumes += volume
+        if (blockingSound != null && bytes.contentEquals(blockingSound)) {
+            awaitCancellation()
+        }
     }
 }

@@ -127,26 +127,37 @@ internal class LmuWindowsWavNarratorEngine(
                 }
             return
         }
-        if (soundPlayer.isPlaying) return
-        cancelPlayback()
-        playJob = scope.launch(playbackParent) { play(event, mainSound) }
+        val previousParent = cancelPlayback()
+        playJob =
+            scope.launch(playbackParent) {
+                previousParent.join()
+                play(event, mainSound)
+            }
     }
 
     override fun stop() {
         cancelPlayback()
     }
 
-    private fun cancelPlayback() {
-        playbackParent.cancel()
+    // playbackParent.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
+    // 呼び出した時点では前の再生がまだ鳴っている。次の再生を安全に開始できるのは
+    // 返り値の Job が完了（＝停止処理が完了）した後なので、呼び出し側は join() してから再生する。
+    private fun cancelPlayback(): Job {
+        val previousParent = playbackParent
+        previousParent.cancel()
         playbackParent = SupervisorJob()
         playJob = null
+        return previousParent
     }
 
     override fun previewStartSound(type: ReadoutStartSoundType) {
         val sound = startSounds[type] ?: return
-        if (soundPlayer.isPlaying) return
-        cancelPlayback()
-        playJob = scope.launch(playbackParent) { soundPlayer.play(sound, currentVolume) }
+        val previousParent = cancelPlayback()
+        playJob =
+            scope.launch(playbackParent) {
+                previousParent.join()
+                soundPlayer.play(sound, currentVolume)
+            }
     }
 
     private suspend fun play(

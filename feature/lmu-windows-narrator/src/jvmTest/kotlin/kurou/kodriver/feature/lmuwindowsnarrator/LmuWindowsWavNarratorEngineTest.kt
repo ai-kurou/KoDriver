@@ -2,6 +2,7 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -21,7 +22,7 @@ import kotlin.test.assertEquals
 @Suppress("TooManyFunctions")
 class LmuWindowsWavNarratorEngineTest {
     @Test
-    fun `再生中は音声を再生しない`() =
+    fun `soundPlayer isPlaying が true でも実行中のジョブがなければ音声を再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
             val engine = createEngine(player)
@@ -30,7 +31,30 @@ class LmuWindowsWavNarratorEngineTest {
             engine.speak(SpeechEvent.CarLeft)
             runCurrent()
 
-            assertEquals(emptyList(), player.playedSounds)
+            assertEquals(2, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+        }
+
+    @Test
+    fun `優先度の高い音声は前の再生の停止処理が完了してから再生される`() =
+        runTest {
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(SpeechEvent.CarLeft)
+            runCurrent()
+
+            engine.stop()
+            engine.speak(SpeechEvent.RedFlag)
+            advanceUntilIdle()
+
+            assertEquals(4, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+            assertContentEquals(EVENT_SOUND, player.playedSounds[3])
         }
 
     @Test
@@ -350,7 +374,7 @@ class LmuWindowsWavNarratorEngineTest {
         }
 
     @Test
-    fun `previewStartSoundは再生中なら何も再生しない`() =
+    fun `previewStartSoundはsoundPlayer isPlayingが trueでも実行中のジョブがなければ再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
             val engine = createEngine(player)
@@ -359,7 +383,8 @@ class LmuWindowsWavNarratorEngineTest {
             engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
             runCurrent()
 
-            assertEquals(emptyList(), player.playedSounds)
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
         }
 
     @Test
@@ -645,6 +670,7 @@ class LmuWindowsWavNarratorEngineTest {
 
 private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
+    private val blockingSound: ByteArray? = null,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
     val playedVolumes = mutableListOf<Int>()
@@ -655,5 +681,8 @@ private class FakeSoundPlayer(
     ) {
         playedSounds += bytes
         playedVolumes += volume
+        if (blockingSound != null && bytes.contentEquals(blockingSound)) {
+            awaitCancellation()
+        }
     }
 }
