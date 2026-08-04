@@ -63,7 +63,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `mYellowFlagStateカードのタイトルを表示する`() {
+    fun `イエローフラッグ状態カードのタイトルを表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -74,7 +74,7 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("mYellowFlagState").assertIsDisplayed()
+        rule.onNodeWithText("イエローフラッグ状態 (LMUのみ)").assertIsDisplayed()
     }
 
     @Test
@@ -112,7 +112,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `mSessionカードのタイトルを表示する`() {
+    fun `セッションカードのタイトルを表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -123,7 +123,7 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("mSession").assertIsDisplayed()
+        rule.onNodeWithText("セッション (LMUのみ)").assertIsDisplayed()
     }
 
     @Test
@@ -160,7 +160,7 @@ class DebugStateDetailPaneTest {
     }
 
     @Test
-    fun `mGamePhaseカードのタイトルを表示する`() {
+    fun `ゲームフェーズカードのタイトルを表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -171,7 +171,7 @@ class DebugStateDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("mGamePhase").assertIsDisplayed()
+        rule.onNodeWithText("ゲームフェーズ (LMUのみ)").assertIsDisplayed()
     }
 
     @Test

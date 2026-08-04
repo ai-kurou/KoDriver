@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -87,6 +88,7 @@ import kotlin.math.round
 
 private val NARROW_WIDTH_UPPER_BOUND = 400.dp
 private val MEDIUM_WIDTH_UPPER_BOUND = 700.dp
+private const val DISABLED_CARD_ALPHA = 0.38f
 
 internal const val DEBUG_STATE_GRID_TEST_TAG = "debug_state_grid"
 
@@ -149,6 +151,7 @@ internal fun DebugStateDetailPaneContent(
                         DebugStateCard(
                             cardKey = cardKey,
                             uiState = uiState,
+                            enabled = cardKey in uiState.enabledCardKeys,
                             modifier = Modifier.padding(8.dp).longPressDraggableHandle(),
                         )
                     }
@@ -228,11 +231,12 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
 private fun DebugStateCard(
     cardKey: DebugStateCardKey,
     uiState: DebugStateDetailUiState,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     DetailPaneCard(
         title = stringResource(debugStateCardTitles.getValue(cardKey)),
-        modifier = modifier,
+        modifier = modifier.alpha(if (enabled) 1f else DISABLED_CARD_ALPHA),
         bottomContent = {
             debugStateCardContents.getValue(cardKey)(uiState)
         },
