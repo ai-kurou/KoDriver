@@ -1804,8 +1804,8 @@ private class FakeAceWindowsFlagRepository : AceWindowsFlagRepository {
 private val aceStatusData1 = AceWindowsStatusData(status = AceWindowsStatusType.LIVE)
 private val aceStatusData2 = AceWindowsStatusData(status = AceWindowsStatusType.PAUSE)
 
-private const val ACE_STATUS_JSON_1 = """{"status":"LIVE"}"""
-private const val ACE_STATUS_JSON_2 = """{"status":"PAUSE"}"""
+private const val ACE_STATUS_JSON_1 = """{"status":"LIVE","carLocation":"UNASSIGNED"}"""
+private const val ACE_STATUS_JSON_2 = """{"status":"PAUSE","carLocation":"UNASSIGNED"}"""
 
 private object EmptyAceWindowsStatusRepository : AceWindowsStatusRepository {
     override fun statusStream(): Flow<AceWindowsStatusData> = emptyFlow()

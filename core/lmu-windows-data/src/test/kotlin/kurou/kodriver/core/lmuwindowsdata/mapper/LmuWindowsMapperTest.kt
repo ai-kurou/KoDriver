@@ -1,10 +1,12 @@
 package kurou.kodriver.core.lmuwindowsdata.mapper
 
+import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.WheelIndex
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class LmuWindowsMapperTest {
@@ -18,9 +20,12 @@ class LmuWindowsMapperTest {
         const val OFF_SCORING_NUM_VEHICLES = 104
         const val OFF_SCORING_BEST_LAP_TIME = 144
         const val OFF_SCORING_LAST_LAP_TIME = 168
+        const val OFF_SCORING_IN_PITS = 198
         const val OFF_SCORING_IS_PLAYER = 196
         const val OFF_SCORING_VEHICLE_CLASS = 200
         const val OFF_SCORING_LAP_START_ET = 256
+        const val OFF_SCORING_PIT_STATE = 457
+        const val OFF_SCORING_IN_GARAGE_STALL = 507
         const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
         const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
 
@@ -339,5 +344,64 @@ class LmuWindowsMapperTest {
         val result = LmuWindowsMapper.readVehicleClassName(buf, scoringBase)
 
         assertEquals("", result)
+    }
+
+    @Test
+    fun `readPitStatusはmInPits_mPitState_mInGarageStallを正しくパースする`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        buf.put(scoringBase + OFF_SCORING_IN_PITS, 1)
+        buf.put(scoringBase + OFF_SCORING_PIT_STATE, 2)
+        buf.put(scoringBase + OFF_SCORING_IN_GARAGE_STALL, 1)
+
+        val result = LmuWindowsMapper.readPitStatus(buf, scoringBase)
+
+        assertTrue(result.inPits)
+        assertEquals(LmuWindowsPitState.ENTERING, result.pitState)
+        assertTrue(result.inGarageStall)
+    }
+
+    @Test
+    fun `readPitStatusは全てのmPitStateの値を取得できる`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        val expected =
+            mapOf(
+                0 to LmuWindowsPitState.NONE,
+                1 to LmuWindowsPitState.REQUESTED,
+                2 to LmuWindowsPitState.ENTERING,
+                3 to LmuWindowsPitState.STOPPED,
+                4 to LmuWindowsPitState.EXITING,
+            )
+
+        expected.forEach { (rawValue, pitState) ->
+            buf.put(scoringBase + OFF_SCORING_PIT_STATE, rawValue.toByte())
+
+            val result = LmuWindowsMapper.readPitStatus(buf, scoringBase)
+
+            assertEquals(pitState, result.pitState, "rawValue=$rawValue")
+        }
+    }
+
+    @Test
+    fun `readPitStatusはmPitStateが未知の値のときUNKNOWNを返す`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+        buf.put(scoringBase + OFF_SCORING_PIT_STATE, 99)
+
+        val result = LmuWindowsMapper.readPitStatus(buf, scoringBase)
+
+        assertEquals(LmuWindowsPitState.UNKNOWN, result.pitState)
+    }
+
+    @Test
+    fun `readPitStatusはbool系フィールドが0のときfalseを返す`() {
+        val buf = emptyBuffer()
+        val scoringBase = vehicleScoringBase(index = 0)
+
+        val result = LmuWindowsMapper.readPitStatus(buf, scoringBase)
+
+        assertFalse(result.inPits)
+        assertFalse(result.inGarageStall)
     }
 }
