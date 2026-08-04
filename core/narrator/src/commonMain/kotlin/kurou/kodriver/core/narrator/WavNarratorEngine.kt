@@ -46,8 +46,12 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     @Volatile
     private var currentStartSoundType: START_TYPE = defaultStartSoundType
 
+    @Volatile
     private var sounds: Map<EVENT, ByteArray> = emptyMap()
+
+    @Volatile
     private var startSounds: Map<START_TYPE, ByteArray> = emptyMap()
+
     private var playJob: Job? = null
 
     // playJob はキューのチェーン最後尾しか指さないため、割り込み時に再生中・待機中の
@@ -55,11 +59,6 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     // queue=true の speak() は常にこの Job 配下へ launch するため、cancelPlayback() は
     // 呼び出しのたびにここを生存中の新しい Job へ差し替える。
     private var playbackParent: Job = SupervisorJob()
-
-    // 直前に cancelPlayback() でキャンセルした Job。SoundPlayer の停止処理は非同期なので、
-    // stop() の直後に speak()/previewStartSound() が呼ばれても、この Job が完了する
-    // （＝停止処理が完了する）まで新しい再生を始めない。
-    private var lastCancelledPlayback: Job = Job().also { it.complete() }
 
     @Volatile
     private var _currentKey: KEY? = null
@@ -105,6 +104,9 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
     ) {
         val mainSound = sounds[event] ?: return
         if (queue) {
+            // stop() 直後で playbackParent がキャンセル済みのままだと、その配下へ launch した
+            // 瞬間に子ジョブごとキャンセルされてしまうため、生存中でなければ差し替える。
+            if (!playbackParent.isActive) playbackParent = SupervisorJob()
             val previousJob = playJob
             playJob =
                 scope.launch(playbackParent) {
@@ -113,8 +115,8 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
                 }
             return
         }
-        val barrier = lastCancelledPlayback
-        cancelPlayback()
+        val barrier = cancelPlayback()
+        playbackParent = SupervisorJob()
         playJob =
             scope.launch(playbackParent) {
                 barrier.join()
@@ -139,22 +141,27 @@ class WavNarratorEngine<EVENT, START_TYPE, KEY>(
 
     // playbackParent.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
     // 呼び出した時点では前の再生がまだ鳴っている。次に本当に再生を始めてよいタイミングは
-    // ここでキャンセルした Job（lastCancelledPlayback）が完了（＝停止処理が完了）した後なので、
-    // speak()/previewStartSound() は自分が呼ぶ前の lastCancelledPlayback を join() してから再生する。
-    // stop() 単独で呼ばれた場合も同じ経路を通るため、stop() の直後に speak() を呼ぶ
-    // 優先度割り込みパターン（speakWithPriority）でも正しい Job を待てる。
-    private fun cancelPlayback() {
-        val previousParent = playbackParent
-        previousParent.cancel()
-        lastCancelledPlayback = previousParent
-        playbackParent = SupervisorJob()
+    // ここでキャンセルした Job が完了（＝停止処理が完了）した後なので、その Job を戻り値として
+    // 返し、呼び出し元（speak()/previewStartSound()）はそれを join() してから再生する。
+    //
+    // ここでは playbackParent を新しい Job に差し替えない。stop() は「今キャンセルすべき Job」を
+    // 返すだけで、次に speak()/previewStartSound() が呼ばれるまで playbackParent はキャンセル済み
+    // のまま保持される。こうすることで、stop() の直後に speak() が呼ばれた場合でも、
+    // speak() 自身の cancelPlayback() がその「まだ停止処理中の Job」を正しく再取得して待てる。
+    // （stop() 側で先に新しい空の Job へ差し替えてしまうと、speak() 側は空の Job しか
+    // 参照できず、停止処理の完了を待たずに次の音声が重複再生されてしまう。）
+    // 差し替え自体は、新しい再生を実際に launch する直前（speak()/previewStartSound() 側）で行う。
+    private fun cancelPlayback(): Job {
+        val cancelled = playbackParent
+        cancelled.cancel()
         playJob = null
+        return cancelled
     }
 
     fun previewStartSound(type: START_TYPE) {
         val sound = startSounds[type] ?: return
-        val barrier = lastCancelledPlayback
-        cancelPlayback()
+        val barrier = cancelPlayback()
+        playbackParent = SupervisorJob()
         playJob =
             scope.launch(playbackParent) {
                 barrier.join()

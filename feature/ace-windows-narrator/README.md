@@ -6,8 +6,8 @@ ACE (Assetto Corsa EVO) Windows版のWAV音声再生とアナウンス制御。`
 `AceWindowsNarratorViewModel` が `ObserveAceWindowsFuelUseCase` の燃料残量と
 `ObserveAceWindowsRemainingFuelThresholdPercentageUseCase` の閾値を監視し、
 `AceWindowsNarratorEventProcessor` を通じて `SpeechEvent.AceWindowsRemainingFuelWarning` を
-`:core:narrator` の `WavNarratorEngine`（`TextToSpeechEngine` 実装）に渡して WAV（`remaining_fuel_caution.wav`）を
-再生する。`WavNarratorEngine` の生成時に渡すイベント→WAVファイルパスのマップと `Res::readBytes` は
+`TextToSpeechEngine` 実装の `AceWindowsWavNarratorEngine`（`:core:narrator` の `WavNarratorEngine` に委譲する薄いアダプタ）に
+渡して WAV（`remaining_fuel_caution.wav`）を再生する。`WavNarratorEngine` の生成時に渡すイベント→WAVファイルパスのマップと `Res::readBytes` は
 `AceWindowsNarratorModule.kt` で定義する。`SoundPlayer` 等の音声再生基盤の実装は `:core:narrator` を参照。
 
 <!-- MODULE-GRAPH-START -->

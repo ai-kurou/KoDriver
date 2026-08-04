@@ -68,6 +68,34 @@ class WavNarratorEngineTest {
         }
 
     @Test
+    fun `speakがspeakに連続で割り込む場合も前の再生の停止処理が完了するまで次の音声を再生しない`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+
+            // stop() を挟まず speak() が speak() に直接割り込むケース
+            engine.speak(RED_FLAG)
+            runCurrent()
+
+            // 前の再生（CAR_LEFT）の停止処理（cancellationSignal の完了）を待っている間は次の音声を再生しない
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(4, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+            assertContentEquals(RED_FLAG_SOUND, player.playedSounds[3])
+        }
+
+    @Test
     fun `イベント音声が未ロードなら音声を再生しない`() =
         runTest {
             val player = FakeSoundPlayer()
@@ -372,6 +400,27 @@ class WavNarratorEngineTest {
             runCurrent()
 
             assertEquals(null, engine.currentKey)
+        }
+
+    @Test
+    fun `stopで中断した後currentKeyはnullを返す`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(CAR_LEFT)
+            runCurrent()
+            assertEquals(CAR_LEFT_KEY, engine.currentKey)
+
+            engine.stop()
+            runCurrent()
+
+            assertEquals(null, engine.currentKey)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
         }
 
     private fun TestScope.createEngine(
