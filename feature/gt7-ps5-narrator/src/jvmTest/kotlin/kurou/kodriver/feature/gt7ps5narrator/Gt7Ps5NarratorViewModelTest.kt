@@ -598,6 +598,16 @@ class Gt7Ps5NarratorViewModelTest {
             // Gt7Ps5.MyBestLap.RootのREADOUT_ENABLED_STATE_DEFAULTはtrueのため、未読み込みでも読み上げられる。
             assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            }
+            verify(exactly = 1) {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+            }
+            verify(exactly = 1) { myBestLapPreferencesRepository.observeVoiceType() }
+            verify(exactly = 1) { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() }
+            verify(exactly = 1) { remainingFuelPreferencesRepository.observeThresholdPercentage() }
+            verify(exactly = 1) { queuePreferencesRepository.observeQueueEnabledStates() }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
                     0L,
@@ -606,7 +616,15 @@ class Gt7Ps5NarratorViewModelTest {
                     telemetryJsons.single(),
                 )
             }
-            confirmVerified(simulatorPreferencesRepository, telemetryLogRepository)
+            confirmVerified(
+                simulatorPreferencesRepository,
+                readoutPreferencesRepository,
+                myBestLapPreferencesRepository,
+                remainingFuelLapsPreferencesRepository,
+                remainingFuelPreferencesRepository,
+                queuePreferencesRepository,
+                telemetryLogRepository,
+            )
         }
 
     /**
