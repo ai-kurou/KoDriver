@@ -20,10 +20,9 @@
 
 ## 設計・重複
 
-- **対象**: `feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator`
-  **課題**: `SoundPlayer` / `NarratorErrorCapture`（commonMain + jvm/android/js/wasmJs の actual）/ `PlatformSoundModule` / `JsSoundPlayer` / `WasmJsSoundPlayer` は3モジュールで完全に同一（パッケージ名を正規化して diff 済み）。`*WavNarratorEngine` と `*NarratorEventProcessor` も構造が同じで、実質の差はイベント→WAV ファイルのマップだけ。上記のバグ（SoundPlayer の改善が LMU にしか入っていない、割り込みバグが3箇所に同時に存在する）は、この重複が直接の原因になっている。`SoundPlayer` を型ごと分けているのは Koin の型解決を分離するためと見えるが、`named()` 修飾子で代替できる。
-  **改善案**: 共通の narrator 基盤モジュール（例: `feature:narrator-core` もしくは `core:designsystem` 配下）へ `SoundPlayer` / `NarratorErrorCapture` / `PlatformSoundModule` と、イベント→ファイルのマップを差し替え可能にした `WavNarratorEngine` を切り出し、3モジュールはマップと DI 登録のみを持つ形にする。
-  **付随する課題**: 3つの `TextToSpeechEngine` はいずれも `single` で、`init` ブロックで自モジュールの WAV を全て ByteArray としてロードする。そのため選択中でないシミュレータの音声（3モジュール合計で 46 ファイル・約 2.8MB）も常時メモリに載る。共通化のタイミングで、選択中のシミュレータ分だけ遅延ロードする方式も検討したい。
+- **対象**: `core:narrator`（`JvmSoundPlayer` / `AndroidSoundPlayer` / `WavNarratorEngine` を含む `TextToSpeechEngine` 実装群）
+  **課題**: 3つの `TextToSpeechEngine`（LMU/GT7/ACEの `WavNarratorEngine` アダプタ経由）はいずれも `single` で、`init` ブロックで自モジュールの WAV を全て ByteArray としてロードする。そのため選択中でないシミュレータの音声（3モジュール合計で 46 ファイル・約 2.8MB）も常時メモリに載る。
+  **改善案**: 選択中のシミュレータ分だけ遅延ロードする方式を検討する。narrator の共通化（`core:narrator` への切り出し）により実装箇所は1箇所に集約されたため、対応する場合の変更範囲は小さい。
 
 - **対象**: `feature:readout-list`（`ReadoutItemDisplayName.kt`）, `feature:telemetry-log-list`（`ReadoutItemDisplayName.kt`）
   **課題**: `ReadoutItemKey` を表示名に変換する `when` 式が、関数名（`itemDisplayName` / `readoutItemDisplayName`）とリソースキーの接頭辞（`item_` / `readout_item_`）以外はほぼ逐語で重複しており、約190行ある。文字列リソースも接頭辞を除けばキー名・文言ともに30項目すべて一致している（diff で確認）。先に PR #908 で解決した Simulator 表示名・アイコンの重複とまったく同じ構図。カバレッジも 51.9%（telemetry-log-list） / 62.0%（readout-list）と低く、旗の分岐がほとんど未検証。
@@ -48,10 +47,6 @@
 - **対象**: `core:domain`（`Simulator.kt`）, `feature:readout-list`（`ReadoutListViewModel.kt:27-28`）
   **課題**: `Simulator.entries` が private なため、シミュレータ一覧が必要な `ReadoutListViewModel` が `listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows)` を独自に再定義している。同じ `core:domain` の `ReadoutItemKey.entries` は public で、扱いが割れている。新しいシミュレータを追加したときに追加漏れがコンパイルエラーにならない。
   **改善案**: `Simulator.entries` を public にし、`ReadoutListViewModel` はそれを参照する。
-
-- **対象**: `feature:lmu-windows-narrator`（`jvmMain/JvmSoundPlayer.kt:60`）
-  **課題**: 同一モジュール内に `captureNarratorError()` という expect/actual のエラー送出抽象があり `AndroidSoundPlayer` はそれを使っているのに、`JvmSoundPlayer` だけ `Sentry.captureException()` を直接呼んでいる。
-  **改善案**: `captureNarratorError()` に統一する。
 
 - **対象**: `core:ace-windows-data`（`AceWindowsMapper.kt`）
   **課題**: 燃料の変換だけ `map()` で、他は `mapFlag()` / `mapStatus()`。何を map するのか関数名から分からない。
@@ -83,10 +78,6 @@
 - **対象**: `core:designsystem`
   **課題**: 実装13ファイルに対しテストは3ファイルのみで、`ListPaneCard` はカバレッジ 0%。`DetailPane` / `DetailPaneCard` / `DetailPaneScaffold` / `DetailPaneTopAppBar` / `ThresholdSlider` などアプリ全体で使い回している Composable にスクリーンショットテストが1つもない。共通コンポーネントの見た目が変わっても、各 feature の golden 画像が全部更新されるまで気づけない。
   **改善案**: designsystem 側に主要コンポーネントのスクリーンショットテストを追加する。
-
-- **対象**: `feature:lmu-windows-narrator` / `feature:ace-windows-narrator` の `NarratorErrorCapture`
-  **課題**: js / wasmJs の actual 実装は3モジュールで同一だが、テスト（`jsTest` / `wasmJsTest`）があるのは `feature:gt7-ps5-narrator` だけ。
-  **改善案**: Narrator 基盤の共通化（上記）で1箇所に集約するのが本筋。集約前に対応する場合は、LMU / ACE にも同等のテストを追加する。
 
 ---
 
