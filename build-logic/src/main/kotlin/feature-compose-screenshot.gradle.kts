@@ -19,7 +19,9 @@ kotlin {
             implementation(libs.findLibrary("roborazzi-composeDesktop").get())
         }
         jvmTest {
-            kotlin.srcDir(rootProject.layout.projectDirectory.dir("build-logic/src/featureComposeScreenshotJvmTest/kotlin"))
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir("build-logic/src/featureComposeScreenshotJvmTest/kotlin"),
+            )
         }
     }
 }
