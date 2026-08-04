@@ -4,6 +4,7 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.readoutEnabled
 
 /**
  * GT7 向け読み上げ判定の継続状態。
@@ -73,7 +74,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
         if (current >= state.personalBestMs) return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
-        if (!settings.enabledStates.getValue(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)) {
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.MyBestLap.Root)) {
             return Gt7Ps5NarratorReadoutDecision(stateWithCurrentBestLap, emptyList())
         }
 

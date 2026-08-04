@@ -12,6 +12,33 @@ class DetermineAceWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineAceWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `enabledStatesが空でも例外にならずデフォルトtrueで読み上げる`() {
+        val fuelDecision =
+            useCase.determineRemainingFuel(
+                state = AceWindowsNarratorState(),
+                data = fuel(remainingPercent = 20.0),
+                settings =
+                    AceWindowsNarratorReadoutSettings(
+                        enabledStates = emptyMap(),
+                        remainingFuelThresholdPercentage = 30,
+                    ),
+            )
+        val flagDecision =
+            useCase.determineFlag(
+                state = AceWindowsNarratorState(previousFlag = AceWindowsFlagType.NO_FLAG),
+                data = flag(AceWindowsFlagType.BLUE_FLAG),
+                settings =
+                    AceWindowsNarratorReadoutSettings(
+                        enabledStates = emptyMap(),
+                        remainingFuelThresholdPercentage = 0,
+                    ),
+            )
+
+        assertEquals(listOf(SpeechEvent.AceWindowsRemainingFuelWarning), fuelDecision.events)
+        assertEquals(listOf(SpeechEvent.AceWindowsBlueFlag), flagDecision.events)
+    }
+
+    @Test
     fun `残量が閾値以下になると読み上げる`() {
         val decision =
             useCase.determineRemainingFuel(

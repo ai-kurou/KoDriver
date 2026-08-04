@@ -12,6 +12,24 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
 
     @Test
+    fun `enabledStatesが空でも例外にならずデフォルトtrueで読み上げる`() {
+        val initialDecision =
+            useCase.determineMyBestLap(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(bestLapTimeMs = 90_000),
+                settings = settings(enabledStates = emptyMap()),
+            )
+        val decision =
+            useCase.determineMyBestLap(
+                state = initialDecision.state,
+                telemetry = telemetry(bestLapTimeMs = 89_000),
+                settings = settings(enabledStates = emptyMap()),
+            )
+
+        assertEquals(listOf(SpeechEvent.Gt7Ps5MyBestLapFormal), decision.events)
+    }
+
+    @Test
     fun `初回の自己ベスト値では読み上げない`() {
         val decision =
             useCase.determineMyBestLap(

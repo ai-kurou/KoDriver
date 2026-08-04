@@ -14,6 +14,7 @@ import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -559,6 +560,35 @@ class Gt7Ps5NarratorViewModelTest {
 
             assertEquals(false, ttsEngine.stopCalled)
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
+    fun `設定読み込み前にテレメトリが届いても例外にならずデフォルト値で判定する`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.Gt7Ps5)
+            // enabledStatesはまだ何も流れてこない（DataStoreの初回読み込み中を模す）状態にする。
+            every {
+                readoutPreferencesRepository.observeReadoutEnabledStates(Simulator.Gt7Ps5.id)
+            } returns MutableSharedFlow()
+            every {
+                readoutPreferencesRepository.observeReadoutOrder(Simulator.Gt7Ps5.id)
+            } returns MutableStateFlow(listOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root))
+            every { myBestLapPreferencesRepository.observeVoiceType() } returns
+                MutableStateFlow(MyBestLapVoiceType.FORMAL)
+            every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
+            every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(0)
+            every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
+            coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+            channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
+            channel.send(gt7Telemetry(bestLapTimeMs = 59_000))
+
+            // Gt7Ps5.MyBestLap.RootのREADOUT_ENABLED_STATE_DEFAULTはtrueのため、未読み込みでも読み上げられる。
+            assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
         }
 
     /**
