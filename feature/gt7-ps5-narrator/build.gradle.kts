@@ -10,14 +10,9 @@ kotlin {
     }
 
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.sentry)
-        }
-        jvmMain.dependencies {
-            implementation(libs.sentry)
-        }
         commonMain.dependencies {
             implementation(projects.core.designsystem)
+            implementation(projects.core.narrator)
             implementation(libs.kotlinx.coroutinesCore)
             implementation(libs.kotlinx.serialization.json)
         }
@@ -29,13 +24,6 @@ kotlin {
         }
         androidUnitTest.dependencies {
             implementation(libs.kotlin.testJunit)
-        }
-        jsTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
-        wasmJsTest.dependencies {
-            implementation(libs.kotlin.test)
-            implementation(libs.kotlinx.coroutinesTest)
         }
     }
 }

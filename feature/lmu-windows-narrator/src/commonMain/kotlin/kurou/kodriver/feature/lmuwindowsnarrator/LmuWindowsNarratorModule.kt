@@ -1,6 +1,12 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.WavResources
+import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
@@ -32,6 +38,8 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.feature.lmuwindowsnarrator.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -50,6 +58,7 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は GT7 と区別するため named("lmu_windows") で登録している。
  */
+@OptIn(ExperimentalResourceApi::class)
 val lmuWindowsNarratorModule: Module =
     module {
         // ViewModel（LmuWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
@@ -97,16 +106,60 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsPitTimingTyreWearLapsUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
-        // 音声再生（named "lmu_windows" で GT7 と分離。SoundPlayer は platformSoundModule が提供）
+        // 音声再生（named "lmu_windows" で GT7/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
         factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
-        includes(platformSoundModule)
+        includes(platformSoundModule(named("lmu_windows")))
         single<TextToSpeechEngine>(named("lmu_windows")) {
             LmuWindowsWavNarratorEngine(
-                soundPlayer = get(),
-                volumeFlow = ObserveSoundVolumeUseCase(get())(),
-                startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                WavNarratorEngine(
+                    soundPlayer = get(named("lmu_windows")),
+                    resources =
+                        WavResources(
+                            eventToFile = lmuWindowsEventToFile,
+                            startSoundTypeToFile = lmuWindowsStartSoundTypeToFile,
+                            resourceLoader = Res::readBytes,
+                            startSoundResourceLoader = ::readStartSoundBytes,
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    volumeFlow = ObserveSoundVolumeUseCase(get())(),
+                    startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                ),
             )
         }
     }
 
-internal expect val platformSoundModule: Module
+private val lmuWindowsEventToFile: Map<SpeechEvent, String> =
+    buildMap {
+        put(SpeechEvent.CarLeft, "files/car_left.wav")
+        put(SpeechEvent.CarRight, "files/car_right.wav")
+        put(SpeechEvent.LeftApproach, "files/left_approach.wav")
+        put(SpeechEvent.RightApproach, "files/right_approach.wav")
+        put(SpeechEvent.KeepLeft, "files/keep_left.wav")
+        put(SpeechEvent.KeepRight, "files/keep_right.wav")
+        put(SpeechEvent.LeftSustained, "files/left_sustained.wav")
+        put(SpeechEvent.RightSustained, "files/right_sustained.wav")
+        put(SpeechEvent.BlueFlag, "files/blue_flag.wav")
+        put(SpeechEvent.YellowFlag, "files/yellow_flag.wav")
+        put(SpeechEvent.FullCourseYellow, "files/full_course_yellow.wav")
+        put(SpeechEvent.SessionStop, "files/session_stopped.wav")
+        put(SpeechEvent.RedFlag, "files/red_flag.wav")
+        put(SpeechEvent.Overheating, "files/gp2_gp2.wav")
+        put(SpeechEvent.LmuWindowsMyBestLapFormal, "files/my_best_lap_formal.wav")
+        put(SpeechEvent.LmuWindowsMyBestLapCasual, "files/my_best_lap_casual.wav")
+        put(SpeechEvent.TyreOverheat, "files/tyre_overheat.wav")
+        put(SpeechEvent.TyreCold, "files/tyre_cold.wav")
+        put(SpeechEvent.TyreWearWarning, "files/tyre_wear_caution.wav")
+        put(SpeechEvent.RemainingVirtualEnergyWarning, "files/remaining_virtual_energy_caution.wav")
+        for (laps in 0..MAX_PIT_TIMING_LAPS) {
+            put(SpeechEvent.PitTimingWarning(laps), "files/pit_timing_laps_$laps.wav")
+        }
+    }
+
+private val lmuWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
+    mapOf(
+        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+    )
+
+private const val MAX_PIT_TIMING_LAPS = 5

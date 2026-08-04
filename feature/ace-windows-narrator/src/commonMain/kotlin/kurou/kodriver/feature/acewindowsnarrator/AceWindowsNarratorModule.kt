@@ -1,6 +1,12 @@
 package kurou.kodriver.feature.acewindowsnarrator
 
+import kurou.kodriver.core.designsystem.readStartSoundBytes
+import kurou.kodriver.core.narrator.WavNarratorEngine
+import kurou.kodriver.core.narrator.WavResources
+import kurou.kodriver.core.narrator.platformSoundModule
+import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.ReadoutStartSoundType
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -15,6 +21,8 @@ import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 import kurou.kodriver.domain.usecase.ObserveSoundVolumeUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveTelemetryLogUseCase
+import kurou.kodriver.feature.acewindowsnarrator.generated.resources.Res
+import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -31,6 +39,7 @@ import org.koin.dsl.module
  *   SoundPlayer（[platformSoundModule]）。
  * 音声系は LMU/GT7 と区別するため named("ace_windows") で登録している。
  */
+@OptIn(ExperimentalResourceApi::class)
 val aceWindowsNarratorModule: Module =
     module {
         // ViewModel（AceWindowsNarratorEventProcessor 経由で下記の TextToSpeechEngine を利用）
@@ -55,16 +64,46 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveSelectedSimulatorUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
-        // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は platformSoundModule が提供）
-        includes(platformSoundModule)
+        // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
+        includes(platformSoundModule(named("ace_windows")))
         single<TextToSpeechEngine>(named("ace_windows")) {
             AceWindowsWavNarratorEngine(
-                soundPlayer = get(),
-                volumeFlow = ObserveSoundVolumeUseCase(get())(),
-                startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                WavNarratorEngine(
+                    soundPlayer = get(named("ace_windows")),
+                    resources =
+                        WavResources(
+                            eventToFile = aceWindowsEventToFile,
+                            startSoundTypeToFile = aceWindowsStartSoundTypeToFile,
+                            resourceLoader = Res::readBytes,
+                            startSoundResourceLoader = ::readStartSoundBytes,
+                        ),
+                    eventToKey = { it.readoutItemKey },
+                    defaultStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,
+                    volumeFlow = ObserveSoundVolumeUseCase(get())(),
+                    startSoundTypeFlow = ObserveReadoutStartSoundTypeUseCase(get())(),
+                ),
             )
         }
         factory(named("ace_windows")) { PlaySpeechEventUseCase(get(named("ace_windows"))) }
     }
 
-internal expect val platformSoundModule: Module
+private val aceWindowsEventToFile: Map<SpeechEvent, String> =
+    mapOf(
+        SpeechEvent.AceWindowsRemainingFuelWarning to "files/remaining_fuel_caution.wav",
+        SpeechEvent.AceWindowsWhiteFlag to "files/white_flag.wav",
+        SpeechEvent.AceWindowsGreenFlag to "files/green_flag.wav",
+        SpeechEvent.AceWindowsRedFlag to "files/red_flag.wav",
+        SpeechEvent.AceWindowsBlueFlag to "files/blue_flag.wav",
+        SpeechEvent.AceWindowsYellowFlag to "files/yellow_flag.wav",
+        SpeechEvent.AceWindowsBlackFlag to "files/black_flag.wav",
+        SpeechEvent.AceWindowsBlackWhiteFlag to "files/black_white_flag.wav",
+        SpeechEvent.AceWindowsCheckeredFlag to "files/checkered_flag.wav",
+        SpeechEvent.AceWindowsOrangeCircleFlag to "files/orange_circle_flag.wav",
+        SpeechEvent.AceWindowsRedYellowStripesFlag to "files/red_yellow_stripes_flag.wav",
+    )
+
+private val aceWindowsStartSoundTypeToFile: Map<ReadoutStartSoundType, String> =
+    mapOf(
+        ReadoutStartSoundType.FORMULA_RADIO to "files/formula_radio.wav",
+        ReadoutStartSoundType.ELECTRONIC_NOISE to "files/electronic_noise.wav",
+    )

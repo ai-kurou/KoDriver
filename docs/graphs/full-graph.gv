@@ -23,4 +23,5 @@ digraph G {
   ":server" -> ":core:domain"
   "feature" -> ":core:designsystem"
   "feature" -> ":core:domain"
+  "feature" -> ":core:narrator"
 }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
+import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
@@ -11,6 +12,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesReposi
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 /**
@@ -24,7 +26,7 @@ val fakeGt7Ps5DataModule =
         single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
         single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
         single<Gt7Ps5RemainingFuelPreferencesRepository> { FakeGt7Ps5RemainingFuelPreferencesRepository() }
-        single<SoundPlayer> { NoOpSoundPlayer() }
+        single<SoundPlayer>(named("gt7_ps5")) { NoOpSoundPlayer() }
     }
 
 private class FakeGt7Ps5Repository : Gt7Ps5Repository {
