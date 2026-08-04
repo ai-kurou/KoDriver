@@ -5,6 +5,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.readoutEnabled
 
 /**
  * ACE 向け読み上げ判定の継続状態。
@@ -40,7 +41,7 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val isLow = data.remainingPercent > 0.0 && data.remainingPercent <= settings.remainingFuelThresholdPercentage
         val shouldAnnounce =
             !state.remainingFuelWarned && isLow &&
-                settings.enabledStates.getValue(ReadoutItemKey.AceWindows.RemainingFuel.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.RemainingFuel.Root)
         return AceWindowsNarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.AceWindowsRemainingFuelWarning) else emptyList(),
@@ -55,14 +56,14 @@ class DetermineAceWindowsNarratorReadoutUseCase {
         val previous = state.previousFlag
         val nextState = state.copy(previousFlag = data.flag)
         if (previous == null) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
-        if (!settings.enabledStates.getValue(ReadoutItemKey.AceWindows.Flag.Root)) {
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.AceWindows.Flag.Root)) {
             return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         }
         if (data.flag == previous) return AceWindowsNarratorReadoutDecision(nextState, emptyList())
         val event =
             flagEvent(data.flag)
                 ?.takeIf { (itemKey, _) ->
-                    settings.enabledStates.getValue(itemKey)
+                    settings.enabledStates.readoutEnabled(itemKey)
                 }?.second
         return AceWindowsNarratorReadoutDecision(nextState, listOfNotNull(event))
     }

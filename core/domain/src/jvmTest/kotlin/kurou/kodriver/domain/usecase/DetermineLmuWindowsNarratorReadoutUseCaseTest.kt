@@ -34,6 +34,90 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     private val useCase = DetermineLmuWindowsNarratorReadoutUseCase()
 
     @Test
+    fun `enabledStatesが空でも例外にならずデフォルト値で判定する`() {
+        val emptySettings = settings(enabledStates = emptyMap())
+
+        val myBestLap =
+            useCase.determineMyBestLap(
+                state = LmuWindowsNarratorState(previousBestLapTimeMs = 60_000L),
+                telemetry = telemetry(bestLapTimeMs = 59_000L),
+                settings = emptySettings,
+            )
+        val vehicleApproach =
+            useCase.determineVehicleApproach(
+                state = LmuWindowsNarratorState(),
+                vehicleApproach = leftVehicleApproach(vehicleId = 1),
+                settings = emptySettings,
+                observedAtMs = 0L,
+            )
+        val vehicleDamage =
+            useCase.determineVehicleDamage(
+                state = LmuWindowsNarratorState(previousVehicleDamage = damage(overheating = false)),
+                vehicleDamage = damage(overheating = true),
+                settings = emptySettings,
+            )
+        val tyreTemperatureOverheat =
+            useCase.determineTyreTemperatureOverheat(
+                state = LmuWindowsNarratorState(),
+                input = tyreTemperatureInput(fl = 95.0),
+                settings = emptySettings.copy(tyreTemperatureHighThresholdCelsius = 90),
+            )
+        val tyreTemperatureLow =
+            useCase.determineTyreTemperatureLow(
+                state = LmuWindowsNarratorState(previousGamePhaseForTyreLowWarning = SessionPhase.GREEN_FLAG),
+                input = tyreTemperatureInput(fl = 55.0, raceFlags = clearFlags(gamePhase = SessionPhase.GARAGE)),
+                settings = emptySettings,
+            )
+        val tyreWear =
+            useCase.determineTyreWear(
+                state = LmuWindowsNarratorState(),
+                data = tyreWear(fl = 0.4),
+                settings = emptySettings.copy(tyreWearThresholdPercentage = 50),
+            )
+        val remainingVirtualEnergy =
+            useCase.determineRemainingVirtualEnergy(
+                state = LmuWindowsNarratorState(),
+                data = remainingVirtualEnergy(remainingRatio = 0.4),
+                settings = emptySettings.copy(remainingVirtualEnergyThresholdPercentage = 50),
+            )
+        val pitTimingVirtualEnergy =
+            useCase.determinePitTimingVirtualEnergy(
+                state = LmuWindowsNarratorState(),
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+                settings = emptySettings,
+                observedAtMs = 0L,
+            )
+        val pitTimingTyreWear =
+            useCase.determinePitTimingTyreWear(
+                state = LmuWindowsNarratorState(),
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                tyreWear = tyreWear(fl = 1.0),
+                settings = emptySettings,
+                observedAtMs = 0L,
+            )
+        val raceFlags =
+            useCase.determineRaceFlags(
+                state = LmuWindowsNarratorState(previousRaceFlags = clearFlags()),
+                raceFlags = clearFlags(gamePhase = SessionPhase.RED_FLAG),
+                settings = emptySettings,
+            )
+
+        // LmuWindows.VehicleDamage.RootはREADOUT_ENABLED_STATE_DEFAULTでfalseのため読み上げない。
+        assertEquals(emptyList<SpeechEvent>(), vehicleDamage.events)
+        // それ以外の項目はデフォルトtrue/READOUT_ENABLED_STATE_DEFAULT準拠で判定され、例外は投げない。
+        assertNotNull(myBestLap)
+        assertNotNull(vehicleApproach)
+        assertNotNull(tyreTemperatureOverheat)
+        assertNotNull(tyreTemperatureLow)
+        assertNotNull(tyreWear)
+        assertNotNull(remainingVirtualEnergy)
+        assertNotNull(pitTimingVirtualEnergy)
+        assertNotNull(pitTimingTyreWear)
+        assertNotNull(raceFlags)
+    }
+
+    @Test
     fun `初回の自己ベストラップは状態だけ更新する`() {
         val decision =
             useCase.determineMyBestLap(
