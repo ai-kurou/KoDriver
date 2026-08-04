@@ -581,7 +581,15 @@ class Gt7Ps5NarratorViewModelTest {
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(0)
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
-            coEvery { telemetryLogRepository.saveTelemetryLog(any(), any(), any(), any()) } just Runs
+            val telemetryJsons = mutableListOf<String>()
+            coEvery {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    capture(telemetryJsons),
+                )
+            } just Runs
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
             channel.send(gt7Telemetry(bestLapTimeMs = 60_000))
@@ -589,6 +597,15 @@ class Gt7Ps5NarratorViewModelTest {
 
             // Gt7Ps5.MyBestLap.RootのREADOUT_ENABLED_STATE_DEFAULTはtrueのため、未読み込みでも読み上げられる。
             assertEquals(listOf<SpeechEvent>(SpeechEvent.Gt7Ps5MyBestLapFormal), spokenTexts)
+            coVerify(exactly = 1) {
+                telemetryLogRepository.saveTelemetryLog(
+                    0L,
+                    Simulator.Gt7Ps5,
+                    ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
+                    telemetryJsons.single(),
+                )
+            }
+            confirmVerified(telemetryLogRepository)
         }
 
     /**
