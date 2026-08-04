@@ -1,7 +1,10 @@
 package kurou.kodriver.feature.lmuwindowsnarrator
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -11,6 +14,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import org.junit.Test
@@ -21,7 +25,7 @@ import kotlin.test.assertEquals
 @Suppress("TooManyFunctions")
 class LmuWindowsWavNarratorEngineTest {
     @Test
-    fun `再生中は音声を再生しない`() =
+    fun `soundPlayer isPlaying が true でも実行中のジョブがなければ音声を再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
             val engine = createEngine(player)
@@ -30,7 +34,37 @@ class LmuWindowsWavNarratorEngineTest {
             engine.speak(SpeechEvent.CarLeft)
             runCurrent()
 
-            assertEquals(emptyList(), player.playedSounds)
+            assertEquals(2, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+        }
+
+    @Test
+    fun `stop直後のspeakは前の再生の停止処理が完了するまで次の音声を再生しない`() =
+        runTest {
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player = FakeSoundPlayer(blockingSound = CAR_LEFT_SOUND, cancellationSignal = cancellationSignal)
+            val engine = createEngine(player)
+            runCurrent()
+
+            engine.speak(SpeechEvent.CarLeft)
+            runCurrent()
+
+            engine.stop()
+            engine.speak(SpeechEvent.RedFlag)
+            runCurrent()
+
+            // 前の再生の停止処理（cancellationSignal の完了）を待っている間は次の音声を再生しない
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
+            advanceUntilIdle()
+
+            assertEquals(4, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[0])
+            assertContentEquals(CAR_LEFT_SOUND, player.playedSounds[1])
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds[2])
+            assertContentEquals(EVENT_SOUND, player.playedSounds[3])
         }
 
     @Test
@@ -350,7 +384,7 @@ class LmuWindowsWavNarratorEngineTest {
         }
 
     @Test
-    fun `previewStartSoundは再生中なら何も再生しない`() =
+    fun `previewStartSoundはsoundPlayer isPlayingが trueでも実行中のジョブがなければ再生する`() =
         runTest {
             val player = FakeSoundPlayer(isPlaying = true)
             val engine = createEngine(player)
@@ -359,7 +393,8 @@ class LmuWindowsWavNarratorEngineTest {
             engine.previewStartSound(ReadoutStartSoundType.FORMULA_RADIO)
             runCurrent()
 
-            assertEquals(emptyList(), player.playedSounds)
+            assertEquals(1, player.playedSounds.size)
+            assertContentEquals(FORMULA_RADIO_SOUND, player.playedSounds.single())
         }
 
     @Test
@@ -645,6 +680,8 @@ class LmuWindowsWavNarratorEngineTest {
 
 private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
+    private val blockingSound: ByteArray? = null,
+    private val cancellationSignal: CompletableDeferred<Unit>? = null,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
     val playedVolumes = mutableListOf<Int>()
@@ -655,5 +692,14 @@ private class FakeSoundPlayer(
     ) {
         playedSounds += bytes
         playedVolumes += volume
+        if (blockingSound != null && bytes.contentEquals(blockingSound)) {
+            try {
+                awaitCancellation()
+            } finally {
+                withContext(NonCancellable) {
+                    cancellationSignal?.await()
+                }
+            }
+        }
     }
 }

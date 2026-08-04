@@ -38,7 +38,14 @@ internal class Gt7Ps5WavNarratorEngine(
 
     // playJob はキューのチェーン最後尾しか指さないため、割り込み時に再生中・待機中の
     // ジョブをまとめてキャンセルできるよう、全再生ジョブをこの親 Job にぶら下げる。
+    // queue=true の speak() は常にこの Job 配下へ launch するため、cancelPlayback() は
+    // 呼び出しのたびにここを生存中の新しい Job へ差し替える。
     private var playbackParent: Job = SupervisorJob()
+
+    // 直前に cancelPlayback() でキャンセルした Job。SoundPlayer の停止処理は非同期なので、
+    // stop() の直後に speak()/previewStartSound() が呼ばれても、この Job が完了する
+    // （＝停止処理が完了する）まで新しい再生を始めない。
+    private var lastCancelledPlayback: Job = Job().also { it.complete() }
 
     @Volatile
     private var _currentReadoutItemKey: ReadoutItemKey? = null
@@ -105,9 +112,13 @@ internal class Gt7Ps5WavNarratorEngine(
                 }
             return
         }
-        if (soundPlayer.isPlaying) return
+        val barrier = lastCancelledPlayback
         cancelPlayback()
-        playJob = scope.launch(playbackParent) { play(event, mainSound) }
+        playJob =
+            scope.launch(playbackParent) {
+                barrier.join()
+                play(event, mainSound)
+            }
     }
 
     private suspend fun play(
@@ -125,17 +136,29 @@ internal class Gt7Ps5WavNarratorEngine(
         cancelPlayback()
     }
 
+    // playbackParent.cancel() は SoundPlayer の停止処理を非同期にトリガーするだけで、
+    // 呼び出した時点では前の再生がまだ鳴っている。次に本当に再生を始めてよいタイミングは
+    // ここでキャンセルした Job（lastCancelledPlayback）が完了（＝停止処理が完了）した後なので、
+    // speak()/previewStartSound() は自分が呼ぶ前の lastCancelledPlayback を join() してから再生する。
+    // stop() 単独で呼ばれた場合も同じ経路を通るため、stop() の直後に speak() を呼ぶ
+    // 優先度割り込みパターン（speakWithPriority）でも正しい Job を待てる。
     private fun cancelPlayback() {
-        playbackParent.cancel()
+        val previousParent = playbackParent
+        previousParent.cancel()
+        lastCancelledPlayback = previousParent
         playbackParent = SupervisorJob()
         playJob = null
     }
 
     override fun previewStartSound(type: ReadoutStartSoundType) {
         val sound = startSounds[type] ?: return
-        if (soundPlayer.isPlaying) return
+        val barrier = lastCancelledPlayback
         cancelPlayback()
-        playJob = scope.launch(playbackParent) { soundPlayer.play(sound, currentVolume) }
+        playJob =
+            scope.launch(playbackParent) {
+                barrier.join()
+                soundPlayer.play(sound, currentVolume)
+            }
     }
 
     internal companion object {
