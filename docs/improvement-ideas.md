@@ -96,10 +96,6 @@
 
 ## テスト
 
-- **対象**: 各 feature モジュールの `jvmTest/.../RoborazziUtil.kt`
-  **課題**: 34モジュールに複製されており、内容は `package` 行以外まったく同一（md5 と diff で確認）。スクリーンショットテストの設定を変えるときに34ファイルを触ることになる。
-  **改善案**: 共有のテスト用モジュール（`testFixtures` もしくは `build-logic` の `feature-compose-screenshot` プラグイン側）に1箇所だけ置き、各モジュールから参照する。
-
 - **対象**: `core:designsystem`
   **課題**: 実装13ファイルに対しテストは3ファイルのみで、`ListPaneCard` はカバレッジ 0%。`DetailPane` / `DetailPaneCard` / `DetailPaneScaffold` / `DetailPaneTopAppBar` / `ThresholdSlider` などアプリ全体で使い回している Composable にスクリーンショットテストが1つもない。共通コンポーネントの見た目が変わっても、各 feature の golden 画像が全部更新されるまで気づけない。
   **改善案**: designsystem 側に主要コンポーネントのスクリーンショットテストを追加する。
@@ -127,4 +123,3 @@
 - **対象**: `feature:lmu-windows-narrator`（`LmuWindowsNarratorViewModel.kt`）, `feature:gt7-ps5-narrator`（`Gt7Ps5NarratorViewModel.kt`）
   **課題**: `stateIn` の初期値に、対応する `*_DEFAULT` 定数があるのにリテラルを直書きしている箇所が8つある（LMU: `:207 FORMAL`, `:212 SESSION_STOP`, `:217 95`, `:251 true`, `:256 CAR_LEFT_RIGHT`, `:270 KEEP_LEFT_RIGHT` / GT7: `:89 FORMAL`, `:94 3`）。現状は値が一致しているため挙動上のバグはないが、Defaults 側だけを変更したときに Narrator の初期値が古いまま残る。CLAUDE.md の「デフォルト値は `:core:domain` の定数を参照する」に反する。
   **改善案**: すべて対応する定数参照に置き換える。同じ ViewModel 内でも `LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE` などは定数参照になっており、揃えるだけで済む。
-
