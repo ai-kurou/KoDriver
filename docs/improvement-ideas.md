@@ -26,12 +26,6 @@
   **課題**: 読み上げ判定は `enabledStates.getValue(key)` でユーザー設定を参照している（本番コードに29箇所）。`Map.getValue` はキーが無いと `NoSuchElementException` を投げるが、ViewModel 側は `stateIn(..., SharingStarted.Eagerly, emptyMap())` で初期化しているため、DataStore の初回読み込みが完了する前にテレメトリが届くと例外になる。特に `Gt7Ps5NarratorViewModel.kt:211,215` の `currentSettings` getter、`LmuWindowsNarratorViewModel.kt:385,446`（`determinePitTiming*` の `enabled=` 引数）、`DetermineLmuWindowsNarratorReadoutUseCase.kt:562,578`（車両接近）は毎 tick 無条件に評価される。一時テストで再現し、`java.util.NoSuchElementException: Key Root is missing in the map.` が発生して当該ジョブが恒久停止することを確認済み（Android では未捕捉例外としてクラッシュに至る）。`SharedMemoryPollingSource` は待機なしで最初のバッファを emit するため、LMU 起動済みの状態でデスクトップアプリを起動するケースが最も現実的な発生条件。
   **改善案**: `getValue` を `getOrDefault` / `?: default` に置き換えるか、`enabledStates` が空の間は判定自体をスキップするガードを入れる。デフォルト値は `READOUT_ENABLED_STATE_DEFAULT` など既存の Defaults に揃える。あわせて「設定未ロード中にテレメトリが届いても例外にならない」テストを各 Narrator ViewModel に追加する。
 
-- **対象**: `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator` の `JvmSoundPlayer`・`AndroidSoundPlayer`
-  **課題**: LMU 版の SoundPlayer だけが改善されており、GT7 / ACE は旧実装のまま取り残されている。JVM は LMU が `SourceDataLine` + Bluetooth A2DP 対策（末尾に 0.3 秒の無音を書き足す）なのに対し GT7 / ACE は `Clip`、Android は LMU が `SoundPool` + セッション維持なのに対し GT7 / ACE は `MediaPlayer`。
-  そのため **Bluetooth ヘッドセット使用時の語尾切れが GT7 / ACE では JVM・Android とも再発する可能性が高い**。ただしこれは実機での再現を確認したものではなく、LMU 側にのみ A2DP 対策の実装とコメントが入っており GT7 / ACE には無いという、コード上の差分からの推定である（実機再現の確認は未実施）。
-  一方、GT7 / ACE の `JvmSoundPlayer` が `AudioSystem.getAudioInputStream(...)` で開いた `AudioInputStream` を一度も `close()` していない点は、コード上で確認できる確実なリーク（LMU は `.use { }` で修正済み）。
-  **改善案**: 下記「Narrator 3モジュールの重複」の共通化とあわせて、LMU の実装へ統一する。着手時はまず GT7 / ACE で実機の Bluetooth 再生を確認し、語尾切れが再現するかを記録する。
-
 ---
 
 ## 設計・重複
