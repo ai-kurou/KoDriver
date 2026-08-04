@@ -26,11 +26,6 @@
   **課題**: 読み上げ判定は `enabledStates.getValue(key)` でユーザー設定を参照している（本番コードに29箇所）。`Map.getValue` はキーが無いと `NoSuchElementException` を投げるが、ViewModel 側は `stateIn(..., SharingStarted.Eagerly, emptyMap())` で初期化しているため、DataStore の初回読み込みが完了する前にテレメトリが届くと例外になる。特に `Gt7Ps5NarratorViewModel.kt:211,215` の `currentSettings` getter、`LmuWindowsNarratorViewModel.kt:385,446`（`determinePitTiming*` の `enabled=` 引数）、`DetermineLmuWindowsNarratorReadoutUseCase.kt:562,578`（車両接近）は毎 tick 無条件に評価される。一時テストで再現し、`java.util.NoSuchElementException: Key Root is missing in the map.` が発生して当該ジョブが恒久停止することを確認済み（Android では未捕捉例外としてクラッシュに至る）。`SharedMemoryPollingSource` は待機なしで最初のバッファを emit するため、LMU 起動済みの状態でデスクトップアプリを起動するケースが最も現実的な発生条件。
   **改善案**: `getValue` を `getOrDefault` / `?: default` に置き換えるか、`enabledStates` が空の間は判定自体をスキップするガードを入れる。デフォルト値は `READOUT_ENABLED_STATE_DEFAULT` など既存の Defaults に揃える。あわせて「設定未ロード中にテレメトリが届いても例外にならない」テストを各 Narrator ViewModel に追加する。
 
-- **対象**: `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator` の `JvmSoundPlayer`
-  **課題**: LMU 版の `JvmSoundPlayer` は `SourceDataLine` を `.use { }` で扱っているのに対し、GT7 / ACE の `JvmSoundPlayer` は `AudioSystem.getAudioInputStream(...)` で開いた `AudioInputStream` を一度も `close()` していない（コード上で確認できる確実なリーク）。
-  （※ Bluetooth ヘッドセット使用時の語尾切れについては実機（BTイヤホン接続・detailPaneからのwav再生）で確認したところ GT7 / ACE でも問題は再現しなかったため、改善対象から除外した。）
-  **改善案**: 下記「Narrator 3モジュールの重複」の共通化とあわせて、GT7 / ACE の `JvmSoundPlayer` も `.use { }` でクローズするよう修正する。
-
 ---
 
 ## 設計・重複

@@ -22,9 +22,10 @@ class JvmSoundPlayer : SoundPlayer {
         volume: Int,
     ) = suspendCancellableCoroutine { cont ->
         try {
-            val stream = AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes))
             val clip = AudioSystem.getClip()
-            clip.open(stream)
+            AudioSystem.getAudioInputStream(ByteArrayInputStream(bytes)).use { stream ->
+                clip.open(stream)
+            }
             applyVolume(clip, volume)
             clip.addLineListener { event ->
                 if (event.type == LineEvent.Type.STOP) {
