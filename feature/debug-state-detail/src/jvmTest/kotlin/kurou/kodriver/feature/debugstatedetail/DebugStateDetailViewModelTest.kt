@@ -592,7 +592,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals("LMP2", state.vehicleClass?.name)
+            assertEquals("LMP2", state.lmuWindowsVehicleClass?.name)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
@@ -641,7 +641,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals("Gr.3", state.gt7VehicleClass)
+            assertEquals("Gr.3", state.gt7Ps5VehicleClass)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }

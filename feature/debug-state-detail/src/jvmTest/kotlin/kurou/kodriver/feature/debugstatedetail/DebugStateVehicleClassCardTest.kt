@@ -37,7 +37,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            vehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -56,7 +56,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7VehicleClass = "Gr.3",
+                            gt7Ps5VehicleClass = "Gr.3",
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -76,7 +76,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7VehicleClass = "",
+                            gt7Ps5VehicleClass = "",
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -96,7 +96,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            vehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -116,7 +116,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = null,
-                            vehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -136,7 +136,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            vehicleClass = LmuWindowsVehicleClassData(name = ""),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = ""),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,

@@ -11,13 +11,13 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun VehicleClassContent(
     selectedSimulator: Simulator?,
-    vehicleClass: LmuWindowsVehicleClassData?,
-    gt7VehicleClass: String?,
+    lmuWindowsVehicleClass: LmuWindowsVehicleClassData?,
+    gt7Ps5VehicleClass: String?,
 ) {
     val name =
         when (selectedSimulator) {
-            is Simulator.LmuWindows -> vehicleClass?.name
-            is Simulator.Gt7Ps5 -> gt7VehicleClass
+            is Simulator.LmuWindows -> lmuWindowsVehicleClass?.name
+            is Simulator.Gt7Ps5 -> gt7Ps5VehicleClass
             else -> null
         }
     if (name.isNullOrEmpty()) {

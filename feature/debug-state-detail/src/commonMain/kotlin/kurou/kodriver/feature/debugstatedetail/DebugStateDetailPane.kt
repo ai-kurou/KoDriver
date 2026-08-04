@@ -181,7 +181,11 @@ private val debugStateCardContents: Map<DebugStateCardKey, @Composable (DebugSta
         DebugStateCardKey.SIMULATOR to { uiState -> SimulatorInfoContent(uiState.selectedSimulator) },
         DebugStateCardKey.VEHICLE_CLASS to
             { uiState ->
-                VehicleClassContent(uiState.selectedSimulator, uiState.vehicleClass, uiState.gt7VehicleClass)
+                VehicleClassContent(
+                    uiState.selectedSimulator,
+                    uiState.lmuWindowsVehicleClass,
+                    uiState.gt7Ps5VehicleClass,
+                )
             },
         DebugStateCardKey.FLAG_INFO to
             { uiState -> FlagInfoContent(uiState.selectedSimulator, uiState.raceFlags, uiState.aceWindowsFlag) },
