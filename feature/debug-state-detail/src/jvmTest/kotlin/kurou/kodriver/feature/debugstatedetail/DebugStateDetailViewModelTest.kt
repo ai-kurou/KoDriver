@@ -70,6 +70,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class DebugStateDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -963,6 +964,61 @@ class DebugStateDetailViewModelTest {
                     DebugStateCardKey.VEHICLE_CLASS,
                     DebugStateCardKey.CURRENT_LAP,
                     DebugStateCardKey.BEST_LAP,
+                    DebugStateCardKey.FUEL_CONSUMPTION,
+                ),
+                enabledCardKeys,
+            )
+            verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
+            verify(exactly = 1) { flagRepository.flagStream() }
+            verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
+            verify(exactly = 1) { lmuWindowsRepository.telemetryStream() }
+            verify(exactly = 2) { gt7Ps5Repository.telemetryStream() }
+            verify(exactly = 1) { aceWindowsFuelRepository.fuelStream() }
+            verify(exactly = 1) { aceWindowsFlagRepository.flagStream() }
+            verify(exactly = 1) { vehicleApproachRepository.vehicleApproachStream() }
+            verify(exactly = 1) { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() }
+            verify(exactly = 1) { vehicleClassRepository.vehicleClassStream() }
+            verify(exactly = 1) { cardOrderRepository.observeCardOrder() }
+            confirmVerified(
+                simulatorPreferencesRepository,
+                flagRepository,
+                virtualEnergyRepository,
+                lmuWindowsRepository,
+                gt7Ps5Repository,
+                aceWindowsFuelRepository,
+                aceWindowsFlagRepository,
+                vehicleApproachRepository,
+                tyreCarcassTemperatureRepository,
+                vehicleClassRepository,
+                cardOrderRepository,
+            )
+        }
+
+    @Test
+    fun `ACE選択時は受信済みカードのうちACE対応カードだけを有効にする`() =
+        runTest {
+            every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
+            every { flagRepository.flagStream() } returns
+                MutableStateFlow(sampleRaceFlags(gamePhase = SessionPhase.UNKNOWN))
+            every { virtualEnergyRepository.virtualEnergyStream() } returns MutableStateFlow(sampleVirtualEnergy(0))
+            every { lmuWindowsRepository.telemetryStream() } returns MutableStateFlow(sampleLmuWindowsTelemetry(0))
+            every { gt7Ps5Repository.telemetryStream() } returns MutableStateFlow(sampleGt7Ps5Telemetry(3))
+            every { aceWindowsFuelRepository.fuelStream() } returns MutableStateFlow(sampleAceWindowsFuel())
+            every { aceWindowsFlagRepository.flagStream() } returns MutableStateFlow(sampleAceWindowsFlag())
+            every { vehicleApproachRepository.vehicleApproachStream() } returns
+                MutableStateFlow(sampleVehicleApproach(emptySet()))
+            every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
+                MutableStateFlow(sampleTyreCarcassTemperature())
+            every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(sampleVehicleClass())
+            every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
+            val viewModel = createViewModel()
+
+            val enabledCardKeys = viewModel.uiState.first().enabledCardKeys
+
+            assertEquals(
+                setOf(
+                    DebugStateCardKey.SIMULATOR,
+                    DebugStateCardKey.FLAG_INFO,
                     DebugStateCardKey.FUEL_CONSUMPTION,
                 ),
                 enabledCardKeys,
