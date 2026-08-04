@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
 import org.junit.Rule
@@ -56,7 +57,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5VehicleClass = "Gr.3",
+                            gt7Ps5VehicleClass = Gt7Ps5VehicleClassData(name = "Gr.3"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -76,7 +77,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5VehicleClass = "",
+                            gt7Ps5VehicleClass = Gt7Ps5VehicleClassData(name = ""),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,

@@ -13,6 +13,7 @@ import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -48,7 +49,7 @@ private data class OptionalTelemetry(
     val gt7Ps5Telemetry: Gt7Ps5TelemetryData?,
     val aceWindowsFuel: AceWindowsFuelData?,
     val aceWindowsFlag: AceWindowsFlagData?,
-    val gt7Ps5VehicleClass: String?,
+    val gt7Ps5VehicleClass: Gt7Ps5VehicleClassData?,
 )
 
 @Suppress("LongParameterList")

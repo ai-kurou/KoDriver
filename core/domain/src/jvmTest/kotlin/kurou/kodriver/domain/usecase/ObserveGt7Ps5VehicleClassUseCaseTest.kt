@@ -31,7 +31,7 @@ class ObserveGt7Ps5VehicleClassUseCaseTest {
 
             val result = useCase().first()
 
-            assertEquals("GR3", result)
+            assertEquals("GR3", result.name)
             verify(exactly = 1) { repo.telemetryStream() }
             confirmVerified(repo)
         }
@@ -45,7 +45,7 @@ class ObserveGt7Ps5VehicleClassUseCaseTest {
 
             val result = useCase().first()
 
-            assertEquals("", result)
+            assertEquals("", result.name)
             verify(exactly = 1) { repo.telemetryStream() }
             confirmVerified(repo)
         }

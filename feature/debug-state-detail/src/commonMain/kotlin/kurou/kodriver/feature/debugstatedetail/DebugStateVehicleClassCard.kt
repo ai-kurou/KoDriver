@@ -2,6 +2,7 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
@@ -12,12 +13,12 @@ import org.jetbrains.compose.resources.stringResource
 internal fun VehicleClassContent(
     selectedSimulator: Simulator?,
     lmuWindowsVehicleClass: LmuWindowsVehicleClassData?,
-    gt7Ps5VehicleClass: String?,
+    gt7Ps5VehicleClass: Gt7Ps5VehicleClassData?,
 ) {
     val name =
         when (selectedSimulator) {
             is Simulator.LmuWindows -> lmuWindowsVehicleClass?.name
-            is Simulator.Gt7Ps5 -> gt7Ps5VehicleClass
+            is Simulator.Gt7Ps5 -> gt7Ps5VehicleClass?.name
             else -> null
         }
     if (name.isNullOrEmpty()) {

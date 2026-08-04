@@ -641,7 +641,7 @@ class DebugStateDetailViewModelTest {
 
             val state = viewModel.uiState.first()
 
-            assertEquals("Gr.3", state.gt7Ps5VehicleClass)
+            assertEquals("Gr.3", state.gt7Ps5VehicleClass?.name)
             verify(exactly = 1) { simulatorPreferencesRepository.selectedSimulator() }
             verify(exactly = 1) { flagRepository.flagStream() }
             verify(exactly = 1) { virtualEnergyRepository.virtualEnergyStream() }
