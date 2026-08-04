@@ -2,8 +2,10 @@
 
 package kurou.kodriver.feature.gt7ps5narrator
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -13,6 +15,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import org.junit.Test
@@ -37,9 +40,11 @@ class Gt7Ps5WavNarratorEngineTest {
         }
 
     @Test
-    fun `優先度の高い音声は前の再生の停止処理が完了してから再生される`() =
+    fun `stop直後のspeakは前の再生の停止処理が完了するまで次の音声を再生しない`() =
         runTest {
-            val player = FakeSoundPlayer(blockingSound = MY_BEST_LAP_FORMAL_SOUND)
+            val cancellationSignal = CompletableDeferred<Unit>()
+            val player =
+                FakeSoundPlayer(blockingSound = MY_BEST_LAP_FORMAL_SOUND, cancellationSignal = cancellationSignal)
             val engine = createEngine(player)
             runCurrent()
 
@@ -48,6 +53,12 @@ class Gt7Ps5WavNarratorEngineTest {
 
             engine.stop()
             engine.speak(SpeechEvent.Gt7Ps5RemainingFuelWarning)
+            runCurrent()
+
+            // 前の再生の停止処理（cancellationSignal の完了）を待っている間は次の音声を再生しない
+            assertEquals(2, player.playedSounds.size)
+
+            cancellationSignal.complete(Unit)
             advanceUntilIdle()
 
             assertEquals(4, player.playedSounds.size)
@@ -433,6 +444,7 @@ class Gt7Ps5WavNarratorEngineTest {
 private class FakeSoundPlayer(
     override val isPlaying: Boolean = false,
     private val blockingSound: ByteArray? = null,
+    private val cancellationSignal: CompletableDeferred<Unit>? = null,
 ) : SoundPlayer {
     val playedSounds = mutableListOf<ByteArray>()
     val playedVolumes = mutableListOf<Int>()
@@ -444,7 +456,13 @@ private class FakeSoundPlayer(
         playedSounds += bytes
         playedVolumes += volume
         if (blockingSound != null && bytes.contentEquals(blockingSound)) {
-            awaitCancellation()
+            try {
+                awaitCancellation()
+            } finally {
+                withContext(NonCancellable) {
+                    cancellationSignal?.await()
+                }
+            }
         }
     }
 }
