@@ -155,7 +155,7 @@ class DebugStateDetailPaneScreenshotTest {
             gt7Ps5Telemetry = sampleGt7Ps5Telemetry,
             vehicleApproach = sampleVehicleApproach,
             tyreCarcassTemperature = sampleTyreCarcassTemperature,
-            vehicleClass = sampleVehicleClass,
+            lmuWindowsVehicleClass = sampleVehicleClass,
         )
 
     @Test

@@ -2,6 +2,7 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
@@ -11,10 +12,16 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun VehicleClassContent(
     selectedSimulator: Simulator?,
-    vehicleClass: LmuWindowsVehicleClassData?,
+    lmuWindowsVehicleClass: LmuWindowsVehicleClassData?,
+    gt7Ps5VehicleClass: Gt7Ps5VehicleClassData?,
 ) {
-    val name = vehicleClass?.name
-    if (selectedSimulator !is Simulator.LmuWindows || name.isNullOrEmpty()) {
+    val name =
+        when (selectedSimulator) {
+            is Simulator.LmuWindows -> lmuWindowsVehicleClass?.name
+            is Simulator.Gt7Ps5 -> gt7Ps5VehicleClass?.name
+            else -> null
+        }
+    if (name.isNullOrEmpty()) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
