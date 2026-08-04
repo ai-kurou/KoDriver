@@ -3,6 +3,8 @@ package kurou.kodriver.core.lmuwindowsdata.mapper
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
 import kurou.kodriver.domain.model.LmuWindowsInputsData
+import kurou.kodriver.domain.model.LmuWindowsPitState
+import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
@@ -34,11 +36,14 @@ import kotlin.math.roundToLong
  *
  * rF2VehicleScoring オフセット:
  *   mVehicles[104]             : 先頭オフセット 2192, stride=584
+ *   mInPits                    : +198 (bool、ピットレーン走行中。リモート車両は不正確な場合あり)
  *   mBestLapTime               : +144
  *   mLastLapTime               : +168
  *   mIsPlayer                  : +196
  *   mVehicleClass (char[32])   : +200 （人間可読なクラス名。例: "Hypercar", "LMP2", "GTE", "LMGT3"）
  *   mLapStartET                : +256
+ *   mPitState                  : +457 (uint8、0=なし,1=要求,2=入場中,3=停止中,4=出場中)
+ *   mInGarageStall              : +507 (bool、正しいガレージストール内にいるか)
  *   mBestLapSector1            : +576
  *   mBestLapSector2            : +580
  *
@@ -82,12 +87,15 @@ internal object LmuWindowsMapper {
     private const val OFF_SCORING_MAX_LAPS = 84
     private const val OFF_SCORING_NUM_VEHICLES = 104
 
+    private const val OFF_SCORING_IN_PITS = 198
     private const val OFF_SCORING_BEST_LAP_TIME = 144
     private const val OFF_SCORING_LAST_LAP_TIME = 168
     private const val OFF_SCORING_IS_PLAYER = 196
     private const val OFF_SCORING_VEHICLE_CLASS = 200
     private const val VEHICLE_CLASS_LENGTH = 32
     private const val OFF_SCORING_LAP_START_ET = 256
+    private const val OFF_SCORING_PIT_STATE = 457
+    private const val OFF_SCORING_IN_GARAGE_STALL = 507
     private const val OFF_SCORING_BEST_LAP_SECTOR1 = 576
     private const val OFF_SCORING_BEST_LAP_SECTOR2 = 580
 
@@ -224,6 +232,18 @@ internal object LmuWindowsMapper {
         val nullIndex = bytes.indexOf(0).let { if (it < 0) bytes.size else it }
         return String(bytes, 0, nullIndex, Charsets.US_ASCII)
     }
+
+    /** Scoring セグメントのプレイヤー車両のピット状態 (mInPits / mPitState / mInGarageStall) を返す。 */
+    internal fun readPitStatus(
+        buffer: ByteBuffer,
+        vehicleScoringBase: Int,
+    ): LmuWindowsPitStatusData =
+        LmuWindowsPitStatusData(
+            inPits = buffer.get(vehicleScoringBase + OFF_SCORING_IN_PITS).toInt() != 0,
+            pitState =
+                LmuWindowsPitState.fromRaw(buffer.get(vehicleScoringBase + OFF_SCORING_PIT_STATE).toInt() and 0xFF),
+            inGarageStall = buffer.get(vehicleScoringBase + OFF_SCORING_IN_GARAGE_STALL).toInt() != 0,
+        )
 
     internal fun findPlayerVehicleScoringBase(buffer: ByteBuffer): Int? {
         val vehicleCount = buffer.getInt(SCORING_BASE + OFF_SCORING_NUM_VEHICLES).coerceIn(0, MAX_SCORING_VEHICLES)

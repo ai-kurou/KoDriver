@@ -1,5 +1,6 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
+import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import java.nio.ByteBuffer
@@ -11,6 +12,7 @@ class AceWindowsMapperTest {
     private companion object {
         const val OFF_STATUS = 4
         const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
+        const val OFF_CAR_LOCATION = 1388
         const val OFF_FLAG = 2404
         const val BUFFER_SIZE = 8_192
     }
@@ -25,9 +27,13 @@ class AceWindowsMapperTest {
             it.putInt(OFF_FLAG, flagRawValue)
         }
 
-    private fun statusBuffer(statusRawValue: Int): ByteBuffer =
+    private fun statusBuffer(
+        statusRawValue: Int,
+        carLocationRawValue: Int = AceWindowsCarLocation.UNASSIGNED.rawValue,
+    ): ByteBuffer =
         ByteBuffer.allocate(BUFFER_SIZE).order(ByteOrder.LITTLE_ENDIAN).also {
             it.putInt(OFF_STATUS, statusRawValue)
+            it.putInt(OFF_CAR_LOCATION, carLocationRawValue)
         }
 
     @Test
@@ -104,5 +110,30 @@ class AceWindowsMapperTest {
         val result = AceWindowsMapper.mapStatus(statusBuffer(-1))
 
         assertEquals(AceWindowsStatusType.UNKNOWN, result.status)
+    }
+
+    @Test
+    fun `carLocation は全てのACEVO_CAR_LOCATIONの値を取得できる`() {
+        val expected =
+            mapOf(
+                0 to AceWindowsCarLocation.UNASSIGNED,
+                1 to AceWindowsCarLocation.PITLANE,
+                2 to AceWindowsCarLocation.PITENTRY,
+                3 to AceWindowsCarLocation.PITEXIT,
+                4 to AceWindowsCarLocation.TRACK,
+            )
+
+        expected.forEach { (rawValue, carLocation) ->
+            val result = AceWindowsMapper.mapStatus(statusBuffer(AceWindowsStatusType.LIVE.rawValue, rawValue))
+
+            assertEquals(carLocation, result.carLocation, "rawValue=$rawValue")
+        }
+    }
+
+    @Test
+    fun `carLocation が未知の値のとき UNKNOWN を返す`() {
+        val result = AceWindowsMapper.mapStatus(statusBuffer(AceWindowsStatusType.LIVE.rawValue, -1))
+
+        assertEquals(AceWindowsCarLocation.UNKNOWN, result.carLocation)
     }
 }

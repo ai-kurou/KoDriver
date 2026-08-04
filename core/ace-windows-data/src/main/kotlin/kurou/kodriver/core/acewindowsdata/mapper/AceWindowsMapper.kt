@@ -1,5 +1,6 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
+import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -55,10 +56,12 @@ import java.nio.ByteBuffer
  *   [+2404] flag (int32, ACEVO_FLAG_TYPE、自車提示) ← Flag 取得対象
  *
  * [+4] status (int32, ACEVO_STATUS) ← Status 取得対象
+ * [+1388] car_location (int32, ACEVO_CAR_LOCATION) ← CarLocation 取得対象
  */
 internal object AceWindowsMapper {
     private const val OFF_STATUS = 4
     private const val OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT = 200
+    private const val OFF_CAR_LOCATION = 1388
     private const val OFF_FLAG = 2404
     private const val PERCENT_MULTIPLIER = 100
 
@@ -79,5 +82,6 @@ internal object AceWindowsMapper {
     fun mapStatus(buffer: ByteBuffer): AceWindowsStatusData =
         AceWindowsStatusData(
             status = AceWindowsStatusType.fromRaw(buffer.getInt(OFF_STATUS)),
+            carLocation = AceWindowsCarLocation.fromRaw(buffer.getInt(OFF_CAR_LOCATION)),
         )
 }

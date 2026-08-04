@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsFlagRepositoryImpl
+import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsPitStatusRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreCarcassTemperatureRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsTyreWearRepositoryImpl
@@ -13,6 +14,7 @@ import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleApproachRe
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleClassRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVehicleDamageRepositoryImpl
 import kurou.kodriver.core.lmuwindowsdata.repository.LmuWindowsVirtualEnergyRepositoryImpl
+import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
 import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
@@ -22,6 +24,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
+import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
@@ -63,6 +66,9 @@ val lmuWindowsDataModule =
         single<LmuWindowsFlagRepository> {
             if (isWindows) LmuWindowsFlagRepositoryImpl(source = get()) else NoOpFlagRepository()
         }
+        single<LmuWindowsPitStatusRepository> {
+            if (isWindows) LmuWindowsPitStatusRepositoryImpl(source = get()) else NoOpPitStatusRepository()
+        }
         single<LmuWindowsVehicleDamageRepository> {
             if (isWindows) LmuWindowsVehicleDamageRepositoryImpl(source = get()) else NoOpVehicleDamageRepository()
         }
@@ -98,6 +104,10 @@ private class NoOpVehicleApproachRepository : LmuWindowsVehicleApproachRepositor
 
 private class NoOpFlagRepository : LmuWindowsFlagRepository {
     override fun flagStream(): Flow<LmuWindowsRaceFlagsData> = emptyFlow()
+}
+
+private class NoOpPitStatusRepository : LmuWindowsPitStatusRepository {
+    override fun pitStatusStream(): Flow<LmuWindowsPitStatusData> = emptyFlow()
 }
 
 private class NoOpVehicleDamageRepository : LmuWindowsVehicleDamageRepository {
