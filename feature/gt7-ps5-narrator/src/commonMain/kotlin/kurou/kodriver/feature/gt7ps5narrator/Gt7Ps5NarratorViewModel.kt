@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
+import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
@@ -86,12 +87,12 @@ internal class Gt7Ps5NarratorViewModel(
     private val voiceType =
         myBestLapUseCases
             .observeMyBestLapVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
 
     private val fuelThreshold =
         remainingFuelLapsUseCases
             .observeRemainingFuelLapsThreshold()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, 3)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT)
 
     private val remainingFuelThreshold =
         remainingFuelUseCases

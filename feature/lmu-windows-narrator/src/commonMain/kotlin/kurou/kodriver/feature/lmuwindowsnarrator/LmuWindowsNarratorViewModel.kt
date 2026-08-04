@@ -16,14 +16,16 @@ import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_TYRE_WEAR_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_PIT_TIMING_VIRTUAL_ENERGY_LAPS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT
+import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
+import kurou.kodriver.domain.model.RED_FLAG_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.RedFlagVoiceType
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
@@ -204,17 +206,21 @@ internal class LmuWindowsNarratorViewModel(
     private val voiceType =
         narratorUseCases
             .observeMyBestLapVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, MyBestLapVoiceType.FORMAL)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, MY_BEST_LAP_VOICE_TYPE_DEFAULT)
 
     private val redFlagVoiceType =
         narratorUseCases
             .observeRedFlagVoiceType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, RedFlagVoiceType.SESSION_STOP)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, RED_FLAG_VOICE_TYPE_DEFAULT)
 
     private val tyreHighThreshold =
         tyreTemperatureUseCases
             .observeHighThreshold()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, 95)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
+            )
 
     private val tyreLowWarningPhases =
         tyreTemperatureUseCases
@@ -248,12 +254,12 @@ internal class LmuWindowsNarratorViewModel(
     private val skipFirstLap =
         vehicleApproachUseCases
             .observeSkipFirstLap()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_VEHICLE_APPROACH_SKIP_FIRST_LAP_DEFAULT)
 
     private val startReadoutType =
         vehicleApproachUseCases
             .observeStartReadoutType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachStartReadoutType.CAR_LEFT_RIGHT)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT)
 
     private val sustainedApproachDurationSeconds =
         vehicleApproachUseCases
@@ -267,7 +273,11 @@ internal class LmuWindowsNarratorViewModel(
     private val sustainedReadoutType =
         vehicleApproachUseCases
             .observeSustainedReadoutType()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT)
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT,
+            )
 
     @Suppress("UnusedPrivateProperty")
     private val myBestLapJob =
