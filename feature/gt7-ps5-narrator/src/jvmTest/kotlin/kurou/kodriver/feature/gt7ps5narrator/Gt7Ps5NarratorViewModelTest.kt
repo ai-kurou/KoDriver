@@ -217,14 +217,14 @@ class Gt7Ps5NarratorViewModelTest {
                 true,
                 telemetryJsons.single().contains(
                     """"previousTelemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":60000,""" +
-                        """"gasLevel":0.0,"gasCapacity":100.0}""",
+                        """"gasLevel":0.0,"gasCapacity":100.0,"carCategory":""}""",
                 ),
             )
             assertEquals(
                 true,
                 telemetryJsons.single().contains(
                     """"telemetry":{"lapCount":0,"lapsInRace":0,"bestLapTimeMs":59000,""" +
-                        """"gasLevel":0.0,"gasCapacity":100.0}""",
+                        """"gasLevel":0.0,"gasCapacity":100.0,"carCategory":""}""",
                 ),
             )
             assertEquals(true, telemetryJsons.single().contains(""""settings":{"raw":"""))

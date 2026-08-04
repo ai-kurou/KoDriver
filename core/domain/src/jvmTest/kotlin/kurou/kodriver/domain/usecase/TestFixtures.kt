@@ -15,14 +15,17 @@ import kurou.kodriver.domain.model.SectorFlagState
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.SessionYellowFlagState
 
-internal fun fakeGt7Ps5TelemetryData(lapCount: Int = 0) =
-    Gt7Ps5TelemetryData(
-        lapCount = lapCount,
-        lapsInRace = 0,
-        bestLapTimeMs = -1,
-        gasLevel = 0f,
-        gasCapacity = 100f,
-    )
+internal fun fakeGt7Ps5TelemetryData(
+    lapCount: Int = 0,
+    carCategory: String = "",
+) = Gt7Ps5TelemetryData(
+    lapCount = lapCount,
+    lapsInRace = 0,
+    bestLapTimeMs = -1,
+    gasLevel = 0f,
+    gasCapacity = 100f,
+    carCategory = carCategory,
+)
 
 internal fun fakeRaceFlagsData(
     gamePhase: SessionPhase = SessionPhase.GARAGE,
