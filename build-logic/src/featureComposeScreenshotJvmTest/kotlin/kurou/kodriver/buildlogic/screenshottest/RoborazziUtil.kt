@@ -1,10 +1,10 @@
-package kurou.kodriver.feature.otherconsoleipdetail
+package kurou.kodriver.buildlogic.screenshottest
 
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import com.github.takahirom.roborazzi.RoborazziOptions
 import io.github.takahirom.roborazzi.captureRoboImage
 
-private val defaultOptions =
+val defaultRoborazziOptions =
     RoborazziOptions(
         compareOptions =
             RoborazziOptions.CompareOptions(
@@ -12,4 +12,4 @@ private val defaultOptions =
             ),
     )
 
-internal fun SemanticsNodeInteraction.captureRoboImage() = captureRoboImage(roborazziOptions = defaultOptions)
+fun SemanticsNodeInteraction.captureRoboImage() = captureRoboImage(roborazziOptions = defaultRoborazziOptions)

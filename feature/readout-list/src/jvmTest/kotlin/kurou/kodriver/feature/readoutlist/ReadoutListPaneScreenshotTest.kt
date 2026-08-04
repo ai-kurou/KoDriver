@@ -15,6 +15,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
