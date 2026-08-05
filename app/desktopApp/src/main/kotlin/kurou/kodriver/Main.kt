@@ -91,12 +91,14 @@ fun main() {
                             val startedServer = createKoDriverServer(requireNotNull(koin)).also { it.start() }
                             server = startedServer
                             // OS のシャットダウン・ログオフでも呼ばれる。終了確認ダイアログでユーザー操作を
-                            // 待たないようフラグを立ててから、サーバー停止とアプリ終了を行う。
+                            // 待たないようフラグを立ててから、サーバーを停止する。
+                            // UI の終了は Compose の ApplicationScope 側（onCloseRequest）に任せる。
+                            // ここで exitApplication() を呼ぶとシャットダウン中の JVM から EDT へ
+                            // コンポジション破棄を投げることになり、フックが長引く恐れがある。
                             Runtime.getRuntime().addShutdownHook(
                                 Thread {
                                     SystemShutdownState.markShuttingDown()
                                     startedServer.stop()
-                                    exitApplication()
                                 },
                             )
                         }
