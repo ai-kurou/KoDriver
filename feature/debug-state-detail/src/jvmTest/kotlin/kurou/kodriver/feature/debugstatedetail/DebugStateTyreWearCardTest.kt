@@ -71,6 +71,30 @@ class DebugStateTyreWearCardTest {
     }
 
     @Test
+    fun `selectedSimulatorがACEの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
     fun `selectedSimulatorがLMUでもlmuWindowsTelemetryがnullの場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
