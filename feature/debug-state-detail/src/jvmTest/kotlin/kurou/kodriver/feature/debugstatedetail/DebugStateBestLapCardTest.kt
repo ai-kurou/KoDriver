@@ -45,23 +45,25 @@ class DebugStateBestLapCardTest {
 
     @Test
     fun `ベストラップが未計測（0以下）の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = -1),
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+        listOf(0, -1).forEach { bestLapTimeMs ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.Gt7Ps5,
+                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = bestLapTimeMs),
+                                cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
-        }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
+            rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+            rule.onNodeWithText("未取得").assertIsDisplayed()
+        }
     }
 
     @Test
