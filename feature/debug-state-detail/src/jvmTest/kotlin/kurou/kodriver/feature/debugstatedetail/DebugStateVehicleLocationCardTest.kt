@@ -99,6 +99,32 @@ class DebugStateVehicleLocationCardTest {
     }
 
     @Test
+    fun `selectedSimulatorがACEの場合はステータスとcarLocationを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsStatus =
+                                AceWindowsStatusData(
+                                    status = AceWindowsStatusType.LIVE,
+                                    carLocation = AceWindowsCarLocation.TRACK,
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("車両位置").assertIsDisplayed()
+        rule.onNodeWithText("ステータス: Live（走行中）").assertIsDisplayed()
+        rule.onNodeWithText("Track（コース上）").assertIsDisplayed()
+    }
+
+    @Test
     fun `selectedSimulatorがACEの場合はcarLocationの各値に対応する表示文言を表示する`() {
         val expectedByCarLocation =
             mapOf(
