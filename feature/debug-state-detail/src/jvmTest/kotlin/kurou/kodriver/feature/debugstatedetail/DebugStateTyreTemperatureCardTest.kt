@@ -23,11 +23,19 @@ class DebugStateTyreTemperatureCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `タイヤ表面温度カードのタイトルを表示する`() {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = null,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -35,6 +43,55 @@ class DebugStateTyreTemperatureCardTest {
         }
 
         rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
+        rule.onNodeWithText("FR -℃").assertIsDisplayed()
     }
 
     @Test
@@ -62,79 +119,11 @@ class DebugStateTyreTemperatureCardTest {
             }
         }
 
+        rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
         rule.onNodeWithText("FL 85.0℃").assertIsDisplayed()
         rule.onNodeWithText("FR 86.0℃").assertIsDisplayed()
         rule.onNodeWithText("RL 87.0℃").assertIsDisplayed()
         rule.onNodeWithText("RR 88.0℃").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("FR -℃").assertIsDisplayed()
     }
 
     private fun sampleWheel(surfaceTemperatureCelsius: Double) =
