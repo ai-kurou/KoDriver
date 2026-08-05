@@ -22,11 +22,17 @@ class DebugStateCurrentLapCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `現在のラップカードのタイトルを表示する`() {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = null,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                            cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -34,46 +40,7 @@ class DebugStateCurrentLapCardTest {
         }
 
         rule.onNodeWithText("現在のラップ").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがLMUの場合はLMUテレメトリのcurrentLapを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("3").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがGT7の場合はGT7テレメトリのlapCountを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("9").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test
@@ -94,20 +61,20 @@ class DebugStateCurrentLapCardTest {
             }
         }
 
+        rule.onNodeWithText("現在のラップ").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
+    fun `selectedSimulatorがLMUの場合はLMUテレメトリのcurrentLapを表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            selectedSimulator = null,
+                            selectedSimulator = Simulator.LmuWindows,
                             lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
                             gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
-                            cardOrder = listOf(DebugStateCardKey.CURRENT_LAP),
                         ),
                     canNavigateBack = true,
                     onBack = {},
@@ -115,7 +82,29 @@ class DebugStateCurrentLapCardTest {
             }
         }
 
-        rule.onNodeWithText("未取得").assertIsDisplayed()
+        rule.onNodeWithText("現在のラップ").assertIsDisplayed()
+        rule.onNodeWithText("3").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合はGT7テレメトリのlapCountを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(currentLap = 3),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(lapCount = 9),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("現在のラップ").assertIsDisplayed()
+        rule.onNodeWithText("9").assertIsDisplayed()
     }
 
     private fun sampleLmuWindowsTelemetry(currentLap: Int) =
