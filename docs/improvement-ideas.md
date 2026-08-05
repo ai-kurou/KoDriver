@@ -98,3 +98,7 @@
 - **対象**: `feature:lmu-windows-narrator`（`LmuWindowsNarratorViewModel.kt`）, `feature:gt7-ps5-narrator`（`Gt7Ps5NarratorViewModel.kt`）
   **課題**: `stateIn` の初期値に、対応する `*_DEFAULT` 定数があるのにリテラルを直書きしている箇所が8つある（LMU: `:207 FORMAL`, `:212 SESSION_STOP`, `:217 95`, `:251 true`, `:256 CAR_LEFT_RIGHT`, `:270 KEEP_LEFT_RIGHT` / GT7: `:89 FORMAL`, `:94 3`）。現状は値が一致しているため挙動上のバグはないが、Defaults 側だけを変更したときに Narrator の初期値が古いまま残る。CLAUDE.md の「デフォルト値は `:core:domain` の定数を参照する」に反する。
   **改善案**: すべて対応する定数参照に置き換える。同じ ViewModel 内でも `LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE` などは定数参照になっており、揃えるだけで済む。
+
+- **対象**: `app:desktopApp`（`Main.kt` / `SystemShutdownState.kt`）
+  **課題**: Windows のシャットダウン阻止対策として JVM のシャットダウンフックで `SystemShutdownState.markShuttingDown()` を立てているが、Windows が `WM_QUERYENDSESSION` を送ってから JVM がシャットダウンを開始するまでにウィンドウ側の終了要求が先に届くと、一瞬だけ終了確認ダイアログが表示される可能性がある。
+  **改善案**: JNA（`:core:windows-shared-memory` に JNA 依存あり）で自ウィンドウをサブクラス化し、`WM_QUERYENDSESSION` を直接検知して即終了する。必要なら `ShutdownBlockReasonDestroy` も呼ぶ。

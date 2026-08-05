@@ -53,7 +53,13 @@ fun main() {
             var ready by remember { mutableStateOf(false) }
             val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
             Window(
-                onCloseRequest = { if (ready) exitRequested = true else exitApplication() },
+                onCloseRequest = {
+                    if (shouldConfirmExit(ready = ready, shuttingDown = SystemShutdownState.isShuttingDown)) {
+                        exitRequested = true
+                    } else {
+                        exitApplication()
+                    }
+                },
                 title = "KoDriver",
                 state = windowState,
                 icon = painterResource("launcher.png"),
@@ -84,7 +90,15 @@ fun main() {
                         withContext(Dispatchers.IO) {
                             val startedServer = createKoDriverServer(requireNotNull(koin)).also { it.start() }
                             server = startedServer
-                            Runtime.getRuntime().addShutdownHook(Thread { startedServer.stop() })
+                            // OS のシャットダウン・ログオフでも呼ばれる。終了確認ダイアログでユーザー操作を
+                            // 待たないようフラグを立ててから、サーバー停止とアプリ終了を行う。
+                            Runtime.getRuntime().addShutdownHook(
+                                Thread {
+                                    SystemShutdownState.markShuttingDown()
+                                    startedServer.stop()
+                                    exitApplication()
+                                },
+                            )
                         }
                     },
                     onReady = { ready = true },
