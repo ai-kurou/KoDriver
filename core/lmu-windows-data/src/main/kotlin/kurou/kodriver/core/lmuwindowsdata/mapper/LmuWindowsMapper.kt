@@ -40,7 +40,7 @@ import kotlin.math.roundToLong
  *   mBestLapTime               : +144
  *   mLastLapTime               : +168
  *   mIsPlayer                  : +196
- *   mVehicleClass (char[32])   : +200 （人間可読なクラス名。例: "Hypercar", "LMP2", "GTE", "LMGT3"）
+ *   mVehicleClass (char[32])   : +200 （人間可読なクラス名。2026年8月時点の実測値: "GT3", "GTE", "LMP3", "LMP2", "LMP2_ELMS", "Hyper"）
  *   mLapStartET                : +256
  *   mPitState                  : +457 (uint8、0=なし,1=要求,2=入場中,3=停止中,4=出場中)
  *   mInGarageStall              : +507 (bool、正しいガレージストール内にいるか)
