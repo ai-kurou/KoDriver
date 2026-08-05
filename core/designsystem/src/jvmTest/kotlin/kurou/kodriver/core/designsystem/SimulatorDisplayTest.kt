@@ -32,7 +32,7 @@ class SimulatorDisplayTest {
             name = simulatorDisplayName("gt7_ps5")
         }
 
-        assertEquals("GranTurismo 7（PS5）", name)
+        assertEquals("Gran Turismo 7（PS5）", name)
     }
 
     @Test
