@@ -178,6 +178,8 @@ class AceWindowsNarratorViewModelTest {
             flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
 
             assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            verify(exactly = 0) { ttsEngine.speak(any(), any()) }
+            confirmVerified(ttsEngine)
         }
 
     @Test
