@@ -222,11 +222,15 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithText("読み上げタイミングについて").assertDoesNotExist()
+        rule
+            .onNodeWithText(
+                "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
+                    "レース中（コース走行中）は設定通りに読み上げられます。",
+            ).assertDoesNotExist()
     }
 
     @Test
-    fun `ACE選択時は読み上げタイミングヒントをタップすると説明が表示される`() {
+    fun `ACE選択時は読み上げタイミングヒントを表示する`() {
         rule.setContent {
             KoDriverTheme {
                 ReadoutListPane(
@@ -246,12 +250,6 @@ class ReadoutListPaneTest {
             }
         }
 
-        rule.onNodeWithText("読み上げタイミングについて").assertIsDisplayed()
-        rule
-            .onNodeWithContentDescription(
-                "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
-                    "レース中（コース走行中）は設定通りに読み上げられます。",
-            ).performClick()
         rule
             .onNodeWithText(
                 "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
