@@ -88,6 +88,8 @@ import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
+import kurou.kodriver.feature.readoutlist.generated.resources.ace_readout_timing_hint_description
+import kurou.kodriver.feature.readoutlist.generated.resources.ace_readout_timing_hint_label
 import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_label
@@ -229,6 +231,50 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+private fun AceReadoutTimingHintRow(modifier: Modifier = Modifier) {
+    var showHelpSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    if (showHelpSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showHelpSheet = false },
+            sheetState = sheetState,
+        ) {
+            Text(
+                text = stringResource(Res.string.ace_readout_timing_hint_description),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 24.dp),
+            )
+        }
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(bottom = 12.dp),
+    ) {
+        Text(
+            text = stringResource(Res.string.ace_readout_timing_hint_label),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        IconButton(
+            onClick = { showHelpSheet = true },
+            modifier = Modifier.size(24.dp),
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                contentDescription = stringResource(Res.string.ace_readout_timing_hint_description),
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 internal fun ReadoutListPane(
     uiState: ReadoutListUiState,
     onSimulatorSelected: (Simulator) -> Unit,
@@ -304,6 +350,11 @@ internal fun ReadoutListPane(
             if (uiState.selectedSimulator != null) {
                 item(key = "priorityHint") {
                     PriorityHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
+                }
+                if (uiState.selectedSimulator is Simulator.AceWindows) {
+                    item(key = "aceReadoutTimingHint") {
+                        AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+                    }
                 }
                 itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
