@@ -84,6 +84,12 @@
     <string name="debug_state_vehicle_location_ace_pitexit">PitExit（ピット退出）</string>
     <string name="debug_state_vehicle_location_ace_track">Track（コース上）</string>
     <string name="debug_state_vehicle_location_ace_unknown">不明</string>
+    <string name="debug_state_vehicle_location_ace_status">ステータス: %1$s</string>
+    <string name="debug_state_vehicle_location_ace_status_off">Off（未起動）</string>
+    <string name="debug_state_vehicle_location_ace_status_replay">Replay（リプレイ中）</string>
+    <string name="debug_state_vehicle_location_ace_status_live">Live（走行中）</string>
+    <string name="debug_state_vehicle_location_ace_status_pause">Pause（ポーズ中）</string>
+    <string name="debug_state_vehicle_location_ace_status_unknown">不明</string>
     <string name="debug_state_vehicle_location_in_pits">ピットレーン走行中: %1$s</string>
     <string name="debug_state_vehicle_location_pit_state">ピット状態: %1$s</string>
     <string name="debug_state_vehicle_location_in_garage_stall">ガレージ内: %1$s</string>
