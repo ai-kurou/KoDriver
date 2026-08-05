@@ -165,19 +165,25 @@ class AceWindowsNarratorViewModelTest {
     @Test
     fun `carLocationがTRACK以外の場合は残量が閾値以下でもフラグが変化しても読み上げない`() =
         runTest(testDispatcher) {
-            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(thresholdPercentage = 30, carLocation = AceWindowsCarLocation.PITLANE)
-            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+            listOf(
+                AceWindowsCarLocation.PITLANE,
+                AceWindowsCarLocation.PITENTRY,
+                AceWindowsCarLocation.PITEXIT,
+            ).forEach { carLocation ->
+                val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+                val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+                val spokenTexts = mutableListOf<SpeechEvent>()
+                val ttsEngine = mockTts(spokenTexts)
+                stubReadoutDefaults(thresholdPercentage = 30, carLocation = carLocation)
+                createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
-            fuelChannel.send(fuel(50.0))
-            fuelChannel.send(fuel(20.0))
-            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+                fuelChannel.send(fuel(50.0))
+                fuelChannel.send(fuel(20.0))
+                flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+                flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
 
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+                assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            }
         }
 
     @Test
