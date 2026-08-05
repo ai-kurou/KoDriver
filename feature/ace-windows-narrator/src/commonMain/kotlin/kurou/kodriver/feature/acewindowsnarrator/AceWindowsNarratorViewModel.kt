@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
 import kurou.kodriver.domain.model.AceWindowsCarLocation
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.AceWindowsNarratorReadoutSettings
@@ -127,9 +128,12 @@ internal class AceWindowsNarratorViewModel(
                 if (simulator !is Simulator.AceWindows) flowOf(null) else observeAceWindowsStatus()
             }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    // ピットレーン・ピット進入・退出中は読み上げず、コース上（TRACK）走行中に限定する。
+    // レース走行中（LIVE）かつコース上（TRACK）走行中に限定する。
+    // ピットレーン・ピット進入・退出中、およびメニュー・リプレイ・ポーズ中は読み上げない。
     private val isOnTrack: Boolean
-        get() = currentStatus.value?.carLocation == AceWindowsCarLocation.TRACK
+        get() =
+            currentStatus.value?.status == AceWindowsStatusType.LIVE &&
+                currentStatus.value?.carLocation == AceWindowsCarLocation.TRACK
 
     @Suppress("UnusedPrivateProperty")
     private val fuelJob =
