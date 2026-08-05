@@ -71,6 +71,30 @@ class DebugStateTyreTemperatureCardTest {
     }
 
     @Test
+    fun `selectedSimulatorがACEの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(85.0)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_TEMPERATURE),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ表面温度").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
     fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
         rule.setContent {
             MaterialTheme {
