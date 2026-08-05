@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.LmuWindowsPitState
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.Simulator
@@ -13,6 +14,12 @@ import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_f
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_pitentry
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_pitexit
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_pitlane
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_status
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_status_live
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_status_off
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_status_pause
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_status_replay
+import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_status_unknown
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_track
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_unassigned
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_vehicle_location_ace_unknown
@@ -38,6 +45,16 @@ private fun aceCarLocationDisplayName(carLocation: AceWindowsCarLocation): Strin
         AceWindowsCarLocation.PITEXIT -> stringResource(Res.string.debug_state_vehicle_location_ace_pitexit)
         AceWindowsCarLocation.TRACK -> stringResource(Res.string.debug_state_vehicle_location_ace_track)
         AceWindowsCarLocation.UNKNOWN -> stringResource(Res.string.debug_state_vehicle_location_ace_unknown)
+    }
+
+@Composable
+private fun aceStatusTypeDisplayName(status: AceWindowsStatusType): String =
+    when (status) {
+        AceWindowsStatusType.OFF -> stringResource(Res.string.debug_state_vehicle_location_ace_status_off)
+        AceWindowsStatusType.REPLAY -> stringResource(Res.string.debug_state_vehicle_location_ace_status_replay)
+        AceWindowsStatusType.LIVE -> stringResource(Res.string.debug_state_vehicle_location_ace_status_live)
+        AceWindowsStatusType.PAUSE -> stringResource(Res.string.debug_state_vehicle_location_ace_status_pause)
+        AceWindowsStatusType.UNKNOWN -> stringResource(Res.string.debug_state_vehicle_location_ace_status_unknown)
     }
 
 @Composable
@@ -67,12 +84,20 @@ internal fun VehicleLocationContent(
 ) {
     when (selectedSimulator) {
         is Simulator.AceWindows -> {
-            val carLocation = aceWindowsStatus?.carLocation
-            if (carLocation == null) {
+            if (aceWindowsStatus == null) {
                 Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
                 return
             }
-            Text(text = aceCarLocationDisplayName(carLocation))
+            Column {
+                Text(
+                    text =
+                        stringResource(
+                            Res.string.debug_state_vehicle_location_ace_status,
+                            aceStatusTypeDisplayName(aceWindowsStatus.status),
+                        ),
+                )
+                Text(text = aceCarLocationDisplayName(aceWindowsStatus.carLocation))
+            }
         }
 
         is Simulator.LmuWindows -> {

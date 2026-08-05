@@ -133,6 +133,39 @@ class DebugStateVehicleLocationCardTest {
     }
 
     @Test
+    fun `selectedSimulatorがACEの場合はstatusの各値に対応する表示文言を表示する`() {
+        val expectedByStatus =
+            mapOf(
+                AceWindowsStatusType.OFF to "Off（未起動）",
+                AceWindowsStatusType.REPLAY to "Replay（リプレイ中）",
+                AceWindowsStatusType.LIVE to "Live（走行中）",
+                AceWindowsStatusType.PAUSE to "Pause（ポーズ中）",
+                AceWindowsStatusType.UNKNOWN to "不明",
+            )
+
+        expectedByStatus.forEach { (status, expectedText) ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.AceWindows,
+                                aceWindowsStatus =
+                                    AceWindowsStatusData(status = status, carLocation = AceWindowsCarLocation.TRACK),
+                                cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText("車両位置").assertIsDisplayed()
+            rule.onNodeWithText("ステータス: $expectedText").assertIsDisplayed()
+        }
+    }
+
+    @Test
     fun `selectedSimulatorがLMUの場合はピットレーン走行中とピット状態とガレージ内を表示する`() {
         rule.setContent {
             MaterialTheme {
