@@ -23,11 +23,19 @@ class DebugStateTyreWearCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `タイヤ摩耗カードのタイトルを表示する`() {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = null,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -35,6 +43,100 @@ class DebugStateTyreWearCardTest {
         }
 
         rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがACEの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがLMUでもlmuWindowsTelemetryがnullの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsTelemetry = null,
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsTelemetry =
+                                sampleLmuWindowsTelemetry(
+                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
+                                ),
+                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
+        rule.onNodeWithText("FR -%").assertIsDisplayed()
     }
 
     @Test
@@ -62,99 +164,11 @@ class DebugStateTyreWearCardTest {
             }
         }
 
+        rule.onNodeWithText("タイヤ摩耗").assertIsDisplayed()
         rule.onNodeWithText("FL 80.0%").assertIsDisplayed()
         rule.onNodeWithText("FR 75.0%").assertIsDisplayed()
         rule.onNodeWithText("RL 70.0%").assertIsDisplayed()
         rule.onNodeWithText("RR 65.0%").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがLMUでもlmuWindowsTelemetryがnullの場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry = null,
-                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `一部のホイールデータが欠けている場合はハイフンを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry =
-                                sampleLmuWindowsTelemetry(
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to sampleWheel(0.8)),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.TYRE_WEAR),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("FR -%").assertIsDisplayed()
     }
 
     private fun sampleWheel(wear: Double) =
