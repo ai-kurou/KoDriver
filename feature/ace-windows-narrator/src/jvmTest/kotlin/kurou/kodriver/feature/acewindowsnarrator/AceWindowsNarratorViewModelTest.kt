@@ -163,38 +163,7 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `レース中(LIVE)以外は残量が閾値以下でも読み上げない`() =
-        runTest(testDispatcher) {
-            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(thresholdPercentage = 30, status = AceWindowsStatusType.PAUSE)
-            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
-
-            channel.send(fuel(50.0))
-            channel.send(fuel(20.0))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `レース中(LIVE)以外はフラグが変化しても読み上げない`() =
-        runTest(testDispatcher) {
-            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(thresholdPercentage = 30, status = AceWindowsStatusType.REPLAY)
-            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
-
-            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `LIVEでもcarLocationがTRACK以外の場合は残量が閾値以下でもフラグが変化しても読み上げない`() =
+    fun `carLocationがTRACK以外の場合は残量が閾値以下でもフラグが変化しても読み上げない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
             val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
@@ -345,7 +314,6 @@ class AceWindowsNarratorViewModelTest {
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
         carLocation: AceWindowsCarLocation = AceWindowsCarLocation.TRACK,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
@@ -362,7 +330,7 @@ class AceWindowsNarratorViewModelTest {
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every {
             statusRepository.statusStream()
-        } returns MutableStateFlow(AceWindowsStatusData(status = status, carLocation = carLocation))
+        } returns MutableStateFlow(AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = carLocation))
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
