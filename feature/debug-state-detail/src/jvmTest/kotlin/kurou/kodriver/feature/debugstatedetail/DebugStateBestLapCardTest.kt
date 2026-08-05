@@ -22,11 +22,17 @@ class DebugStateBestLapCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `ベストラップカードのタイトルを表示する`() {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = null,
+                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -34,6 +40,30 @@ class DebugStateBestLapCardTest {
         }
 
         rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `ベストラップが未計測（0以下）の場合は未取得の文言を表示する`() {
+        listOf(0, -1).forEach { bestLapTimeMs ->
+            rule.setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.Gt7Ps5,
+                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = bestLapTimeMs),
+                                cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+            rule.onNodeWithText("未取得").assertIsDisplayed()
+        }
     }
 
     @Test
@@ -53,6 +83,7 @@ class DebugStateBestLapCardTest {
             }
         }
 
+        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("1:23.456").assertIsDisplayed()
     }
 
@@ -73,27 +104,8 @@ class DebugStateBestLapCardTest {
             }
         }
 
+        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("1:30.000").assertIsDisplayed()
-    }
-
-    @Test
-    fun `ベストラップが未計測（0以下）の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = -1),
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test
@@ -114,27 +126,7 @@ class DebugStateBestLapCardTest {
             }
         }
 
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
+        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
