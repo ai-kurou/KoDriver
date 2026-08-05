@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFlagType
 import kurou.kodriver.domain.model.AceWindowsFuelData
@@ -162,34 +163,27 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
-    fun `レース中(LIVE)以外は残量が閾値以下でも読み上げない`() =
+    fun `carLocationがTRACK以外の場合は残量が閾値以下でもフラグが変化しても読み上げない`() =
         runTest(testDispatcher) {
-            val channel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(thresholdPercentage = 30, status = AceWindowsStatusType.PAUSE)
-            createViewModel(fuelChannel = channel, ttsEngine = ttsEngine)
+            listOf(
+                AceWindowsCarLocation.PITLANE,
+                AceWindowsCarLocation.PITENTRY,
+                AceWindowsCarLocation.PITEXIT,
+            ).forEach { carLocation ->
+                val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+                val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+                val spokenTexts = mutableListOf<SpeechEvent>()
+                val ttsEngine = mockTts(spokenTexts)
+                stubReadoutDefaults(thresholdPercentage = 30, carLocation = carLocation)
+                createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
 
-            channel.send(fuel(50.0))
-            channel.send(fuel(20.0))
+                fuelChannel.send(fuel(50.0))
+                fuelChannel.send(fuel(20.0))
+                flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+                flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
 
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
-        }
-
-    @Test
-    fun `レース中(LIVE)以外はフラグが変化しても読み上げない`() =
-        runTest(testDispatcher) {
-            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
-            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
-            val spokenTexts = mutableListOf<SpeechEvent>()
-            val ttsEngine = mockTts(spokenTexts)
-            stubReadoutDefaults(thresholdPercentage = 30, status = AceWindowsStatusType.REPLAY)
-            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
-
-            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
-            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
-
-            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+                assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            }
         }
 
     @Test
@@ -326,7 +320,7 @@ class AceWindowsNarratorViewModelTest {
         enabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
-        status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
+        carLocation: AceWindowsCarLocation = AceWindowsCarLocation.TRACK,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -340,7 +334,9 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(thresholdPercentage)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
-        every { statusRepository.statusStream() } returns MutableStateFlow(AceWindowsStatusData(status = status))
+        every {
+            statusRepository.statusStream()
+        } returns MutableStateFlow(AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = carLocation))
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
