@@ -313,13 +313,21 @@ internal fun ReadoutListPane(
                 }
             }
             if (uiState.selectedSimulator != null) {
-                item(key = "priorityHint") {
-                    PriorityHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
-                }
-                if (uiState.selectedSimulator is Simulator.AceWindows) {
+                val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
+                if (isAceSelected) {
                     item(key = "aceReadoutTimingHint") {
-                        AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
+                        AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
                     }
+                }
+                item(key = "priorityHint") {
+                    PriorityHintRow(
+                        modifier =
+                            Modifier.padding(
+                                start = 8.dp,
+                                top = if (isAceSelected) 0.dp else 16.dp,
+                                end = 8.dp,
+                            ),
+                    )
                 }
                 itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
