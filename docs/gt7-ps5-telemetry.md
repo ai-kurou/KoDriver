@@ -1,6 +1,6 @@
 # GT7 UDP テレメトリー（SimulatorInterface）フィールドリファレンス
 
-GranTurismo 7 は PS4/PS5 から **UDP** でテレメトリーを送信する（Polyphony Digital の SimulatorInterface）。本ドキュメントは [Nenkai/PDTools](https://github.com/Nenkai/PDTools) の `SimulatorPacket.cs` / `SimulatorInterfaceClient.cs` と [MacManley/gt7-udp](https://github.com/MacManley/gt7-udp) の `GT7UDPParser.h` を基に照合済み。
+Gran Turismo 7 は PS4/PS5 から **UDP** でテレメトリーを送信する（Polyphony Digital の SimulatorInterface）。本ドキュメントは [Nenkai/PDTools](https://github.com/Nenkai/PDTools) の `SimulatorPacket.cs` / `SimulatorInterfaceClient.cs` と [MacManley/gt7-udp](https://github.com/MacManley/gt7-udp) の `GT7UDPParser.h` を基に照合済み。
 
 ## パケット概要
 

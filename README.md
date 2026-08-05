@@ -11,7 +11,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/ai-kurou/KoDriver)](https://github.com/ai-kurou/KoDriver/releases)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.0-7F52FF?logo=kotlin)
 
-Le Mans Ultimate（LMU）、GranTurismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
+Le Mans Ultimate（LMU）、Gran Turismo 7（GT7 PS5）、Assetto Corsa EVO（ACE）の走行情報に応じて、WAV 音声ファイルをリアルタイムに再生する Compose Multiplatform アプリ。
 
 https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 
@@ -33,7 +33,7 @@ https://github.com/user-attachments/assets/87a7efa0-51ff-41f2-8bc2-a045154fa264
 **デスクトップアプリ（Windows）**
 
 - Windows 10 以降
-- Le Mans Ultimate（LMU 使用時）、GranTurismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（ACE 使用時）
+- Le Mans Ultimate（LMU 使用時）、Gran Turismo 7 PS5（GT7 使用時）、または Assetto Corsa EVO（ACE 使用時）
 
 **Android アプリ**
 

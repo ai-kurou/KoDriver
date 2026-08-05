@@ -79,7 +79,7 @@ class MainActivityTest {
     @Test
     fun `GT7選択時に読み上げ項目を順にタップする`() {
         launchActivity()
-        selectSimulator("GranTurismo 7（PS5）")
+        selectSimulator("Gran Turismo 7（PS5）")
         clickReadoutPriorityHelp()
 
         waitUntilDisplayed("燃料残り周回数")
@@ -125,7 +125,7 @@ class MainActivityTest {
     @Test
     fun `GT7選択時に接続状況バナーをタップして戻る`() {
         launchActivity()
-        selectSimulator("GranTurismo 7（PS5）")
+        selectSimulator("Gran Turismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         waitUntilDisplayed("ゲーム機またはSimHubを実行しているPCのIPアドレスを入力してください。")
