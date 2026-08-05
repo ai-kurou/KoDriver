@@ -187,6 +187,31 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `statusがLIVE以外の場合はcarLocationがTRACKでも残量が閾値以下でもフラグが変化しても読み上げない`() =
+        runTest(testDispatcher) {
+            listOf(
+                AceWindowsStatusType.OFF,
+                AceWindowsStatusType.REPLAY,
+                AceWindowsStatusType.PAUSE,
+                AceWindowsStatusType.UNKNOWN,
+            ).forEach { status ->
+                val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+                val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+                val spokenTexts = mutableListOf<SpeechEvent>()
+                val ttsEngine = mockTts(spokenTexts)
+                stubReadoutDefaults(thresholdPercentage = 30, status = status)
+                createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+
+                fuelChannel.send(fuel(50.0))
+                fuelChannel.send(fuel(20.0))
+                flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+                flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+
+                assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+            }
+        }
+
+    @Test
     fun `ACEを離れて戻した際に古いLIVE状態が残らない`() =
         runTest(testDispatcher) {
             val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
@@ -321,6 +346,7 @@ class AceWindowsNarratorViewModelTest {
         orderOverride: List<ReadoutItemKey> = listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root),
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         carLocation: AceWindowsCarLocation = AceWindowsCarLocation.TRACK,
+        status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -336,7 +362,7 @@ class AceWindowsNarratorViewModelTest {
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every {
             statusRepository.statusStream()
-        } returns MutableStateFlow(AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = carLocation))
+        } returns MutableStateFlow(AceWindowsStatusData(status = status, carLocation = carLocation))
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
