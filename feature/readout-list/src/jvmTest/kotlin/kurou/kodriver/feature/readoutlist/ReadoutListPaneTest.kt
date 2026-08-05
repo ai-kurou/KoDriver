@@ -201,6 +201,62 @@ class ReadoutListPaneTest {
         assertFalse(queueChanges.contains(ReadoutItemKey.LmuWindows.Flag.Root to true))
     }
 
+    @Test
+    fun `ACE選択時のみ読み上げタイミングヒントを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows, Simulator.AceWindows),
+                            selectedSimulator = Simulator.LmuWindows,
+                            items = listOf(ReadoutItemKey.LmuWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.Flag.Root to true),
+                        ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule
+            .onNodeWithText(
+                "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
+                    "レース中（コース走行中）は設定通りに読み上げられます。",
+            ).assertDoesNotExist()
+    }
+
+    @Test
+    fun `ACE選択時は読み上げタイミングヒントを表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutListPane(
+                    uiState =
+                        ReadoutListUiState(
+                            simulators = listOf(Simulator.LmuWindows, Simulator.AceWindows),
+                            selectedSimulator = Simulator.AceWindows,
+                            items = listOf(ReadoutItemKey.AceWindows.Flag.Root),
+                            readoutEnabledStates = mapOf(ReadoutItemKey.AceWindows.Flag.Root to true),
+                        ),
+                    onSimulatorSelected = {},
+                    onMove = { _, _ -> },
+                    onReadoutEnabledChanged = { _, _ -> },
+                    onQueueEnabledChanged = { _, _ -> },
+                    onItemClick = {},
+                )
+            }
+        }
+
+        rule
+            .onNodeWithText(
+                "レース開始前やローディング画面で読み上げが発生することがありますが、仕様上の挙動です。" +
+                    "レース中（コース走行中）は設定通りに読み上げられます。",
+            ).assertIsDisplayed()
+    }
+
     private fun hasSwitchRole(): SemanticsMatcher = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Switch)
 
     private fun hasQueueToggleRole(): SemanticsMatcher =

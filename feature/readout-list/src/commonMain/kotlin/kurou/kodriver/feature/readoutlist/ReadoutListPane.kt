@@ -88,6 +88,7 @@ import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
+import kurou.kodriver.feature.readoutlist.generated.resources.ace_readout_timing_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.drag_handle
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_description
 import kurou.kodriver.feature.readoutlist.generated.resources.priority_hint_label
@@ -227,6 +228,16 @@ private fun PriorityHintRow(modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+private fun AceReadoutTimingHintRow(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(Res.string.ace_readout_timing_hint_description),
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.error,
+        modifier = modifier.padding(bottom = 12.dp),
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ReadoutListPane(
@@ -302,8 +313,21 @@ internal fun ReadoutListPane(
                 }
             }
             if (uiState.selectedSimulator != null) {
+                val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
+                if (isAceSelected) {
+                    item(key = "aceReadoutTimingHint") {
+                        AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
+                    }
+                }
                 item(key = "priorityHint") {
-                    PriorityHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
+                    PriorityHintRow(
+                        modifier =
+                            Modifier.padding(
+                                start = 8.dp,
+                                top = if (isAceSelected) 0.dp else 16.dp,
+                                end = 8.dp,
+                            ),
+                    )
                 }
                 itemsIndexed(uiState.items, key = { _, it -> it.value }) { index, item ->
                     ReorderableItem(reorderableState, key = item.value) {
