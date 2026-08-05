@@ -24,11 +24,15 @@ class DebugStatePitTimingRemainingLapsCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `ピットタイミング予想残り周回数カードのタイトルを表示する`() {
+    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -36,6 +40,28 @@ class DebugStatePitTimingRemainingLapsCardTest {
         }
 
         rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `LMUだがバーチャルエナジーとタイヤ摩耗のデータが取得できない場合はハイフンを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+        rule.onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
+        rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
     }
 
     @Test
@@ -60,47 +86,9 @@ class DebugStatePitTimingRemainingLapsCardTest {
             }
         }
 
+        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
         rule.onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
         rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `LMUだがバーチャルエナジーとタイヤ摩耗のデータが取得できない場合はハイフンを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
-        rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
     }
 
     private fun sampleLmuTelemetry(
