@@ -99,35 +99,17 @@ class DebugStateVehicleLocationCardTest {
     }
 
     @Test
-    fun `selectedSimulatorがACEの場合はステータスとcarLocationを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.AceWindows,
-                            aceWindowsStatus =
-                                AceWindowsStatusData(
-                                    status = AceWindowsStatusType.LIVE,
-                                    carLocation = AceWindowsCarLocation.TRACK,
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("車両位置").assertIsDisplayed()
-        rule.onNodeWithText("ステータス: Live（走行中）").assertIsDisplayed()
-        rule.onNodeWithText("Track（コース上）").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがACEの場合はcarLocationの各値に対応する表示文言を表示する`() {
-        val expectedByCarLocation =
-            mapOf(
+    fun `selectedSimulatorがACEの場合はstatusとcarLocationの各値に対応する表示文言を表示する`() {
+        val expectedStatuses =
+            listOf(
+                AceWindowsStatusType.OFF to "Off（未起動）",
+                AceWindowsStatusType.REPLAY to "Replay（リプレイ中）",
+                AceWindowsStatusType.LIVE to "Live（走行中）",
+                AceWindowsStatusType.PAUSE to "Pause（ポーズ中）",
+                AceWindowsStatusType.UNKNOWN to "不明",
+            )
+        val expectedCarLocations =
+            listOf(
                 AceWindowsCarLocation.UNASSIGNED to "Unassigned（未割当）",
                 AceWindowsCarLocation.PITLANE to "PitLane（ピットレーン）",
                 AceWindowsCarLocation.PITENTRY to "PitEntry（ピット進入）",
@@ -136,15 +118,16 @@ class DebugStateVehicleLocationCardTest {
                 AceWindowsCarLocation.UNKNOWN to "不明",
             )
 
-        expectedByCarLocation.forEach { (carLocation, expectedText) ->
+        // statusとcarLocationの数が異なるため、少ない方のstatusを循環させて両方の全enum値を1ループで網羅する。
+        expectedCarLocations.forEachIndexed { index, (carLocation, expectedCarLocationText) ->
+            val (status, expectedStatusText) = expectedStatuses[index % expectedStatuses.size]
             rule.setContent {
                 MaterialTheme {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
                                 selectedSimulator = Simulator.AceWindows,
-                                aceWindowsStatus =
-                                    AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = carLocation),
+                                aceWindowsStatus = AceWindowsStatusData(status = status, carLocation = carLocation),
                                 cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
                             ),
                         canNavigateBack = true,
@@ -154,40 +137,8 @@ class DebugStateVehicleLocationCardTest {
             }
 
             rule.onNodeWithText("車両位置").assertIsDisplayed()
-            rule.onNodeWithText(expectedText).assertIsDisplayed()
-        }
-    }
-
-    @Test
-    fun `selectedSimulatorがACEの場合はstatusの各値に対応する表示文言を表示する`() {
-        val expectedByStatus =
-            mapOf(
-                AceWindowsStatusType.OFF to "Off（未起動）",
-                AceWindowsStatusType.REPLAY to "Replay（リプレイ中）",
-                AceWindowsStatusType.LIVE to "Live（走行中）",
-                AceWindowsStatusType.PAUSE to "Pause（ポーズ中）",
-                AceWindowsStatusType.UNKNOWN to "不明",
-            )
-
-        expectedByStatus.forEach { (status, expectedText) ->
-            rule.setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.AceWindows,
-                                aceWindowsStatus =
-                                    AceWindowsStatusData(status = status, carLocation = AceWindowsCarLocation.TRACK),
-                                cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
-            }
-
-            rule.onNodeWithText("車両位置").assertIsDisplayed()
-            rule.onNodeWithText("ステータス: $expectedText").assertIsDisplayed()
+            rule.onNodeWithText("ステータス: $expectedStatusText").assertIsDisplayed()
+            rule.onNodeWithText(expectedCarLocationText).assertIsDisplayed()
         }
     }
 
