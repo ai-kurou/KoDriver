@@ -16,48 +16,14 @@ class DebugStateVehicleClassCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `車両クラスカードのタイトルを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("車両クラス").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがLMUの場合はクラス名を表示する`() {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
                     uiState =
                         DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
+                            selectedSimulator = null,
                             lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("Hypercar").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがGT7の場合はクラス名を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            gt7Ps5VehicleClass = Gt7Ps5VehicleClassData(name = "Gr.3"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -66,7 +32,8 @@ class DebugStateVehicleClassCardTest {
             }
         }
 
-        rule.onNodeWithText("Gr.3").assertIsDisplayed()
+        rule.onNodeWithText("車両クラス").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test
@@ -86,6 +53,7 @@ class DebugStateVehicleClassCardTest {
             }
         }
 
+        rule.onNodeWithText("車両クラス").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
@@ -106,26 +74,7 @@ class DebugStateVehicleClassCardTest {
             }
         }
 
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
+        rule.onNodeWithText("車両クラス").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
@@ -146,6 +95,48 @@ class DebugStateVehicleClassCardTest {
             }
         }
 
+        rule.onNodeWithText("車両クラス").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがLMUの場合はクラス名を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("車両クラス").assertIsDisplayed()
+        rule.onNodeWithText("Hypercar").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合はクラス名を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5VehicleClass = Gt7Ps5VehicleClassData(name = "Gr.3"),
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("車両クラス").assertIsDisplayed()
+        rule.onNodeWithText("Gr.3").assertIsDisplayed()
     }
 }
