@@ -19,11 +19,15 @@ class DebugStateVehicleLocationCardTest {
     val rule = createComposeRule()
 
     @Test
-    fun `車両位置カードのタイトルを表示する`() {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
-                    uiState = DebugStateDetailUiState(),
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = null,
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                        ),
                     canNavigateBack = true,
                     onBack = {},
                 )
@@ -31,6 +35,67 @@ class DebugStateVehicleLocationCardTest {
         }
 
         rule.onNodeWithText("車両位置").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがACEでステータス情報が未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("車両位置").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがLMUでピット状態が未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("車両位置").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("車両位置").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test
@@ -62,27 +127,9 @@ class DebugStateVehicleLocationCardTest {
                 }
             }
 
+            rule.onNodeWithText("車両位置").assertIsDisplayed()
             rule.onNodeWithText(expectedText).assertIsDisplayed()
         }
-    }
-
-    @Test
-    fun `selectedSimulatorがACEでステータス情報が未取得の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.AceWindows,
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test
@@ -107,6 +154,7 @@ class DebugStateVehicleLocationCardTest {
             }
         }
 
+        rule.onNodeWithText("車両位置").assertIsDisplayed()
         rule.onNodeWithText("ピットレーン走行中: はい").assertIsDisplayed()
         rule.onNodeWithText("ピット状態: Entering（ピット進入中）").assertIsDisplayed()
         rule.onNodeWithText("ガレージ内: いいえ").assertIsDisplayed()
@@ -141,66 +189,10 @@ class DebugStateVehicleLocationCardTest {
                 }
             }
 
+            rule.onNodeWithText("車両位置").assertIsDisplayed()
             rule.onNodeWithText("ピット状態: $expectedText").assertIsDisplayed()
             rule.onNodeWithText("ピットレーン走行中: いいえ").assertIsDisplayed()
             rule.onNodeWithText("ガレージ内: はい").assertIsDisplayed()
         }
-    }
-
-    @Test
-    fun `selectedSimulatorがLMUでピット状態が未取得の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            cardOrder = listOf(DebugStateCardKey.VEHICLE_LOCATION),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 }
