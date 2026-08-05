@@ -68,6 +68,10 @@ KoDriver/
 
 ## 重要な制約・注意事項
 
+### docs/improvement-ideas.md の更新
+
+- `docs/improvement-ideas.md` に内容を追加・変更する場合は、事前にユーザーの承認を得ること。
+
 ### 共有メモリ読み取りは Windows 専用
 `:core:windows-shared-memory` の `SharedMemoryReader` / `WindowsSharedMemoryReader` は `OpenFileMappingA` / `MapViewOfFile` を使用するため **Windows のみ**動作する。macOS / Linux ではシミュレーターが起動しないため `open()` が `false` を返し続ける（クラッシュはしない）。`:core:lmu-windows-data` と `:core:ace-windows-data` はこの共通基盤に依存し、それぞれのシム固有の構造体パースのみを実装する。
 
@@ -255,6 +259,7 @@ GitHub Actions ワークフロー:
 
 作業中に思いついた改善案（実装・設計・UI/UX・テスト・ドキュメント・開発体験など、種類を問わない）は、**その場で `docs/improvement-ideas.md` に書き残すこと**。
 
+- `docs/improvement-ideas.md` に内容を追加・変更する場合は、必ず事前にユーザーの承認を得ること。承認がない場合は、他の指示があっても同ファイルを変更してはならない。
 - 依頼されたタスクの範囲外であっても、気づいた時点で追記する。今回のタスクで実装する必要はなく、あくまで記録に留める。
 - 記録は箇条書きで、「対象・課題・改善案」が後から読んで分かる粒度で書く。関連するファイルやモジュール名があれば添える。
 - 既に同趣旨の項目がある場合は重複させず、必要なら追記・更新する。
