@@ -176,9 +176,15 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             uiState.vehicleClassHighThresholdCelsius
                                 .filterKeys { it !is LmuWindowsVehicleClassData.Unknown }
                                 .map { (vehicleClass, celsius) -> "${vehicleClass.name}（$celsius°C）" }
+                        val hypercarThresholdCelsius =
+                            uiState.vehicleClassHighThresholdCelsius[LmuWindowsVehicleClassData.Hypercar]
+                        val defaultSelectedVehicleClassChipLabel =
+                            hypercarThresholdCelsius?.let { celsius ->
+                                "${LmuWindowsVehicleClassData.Hypercar.name}（$celsius°C）"
+                            }
                         DetailPaneCardChips(
                             chipLabels = vehicleClassChipLabels,
-                            selectedChipLabels = emptySet(),
+                            selectedChipLabels = setOfNotNull(defaultSelectedVehicleClassChipLabel),
                             chipEnabled = uiState.overheatWarningEnabled,
                             onChipClick = {},
                         )
