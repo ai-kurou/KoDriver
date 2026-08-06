@@ -50,6 +50,25 @@ fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClas
     }
 
 /**
+ * 現在走行中の車両クラスに対応する高温警告しきい値を、クラス別しきい値マップから解決する。
+ * [LmuWindowsVehicleClassData.Unknown] は raw 値によらず代表キーの1件を共有するため、
+ * マップの直接参照ではなく代表キーへ正規化してから参照する。
+ */
+fun resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
+    thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Int>,
+    vehicleClass: LmuWindowsVehicleClassData,
+): Int {
+    val key =
+        if (vehicleClass is LmuWindowsVehicleClassData.Unknown) {
+            LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY)
+        } else {
+            vehicleClass
+        }
+    return thresholdsByVehicleClass[key]
+        ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass)
+}
+
+/**
  * 対象クラスチップのデフォルト選択値。
  */
 val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehicleClassData =

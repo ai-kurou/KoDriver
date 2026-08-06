@@ -29,6 +29,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
+import kurou.kodriver.domain.model.resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorReadoutSettings
 import kurou.kodriver.domain.usecase.LmuWindowsNarratorState
@@ -229,7 +230,7 @@ internal class LmuWindowsNarratorViewModel(
             vehicleClassFlow,
             tyreTemperatureUseCases.observeVehicleClassHighThreshold(),
         ) { vehicleClass, thresholdsByVehicleClass ->
-            resolveTyreTemperatureHighThreshold(thresholdsByVehicleClass, vehicleClass)
+            resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(thresholdsByVehicleClass, vehicleClass)
         }.stateIn(
             viewModelScope,
             SharingStarted.Eagerly,
@@ -610,25 +611,6 @@ internal class LmuWindowsNarratorViewModel(
                 pitTimingVirtualEnergyLapsThreshold = pitTimingVirtualEnergyLapsThreshold.value,
                 pitTimingTyreWearLapsThreshold = pitTimingTyreWearLapsThreshold.value,
             )
-}
-
-/**
- * 現在走行中の車両クラスに対応する高温警告しきい値を、クラス別しきい値マップから解決する。
- * [LmuWindowsVehicleClassData.Unknown] は raw 値によらず代表キーの1件を共有するため、
- * マップの直接参照ではなく代表キーへ正規化してから参照する。
- */
-private fun resolveTyreTemperatureHighThreshold(
-    thresholdsByVehicleClass: Map<LmuWindowsVehicleClassData, Int>,
-    vehicleClass: LmuWindowsVehicleClassData,
-): Int {
-    val key =
-        if (vehicleClass is LmuWindowsVehicleClassData.Unknown) {
-            LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY)
-        } else {
-            vehicleClass
-        }
-    return thresholdsByVehicleClass[key]
-        ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass)
 }
 
 /**
