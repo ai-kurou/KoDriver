@@ -39,6 +39,44 @@ class LmuWindowsVehicleClassTyreTemperatureDefaultsTest {
     }
 
     @Test
+    fun `resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusはマップの値を返す`() {
+        val thresholds: Map<LmuWindowsVehicleClassData, Int> = mapOf(LmuWindowsVehicleClassData.Gt3 to 100)
+
+        assertEquals(
+            100,
+            resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
+                thresholds,
+                LmuWindowsVehicleClassData.Gt3,
+            ),
+        )
+    }
+
+    @Test
+    fun `resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusはマップに無いクラスはデフォルト値を返す`() {
+        assertEquals(
+            LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GT3_DEFAULT,
+            resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
+                emptyMap(),
+                LmuWindowsVehicleClassData.Gt3,
+            ),
+        )
+    }
+
+    @Test
+    fun `resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusはUnknownのraw値によらず代表キーを参照する`() {
+        val thresholds: Map<LmuWindowsVehicleClassData, Int> =
+            mapOf(LmuWindowsVehicleClassData.Unknown(LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY) to 100)
+
+        assertEquals(
+            100,
+            resolveLmuWindowsVehicleClassTyreTemperatureHighThresholdCelsius(
+                thresholds,
+                LmuWindowsVehicleClassData.Unknown("Formula2026"),
+            ),
+        )
+    }
+
+    @Test
     fun `lmuWindowsAllVehicleClassesは既知の6クラスとUnknownの代表インスタンスを1件含む`() {
         assertEquals(
             listOf(

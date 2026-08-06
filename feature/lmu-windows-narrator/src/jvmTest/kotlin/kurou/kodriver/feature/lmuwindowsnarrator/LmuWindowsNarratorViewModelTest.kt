@@ -32,6 +32,7 @@ import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
@@ -47,6 +48,7 @@ import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
 import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
@@ -61,6 +63,8 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
@@ -78,7 +82,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
@@ -89,6 +92,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
@@ -143,6 +148,13 @@ class LmuWindowsNarratorViewModelTest {
 
     @MockK
     private lateinit var tyreTemperaturePreferencesRepository: LmuWindowsTyreTemperaturePreferencesRepository
+
+    @MockK
+    private lateinit var vehicleClassTyreTemperaturePreferencesRepository:
+        LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
+
+    @MockK
+    private lateinit var vehicleClassRepository: LmuWindowsVehicleClassRepository
 
     @MockK
     private lateinit var tyreWearRepository: LmuWindowsTyreWearRepository
@@ -211,6 +223,8 @@ class LmuWindowsNarratorViewModelTest {
         sustainedReadoutType: VehicleApproachSustainedReadoutType,
         sustainedApproachDurationSeconds: Int,
         tyreTemperatureHighThreshold: Int,
+        vehicleClass: LmuWindowsVehicleClassData,
+        tyreTemperatureHighThresholdByVehicleClass: Map<LmuWindowsVehicleClassData, Int>?,
         tyreTemperatureOverheatWarningEnabled: Boolean,
         tyreTemperatureLowWarningEnabled: Boolean,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean>,
@@ -249,8 +263,12 @@ class LmuWindowsNarratorViewModelTest {
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
         every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
             tyreTemperatureChannel.receiveAsFlow()
-        every { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns
-            MutableStateFlow(tyreTemperatureHighThreshold)
+        every { vehicleClassTyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns
+            MutableStateFlow(
+                tyreTemperatureHighThresholdByVehicleClass
+                    ?: lmuWindowsAllVehicleClasses.associateWith { tyreTemperatureHighThreshold },
+            )
+        every { vehicleClassRepository.vehicleClassStream() } returns MutableStateFlow(vehicleClass)
         every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns
             MutableStateFlow(
                 mapOf(
@@ -304,6 +322,8 @@ class LmuWindowsNarratorViewModelTest {
         sustainedReadoutType: VehicleApproachSustainedReadoutType = VehicleApproachSustainedReadoutType.KEEP_LEFT_RIGHT,
         sustainedApproachDurationSeconds: Int = LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT,
         tyreTemperatureHighThreshold: Int = 90,
+        vehicleClass: LmuWindowsVehicleClassData = LmuWindowsVehicleClassData.Hypercar,
+        tyreTemperatureHighThresholdByVehicleClass: Map<LmuWindowsVehicleClassData, Int>? = null,
         tyreTemperatureOverheatWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningEnabled: Boolean = true,
         tyreTemperatureLowWarningPhasesOverride: Map<SessionPhase, Boolean> = emptyMap(),
@@ -336,6 +356,8 @@ class LmuWindowsNarratorViewModelTest {
             sustainedReadoutType = sustainedReadoutType,
             sustainedApproachDurationSeconds = sustainedApproachDurationSeconds,
             tyreTemperatureHighThreshold = tyreTemperatureHighThreshold,
+            vehicleClass = vehicleClass,
+            tyreTemperatureHighThresholdByVehicleClass = tyreTemperatureHighThresholdByVehicleClass,
             tyreTemperatureOverheatWarningEnabled = tyreTemperatureOverheatWarningEnabled,
             tyreTemperatureLowWarningEnabled = tyreTemperatureLowWarningEnabled,
             tyreTemperatureLowWarningPhasesOverride = tyreTemperatureLowWarningPhasesOverride,
@@ -399,10 +421,11 @@ class LmuWindowsNarratorViewModelTest {
                         ObserveLmuWindowsTyreCarcassTemperatureUseCase(
                             tyreCarcassTemperatureRepository,
                         ),
-                    observeHighThreshold =
-                        ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(
-                            tyreTemperaturePreferencesRepository,
+                    observeVehicleClassHighThreshold =
+                        ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(
+                            vehicleClassTyreTemperaturePreferencesRepository,
                         ),
+                    observeVehicleClass = ObserveLmuWindowsVehicleClassUseCase(vehicleClassRepository),
                     observeTyreTemperatureEnabledStates =
                         ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(
                             tyreTemperaturePreferencesRepository,
@@ -1168,6 +1191,31 @@ class LmuWindowsNarratorViewModelTest {
             channel.send(tyreTemperature(fl = 95.0))
 
             assertEquals(listOf<SpeechEvent>(SpeechEvent.TyreOverheat), spokenTexts)
+        }
+
+    @Test
+    fun `走行中の車両クラスに対応するしきい値未満では TyreOverheat を読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<LmuWindowsTyreCarcassTemperatureData>(Channel.UNLIMITED)
+            val flagChannel = Channel<LmuWindowsRaceFlagsData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val tts = mockTts(spokenTexts)
+            createViewModel(
+                tyreTemperatureChannel = channel,
+                flagChannel = flagChannel,
+                ttsEngine = tts,
+                vehicleClass = LmuWindowsVehicleClassData.Gt3,
+                tyreTemperatureHighThresholdByVehicleClass =
+                    lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                        if (vehicleClass == LmuWindowsVehicleClassData.Gt3) 100 else 90
+                    },
+                enabledOverrides = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+            )
+            flagChannel.send(clearFlags())
+
+            channel.send(tyreTemperature(fl = 95.0))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
         }
 
     @Test
