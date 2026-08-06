@@ -58,6 +58,12 @@ tasks.withType<Test>().configureEach {
     systemProperty("skiko.renderApi", "SOFTWARE_FAST")
 }
 
+tasks.named("compileTestKotlin") {
+    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>).compilerOptions {
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.test.ExperimentalTestApi")
+    }
+}
+
 compose.desktop {
     application {
         mainClass = "kurou.kodriver.MainKt"

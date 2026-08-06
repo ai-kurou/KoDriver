@@ -4,31 +4,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.MyBestLapVoiceType
-import org.junit.Rule
 import org.junit.Test
 
 class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
-    @get:Rule
-    val rule = createComposeRule()
+    @Test
+    fun `デフォルト`() =
+        composeScreenshotTest {
+            capturePane()
+        }
 
     @Test
-    fun `デフォルト`() {
-        capturePane()
-    }
+    fun `casual選択`() =
+        composeScreenshotTest {
+            capturePane(uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.CASUAL))
+        }
 
-    @Test
-    fun `casual選択`() {
-        capturePane(uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.CASUAL))
-    }
-
-    private fun capturePane(uiState: Gt7Ps5ReadoutMyBestLapDetailUiState = Gt7Ps5ReadoutMyBestLapDetailUiState()) {
-        rule.setContent {
+    private fun DesktopComposeUiTest.capturePane(
+        uiState: Gt7Ps5ReadoutMyBestLapDetailUiState = Gt7Ps5ReadoutMyBestLapDetailUiState(),
+    ) {
+        setContent {
             KoDriverTheme {
                 Surface {
                     Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
@@ -37,6 +38,6 @@ class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
                 }
             }
         }
-        rule.onRoot().captureRoboImage()
+        onRoot().captureRoboImage()
     }
 }

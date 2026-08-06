@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
@@ -14,71 +13,69 @@ import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailUiState
-import org.junit.Rule
 import org.junit.Test
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class OtherContentScreenshotTest {
-    @get:Rule
-    val rule = createComposeRule()
-
     // Windows版KoDriverへ接続するIPアドレスは Android 専用項目のため JVM では表示しない。
 
     @Test
-    fun `ゲーム機とSimHubへ接続するIPアドレス詳細を表示`() {
-        rule.setContent {
-            AppTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                        OtherContent(
-                            uiState = OtherListUiState(selectedItem = OtherListItemType.ConsoleIp),
-                            onItemSelected = {},
-                            onClearSelectedItem = {},
-                            scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack ->
-                                if (itemType == OtherListItemType.ConsoleIp) {
-                                    OtherConsoleIpDetailPaneContent(
-                                        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-                                        canNavigateBack = canNavigateBack,
-                                        onBack = onBack,
-                                    )
-                                }
-                            },
-                        )
+    fun `ゲーム機とSimHubへ接続するIPアドレス詳細を表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.ConsoleIp),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack ->
+                                    if (itemType == OtherListItemType.ConsoleIp) {
+                                        OtherConsoleIpDetailPaneContent(
+                                            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        rule.onRoot().captureRoboImage()
-    }
+            onRoot().captureRoboImage()
+        }
 
     @Test
-    fun `音量詳細を表示`() {
-        rule.setContent {
-            AppTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                        OtherContent(
-                            uiState = OtherListUiState(selectedItem = OtherListItemType.Volume),
-                            onItemSelected = {},
-                            onClearSelectedItem = {},
-                            scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack ->
-                                if (itemType == OtherListItemType.Volume) {
-                                    OtherVolumeDetailPaneContent(
-                                        uiState = OtherVolumeDetailUiState(volume = 80),
-                                        canNavigateBack = canNavigateBack,
-                                        onBack = onBack,
-                                    )
-                                }
-                            },
-                        )
+    fun `音量詳細を表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.Volume),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack ->
+                                    if (itemType == OtherListItemType.Volume) {
+                                        OtherVolumeDetailPaneContent(
+                                            uiState = OtherVolumeDetailUiState(volume = 80),
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        rule.onRoot().captureRoboImage()
-    }
+            onRoot().captureRoboImage()
+        }
 }

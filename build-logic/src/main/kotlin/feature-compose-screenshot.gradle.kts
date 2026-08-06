@@ -26,4 +26,10 @@ kotlin {
     }
 }
 
+tasks.named("compileTestKotlinJvm") {
+    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>).compilerOptions {
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.test.ExperimentalTestApi")
+    }
+}
+
 apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))

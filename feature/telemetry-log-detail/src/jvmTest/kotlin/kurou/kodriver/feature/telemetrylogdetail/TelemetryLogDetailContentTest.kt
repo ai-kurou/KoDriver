@@ -1,49 +1,47 @@
 package kurou.kodriver.feature.telemetrylogdetail
 
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
-import org.junit.Rule
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import org.junit.Test
 
 class TelemetryLogDetailContentTest {
-    @get:Rule
-    val rule = createComposeRule()
-
     @Test
-    fun `空の詳細ペインを表示する`() {
-        rule.setContent {
-            TelemetryLogDetailContent(uiState = TelemetryLogDetailUiState())
+    fun `空の詳細ペインを表示する`() =
+        composeScreenshotTest {
+            setContent {
+                TelemetryLogDetailContent(uiState = TelemetryLogDetailUiState())
+            }
+
+            onRoot().assertExists()
         }
 
-        rule.onRoot().assertExists()
-    }
-
     @Test
-    fun `2つのテレメトリーデータJSONを表示する`() {
-        rule.setContent {
-            TelemetryLogDetailContent(
-                uiState =
-                    TelemetryLogDetailUiState(
-                        logId = 2L,
-                        items =
-                            listOf(
-                                TelemetryLogDetailItemUiState(
-                                    title = "選択したログ",
-                                    telemetryJson = """{"speed":120}""",
+    fun `2つのテレメトリーデータJSONを表示する`() =
+        composeScreenshotTest {
+            setContent {
+                TelemetryLogDetailContent(
+                    uiState =
+                        TelemetryLogDetailUiState(
+                            logId = 2L,
+                            items =
+                                listOf(
+                                    TelemetryLogDetailItemUiState(
+                                        title = "選択したログ",
+                                        telemetryJson = """{"speed":120}""",
+                                    ),
+                                    TelemetryLogDetailItemUiState(
+                                        title = "一つ前のログ",
+                                        telemetryJson = """{"speed":118}""",
+                                    ),
                                 ),
-                                TelemetryLogDetailItemUiState(
-                                    title = "一つ前のログ",
-                                    telemetryJson = """{"speed":118}""",
-                                ),
-                            ),
-                    ),
-            )
-        }
+                        ),
+                )
+            }
 
-        rule.onNodeWithText("選択したログ").assertExists()
-        rule.onNodeWithText("""{"speed":120}""").assertExists()
-        rule.onNodeWithText("一つ前のログ").assertExists()
-        rule.onNodeWithText("""{"speed":118}""").assertExists()
-    }
+            onNodeWithText("選択したログ").assertExists()
+            onNodeWithText("""{"speed":120}""").assertExists()
+            onNodeWithText("一つ前のログ").assertExists()
+            onNodeWithText("""{"speed":118}""").assertExists()
+        }
 }

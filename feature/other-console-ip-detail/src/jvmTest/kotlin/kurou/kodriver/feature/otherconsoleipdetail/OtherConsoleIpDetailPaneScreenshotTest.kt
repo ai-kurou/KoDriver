@@ -2,73 +2,73 @@ package kurou.kodriver.feature.otherconsoleipdetail
 
 import androidx.compose.material3.Surface
 import androidx.compose.ui.test.isRoot
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import org.junit.Rule
 import org.junit.Test
 
 class OtherConsoleIpDetailPaneScreenshotTest {
-    @get:Rule
-    val rule = createComposeRule()
-
     @Test
-    fun `デフォルト`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
-                    )
+    fun `デフォルト`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
+                        )
+                    }
                 }
             }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
         }
-        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
-    }
 
     @Test
-    fun `空入力`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
-                    )
+    fun `空入力`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(inputAddress = ""),
+                        )
+                    }
                 }
             }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
         }
-        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
-    }
 
     @Test
-    fun `不正なIPアドレス`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
-                    )
+    fun `不正なIPアドレス`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState = OtherConsoleIpDetailUiState(inputAddress = "invalid", isInputValid = false),
+                        )
+                    }
                 }
             }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
         }
-        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
-    }
 
     @Test
-    fun `保存失敗`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    OtherConsoleIpDetailPaneContent(
-                        uiState =
-                            OtherConsoleIpDetailUiState(
-                                inputAddress = "192.168.1.100",
-                                saveFailed = true,
-                            ),
-                    )
+    fun `保存失敗`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        OtherConsoleIpDetailPaneContent(
+                            uiState =
+                                OtherConsoleIpDetailUiState(
+                                    inputAddress = "192.168.1.100",
+                                    saveFailed = true,
+                                ),
+                        )
+                    }
                 }
             }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
         }
-        rule.onAllNodes(isRoot()).get(0).captureRoboImage()
-    }
 }

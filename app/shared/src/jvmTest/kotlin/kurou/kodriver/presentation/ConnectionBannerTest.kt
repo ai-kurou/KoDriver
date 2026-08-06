@@ -3,163 +3,168 @@ package kurou.kodriver.presentation
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertHasNoClickAction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class ConnectionBannerTest {
-    @get:Rule
-    val composeRule = createComposeRule()
-
     @Test
-    fun `CONNECTED状態でメッセージが表示される`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.CONNECTED,
-                        message = "接続済み",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                    ),
-            )
+    fun `CONNECTED状態でメッセージが表示される`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.CONNECTED,
+                            message = "接続済み",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                        ),
+                )
+            }
+
+            onNodeWithText("接続済み").assertIsDisplayed()
         }
 
-        composeRule.onNodeWithText("接続済み").assertIsDisplayed()
-    }
-
     @Test
-    fun `DISCONNECTED状態でメッセージが表示される`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = "切断中",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                    ),
-            )
+    fun `DISCONNECTED状態でメッセージが表示される`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = "切断中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                        ),
+                )
+            }
+
+            onNodeWithText("切断中").assertIsDisplayed()
         }
 
-        composeRule.onNodeWithText("切断中").assertIsDisplayed()
-    }
-
     @Test
-    fun `UNCHECKED状態でメッセージが表示される`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.UNCHECKED,
-                        message = "確認中",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                    ),
-            )
+    fun `UNCHECKED状態でメッセージが表示される`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "確認中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                        ),
+                )
+            }
+
+            onNodeWithText("確認中").assertIsDisplayed()
         }
 
-        composeRule.onNodeWithText("確認中").assertIsDisplayed()
-    }
-
     @Test
-    fun `SIMULATORアイコンタイプかつCONNECTEDでメッセージが表示される`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.CONNECTED,
-                        message = "LMU接続済み",
-                        iconType = ConnectionBannerIconType.SIMULATOR,
-                    ),
-            )
+    fun `SIMULATORアイコンタイプかつCONNECTEDでメッセージが表示される`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.CONNECTED,
+                            message = "LMU接続済み",
+                            iconType = ConnectionBannerIconType.SIMULATOR,
+                        ),
+                )
+            }
+
+            onNodeWithText("LMU接続済み").assertIsDisplayed()
         }
 
-        composeRule.onNodeWithText("LMU接続済み").assertIsDisplayed()
-    }
-
     @Test
-    fun `SIMULATORアイコンタイプかつDISCONNECTEDでメッセージが表示される`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = "LMU未接続",
-                        iconType = ConnectionBannerIconType.SIMULATOR,
-                    ),
-            )
+    fun `SIMULATORアイコンタイプかつDISCONNECTEDでメッセージが表示される`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = "LMU未接続",
+                            iconType = ConnectionBannerIconType.SIMULATOR,
+                        ),
+                )
+            }
+
+            onNodeWithText("LMU未接続").assertIsDisplayed()
         }
 
-        composeRule.onNodeWithText("LMU未接続").assertIsDisplayed()
-    }
-
     @Test
-    fun `isTappableかつonClickがある場合にタップ可能でシェブロンが表示される`() {
-        var clicked = false
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.UNCHECKED,
-                        message = "IPアドレスが未設定です",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                        isTappable = true,
-                    ),
-                onClick = { clicked = true },
-            )
+    fun `isTappableかつonClickがある場合にタップ可能でシェブロンが表示される`() =
+        composeScreenshotTest {
+            var clicked = false
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "IPアドレスが未設定です",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = true,
+                        ),
+                    onClick = { clicked = true },
+                )
+            }
+
+            onNodeWithText("IPアドレスが未設定です").assertHasClickAction()
+            onNodeWithText("IPアドレスが未設定です").performClick()
+            assertEquals(true, clicked)
         }
 
-        composeRule.onNodeWithText("IPアドレスが未設定です").assertHasClickAction()
-        composeRule.onNodeWithText("IPアドレスが未設定です").performClick()
-        assertEquals(true, clicked)
-    }
-
     @Test
-    fun `isTappableがfalseの場合はタップ不可でシェブロンが表示されない`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.UNCHECKED,
-                        message = "確認中",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                        isTappable = false,
-                    ),
-                onClick = {},
-            )
+    fun `isTappableがfalseの場合はタップ不可でシェブロンが表示されない`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "確認中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = false,
+                        ),
+                    onClick = {},
+                )
+            }
+
+            onNodeWithText("確認中").assertHasNoClickAction()
         }
 
-        composeRule.onNodeWithText("確認中").assertHasNoClickAction()
-    }
-
     @Test
-    fun `isTappableがtrueでもonClickがnullの場合はタップ不可`() {
-        composeRule.setContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.UNCHECKED,
-                        message = "確認中",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                        isTappable = true,
-                    ),
-                onClick = null,
-            )
+    fun `isTappableがtrueでもonClickがnullの場合はタップ不可`() =
+        composeScreenshotTest {
+            setContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "確認中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = true,
+                        ),
+                    onClick = null,
+                )
+            }
+
+            onNodeWithText("確認中").assertHasNoClickAction()
         }
 
-        composeRule.onNodeWithText("確認中").assertHasNoClickAction()
-    }
+    @Test
+    fun `pulseScaleはprogress0で最小値progress1で1になる`() =
+        composeScreenshotTest {
+            assertEquals(0.85f, pulseScale(0f))
+            assertEquals(1f, pulseScale(1f))
+        }
 
     @Test
-    fun `pulseScaleはprogress0で最小値progress1で1になる`() {
-        assertEquals(0.85f, pulseScale(0f))
-        assertEquals(1f, pulseScale(1f))
-    }
-
-    @Test
-    fun `pulseAlphaはprogress0で最小値progress1で1になる`() {
-        assertEquals(0.45f, pulseAlpha(0f))
-        assertEquals(1f, pulseAlpha(1f))
-    }
+    fun `pulseAlphaはprogress0で最小値progress1で1になる`() =
+        composeScreenshotTest {
+            assertEquals(0.45f, pulseAlpha(0f))
+            assertEquals(1f, pulseAlpha(1f))
+        }
 }

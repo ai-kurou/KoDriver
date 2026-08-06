@@ -4,116 +4,118 @@ import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
-import org.junit.Rule
 import org.junit.Test
 
 class ConnectionBannerContentScreenshotTest {
-    @get:Rule
-    val rule = createComposeRule()
+    @Test
+    fun `SIMULATOR接続中`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.CONNECTED,
+                            message = "シミュレータに接続中",
+                            iconType = ConnectionBannerIconType.SIMULATOR,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
+        }
 
     @Test
-    fun `SIMULATOR接続中`() {
-        setThemedContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.CONNECTED,
-                        message = "シミュレータに接続中",
-                        iconType = ConnectionBannerIconType.SIMULATOR,
-                    ),
-                modifier = Modifier.requiredWidth(360.dp),
-            )
+    fun `SIMULATOR接続待機中`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = "シミュレータ接続待機中",
+                            iconType = ConnectionBannerIconType.SIMULATOR,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `SIMULATOR接続待機中`() {
-        setThemedContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = "シミュレータ接続待機中",
-                        iconType = ConnectionBannerIconType.SIMULATOR,
-                    ),
-                modifier = Modifier.requiredWidth(360.dp),
-            )
+    fun `NETWORK接続中`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.CONNECTED,
+                            message = "Windows版KoDriverに接続中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NETWORK接続中`() {
-        setThemedContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.CONNECTED,
-                        message = "Windows版KoDriverに接続中",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                    ),
-                modifier = Modifier.requiredWidth(360.dp),
-            )
+    fun `NETWORK接続待機中`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = "Windows版KoDriver接続待機中",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NETWORK接続待機中`() {
-        setThemedContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = "Windows版KoDriver接続待機中",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                    ),
-                modifier = Modifier.requiredWidth(360.dp),
-            )
+    fun `NETWORK IPアドレス未設定`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = "接続先IPアドレスが未設定です",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NETWORK IPアドレス未設定`() {
-        setThemedContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.DISCONNECTED,
-                        message = "接続先IPアドレスが未設定です",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                    ),
-                modifier = Modifier.requiredWidth(360.dp),
-            )
+    fun `NETWORK IPアドレス未設定 タップ可能`() =
+        composeScreenshotTest {
+            setThemedContent {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "接続先IPアドレスが未設定です",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = true,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                    onClick = {},
+                )
+            }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
-    @Test
-    fun `NETWORK IPアドレス未設定 タップ可能`() {
-        setThemedContent {
-            ConnectionBannerContent(
-                uiState =
-                    ConnectionBannerUiState(
-                        status = ConnectionBannerStatus.UNCHECKED,
-                        message = "接続先IPアドレスが未設定です",
-                        iconType = ConnectionBannerIconType.NETWORK,
-                        isTappable = true,
-                    ),
-                modifier = Modifier.requiredWidth(360.dp),
-                onClick = {},
-            )
-        }
-        rule.onRoot().captureRoboImage()
-    }
-
-    private fun setThemedContent(content: @Composable () -> Unit) {
-        rule.setContent {
+    private fun DesktopComposeUiTest.setThemedContent(content: @Composable () -> Unit) {
+        setContent {
             AppTheme {
                 Surface(content = content)
             }

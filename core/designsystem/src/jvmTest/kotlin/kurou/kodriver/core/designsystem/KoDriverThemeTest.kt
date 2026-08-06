@@ -1,24 +1,25 @@
+@file:OptIn(ExperimentalTestApi::class)
+
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.ui.test.junit4.v2.createComposeRule
-import org.junit.Rule
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.v2.runDesktopComposeUiTest
 import org.junit.Test
 
 class KoDriverThemeTest {
-    @get:Rule
-    val composeRule = createComposeRule()
+    @Test
+    fun `darkTheme=falseでクラッシュしない`() =
+        runDesktopComposeUiTest {
+            setContent {
+                KoDriverTheme(darkTheme = false) {}
+            }
+        }
 
     @Test
-    fun `darkTheme=falseでクラッシュしない`() {
-        composeRule.setContent {
-            KoDriverTheme(darkTheme = false) {}
+    fun `darkTheme=trueでクラッシュしない`() =
+        runDesktopComposeUiTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {}
+            }
         }
-    }
-
-    @Test
-    fun `darkTheme=trueでクラッシュしない`() {
-        composeRule.setContent {
-            KoDriverTheme(darkTheme = true) {}
-        }
-    }
 }

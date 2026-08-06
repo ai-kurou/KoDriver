@@ -2,8 +2,8 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.LmuWindowsEngineData
 import kurou.kodriver.domain.model.LmuWindowsFuelData
@@ -16,120 +16,121 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.WheelIndex
-import org.junit.Rule
 import org.junit.Test
 
 class DebugStatePitTimingRemainingLapsCardTest {
-    @get:Rule
-    val rule = createComposeRule()
-
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = null,
+                                cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
+
+            onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+            onNodeWithText("未取得").assertIsDisplayed()
         }
 
-        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
     @Test
-    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `selectedSimulatorがGT7の場合は未取得の文言を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.Gt7Ps5,
+                                cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
+
+            onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+            onNodeWithText("未取得").assertIsDisplayed()
         }
 
-        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
     @Test
-    fun `selectedSimulatorがACEの場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.AceWindows,
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `selectedSimulatorがACEの場合は未取得の文言を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.AceWindows,
+                                cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
+
+            onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+            onNodeWithText("未取得").assertIsDisplayed()
         }
 
-        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
     @Test
-    fun `LMUだがバーチャルエナジーとタイヤ摩耗のデータが取得できない場合はハイフンを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `LMUだがバーチャルエナジーとタイヤ摩耗のデータが取得できない場合はハイフンを表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
+
+            onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+            onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
+            onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
         }
 
-        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー: 残り -周").assertIsDisplayed()
-        rule.onNodeWithText("タイヤ摩耗: 残り -周").assertIsDisplayed()
-    }
-
     @Test
-    fun `selectedSimulatorがLMUの場合はバーチャルエナジーとタイヤ摩耗の予想残り周回数を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
-                            lmuWindowsTelemetry =
-                                sampleLmuTelemetry(
-                                    currentLap = 5,
-                                    wheels = mapOf(WheelIndex.FRONT_LEFT to 0.6),
-                                ),
-                            cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `selectedSimulatorがLMUの場合はバーチャルエナジーとタイヤ摩耗の予想残り周回数を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                                lmuWindowsTelemetry =
+                                    sampleLmuTelemetry(
+                                        currentLap = 5,
+                                        wheels = mapOf(WheelIndex.FRONT_LEFT to 0.6),
+                                    ),
+                                cardOrder = listOf(DebugStateCardKey.PIT_TIMING_REMAINING_LAPS),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
-        }
 
-        rule.onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
-        rule.onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
-        rule.onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
-    }
+            onNodeWithText("ピットタイミング予想残り周回数").assertIsDisplayed()
+            onNodeWithText("バーチャルエナジー: 残り 5.0周").assertIsDisplayed()
+            onNodeWithText("タイヤ摩耗: 残り 7.5周").assertIsDisplayed()
+        }
 
     private fun sampleLmuTelemetry(
         currentLap: Int,

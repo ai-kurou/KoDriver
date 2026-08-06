@@ -2,8 +2,8 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.LmuWindowsEngineData
@@ -14,45 +14,20 @@ import kurou.kodriver.domain.model.LmuWindowsTimingData
 import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.Simulator
-import org.junit.Rule
 import org.junit.Test
 
 class DebugStateBestLapCardTest {
-    @get:Rule
-    val rule = createComposeRule()
-
     @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = null,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
-            }
-        }
-
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
-
-    @Test
-    fun `ベストラップが未計測（0以下）の場合は未取得の文言を表示する`() {
-        listOf(0, -1).forEach { bestLapTimeMs ->
-            rule.setContent {
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() =
+        composeScreenshotTest {
+            setContent {
                 MaterialTheme {
                     DebugStateDetailPaneContent(
                         uiState =
                             DebugStateDetailUiState(
-                                selectedSimulator = Simulator.Gt7Ps5,
-                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = bestLapTimeMs),
+                                selectedSimulator = null,
+                                lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
                                 cardOrder = listOf(DebugStateCardKey.BEST_LAP),
                             ),
                         canNavigateBack = true,
@@ -61,74 +36,100 @@ class DebugStateBestLapCardTest {
                 }
             }
 
-            rule.onNodeWithText("ベストラップ").assertIsDisplayed()
-            rule.onNodeWithText("未取得").assertIsDisplayed()
+            onNodeWithText("ベストラップ").assertIsDisplayed()
+            onNodeWithText("未取得").assertIsDisplayed()
         }
-    }
 
     @Test
-    fun `selectedSimulatorがLMUの場合はLMUテレメトリのbestLapTimeMsを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `ベストラップが未計測（0以下）の場合は未取得の文言を表示する`() =
+        composeScreenshotTest {
+            listOf(0, -1).forEach { bestLapTimeMs ->
+                setContent {
+                    MaterialTheme {
+                        DebugStateDetailPaneContent(
+                            uiState =
+                                DebugStateDetailUiState(
+                                    selectedSimulator = Simulator.Gt7Ps5,
+                                    gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = bestLapTimeMs),
+                                    cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                                ),
+                            canNavigateBack = true,
+                            onBack = {},
+                        )
+                    }
+                }
+
+                onNodeWithText("ベストラップ").assertIsDisplayed()
+                onNodeWithText("未取得").assertIsDisplayed()
             }
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
-        rule.onNodeWithText("1:23.456").assertIsDisplayed()
-    }
-
     @Test
-    fun `selectedSimulatorがGT7の場合はGT7テレメトリのbestLapTimeMsを表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.Gt7Ps5,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `selectedSimulatorがLMUの場合はLMUテレメトリのbestLapTimeMsを表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.LmuWindows,
+                                lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
+
+            onNodeWithText("ベストラップ").assertIsDisplayed()
+            onNodeWithText("1:23.456").assertIsDisplayed()
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
-        rule.onNodeWithText("1:30.000").assertIsDisplayed()
-    }
-
     @Test
-    fun `selectedSimulatorがAceWindowsの場合は未取得の文言を表示する`() {
-        rule.setContent {
-            MaterialTheme {
-                DebugStateDetailPaneContent(
-                    uiState =
-                        DebugStateDetailUiState(
-                            selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
-                            gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
-                            cardOrder = listOf(DebugStateCardKey.BEST_LAP),
-                        ),
-                    canNavigateBack = true,
-                    onBack = {},
-                )
+    fun `selectedSimulatorがGT7の場合はGT7テレメトリのbestLapTimeMsを表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.Gt7Ps5,
+                                lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
             }
+
+            onNodeWithText("ベストラップ").assertIsDisplayed()
+            onNodeWithText("1:30.000").assertIsDisplayed()
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
-        rule.onNodeWithText("未取得").assertIsDisplayed()
-    }
+    @Test
+    fun `selectedSimulatorがAceWindowsの場合は未取得の文言を表示する`() =
+        composeScreenshotTest {
+            setContent {
+                MaterialTheme {
+                    DebugStateDetailPaneContent(
+                        uiState =
+                            DebugStateDetailUiState(
+                                selectedSimulator = Simulator.AceWindows,
+                                lmuWindowsTelemetry = sampleLmuWindowsTelemetry(bestLapTimeMs = 83_456L),
+                                gt7Ps5Telemetry = sampleGt7Ps5Telemetry(bestLapTimeMs = 90_000),
+                                cardOrder = listOf(DebugStateCardKey.BEST_LAP),
+                            ),
+                        canNavigateBack = true,
+                        onBack = {},
+                    )
+                }
+            }
+
+            onNodeWithText("ベストラップ").assertIsDisplayed()
+            onNodeWithText("未取得").assertIsDisplayed()
+        }
 
     private fun sampleLmuWindowsTelemetry(bestLapTimeMs: Long) =
         LmuWindowsTelemetryData(
