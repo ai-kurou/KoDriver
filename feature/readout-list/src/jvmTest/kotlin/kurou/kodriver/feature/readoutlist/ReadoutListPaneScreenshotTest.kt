@@ -42,7 +42,7 @@ class ReadoutListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 800.dp)) {
                         ReadoutListPane(
                             uiState =
                                 ReadoutListUiState(
@@ -69,7 +69,7 @@ class ReadoutListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 800.dp)) {
                         ReadoutListPane(
                             uiState =
                                 ReadoutListUiState(
@@ -101,7 +101,7 @@ class ReadoutListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 800.dp)) {
                         ReadoutListPane(
                             uiState =
                                 ReadoutListUiState(
@@ -130,7 +130,7 @@ class ReadoutListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 800.dp)) {
                         ReadoutListPane(
                             uiState =
                                 ReadoutListUiState(
