@@ -37,9 +37,9 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_carcass_card_title
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_description
@@ -75,14 +75,14 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LmuWindowsReadoutTyreTemperatureDetailPaneContent(
         uiState = uiState,
-        onHighThresholdChanged = viewModel::onHighThresholdChanged,
-        onHighThresholdReset = viewModel::onHighThresholdReset,
         onOverheatWarningEnabledChanged = viewModel::onOverheatWarningEnabledChanged,
         onPreviewClicked = viewModel::onPreviewClicked,
         onLowWarningEnabledChanged = viewModel::onLowWarningEnabledChanged,
         onLowWarningPhaseToggled = viewModel::onLowWarningPhaseToggled,
         onLowWarningPreviewClicked = viewModel::onLowWarningPreviewClicked,
         onVehicleClassSelected = viewModel::onVehicleClassSelected,
+        onVehicleClassHighThresholdChanged = viewModel::onVehicleClassHighThresholdChanged,
+        onVehicleClassHighThresholdReset = viewModel::onVehicleClassHighThresholdReset,
         modifier = modifier,
     )
 }
@@ -91,14 +91,14 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
 @Composable
 internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     uiState: LmuWindowsReadoutTyreTemperatureDetailUiState,
-    onHighThresholdChanged: (Int) -> Unit = {},
-    onHighThresholdReset: () -> Unit = {},
     onOverheatWarningEnabledChanged: (Boolean) -> Unit = {},
     onPreviewClicked: () -> Unit = {},
     onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
     onLowWarningPreviewClicked: () -> Unit = {},
     onVehicleClassSelected: (LmuWindowsVehicleClassData) -> Unit = {},
+    onVehicleClassHighThresholdChanged: (LmuWindowsVehicleClassData, Int) -> Unit = { _, _ -> },
+    onVehicleClassHighThresholdReset: (LmuWindowsVehicleClassData) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var showHelpSheet by remember { mutableStateOf(false) }
@@ -208,14 +208,24 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             }
                         },
                     )
+                    val selectedVehicleClassHighThresholdCelsius =
+                        uiState.vehicleClassHighThresholdCelsius[uiState.selectedVehicleClass]
+                            ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                uiState.selectedVehicleClass,
+                            )
                     ThresholdSlider(
-                        value = uiState.highThresholdCelsius.toFloat(),
+                        value = selectedVehicleClassHighThresholdCelsius.toFloat(),
                         valueRange = HIGH_THRESHOLD_MIN..HIGH_THRESHOLD_MAX,
                         steps = (HIGH_THRESHOLD_MAX - HIGH_THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { labelTemplate.formatSliderLabel(it.roundToInt()) },
-                        onValueChangeFinished = { onHighThresholdChanged(it.roundToInt()) },
-                        defaultValue = LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT.toFloat(),
-                        onResetToDefault = onHighThresholdReset,
+                        onValueChangeFinished = {
+                            onVehicleClassHighThresholdChanged(uiState.selectedVehicleClass, it.roundToInt())
+                        },
+                        defaultValue =
+                            lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                uiState.selectedVehicleClass,
+                            ).toFloat(),
+                        onResetToDefault = { onVehicleClassHighThresholdReset(uiState.selectedVehicleClass) },
                         resetContentDescription = stringResource(Res.string.tyre_temperature_high_threshold_reset),
                     )
                 }

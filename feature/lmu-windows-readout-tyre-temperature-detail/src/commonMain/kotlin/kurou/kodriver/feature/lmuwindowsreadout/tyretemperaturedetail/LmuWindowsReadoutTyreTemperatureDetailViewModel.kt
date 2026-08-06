@@ -8,31 +8,26 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase
 
 @Suppress("LongParameterList")
 internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
-    observeHighThreshold: ObserveLmuWindowsTyreTemperatureHighThresholdUseCase,
     observeEnabledStates: ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase,
     observeLowWarningPhases: ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
     observeVehicleClassHighThreshold: ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase,
     observeVehicleClassSelection: ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase,
-    private val saveHighThreshold: SaveLmuWindowsTyreTemperatureHighThresholdUseCase,
     private val saveEnabledState: SaveLmuWindowsTyreTemperatureEnabledStateUseCase,
     private val saveLowWarningPhases: SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase,
     private val saveVehicleClassHighThreshold: SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase,
@@ -41,14 +36,12 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
 ) : ViewModel() {
     val uiState: StateFlow<LmuWindowsReadoutTyreTemperatureDetailUiState> =
         combine(
-            observeHighThreshold(),
             observeEnabledStates(),
             observeLowWarningPhases(),
             observeVehicleClassHighThreshold(),
             observeVehicleClassSelection(),
-        ) { highThresholdCelsius, states, lowWarningPhases, vehicleClassHighThresholdCelsius, selectedVehicleClass ->
+        ) { states, lowWarningPhases, vehicleClassHighThresholdCelsius, selectedVehicleClass ->
             LmuWindowsReadoutTyreTemperatureDetailUiState(
-                highThresholdCelsius = highThresholdCelsius,
                 overheatWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.OverheatWarning),
                 lowWarningEnabled = states.getValue(ReadoutItemKey.LmuWindows.TyreTemperature.LowWarning),
                 lowWarningPhases = lowWarningPhases,
@@ -60,14 +53,6 @@ internal class LmuWindowsReadoutTyreTemperatureDetailViewModel(
             SharingStarted.WhileSubscribed(5_000),
             LmuWindowsReadoutTyreTemperatureDetailUiState(),
         )
-
-    fun onHighThresholdChanged(celsius: Int) {
-        viewModelScope.launch { saveHighThreshold(celsius) }
-    }
-
-    fun onHighThresholdReset() {
-        viewModelScope.launch { saveHighThreshold(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT) }
-    }
 
     fun onOverheatWarningEnabledChanged(enabled: Boolean) {
         viewModelScope.launch {
