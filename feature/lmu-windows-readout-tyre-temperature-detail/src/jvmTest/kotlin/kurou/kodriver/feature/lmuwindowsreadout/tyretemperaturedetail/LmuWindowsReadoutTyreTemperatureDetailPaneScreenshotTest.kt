@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
+import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
 import org.junit.Test
 
 class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
@@ -20,7 +22,15 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                                uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
+                                uiState =
+                                    LmuWindowsReadoutTyreTemperatureDetailUiState(
+                                        vehicleClassHighThresholdCelsius =
+                                            lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
+                                                lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(
+                                                    vehicleClass,
+                                                )
+                                            },
+                                    ),
                             )
                         }
                     }

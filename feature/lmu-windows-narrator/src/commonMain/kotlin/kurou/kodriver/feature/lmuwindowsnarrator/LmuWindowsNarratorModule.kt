@@ -17,7 +17,6 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsRedFlagVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsRemainingVirtualEnergyThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreCarcassTemperatureUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreWearUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
@@ -27,6 +26,8 @@ import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachStartReadou
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedDurationUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachSustainedReadoutTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleApproachUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleDamageUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVirtualEnergyUseCase
@@ -70,7 +71,7 @@ val lmuWindowsNarratorModule: Module =
         factory { VehicleApproachUseCases(get(), get(), get(), get(), get(), get(), get()) }
         factory { VehicleDamageUseCases(get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
-        factory { TyreTemperatureUseCases(get(), get(), get(), get()) }
+        factory { TyreTemperatureUseCases(get(), get(), get(), get(), get()) }
         factory { TyreWearUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
         factory { PitTimingUseCases(get(), get()) }
@@ -96,7 +97,8 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveLmuWindowsVehicleDamageEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsVehicleDamageUseCase(get()) }
         factory { ObserveLmuWindowsTyreCarcassTemperatureUseCase(get()) }
-        factory { ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(get()) }
+        factory { ObserveLmuWindowsVehicleClassUseCase(get()) }
         factory { ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(get()) }
         factory { ObserveLmuWindowsTyreWearUseCase(get()) }
         factory { ObserveLmuWindowsTyreWearThresholdPercentageUseCase(get()) }

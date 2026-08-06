@@ -60,11 +60,6 @@
   **課題**: ACE だけ `isLive`（`AceWindowsStatusType.LIVE`）でセッション状態をゲートして、メニュー・リプレイ・ポーズ中は読み上げない仕様になっている（#888）。LMU / GT7 には同等のゲートがない。意図的な差なのか、単に ACE から先に入れただけなのかがコードから読み取れない。
   **改善案**: LMU / GT7 にも同等のセッション状態ゲートが必要かを判断し、必要なら実装、不要ならその理由をコメントか CLAUDE.md に残す。
 
-- **対象**: `feature:lmu-windows-readout-tyre-temperature-detail`
-  **課題**: LMU のタイヤ温度アナウンス（高温閾値）は車両クラスによらず単一の閾値設定になっている。しかしクラスごとにタイヤ温度の実運用レンジが異なり、例えば GT3 は90℃に届かないままレースを終えることがある一方、GTE は90℃を超えた状態でレースを走り切ることがあり、同じ閾値では「GTEでは正常域なのに警告される／GT3では警告すべき水準に届く前に見逃す」というズレが起きうる（ユーザー報告、実測は未確認）。現在の LMU 車両クラスは Hypercar・LMP2・LMP3・GTE・LMGT3 の5クラスが確認できている。
-  車両クラス自体の取得は `core:lmu-windows-data`（`LmuWindowsVehicleClassRepositoryImpl`, `LmuWindowsMapper.readVehicleClassName`）で実装済み（Scoring セグメント `rF2VehicleScoring.mVehicleClass[32]`、車両先頭 +200 の人間可読な文字列を使用。#916 / #917）。`feature:debug-state-detail` のデバッグカードとしても表示できる。ただし `feature:lmu-windows-readout-tyre-temperature-detail` の閾値設定側では未活用で、クラス別の閾値切り替えはまだ実装されていない。
-  **改善案**: `feature:lmu-windows-readout-tyre-temperature-detail` の閾値設定をクラス文字列ごとに保持できるよう拡張する（未知のクラス文字列は現行の単一閾値にフォールバック）。`ReadoutItemKey` を追加する場合は CLAUDE.md の「ReadoutItemKey の配線」の手順に従い listPane/detailPane と Narrator 判定側の両方を確認すること。
-
 - **対象**: `core:gt7-ps5-data`（`Gt7Ps5Mapper.kt`）, `core:ace-windows-data`（`AceWindowsMapper.kt`）
   **課題**: LMU の車両クラス取得（上記）に続き、GT7 / ACE でも同様のデータが取れるか調査した。
   - GT7: `docs/gt7-ps5-telemetry.md` によると `carCategory[4]`（オフセット `0x16C`、char[4]、"GR3"/"GRX" 等）と `carCode`（オフセット `0x124`、int32の車両ID）が存在するが、`Gt7Ps5Mapper` はいずれも未実装。`carCategory` はLMUの `mVehicleClass` に近い性質だが4文字と短く、GT7独自の車格コードでありレースクラス名としての粒度はLMUと異なる。
