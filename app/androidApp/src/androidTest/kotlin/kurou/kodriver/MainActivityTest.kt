@@ -142,7 +142,6 @@ class MainActivityTest {
         clickScrollableItem("読み上げ開始音")
         clickItem("キャンセル")
         clickScrollableItem("画面をスリープさせない")
-        clickScrollableItem("終了確認を表示")
         clickScrollableItem("テーマ")
         clickItem("キャンセル")
         clickScrollableItem("ダイナミックカラー")

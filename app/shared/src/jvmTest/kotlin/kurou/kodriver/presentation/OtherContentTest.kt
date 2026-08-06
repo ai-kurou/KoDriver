@@ -45,7 +45,6 @@ class OtherContentTest {
         var releasePageOpened = false
         var themeDialogOpened = false
         var keepScreenOn = true
-        var exitConfirmationEnabled = true
         var dynamicColorEnabled = false
         var capturedOnBack: (() -> Unit)? = null
         var selectedItem by mutableStateOf<OtherListItemType?>(null)
@@ -56,7 +55,6 @@ class OtherContentTest {
                     OtherListUiState(
                         selectedItem = selectedItem,
                         keepScreenOn = keepScreenOn,
-                        exitConfirmationEnabled = exitConfirmationEnabled,
                         dynamicColorEnabled = dynamicColorEnabled,
                         items = OtherListUiState().items + OtherListItemType.DynamicColor,
                         appVersionLabel = "Windows版KoDriverバージョン",
@@ -67,7 +65,6 @@ class OtherContentTest {
                 onOpenReleasePage = { releasePageOpened = true },
                 onOpenThemeDialog = { themeDialogOpened = true },
                 onKeepScreenOnChange = { keepScreenOn = it },
-                onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
                 onAppVersionTapped = { selectedItem = OtherListItemType.DebugState },
                 onClearSelectedItem = { selectedItem = null },
@@ -107,13 +104,6 @@ class OtherContentTest {
         rule.onNode(hasText("読み上げ開始音")).performClick()
         rule.waitForIdle()
 
-        assertFalse(backEnabled)
-
-        // ExitConfirmation（Switchで直接切り替える）
-        rule.onNode(hasText("終了確認を表示")).performClick()
-        rule.waitForIdle()
-
-        assertFalse(exitConfirmationEnabled)
         assertFalse(backEnabled)
 
         // DynamicColor（Switchで直接切り替える）

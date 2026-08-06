@@ -7,7 +7,6 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.FeedbackRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -102,10 +101,6 @@ val desktopDataModule =
         single<KeepScreenOnEnabledRepository> { JvmKeepScreenOnEnabledRepository() }
         // Dynamic Color（プラットフォーム固有実装。Desktop は no-op 相当。Android 12+ でのみ意味を持つ）
         single<DynamicColorEnabledRepository> { JvmDynamicColorEnabledRepository() }
-        // 設定永続化（DataStore）
-        single<ExitConfirmationEnabledRepository> {
-            createExitConfirmationEnabledRepository(directory = kodriverDirectory)
-        }
         single<LmuWindowsTyreTemperaturePreferencesRepository> {
             createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
         }

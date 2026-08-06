@@ -21,7 +21,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
-import androidx.compose.material.icons.outlined.Output
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material3.Badge
@@ -49,7 +48,6 @@ import kurou.kodriver.feature.otherlist.generated.resources.Res
 import kurou.kodriver.feature.otherlist.generated.resources.item_console_ip
 import kurou.kodriver.feature.otherlist.generated.resources.item_debug_state
 import kurou.kodriver.feature.otherlist.generated.resources.item_dynamic_color
-import kurou.kodriver.feature.otherlist.generated.resources.item_exit_confirmation
 import kurou.kodriver.feature.otherlist.generated.resources.item_feedback
 import kurou.kodriver.feature.otherlist.generated.resources.item_github_repository
 import kurou.kodriver.feature.otherlist.generated.resources.item_keep_screen_on
@@ -94,7 +92,6 @@ private fun OtherListItemType.section(): OtherListSection =
         -> OtherListSection.ReadoutSettings
 
         OtherListItemType.KeepScreenOn,
-        OtherListItemType.ExitConfirmation,
         OtherListItemType.Theme,
         OtherListItemType.DynamicColor,
         -> OtherListSection.AppSettings
@@ -116,7 +113,6 @@ private fun otherItemDisplayName(itemType: OtherListItemType): String =
         OtherListItemType.Volume -> stringResource(Res.string.item_volume)
         OtherListItemType.KeepScreenOn -> stringResource(Res.string.item_keep_screen_on)
         OtherListItemType.ReadoutStartSound -> stringResource(Res.string.item_readout_start_sound)
-        OtherListItemType.ExitConfirmation -> stringResource(Res.string.item_exit_confirmation)
         OtherListItemType.Theme -> stringResource(Res.string.item_theme)
         OtherListItemType.DynamicColor -> stringResource(Res.string.item_dynamic_color)
         OtherListItemType.GitHubRepository -> stringResource(Res.string.item_github_repository)
@@ -159,10 +155,6 @@ private fun OtherListItemLeadingIcon(
 
         OtherListItemType.ReadoutStartSound -> {
             Icon(imageVector = Icons.Outlined.MusicNote, contentDescription = null)
-        }
-
-        OtherListItemType.ExitConfirmation -> {
-            Icon(imageVector = Icons.Outlined.Output, contentDescription = null)
         }
 
         OtherListItemType.Theme -> {
@@ -211,7 +203,6 @@ private fun OtherListItemTrailingIcon(itemType: OtherListItemType) {
         -> Icon(imageVector = Icons.Outlined.Edit, contentDescription = null)
 
         OtherListItemType.KeepScreenOn,
-        OtherListItemType.ExitConfirmation,
         OtherListItemType.DynamicColor,
         -> Unit
 
@@ -229,7 +220,6 @@ fun OtherListPane(
     uiState: OtherListUiState,
     onItemClick: (OtherListItemType) -> Unit,
     onKeepScreenOnChange: (Boolean) -> Unit,
-    onExitConfirmationEnabledChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onAppVersionTapped: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -261,7 +251,6 @@ fun OtherListPane(
                         item = item,
                         uiState = uiState,
                         onKeepScreenOnChange = onKeepScreenOnChange,
-                        onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
                         onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                         onItemClick = onItemClick,
                     )
@@ -312,7 +301,6 @@ private fun OtherListItem(
     item: OtherListItemType,
     uiState: OtherListUiState,
     onKeepScreenOnChange: (Boolean) -> Unit,
-    onExitConfirmationEnabledChange: (Boolean) -> Unit,
     onDynamicColorEnabledChange: (Boolean) -> Unit,
     onItemClick: (OtherListItemType) -> Unit,
 ) {
@@ -360,13 +348,6 @@ private fun OtherListItem(
                     )
                 }
 
-                OtherListItemType.ExitConfirmation -> {
-                    Switch(
-                        checked = uiState.exitConfirmationEnabled,
-                        onCheckedChange = onExitConfirmationEnabledChange,
-                    )
-                }
-
                 OtherListItemType.DynamicColor -> {
                     Switch(
                         checked = uiState.dynamicColorEnabled,
@@ -404,10 +385,6 @@ private fun OtherListItem(
                     when (item) {
                         OtherListItemType.KeepScreenOn -> {
                             onKeepScreenOnChange(!uiState.keepScreenOn)
-                        }
-
-                        OtherListItemType.ExitConfirmation -> {
-                            onExitConfirmationEnabledChange(!uiState.exitConfirmationEnabled)
                         }
 
                         OtherListItemType.DynamicColor -> {
@@ -495,7 +472,6 @@ private fun OtherListPanePreview() {
         uiState = OtherListUiState(),
         onItemClick = {},
         onKeepScreenOnChange = {},
-        onExitConfirmationEnabledChange = {},
         onDynamicColorEnabledChange = {},
     )
 }
