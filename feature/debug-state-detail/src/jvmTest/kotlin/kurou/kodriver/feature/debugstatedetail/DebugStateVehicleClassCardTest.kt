@@ -23,7 +23,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = null,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -65,7 +65,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.AceWindows,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -86,7 +86,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = ""),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue(""),
                             cardOrder = listOf(DebugStateCardKey.VEHICLE_CLASS),
                         ),
                     canNavigateBack = true,
@@ -107,7 +107,7 @@ class DebugStateVehicleClassCardTest {
                     uiState =
                         DebugStateDetailUiState(
                             selectedSimulator = Simulator.LmuWindows,
-                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar"),
+                            lmuWindowsVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar"),
                         ),
                     canNavigateBack = true,
                     onBack = {},

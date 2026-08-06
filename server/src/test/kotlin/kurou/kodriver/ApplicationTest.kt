@@ -1747,9 +1747,9 @@ private const val TYRE_CARCASS_TEMPERATURE_JSON_1 =
 private const val TYRE_CARCASS_TEMPERATURE_JSON_2 =
     """{"wheels":{"FRONT_LEFT":90.0,"FRONT_RIGHT":91.0,"REAR_LEFT":92.0,"REAR_RIGHT":93.0}}"""
 
-private val vehicleClassData1 = LmuWindowsVehicleClassData(name = "Hypercar")
+private val vehicleClassData1 = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 
-private val vehicleClassData2 = LmuWindowsVehicleClassData(name = "LMP2")
+private val vehicleClassData2 = LmuWindowsVehicleClassData.fromRawValue("LMP2")
 
 private const val VEHICLE_CLASS_JSON_1 = """{"name":"Hypercar"}"""
 

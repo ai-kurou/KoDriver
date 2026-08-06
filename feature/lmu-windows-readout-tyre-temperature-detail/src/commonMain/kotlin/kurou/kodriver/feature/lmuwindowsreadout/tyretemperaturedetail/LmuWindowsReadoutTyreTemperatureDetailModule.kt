@@ -1,11 +1,13 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -29,15 +31,19 @@ val lmuWindowsReadoutTyreTemperatureDetailModule =
                 get(),
                 get(),
                 get(),
+                get(),
+                get(),
                 get(named("lmu_windows")),
             )
         }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
-        factoryOf(::ObserveLmuWindowsTyreTemperatureHighThresholdUseCase)
         factoryOf(::ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase)
         factoryOf(::ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase)
-        factoryOf(::SaveLmuWindowsTyreTemperatureHighThresholdUseCase)
+        factoryOf(::ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase)
+        factoryOf(::ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase)
         factoryOf(::SaveLmuWindowsTyreTemperatureEnabledStateUseCase)
         factoryOf(::SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase)
+        factoryOf(::SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase)
+        factoryOf(::SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase)
     }

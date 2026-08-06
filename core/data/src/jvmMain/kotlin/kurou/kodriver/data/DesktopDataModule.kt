@@ -21,6 +21,7 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.QueuePreferencesRepository
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
@@ -103,6 +104,9 @@ val desktopDataModule =
         single<DynamicColorEnabledRepository> { JvmDynamicColorEnabledRepository() }
         single<LmuWindowsTyreTemperaturePreferencesRepository> {
             createLmuWindowsTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
+        }
+        single<LmuWindowsVehicleClassTyreTemperaturePreferencesRepository> {
+            createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(directory = kodriverDirectory)
         }
         single<LmuWindowsTyreWearPreferencesRepository> {
             createLmuWindowsTyreWearPreferencesRepository(directory = kodriverDirectory)

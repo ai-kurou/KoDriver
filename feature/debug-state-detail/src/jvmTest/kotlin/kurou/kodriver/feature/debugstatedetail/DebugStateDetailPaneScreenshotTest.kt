@@ -119,7 +119,7 @@ private val sampleTyreCarcassTemperature =
             ),
     )
 
-private val sampleVehicleClass = LmuWindowsVehicleClassData(name = "Hypercar")
+private val sampleVehicleClass = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 
 private val sampleAceWindowsStatus =
     AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = AceWindowsCarLocation.TRACK)
