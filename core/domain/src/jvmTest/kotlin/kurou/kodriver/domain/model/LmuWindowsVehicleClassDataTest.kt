@@ -10,11 +10,11 @@ class LmuWindowsVehicleClassDataTest {
     @Test
     fun `fromRawValueは既知のクラス文字列を対応するインスタンスへ変換する`() {
         assertEquals(LmuWindowsVehicleClassData.Hypercar, LmuWindowsVehicleClassData.fromRawValue("Hyper"))
-        assertEquals(LmuWindowsVehicleClassData.Lmp2, LmuWindowsVehicleClassData.fromRawValue("LMP2"))
-        assertEquals(LmuWindowsVehicleClassData.Lmp2Elms, LmuWindowsVehicleClassData.fromRawValue("LMP2_ELMS"))
-        assertEquals(LmuWindowsVehicleClassData.Lmp3, LmuWindowsVehicleClassData.fromRawValue("LMP3"))
+        assertEquals(LmuWindowsVehicleClassData.P2, LmuWindowsVehicleClassData.fromRawValue("LMP2"))
+        assertEquals(LmuWindowsVehicleClassData.P2Elms, LmuWindowsVehicleClassData.fromRawValue("LMP2_ELMS"))
+        assertEquals(LmuWindowsVehicleClassData.P3, LmuWindowsVehicleClassData.fromRawValue("LMP3"))
         assertEquals(LmuWindowsVehicleClassData.Gte, LmuWindowsVehicleClassData.fromRawValue("GTE"))
-        assertEquals(LmuWindowsVehicleClassData.Lmgt3, LmuWindowsVehicleClassData.fromRawValue("GT3"))
+        assertEquals(LmuWindowsVehicleClassData.Gt3, LmuWindowsVehicleClassData.fromRawValue("GT3"))
     }
 
     @Test
@@ -45,7 +45,7 @@ class LmuWindowsVehicleClassDataTest {
     fun `デシリアライズ時は既知の値を対応するインスタンスへ復元する`() {
         val result = Json.decodeFromString<LmuWindowsVehicleClassData>("""{"name":"LMP3"}""")
 
-        assertEquals(LmuWindowsVehicleClassData.Lmp3, result)
+        assertEquals(LmuWindowsVehicleClassData.P3, result)
     }
 
     @Test

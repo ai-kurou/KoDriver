@@ -17,15 +17,15 @@ sealed class LmuWindowsVehicleClassData(
 ) {
     data object Hypercar : LmuWindowsVehicleClassData("Hyper")
 
-    data object Lmp2 : LmuWindowsVehicleClassData("LMP2")
+    data object P2 : LmuWindowsVehicleClassData("LMP2")
 
-    data object Lmp2Elms : LmuWindowsVehicleClassData("LMP2_ELMS")
+    data object P2Elms : LmuWindowsVehicleClassData("LMP2_ELMS")
 
-    data object Lmp3 : LmuWindowsVehicleClassData("LMP3")
+    data object P3 : LmuWindowsVehicleClassData("LMP3")
 
     data object Gte : LmuWindowsVehicleClassData("GTE")
 
-    data object Lmgt3 : LmuWindowsVehicleClassData("GT3")
+    data object Gt3 : LmuWindowsVehicleClassData("GT3")
 
     /** 未知のクラス文字列、またはプレイヤー車両が見つからず空文字列だった場合。 */
     data class Unknown(
@@ -36,11 +36,11 @@ sealed class LmuWindowsVehicleClassData(
         fun fromRawValue(raw: String): LmuWindowsVehicleClassData =
             when (raw) {
                 Hypercar.name -> Hypercar
-                Lmp2.name -> Lmp2
-                Lmp2Elms.name -> Lmp2Elms
-                Lmp3.name -> Lmp3
+                P2.name -> P2
+                P2Elms.name -> P2Elms
+                P3.name -> P3
                 Gte.name -> Gte
-                Lmgt3.name -> Lmgt3
+                Gt3.name -> Gt3
                 else -> Unknown(raw)
             }
     }
