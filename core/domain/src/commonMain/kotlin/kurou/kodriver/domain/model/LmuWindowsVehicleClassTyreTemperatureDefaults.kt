@@ -15,8 +15,8 @@ const val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_UNKN
 const val LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY = "Unknown"
 
 /**
- * 車両クラスごとの高温警告しきい値のデフォルト値（摂氏）。Hypercar と GTE は他クラスより
- * タイヤ温度が高くなる傾向があるため 100℃、それ以外のクラスは 90℃ を既定値とする。
+ * 車両クラスごとの高温警告しきい値のデフォルト値（摂氏）。Hypercar と GTE は 100℃、
+ * それ以外のクラスは 90℃ を既定値とする。
  */
 fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass: LmuWindowsVehicleClassData): Int =
     when (vehicleClass) {
