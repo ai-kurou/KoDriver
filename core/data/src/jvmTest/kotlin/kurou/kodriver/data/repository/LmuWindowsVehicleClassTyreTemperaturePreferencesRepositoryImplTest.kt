@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.LmuWindowsVehicleClassTyreTemperaturePreferencesSerializer
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
 import kurou.kodriver.domain.model.lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault
@@ -91,5 +92,41 @@ class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImplTest {
                 LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_GTE_DEFAULT,
                 repository.observeHighThresholdCelsius().first()[LmuWindowsVehicleClassData.Gte],
             )
+        }
+
+    @Test
+    fun `対象クラスの初期選択値はデフォルト値`() =
+        testScope.runTest {
+            assertEquals(
+                LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT,
+                repository.observeSelectedVehicleClass().first(),
+            )
+        }
+
+    @Test
+    fun `saveSelectedVehicleClass で保存したクラスが選択値として反映される`() =
+        testScope.runTest {
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
+
+            assertEquals(LmuWindowsVehicleClassData.Gte, repository.observeSelectedVehicleClass().first())
+        }
+
+    @Test
+    fun `saveSelectedVehicleClass を複数回呼ぶと最後の値で上書きされる`() =
+        testScope.runTest {
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gte)
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Gt3)
+
+            assertEquals(LmuWindowsVehicleClassData.Gt3, repository.observeSelectedVehicleClass().first())
+        }
+
+    @Test
+    fun `選択クラスがUnknownの場合は代表キーとして保存・復元される`() =
+        testScope.runTest {
+            repository.saveSelectedVehicleClass(LmuWindowsVehicleClassData.Unknown("Formula2026"))
+
+            val result = repository.observeSelectedVehicleClass().first()
+
+            assertEquals(true, result is LmuWindowsVehicleClassData.Unknown)
         }
 }

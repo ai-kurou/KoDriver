@@ -8,4 +8,5 @@ import kotlinx.serialization.protobuf.ProtoNumber
 @Serializable
 internal data class LmuWindowsVehicleClassTyreTemperaturePreferences(
     @ProtoNumber(1) val highThresholdCelsiusByVehicleClass: Map<String, Int> = emptyMap(),
+    @ProtoNumber(2) val selectedVehicleClassKey: String = "",
 )

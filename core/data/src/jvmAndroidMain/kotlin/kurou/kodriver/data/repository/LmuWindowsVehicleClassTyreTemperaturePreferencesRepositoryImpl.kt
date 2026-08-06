@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsVehicleClassTyreTemperaturePreferences
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.lmuWindowsAllVehicleClasses
@@ -29,6 +30,18 @@ internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
             val updated = it.highThresholdCelsiusByVehicleClass + (keyOf(vehicleClass) to celsius)
             it.copy(highThresholdCelsiusByVehicleClass = updated)
         }
+    }
+
+    override fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData> =
+        dataStore.data.map { prefs ->
+            prefs.selectedVehicleClassKey
+                .takeIf { it.isNotEmpty() }
+                ?.let { LmuWindowsVehicleClassData.fromRawValue(it) }
+                ?: LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
+        }
+
+    override suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData) {
+        dataStore.updateData { it.copy(selectedVehicleClassKey = keyOf(vehicleClass)) }
     }
 
     // Unknown は raw 値によらず1つのしきい値を共有する（未知クラス全体の安全網としての性質上、

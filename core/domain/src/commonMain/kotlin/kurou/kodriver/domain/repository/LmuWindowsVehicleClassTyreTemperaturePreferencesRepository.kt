@@ -10,4 +10,8 @@ interface LmuWindowsVehicleClassTyreTemperaturePreferencesRepository {
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Int,
     )
+
+    fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData>
+
+    suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData)
 }

@@ -50,6 +50,12 @@ fun lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClas
     }
 
 /**
+ * 対象クラスチップのデフォルト選択値。
+ */
+val LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT: LmuWindowsVehicleClassData =
+    LmuWindowsVehicleClassData.Hypercar
+
+/**
  * 高温警告しきい値をクラスごとに保存・列挙する際に対象とする全車両クラス
  * （Unknown は代表インスタンスを1件のみ含む）。
  */

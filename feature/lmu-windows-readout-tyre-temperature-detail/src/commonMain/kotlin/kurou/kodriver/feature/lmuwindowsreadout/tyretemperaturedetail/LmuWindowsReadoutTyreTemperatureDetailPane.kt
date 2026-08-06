@@ -82,6 +82,7 @@ fun LmuWindowsReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
         onLowWarningEnabledChanged = viewModel::onLowWarningEnabledChanged,
         onLowWarningPhaseToggled = viewModel::onLowWarningPhaseToggled,
         onLowWarningPreviewClicked = viewModel::onLowWarningPreviewClicked,
+        onVehicleClassSelected = viewModel::onVehicleClassSelected,
         modifier = modifier,
     )
 }
@@ -97,6 +98,7 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
     onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     onLowWarningPhaseToggled: (SessionPhase) -> Unit = {},
     onLowWarningPreviewClicked: () -> Unit = {},
+    onVehicleClassSelected: (LmuWindowsVehicleClassData) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var showHelpSheet by remember { mutableStateOf(false) }
@@ -172,21 +174,25 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
                     ) {
-                        val vehicleClassChipLabels =
+                        val vehicleClassByChipLabel =
                             uiState.vehicleClassHighThresholdCelsius
                                 .filterKeys { it !is LmuWindowsVehicleClassData.Unknown }
-                                .map { (vehicleClass, celsius) -> "${vehicleClass.name}（$celsius°C）" }
-                        val hypercarThresholdCelsius =
-                            uiState.vehicleClassHighThresholdCelsius[LmuWindowsVehicleClassData.Hypercar]
-                        val defaultSelectedVehicleClassChipLabel =
-                            hypercarThresholdCelsius?.let { celsius ->
-                                "${LmuWindowsVehicleClassData.Hypercar.name}（$celsius°C）"
+                                .entries
+                                .associate { (vehicleClass, celsius) ->
+                                    "${vehicleClass.name}（$celsius°C）" to
+                                        vehicleClass
+                                }
+                        val selectedVehicleClassChipLabel =
+                            uiState.vehicleClassHighThresholdCelsius[uiState.selectedVehicleClass]?.let { celsius ->
+                                "${uiState.selectedVehicleClass.name}（$celsius°C）"
                             }
                         DetailPaneCardChips(
-                            chipLabels = vehicleClassChipLabels,
-                            selectedChipLabels = setOfNotNull(defaultSelectedVehicleClassChipLabel),
+                            chipLabels = vehicleClassByChipLabel.keys.toList(),
+                            selectedChipLabels = setOfNotNull(selectedVehicleClassChipLabel),
                             chipEnabled = uiState.overheatWarningEnabled,
-                            onChipClick = {},
+                            onChipClick = { label ->
+                                vehicleClassByChipLabel[label]?.let { onVehicleClassSelected(it) }
+                            },
                         )
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
