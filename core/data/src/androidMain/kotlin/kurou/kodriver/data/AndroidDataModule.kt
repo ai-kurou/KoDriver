@@ -13,7 +13,6 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kurou.kodriver.domain.repository.ExitConfirmationEnabledRepository
 import kurou.kodriver.domain.repository.FeedbackRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -54,7 +53,6 @@ private val Context.simulatorDataStore by preferencesDataStore("simulator_prefer
 private val Context.readoutDataStore by preferencesDataStore("readout_preferences")
 private val Context.serverIpDataStore by preferencesDataStore("server_ip_preferences")
 private val Context.keepScreenOnDataStore by preferencesDataStore("keep_screen_on_preferences")
-private val Context.exitConfirmationDataStore by preferencesDataStore("exit_confirmation_preferences")
 private val Context.dynamicColorDataStore by preferencesDataStore("dynamic_color_preferences")
 
 /**
@@ -158,9 +156,6 @@ fun androidDataModule(context: Context) =
         // 画面スリープ抑止（Android は端末画面を実際に点灯維持）
         single<KeepScreenOnEnabledRepository> {
             AndroidKeepScreenOnEnabledRepository(context.keepScreenOnDataStore)
-        }
-        single<ExitConfirmationEnabledRepository> {
-            AndroidExitConfirmationEnabledRepository(context.exitConfirmationDataStore)
         }
         // Dynamic Color（Android 12+ の Material You 配色を使うかどうかの設定）
         single<DynamicColorEnabledRepository> {

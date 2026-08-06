@@ -35,7 +35,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -58,7 +57,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -81,7 +79,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = { keepScreenOn = it },
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -89,52 +86,6 @@ class OtherListPaneTest {
         rule.onNode(hasText("画面をスリープさせない")).performClick()
 
         assertEquals(true, keepScreenOn)
-    }
-
-    @Test
-    fun `終了確認をクリックすると切り替えコールバックを呼ぶ`() {
-        var exitConfirmationEnabled: Boolean? = null
-
-        rule.setContent {
-            OtherListPane(
-                uiState =
-                    OtherListUiState(
-                        items = listOf(OtherListItemType.ExitConfirmation),
-                        exitConfirmationEnabled = true,
-                    ),
-                onItemClick = {},
-                onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
-                onDynamicColorEnabledChange = {},
-            )
-        }
-
-        rule.onNode(hasText("終了確認を表示")).performClick()
-
-        assertEquals(false, exitConfirmationEnabled)
-    }
-
-    @Test
-    fun `終了確認がOFFのときにクリックするとONへ切り替えコールバックを呼ぶ`() {
-        var exitConfirmationEnabled: Boolean? = null
-
-        rule.setContent {
-            OtherListPane(
-                uiState =
-                    OtherListUiState(
-                        items = listOf(OtherListItemType.ExitConfirmation),
-                        exitConfirmationEnabled = false,
-                    ),
-                onItemClick = {},
-                onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = { exitConfirmationEnabled = it },
-                onDynamicColorEnabledChange = {},
-            )
-        }
-
-        rule.onNode(hasText("終了確認を表示")).performClick()
-
-        assertEquals(true, exitConfirmationEnabled)
     }
 
     @Test
@@ -150,7 +101,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = { dynamicColorEnabled = it },
             )
         }
@@ -171,19 +121,16 @@ class OtherListPaneTest {
                         items =
                             listOf(
                                 OtherListItemType.KeepScreenOn,
-                                OtherListItemType.ExitConfirmation,
                                 OtherListItemType.DynamicColor,
                             ),
                     ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
 
         rule.onNode(hasText("画面をスリープさせない")).performClick()
-        rule.onNode(hasText("終了確認を表示")).performClick()
         rule.onNode(hasText("ダイナミックカラー")).performClick()
 
         assertNull(clickedItem)
@@ -201,7 +148,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -222,7 +168,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -244,7 +189,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = { clickedItem = it },
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -268,7 +212,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
                 onAppVersionTapped = { tappedCount++ },
             )
@@ -295,7 +238,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
                 onAppVersionTapped = { tappedCount++ },
             )
@@ -318,13 +260,12 @@ class OtherListPaneTest {
                             listOf(
                                 OtherListItemType.ConsoleIp,
                                 OtherListItemType.Volume,
-                                OtherListItemType.ExitConfirmation,
+                                OtherListItemType.Theme,
                                 OtherListItemType.License,
                             ),
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -345,7 +286,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -366,7 +306,6 @@ class OtherListPaneTest {
                     ),
                 onItemClick = {},
                 onKeepScreenOnChange = {},
-                onExitConfirmationEnabledChange = {},
                 onDynamicColorEnabledChange = {},
             )
         }
@@ -389,7 +328,6 @@ class OtherListPaneTest {
                                     OtherListItemType.ConsoleIp,
                                     OtherListItemType.Volume,
                                     OtherListItemType.ReadoutStartSound,
-                                    OtherListItemType.ExitConfirmation,
                                     OtherListItemType.Theme,
                                     OtherListItemType.DynamicColor,
                                     OtherListItemType.GitHubRepository,
@@ -399,7 +337,6 @@ class OtherListPaneTest {
                         ),
                     onItemClick = {},
                     onKeepScreenOnChange = {},
-                    onExitConfirmationEnabledChange = {},
                     onDynamicColorEnabledChange = {},
                     scrollToTopRequest = scrollToTopRequest,
                 )

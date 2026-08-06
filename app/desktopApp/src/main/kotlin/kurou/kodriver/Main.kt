@@ -1,10 +1,6 @@
 package kurou.kodriver
 
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -49,11 +45,9 @@ fun main() {
     var server: KoDriverServer? = null
     try {
         application {
-            var exitRequested by remember { mutableStateOf(false) }
-            var ready by remember { mutableStateOf(false) }
             val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
             Window(
-                onCloseRequest = { if (ready) exitRequested = true else exitApplication() },
+                onCloseRequest = { exitApplication() },
                 title = "KoDriver",
                 state = windowState,
                 icon = painterResource("launcher.png"),
@@ -87,17 +81,12 @@ fun main() {
                             Runtime.getRuntime().addShutdownHook(Thread { startedServer.stop() })
                         }
                     },
-                    onReady = { ready = true },
                     onError = { throwable ->
                         Sentry.captureException(throwable)
                         exitApplication()
                     },
                 ) {
-                    AppScreen(
-                        exitRequested = exitRequested,
-                        onExitRequestConsumed = { exitRequested = false },
-                        onExit = ::exitApplication,
-                    )
+                    AppScreen()
                 }
             }
         }

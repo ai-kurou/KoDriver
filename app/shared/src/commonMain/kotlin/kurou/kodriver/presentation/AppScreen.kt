@@ -43,7 +43,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,7 +53,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
-import kotlinx.coroutines.CancellationException
 import kurou.kodriver.app.shared.generated.resources.Res
 import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
@@ -216,7 +214,6 @@ private fun DefaultOtherContent(
 
                 OtherListItemType.KeepScreenOn,
                 OtherListItemType.ReadoutStartSound,
-                OtherListItemType.ExitConfirmation,
                 OtherListItemType.Theme,
                 OtherListItemType.DynamicColor,
                 OtherListItemType.GitHubRepository,
@@ -237,9 +234,6 @@ fun AppScreen(
     telemetryLogListViewModel: TelemetryLogListViewModel = koinViewModel(),
     otherListViewModel: OtherListViewModel = koinViewModel(),
     backHandler: AppBackHandler = { _, _, _ -> },
-    onExit: () -> Unit = {},
-    exitRequested: Boolean = false,
-    onExitRequestConsumed: () -> Unit = {},
     onDarkThemeChanged: (Boolean) -> Unit = {},
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
         ReadoutContent(
@@ -271,28 +265,14 @@ fun AppScreen(
     val readoutListUiState by readoutListViewModel.uiState.collectAsState()
     val telemetryLogListUiState by telemetryLogListViewModel.uiState.collectAsState()
     val otherListUiState by otherListViewModel.uiState.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    var showExitConfirmationDialog by rememberSaveable { mutableStateOf(false) }
     var readoutListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
     var telemetryLogListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
     var otherListScrollToTopRequest by rememberSaveable { mutableStateOf(0) }
-
-    backHandler(uiState.exitConfirmationEnabled, {}) {
-        showExitConfirmationDialog = true
-    }
 
     AppStartupEffects(
         darkTheme = darkTheme,
         checkUpdate = viewModel::checkUpdate,
         onDarkThemeChanged = onDarkThemeChanged,
-    )
-
-    AppExitRequestEffect(
-        exitRequested = exitRequested,
-        exitConfirmationEnabled = uiState.exitConfirmationEnabled,
-        onExitRequestConsumed = onExitRequestConsumed,
-        onShowExitConfirmationDialog = { showExitConfirmationDialog = true },
-        onExit = onExit,
     )
 
     ConnectionSnackbarEffect(
@@ -304,16 +284,6 @@ fun AppScreen(
     )
 
     AppNarratorEffects()
-
-    ExitConfirmationDialogHost(
-        visible = showExitConfirmationDialog,
-        darkTheme = darkTheme,
-        dynamicColorEnabled = uiState.dynamicColorEnabled,
-        coroutineScope = coroutineScope,
-        saveExitConfirmationEnabled = viewModel::saveExitConfirmationEnabled,
-        onDismiss = { showExitConfirmationDialog = false },
-        onExit = onExit,
-    )
 
     AppScreenContent(
         darkTheme = darkTheme,
@@ -377,19 +347,6 @@ internal fun ConnectionSnackbarEffect(
                 )
             }
         }
-    }
-}
-
-internal suspend fun saveExitConfirmationPreferenceForExit(
-    doNotShowAgain: Boolean,
-    saveExitConfirmationEnabled: suspend (Boolean) -> Unit,
-) {
-    if (!doNotShowAgain) return
-    try {
-        saveExitConfirmationEnabled(false)
-    } catch (e: CancellationException) {
-        throw e
-    } catch (_: Throwable) {
     }
 }
 

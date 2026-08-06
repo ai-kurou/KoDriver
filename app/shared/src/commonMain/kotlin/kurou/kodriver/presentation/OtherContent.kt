@@ -65,7 +65,6 @@ fun OtherContent(
         onOpenReadoutStartSoundDialog = onOpenReadoutStartSoundDialog,
         onOpenThemeDialog = onOpenThemeDialog,
         onKeepScreenOnChange = viewModel::onKeepScreenOnChange,
-        onExitConfirmationEnabledChange = viewModel::onExitConfirmationEnabledChange,
         onDynamicColorEnabledChange = viewModel::onDynamicColorEnabledChange,
         onAppVersionTapped = { viewModel.selectItem(OtherListItemType.DebugState) },
         onClearSelectedItem = viewModel::clearSelectedItem,
@@ -98,7 +97,6 @@ private fun handleOtherItemClick(
         OtherListItemType.ConsoleIp,
         OtherListItemType.Volume,
         OtherListItemType.KeepScreenOn,
-        OtherListItemType.ExitConfirmation,
         OtherListItemType.DynamicColor,
         OtherListItemType.Feedback,
         OtherListItemType.License,
@@ -117,7 +115,6 @@ internal fun OtherContent(
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
     onKeepScreenOnChange: (Boolean) -> Unit = {},
-    onExitConfirmationEnabledChange: (Boolean) -> Unit = {},
     onDynamicColorEnabledChange: (Boolean) -> Unit = {},
     onAppVersionTapped: () -> Unit = {},
     onClearSelectedItem: () -> Unit,
@@ -193,7 +190,6 @@ internal fun OtherContent(
             OtherListPane(
                 uiState = uiState,
                 onKeepScreenOnChange = onKeepScreenOnChange,
-                onExitConfirmationEnabledChange = onExitConfirmationEnabledChange,
                 onDynamicColorEnabledChange = onDynamicColorEnabledChange,
                 onAppVersionTapped = onAppVersionTapped,
                 onItemClick = { itemType ->

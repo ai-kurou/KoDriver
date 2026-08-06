@@ -11,22 +11,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kurou.kodriver.domain.usecase.CheckAppUpdateAvailableUseCase
 import kurou.kodriver.domain.usecase.ObserveDynamicColorEnabledUseCase
-import kurou.kodriver.domain.usecase.ObserveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.ObserveKeepScreenOnEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveDynamicColorEnabledUseCase
-import kurou.kodriver.domain.usecase.SaveExitConfirmationEnabledUseCase
 import kurou.kodriver.domain.usecase.SaveKeepScreenOnEnabledUseCase
 
 /**
  * OtherList 画面の状態管理とユーザー操作を扱う ViewModel。
  */
-@Suppress("LongParameterList")
 class OtherListViewModel(
     private val checkAppUpdateAvailable: CheckAppUpdateAvailableUseCase,
     observeKeepScreenOn: ObserveKeepScreenOnEnabledUseCase,
     private val saveKeepScreenOn: SaveKeepScreenOnEnabledUseCase,
-    observeExitConfirmationEnabled: ObserveExitConfirmationEnabledUseCase,
-    private val saveExitConfirmationEnabled: SaveExitConfirmationEnabledUseCase,
     observeDynamicColorEnabled: ObserveDynamicColorEnabledUseCase,
     private val saveDynamicColorEnabled: SaveDynamicColorEnabledUseCase,
     private val currentVersion: String,
@@ -43,12 +38,10 @@ class OtherListViewModel(
         combine(
             _uiState,
             observeKeepScreenOn(),
-            observeExitConfirmationEnabled(),
             observeDynamicColorEnabled(),
-        ) { state, keepScreenOn, exitConfirmationEnabled, dynamicColorEnabled ->
+        ) { state, keepScreenOn, dynamicColorEnabled ->
             state.copy(
                 keepScreenOn = keepScreenOn,
-                exitConfirmationEnabled = exitConfirmationEnabled,
                 dynamicColorEnabled = dynamicColorEnabled,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), _uiState.value)
@@ -79,10 +72,6 @@ class OtherListViewModel(
 
     fun clearSelectedItem() {
         _uiState.update { it.copy(selectedItem = null) }
-    }
-
-    fun onExitConfirmationEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { saveExitConfirmationEnabled(enabled) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {
