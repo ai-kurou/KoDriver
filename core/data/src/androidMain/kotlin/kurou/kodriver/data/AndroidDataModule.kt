@@ -35,6 +35,7 @@ import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepo
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
+import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamagePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
@@ -207,6 +208,9 @@ private fun androidDataModuleThresholdPreferences(context: Context) =
     module {
         single<LmuWindowsTyreTemperaturePreferencesRepository> {
             createLmuWindowsTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<LmuWindowsVehicleClassTyreTemperaturePreferencesRepository> {
+            createLmuWindowsVehicleClassTyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
         }
         single<LmuWindowsTyreWearPreferencesRepository> {
             createLmuWindowsTyreWearPreferencesRepository(context.filesDir.absolutePath)
