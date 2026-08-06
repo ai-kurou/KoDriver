@@ -658,7 +658,7 @@ class DebugStateDetailViewModelTest {
             every { tyreCarcassTemperatureRepository.tyreCarcassTemperatureStream() } returns
                 MutableStateFlow(sampleTyreCarcassTemperature())
             every { vehicleClassRepository.vehicleClassStream() } returns
-                MutableStateFlow(LmuWindowsVehicleClassData(name = "LMP2"))
+                MutableStateFlow(LmuWindowsVehicleClassData.fromRawValue("LMP2"))
             every { aceWindowsStatusRepository.statusStream() } returns MutableStateFlow(sampleAceWindowsStatus())
             every { lmuWindowsPitStatusRepository.pitStatusStream() } returns MutableStateFlow(samplePitStatus())
             every { cardOrderRepository.observeCardOrder() } returns MutableStateFlow(emptyList())
@@ -1336,7 +1336,7 @@ private fun sampleVehicleApproach(leftVehicleIds: Set<Int>) =
 
 private fun sampleTyreCarcassTemperature() = LmuWindowsTyreCarcassTemperatureData(wheels = emptyMap())
 
-private fun sampleVehicleClass() = LmuWindowsVehicleClassData(name = "Hypercar")
+private fun sampleVehicleClass() = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
 
 private fun sampleGt7Ps5Telemetry(
     lapCount: Int,
