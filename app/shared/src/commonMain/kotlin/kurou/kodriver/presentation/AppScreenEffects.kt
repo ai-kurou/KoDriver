@@ -3,8 +3,6 @@ package kurou.kodriver.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kurou.kodriver.feature.acewindowsnarrator.AceWindowsNarratorEffect
 import kurou.kodriver.feature.gt7ps5narrator.Gt7Ps5NarratorEffect
 import kurou.kodriver.feature.lmuwindowsnarrator.LmuWindowsNarratorEffect
@@ -57,58 +55,9 @@ internal fun AppStartupEffects(
 }
 
 @Composable
-internal fun AppExitRequestEffect(
-    exitRequested: Boolean,
-    exitConfirmationEnabled: Boolean,
-    onExitRequestConsumed: () -> Unit,
-    onShowExitConfirmationDialog: () -> Unit,
-    onExit: () -> Unit,
-) {
-    LaunchedEffect(exitRequested) {
-        if (exitRequested) {
-            onExitRequestConsumed()
-            if (exitConfirmationEnabled) {
-                onShowExitConfirmationDialog()
-            } else {
-                onExit()
-            }
-        }
-    }
-}
-
-@Composable
 internal fun AppNarratorEffects() {
     LmuWindowsNarratorEffect()
     Gt7Ps5NarratorEffect()
     AceWindowsNarratorEffect()
     VersionMismatchBottomSheetEffect()
-}
-
-@Composable
-internal fun ExitConfirmationDialogHost(
-    visible: Boolean,
-    darkTheme: Boolean,
-    dynamicColorEnabled: Boolean,
-    coroutineScope: CoroutineScope,
-    saveExitConfirmationEnabled: suspend (Boolean) -> Unit,
-    onDismiss: () -> Unit,
-    onExit: () -> Unit,
-) {
-    if (!visible) return
-
-    AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
-        ExitConfirmationDialog(
-            onDismiss = onDismiss,
-            onConfirm = { doNotShowAgain ->
-                coroutineScope.launch {
-                    saveExitConfirmationPreferenceForExit(
-                        doNotShowAgain = doNotShowAgain,
-                        saveExitConfirmationEnabled = saveExitConfirmationEnabled,
-                    )
-                    onDismiss()
-                    onExit()
-                }
-            },
-        )
-    }
 }

@@ -43,7 +43,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 },
-                onExit = { finish() },
                 onDarkThemeChanged = { darkTheme ->
                     enableEdgeToEdge(
                         statusBarStyle =

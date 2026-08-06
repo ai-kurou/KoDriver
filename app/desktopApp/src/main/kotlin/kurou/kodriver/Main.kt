@@ -1,10 +1,6 @@
 package kurou.kodriver
 
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -49,17 +45,9 @@ fun main() {
     var server: KoDriverServer? = null
     try {
         application {
-            var exitRequested by remember { mutableStateOf(false) }
-            var ready by remember { mutableStateOf(false) }
             val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
             Window(
-                onCloseRequest = {
-                    if (shouldConfirmExit(ready = ready, shuttingDown = SystemShutdownState.isShuttingDown)) {
-                        exitRequested = true
-                    } else {
-                        exitApplication()
-                    }
-                },
+                onCloseRequest = { exitApplication() },
                 title = "KoDriver",
                 state = windowState,
                 icon = painterResource("launcher.png"),
@@ -90,30 +78,15 @@ fun main() {
                         withContext(Dispatchers.IO) {
                             val startedServer = createKoDriverServer(requireNotNull(koin)).also { it.start() }
                             server = startedServer
-                            // OS のシャットダウン・ログオフでも呼ばれる。終了確認ダイアログでユーザー操作を
-                            // 待たないようフラグを立ててから、サーバーを停止する。
-                            // UI の終了は Compose の ApplicationScope 側（onCloseRequest）に任せる。
-                            // ここで exitApplication() を呼ぶとシャットダウン中の JVM から EDT へ
-                            // コンポジション破棄を投げることになり、フックが長引く恐れがある。
-                            Runtime.getRuntime().addShutdownHook(
-                                Thread {
-                                    SystemShutdownState.markShuttingDown()
-                                    startedServer.stop()
-                                },
-                            )
+                            Runtime.getRuntime().addShutdownHook(Thread { startedServer.stop() })
                         }
                     },
-                    onReady = { ready = true },
                     onError = { throwable ->
                         Sentry.captureException(throwable)
                         exitApplication()
                     },
                 ) {
-                    AppScreen(
-                        exitRequested = exitRequested,
-                        onExitRequestConsumed = { exitRequested = false },
-                        onExit = ::exitApplication,
-                    )
+                    AppScreen()
                 }
             }
         }

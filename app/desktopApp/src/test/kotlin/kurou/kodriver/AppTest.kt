@@ -198,7 +198,6 @@ class AppTest {
         clickItem("読み上げ開始音")
         clickItem("キャンセル")
         // 「画面をスリープさせない」は Desktop では表示されないため、AppTest では対象外。
-        clickItem("終了確認を表示")
         clickItem("テーマ")
         clickItem("キャンセル")
         scrollToItem("フィードバックを送信")

@@ -13,7 +13,6 @@ class OtherListItemsTest {
                 OtherListItemType.ConsoleIp,
                 OtherListItemType.Volume,
                 OtherListItemType.ReadoutStartSound,
-                OtherListItemType.ExitConfirmation,
                 OtherListItemType.Theme,
                 OtherListItemType.GitHubRepository,
                 OtherListItemType.ReleasePage,
