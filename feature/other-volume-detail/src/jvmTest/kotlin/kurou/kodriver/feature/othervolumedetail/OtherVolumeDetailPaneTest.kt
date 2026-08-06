@@ -5,48 +5,51 @@ import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasProgressBarRangeInfo
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherVolumeDetailPaneTest {
-    @Test
-    fun `スライダー操作を完了すると変更後の音量を通知する`() =
-        composeScreenshotTest {
-            var changedVolume: Int? = null
-            setContent {
-                MaterialTheme {
-                    OtherVolumeDetailPaneContent(
-                        uiState = OtherVolumeDetailUiState(volume = 80),
-                        onVolumeChanged = { changedVolume = it },
-                    )
-                }
-            }
+    @get:Rule
+    val rule = createComposeRule()
 
-            onNode(
+    @Test
+    fun `スライダー操作を完了すると変更後の音量を通知する`() {
+        var changedVolume: Int? = null
+        rule.setContent {
+            MaterialTheme {
+                OtherVolumeDetailPaneContent(
+                    uiState = OtherVolumeDetailUiState(volume = 80),
+                    onVolumeChanged = { changedVolume = it },
+                )
+            }
+        }
+
+        rule
+            .onNode(
                 hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 80f, range = 0f..100f, steps = 99)),
             ).performSemanticsAction(SemanticsActions.SetProgress) { it(50f) }
 
-            assertEquals(50, changedVolume)
-        }
+        assertEquals(50, changedVolume)
+    }
 
     @Test
-    fun `戻るボタンをタップするとonBackが呼ばれる`() =
-        composeScreenshotTest {
-            var backCount = 0
-            setContent {
-                MaterialTheme {
-                    OtherVolumeDetailPaneContent(
-                        uiState = OtherVolumeDetailUiState(),
-                        onBack = { backCount++ },
-                    )
-                }
+    fun `戻るボタンをタップするとonBackが呼ばれる`() {
+        var backCount = 0
+        rule.setContent {
+            MaterialTheme {
+                OtherVolumeDetailPaneContent(
+                    uiState = OtherVolumeDetailUiState(),
+                    onBack = { backCount++ },
+                )
             }
-
-            onNode(hasContentDescription("戻る")).performClick()
-
-            assertEquals(1, backCount)
         }
+
+        rule.onNode(hasContentDescription("戻る")).performClick()
+
+        assertEquals(1, backCount)
+    }
 }

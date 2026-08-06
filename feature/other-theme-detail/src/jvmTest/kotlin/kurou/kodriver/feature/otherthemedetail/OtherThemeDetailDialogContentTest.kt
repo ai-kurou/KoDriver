@@ -2,22 +2,25 @@
 
 package kurou.kodriver.feature.otherthemedetail
 
-import androidx.compose.ui.test.DesktopComposeUiTest
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.domain.model.ThemeMode
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherThemeDetailDialogContentTest {
-    private fun DesktopComposeUiTest.setContent(
+    @get:Rule
+    val rule = createComposeRule()
+
+    private fun setContent(
         uiState: OtherThemeDetailUiState = OtherThemeDetailUiState(),
         onThemeModeSelected: (ThemeMode) -> Unit = {},
         onConfirm: () -> Unit = {},
         onDismiss: () -> Unit = {},
     ) {
-        setContent {
+        rule.setContent {
             OtherThemeDetailDialogContent(
                 uiState = uiState,
                 onThemeModeSelected = onThemeModeSelected,
@@ -28,45 +31,41 @@ class OtherThemeDetailDialogContentTest {
     }
 
     @Test
-    fun `OKボタンをクリックするとonConfirmが呼ばれる`() =
-        composeScreenshotTest {
-            var confirmCount = 0
-            setContent(onConfirm = { confirmCount++ })
+    fun `OKボタンをクリックするとonConfirmが呼ばれる`() {
+        var confirmCount = 0
+        setContent(onConfirm = { confirmCount++ })
 
-            onNodeWithText("OK").performClick()
+        rule.onNodeWithText("OK").performClick()
 
-            assertEquals(1, confirmCount)
-        }
-
-    @Test
-    fun `キャンセルボタンをクリックするとonDismissが呼ばれる`() =
-        composeScreenshotTest {
-            var dismissCount = 0
-            setContent(onDismiss = { dismissCount++ })
-
-            onNodeWithText("キャンセル").performClick()
-
-            assertEquals(1, dismissCount)
-        }
+        assertEquals(1, confirmCount)
+    }
 
     @Test
-    fun `すべてのテーマモードラベルが表示されている`() =
-        composeScreenshotTest {
-            setContent()
+    fun `キャンセルボタンをクリックするとonDismissが呼ばれる`() {
+        var dismissCount = 0
+        setContent(onDismiss = { dismissCount++ })
 
-            onNodeWithText("システムに従う").fetchSemanticsNode()
-            onNodeWithText("ライト").fetchSemanticsNode()
-            onNodeWithText("ダーク").fetchSemanticsNode()
-        }
+        rule.onNodeWithText("キャンセル").performClick()
+
+        assertEquals(1, dismissCount)
+    }
 
     @Test
-    fun `テーマモードをクリックするとonThemeModeSelectedが呼ばれる`() =
-        composeScreenshotTest {
-            var selectedThemeMode: ThemeMode? = null
-            setContent(onThemeModeSelected = { selectedThemeMode = it })
+    fun `すべてのテーマモードラベルが表示されている`() {
+        setContent()
 
-            onNodeWithText("ダーク").performClick()
+        rule.onNodeWithText("システムに従う").fetchSemanticsNode()
+        rule.onNodeWithText("ライト").fetchSemanticsNode()
+        rule.onNodeWithText("ダーク").fetchSemanticsNode()
+    }
 
-            assertEquals(ThemeMode.DARK, selectedThemeMode)
-        }
+    @Test
+    fun `テーマモードをクリックするとonThemeModeSelectedが呼ばれる`() {
+        var selectedThemeMode: ThemeMode? = null
+        setContent(onThemeModeSelected = { selectedThemeMode = it })
+
+        rule.onNodeWithText("ダーク").performClick()
+
+        assertEquals(ThemeMode.DARK, selectedThemeMode)
+    }
 }

@@ -2,20 +2,23 @@
 
 package kurou.kodriver.feature.otherreadoutstartsounddetail
 
-import androidx.compose.ui.test.DesktopComposeUiTest
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class OtherReadoutStartSoundDetailDialogContentTest {
-    private fun DesktopComposeUiTest.setContent(
+    @get:Rule
+    val rule = createComposeRule()
+
+    private fun setContent(
         uiState: OtherReadoutStartSoundDetailUiState = OtherReadoutStartSoundDetailUiState(),
         onConfirm: () -> Unit = {},
         onDismiss: () -> Unit = {},
     ) {
-        setContent {
+        rule.setContent {
             OtherReadoutStartSoundDetailDialogContent(
                 uiState = uiState,
                 onConfirm = onConfirm,
@@ -25,33 +28,30 @@ class OtherReadoutStartSoundDetailDialogContentTest {
     }
 
     @Test
-    fun `OKボタンをクリックするとonConfirmが呼ばれる`() =
-        composeScreenshotTest {
-            var confirmCount = 0
-            setContent(onConfirm = { confirmCount++ })
+    fun `OKボタンをクリックするとonConfirmが呼ばれる`() {
+        var confirmCount = 0
+        setContent(onConfirm = { confirmCount++ })
 
-            onNodeWithText("OK").performClick()
+        rule.onNodeWithText("OK").performClick()
 
-            assertEquals(1, confirmCount)
-        }
-
-    @Test
-    fun `キャンセルボタンをクリックするとonDismissが呼ばれる`() =
-        composeScreenshotTest {
-            var dismissCount = 0
-            setContent(onDismiss = { dismissCount++ })
-
-            onNodeWithText("キャンセル").performClick()
-
-            assertEquals(1, dismissCount)
-        }
+        assertEquals(1, confirmCount)
+    }
 
     @Test
-    fun `すべての種別ラベルが表示されている`() =
-        composeScreenshotTest {
-            setContent()
+    fun `キャンセルボタンをクリックするとonDismissが呼ばれる`() {
+        var dismissCount = 0
+        setContent(onDismiss = { dismissCount++ })
 
-            onNodeWithText("電子ノイズ").fetchSemanticsNode()
-            onNodeWithText("Formula無線").fetchSemanticsNode()
-        }
+        rule.onNodeWithText("キャンセル").performClick()
+
+        assertEquals(1, dismissCount)
+    }
+
+    @Test
+    fun `すべての種別ラベルが表示されている`() {
+        setContent()
+
+        rule.onNodeWithText("電子ノイズ").fetchSemanticsNode()
+        rule.onNodeWithText("Formula無線").fetchSemanticsNode()
+    }
 }

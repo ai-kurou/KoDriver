@@ -2,8 +2,8 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -16,167 +16,164 @@ import kurou.kodriver.domain.model.LmuWindowsTyreData
 import kurou.kodriver.domain.model.LmuWindowsVehicleData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.model.Simulator
+import org.junit.Rule
 import org.junit.Test
 
 class DebugStateFuelConsumptionCardTest {
-    @Test
-    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = null,
-                                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
-                                lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
-            }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("未取得").assertIsDisplayed()
-        }
+    @get:Rule
+    val rule = createComposeRule()
 
     @Test
-    fun `selectedSimulatorがGT7でデータ未取得の場合は未取得の文言を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.Gt7Ps5,
-                                gt7Ps5Telemetry = null,
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
+    fun `selectedSimulatorが未選択の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = null,
+                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
             }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("未取得").assertIsDisplayed()
         }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
 
     @Test
-    fun `selectedSimulatorがAceWindowsでデータ未取得の場合は未取得の文言を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.AceWindows,
-                                aceWindowsFuel = null,
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
+    fun `selectedSimulatorがGT7でデータ未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry = null,
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
             }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("未取得").assertIsDisplayed()
         }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
 
     @Test
-    fun `selectedSimulatorがLMUの場合はバーチャルエナジー消費率と残り周数を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.LmuWindows,
-                                virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
-                                lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
+    fun `selectedSimulatorがAceWindowsでデータ未取得の場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = null,
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
             }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("消費 10.0%/周").assertIsDisplayed()
-            onNodeWithText("残り 5.0周").assertIsDisplayed()
         }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
+    }
 
     @Test
-    fun `selectedSimulatorがGT7の場合は燃料残量と燃料消費量Lと残り周数を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.Gt7Ps5,
-                                gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
+    fun `selectedSimulatorがLMUの場合はバーチャルエナジー消費率と残り周数を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
             }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("残量 57.1%").assertIsDisplayed()
-            onNodeWithText("消費 10.0L/周").assertIsDisplayed()
-            onNodeWithText("残り 4.0周").assertIsDisplayed()
         }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("消費 10.0%/周").assertIsDisplayed()
+        rule.onNodeWithText("残り 5.0周").assertIsDisplayed()
+    }
 
     @Test
-    fun `selectedSimulatorがGT7の場合は燃費計算できなくても燃料残量を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.Gt7Ps5,
-                                gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
+    fun `selectedSimulatorがGT7の場合は燃料残量と燃料消費量Lと残り周数を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 3, gasLevel = 40f, gasCapacity = 70f),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
             }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("残量 50.0%").assertIsDisplayed()
         }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("残量 57.1%").assertIsDisplayed()
+        rule.onNodeWithText("消費 10.0L/周").assertIsDisplayed()
+        rule.onNodeWithText("残り 4.0周").assertIsDisplayed()
+    }
 
     @Test
-    fun `selectedSimulatorがAceWindowsの場合は残り燃料の割合を表示する`() =
-        composeScreenshotTest {
-            setContent {
-                MaterialTheme {
-                    DebugStateDetailPaneContent(
-                        uiState =
-                            DebugStateDetailUiState(
-                                selectedSimulator = Simulator.AceWindows,
-                                aceWindowsFuel = AceWindowsFuelData(remainingPercent = 42.0),
-                                cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
-                            ),
-                        canNavigateBack = true,
-                        onBack = {},
-                    )
-                }
+    fun `selectedSimulatorがGT7の場合は燃費計算できなくても燃料残量を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.Gt7Ps5,
+                            gt7Ps5Telemetry = sampleGt7Telemetry(lapCount = 0, gasLevel = 35f, gasCapacity = 70f),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
             }
-
-            onNodeWithText("燃料消費").assertIsDisplayed()
-            onNodeWithText("残量 42.0%").assertIsDisplayed()
         }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがAceWindowsの場合は残り燃料の割合を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.AceWindows,
+                            aceWindowsFuel = AceWindowsFuelData(remainingPercent = 42.0),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("残量 42.0%").assertIsDisplayed()
+    }
 
     private fun sampleLmuTelemetry(currentLap: Int) =
         LmuWindowsTelemetryData(
