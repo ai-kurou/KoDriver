@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -131,5 +132,26 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         }
 
         rule.onAllNodesWithText("タイヤ低温警告", substring = true)[0].assertIsDisplayed()
+    }
+
+    @Test
+    fun `対象クラスのサブタイトルとクラス別しきい値のチップが表示される`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Gt3 to 90,
+                                    LmuWindowsVehicleClassData.Unknown("") to 95,
+                                ),
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("対象クラス").assertIsDisplayed()
+        rule.onNodeWithText("GT3（90°C）").assertIsDisplayed()
     }
 }
