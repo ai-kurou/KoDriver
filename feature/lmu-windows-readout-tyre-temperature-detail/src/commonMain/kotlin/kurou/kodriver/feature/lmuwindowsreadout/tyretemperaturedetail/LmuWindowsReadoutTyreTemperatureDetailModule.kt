@@ -3,9 +3,11 @@ package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
+import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
+import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -29,6 +31,8 @@ val lmuWindowsReadoutTyreTemperatureDetailModule =
                 get(),
                 get(),
                 get(),
+                get(),
+                get(),
                 get(named("lmu_windows")),
             )
         }
@@ -37,7 +41,9 @@ val lmuWindowsReadoutTyreTemperatureDetailModule =
         factoryOf(::ObserveLmuWindowsTyreTemperatureHighThresholdUseCase)
         factoryOf(::ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase)
         factoryOf(::ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase)
+        factoryOf(::ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase)
         factoryOf(::SaveLmuWindowsTyreTemperatureHighThresholdUseCase)
         factoryOf(::SaveLmuWindowsTyreTemperatureEnabledStateUseCase)
         factoryOf(::SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase)
+        factoryOf(::SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase)
     }
