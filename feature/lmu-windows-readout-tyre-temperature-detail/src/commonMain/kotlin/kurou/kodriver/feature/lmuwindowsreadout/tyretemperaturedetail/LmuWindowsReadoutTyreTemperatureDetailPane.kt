@@ -64,7 +64,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
 
 private const val HIGH_THRESHOLD_MIN = 90f
-private const val HIGH_THRESHOLD_MAX = 100f
+private const val HIGH_THRESHOLD_MAX = 110f
 
 /**
  * LmuWindowsReadoutTyreTemperatureDetail の画面を表示する Composable。
