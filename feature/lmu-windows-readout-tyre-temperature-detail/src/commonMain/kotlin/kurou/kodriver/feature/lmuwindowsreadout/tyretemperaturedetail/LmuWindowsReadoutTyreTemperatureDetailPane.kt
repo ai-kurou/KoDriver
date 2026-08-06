@@ -38,6 +38,7 @@ import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_carcass_card_title
@@ -57,6 +58,7 @@ import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_chip
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_description
 import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_threshold_help_icon_content_description
+import kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail.generated.resources.tyre_temperature_vehicle_class_target_subtitle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -159,6 +161,32 @@ internal fun LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                             selectedChipLabels = setOf(overheatWarningChipLabel),
                             chipEnabled = uiState.overheatWarningEnabled,
                             onChipClick = { onPreviewClicked() },
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+                    DetailPaneSubtitle(
+                        text = stringResource(Res.string.tyre_temperature_vehicle_class_target_subtitle),
+                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
+                    ) {
+                        val vehicleClassChipLabels =
+                            uiState.vehicleClassHighThresholdCelsius
+                                .filterKeys { it !is LmuWindowsVehicleClassData.Unknown }
+                                .map { (vehicleClass, celsius) -> "${vehicleClass.name}（$celsius°C）" }
+                        val hypercarThresholdCelsius =
+                            uiState.vehicleClassHighThresholdCelsius[LmuWindowsVehicleClassData.Hypercar]
+                        val defaultSelectedVehicleClassChipLabel =
+                            hypercarThresholdCelsius?.let { celsius ->
+                                "${LmuWindowsVehicleClassData.Hypercar.name}（$celsius°C）"
+                            }
+                        DetailPaneCardChips(
+                            chipLabels = vehicleClassChipLabels,
+                            selectedChipLabels = setOfNotNull(defaultSelectedVehicleClassChipLabel),
+                            chipEnabled = uiState.overheatWarningEnabled,
+                            onChipClick = {},
                         )
                     }
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
