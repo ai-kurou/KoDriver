@@ -119,6 +119,8 @@ class DebugStateDetailViewModelTest {
     @MockK
     private lateinit var lmuWindowsPitStatusRepository: LmuWindowsPitStatusRepository
 
+    // saveCardOrder は戻り値 Unit の suspend 関数のため relaxUnitFun でスタブ不要にし、
+    // coEvery を省略して coVerify のみで呼び出しを検証する
     @MockK(relaxUnitFun = true)
     private lateinit var cardOrderRepository: DebugStateCardOrderPreferencesRepository
 
