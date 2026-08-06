@@ -61,6 +61,14 @@ class JvmExitConfirmationEnabledRepositoryTest {
 
             assertTrue(repository.exitConfirmationEnabled().first())
         }
+
+    @Test
+    fun `保存時にIOエラーが発生しても例外をスローしない`() =
+        testScope.runTest {
+            val repository = JvmExitConfirmationEnabledRepository(BrokenDataStore())
+
+            repository.saveExitConfirmationEnabled(false)
+        }
 }
 
 private class BrokenDataStore : DataStore<Preferences> {
