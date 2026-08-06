@@ -20,20 +20,17 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
-import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase
 import kurou.kodriver.domain.usecase.PlaySpeechEventUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureEnabledStateUseCase
-import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.SaveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase
@@ -68,14 +65,12 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     private fun createViewModel() =
         LmuWindowsReadoutTyreTemperatureDetailViewModel(
-            observeHighThreshold = ObserveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             observeEnabledStates = ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase(repository),
             observeLowWarningPhases = ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
             observeVehicleClassHighThreshold =
                 ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase(vehicleClassRepository),
             observeVehicleClassSelection =
                 ObserveLmuWindowsVehicleClassTyreTemperatureSelectionUseCase(vehicleClassRepository),
-            saveHighThreshold = SaveLmuWindowsTyreTemperatureHighThresholdUseCase(repository),
             saveEnabledState = SaveLmuWindowsTyreTemperatureEnabledStateUseCase(repository),
             saveLowWarningPhases = SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(repository),
             saveVehicleClassHighThreshold =
@@ -88,7 +83,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `初期状態はリポジトリのデフォルト値を反映したUiStateを返す`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
             every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
@@ -97,10 +91,9 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             val viewModel = createViewModel()
 
             assertEquals(
-                LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90, overheatWarningEnabled = true),
+                LmuWindowsReadoutTyreTemperatureDetailUiState(overheatWarningEnabled = true),
                 viewModel.uiState.first(),
             )
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -111,7 +104,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onOverheatWarningEnabledChangedを呼ぶとuiStateのoverheatWarningEnabledが更新される`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeEnabledStates() } returns enabledStatesFlow
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
@@ -128,7 +120,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onOverheatWarningEnabledChanged(false)
 
             assertEquals(false, viewModel.uiState.first().overheatWarningEnabled)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -140,70 +131,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
         }
 
     @Test
-    fun `onHighThresholdChangedを呼ぶとuiStateのhighThresholdCelsiusが更新される`() =
-        runTest {
-            val highThresholdFlow = MutableStateFlow(90)
-            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-            every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
-            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
-                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
-            coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
-            val viewModel = createViewModel()
-
-            viewModel.onHighThresholdChanged(100)
-
-            assertEquals(100, viewModel.uiState.first().highThresholdCelsius)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { repository.observeLowWarningPhases() }
-            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
-            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-            confirmVerified(repository, vehicleClassRepository)
-        }
-
-    @Test
-    fun `onHighThresholdResetを呼ぶとhighThresholdCelsiusがデフォルト値95に戻る`() =
-        runTest {
-            val highThresholdFlow = MutableStateFlow(90)
-            every { repository.observeHighThresholdCelsius() } returns highThresholdFlow
-            every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
-            every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
-            every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
-            every { vehicleClassRepository.observeSelectedVehicleClass() } returns
-                MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
-            coEvery { repository.saveHighThresholdCelsius(100) } answers { highThresholdFlow.update { 100 } }
-            coEvery {
-                repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
-            } answers {
-                highThresholdFlow.update { LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT }
-            }
-            val viewModel = createViewModel()
-
-            viewModel.onHighThresholdChanged(100)
-            viewModel.onHighThresholdReset()
-
-            assertEquals(
-                LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
-                viewModel.uiState.first().highThresholdCelsius,
-            )
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
-            verify(exactly = 1) { repository.observeEnabledStates() }
-            verify(exactly = 1) { repository.observeLowWarningPhases() }
-            verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
-            verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
-            coVerify(exactly = 1) { repository.saveHighThresholdCelsius(100) }
-            coVerify(exactly = 1) {
-                repository.saveHighThresholdCelsius(LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
-            }
-            confirmVerified(repository, vehicleClassRepository)
-        }
-
-    @Test
     fun `onPreviewClickedを呼ぶとTyreOverheatイベントが再生される`() {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
         every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
@@ -214,7 +142,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
         viewModel.onPreviewClicked()
 
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
         verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { repository.observeLowWarningPhases() }
         verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -225,7 +152,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
     @Test
     fun `onLowWarningPreviewClickedを呼ぶとTyreColdイベントが再生される`() {
-        every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
         every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
         every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
         every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
@@ -236,7 +162,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
 
         viewModel.onLowWarningPreviewClicked()
 
-        verify(exactly = 1) { repository.observeHighThresholdCelsius() }
         verify(exactly = 1) { repository.observeEnabledStates() }
         verify(exactly = 1) { repository.observeLowWarningPhases() }
         verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -248,7 +173,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
             every { repository.observeEnabledStates() } returns enabledStatesFlow
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
@@ -265,7 +189,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onLowWarningEnabledChanged(false)
 
             assertEquals(false, viewModel.uiState.first().lowWarningEnabled)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -279,7 +202,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onLowWarningPhaseToggledで未選択のフェーズを渡すと選択に追加される`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             val lowWarningPhasesFlow =
                 MutableStateFlow(
@@ -310,7 +232,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onLowWarningPhaseToggled(SessionPhase.GARAGE)
 
             assertEquals(setOf(SessionPhase.GARAGE), viewModel.uiState.first().lowWarningPhases)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -322,7 +243,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onLowWarningPhaseToggledで選択済みのフェーズを渡すと選択から除外される`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             val defaultPhases =
                 mapOf(
@@ -357,7 +277,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
                 setOf(SessionPhase.WARM_UP, SessionPhase.GRID_WALK),
                 viewModel.uiState.first().lowWarningPhases,
             )
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -371,7 +290,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onVehicleClassHighThresholdChangedを呼ぶとuiStateのvehicleClassHighThresholdCelsiusが更新される`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
             val vehicleClassHighThresholdFlow =
@@ -394,7 +312,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
                 mapOf<LmuWindowsVehicleClassData, Int>(LmuWindowsVehicleClassData.Gte to 100),
                 viewModel.uiState.first().vehicleClassHighThresholdCelsius,
             )
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -408,7 +325,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onVehicleClassHighThresholdResetを呼ぶとそのクラスのしきい値がデフォルト値に戻る`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
             val vehicleClassHighThresholdFlow =
@@ -431,7 +347,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
                 mapOf<LmuWindowsVehicleClassData, Int>(LmuWindowsVehicleClassData.Gt3 to 95),
                 viewModel.uiState.first().vehicleClassHighThresholdCelsius,
             )
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
@@ -445,7 +360,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
     @Test
     fun `onVehicleClassSelectedを呼ぶとuiStateのselectedVehicleClassが更新される`() =
         runTest {
-            every { repository.observeHighThresholdCelsius() } returns MutableStateFlow(90)
             every { repository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { repository.observeLowWarningPhases() } returns MutableStateFlow(emptyMap())
             every { vehicleClassRepository.observeHighThresholdCelsius() } returns MutableStateFlow(emptyMap())
@@ -460,7 +374,6 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             viewModel.onVehicleClassSelected(LmuWindowsVehicleClassData.Gte)
 
             assertEquals(LmuWindowsVehicleClassData.Gte, viewModel.uiState.first().selectedVehicleClass)
-            verify(exactly = 1) { repository.observeHighThresholdCelsius() }
             verify(exactly = 1) { repository.observeEnabledStates() }
             verify(exactly = 1) { repository.observeLowWarningPhases() }
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }

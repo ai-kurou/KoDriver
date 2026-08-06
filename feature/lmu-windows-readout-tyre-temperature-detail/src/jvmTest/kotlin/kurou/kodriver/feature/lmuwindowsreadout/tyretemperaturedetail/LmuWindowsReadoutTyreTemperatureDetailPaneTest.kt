@@ -23,18 +23,21 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     val rule = createComposeRule()
 
     @Test
-    fun `リセットボタンをクリックするとonHighThresholdResetが呼ばれる`() {
-        var resetCalled = false
+    fun `リセットボタンをクリックするとonVehicleClassHighThresholdResetが選択中クラスで呼ばれる`() {
+        var resetVehicleClass: LmuWindowsVehicleClassData? = null
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90),
-                    onHighThresholdReset = { resetCalled = true },
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Hypercar to 90),
+                        ),
+                    onVehicleClassHighThresholdReset = { resetVehicleClass = it },
                 )
             }
         }
         rule.onNodeWithContentDescription("デフォルトに戻す").performClick()
-        assertEquals(true, resetCalled)
+        assertEquals(LmuWindowsVehicleClassData.Hypercar, resetVehicleClass)
     }
 
     @Test
@@ -53,13 +56,20 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
     }
 
     @Test
-    fun `スライダーの値を確定するとonHighThresholdChangedが呼ばれる`() {
+    fun `スライダーの値を確定するとonVehicleClassHighThresholdChangedが選択中クラスで呼ばれる`() {
+        var changedVehicleClass: LmuWindowsVehicleClassData? = null
         var changedValue: Int? = null
         rule.setContent {
             KoDriverTheme {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                    uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(highThresholdCelsius = 90),
-                    onHighThresholdChanged = { changedValue = it },
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Hypercar to 90),
+                        ),
+                    onVehicleClassHighThresholdChanged = { vehicleClass, celsius ->
+                        changedVehicleClass = vehicleClass
+                        changedValue = celsius
+                    },
                 )
             }
         }
@@ -69,7 +79,32 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                 hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 90f, range = 90f..100f, steps = 9)),
             ).performSemanticsAction(SemanticsActions.SetProgress) { it(95f) }
 
+        assertEquals(LmuWindowsVehicleClassData.Hypercar, changedVehicleClass)
         assertEquals(95, changedValue)
+    }
+
+    @Test
+    fun `スライダーは選択中クラスのしきい値を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 90,
+                                    LmuWindowsVehicleClassData.Gt3 to 97,
+                                ),
+                            selectedVehicleClass = LmuWindowsVehicleClassData.Gt3,
+                        ),
+                )
+            }
+        }
+
+        rule
+            .onNode(
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 97f, range = 90f..100f, steps = 9)),
+            ).assertIsDisplayed()
     }
 
     @Test
