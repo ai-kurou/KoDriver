@@ -30,7 +30,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
                 LmuWindowsReadoutTyreTemperatureDetailPaneContent(
                     uiState =
                         LmuWindowsReadoutTyreTemperatureDetailUiState(
-                            vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Hypercar to 90),
+                            vehicleClassHighThresholdCelsius = mapOf(LmuWindowsVehicleClassData.Hypercar to 95),
                         ),
                     onVehicleClassHighThresholdReset = { resetVehicleClass = it },
                 )
@@ -76,7 +76,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 90f, range = 90f..100f, steps = 9)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 90f, range = 90f..110f, steps = 19)),
             ).performSemanticsAction(SemanticsActions.SetProgress) { it(95f) }
 
         assertEquals(LmuWindowsVehicleClassData.Hypercar, changedVehicleClass)
@@ -103,7 +103,7 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 97f, range = 90f..100f, steps = 9)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 97f, range = 90f..110f, steps = 19)),
             ).assertIsDisplayed()
     }
 

@@ -335,16 +335,16 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             every { vehicleClassRepository.observeSelectedVehicleClass() } returns
                 MutableStateFlow(LmuWindowsVehicleClassData.Hypercar)
             coEvery {
-                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 95)
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 90)
             } answers {
-                vehicleClassHighThresholdFlow.update { it + (LmuWindowsVehicleClassData.Gt3 to 95) }
+                vehicleClassHighThresholdFlow.update { it + (LmuWindowsVehicleClassData.Gt3 to 90) }
             }
             val viewModel = createViewModel()
 
             viewModel.onVehicleClassHighThresholdReset(LmuWindowsVehicleClassData.Gt3)
 
             assertEquals(
-                mapOf<LmuWindowsVehicleClassData, Int>(LmuWindowsVehicleClassData.Gt3 to 95),
+                mapOf<LmuWindowsVehicleClassData, Int>(LmuWindowsVehicleClassData.Gt3 to 90),
                 viewModel.uiState.first().vehicleClassHighThresholdCelsius,
             )
             verify(exactly = 1) { repository.observeEnabledStates() }
@@ -352,7 +352,7 @@ class LmuWindowsReadoutTyreTemperatureDetailViewModelTest {
             verify(exactly = 1) { vehicleClassRepository.observeHighThresholdCelsius() }
             verify(exactly = 1) { vehicleClassRepository.observeSelectedVehicleClass() }
             coVerify(exactly = 1) {
-                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 95)
+                vehicleClassRepository.saveHighThresholdCelsius(LmuWindowsVehicleClassData.Gt3, 90)
             }
             confirmVerified(repository, vehicleClassRepository)
         }
