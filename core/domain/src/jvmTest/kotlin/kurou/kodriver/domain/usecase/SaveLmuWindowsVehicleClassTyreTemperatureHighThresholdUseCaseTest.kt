@@ -11,6 +11,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class SaveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCaseTest {
+    // saveHighThresholdCelsius は戻り値 Unit の suspend 関数のため relaxUnitFun でスタブ不要にし、
+    // coEvery を省略して coVerify のみで呼び出しを検証する
     @MockK(relaxUnitFun = true)
     private lateinit var repository: LmuWindowsVehicleClassTyreTemperaturePreferencesRepository
 
