@@ -24,7 +24,7 @@ class OtherListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 768.dp)) {
                         OtherListPane(
                             uiState = OtherListUiState(),
                             onItemClick = {},
@@ -44,7 +44,7 @@ class OtherListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 768.dp)) {
                         OtherListPane(
                             uiState = OtherListUiState(hasAppUpdate = true),
                             onItemClick = {},

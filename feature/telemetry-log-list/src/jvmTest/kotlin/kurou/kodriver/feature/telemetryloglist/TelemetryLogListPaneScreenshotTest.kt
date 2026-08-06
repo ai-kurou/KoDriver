@@ -21,7 +21,7 @@ class TelemetryLogListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 768.dp)) {
                         TelemetryLogListPane(
                             uiState = previewTelemetryLogListUiState,
                         )
@@ -38,7 +38,7 @@ class TelemetryLogListPaneScreenshotTest {
         rule.setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(360.dp, 768.dp)) {
                         TelemetryLogListPane()
                     }
                 }
