@@ -19,8 +19,8 @@ internal class LmuWindowsVehicleClassRepositoryImpl(
     private fun readVehicleClass(buffer: ByteBuffer): LmuWindowsVehicleClassData {
         val vehicleScoringBase =
             LmuWindowsMapper.findPlayerVehicleScoringBase(buffer)
-                ?: return LmuWindowsVehicleClassData(name = "")
+                ?: return LmuWindowsVehicleClassData.fromRawValue(raw = "")
         val name = LmuWindowsMapper.readVehicleClassName(buffer, vehicleScoringBase)
-        return LmuWindowsVehicleClassData(name)
+        return LmuWindowsVehicleClassData.fromRawValue(name)
     }
 }

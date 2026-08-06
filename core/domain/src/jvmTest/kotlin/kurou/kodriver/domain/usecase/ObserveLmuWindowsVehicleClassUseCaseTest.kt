@@ -29,7 +29,7 @@ class ObserveLmuWindowsVehicleClassUseCaseTest {
     @Test
     fun `invoke はリポジトリの vehicleClassStream を返す`() =
         runTest {
-            val expected = LmuWindowsVehicleClassData(name = "Hypercar")
+            val expected = LmuWindowsVehicleClassData.fromRawValue("Hypercar")
             every { repo.vehicleClassStream() } returns flowOf(expected)
             val useCase = ObserveLmuWindowsVehicleClassUseCase(repo)
 
@@ -56,9 +56,9 @@ class ObserveLmuWindowsVehicleClassUseCaseTest {
     @Test
     fun `複数のデータを順番通りに流す`() =
         runTest {
-            val data1 = LmuWindowsVehicleClassData(name = "LMP2")
-            val data2 = LmuWindowsVehicleClassData(name = "GTE")
-            val data3 = LmuWindowsVehicleClassData(name = "LMGT3")
+            val data1 = LmuWindowsVehicleClassData.fromRawValue("LMP2")
+            val data2 = LmuWindowsVehicleClassData.fromRawValue("GTE")
+            val data3 = LmuWindowsVehicleClassData.fromRawValue("LMGT3")
             every { repo.vehicleClassStream() } returns flowOf(data1, data2, data3)
             val useCase = ObserveLmuWindowsVehicleClassUseCase(repo)
 
