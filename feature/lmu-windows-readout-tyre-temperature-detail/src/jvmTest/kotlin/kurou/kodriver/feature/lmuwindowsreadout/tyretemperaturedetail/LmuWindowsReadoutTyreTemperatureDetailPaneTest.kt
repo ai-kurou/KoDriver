@@ -177,4 +177,50 @@ class LmuWindowsReadoutTyreTemperatureDetailPaneTest {
         rule.onNodeWithText("Hyper（90°C）").assertIsSelected()
         rule.onNodeWithText("GT3（95°C）").assertIsNotSelected()
     }
+
+    @Test
+    fun `対象クラスのチップは選択済みのselectedVehicleClassが選択状態になる`() {
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 90,
+                                    LmuWindowsVehicleClassData.Gt3 to 95,
+                                ),
+                            selectedVehicleClass = LmuWindowsVehicleClassData.Gt3,
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("GT3（95°C）").assertIsSelected()
+        rule.onNodeWithText("Hyper（90°C）").assertIsNotSelected()
+    }
+
+    @Test
+    fun `対象クラスのチップをクリックするとonVehicleClassSelectedにそのクラスが渡される`() {
+        var selectedVehicleClass: LmuWindowsVehicleClassData? = null
+        rule.setContent {
+            KoDriverTheme {
+                LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                    uiState =
+                        LmuWindowsReadoutTyreTemperatureDetailUiState(
+                            vehicleClassHighThresholdCelsius =
+                                mapOf(
+                                    LmuWindowsVehicleClassData.Hypercar to 90,
+                                    LmuWindowsVehicleClassData.Gt3 to 95,
+                                ),
+                        ),
+                    onVehicleClassSelected = { selectedVehicleClass = it },
+                )
+            }
+        }
+
+        rule.onNodeWithText("GT3（95°C）").performClick()
+
+        assertEquals(LmuWindowsVehicleClassData.Gt3, selectedVehicleClass)
+    }
 }
