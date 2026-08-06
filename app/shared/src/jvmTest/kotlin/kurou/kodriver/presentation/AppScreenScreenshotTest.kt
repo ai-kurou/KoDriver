@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -32,7 +32,6 @@ import kurou.kodriver.feature.telemetryloglist.telemetryLogListModule
 import org.jetbrains.compose.resources.stringResource
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Rule
 import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin as koinStop
@@ -68,192 +67,196 @@ class AppScreenScreenshotTest {
         }
     }
 
-    @get:Rule
-    val composeRule = createComposeRule()
+    @Test
+    fun `NavigationRail 読み上げタブ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
+            }
+            onRoot().captureRoboImage()
+        }
 
     @Test
-    fun `NavigationRail 読み上げタブ`() {
-        setAppContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationRail,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
-                    },
-                )
+    fun `NavigationRail 読み上げタブ ダークテーマ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        darkTheme = true,
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
             }
+            onRoot().captureRoboImage()
         }
-        composeRule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NavigationRail 読み上げタブ ダークテーマ`() {
-        setAppContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreenContent(
-                    darkTheme = true,
-                    layoutType = NavigationSuiteType.NavigationRail,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
-                    },
-                )
+    fun `NavigationRail その他タブ`() =
+        composeScreenshotTest {
+            var navMore by mutableStateOf("")
+
+            setAppContent {
+                navMore = stringResource(Res.string.nav_more)
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        otherContent = { _ ->
+                            OtherContent(
+                                uiState = OtherListUiState(),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = singlePaneDirective,
+                            )
+                        },
+                    )
+                }
             }
+            onNodeWithText(navMore).performClick()
+            waitForIdle()
+            onRoot().captureRoboImage()
         }
-        composeRule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NavigationRail その他タブ`() {
-        var navMore by mutableStateOf("")
+    fun `NavigationRail ログタブ`() =
+        composeScreenshotTest {
+            var navLog by mutableStateOf("")
 
-        setAppContent {
-            navMore = stringResource(Res.string.nav_more)
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationRail,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    otherContent = { _ ->
-                        OtherContent(
-                            uiState = OtherListUiState(),
-                            onItemSelected = {},
-                            onClearSelectedItem = {},
-                            scaffoldDirective = singlePaneDirective,
-                        )
-                    },
-                )
+            setAppContent {
+                navLog = stringResource(Res.string.nav_log)
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationRail,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        telemetryLogContent = { _ -> TelemetryLogContent() },
+                    )
+                }
             }
+            onNodeWithText(navLog).performClick()
+            waitForIdle()
+            onRoot().captureRoboImage()
         }
-        composeRule.onNodeWithText(navMore).performClick()
-        composeRule.waitForIdle()
-        composeRule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NavigationRail ログタブ`() {
-        var navLog by mutableStateOf("")
-
-        setAppContent {
-            navLog = stringResource(Res.string.nav_log)
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationRail,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    telemetryLogContent = { _ -> TelemetryLogContent() },
-                )
+    fun `NavigationBar 読み上げタブ`() =
+        composeScreenshotTest {
+            setAppContent {
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationBar,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        readoutContent = {
+                            ReadoutContent(scaffoldDirective = singlePaneDirective)
+                        },
+                    )
+                }
             }
+            onRoot().captureRoboImage()
         }
-        composeRule.onNodeWithText(navLog).performClick()
-        composeRule.waitForIdle()
-        composeRule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NavigationBar 読み上げタブ`() {
-        setAppContent {
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationBar,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    readoutContent = {
-                        ReadoutContent(scaffoldDirective = singlePaneDirective)
-                    },
-                )
+    fun `NavigationBar ログタブ`() =
+        composeScreenshotTest {
+            var navLog by mutableStateOf("")
+
+            setAppContent {
+                navLog = stringResource(Res.string.nav_log)
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationBar,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        telemetryLogContent = { _ -> TelemetryLogContent() },
+                    )
+                }
             }
+            onNodeWithText(navLog).performClick()
+            waitForIdle()
+            onRoot().captureRoboImage()
         }
-        composeRule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `NavigationBar ログタブ`() {
-        var navLog by mutableStateOf("")
+    fun `NavigationBar その他タブ`() =
+        composeScreenshotTest {
+            var navMore by mutableStateOf("")
 
-        setAppContent {
-            navLog = stringResource(Res.string.nav_log)
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationBar,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    telemetryLogContent = { _ -> TelemetryLogContent() },
-                )
+            setAppContent {
+                navMore = stringResource(Res.string.nav_more)
+                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
+                Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
+                    AppScreenContent(
+                        layoutType = NavigationSuiteType.NavigationBar,
+                        bannerUiState =
+                            ConnectionBannerUiState(
+                                status = ConnectionBannerStatus.DISCONNECTED,
+                                message = bannerMessage,
+                            ),
+                        hasAppUpdate = true,
+                        otherContent = { _ ->
+                            OtherContent(
+                                uiState = OtherListUiState(),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = singlePaneDirective,
+                            )
+                        },
+                    )
+                }
             }
+            onNodeWithText(navMore).performClick()
+            waitForIdle()
+            onRoot().captureRoboImage()
         }
-        composeRule.onNodeWithText(navLog).performClick()
-        composeRule.waitForIdle()
-        composeRule.onRoot().captureRoboImage()
-    }
 
-    @Test
-    fun `NavigationBar その他タブ`() {
-        var navMore by mutableStateOf("")
-
-        setAppContent {
-            navMore = stringResource(Res.string.nav_more)
-            val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-            Box(modifier = Modifier.requiredSize(360.dp, 640.dp)) {
-                AppScreenContent(
-                    layoutType = NavigationSuiteType.NavigationBar,
-                    bannerUiState =
-                        ConnectionBannerUiState(
-                            status = ConnectionBannerStatus.DISCONNECTED,
-                            message = bannerMessage,
-                        ),
-                    hasAppUpdate = true,
-                    otherContent = { _ ->
-                        OtherContent(
-                            uiState = OtherListUiState(),
-                            onItemSelected = {},
-                            onClearSelectedItem = {},
-                            scaffoldDirective = singlePaneDirective,
-                        )
-                    },
-                )
-            }
-        }
-        composeRule.onNodeWithText(navMore).performClick()
-        composeRule.waitForIdle()
-        composeRule.onRoot().captureRoboImage()
-    }
-
-    private fun setAppContent(content: @Composable () -> Unit) {
-        composeRule.setContent {
+    private fun DesktopComposeUiTest.setAppContent(content: @Composable () -> Unit) {
+        setContent {
             AppTheme {
                 content()
             }
