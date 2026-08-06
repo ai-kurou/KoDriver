@@ -142,7 +142,7 @@ class DebugStateDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             DebugStateDetailPaneContent(
                                 uiState = DebugStateDetailUiState(),
                                 canNavigateBack = true,
@@ -176,7 +176,7 @@ class DebugStateDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             DebugStateDetailPaneContent(
                                 uiState = allCardsFilledUiState,
                                 canNavigateBack = true,
@@ -195,7 +195,7 @@ class DebugStateDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             DebugStateDetailPaneContent(
                                 uiState = allCardsFilledUiState,
                                 canNavigateBack = true,
