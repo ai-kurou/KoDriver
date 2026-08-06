@@ -4,59 +4,58 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import org.junit.Rule
 import org.junit.Test
 
 class LmuWindowsReadoutTyreTemperatureDetailPaneScreenshotTest {
-    @get:Rule
-    val rule = createComposeRule()
-
     @Test
-    fun `デフォルト`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 800.dp)) {
-                        LmuWindowsReadoutTyreTemperatureDetailPaneContent(
-                            uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
-                        )
+    fun `デフォルト`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(480.dp, 800.dp)) {
+                            LmuWindowsReadoutTyreTemperatureDetailPaneContent(
+                                uiState = LmuWindowsReadoutTyreTemperatureDetailUiState(),
+                            )
+                        }
                     }
                 }
             }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `ヘルプボトムシート`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        TyreTemperatureThresholdHelpSheetContent()
+    fun `ヘルプボトムシート`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                            TyreTemperatureThresholdHelpSheetContent()
+                        }
                     }
                 }
             }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 
     @Test
-    fun `低温警告対象フェーズのヘルプボトムシート`() {
-        rule.setContent {
-            KoDriverTheme {
-                Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
-                        TyreTemperatureLowWarningPhasesHelpSheetContent()
+    fun `低温警告対象フェーズのヘルプボトムシート`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                            TyreTemperatureLowWarningPhasesHelpSheetContent()
+                        }
                     }
                 }
             }
+            onRoot().captureRoboImage()
         }
-        rule.onRoot().captureRoboImage()
-    }
 }
