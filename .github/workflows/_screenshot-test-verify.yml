@@ -46,10 +46,11 @@ jobs:
         if: steps.verify.outcome == 'failure'
         env:
           TARGET_REF: ${{ github.head_ref }}
+          SNAPSHOT_PATH_GLOB: ${{ inputs.snapshotPathGlob }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          find . -path "${{ inputs.snapshotPathGlob }}" -not -path "*/build/*" -print0 | xargs -0 -r git add
+          find . -path "$SNAPSHOT_PATH_GLOB" -not -path "*/build/*" -print0 | xargs -0 -r git add
           if git diff --staged --quiet; then
             echo "No golden image changes to commit"
           else
