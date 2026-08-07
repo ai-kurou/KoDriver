@@ -135,7 +135,6 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `見つかったWindows版KoDriverを選択ボタン表示`() =
         composeScreenshotTest {
-            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
