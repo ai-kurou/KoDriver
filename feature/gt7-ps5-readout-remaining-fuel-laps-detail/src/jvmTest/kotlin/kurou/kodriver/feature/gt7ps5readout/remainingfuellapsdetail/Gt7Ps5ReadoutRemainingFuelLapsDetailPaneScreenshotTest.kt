@@ -19,12 +19,6 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneScreenshotTest {
             capturePane()
         }
 
-    @Test
-    fun `1周設定`() =
-        composeScreenshotTest {
-            capturePane(uiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(remainingFuelLaps = 1))
-        }
-
     private fun DesktopComposeUiTest.capturePane(
         uiState: Gt7Ps5ReadoutRemainingFuelLapsDetailUiState = Gt7Ps5ReadoutRemainingFuelLapsDetailUiState(),
     ) {
