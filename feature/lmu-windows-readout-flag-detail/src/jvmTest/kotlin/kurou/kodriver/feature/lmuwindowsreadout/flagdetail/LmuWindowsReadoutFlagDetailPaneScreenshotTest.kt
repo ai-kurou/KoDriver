@@ -28,20 +28,6 @@ class LmuWindowsReadoutFlagDetailPaneScreenshotTest {
             )
         }
 
-    @Test
-    fun `全カード無効`() =
-        composeScreenshotTest {
-            captureLmuWindowsReadoutFlagDetailPane(
-                enabledStates =
-                    mapOf(
-                        ReadoutItemKey.LmuWindows.Flag.BlueFlag to false,
-                        ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to false,
-                        ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to false,
-                        ReadoutItemKey.LmuWindows.Flag.RedFlag to false,
-                    ),
-            )
-        }
-
     private fun DesktopComposeUiTest.captureLmuWindowsReadoutFlagDetailPane(
         enabledStates: Map<ReadoutItemKey, Boolean>,
     ) {

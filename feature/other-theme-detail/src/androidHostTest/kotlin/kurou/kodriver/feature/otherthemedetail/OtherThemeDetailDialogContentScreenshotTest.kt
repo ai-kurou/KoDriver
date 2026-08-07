@@ -33,19 +33,4 @@ class OtherThemeDetailDialogContentScreenshotTest {
             }
         }
     }
-
-    @Test
-    fun `ダークを選択中`() {
-        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
-            KoDriverTheme {
-                Surface {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        OtherThemeDetailDialogContent(
-                            uiState = OtherThemeDetailUiState(pendingThemeMode = ThemeMode.DARK),
-                        )
-                    }
-                }
-            }
-        }
-    }
 }

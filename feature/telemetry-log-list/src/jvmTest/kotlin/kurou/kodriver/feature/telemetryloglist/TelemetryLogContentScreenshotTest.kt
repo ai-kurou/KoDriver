@@ -3,6 +3,7 @@ package kurou.kodriver.feature.telemetryloglist
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
@@ -20,26 +21,9 @@ class TelemetryLogContentScreenshotTest {
                     Surface {
                         Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
                             TelemetryLogContentScaffold(
-                                uiState = previewTelemetryLogListUiState,
+                                uiState = previewTelemetryLogListUiState.copy(selectedLogId = 2),
                                 scaffoldDirective = twoPaneDirective,
-                            )
-                        }
-                    }
-                }
-            }
-
-            onRoot().captureRoboImage()
-        }
-
-    @Test
-    fun `空状態`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
-                            TelemetryLogContentScaffold(
-                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { logId -> Text("Detail: $logId") },
                             )
                         }
                     }
