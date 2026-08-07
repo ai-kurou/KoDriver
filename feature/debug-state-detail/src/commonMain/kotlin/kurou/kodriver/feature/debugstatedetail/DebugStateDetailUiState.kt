@@ -34,7 +34,7 @@ internal val defaultDebugStateCardOrder =
         DebugStateCardKey.PIT_TIMING_REMAINING_LAPS,
     )
 
-internal data class DebugStateDetailUiState(
+data class DebugStateDetailUiState(
     val selectedSimulator: Simulator? = null,
     val raceFlags: LmuWindowsRaceFlagsData? = null,
     val virtualEnergy: LmuWindowsVirtualEnergyData? = null,

@@ -7,8 +7,13 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPaneContent
+import kurou.kodriver.feature.debugstatedetail.DebugStateDetailUiState
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
+import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailPaneContent
+import kurou.kodriver.feature.otherfeedbackdetail.OtherFeedbackDetailUiState
+import kurou.kodriver.feature.otherlicensedetail.OtherLicenseDetailPane
 import kurou.kodriver.feature.otherlist.OtherListItemType
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
@@ -65,6 +70,95 @@ class OtherContentScreenshotTest {
                                     if (itemType == OtherListItemType.Volume) {
                                         OtherVolumeDetailPaneContent(
                                             uiState = OtherVolumeDetailUiState(volume = 80),
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `フィードバックを送信を表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.Feedback),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack ->
+                                    if (itemType == OtherListItemType.Feedback) {
+                                        OtherFeedbackDetailPaneContent(
+                                            uiState = OtherFeedbackDetailUiState(),
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `ライセンスを表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.License),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack ->
+                                    if (itemType == OtherListItemType.License) {
+                                        OtherLicenseDetailPane(
+                                            canNavigateBack = canNavigateBack,
+                                            onBack = onBack,
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `DebugStateDetailを表示`() =
+        composeScreenshotTest {
+            setContent {
+                AppTheme {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(840.dp, 640.dp)) {
+                            OtherContent(
+                                uiState = OtherListUiState(selectedItem = OtherListItemType.DebugState),
+                                onItemSelected = {},
+                                onClearSelectedItem = {},
+                                scaffoldDirective = twoPaneDirective,
+                                detailContent = { itemType, canNavigateBack, onBack ->
+                                    if (itemType == OtherListItemType.DebugState) {
+                                        DebugStateDetailPaneContent(
+                                            uiState = DebugStateDetailUiState(),
                                             canNavigateBack = canNavigateBack,
                                             onBack = onBack,
                                         )

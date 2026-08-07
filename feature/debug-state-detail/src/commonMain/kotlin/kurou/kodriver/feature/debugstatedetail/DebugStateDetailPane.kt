@@ -121,7 +121,7 @@ fun DebugStateDetailPane(
 }
 
 @Composable
-internal fun DebugStateDetailPaneContent(
+fun DebugStateDetailPaneContent(
     uiState: DebugStateDetailUiState,
     canNavigateBack: Boolean,
     onBack: () -> Unit,
