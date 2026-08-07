@@ -15,6 +15,7 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -91,6 +92,24 @@ class TelemetryLogContentTest {
 
         rule.onNodeWithText("ログはまだありません").assertExists()
         rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertExists()
+    }
+
+    @Test
+    fun `フィードバックボタンをタップするとonFeedbackClickを呼ぶ`() {
+        var clicked = false
+        rule.setContent {
+            TelemetryLogContentScaffold(
+                uiState =
+                    TelemetryLogListUiState(
+                        logs = listOf(createTelemetryLog(id = 1)),
+                    ),
+                onFeedbackClick = { clicked = true },
+            )
+        }
+
+        rule.onNodeWithContentDescription("フィードバックを送信").performClick()
+
+        assertTrue(clicked)
     }
 
     @Test
