@@ -90,14 +90,14 @@ import kurou.kodriver.feature.telemetryloglist.TelemetryLogListViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-private fun bannerTapWithTabSwitch(
-    onBannerTap: (() -> Unit)?,
+private fun withTabSwitch(
+    action: (() -> Unit)?,
     switchToMore: () -> Unit,
 ): (() -> Unit)? =
-    if (onBannerTap != null) {
+    if (action != null) {
         {
             switchToMore()
-            onBannerTap()
+            action()
         }
     } else {
         null
@@ -242,10 +242,14 @@ fun AppScreen(
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
-    telemetryLogContent: @Composable (scrollToTopRequest: Int) -> Unit = { scrollToTopRequest ->
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: () -> Unit) -> Unit = {
+        scrollToTopRequest,
+        onFeedbackClick,
+        ->
         TelemetryLogContent(
             backHandler = backHandler,
             scrollToTopRequest = scrollToTopRequest,
+            onFeedbackClick = onFeedbackClick,
             detailContent = { id ->
                 TelemetryLogDetailContent(id = id)
             },
@@ -297,6 +301,7 @@ fun AppScreen(
                 bannerUiState = bannerUiState,
                 onSelectOtherItem = otherListViewModel::selectItem,
             ),
+        onFeedbackClick = { otherListViewModel.selectItem(OtherListItemType.Feedback) },
         onReadoutTabReselected = {
             handleTabReselected(
                 selectedItem = readoutListUiState.selectedItem,
@@ -360,19 +365,24 @@ internal fun AppScreenContent(
     hasAppUpdate: Boolean = false,
     keepScreenOn: Boolean = false,
     onBannerTap: (() -> Unit)? = null,
+    onFeedbackClick: (() -> Unit)? = null,
     onReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     readoutListScrollToTopRequest: Int = 0,
-    telemetryLogContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: () -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
     otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     otherListScrollToTopRequest: Int = 0,
 ) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
     val onBannerTapWithTabSwitch =
-        bannerTapWithTabSwitch(onBannerTap) {
+        withTabSwitch(onBannerTap) {
+            currentDestination = AppDestination.More
+        }
+    val onFeedbackClickWithTabSwitch =
+        withTabSwitch(onFeedbackClick) {
             currentDestination = AppDestination.More
         }
 
@@ -493,7 +503,12 @@ internal fun AppScreenContent(
                         AppDestinationContent(
                             destination = destination,
                             readoutContent = { readoutContent(readoutListScrollToTopRequest) },
-                            telemetryLogContent = { telemetryLogContent(telemetryLogListScrollToTopRequest) },
+                            telemetryLogContent = {
+                                telemetryLogContent(
+                                    telemetryLogListScrollToTopRequest,
+                                    onFeedbackClickWithTabSwitch ?: {},
+                                )
+                            },
                             otherContent = { otherContent(otherListScrollToTopRequest) },
                         )
                     }

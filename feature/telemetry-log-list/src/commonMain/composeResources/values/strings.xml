@@ -38,4 +38,5 @@
     <string name="telemetry_log_reset_cancel_button">キャンセル</string>
     <string name="telemetry_log_reset_success">データベースをリセットしました</string>
     <string name="telemetry_log_reset_failure">データベースのリセットに失敗しました</string>
+    <string name="telemetry_log_feedback_button">フィードバックを送信</string>
 </resources>
