@@ -117,6 +117,8 @@ jobs:
           files: build/reports/kover/report.xml
 
   desktop-screenshot-test-verify:
+    permissions:
+      contents: write
     uses: ./.github/workflows/_screenshot-test-verify.yml
     with:
       taskSuffix: Jvm
@@ -125,6 +127,8 @@ jobs:
     secrets: inherit
 
   android-screenshot-test-verify:
+    permissions:
+      contents: write
     uses: ./.github/workflows/_screenshot-test-verify.yml
     with:
       taskSuffix: AndroidHost
