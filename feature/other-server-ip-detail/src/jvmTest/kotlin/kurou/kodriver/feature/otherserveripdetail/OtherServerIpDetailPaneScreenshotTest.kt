@@ -15,6 +15,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `デフォルト`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -32,6 +33,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `不正なIPアドレス`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -49,6 +51,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `空入力`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -66,6 +69,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `接続確認中`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -87,6 +91,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `接続警告あり`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -108,6 +113,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `検出中表示`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
@@ -129,6 +135,7 @@ class OtherServerIpDetailPaneScreenshotTest {
     @Test
     fun `見つかったWindows版KoDriverを選択ボタン表示`() =
         composeScreenshotTest {
+            mainClock.autoAdvance = false
             setContent {
                 KoDriverTheme {
                     Surface {
