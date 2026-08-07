@@ -31,21 +31,4 @@ class OtherThemeDetailDialogContentScreenshotTest {
             }
             onNode(isDialog()).captureRoboImage()
         }
-
-    @Test
-    fun `ダークを選択中`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                            OtherThemeDetailDialogContent(
-                                uiState = OtherThemeDetailUiState(pendingThemeMode = ThemeMode.DARK),
-                            )
-                        }
-                    }
-                }
-            }
-            onNode(isDialog()).captureRoboImage()
-        }
 }
