@@ -16,37 +16,6 @@ jobs:
 
   build-windows:
     name: Build Windows
-    runs-on: windows-latest
-    timeout-minutes: 10
-
-    steps:
-      # Roborazzi のスナップショットファイル名がテストクラスの完全修飾名を含むため長くなりやすく、
-      # Windows のデフォルトパス長上限（260文字）を超えて checkout が失敗することがある。
-      - run: git config --global core.longpaths true
-
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-
-      - uses: ./.github/actions/setup
-
-      - name: Get version
-        id: version
-        shell: bash
-        run: echo "version=$(grep '^appVersion=' gradle.properties | cut -d'=' -f2)" >> $GITHUB_OUTPUT
-
-      - name: Build MSI
-        run: ./gradlew :app:desktopApp:packageMsi
-
-      - name: Rename MSI
-        shell: bash
-        run: |
-          mv app/desktopApp/build/compose/binaries/main/msi/*.msi \
-             app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${{ steps.version.outputs.version }}.msi
-
-      - name: Upload MSI
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: KoDriver-windows-${{ steps.version.outputs.version }}
-          path: app/desktopApp/build/compose/binaries/main/msi/KoDriver-windows-${{ steps.version.outputs.version }}.msi
-          retention-days: 30
+    uses: ./.github/workflows/_build-windows-msi.yml
+    with:
+      ref: ${{ github.ref }}
