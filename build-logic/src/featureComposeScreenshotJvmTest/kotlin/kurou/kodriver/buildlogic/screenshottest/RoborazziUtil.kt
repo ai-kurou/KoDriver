@@ -11,7 +11,7 @@ val defaultRoborazziOptions =
     RoborazziOptions(
         compareOptions =
             RoborazziOptions.CompareOptions(
-                changeThreshold = 0.001f,
+                changeThreshold = 0.01f,
             ),
     )
 

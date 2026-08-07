@@ -22,7 +22,7 @@ import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [36], qualifiers = "w360dp-h640dp")
+@Config(sdk = [36], qualifiers = "w360dp-h1080dp")
 class OtherListPaneScreenshotTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
