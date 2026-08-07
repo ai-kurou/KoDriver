@@ -88,7 +88,7 @@ class DebugStateFuelConsumptionCardTest {
     }
 
     @Test
-    fun `selectedSimulatorがLMUの場合はバーチャルエナジー消費率と残り周数を表示する`() {
+    fun `selectedSimulatorがLMUの場合はバーチャルエナジー残量と消費率と残り周数を表示する`() {
         rule.setContent {
             MaterialTheme {
                 DebugStateDetailPaneContent(
@@ -106,8 +106,53 @@ class DebugStateFuelConsumptionCardTest {
         }
 
         rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
         rule.onNodeWithText("消費 10.0%/周").assertIsDisplayed()
         rule.onNodeWithText("残り 5.0周").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがLMUの場合は消費率を計算できなくてもバーチャルエナジー残量を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            virtualEnergy = LmuWindowsVirtualEnergyData(remainingRatio = 0.5),
+                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 0),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("残量 50.0%").assertIsDisplayed()
+    }
+
+    @Test
+    fun `selectedSimulatorがLMUでvirtualEnergyがnullの場合は未取得の文言を表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                DebugStateDetailPaneContent(
+                    uiState =
+                        DebugStateDetailUiState(
+                            selectedSimulator = Simulator.LmuWindows,
+                            virtualEnergy = null,
+                            lmuWindowsTelemetry = sampleLmuTelemetry(currentLap = 5),
+                            cardOrder = listOf(DebugStateCardKey.FUEL_CONSUMPTION),
+                        ),
+                    canNavigateBack = true,
+                    onBack = {},
+                )
+            }
+        }
+
+        rule.onNodeWithText("燃料消費").assertIsDisplayed()
+        rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
     @Test

@@ -56,6 +56,9 @@ internal fun calculateGt7FuelRemainingPercent(telemetry: Gt7Ps5TelemetryData?): 
     return telemetry.gasLevel * PERCENT_MULTIPLIER / telemetry.gasCapacity
 }
 
+internal fun calculateLmuVirtualEnergyRemainingPercent(virtualEnergy: LmuWindowsVirtualEnergyData?): Double? =
+    virtualEnergy?.remainingRatio?.times(PERCENT_MULTIPLIER)
+
 /**
  * 4輪のうち最も摩耗が進んでいるタイヤの残溝割合を基準に、レース開始からの平均摩耗量で近似する簡易計算。
  * 直近のタイヤ交換は考慮しない。

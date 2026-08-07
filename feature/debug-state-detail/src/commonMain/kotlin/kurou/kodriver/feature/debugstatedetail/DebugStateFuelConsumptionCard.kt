@@ -33,34 +33,48 @@ internal fun FuelConsumptionContent(
         Gt7Ps5FuelContent(gt7Ps5Telemetry)
         return
     }
-    val (result, perLapTextRes) =
-        when (selectedSimulator) {
-            is Simulator.LmuWindows -> {
-                calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry) to
-                    Res.string.debug_state_fuel_consumption_per_lap_ratio
-            }
+    if (selectedSimulator is Simulator.LmuWindows) {
+        LmuWindowsFuelContent(virtualEnergy, lmuWindowsTelemetry)
+        return
+    }
+    Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
+}
 
-            is Simulator.AceWindows, null -> {
-                null to Res.string.debug_state_fuel_consumption_per_lap_liters
-            }
-
-            is Simulator.Gt7Ps5 -> {
-                error("GT7 fuel is handled before this branch")
-            }
-        }
-    if (result == null) {
+@Composable
+private fun LmuWindowsFuelContent(
+    virtualEnergy: LmuWindowsVirtualEnergyData?,
+    lmuWindowsTelemetry: LmuWindowsTelemetryData?,
+) {
+    val remainingPercent = calculateLmuVirtualEnergyRemainingPercent(virtualEnergy)
+    if (remainingPercent == null) {
         Text(text = stringResource(Res.string.debug_state_flag_info_unavailable))
         return
     }
+    val consumption = calculateLmuVirtualEnergyConsumption(virtualEnergy, lmuWindowsTelemetry)
     Column {
-        Text(text = stringResource(perLapTextRes, formatOneDecimal(result.consumptionPerLap)))
         Text(
             text =
                 stringResource(
-                    Res.string.debug_state_fuel_consumption_remaining_laps,
-                    formatOneDecimal(result.preciseRemainingLaps),
+                    Res.string.debug_state_fuel_consumption_remaining_percent,
+                    formatOneDecimal(remainingPercent),
                 ),
         )
+        if (consumption != null) {
+            Text(
+                text =
+                    stringResource(
+                        Res.string.debug_state_fuel_consumption_per_lap_ratio,
+                        formatOneDecimal(consumption.consumptionPerLap),
+                    ),
+            )
+            Text(
+                text =
+                    stringResource(
+                        Res.string.debug_state_fuel_consumption_remaining_laps,
+                        formatOneDecimal(consumption.preciseRemainingLaps),
+                    ),
+            )
+        }
     }
 }
 
