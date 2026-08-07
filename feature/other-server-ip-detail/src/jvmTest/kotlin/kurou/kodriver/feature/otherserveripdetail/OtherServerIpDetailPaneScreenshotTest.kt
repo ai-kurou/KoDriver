@@ -132,6 +132,8 @@ class OtherServerIpDetailPaneScreenshotTest {
             onAllNodes(isRoot()).get(0).captureRoboImage()
         }
 
+    // discoveredServersが非空かつisCheckingConnectivityがfalseのためCircularProgressIndicatorが表示されず、
+    // 他のテストと異なりmainClock.autoAdvance = falseは不要。
     @Test
     fun `見つかったWindows版KoDriverを選択ボタン表示`() =
         composeScreenshotTest {
