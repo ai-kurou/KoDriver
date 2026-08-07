@@ -2,13 +2,11 @@
 
 package kurou.kodriver.presentation
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import com.github.takahirom.roborazzi.captureRoboImage
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
@@ -18,7 +16,6 @@ import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailPaneContent
 import kurou.kodriver.feature.otherserveripdetail.OtherServerIpDetailUiState
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailPaneContent
 import kurou.kodriver.feature.othervolumedetail.OtherVolumeDetailUiState
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -30,13 +27,9 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [36], qualifiers = "w840dp-h640dp")
 class OtherContentScreenshotTest {
-    @get:Rule
-    val rule = createAndroidComposeRule<ComponentActivity>()
-
     @Test
     fun `Windows版KoDriverへ接続するIPアドレス詳細を表示`() {
-        rule.mainClock.autoAdvance = false
-        rule.setContent {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             AppTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -59,15 +52,11 @@ class OtherContentScreenshotTest {
                 }
             }
         }
-
-        rule.activity.window.decorView
-            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
 
     @Test
     fun `ゲーム機とSimHubへ接続するIPアドレス詳細を表示`() {
-        rule.mainClock.autoAdvance = false
-        rule.setContent {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             AppTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -90,15 +79,11 @@ class OtherContentScreenshotTest {
                 }
             }
         }
-
-        rule.activity.window.decorView
-            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
 
     @Test
     fun `音量詳細を表示`() {
-        rule.mainClock.autoAdvance = false
-        rule.setContent {
+        captureRoboImage(roborazziOptions = defaultRoborazziOptions) {
             AppTheme {
                 Surface {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -121,8 +106,5 @@ class OtherContentScreenshotTest {
                 }
             }
         }
-
-        rule.activity.window.decorView
-            .captureRoboImage(roborazziOptions = defaultRoborazziOptions)
     }
 }
