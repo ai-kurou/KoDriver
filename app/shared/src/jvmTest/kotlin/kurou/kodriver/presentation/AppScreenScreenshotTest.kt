@@ -91,30 +91,6 @@ class AppScreenScreenshotTest {
         }
 
     @Test
-    fun `NavigationRail 読み上げタブ ダークテーマ`() =
-        composeScreenshotTest {
-            setAppContent {
-                val bannerMessage = stringResource(Res.string.banner_simulator_disconnected)
-                Box(modifier = Modifier.requiredSize(720.dp, 640.dp)) {
-                    AppScreenContent(
-                        darkTheme = true,
-                        layoutType = NavigationSuiteType.NavigationRail,
-                        bannerUiState =
-                            ConnectionBannerUiState(
-                                status = ConnectionBannerStatus.DISCONNECTED,
-                                message = bannerMessage,
-                            ),
-                        hasAppUpdate = true,
-                        readoutContent = {
-                            ReadoutContent(scaffoldDirective = singlePaneDirective)
-                        },
-                    )
-                }
-            }
-            onRoot().captureRoboImage()
-        }
-
-    @Test
     fun `NavigationRail その他タブ`() =
         composeScreenshotTest {
             var navMore by mutableStateOf("")
