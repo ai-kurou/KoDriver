@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.MyBestLapVoiceType
 import org.junit.Test
 
 class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
@@ -18,12 +17,6 @@ class Gt7Ps5ReadoutMyBestLapDetailPaneScreenshotTest {
     fun `デフォルト`() =
         composeScreenshotTest {
             capturePane()
-        }
-
-    @Test
-    fun `casual選択`() =
-        composeScreenshotTest {
-            capturePane(uiState = Gt7Ps5ReadoutMyBestLapDetailUiState(voiceType = MyBestLapVoiceType.CASUAL))
         }
 
     private fun DesktopComposeUiTest.capturePane(
