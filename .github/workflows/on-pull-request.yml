@@ -119,17 +119,17 @@ jobs:
   desktop-screenshot-test-verify:
     uses: ./.github/workflows/_screenshot-test-verify.yml
     with:
-      task-suffix: Jvm
-      snapshot-path-glob: "*/jvmTest/snapshots/*.png"
-      timeout-minutes: 25
+      taskSuffix: Jvm
+      snapshotPathGlob: "*/jvmTest/snapshots/*.png"
+      timeoutMinutes: 25
     secrets: inherit
 
   android-screenshot-test-verify:
     uses: ./.github/workflows/_screenshot-test-verify.yml
     with:
-      task-suffix: AndroidHost
-      snapshot-path-glob: "*/androidHostTest/snapshots/*.png"
-      timeout-minutes: 23
+      taskSuffix: AndroidHost
+      snapshotPathGlob: "*/androidHostTest/snapshots/*.png"
+      timeoutMinutes: 23
     secrets: inherit
 
   desktop-test:

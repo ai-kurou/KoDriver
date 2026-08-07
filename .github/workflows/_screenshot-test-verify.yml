@@ -3,15 +3,15 @@ name: _Screenshot Test Verify
 on:
   workflow_call:
     inputs:
-      task-suffix:
+      taskSuffix:
         description: 'Roborazzi の verify/record タスク名のサフィックス（例: Jvm, AndroidHost）'
         type: string
         required: true
-      snapshot-path-glob:
+      snapshotPathGlob:
         description: 'golden 画像の find -path パターン（例: */jvmTest/snapshots/*.png）'
         type: string
         required: true
-      timeout-minutes:
+      timeoutMinutes:
         type: number
         required: true
     secrets:
@@ -21,7 +21,7 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout-minutes }}
+    timeout-minutes: ${{ inputs.timeoutMinutes }}
     permissions:
       contents: write
 
@@ -36,11 +36,11 @@ jobs:
       - name: Verify screenshot tests
         id: verify
         continue-on-error: true
-        run: ./gradlew verifyRoborazzi${{ inputs.task-suffix }}Tests
+        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests
 
       - name: Record golden images
         if: steps.verify.outcome == 'failure'
-        run: ./gradlew recordRoborazzi${{ inputs.task-suffix }}Tests
+        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests
 
       - name: Commit updated golden images
         if: steps.verify.outcome == 'failure'
@@ -49,7 +49,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          find . -path "${{ inputs.snapshot-path-glob }}" -not -path "*/build/*" -print0 | xargs -0 -r git add
+          find . -path "${{ inputs.snapshotPathGlob }}" -not -path "*/build/*" -print0 | xargs -0 -r git add
           if git diff --staged --quiet; then
             echo "No golden image changes to commit"
           else
