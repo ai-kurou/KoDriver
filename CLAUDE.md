@@ -150,9 +150,8 @@ feature の `companion object` や `Pane.kt` に仕様値を置くと、`:core:d
 
 スクリーンショットテストの画面サイズは、目的別にできるだけ以下へ揃えること。
 
-- listPane などの一覧単体: `360.dp x 640.dp`
-- detailPane などの詳細単体: `480.dp x 640.dp`
-- 項目が多く縦方向の収まりを確認したい detailPane: `480.dp x 800.dp`
+- listPane などの一覧単体: `360.dp x 1080.dp`
+- detailPane などの詳細単体: `1560.dp x 1080.dp`
 - list/detail などアプリ全体・2ペイン構成: `720.dp x 640.dp` または `840.dp x 640.dp`
 - ダイアログ表示用のホスト: `480.dp x 320.dp`
 - デスクトップ Splash など独立したウィンドウ: 既存の専用サイズ

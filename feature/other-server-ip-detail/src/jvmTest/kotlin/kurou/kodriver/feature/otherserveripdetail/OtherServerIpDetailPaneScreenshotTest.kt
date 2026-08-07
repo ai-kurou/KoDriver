@@ -18,7 +18,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
                             )
@@ -35,7 +35,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState = OtherServerIpDetailUiState(inputIp = "invalid", isInputValid = false),
                             )
@@ -52,7 +52,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState = OtherServerIpDetailUiState(inputIp = ""),
                             )
@@ -69,7 +69,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState =
                                     OtherServerIpDetailUiState(
@@ -90,7 +90,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState =
                                     OtherServerIpDetailUiState(
@@ -111,7 +111,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState =
                                     OtherServerIpDetailUiState(
@@ -132,7 +132,7 @@ class OtherServerIpDetailPaneScreenshotTest {
             setContent {
                 KoDriverTheme {
                     Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                             OtherServerIpDetailPaneContent(
                                 uiState =
                                     OtherServerIpDetailUiState(

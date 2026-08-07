@@ -31,7 +31,7 @@ class Gt7Ps5ReadoutRemainingFuelLapsDetailPaneScreenshotTest {
         setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                         Gt7Ps5ReadoutRemainingFuelLapsDetailPaneContent(uiState = uiState)
                     }
                 }

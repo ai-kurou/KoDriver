@@ -38,7 +38,7 @@ class OtherFeedbackDetailPaneScreenshotTest {
         setContent {
             KoDriverTheme {
                 Surface {
-                    Box(modifier = Modifier.requiredSize(480.dp, 640.dp)) {
+                    Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
                         OtherFeedbackDetailPaneContent(uiState = uiState)
                     }
                 }
