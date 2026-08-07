@@ -181,6 +181,7 @@ class AppScreenContentTest {
                         modifier = Modifier.clickable(onClick = onFeedbackClick),
                     )
                 },
+                otherContent = { Text("OtherContent") },
             )
         }
 
@@ -190,7 +191,7 @@ class AppScreenContentTest {
         rule.waitForIdle()
 
         assertEquals(1, feedbackClickCount)
-        rule.onNode(hasText("その他")).assertExists()
+        rule.onNodeWithText("OtherContent").assertExists()
     }
 
     @Test
