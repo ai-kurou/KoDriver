@@ -1,0 +1,70 @@
+name: _Screenshot Test Verify
+
+on:
+  workflow_call:
+    inputs:
+      taskSuffix:
+        description: 'Roborazzi の verify/record タスク名のサフィックス（例: Jvm, AndroidHost）'
+        type: string
+        required: true
+      snapshotPathGlob:
+        description: 'golden 画像の find -path パターン（例: */jvmTest/snapshots/*.png）'
+        type: string
+        required: true
+      timeoutMinutes:
+        type: number
+        required: true
+    secrets:
+      GH_PAT:
+        required: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeoutMinutes }}
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: ./.github/actions/setup-screenshot
+
+      - name: Verify screenshot tests
+        id: verify
+        continue-on-error: true
+        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests
+
+      - name: Record golden images
+        if: steps.verify.outcome == 'failure'
+        run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests
+
+      - name: Commit updated golden images
+        if: steps.verify.outcome == 'failure'
+        env:
+          TARGET_REF: ${{ github.head_ref }}
+          SNAPSHOT_PATH_GLOB: ${{ inputs.snapshotPathGlob }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          find . -path "$SNAPSHOT_PATH_GLOB" -not -path "*/build/*" -print0 | xargs -0 -r git add
+          if git diff --staged --quiet; then
+            echo "No golden image changes to commit"
+          else
+            git commit -m "chore: update golden images"
+            for attempt in 1 2 3; do
+              git pull --rebase origin "$TARGET_REF"
+              git push origin "HEAD:$TARGET_REF" && break
+              if [ "$attempt" = "3" ]; then
+                exit 1
+              fi
+              sleep 5
+            done
+          fi
+
+      - name: Fail when golden images were stale
+        if: steps.verify.outcome == 'failure'
+        run: exit 1
