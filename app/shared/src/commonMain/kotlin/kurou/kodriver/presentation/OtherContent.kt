@@ -164,7 +164,7 @@ internal fun OtherContent(
     }
     val paneExpansionState =
         rememberPaneExpansionState(
-            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(450.dp)),
+            anchors = listOf(PaneExpansionAnchor.Offset.fromStart(400.dp)),
             initialAnchoredIndex = 0,
         )
 
