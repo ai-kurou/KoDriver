@@ -97,6 +97,7 @@ class OtherContentTest {
         var backEnabled = false
         var githubRepositoryOpened = false
         var releasePageOpened = false
+        var readoutStartSoundDialogOpened = false
         var themeDialogOpened = false
         var keepScreenOn = false
         var dynamicColorEnabled = false
@@ -118,6 +119,7 @@ class OtherContentTest {
                 onItemSelected = { selectedItem = it },
                 onOpenGitHubRepository = { state.githubRepositoryOpened = true },
                 onOpenReleasePage = { state.releasePageOpened = true },
+                onOpenReadoutStartSoundDialog = { state.readoutStartSoundDialogOpened = true },
                 onOpenThemeDialog = { state.themeDialogOpened = true },
                 onKeepScreenOnChange = { state.keepScreenOn = it },
                 onDynamicColorEnabledChange = { state.dynamicColorEnabled = it },
@@ -161,6 +163,7 @@ class OtherContentTest {
         onNode(hasText("読み上げ開始音")).performClick()
         waitForIdle()
 
+        assertTrue(state.readoutStartSoundDialogOpened)
         assertFalse(state.backEnabled)
 
         // Theme（ダイアログを開く）
