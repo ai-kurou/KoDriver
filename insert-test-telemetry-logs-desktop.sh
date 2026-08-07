@@ -2,7 +2,7 @@
 # デスクトップアプリの手動UI確認用に、テレメトリログを3件（LMU/GT7/ACE 各1件）
 # ~/.kodriver/telemetry_logs.db に直接INSERTするスクリプト。
 #
-# 使い方: アプリを終了した状態で ./insert-test-telemetry-logs.sh を実行し、
+# 使い方: アプリを終了した状態で ./insert-test-telemetry-logs-desktop.sh を実行し、
 # その後デスクトップアプリを起動してログタブを確認する。
 set -euo pipefail
 
