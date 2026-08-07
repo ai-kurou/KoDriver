@@ -22,16 +22,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -55,6 +58,7 @@ import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_button
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import org.jetbrains.compose.resources.stringResource
 
@@ -64,6 +68,7 @@ internal fun TelemetryLogListPane(
     modifier: Modifier = Modifier,
     onLogClick: (Long) -> Unit = {},
     onResetClick: () -> Unit = {},
+    onFeedbackClick: () -> Unit = {},
     scrollToTopRequest: Int = 0,
 ) {
     if (uiState.logs.isEmpty()) {
@@ -143,6 +148,7 @@ internal fun TelemetryLogListPane(
                         isSelected = log.id == uiState.selectedLogId,
                         raceStartedAt = raceStartedAt,
                         onClick = { onLogClick(log.id) },
+                        onFeedbackClick = onFeedbackClick,
                     )
                     HorizontalDivider()
                 }
@@ -277,6 +283,7 @@ private fun TelemetryLogListItem(
     raceStartedAt: Long,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    onFeedbackClick: () -> Unit = {},
 ) {
     val containerColor by animateColorAsState(
         targetValue =
@@ -343,6 +350,20 @@ private fun TelemetryLogListItem(
                             .size(40.dp)
                             .clip(RoundedCornerShape(6.dp)),
                 )
+            }
+        },
+        trailingContent = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                VerticalDivider(modifier = Modifier.size(width = 1.dp, height = 32.dp))
+                IconButton(onClick = onFeedbackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = stringResource(Res.string.telemetry_log_feedback_button),
+                    )
+                }
             }
         },
         colors = ListItemDefaults.colors(containerColor = containerColor),
