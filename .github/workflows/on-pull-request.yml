@@ -117,102 +117,20 @@ jobs:
           files: build/reports/kover/report.xml
 
   desktop-screenshot-test-verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.GH_PAT }}
-
-      - uses: ./.github/actions/setup-screenshot
-
-      - name: Verify JVM screenshot tests
-        id: verify
-        continue-on-error: true
-        run: ./gradlew verifyRoborazziJvmTests
-
-      - name: Record JVM golden images
-        if: steps.verify.outcome == 'failure'
-        run: ./gradlew recordRoborazziJvmTests
-
-      - name: Commit updated JVM golden images
-        if: steps.verify.outcome == 'failure'
-        env:
-          TARGET_REF: ${{ github.head_ref }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          find . -path "*/jvmTest/snapshots/*.png" -not -path "*/build/*" -print0 | xargs -0 -r git add
-          if git diff --staged --quiet; then
-            echo "No JVM golden image changes to commit"
-          else
-            git commit -m "chore: update golden images"
-            for attempt in 1 2 3; do
-              git pull --rebase origin "$TARGET_REF"
-              git push origin "HEAD:$TARGET_REF" && break
-              if [ "$attempt" = "3" ]; then
-                exit 1
-              fi
-              sleep 5
-            done
-          fi
-
-      - name: Fail when JVM golden images were stale
-        if: steps.verify.outcome == 'failure'
-        run: exit 1
+    uses: ./.github/workflows/_screenshot-test-verify.yml
+    with:
+      task-suffix: Jvm
+      snapshot-path-glob: "*/jvmTest/snapshots/*.png"
+      timeout-minutes: 25
+    secrets: inherit
 
   android-screenshot-test-verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 23
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.GH_PAT }}
-
-      - uses: ./.github/actions/setup-screenshot
-
-      - name: Verify Android screenshot tests
-        id: verify
-        continue-on-error: true
-        run: ./gradlew verifyRoborazziAndroidHostTests
-
-      - name: Record Android golden images
-        if: steps.verify.outcome == 'failure'
-        run: ./gradlew recordRoborazziAndroidHostTests
-
-      - name: Commit updated Android golden images
-        if: steps.verify.outcome == 'failure'
-        env:
-          TARGET_REF: ${{ github.head_ref }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          find . -path "*/androidHostTest/snapshots/*.png" -not -path "*/build/*" -print0 | xargs -0 -r git add
-          if git diff --staged --quiet; then
-            echo "No Android golden image changes to commit"
-          else
-            git commit -m "chore: update golden images"
-            for attempt in 1 2 3; do
-              git pull --rebase origin "$TARGET_REF"
-              git push origin "HEAD:$TARGET_REF" && break
-              if [ "$attempt" = "3" ]; then
-                exit 1
-              fi
-              sleep 5
-            done
-          fi
-
-      - name: Fail when Android golden images were stale
-        if: steps.verify.outcome == 'failure'
-        run: exit 1
+    uses: ./.github/workflows/_screenshot-test-verify.yml
+    with:
+      task-suffix: AndroidHost
+      snapshot-path-glob: "*/androidHostTest/snapshots/*.png"
+      timeout-minutes: 23
+    secrets: inherit
 
   desktop-test:
     runs-on: ubuntu-latest
