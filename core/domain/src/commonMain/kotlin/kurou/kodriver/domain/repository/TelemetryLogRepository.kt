@@ -19,4 +19,6 @@ interface TelemetryLogRepository {
     )
 
     suspend fun deleteAllTelemetryLogs()
+
+    suspend fun deleteTelemetryLog(id: Long)
 }
