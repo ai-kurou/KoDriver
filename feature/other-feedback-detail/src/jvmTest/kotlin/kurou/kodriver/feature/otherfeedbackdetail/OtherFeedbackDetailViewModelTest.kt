@@ -325,7 +325,17 @@ class OtherFeedbackDetailViewModelTest {
             val log = telemetryLog(id = 1L, telemetryJson = """{"lapCount":1}""")
             every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
                 flowOf(TelemetryLogDetail(current = log, previous = null))
-            coEvery { repository.send(any()) } returns Result.success(Unit)
+            val feedback =
+                Feedback(
+                    type = FeedbackType.BugReport,
+                    message = "添付します",
+                    name = "Kurou",
+                    email = "user@example.com",
+                    includesDiagnostics = true,
+                    telemetryLogId = 1L,
+                    telemetryLogJson = """{"lapCount":1}""",
+                )
+            coEvery { repository.send(feedback) } returns Result.success(Unit)
             val viewModel = createViewModel()
             val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
             viewModel.setTelemetryLogId(1L)
@@ -336,21 +346,10 @@ class OtherFeedbackDetailViewModelTest {
             viewModel.onEmailChanged("user@example.com")
             viewModel.onSend()
 
-            assertTrue(viewModel.uiState.value.isSent)
-            assertNull(viewModel.uiState.value.attachedTelemetryLog)
-            coVerify(exactly = 1) {
-                repository.send(
-                    Feedback(
-                        type = FeedbackType.BugReport,
-                        message = "添付します",
-                        name = "Kurou",
-                        email = "user@example.com",
-                        includesDiagnostics = true,
-                        telemetryLogId = 1L,
-                        telemetryLogJson = """{"lapCount":1}""",
-                    ),
-                )
-            }
+            val sentState = viewModel.uiState.first { it.isSent && it.attachedTelemetryLog == null }
+            assertTrue(sentState.isSent)
+            assertNull(sentState.attachedTelemetryLog)
+            coVerify(exactly = 1) { repository.send(feedback) }
             verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
             confirmVerified(repository, telemetryLogRepository)
             collectionJob.cancel()
