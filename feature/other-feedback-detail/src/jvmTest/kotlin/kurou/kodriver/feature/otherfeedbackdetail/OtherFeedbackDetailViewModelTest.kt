@@ -6,12 +6,16 @@ import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -19,13 +23,20 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.domain.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,6 +45,9 @@ class OtherFeedbackDetailViewModelTest {
 
     @MockK
     private lateinit var repository: FeedbackRepository
+
+    @MockK
+    private lateinit var telemetryLogRepository: TelemetryLogRepository
 
     @BeforeTest
     fun setUp() {
@@ -46,7 +60,20 @@ class OtherFeedbackDetailViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = OtherFeedbackDetailViewModel(SendFeedbackUseCase(repository))
+    private fun createViewModel() =
+        OtherFeedbackDetailViewModel(
+            SendFeedbackUseCase(repository),
+            ObserveTelemetryLogDetailUseCase(telemetryLogRepository),
+        )
+
+    private fun telemetryLog(id: Long) =
+        TelemetryLog(
+            id = id,
+            createdAt = 0L,
+            simulator = Simulator.LmuWindows,
+            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+            telemetryJson = "",
+        )
 
     @Test
     fun `必須項目が空なら送信せずエラーを表示する`() =
@@ -217,4 +244,40 @@ class OtherFeedbackDetailViewModelTest {
 
         assertFalse(uiState.canSend)
     }
+
+    @Test
+    fun `setTelemetryLogIdで指定したログが添付される`() =
+        runTest {
+            val log = telemetryLog(id = 1L)
+            every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
+                flowOf(TelemetryLogDetail(current = log, previous = null))
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.setTelemetryLogId(1L)
+
+            assertEquals(log, viewModel.uiState.first { it.attachedTelemetryLog != null }.attachedTelemetryLog)
+            verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
+            confirmVerified(telemetryLogRepository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `onDetachTelemetryLogで添付を解除する`() =
+        runTest {
+            val log = telemetryLog(id = 1L)
+            every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
+                flowOf(TelemetryLogDetail(current = log, previous = null))
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            viewModel.setTelemetryLogId(1L)
+            viewModel.uiState.first { it.attachedTelemetryLog != null }
+
+            viewModel.onDetachTelemetryLog()
+
+            assertNull(viewModel.uiState.first { it.attachedTelemetryLog == null }.attachedTelemetryLog)
+            verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
+            confirmVerified(telemetryLogRepository)
+            collectionJob.cancel()
+        }
 }

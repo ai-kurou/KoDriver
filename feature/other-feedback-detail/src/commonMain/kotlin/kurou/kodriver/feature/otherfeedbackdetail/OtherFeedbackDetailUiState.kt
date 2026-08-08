@@ -1,6 +1,7 @@
 package kurou.kodriver.feature.otherfeedbackdetail
 
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.TelemetryLog
 
 private val EMAIL_REGEX = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 
@@ -17,6 +18,7 @@ data class OtherFeedbackDetailUiState(
     val showMessageError: Boolean = false,
     val showNameError: Boolean = false,
     val showEmailError: Boolean = false,
+    val attachedTelemetryLog: TelemetryLog? = null,
 ) {
     val canSend: Boolean
         get() = message.isNotBlank() && name.isNotBlank() && isValidEmail(email) && !isSending
