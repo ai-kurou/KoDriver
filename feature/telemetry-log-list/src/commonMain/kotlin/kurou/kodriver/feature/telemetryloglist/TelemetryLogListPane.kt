@@ -22,8 +22,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -360,7 +360,7 @@ private fun TelemetryLogListItem(
                 VerticalDivider(modifier = Modifier.size(width = 1.dp, height = 32.dp))
                 IconButton(onClick = onFeedbackClick) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        imageVector = Icons.Default.Feedback,
                         contentDescription = stringResource(Res.string.telemetry_log_feedback_button),
                     )
                 }
