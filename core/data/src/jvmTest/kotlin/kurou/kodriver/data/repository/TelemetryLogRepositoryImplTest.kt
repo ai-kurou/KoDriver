@@ -58,6 +58,24 @@ class TelemetryLogRepositoryImplTest {
         }
 
     @Test
+    fun `deleteTelemetryLogは指定idのログのみ削除する`() =
+        runTest {
+            val dao =
+                FakeTelemetryLogDao(
+                    initialLogs =
+                        listOf(
+                            telemetryLogEntity(id = 1L, createdAt = 1000L),
+                            telemetryLogEntity(id = 2L, createdAt = 2000L),
+                        ),
+                )
+            val repository = TelemetryLogRepositoryImpl(dao)
+
+            repository.deleteTelemetryLog(1L)
+
+            assertEquals(listOf(telemetryLogEntity(id = 2L, createdAt = 2000L)), dao.logs.first())
+        }
+
+    @Test
     fun `observeTelemetryLogsはDomainへ変換して観測する`() =
         runTest {
             val dao =
@@ -198,6 +216,10 @@ private class FakeTelemetryLogDao(
 
     override suspend fun deleteAll() {
         logs.update { emptyList() }
+    }
+
+    override suspend fun delete(id: Long) {
+        logs.update { it.filterNot { log -> log.id == id } }
     }
 }
 
