@@ -32,4 +32,7 @@ internal interface TelemetryLogDao {
 
     @Query("DELETE FROM telemetry_logs")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM telemetry_logs WHERE id = :id")
+    suspend fun delete(id: Long)
 }
