@@ -47,7 +47,7 @@ fun OtherContent(
     scrollToTopRequest: Int = 0,
     onOpenReadoutStartSoundDialog: () -> Unit = {},
     onOpenThemeDialog: () -> Unit = {},
-    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?) -> Unit = { _, _, _, _ -> },
+    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: OtherListViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -123,7 +123,7 @@ internal fun OtherContent(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
-    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?) -> Unit = { _, _, _, _ -> },
+    detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
@@ -213,6 +213,7 @@ internal fun OtherContent(
                         navigator.canNavigateBack(),
                         navigateBack,
                         uiState.selectedFeedbackTelemetryLogId,
+                        uiState.feedbackAttachRequestId,
                     )
                 }
             }
