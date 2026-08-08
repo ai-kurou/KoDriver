@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 
 /**
@@ -18,12 +19,15 @@ import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 class TelemetryLogListViewModel internal constructor(
     observeSortedTelemetryLogs: ObserveSortedTelemetryLogsUseCase,
     private val resetTelemetryLogDatabase: ResetTelemetryLogDatabaseUseCase,
+    private val deleteTelemetryLog: DeleteTelemetryLogUseCase,
 ) : ViewModel() {
     private val _selectedLogId = MutableStateFlow<Long?>(null)
     private val _resetState = MutableStateFlow(ResetState())
     private val _showResetConfirmDialog = MutableStateFlow(false)
+    private val _deleteState = MutableStateFlow(DeleteState())
+    private val _pendingDeleteLogId = MutableStateFlow<Long?>(null)
 
-    val uiState: StateFlow<TelemetryLogListUiState> =
+    private val resetUiState =
         combine(
             observeSortedTelemetryLogs(),
             _selectedLogId,
@@ -36,6 +40,19 @@ class TelemetryLogListViewModel internal constructor(
                 isResetting = resetState.isResetting,
                 resetSucceeded = resetState.resetSucceeded,
                 showResetConfirmDialog = showResetConfirmDialog,
+            )
+        }
+
+    val uiState: StateFlow<TelemetryLogListUiState> =
+        combine(
+            resetUiState,
+            _deleteState,
+            _pendingDeleteLogId,
+        ) { baseUiState, deleteState, pendingDeleteLogId ->
+            baseUiState.copy(
+                pendingDeleteLogId = pendingDeleteLogId,
+                isDeleting = deleteState.isDeleting,
+                deleteSucceeded = deleteState.deleteSucceeded,
             )
         }.stateIn(
             viewModelScope,
@@ -84,8 +101,47 @@ class TelemetryLogListViewModel internal constructor(
         _resetState.update { it.copy(resetSucceeded = null) }
     }
 
+    fun onDeleteClick(id: Long) {
+        _pendingDeleteLogId.update { id }
+    }
+
+    fun onDeleteDismiss() {
+        _pendingDeleteLogId.update { null }
+    }
+
+    fun onDeleteConfirm() {
+        val id = _pendingDeleteLogId.value ?: return
+        _pendingDeleteLogId.update { null }
+        deleteLog(id)
+    }
+
+    fun consumeDeleteResult() {
+        _deleteState.update { it.copy(deleteSucceeded = null) }
+    }
+
+    private fun deleteLog(id: Long) {
+        viewModelScope.launch {
+            _deleteState.update { it.copy(isDeleting = true, deleteSucceeded = null) }
+            val succeeded =
+                try {
+                    deleteTelemetryLog(id)
+                    true
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    false
+                }
+            _deleteState.update { it.copy(isDeleting = false, deleteSucceeded = succeeded) }
+        }
+    }
+
     private data class ResetState(
         val isResetting: Boolean = false,
         val resetSucceeded: Boolean? = null,
+    )
+
+    private data class DeleteState(
+        val isDeleting: Boolean = false,
+        val deleteSucceeded: Boolean? = null,
     )
 }
