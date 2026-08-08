@@ -74,7 +74,9 @@ class OtherContentTest {
                     backEnabled = enabled
                     capturedOnBack = onBack
                 },
-                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit -> Text("Detail: ${item.id}") },
+                detailContent = { item: OtherListItemType, _: Boolean, _: () -> Unit, _: Long? ->
+                    Text("Detail: ${item.id}")
+                },
             )
         }
 

@@ -62,16 +62,25 @@ class OtherListViewModel(
             return
         }
         _uiState.update { current ->
-            current.copy(selectedItem = if (current.selectedItem == itemType) null else itemType)
+            current.copy(
+                selectedItem = if (current.selectedItem == itemType) null else itemType,
+                selectedFeedbackTelemetryLogId = null,
+            )
         }
     }
 
     fun selectItem(itemType: OtherListItemType) {
-        _uiState.update { it.copy(selectedItem = itemType) }
+        _uiState.update { it.copy(selectedItem = itemType, selectedFeedbackTelemetryLogId = null) }
+    }
+
+    fun selectFeedbackItem(telemetryLogId: Long) {
+        _uiState.update {
+            it.copy(selectedItem = OtherListItemType.Feedback, selectedFeedbackTelemetryLogId = telemetryLogId)
+        }
     }
 
     fun clearSelectedItem() {
-        _uiState.update { it.copy(selectedItem = null) }
+        _uiState.update { it.copy(selectedItem = null, selectedFeedbackTelemetryLogId = null) }
     }
 
     fun onKeepScreenOnChange(enabled: Boolean) {

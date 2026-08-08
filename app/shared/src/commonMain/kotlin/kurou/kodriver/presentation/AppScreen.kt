@@ -103,6 +103,19 @@ private fun withTabSwitch(
         null
     }
 
+private fun <T> withTabSwitchWithArg(
+    action: ((T) -> Unit)?,
+    switchToMore: () -> Unit,
+): ((T) -> Unit)? =
+    if (action != null) {
+        { arg ->
+            switchToMore()
+            action(arg)
+        }
+    } else {
+        null
+    }
+
 internal fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListItemType =
     when (this) {
         ConnectionBannerNavigationTarget.ConsoleIp -> OtherListItemType.ConsoleIp
@@ -186,7 +199,7 @@ private fun DefaultOtherContent(
         scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
-        detailContent = { itemType, canNavigateBack, onBack ->
+        detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId ->
             when (itemType) {
                 OtherListItemType.ServerIp -> {
                     OtherServerIpDetailPane(canNavigateBack, onBack)
@@ -205,7 +218,7 @@ private fun DefaultOtherContent(
                 }
 
                 OtherListItemType.Feedback -> {
-                    OtherFeedbackDetailPane(canNavigateBack, onBack)
+                    OtherFeedbackDetailPane(canNavigateBack, onBack, telemetryLogId = feedbackTelemetryLogId)
                 }
 
                 OtherListItemType.DebugState -> {
@@ -242,7 +255,7 @@ fun AppScreen(
             detailContent = { itemType -> ReadoutItemDetailContent(itemType) },
         )
     },
-    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: () -> Unit) -> Unit = {
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = {
         scrollToTopRequest,
         onFeedbackClick,
         ->
@@ -301,7 +314,7 @@ fun AppScreen(
                 bannerUiState = bannerUiState,
                 onSelectOtherItem = otherListViewModel::selectItem,
             ),
-        onFeedbackClick = { otherListViewModel.selectItem(OtherListItemType.Feedback) },
+        onFeedbackClick = { telemetryLogId -> otherListViewModel.selectFeedbackItem(telemetryLogId) },
         onReadoutTabReselected = {
             handleTabReselected(
                 selectedItem = readoutListUiState.selectedItem,
@@ -365,13 +378,13 @@ internal fun AppScreenContent(
     hasAppUpdate: Boolean = false,
     keepScreenOn: Boolean = false,
     onBannerTap: (() -> Unit)? = null,
-    onFeedbackClick: (() -> Unit)? = null,
+    onFeedbackClick: ((Long) -> Unit)? = null,
     onReadoutTabReselected: () -> Unit = {},
     onLogTabReselected: () -> Unit = {},
     onOtherTabReselected: () -> Unit = {},
     readoutContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     readoutListScrollToTopRequest: Int = 0,
-    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: () -> Unit) -> Unit = { _, _ -> },
+    telemetryLogContent: @Composable (scrollToTopRequest: Int, onFeedbackClick: (Long) -> Unit) -> Unit = { _, _ -> },
     telemetryLogListScrollToTopRequest: Int = 0,
     otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     otherListScrollToTopRequest: Int = 0,
@@ -382,7 +395,7 @@ internal fun AppScreenContent(
             currentDestination = AppDestination.More
         }
     val onFeedbackClickWithTabSwitch =
-        withTabSwitch(onFeedbackClick) {
+        withTabSwitchWithArg(onFeedbackClick) {
             currentDestination = AppDestination.More
         }
 

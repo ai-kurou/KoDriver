@@ -59,6 +59,7 @@ fun OtherFeedbackDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    telemetryLogId: Long? = null,
 ) {
     val viewModel: OtherFeedbackDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

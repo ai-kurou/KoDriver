@@ -9,6 +9,7 @@ import kurou.kodriver.domain.model.KEEP_SCREEN_ON_ENABLED_DEFAULT
 data class OtherListUiState(
     val items: List<OtherListItemType> = buildOtherListItems(),
     val selectedItem: OtherListItemType? = null,
+    val selectedFeedbackTelemetryLogId: Long? = null,
     val hasAppUpdate: Boolean = false,
     val keepScreenOn: Boolean = KEEP_SCREEN_ON_ENABLED_DEFAULT,
     val dynamicColorEnabled: Boolean = DYNAMIC_COLOR_ENABLED_DEFAULT,
