@@ -33,17 +33,10 @@ jobs:
 
       - uses: ./.github/actions/setup-screenshot
 
-      - name: Verify screenshot tests
-        id: verify
-        continue-on-error: true
-        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests
-
       - name: Record golden images
-        if: steps.verify.outcome == 'failure'
         run: ./gradlew recordRoborazzi${{ inputs.taskSuffix }}Tests
 
       - name: Commit updated golden images
-        if: steps.verify.outcome == 'failure'
         env:
           TARGET_REF: ${{ github.head_ref }}
           SNAPSHOT_PATH_GLOB: ${{ inputs.snapshotPathGlob }}
@@ -65,6 +58,5 @@ jobs:
             done
           fi
 
-      - name: Fail when golden images were stale
-        if: steps.verify.outcome == 'failure'
-        run: exit 1
+      - name: Verify screenshot tests
+        run: ./gradlew verifyRoborazzi${{ inputs.taskSuffix }}Tests
