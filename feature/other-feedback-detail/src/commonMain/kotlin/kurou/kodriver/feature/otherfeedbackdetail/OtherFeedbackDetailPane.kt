@@ -72,9 +72,10 @@ fun OtherFeedbackDetailPane(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     telemetryLogId: Long? = null,
+    telemetryLogAttachRequestId: Long = 0,
 ) {
     val viewModel: OtherFeedbackDetailViewModel = koinViewModel()
-    LaunchedEffect(telemetryLogId) {
+    LaunchedEffect(telemetryLogId, telemetryLogAttachRequestId) {
         viewModel.setTelemetryLogId(telemetryLogId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

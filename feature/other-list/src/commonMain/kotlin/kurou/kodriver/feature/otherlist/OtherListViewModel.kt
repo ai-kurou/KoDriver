@@ -75,7 +75,11 @@ class OtherListViewModel(
 
     fun selectFeedbackItem(telemetryLogId: Long) {
         _uiState.update {
-            it.copy(selectedItem = OtherListItemType.Feedback, selectedFeedbackTelemetryLogId = telemetryLogId)
+            it.copy(
+                selectedItem = OtherListItemType.Feedback,
+                selectedFeedbackTelemetryLogId = telemetryLogId,
+                feedbackAttachRequestId = it.feedbackAttachRequestId + 1,
+            )
         }
     }
 

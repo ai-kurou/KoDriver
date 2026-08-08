@@ -38,7 +38,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                 if (itemType == OtherListItemType.ServerIp) {
                                     OtherServerIpDetailPaneContent(
                                         uiState = OtherServerIpDetailUiState(inputIp = "192.168.1.100"),
@@ -65,7 +65,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                 if (itemType == OtherListItemType.ConsoleIp) {
                                     OtherConsoleIpDetailPaneContent(
                                         uiState = OtherConsoleIpDetailUiState(inputAddress = "192.168.1.100"),
@@ -92,7 +92,7 @@ class OtherContentScreenshotTest {
                             onItemSelected = {},
                             onClearSelectedItem = {},
                             scaffoldDirective = twoPaneDirective,
-                            detailContent = { itemType, canNavigateBack, onBack, _ ->
+                            detailContent = { itemType, canNavigateBack, onBack, _, _ ->
                                 if (itemType == OtherListItemType.Volume) {
                                     OtherVolumeDetailPaneContent(
                                         uiState = OtherVolumeDetailUiState(volume = 80),

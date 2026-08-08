@@ -161,9 +161,13 @@ class OtherListViewModelTest {
             val viewModel = createViewModel()
 
             viewModel.selectFeedbackItem(42L)
+            val firstRequestId = viewModel.uiState.first().feedbackAttachRequestId
+
+            viewModel.selectFeedbackItem(42L)
 
             assertEquals(OtherListItemType.Feedback, viewModel.uiState.first().selectedItem)
             assertEquals(42L, viewModel.uiState.first().selectedFeedbackTelemetryLogId)
+            assertEquals(firstRequestId + 1, viewModel.uiState.first().feedbackAttachRequestId)
             verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
             verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
             confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)

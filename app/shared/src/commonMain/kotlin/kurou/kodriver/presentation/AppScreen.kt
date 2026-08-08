@@ -199,7 +199,7 @@ private fun DefaultOtherContent(
         scrollToTopRequest = scrollToTopRequest,
         onOpenReadoutStartSoundDialog = { showReadoutStartSoundDialog = true },
         onOpenThemeDialog = { showThemeDialog = true },
-        detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId ->
+        detailContent = { itemType, canNavigateBack, onBack, feedbackTelemetryLogId, feedbackAttachRequestId ->
             when (itemType) {
                 OtherListItemType.ServerIp -> {
                     OtherServerIpDetailPane(canNavigateBack, onBack)
@@ -218,7 +218,12 @@ private fun DefaultOtherContent(
                 }
 
                 OtherListItemType.Feedback -> {
-                    OtherFeedbackDetailPane(canNavigateBack, onBack, telemetryLogId = feedbackTelemetryLogId)
+                    OtherFeedbackDetailPane(
+                        canNavigateBack,
+                        onBack,
+                        telemetryLogId = feedbackTelemetryLogId,
+                        telemetryLogAttachRequestId = feedbackAttachRequestId,
+                    )
                 }
 
                 OtherListItemType.DebugState -> {
