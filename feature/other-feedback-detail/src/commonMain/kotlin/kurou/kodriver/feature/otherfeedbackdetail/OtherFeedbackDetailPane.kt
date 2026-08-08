@@ -11,13 +11,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.Res
+import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_attached_telemetry_log_chip
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description
+import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_detach_telemetry_log
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_diagnostics_description
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_invalid
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_label
@@ -62,6 +74,9 @@ fun OtherFeedbackDetailPane(
     telemetryLogId: Long? = null,
 ) {
     val viewModel: OtherFeedbackDetailViewModel = koinViewModel()
+    LaunchedEffect(telemetryLogId) {
+        viewModel.setTelemetryLogId(telemetryLogId)
+    }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     OtherFeedbackDetailPaneContent(
         uiState = uiState,
@@ -70,6 +85,7 @@ fun OtherFeedbackDetailPane(
         onNameChanged = viewModel::onNameChanged,
         onEmailChanged = viewModel::onEmailChanged,
         onSend = viewModel::onSend,
+        onDetachTelemetryLog = viewModel::onDetachTelemetryLog,
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -87,6 +103,7 @@ fun OtherFeedbackDetailPaneContent(
     onNameChanged: (String) -> Unit = {},
     onEmailChanged: (String) -> Unit = {},
     onSend: () -> Unit = {},
+    onDetachTelemetryLog: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -194,6 +211,13 @@ fun OtherFeedbackDetailPaneContent(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            if (uiState.attachedTelemetryLog != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                AttachedTelemetryLogChip(
+                    telemetryLog = uiState.attachedTelemetryLog,
+                    onDetach = onDetachTelemetryLog,
+                )
+            }
             Spacer(modifier = Modifier.height(16.dp))
             FeedbackStatus(uiState)
             Button(
@@ -234,6 +258,32 @@ private fun FeedbackTypeOption(
 }
 
 @Composable
+private fun AttachedTelemetryLogChip(
+    telemetryLog: TelemetryLog,
+    onDetach: () -> Unit,
+) {
+    InputChip(
+        selected = false,
+        onClick = {},
+        label = {
+            Text(stringResource(Res.string.feedback_attached_telemetry_log_chip, telemetryLog.id.toString()))
+        },
+        trailingIcon = {
+            IconButton(
+                onClick = onDetach,
+                modifier = Modifier.size(InputChipDefaults.IconSize),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(Res.string.feedback_detach_telemetry_log),
+                    modifier = Modifier.size(InputChipDefaults.IconSize),
+                )
+            }
+        },
+    )
+}
+
+@Composable
 private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
     when {
         uiState.isSent -> {
@@ -269,4 +319,22 @@ private fun FeedbackStatus(uiState: OtherFeedbackDetailUiState) {
 @Composable
 private fun OtherFeedbackDetailPanePreview() {
     OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtherFeedbackDetailPaneAttachedTelemetryLogPreview() {
+    OtherFeedbackDetailPaneContent(
+        uiState =
+            OtherFeedbackDetailUiState(
+                attachedTelemetryLog =
+                    TelemetryLog(
+                        id = 1L,
+                        createdAt = 0L,
+                        simulator = Simulator.LmuWindows,
+                        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                        telemetryJson = "",
+                    ),
+            ),
+    )
 }

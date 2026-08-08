@@ -14,6 +14,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -165,6 +168,67 @@ class OtherFeedbackDetailPaneTest {
         }
 
         rule.onNodeWithText("送信に失敗しました。時間をおいてもう一度お試しください。").assertExists()
+    }
+
+    @Test
+    fun `添付されたログのチップを表示する`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState =
+                        OtherFeedbackDetailUiState(
+                            attachedTelemetryLog =
+                                TelemetryLog(
+                                    id = 42L,
+                                    createdAt = 0L,
+                                    simulator = Simulator.LmuWindows,
+                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    telemetryJson = "",
+                                ),
+                        ),
+                )
+            }
+        }
+
+        rule.onNodeWithText("テレメトリログ #42 を添付").assertExists()
+    }
+
+    @Test
+    fun `ログが未添付の場合はチップを表示しない`() {
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(uiState = OtherFeedbackDetailUiState())
+            }
+        }
+
+        rule.onNode(hasContentDescription("添付を解除")).assertDoesNotExist()
+    }
+
+    @Test
+    fun `添付を解除するボタンをタップするとonDetachTelemetryLogが呼ばれる`() {
+        var detachCount = 0
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState =
+                        OtherFeedbackDetailUiState(
+                            attachedTelemetryLog =
+                                TelemetryLog(
+                                    id = 42L,
+                                    createdAt = 0L,
+                                    simulator = Simulator.LmuWindows,
+                                    readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                    telemetryJson = "",
+                                ),
+                        ),
+                    onDetachTelemetryLog = { detachCount++ },
+                )
+            }
+        }
+
+        rule.onNode(hasContentDescription("添付を解除")).performClick()
+
+        assertEquals(1, detachCount)
     }
 
     @Test

@@ -16,6 +16,8 @@
     <string name="feedback_email_required">メールアドレスを入力してください</string>
     <string name="feedback_email_invalid">有効なメールアドレスを入力してください</string>
     <string name="feedback_diagnostics_description">原因調査のため、アプリの状態も送信されます。</string>
+    <string name="feedback_attached_telemetry_log_chip">テレメトリログ #%1$s を添付</string>
+    <string name="feedback_detach_telemetry_log">添付を解除</string>
     <string name="feedback_send">送信</string>
     <string name="feedback_sending">送信中</string>
     <string name="feedback_sent">フィードバックを送信しました。</string>
