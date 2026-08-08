@@ -20,10 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `core:narrator`（`JvmSoundPlayer` / `AndroidSoundPlayer` / `WavNarratorEngine` を含む `TextToSpeechEngine` 実装群）
-  **課題**: 3つの `TextToSpeechEngine`（LMU/GT7/ACEの `WavNarratorEngine` アダプタ経由）はいずれも `single` で、`init` ブロックで自モジュールの WAV を全て ByteArray としてロードする。そのため選択中でないシミュレータの音声（3モジュール合計で 46 ファイル・約 2.8MB）も常時メモリに載る。
-  **改善案**: 選択中のシミュレータ分だけ遅延ロードする方式を検討する。narrator の共通化（`core:narrator` への切り出し）により実装箇所は1箇所に集約されたため、対応する場合の変更範囲は小さい。
-
 - **対象**: `feature:readout-list`（`ReadoutItemDisplayName.kt`）, `feature:telemetry-log-list`（`ReadoutItemDisplayName.kt`）
   **課題**: `ReadoutItemKey` を表示名に変換する `when` 式が、関数名（`itemDisplayName` / `readoutItemDisplayName`）とリソースキーの接頭辞（`item_` / `readout_item_`）以外はほぼ逐語で重複しており、約190行ある。文字列リソースも接頭辞を除けばキー名・文言ともに30項目すべて一致している（diff で確認）。先に PR #908 で解決した Simulator 表示名・アイコンの重複とまったく同じ構図。カバレッジも 51.9%（telemetry-log-list） / 62.0%（readout-list）と低く、旗の分岐がほとんど未検証。
   **改善案**: PR #908 と同じ方針で `core:designsystem` に `readoutItemDisplayName(readoutItemKeyValue: String)` を集約し、文字列リソースも designsystem 側の1箇所に寄せる。`ReadoutItemKey` は `core:domain` の型なので、#908 と同様に `ReadoutItemKey.value`（文字列 ID）を引数に取れば `core:designsystem -> core:domain` の依存を増やさずに済む。集約後は全 `ReadoutItemKey` を網羅する表示名テストを1箇所に置けば済むため、カバレッジの穴も同時に埋まる。
