@@ -109,6 +109,9 @@ internal class OtherFeedbackDetailViewModel(
                             telemetryLogJson = attachedTelemetryLog?.telemetryJson,
                         ),
                     )
+                if (result.isSuccess) {
+                    _telemetryLogId.update { null }
+                }
                 _uiState.update {
                     if (result.isSuccess) {
                         OtherFeedbackDetailUiState(type = it.type, isSent = true)
