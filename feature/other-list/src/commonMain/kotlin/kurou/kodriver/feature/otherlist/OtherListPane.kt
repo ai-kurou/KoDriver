@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Computer
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.NewReleases
@@ -175,9 +176,11 @@ private fun OtherListItemLeadingIcon(
             }
         }
 
-        OtherListItemType.Feedback,
-        OtherListItemType.License,
-        -> {
+        OtherListItemType.Feedback -> {
+            Icon(imageVector = Icons.Outlined.Feedback, contentDescription = null)
+        }
+
+        OtherListItemType.License -> {
             Icon(imageVector = Icons.Outlined.Description, contentDescription = null)
         }
 
