@@ -318,4 +318,40 @@ class OtherFeedbackDetailViewModelTest {
             confirmVerified(repository, telemetryLogRepository)
             collectionJob.cancel()
         }
+
+    @Test
+    fun `テレメトリログを添付して送信に成功したら添付が解除される`() =
+        runTest {
+            val log = telemetryLog(id = 1L, telemetryJson = """{"lapCount":1}""")
+            every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
+                flowOf(TelemetryLogDetail(current = log, previous = null))
+            val feedback =
+                Feedback(
+                    type = FeedbackType.BugReport,
+                    message = "添付します",
+                    name = "Kurou",
+                    email = "user@example.com",
+                    includesDiagnostics = true,
+                    telemetryLogId = 1L,
+                    telemetryLogJson = """{"lapCount":1}""",
+                )
+            coEvery { repository.send(feedback) } returns Result.success(Unit)
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            viewModel.setTelemetryLogId(1L)
+            viewModel.uiState.first { it.attachedTelemetryLog != null }
+
+            viewModel.onMessageChanged("添付します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+
+            val sentState = viewModel.uiState.first { it.isSent && it.attachedTelemetryLog == null }
+            assertTrue(sentState.isSent)
+            assertNull(sentState.attachedTelemetryLog)
+            coVerify(exactly = 1) { repository.send(feedback) }
+            verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
+            confirmVerified(repository, telemetryLogRepository)
+            collectionJob.cancel()
+        }
 }
