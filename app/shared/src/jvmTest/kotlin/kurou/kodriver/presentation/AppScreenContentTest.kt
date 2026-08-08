@@ -168,17 +168,17 @@ class AppScreenContentTest {
     }
 
     @Test
-    fun `telemetryLogContentのonFeedbackClickを呼ぶとその他タブに切り替わりonFeedbackClickが呼ばれる`() {
-        var feedbackClickCount = 0
+    fun `telemetryLogContentのonFeedbackClickを呼ぶとその他タブに切り替わりonFeedbackClickにログIDが渡される`() {
+        var feedbackClickedLogId: Long? = null
 
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                onFeedbackClick = { feedbackClickCount++ },
+                onFeedbackClick = { feedbackClickedLogId = it },
                 telemetryLogContent = { _, onFeedbackClick ->
                     Text(
                         text = "TelemetryLogContent",
-                        modifier = Modifier.clickable(onClick = onFeedbackClick),
+                        modifier = Modifier.clickable(onClick = { onFeedbackClick(42L) }),
                     )
                 },
                 otherContent = { Text("OtherContent") },
@@ -190,7 +190,7 @@ class AppScreenContentTest {
         rule.onNodeWithText("TelemetryLogContent").performClick()
         rule.waitForIdle()
 
-        assertEquals(1, feedbackClickCount)
+        assertEquals(42L, feedbackClickedLogId)
         rule.onNodeWithText("OtherContent").assertExists()
     }
 

@@ -68,7 +68,7 @@ internal fun TelemetryLogListPane(
     modifier: Modifier = Modifier,
     onLogClick: (Long) -> Unit = {},
     onResetClick: () -> Unit = {},
-    onFeedbackClick: () -> Unit = {},
+    onFeedbackClick: (Long) -> Unit = {},
     scrollToTopRequest: Int = 0,
 ) {
     if (uiState.logs.isEmpty()) {
@@ -148,7 +148,7 @@ internal fun TelemetryLogListPane(
                         isSelected = log.id == uiState.selectedLogId,
                         raceStartedAt = raceStartedAt,
                         onClick = { onLogClick(log.id) },
-                        onFeedbackClick = onFeedbackClick,
+                        onFeedbackClick = { onFeedbackClick(log.id) },
                     )
                     HorizontalDivider()
                 }

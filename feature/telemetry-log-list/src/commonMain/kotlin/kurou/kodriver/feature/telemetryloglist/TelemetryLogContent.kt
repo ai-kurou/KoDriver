@@ -50,7 +50,7 @@ fun TelemetryLogContent(
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
-    onFeedbackClick: () -> Unit = {},
+    onFeedbackClick: (Long) -> Unit = {},
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val viewModel = koinViewModel<TelemetryLogListViewModel>()
@@ -87,7 +87,7 @@ internal fun TelemetryLogContentScaffold(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     backHandler: AppBackHandler = { _, _, _ -> },
     scrollToTopRequest: Int = 0,
-    onFeedbackClick: () -> Unit = {},
+    onFeedbackClick: (Long) -> Unit = {},
     detailContent: @Composable (Long) -> Unit = {},
 ) {
     val navigator =

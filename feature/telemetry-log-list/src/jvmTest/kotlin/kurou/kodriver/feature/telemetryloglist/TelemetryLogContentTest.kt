@@ -26,6 +26,7 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -95,21 +96,21 @@ class TelemetryLogContentTest {
     }
 
     @Test
-    fun `フィードバックボタンをタップするとonFeedbackClickを呼ぶ`() {
-        var clicked = false
+    fun `フィードバックボタンをタップするとonFeedbackClickにログIDを渡す`() {
+        var clickedLogId: Long? = null
         rule.setContent {
             TelemetryLogContentScaffold(
                 uiState =
                     TelemetryLogListUiState(
                         logs = listOf(createTelemetryLog(id = 1)),
                     ),
-                onFeedbackClick = { clicked = true },
+                onFeedbackClick = { clickedLogId = it },
             )
         }
 
         rule.onNodeWithContentDescription("フィードバックを送信").performClick()
 
-        assertTrue(clicked)
+        assertEquals(1L, clickedLogId)
     }
 
     @Test
