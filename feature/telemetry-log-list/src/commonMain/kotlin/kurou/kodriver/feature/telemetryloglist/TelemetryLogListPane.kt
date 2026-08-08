@@ -7,8 +7,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,10 +24,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Feedback
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,9 +62,11 @@ import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_menu_item
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_description
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_empty_title
-import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_button
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_feedback_menu_item
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_more_button
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_item
 import org.jetbrains.compose.resources.stringResource
 
@@ -69,6 +77,7 @@ internal fun TelemetryLogListPane(
     onLogClick: (Long) -> Unit = {},
     onResetClick: () -> Unit = {},
     onFeedbackClick: (Long) -> Unit = {},
+    onDeleteClick: (Long) -> Unit = {},
     scrollToTopRequest: Int = 0,
 ) {
     if (uiState.logs.isEmpty()) {
@@ -149,6 +158,7 @@ internal fun TelemetryLogListPane(
                         raceStartedAt = raceStartedAt,
                         onClick = { onLogClick(log.id) },
                         onFeedbackClick = { onFeedbackClick(log.id) },
+                        onDeleteClick = { onDeleteClick(log.id) },
                     )
                     HorizontalDivider()
                 }
@@ -276,6 +286,7 @@ private fun TelemetryLogEmptyState(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TelemetryLogListItem(
     log: TelemetryLog,
@@ -284,7 +295,9 @@ private fun TelemetryLogListItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onFeedbackClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
     val containerColor by animateColorAsState(
         targetValue =
             if (isSelected) {
@@ -358,11 +371,45 @@ private fun TelemetryLogListItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 VerticalDivider(modifier = Modifier.size(width = 1.dp, height = 32.dp))
-                IconButton(onClick = onFeedbackClick) {
-                    Icon(
-                        imageVector = Icons.Default.Feedback,
-                        contentDescription = stringResource(Res.string.telemetry_log_feedback_button),
-                    )
+                Box {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = stringResource(Res.string.telemetry_log_more_button),
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.telemetry_log_feedback_menu_item)) },
+                            leadingIcon = { Icon(imageVector = Icons.Default.Feedback, contentDescription = null) },
+                            onClick = {
+                                menuExpanded = false
+                                onFeedbackClick()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(Res.string.telemetry_log_delete_menu_item),
+                                    color = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error,
+                                )
+                            },
+                            onClick = {
+                                menuExpanded = false
+                                onDeleteClick()
+                            },
+                        )
+                    }
                 }
             }
         },
@@ -370,7 +417,10 @@ private fun TelemetryLogListItem(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick),
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick = { menuExpanded = true },
+                ),
     )
 }
 
