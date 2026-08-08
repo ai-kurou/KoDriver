@@ -52,6 +52,37 @@ class SentryFeedbackRepositoryTest {
             assertEquals("feature_request", scope.tags["feedback.type"])
             val context = scope.contexts.get("kodriver.feedback") as Map<*, *>
             assertEquals(true, context["includesDiagnostics"])
+            assertTrue(!context.containsKey("telemetryLogId"))
+            assertTrue(!context.containsKey("telemetryLogJson"))
+        }
+
+    @Test
+    fun `添付されたテレメトリログの情報をコンテキストへ含めて送信する`() =
+        runTest {
+            val sentryId = SentryId("0123456789abcdef0123456789abcdef")
+            val scope = Scope(SentryOptions())
+            val repository =
+                SentryFeedbackRepository(
+                    captureFeedback = { _, _, configureScope ->
+                        configureScope.run(scope)
+                        sentryId
+                    },
+                )
+
+            val result =
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "本文",
+                        telemetryLogId = 1L,
+                        telemetryLogJson = """{"lapCount":1}""",
+                    ),
+                )
+
+            assertTrue(result.isSuccess)
+            val context = scope.contexts.get("kodriver.feedback") as Map<*, *>
+            assertEquals(1L, context["telemetryLogId"])
+            assertEquals("""{"lapCount":1}""", context["telemetryLogJson"])
         }
 
     @Test

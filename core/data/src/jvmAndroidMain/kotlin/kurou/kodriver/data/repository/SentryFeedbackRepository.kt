@@ -30,7 +30,11 @@ internal class SentryFeedbackRepository(
                 scope.setTag("feedback.type", feedback.type.tagValue)
                 scope.setContexts(
                     "kodriver.feedback",
-                    mapOf("includesDiagnostics" to feedback.includesDiagnostics),
+                    buildMap {
+                        put("includesDiagnostics", feedback.includesDiagnostics)
+                        feedback.telemetryLogId?.let { put("telemetryLogId", it) }
+                        feedback.telemetryLogJson?.let { put("telemetryLogJson", it) }
+                    },
                 )
             }
             Result.success(Unit)
