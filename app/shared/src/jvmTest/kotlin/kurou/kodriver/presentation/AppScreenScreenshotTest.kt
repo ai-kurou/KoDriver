@@ -140,7 +140,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        telemetryLogContent = { _ -> TelemetryLogContent() },
+                        telemetryLogContent = { _, _ -> TelemetryLogContent() },
                     )
                 }
             }
@@ -189,7 +189,7 @@ class AppScreenScreenshotTest {
                                 message = bannerMessage,
                             ),
                         hasAppUpdate = true,
-                        telemetryLogContent = { _ -> TelemetryLogContent() },
+                        telemetryLogContent = { _, _ -> TelemetryLogContent() },
                     )
                 }
             }

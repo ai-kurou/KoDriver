@@ -1,7 +1,9 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -155,7 +157,7 @@ class AppScreenContentTest {
         rule.setContent {
             AppScreenContent(
                 layoutType = NavigationSuiteType.NavigationBar,
-                telemetryLogContent = { _ -> Text("TelemetryLogContent") },
+                telemetryLogContent = { _, _ -> Text("TelemetryLogContent") },
             )
         }
 
@@ -163,6 +165,33 @@ class AppScreenContentTest {
         rule.waitForIdle()
 
         rule.onNodeWithText("TelemetryLogContent").assertExists()
+    }
+
+    @Test
+    fun `telemetryLogContentのonFeedbackClickを呼ぶとその他タブに切り替わりonFeedbackClickにログIDが渡される`() {
+        var feedbackClickedLogId: Long? = null
+
+        rule.setContent {
+            AppScreenContent(
+                layoutType = NavigationSuiteType.NavigationBar,
+                onFeedbackClick = { feedbackClickedLogId = it },
+                telemetryLogContent = { _, onFeedbackClick ->
+                    Text(
+                        text = "TelemetryLogContent",
+                        modifier = Modifier.clickable(onClick = { onFeedbackClick(42L) }),
+                    )
+                },
+                otherContent = { Text("OtherContent") },
+            )
+        }
+
+        rule.onNode(hasText("ログ")).performClick()
+        rule.waitForIdle()
+        rule.onNodeWithText("TelemetryLogContent").performClick()
+        rule.waitForIdle()
+
+        assertEquals(42L, feedbackClickedLogId)
+        rule.onNodeWithText("OtherContent").assertExists()
     }
 
     @Test

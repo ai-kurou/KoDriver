@@ -86,6 +86,36 @@ class SendFeedbackUseCaseTest {
         }
 
     @Test
+    fun `添付されたテレメトリログの情報はそのままRepositoryへ送信する`() =
+        runTest {
+            coEvery { repository.send(any()) } returns Result.success(Unit)
+            val useCase = SendFeedbackUseCase(repository)
+
+            val result =
+                useCase(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "本文",
+                        telemetryLogId = 1L,
+                        telemetryLogJson = """{"lapCount":1}""",
+                    ),
+                )
+
+            assertTrue(result.isSuccess)
+            coVerify(exactly = 1) {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "本文",
+                        telemetryLogId = 1L,
+                        telemetryLogJson = """{"lapCount":1}""",
+                    ),
+                )
+            }
+            confirmVerified(repository)
+        }
+
+    @Test
     fun `本文が空なら失敗してRepositoryへ送信しない`() =
         runTest {
             val useCase = SendFeedbackUseCase(repository)

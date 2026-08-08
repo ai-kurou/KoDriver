@@ -6,4 +6,6 @@ data class Feedback(
     val email: String? = null,
     val name: String? = null,
     val includesDiagnostics: Boolean = false,
+    val telemetryLogId: Long? = null,
+    val telemetryLogJson: String? = null,
 )

@@ -11,6 +11,9 @@ import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import kurou.kodriver.core.designsystem.KoDriverTheme
 import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Test
 
 class OtherFeedbackDetailPaneScreenshotTest {
@@ -30,6 +33,24 @@ class OtherFeedbackDetailPaneScreenshotTest {
                         message = "音声読み上げの条件をもう少し細かく設定できるようにしてほしいです。",
                         name = "Kurou",
                         email = "user@example.com",
+                    ),
+            )
+        }
+
+    @Test
+    fun `ログ添付済み`() =
+        composeScreenshotTest {
+            capture(
+                uiState =
+                    OtherFeedbackDetailUiState(
+                        attachedTelemetryLog =
+                            TelemetryLog(
+                                id = 42L,
+                                createdAt = 0L,
+                                simulator = Simulator.LmuWindows,
+                                readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+                                telemetryJson = "",
+                            ),
                     ),
             )
         }

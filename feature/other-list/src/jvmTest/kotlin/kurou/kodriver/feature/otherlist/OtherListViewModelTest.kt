@@ -154,6 +154,42 @@ class OtherListViewModelTest {
         }
 
     @Test
+    fun `selectFeedbackItemでフィードバック項目が選択されテレメトリログIDが保持される`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            val viewModel = createViewModel()
+
+            viewModel.selectFeedbackItem(42L)
+            val firstRequestId = viewModel.uiState.first().feedbackAttachRequestId
+
+            viewModel.selectFeedbackItem(42L)
+
+            assertEquals(OtherListItemType.Feedback, viewModel.uiState.first().selectedItem)
+            assertEquals(42L, viewModel.uiState.first().selectedFeedbackTelemetryLogId)
+            assertEquals(firstRequestId + 1, viewModel.uiState.first().feedbackAttachRequestId)
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+        }
+
+    @Test
+    fun `selectFeedbackItemの後にonItemSelectedで別項目を選択するとテレメトリログIDが解除される`() =
+        runTest {
+            every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
+            every { dynamicColorRepository.dynamicColorEnabled() } returns dynamicColorFlow
+            val viewModel = createViewModel()
+
+            viewModel.selectFeedbackItem(42L)
+            viewModel.onItemSelected(OtherListItemType.Volume)
+
+            assertNull(viewModel.uiState.first().selectedFeedbackTelemetryLogId)
+            verify(exactly = 1) { keepScreenOnRepository.keepScreenOn() }
+            verify(exactly = 1) { dynamicColorRepository.dynamicColorEnabled() }
+            confirmVerified(appUpdateRepository, keepScreenOnRepository, dynamicColorRepository)
+        }
+
+    @Test
     fun `clearSelectedItemで選択状態が解除される`() =
         runTest {
             every { keepScreenOnRepository.keepScreenOn() } returns keepScreenOnFlow
