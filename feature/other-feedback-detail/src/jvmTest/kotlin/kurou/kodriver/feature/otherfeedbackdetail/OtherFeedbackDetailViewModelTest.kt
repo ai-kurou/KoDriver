@@ -66,14 +66,16 @@ class OtherFeedbackDetailViewModelTest {
             ObserveTelemetryLogDetailUseCase(telemetryLogRepository),
         )
 
-    private fun telemetryLog(id: Long) =
-        TelemetryLog(
-            id = id,
-            createdAt = 0L,
-            simulator = Simulator.LmuWindows,
-            readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
-            telemetryJson = "",
-        )
+    private fun telemetryLog(
+        id: Long,
+        telemetryJson: String = "",
+    ) = TelemetryLog(
+        id = id,
+        createdAt = 0L,
+        simulator = Simulator.LmuWindows,
+        readoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
+        telemetryJson = telemetryJson,
+    )
 
     @Test
     fun `必須項目が空なら送信せずエラーを表示する`() =
@@ -278,6 +280,42 @@ class OtherFeedbackDetailViewModelTest {
             assertNull(viewModel.uiState.first { it.attachedTelemetryLog == null }.attachedTelemetryLog)
             verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
             confirmVerified(telemetryLogRepository)
+            collectionJob.cancel()
+        }
+
+    @Test
+    fun `添付したテレメトリログの情報を含めて送信する`() =
+        runTest {
+            val log = telemetryLog(id = 1L, telemetryJson = """{"lapCount":1}""")
+            every { telemetryLogRepository.observeTelemetryLogDetail(1L) } returns
+                flowOf(TelemetryLogDetail(current = log, previous = null))
+            coEvery { repository.send(any()) } returns Result.success(Unit)
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+            viewModel.setTelemetryLogId(1L)
+            viewModel.uiState.first { it.attachedTelemetryLog != null }
+
+            viewModel.onMessageChanged("添付します")
+            viewModel.onNameChanged("Kurou")
+            viewModel.onEmailChanged("user@example.com")
+            viewModel.onSend()
+
+            assertTrue(viewModel.uiState.value.isSent)
+            coVerify(exactly = 1) {
+                repository.send(
+                    Feedback(
+                        type = FeedbackType.BugReport,
+                        message = "添付します",
+                        name = "Kurou",
+                        email = "user@example.com",
+                        includesDiagnostics = true,
+                        telemetryLogId = 1L,
+                        telemetryLogJson = """{"lapCount":1}""",
+                    ),
+                )
+            }
+            verify(exactly = 1) { telemetryLogRepository.observeTelemetryLogDetail(1L) }
+            confirmVerified(repository, telemetryLogRepository)
             collectionJob.cancel()
         }
 }

@@ -93,6 +93,7 @@ internal class OtherFeedbackDetailViewModel(
             return
         }
         if (current.isSending) return
+        val attachedTelemetryLog = uiState.value.attachedTelemetryLog
         _uiState.update { it.copy(isSending = true, isSent = false, sendFailed = false) }
         viewModelScope.launch {
             try {
@@ -104,6 +105,8 @@ internal class OtherFeedbackDetailViewModel(
                             email = current.email,
                             name = current.name,
                             includesDiagnostics = true,
+                            telemetryLogId = attachedTelemetryLog?.id,
+                            telemetryLogJson = attachedTelemetryLog?.telemetryJson,
                         ),
                     )
                 _uiState.update {
