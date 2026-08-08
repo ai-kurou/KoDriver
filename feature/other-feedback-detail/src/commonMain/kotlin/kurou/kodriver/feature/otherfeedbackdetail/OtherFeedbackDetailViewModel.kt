@@ -24,13 +24,13 @@ internal class OtherFeedbackDetailViewModel(
     private val observeTelemetryLogDetail: ObserveTelemetryLogDetailUseCase,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(OtherFeedbackDetailUiState())
-    private val telemetryLogId = MutableStateFlow<Long?>(null)
+    private val _telemetryLogId = MutableStateFlow<Long?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<OtherFeedbackDetailUiState> =
         combine(
             _uiState,
-            telemetryLogId.flatMapLatest { id ->
+            _telemetryLogId.flatMapLatest { id ->
                 if (id == null) {
                     flowOf(null)
                 } else {
@@ -46,11 +46,11 @@ internal class OtherFeedbackDetailViewModel(
         )
 
     fun setTelemetryLogId(id: Long?) {
-        telemetryLogId.update { id }
+        _telemetryLogId.update { id }
     }
 
     fun onDetachTelemetryLog() {
-        telemetryLogId.update { null }
+        _telemetryLogId.update { null }
     }
 
     fun onTypeSelected(type: FeedbackType) {
