@@ -45,4 +45,11 @@ class TelemetryLogJsonTest {
 
         assertEquals("\"plain\"", literal)
     }
+
+    @Test
+    fun `個別エスケープを持たない制御文字はuXXXX形式でエスケープする`() {
+        val literal = "abc".toJsonStringLiteral()
+
+        assertEquals("\"a\\u0008b\\u000cc\"", literal)
+    }
 }

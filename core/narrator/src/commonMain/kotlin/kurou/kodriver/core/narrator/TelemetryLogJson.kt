@@ -28,14 +28,29 @@ fun String.toJsonStringLiteral(): String =
     buildString {
         append('"')
         this@toJsonStringLiteral.forEach { char ->
-            when (char) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                '\t' -> append("\\t")
+            when {
+                char == '\\' -> append("\\\\")
+                char == '"' -> append("\\\"")
+                char == '\n' -> append("\\n")
+                char == '\r' -> append("\\r")
+                char == '\t' -> append("\\t")
+                char < CONTROL_CHARACTER_BOUNDARY -> appendUnicodeEscape(char)
                 else -> append(char)
             }
         }
         append('"')
     }
+
+/** JSON 仕様でエスケープが必須な制御文字の境界値 (U+0020)。これ未満の文字は全て `\uXXXX` でエスケープする。 */
+private const val CONTROL_CHARACTER_BOUNDARY = ' '
+
+private const val HEX_DIGITS = "0123456789abcdef"
+private const val UNICODE_ESCAPE_HEX_DIGIT_COUNT = 4
+
+private fun StringBuilder.appendUnicodeEscape(char: Char) {
+    append("\\u")
+    for (shift in (UNICODE_ESCAPE_HEX_DIGIT_COUNT - 1) downTo 0) {
+        val nibble = (char.code shr (shift * 4)) and 0xF
+        append(HEX_DIGITS[nibble])
+    }
+}
