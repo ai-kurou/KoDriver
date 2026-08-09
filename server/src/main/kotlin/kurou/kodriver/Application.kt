@@ -11,9 +11,11 @@ import io.ktor.server.routing.routing
 import io.ktor.server.websocket.WebSockets
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import kurou.kodriver.domain.model.AceWindowsFlagData
 import kurou.kodriver.domain.model.AceWindowsFuelData
 import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.domain.model.KoDriverServerFeature
 import kurou.kodriver.domain.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
 import kurou.kodriver.domain.model.LmuWindowsTelemetryData
@@ -23,6 +25,7 @@ import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
@@ -226,18 +229,42 @@ fun Application.module(useCases: KoDriverServerUseCases) {
                 ContentType.Application.Json,
             )
         }
-        flagWebSocket(useCases.observeLmuWindowsRaceFlags)
-        vehicleApproachWebSocket(useCases.observeLmuWindowsVehicleApproach)
-        vehicleDamageWebSocket(useCases.observeLmuWindowsVehicleDamage)
-        tyreCarcassTemperatureWebSocket(useCases.observeLmuWindowsTyreCarcassTemperature)
-        vehicleClassWebSocket(useCases.observeLmuWindowsVehicleClass)
-        tyreWearWebSocket(useCases.observeLmuWindowsTyreWear)
-        timingWebSocket(useCases.observeLmuWindows)
-        virtualEnergyWebSocket(useCases.observeLmuWindowsVirtualEnergy)
-        aceWindowsFuelWebSocket(useCases.observeAceWindowsFuel)
-        aceWindowsFlagWebSocket(useCases.observeAceWindowsFlag)
-        aceWindowsStatusWebSocket(useCases.observeAceWindowsStatus)
-        pitStatusWebSocket(useCases.observeLmuWindowsPitStatus)
+        telemetryWebSocket(KoDriverServerFeature.FLAGS, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsRaceFlags()
+        }
+        telemetryWebSocket(KoDriverServerFeature.VEHICLE_APPROACH, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsVehicleApproach()
+        }
+        telemetryWebSocket(KoDriverServerFeature.DAMAGE, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsVehicleDamage()
+        }
+        telemetryWebSocket(KoDriverServerFeature.TYRE_CARCASS_TEMPERATURE, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsTyreCarcassTemperature()
+        }
+        telemetryWebSocket(KoDriverServerFeature.VEHICLE_CLASS, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsVehicleClass()
+        }
+        telemetryWebSocket(KoDriverServerFeature.TYRE_WEAR, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsTyreWear()
+        }
+        telemetryWebSocket(KoDriverServerFeature.MY_BEST_LAP, Simulator.LmuWindows) {
+            useCases.observeLmuWindows().map { it.timing }
+        }
+        telemetryWebSocket(KoDriverServerFeature.VIRTUAL_ENERGY, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsVirtualEnergy()
+        }
+        telemetryWebSocket(KoDriverServerFeature.FUEL, Simulator.AceWindows) {
+            useCases.observeAceWindowsFuel()
+        }
+        telemetryWebSocket(KoDriverServerFeature.FLAGS, Simulator.AceWindows) {
+            useCases.observeAceWindowsFlag()
+        }
+        telemetryWebSocket(KoDriverServerFeature.STATUS, Simulator.AceWindows) {
+            useCases.observeAceWindowsStatus()
+        }
+        telemetryWebSocket(KoDriverServerFeature.PIT_STATUS, Simulator.LmuWindows) {
+            useCases.observeLmuWindowsPitStatus()
+        }
     }
 }
 
