@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail
 
-import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
 
 internal data class LmuWindowsReadoutRemainingVirtualEnergyDetailUiState(
-    val thresholdPercentage: Int = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE,
+    val thresholdPercentage: Int = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT,
 )

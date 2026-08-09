@@ -20,7 +20,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_description
 import kurou.kodriver.feature.lmuwindowsreadout.remainingvirtualenergydetail.generated.resources.remaining_virtual_energy_threshold_description
@@ -92,7 +92,7 @@ internal fun LmuWindowsReadoutRemainingVirtualEnergyDetailPaneContent(
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
-                        defaultValue = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
+                        defaultValue = LMU_WINDOWS_REMAINING_VIRTUAL_ENERGY_THRESHOLD_PERCENTAGE_DEFAULT.toFloat(),
                         onResetToDefault = onThresholdReset,
                         resetContentDescription = stringResource(Res.string.remaining_virtual_energy_threshold_reset),
                     )
