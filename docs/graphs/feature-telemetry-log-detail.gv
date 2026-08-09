@@ -1,6 +1,8 @@
 digraph G {
   rankdir=TB
   ":app:shared" -> ":feature:telemetry-log-detail"
+  ":core:domain" -> ":core:model"
   ":feature:telemetry-log-detail" -> ":core:domain"
+  ":feature:telemetry-log-detail" -> ":core:model"
   ":feature:telemetry-log-detail" -> ":core:designsystem"
 }

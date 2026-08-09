@@ -1,5 +1,7 @@
 digraph G {
   rankdir=TB
   ":app:shared" -> ":feature:ace-windows-connection"
+  ":core:domain" -> ":core:model"
   ":feature:ace-windows-connection" -> ":core:domain"
+  ":feature:ace-windows-connection" -> ":core:model"
 }

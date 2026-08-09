@@ -1,6 +1,8 @@
 digraph G {
   rankdir=TB
   ":app:shared" -> ":feature:debug-state-detail"
+  ":core:domain" -> ":core:model"
   ":feature:debug-state-detail" -> ":core:domain"
+  ":feature:debug-state-detail" -> ":core:model"
   ":feature:debug-state-detail" -> ":core:designsystem"
 }

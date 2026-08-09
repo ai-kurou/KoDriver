@@ -1,5 +1,7 @@
 digraph G {
   rankdir=TB
   ":app:shared" -> ":feature:server-connection"
+  ":core:domain" -> ":core:model"
   ":feature:server-connection" -> ":core:domain"
+  ":feature:server-connection" -> ":core:model"
 }

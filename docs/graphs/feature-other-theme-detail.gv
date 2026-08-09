@@ -1,6 +1,8 @@
 digraph G {
   rankdir=TB
   ":app:shared" -> ":feature:other-theme-detail"
+  ":core:domain" -> ":core:model"
   ":feature:other-theme-detail" -> ":core:domain"
+  ":feature:other-theme-detail" -> ":core:model"
   ":feature:other-theme-detail" -> ":core:designsystem"
 }

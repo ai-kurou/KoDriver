@@ -1,6 +1,8 @@
 digraph G {
   rankdir=TB
   ":app:shared" -> ":feature:lmu-windows-readout-vehicle-approach-detail"
+  ":core:domain" -> ":core:model"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:domain"
+  ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:model"
   ":feature:lmu-windows-readout-vehicle-approach-detail" -> ":core:designsystem"
 }
