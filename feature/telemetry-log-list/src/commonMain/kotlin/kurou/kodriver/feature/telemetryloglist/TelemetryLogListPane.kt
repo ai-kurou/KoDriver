@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.readoutItemDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
@@ -331,7 +332,7 @@ private fun TelemetryLogListItem(
     ListItem(
         headlineContent = {
             Text(
-                text = readoutItemDisplayName(log.readoutItemKey),
+                text = readoutItemDisplayName(log.readoutItemKey.value),
                 color = headlineColor,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

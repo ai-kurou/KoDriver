@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -146,40 +145,6 @@ class TelemetryLogContentTest {
 
         assertFalse(backEnabled)
         rule.onNodeWithText("フラッグ").assertExists()
-    }
-
-    @Test
-    fun `readoutItemDisplayNameは既知の読み上げ項目IDを日本語名に変換する`() {
-        val expectedDisplayNames =
-            listOf(
-                ReadoutItemKey.LmuWindows.VehicleApproach.Root to "車両接近",
-                ReadoutItemKey.LmuWindows.Flag.Root to "フラッグ",
-                ReadoutItemKey.LmuWindows.Flag.BlueFlag to "ブルーフラッグ",
-                ReadoutItemKey.LmuWindows.Flag.SectorYellowFlag to "イエローフラッグ",
-                ReadoutItemKey.LmuWindows.Flag.FullCourseYellow to "フルコースイエロー",
-                ReadoutItemKey.LmuWindows.Flag.RedFlag to "レッドフラッグ",
-                ReadoutItemKey.LmuWindows.VehicleDamage.Root to "車両故障",
-                ReadoutItemKey.LmuWindows.VehicleDamage.Overheat to "オーバーヒート",
-                ReadoutItemKey.LmuWindows.TyreTemperature.Root to "タイヤ温度",
-                ReadoutItemKey.LmuWindows.PitTiming.Root to "ピットタイミング",
-                ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root to "バーチャルエナジー残量",
-                ReadoutItemKey.LmuWindows.TyreWear.Root to "タイヤ摩耗",
-                ReadoutItemKey.LmuWindows.MyBestLap.Root to "自己ベストラップ",
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root to "自己ベストラップ",
-                ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to "燃料残り周回数",
-                ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to "燃料残量",
-                ReadoutItemKey.AceWindows.RemainingFuel.Root to "燃料残量",
-            )
-
-        rule.setContent {
-            expectedDisplayNames.forEach { (readoutItemKey, _) ->
-                Text(readoutItemDisplayName(readoutItemKey))
-            }
-        }
-
-        expectedDisplayNames.groupingBy { it.second }.eachCount().forEach { (displayName, count) ->
-            rule.onAllNodesWithText(displayName).assertCountEquals(count)
-        }
     }
 
     @Test

@@ -26,20 +26,9 @@ import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
+import kurou.kodriver.core.designsystem.readoutItemDisplayName
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.feature.readoutlist.generated.resources.Res
-import kurou.kodriver.feature.readoutlist.generated.resources.item_flag
-import kurou.kodriver.feature.readoutlist.generated.resources.item_my_best_lap
-import kurou.kodriver.feature.readoutlist.generated.resources.item_pit_timing
-import kurou.kodriver.feature.readoutlist.generated.resources.item_remaining_fuel
-import kurou.kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
-import kurou.kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
-import kurou.kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
-import kurou.kodriver.feature.readoutlist.generated.resources.item_tyre_wear
-import kurou.kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
-import kurou.kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -175,60 +164,7 @@ internal fun ReadoutContent(
 }
 
 @Composable
-private fun selectedItemTitle(selectedItem: ReadoutListItemType): String =
-    when (selectedItem) {
-        ReadoutListItemType.LmuWindows.VehicleApproach -> {
-            stringResource(Res.string.item_vehicle_approach)
-        }
-
-        ReadoutListItemType.LmuWindows.Flag -> {
-            stringResource(Res.string.item_flag)
-        }
-
-        ReadoutListItemType.LmuWindows.VehicleDamage -> {
-            stringResource(Res.string.item_vehicle_damage)
-        }
-
-        ReadoutListItemType.LmuWindows.TyreTemperature -> {
-            stringResource(Res.string.item_tyre_temperature)
-        }
-
-        ReadoutListItemType.LmuWindows.PitTiming -> {
-            stringResource(Res.string.item_pit_timing)
-        }
-
-        ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> {
-            stringResource(Res.string.item_remaining_virtual_energy)
-        }
-
-        ReadoutListItemType.LmuWindows.TyreWear -> {
-            stringResource(Res.string.item_tyre_wear)
-        }
-
-        ReadoutListItemType.LmuWindows.MyBestLap -> {
-            stringResource(Res.string.item_my_best_lap)
-        }
-
-        ReadoutListItemType.Gt7Ps5.MyBestLap -> {
-            stringResource(Res.string.item_my_best_lap)
-        }
-
-        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
-            stringResource(Res.string.item_remaining_fuel_laps)
-        }
-
-        ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
-            stringResource(Res.string.item_remaining_fuel)
-        }
-
-        ReadoutListItemType.AceWindows.Flag -> {
-            stringResource(Res.string.item_flag)
-        }
-
-        ReadoutListItemType.AceWindows.RemainingFuel -> {
-            stringResource(Res.string.item_remaining_fuel)
-        }
-    }
+private fun selectedItemTitle(selectedItem: ReadoutListItemType): String = readoutItemDisplayName(selectedItem.id.value)
 
 @Preview(showBackground = true)
 @Composable

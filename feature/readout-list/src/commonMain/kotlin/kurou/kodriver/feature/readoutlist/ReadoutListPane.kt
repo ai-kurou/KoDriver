@@ -83,6 +83,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import kurou.kodriver.core.designsystem.readoutItemDisplayName
 import kurou.kodriver.core.designsystem.simulatorDisplayName
 import kurou.kodriver.core.designsystem.simulatorIcon
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -345,7 +346,7 @@ internal fun ReadoutListPane(
                             animationSpec = tween(durationMillis = 500),
                             label = "cardContainerColor",
                         )
-                        val itemName = itemDisplayName(item)
+                        val itemName = readoutItemDisplayName(item.value)
                         val readoutEnabled = uiState.readoutEnabledStates[item] ?: false
                         ReadoutListItemCard(
                             item = item,
