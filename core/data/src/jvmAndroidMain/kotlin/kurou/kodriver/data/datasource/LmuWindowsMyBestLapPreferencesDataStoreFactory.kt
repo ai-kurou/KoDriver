@@ -1,12 +1,11 @@
 package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
 import kurou.kodriver.data.model.MyBestLapPreferences
-import java.io.File
 
 internal fun createLmuWindowsMyBestLapPreferencesDataStore(directory: String): DataStore<MyBestLapPreferences> =
-    DataStoreFactory.create(
+    preferencesDataStore(
+        directory = directory,
+        fileName = "lmu_windows_my_best_lap_preferences.pb",
         serializer = MyBestLapPreferencesSerializer,
-        produceFile = { File("$directory/lmu_windows_my_best_lap_preferences.pb") },
     )
