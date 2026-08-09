@@ -1,12 +1,11 @@
 package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
 import kurou.kodriver.data.model.ReadoutPreferences
-import java.io.File
 
 internal fun createReadoutPreferencesDataStore(directory: String): DataStore<ReadoutPreferences> =
-    DataStoreFactory.create(
+    preferencesDataStore(
+        directory = directory,
+        fileName = "readout_preferences.pb",
         serializer = ReadoutPreferencesSerializer,
-        produceFile = { File("$directory/readout_preferences.pb") },
     )

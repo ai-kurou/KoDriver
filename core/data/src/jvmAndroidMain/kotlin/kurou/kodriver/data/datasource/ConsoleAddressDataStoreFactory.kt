@@ -1,12 +1,11 @@
 package kurou.kodriver.data.datasource
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
 import kurou.kodriver.data.model.ConsoleAddressPreferences
-import java.io.File
 
 internal fun createConsoleAddressDataStore(directory: String): DataStore<ConsoleAddressPreferences> =
-    DataStoreFactory.create(
+    preferencesDataStore(
+        directory = directory,
+        fileName = "console_address.pb",
         serializer = ConsoleAddressSerializer,
-        produceFile = { File("$directory/console_address.pb") },
     )

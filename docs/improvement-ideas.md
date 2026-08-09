@@ -20,9 +20,9 @@
 
 ## 設計・重複
 
-- **対象**: `core:data`（`datasource/*Serializer.kt`, `datasource/*DataStoreFactory.kt`, `*RepositoryFactory.kt`, `repository/*RepositoryImpl.kt`）
-  **課題**: Preferences 1種類につき Serializer / DataStoreFactory / RepositoryFactory / RepositoryImpl の4点セットが必要で、現在それぞれ 22 / 23 / 25 / 24 ファイル、合計で約94ファイルの定型コードになっている。設定を1つ増やすたびに4ファイル追加と、それぞれのテスト追加が必要。
-  **改善案**: `@Serializable` なデータクラスと DataStore ファイル名を渡せば Serializer と DataStore を組み立てられる汎用ファクトリ（例: `jsonPreferencesDataStore<T>(fileName, default)`）を用意し、個別ファイルは差分のみ持つ形にする。RepositoryImpl も `observe` / `save` の定型部分を共通化できる余地がある。
+- **対象**: `core:data`（`*RepositoryFactory.kt`, `repository/*RepositoryImpl.kt`）
+  **課題**: Serializer / DataStoreFactory は `protoBufPreferencesSerializer` / `preferencesDataStore` の汎用ファクトリへ共通化済み（`datasource/PreferencesSerializerFactory.kt`, `datasource/PreferencesDataStoreFactory.kt`）。一方 RepositoryFactory（25ファイル）と RepositoryImpl（24ファイル）は、Repository インターフェースが設定ごとに異なるプロパティ単位のメソッド（`observeThresholdPercentage()` / `saveThresholdPercentage()` 等）を持つため、同じパターンでは汎用化できず未着手のまま残っている。
+  **改善案**: RepositoryImpl を共通化するには、まず Repository インターフェース側を `observe(): Flow<T>` / `save(value: T)` のような単一プロパティ操作に統一するか、`DataStore<T>` を薄くラップするだけの共通実装（`observe = dataStore.data`, `save = dataStore::updateData`）に寄せられるか設計から見直す必要がある。インターフェース設計の変更を伴うため、Serializer/DataStoreFactory の共通化とは別の意思決定が必要。
 
 - **対象**: `core:domain`（`Simulator.kt`）, `feature:readout-list`（`ReadoutListViewModel.kt:27-28`）
   **課題**: `Simulator.entries` が private なため、シミュレータ一覧が必要な `ReadoutListViewModel` が `listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows)` を独自に再定義している。同じ `core:domain` の `ReadoutItemKey.entries` は public で、扱いが割れている。新しいシミュレータを追加したときに追加漏れがコンパイルエラーにならない。
