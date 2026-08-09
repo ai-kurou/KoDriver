@@ -2,7 +2,8 @@ package kurou.kodriver.feature.lmuwindowsnarrator
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
@@ -287,21 +288,15 @@ internal class LmuWindowsNarratorEventProcessor(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean {
-        if (queueEnabledStates[event.readoutItemKey] == true) {
-            ttsEngine.speak(event, queue = true)
-            return true
-        }
-        val currentKey = ttsEngine.currentReadoutItemKey
-        if (currentKey != null) {
-            val currentIndex = readoutOrder.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            val newIndex = readoutOrder.indexOf(event.readoutItemKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            if (newIndex >= currentIndex) return false
-            ttsEngine.stop()
-        }
-        ttsEngine.speak(event)
-        return true
-    }
+    ): Boolean =
+        speakWithPriority(
+            eventKey = event.readoutItemKey,
+            currentKey = { ttsEngine.currentReadoutItemKey },
+            readoutOrder = readoutOrder,
+            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+            speak = { queue -> ttsEngine.speak(event, queue) },
+            stop = { ttsEngine.stop() },
+        )
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
@@ -332,12 +327,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
-        """"previousVehicleApproach":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"vehicleApproach":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
+        """"previousVehicleApproach":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"vehicleApproach":${TelemetryLogJson.encodeToString(current)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 private fun buildTelemetryLogJson(
@@ -349,12 +344,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
         """"previousTelemetry":${previous?.toJson() ?: "null"},""" +
         """"telemetry":${current.toJson()},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 private fun LmuWindowsTelemetryData.toJson(): String =
@@ -375,18 +370,18 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
-        """"previousVehicleDamage":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"vehicleDamage":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
+        """"previousVehicleDamage":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"vehicleDamage":${TelemetryLogJson.encodeToString(current)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
  * タイヤ摩耗判定入力（[LmuWindowsTyreWearData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreWear]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTelemetryLogJson(
@@ -398,18 +393,18 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
-        """"previousTyreWear":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"tyreWear":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
+        """"previousTyreWear":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"tyreWear":${TelemetryLogJson.encodeToString(current)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
  * バーチャルエナジー残量判定入力（[LmuWindowsVirtualEnergyData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRemainingVirtualEnergy]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTelemetryLogJson(
@@ -421,12 +416,12 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
-        """"previousRemainingVirtualEnergy":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"remainingVirtualEnergy":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
+        """"previousRemainingVirtualEnergy":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"remainingVirtualEnergy":${TelemetryLogJson.encodeToString(current)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 private fun buildPitTimingTelemetryLogJson(
@@ -439,19 +434,19 @@ private fun buildPitTimingTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
         """"telemetry":${telemetry.toJson()},""" +
-        """"virtualEnergy":${telemetryLogJson.encodeToString(virtualEnergy)},""" +
-        """"tyreWear":${telemetryLogJson.encodeToString(tyreWear)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"virtualEnergy":${TelemetryLogJson.encodeToString(virtualEnergy)},""" +
+        """"tyreWear":${TelemetryLogJson.encodeToString(tyreWear)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
  * フラグ判定入力（[LmuWindowsRaceFlagsData]）は判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineRaceFlags]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTelemetryLogJson(
@@ -463,19 +458,19 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
-        """"previousRaceFlags":${previous?.let { telemetryLogJson.encodeToString(it) } ?: "null"},""" +
-        """"raceFlags":${telemetryLogJson.encodeToString(current)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
+        """"previousRaceFlags":${previous?.let { TelemetryLogJson.encodeToString(it) } ?: "null"},""" +
+        """"raceFlags":${TelemetryLogJson.encodeToString(current)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
 
 /**
  * タイヤ温度読み上げの入力は [TyreTemperatureReadoutInput] で判定ロジック（
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureOverheat] /
  * [kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase.determineTyreTemperatureLow]）と
- * 共有しているため、フィールドを手動で選ばず [telemetryLogJson] でシリアライズしてそのまま記録する。
+ * 共有しているため、フィールドを手動で選ばず [TelemetryLogJson] でシリアライズしてそのまま記録する。
  * これにより判定に使う入力が増えても記録側の更新漏れが構造的に起こらない。
  */
 private fun buildTelemetryLogJson(
@@ -487,20 +482,10 @@ private fun buildTelemetryLogJson(
     finalState: LmuWindowsNarratorState,
 ): String =
     "{" +
-        """"state":${telemetryLogJson.encodeToString(state)},""" +
-        """"input":${telemetryLogJson.encodeToString(input)},""" +
-        """"settings":${telemetryLogJson.encodeToString(settings)},""" +
+        """"state":${TelemetryLogJson.encodeToString(state)},""" +
+        """"input":${TelemetryLogJson.encodeToString(input)},""" +
+        """"settings":${TelemetryLogJson.encodeToString(settings)},""" +
         """"observedAtMs":$observedAtMs,""" +
-        """"overheatState":${telemetryLogJson.encodeToString(overheatState)},""" +
-        """"finalState":${telemetryLogJson.encodeToString(finalState)}""" +
+        """"overheatState":${TelemetryLogJson.encodeToString(overheatState)},""" +
+        """"finalState":${TelemetryLogJson.encodeToString(finalState)}""" +
         "}"
-
-/**
- * ログフォーマットが kotlinx.serialization のデフォルト設定変更に暗黙的に追従しないよう、
- * テレメトリログ用の設定を明示する。
- */
-private val telemetryLogJson =
-    Json {
-        encodeDefaults = true
-        explicitNulls = true
-    }

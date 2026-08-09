@@ -3,6 +3,9 @@ package kurou.kodriver.feature.acewindowsnarrator
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.speakWithPriority
+import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.AceWindowsFlagData
@@ -88,21 +91,15 @@ internal class AceWindowsNarratorEventProcessor(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean {
-        if (queueEnabledStates[event.readoutItemKey] == true) {
-            ttsEngine.speak(event, queue = true)
-            return true
-        }
-        val currentKey = ttsEngine.currentReadoutItemKey
-        if (currentKey != null) {
-            val currentIndex = readoutOrder.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            val newIndex = readoutOrder.indexOf(event.readoutItemKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            if (newIndex >= currentIndex) return false
-            ttsEngine.stop()
-        }
-        ttsEngine.speak(event)
-        return true
-    }
+    ): Boolean =
+        speakWithPriority(
+            eventKey = event.readoutItemKey,
+            currentKey = { ttsEngine.currentReadoutItemKey },
+            readoutOrder = readoutOrder,
+            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+            speak = { queue -> ttsEngine.speak(event, queue) },
+            stop = { ttsEngine.stop() },
+        )
 
     private suspend fun saveTelemetryLogSafely(
         createdAt: Long,
@@ -153,12 +150,10 @@ private fun AceWindowsNarratorState.toJsonString(): String = """{"raw":${toStrin
 
 /**
  * NaN/Infinity を含む可能性のある燃料残量（[AceWindowsFuelData.remainingPercent]）を
- * encode 失敗させないため、非有限値の encode を許可する。
+ * encode 失敗させないため、[TelemetryLogJson] に対して非有限値の encode を許可するよう拡張する。
  */
 private val telemetryLogJson =
-    Json {
-        encodeDefaults = true
-        explicitNulls = true
+    Json(TelemetryLogJson) {
         allowSpecialFloatingPointValues = true
     }
 
@@ -184,19 +179,3 @@ private fun buildFlagTelemetryLogJson(
         """"observedAtMs":$observedAtMs,""" +
         """"finalState":${finalState.toJsonString()}""" +
         "}"
-
-private fun String.toJsonStringLiteral(): String =
-    buildString {
-        append('"')
-        this@toJsonStringLiteral.forEach { char ->
-            when (char) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                '\t' -> append("\\t")
-                else -> append(char)
-            }
-        }
-        append('"')
-    }

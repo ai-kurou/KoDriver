@@ -2,6 +2,9 @@ package kurou.kodriver.feature.gt7ps5narrator
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kurou.kodriver.core.narrator.TelemetryLogJson
+import kurou.kodriver.core.narrator.speakWithPriority
+import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
@@ -72,21 +75,15 @@ internal class Gt7Ps5NarratorEventProcessor(
         event: SpeechEvent,
         readoutOrder: List<ReadoutItemKey>,
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
-    ): Boolean {
-        if (queueEnabledStates[event.readoutItemKey] == true) {
-            ttsEngine.speak(event, queue = true)
-            return true
-        }
-        val currentKey = ttsEngine.currentReadoutItemKey
-        if (currentKey != null) {
-            val currentIndex = readoutOrder.indexOf(currentKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            val newIndex = readoutOrder.indexOf(event.readoutItemKey).takeIf { it != -1 } ?: Int.MAX_VALUE
-            if (newIndex >= currentIndex) return false
-            ttsEngine.stop()
-        }
-        ttsEngine.speak(event)
-        return true
-    }
+    ): Boolean =
+        speakWithPriority(
+            eventKey = event.readoutItemKey,
+            currentKey = { ttsEngine.currentReadoutItemKey },
+            readoutOrder = readoutOrder,
+            queueEnabled = queueEnabledStates[event.readoutItemKey] == true,
+            speak = { queue -> ttsEngine.speak(event, queue) },
+            stop = { ttsEngine.stop() },
+        )
 }
 
 /**
@@ -117,30 +114,10 @@ private fun Gt7Ps5NarratorReadoutSettings.toJsonString(): String = """{"raw":${t
 private fun Gt7Ps5NarratorState.toJsonString(): String = """{"raw":${toString().toJsonStringLiteral()}}"""
 
 /**
- * ログフォーマットが kotlinx.serialization のデフォルト設定変更に暗黙的に追従しないよう、
- * テレメトリログ用の設定を明示する。
  * UDP テレメトリの Float フィールド（gasLevel/gasCapacity 等）が NaN/Infinity を
- * 取りうるため、通常は encode を拒否する非有限値もログ記録できるよう許可する。
+ * 取りうるため、[TelemetryLogJson] に対して通常は encode を拒否する非有限値も許可するよう拡張する。
  */
 private val telemetryLogJson =
-    Json {
-        encodeDefaults = true
-        explicitNulls = true
+    Json(TelemetryLogJson) {
         allowSpecialFloatingPointValues = true
-    }
-
-private fun String.toJsonStringLiteral(): String =
-    buildString {
-        append('"')
-        this@toJsonStringLiteral.forEach { char ->
-            when (char) {
-                '\\' -> append("\\\\")
-                '"' -> append("\\\"")
-                '\n' -> append("\\n")
-                '\r' -> append("\\r")
-                '\t' -> append("\\t")
-                else -> append(char)
-            }
-        }
-        append('"')
     }
