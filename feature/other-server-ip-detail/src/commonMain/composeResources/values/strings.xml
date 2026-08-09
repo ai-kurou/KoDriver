@@ -5,6 +5,8 @@
     <string name="server_ip_save">保存</string>
     <string name="server_ip_invalid">無効なIPアドレスです</string>
     <string name="server_ip_description">Windows版KoDriverが動作しているPCのIPアドレスを入力してください。</string>
+    <string name="server_ip_guide_description">Windows版KoDriverのインストール方法や接続手順は、インストールガイドを参照してください。</string>
+    <string name="server_ip_guide_link">インストールガイドを開く</string>
     <string name="server_ip_connectivity_warning">Windows版KoDriverに接続できませんでした。IPアドレスとファイアウォールの設定を確認してください。</string>
     <string name="server_ip_save_anyway">このまま保存</string>
     <string name="server_ip_discovery_show_button">見つかったWindows版KoDriverを選択</string>

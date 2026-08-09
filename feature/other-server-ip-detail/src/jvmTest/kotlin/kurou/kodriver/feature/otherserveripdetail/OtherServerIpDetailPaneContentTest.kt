@@ -19,6 +19,7 @@ class OtherServerIpDetailPaneContentTest {
         onSave: () -> Unit = {},
         onSaveAnyway: () -> Unit = {},
         onDismiss: () -> Unit = {},
+        onOpenGuide: () -> Unit = {},
         onBack: () -> Unit = {},
     ) {
         rule.setContent {
@@ -27,6 +28,7 @@ class OtherServerIpDetailPaneContentTest {
                 onSave = onSave,
                 onSaveAnyway = onSaveAnyway,
                 onDismiss = onDismiss,
+                onOpenGuide = onOpenGuide,
                 onBack = onBack,
             )
         }
@@ -74,6 +76,16 @@ class OtherServerIpDetailPaneContentTest {
 
         assertEquals(1, dismissCount)
         assertEquals(1, backCount)
+    }
+
+    @Test
+    fun `インストールガイドリンクをクリックするとonOpenGuideが呼ばれる`() {
+        var guideCount = 0
+        setContent(onOpenGuide = { guideCount++ })
+
+        rule.onNodeWithText("インストールガイドを開く").performClick()
+
+        assertEquals(1, guideCount)
     }
 
     @Test

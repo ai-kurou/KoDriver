@@ -25,6 +25,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,7 +38,9 @@ import kurou.kodriver.core.designsystem.DetailPaneScaffold
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_ALTERNATE
 import kurou.kodriver.domain.model.GT7_PS5_UDP_PORT_DEFAULT
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.Res
-import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description
+import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description_prefix
+import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description_simhub_link
+import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_description_suffix
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_guide_description
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_guide_link
 import kurou.kodriver.feature.otherconsoleipdetail.generated.resources.console_ip_invalid
@@ -49,6 +57,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val GT7_CONNECTION_SETUP_URL =
     "https://github.com/ai-kurou/KoDriver/blob/main/docs/gt7-ps5-connection-setup.md"
+private const val SIMHUB_URL = "https://www.simhubdash.com/"
 
 /**
  * OtherConsoleIpDetail の画面を表示する Composable。
@@ -69,6 +78,7 @@ fun OtherConsoleIpDetailPane(
         onSave = viewModel::onSave,
         onDismiss = viewModel::onDismiss,
         onOpenGuide = { uriHandler.openUri(GT7_CONNECTION_SETUP_URL) },
+        onOpenSimHub = { uriHandler.openUri(SIMHUB_URL) },
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -86,6 +96,7 @@ fun OtherConsoleIpDetailPaneContent(
     onSave: () -> Unit = {},
     onDismiss: () -> Unit = {},
     onOpenGuide: () -> Unit = {},
+    onOpenSimHub: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -113,7 +124,29 @@ fun OtherConsoleIpDetailPaneContent(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
         ) {
-            Text(stringResource(Res.string.console_ip_description))
+            Text(
+                text =
+                    buildAnnotatedString {
+                        append(stringResource(Res.string.console_ip_description_prefix))
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "simhub",
+                                styles =
+                                    TextLinkStyles(
+                                        style =
+                                            SpanStyle(
+                                                color = MaterialTheme.colorScheme.primary,
+                                                textDecoration = TextDecoration.Underline,
+                                            ),
+                                    ),
+                                linkInteractionListener = { onOpenSimHub() },
+                            ),
+                        ) {
+                            append(stringResource(Res.string.console_ip_description_simhub_link))
+                        }
+                        append(stringResource(Res.string.console_ip_description_suffix))
+                    },
+            )
             Spacer(modifier = Modifier.height(12.dp))
             TextField(
                 value = uiState.inputAddress,
