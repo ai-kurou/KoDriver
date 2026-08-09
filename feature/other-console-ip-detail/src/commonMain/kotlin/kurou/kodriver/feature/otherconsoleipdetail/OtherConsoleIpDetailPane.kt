@@ -153,6 +153,7 @@ fun OtherConsoleIpDetailPaneContent(
                         }
                         append(stringResource(Res.string.console_ip_description_suffix))
                     },
+                style = MaterialTheme.typography.bodyMedium,
                 inlineContent =
                     mapOf(
                         SIMHUB_LINK_ICON_ID to
