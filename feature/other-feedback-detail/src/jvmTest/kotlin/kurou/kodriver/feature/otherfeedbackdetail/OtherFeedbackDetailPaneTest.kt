@@ -6,13 +6,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.TextLayoutResult
 import kurou.kodriver.domain.model.FeedbackType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -229,6 +233,36 @@ class OtherFeedbackDetailPaneTest {
         rule.onNode(hasContentDescription("添付を解除")).performClick()
 
         assertEquals(1, detachCount)
+    }
+
+    @Test
+    fun `SentryのリンクをタップするとonOpenSentryが呼ばれる`() {
+        var openSentryCount = 0
+        rule.setContent {
+            MaterialTheme {
+                OtherFeedbackDetailPaneContent(
+                    uiState = OtherFeedbackDetailUiState(),
+                    onOpenSentry = { openSentryCount++ },
+                )
+            }
+        }
+
+        val node = rule.onNodeWithText("Sentry", substring = true)
+        val textLayoutResults = mutableListOf<TextLayoutResult>()
+        node
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(textLayoutResults)
+        val text =
+            textLayoutResults
+                .first()
+                .layoutInput.text.text
+        val sentryStart = text.indexOf("Sentry")
+        val sentryBoundingBox = textLayoutResults.first().getBoundingBox(sentryStart)
+        node.performTouchInput { click(sentryBoundingBox.center) }
+
+        assertEquals(1, openSentryCount)
     }
 
     @Test

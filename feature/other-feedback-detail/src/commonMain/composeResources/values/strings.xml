@@ -1,7 +1,9 @@
 <resources>
     <string name="navigate_back">戻る</string>
     <string name="feedback_title">フィードバックを送信</string>
-    <string name="feedback_description">不具合、改善要望、質問などを送信できます。送信内容は Sentry に保存され、アプリ改善の参考にします。</string>
+    <string name="feedback_description_prefix">不具合、改善要望、質問などを送信できます。送信内容は </string>
+    <string name="feedback_description_sentry_link">Sentry</string>
+    <string name="feedback_description_suffix"> に保存され、アプリ改善の参考にします。</string>
     <string name="feedback_type_label">種類</string>
     <string name="feedback_type_bug_report">不具合</string>
     <string name="feedback_type_feature_request">改善要望</string>

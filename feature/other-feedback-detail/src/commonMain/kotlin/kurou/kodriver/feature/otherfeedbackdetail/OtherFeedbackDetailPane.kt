@@ -28,6 +28,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,7 +45,9 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.Res
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_attached_telemetry_log_chip
-import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description
+import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_prefix
+import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_sentry_link
+import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_suffix
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_detach_telemetry_log
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_diagnostics_description
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_email_invalid
@@ -63,6 +72,8 @@ import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.navigate_b
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val SENTRY_URL = "https://sentry.io/"
+
 /**
  * OtherFeedbackDetail の画面を表示する Composable。
  */
@@ -79,6 +90,7 @@ fun OtherFeedbackDetailPane(
         viewModel.setTelemetryLogId(telemetryLogId)
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     OtherFeedbackDetailPaneContent(
         uiState = uiState,
         onTypeSelected = viewModel::onTypeSelected,
@@ -87,6 +99,7 @@ fun OtherFeedbackDetailPane(
         onEmailChanged = viewModel::onEmailChanged,
         onSend = viewModel::onSend,
         onDetachTelemetryLog = viewModel::onDetachTelemetryLog,
+        onOpenSentry = { uriHandler.openUri(SENTRY_URL) },
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -105,6 +118,7 @@ fun OtherFeedbackDetailPaneContent(
     onEmailChanged: (String) -> Unit = {},
     onSend: () -> Unit = {},
     onDetachTelemetryLog: () -> Unit = {},
+    onOpenSentry: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -123,7 +137,29 @@ fun OtherFeedbackDetailPaneContent(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
         ) {
-            Text(stringResource(Res.string.feedback_description))
+            Text(
+                text =
+                    buildAnnotatedString {
+                        append(stringResource(Res.string.feedback_description_prefix))
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = "sentry",
+                                styles =
+                                    TextLinkStyles(
+                                        style =
+                                            SpanStyle(
+                                                color = MaterialTheme.colorScheme.primary,
+                                                textDecoration = TextDecoration.Underline,
+                                            ),
+                                    ),
+                                linkInteractionListener = { onOpenSentry() },
+                            ),
+                        ) {
+                            append(stringResource(Res.string.feedback_description_sentry_link))
+                        }
+                        append(stringResource(Res.string.feedback_description_suffix))
+                    },
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(Res.string.feedback_type_label),
