@@ -5,7 +5,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

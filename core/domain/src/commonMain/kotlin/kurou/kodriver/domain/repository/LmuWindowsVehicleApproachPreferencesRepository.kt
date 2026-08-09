@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.VehicleApproachStartReadoutType
+import kurou.kodriver.core.model.VehicleApproachSustainedReadoutType
 
 interface LmuWindowsVehicleApproachPreferencesRepository {
     fun observeSkipFirstLap(): Flow<Boolean>

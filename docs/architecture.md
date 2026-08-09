@@ -8,7 +8,8 @@ Kotlin Multiplatform + Clean Architecture のマルチモジュール構成。
 | `:app:androidApp` | Android アプリのエントリーポイント。WebSocket 経由でサーバーから LMU 由来の走行情報を受信して表示する、または GT7 PS5 へ直接 UDP 接続してテレメトリを受信する | [図](graphs/app-androidApp.svg) |
 | `:app:webApp` | Web アプリ（Gradle ビルド設定のみ用意、独自機能は未実装） | [図](graphs/app-webApp.svg) |
 | `:app:shared` | Compose Multiplatform 共通 UI・ナビゲーション。各 feature モジュールを組み合わせた画面遷移を担当する | [図](graphs/app-shared.svg) |
-| `:core:domain` | ドメインモデル・リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
+| `:core:model` | 純粋なドメインモデルの型定義（ReadoutItemKey・Simulator・TelemetryLog等） | [図](graphs/core-model.svg) |
+| `:core:domain` | リポジトリ抽象・ユースケース | [図](graphs/core-domain.svg) |
 | `:core:data` | DataStore・HTTP/WebSocketクライアント・リポジトリ実装（JVM / Android） | [図](graphs/core-data.svg) |
 | `:core:lmu-windows-data` | LMU Windows共有メモリ読み取り・リポジトリ実装（JVM） | [図](graphs/core-lmu-windows-data.svg) |
 | `:core:gt7-ps5-data` | GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装（JVM / Android） | [図](graphs/core-gt7-ps5-data.svg) |

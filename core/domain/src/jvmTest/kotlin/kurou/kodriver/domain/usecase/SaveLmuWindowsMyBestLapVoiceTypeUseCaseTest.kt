@@ -5,7 +5,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.core.model.MyBestLapVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMemorySource
 import kurou.kodriver.core.acewindowsdata.mapper.AceWindowsMapper
-import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.core.model.AceWindowsStatusData
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 
 internal class AceWindowsStatusRepositoryImpl(

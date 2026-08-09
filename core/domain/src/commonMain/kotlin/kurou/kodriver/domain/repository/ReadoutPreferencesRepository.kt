@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 
 /**
  * 読み上げ一覧のトップレベル設定を保存する Repository。

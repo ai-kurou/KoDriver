@@ -3,7 +3,7 @@ package kurou.kodriver.feature.otherreadoutstartsounddetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.core.model.ReadoutStartSoundType
 import kurou.kodriver.domain.repository.ReadoutStartSoundPreferencesRepository
 import org.koin.dsl.module
 

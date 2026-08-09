@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.core.model.ReadoutStartSoundType
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.Res
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_cancel
 import kurou.kodriver.feature.otherreadoutstartsounddetail.generated.resources.readout_start_sound_electronic_noise

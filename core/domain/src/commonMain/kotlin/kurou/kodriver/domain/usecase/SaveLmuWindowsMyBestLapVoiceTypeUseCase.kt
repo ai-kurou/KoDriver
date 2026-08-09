@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.core.model.MyBestLapVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsMyBestLapPreferencesRepository
 
 class SaveLmuWindowsMyBestLapVoiceTypeUseCase(

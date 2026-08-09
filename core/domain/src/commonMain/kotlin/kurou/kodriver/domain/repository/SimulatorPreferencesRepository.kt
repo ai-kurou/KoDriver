@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.Simulator
 
 /**
  * ユーザーが選択したシミュレータを保存する Repository。

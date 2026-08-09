@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
 import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleClassRepository
 import java.nio.ByteBuffer
 

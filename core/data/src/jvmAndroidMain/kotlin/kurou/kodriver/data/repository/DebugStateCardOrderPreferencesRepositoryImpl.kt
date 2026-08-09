@@ -3,8 +3,8 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.core.model.DebugStateCardKey
 import kurou.kodriver.data.model.DebugStateCardOrderPreferences
-import kurou.kodriver.domain.model.DebugStateCardKey
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 
 internal class DebugStateCardOrderPreferencesRepositoryImpl(

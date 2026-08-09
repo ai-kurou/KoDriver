@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

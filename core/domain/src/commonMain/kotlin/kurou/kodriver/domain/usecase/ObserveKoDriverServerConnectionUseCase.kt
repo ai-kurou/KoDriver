@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.Simulator
 
 enum class KoDriverServerConnectionStatus {
     NOT_CONFIGURED,

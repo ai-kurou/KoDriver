@@ -45,10 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneScaffold
-import kurou.kodriver.domain.model.FeedbackType
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.core.model.FeedbackType
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
+import kurou.kodriver.core.model.TelemetryLog
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.Res
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_attached_telemetry_log_chip
 import kurou.kodriver.feature.otherfeedbackdetail.generated.resources.feedback_description_prefix

@@ -8,9 +8,9 @@ import kurou.kodriver.core.acewindowsdata.datasource.AceWindowsGraphicsSharedMem
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFlagRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsFuelRepositoryImpl
 import kurou.kodriver.core.acewindowsdata.repository.AceWindowsStatusRepositoryImpl
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsStatusData
+import kurou.kodriver.core.model.AceWindowsFlagData
+import kurou.kodriver.core.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsStatusData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository

@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 
 /**
  * 保存済みの読み上げ順序と現在のデフォルト順序を突き合わせ、有効な読み上げ順序を解決する。

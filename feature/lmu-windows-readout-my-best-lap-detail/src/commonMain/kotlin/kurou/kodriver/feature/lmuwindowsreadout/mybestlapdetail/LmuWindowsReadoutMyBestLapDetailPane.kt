@@ -14,7 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kurou.kodriver.core.designsystem.DetailPaneCard
 import kurou.kodriver.core.designsystem.DetailPaneCardChips
 import kurou.kodriver.core.designsystem.DetailPaneDescription
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.core.model.MyBestLapVoiceType
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_description
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.generated.resources.my_best_lap_enabled

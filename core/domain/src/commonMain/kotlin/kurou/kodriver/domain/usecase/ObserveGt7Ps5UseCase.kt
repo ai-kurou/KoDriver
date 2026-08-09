@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 
 class ObserveGt7Ps5UseCase(

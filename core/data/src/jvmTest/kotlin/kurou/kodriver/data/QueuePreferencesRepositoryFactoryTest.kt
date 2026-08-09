@@ -2,7 +2,7 @@ package kurou.kodriver.data
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals

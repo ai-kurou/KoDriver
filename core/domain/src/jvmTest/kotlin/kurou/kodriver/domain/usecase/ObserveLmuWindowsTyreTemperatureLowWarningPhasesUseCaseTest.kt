@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
+import kurou.kodriver.core.model.SessionPhase
+import kurou.kodriver.core.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

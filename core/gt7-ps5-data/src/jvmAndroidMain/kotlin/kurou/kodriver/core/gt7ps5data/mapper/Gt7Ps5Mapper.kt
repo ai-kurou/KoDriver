@@ -1,6 +1,6 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 

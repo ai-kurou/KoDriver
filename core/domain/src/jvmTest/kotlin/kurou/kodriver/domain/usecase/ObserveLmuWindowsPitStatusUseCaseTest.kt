@@ -10,8 +10,8 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LmuWindowsPitState
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
+import kurou.kodriver.core.model.LmuWindowsPitState
+import kurou.kodriver.core.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

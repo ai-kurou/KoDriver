@@ -3,8 +3,8 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.data.model.SimulatorPreferences
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 
 internal class SimulatorPreferencesRepositoryImpl(

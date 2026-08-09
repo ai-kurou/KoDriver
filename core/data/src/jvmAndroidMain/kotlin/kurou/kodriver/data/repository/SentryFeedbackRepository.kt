@@ -5,7 +5,7 @@ import io.sentry.ScopeCallback
 import io.sentry.Sentry
 import io.sentry.protocol.SentryId
 import kotlinx.coroutines.CancellationException
-import kurou.kodriver.domain.model.Feedback
+import kurou.kodriver.core.model.Feedback
 import kurou.kodriver.domain.repository.FeedbackRepository
 import io.sentry.protocol.Feedback as SentryFeedback
 

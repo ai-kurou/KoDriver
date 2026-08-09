@@ -5,7 +5,7 @@ package kurou.kodriver.feature.otherthemedetail
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

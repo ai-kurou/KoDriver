@@ -1,10 +1,10 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.core.model.AceWindowsFlagData
+import kurou.kodriver.core.model.AceWindowsFlagType
+import kurou.kodriver.core.model.AceWindowsFuelData
+import kurou.kodriver.core.model.ReadoutItemKey
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

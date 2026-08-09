@@ -10,8 +10,8 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.core.model.AceWindowsStatusData
+import kurou.kodriver.core.model.AceWindowsStatusType
 import kurou.kodriver.domain.repository.AceWindowsStatusRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

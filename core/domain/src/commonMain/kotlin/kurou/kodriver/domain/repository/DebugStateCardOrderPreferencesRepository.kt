@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.core.model.DebugStateCardKey
 
 interface DebugStateCardOrderPreferencesRepository {
     fun observeCardOrder(): Flow<List<DebugStateCardKey>>

@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
 class SaveLmuWindowsTyreTemperatureEnabledStateUseCase(

@@ -11,8 +11,8 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
+import kurou.kodriver.core.model.VehicleApproachStartReadoutType
+import kurou.kodriver.core.model.VehicleApproachSustainedReadoutType
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

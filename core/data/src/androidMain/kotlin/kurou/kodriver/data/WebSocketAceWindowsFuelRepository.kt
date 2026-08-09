@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.serialization.json.Json
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.KoDriverServerFeature
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.AceWindowsFuelData
+import kurou.kodriver.core.model.KoDriverServerFeature
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 

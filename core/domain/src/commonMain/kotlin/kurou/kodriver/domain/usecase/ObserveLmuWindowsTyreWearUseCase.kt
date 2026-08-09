@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LmuWindowsTyreWearData
+import kurou.kodriver.core.model.LmuWindowsTyreWearData
 import kurou.kodriver.domain.repository.LmuWindowsTyreWearRepository
 
 class ObserveLmuWindowsTyreWearUseCase(

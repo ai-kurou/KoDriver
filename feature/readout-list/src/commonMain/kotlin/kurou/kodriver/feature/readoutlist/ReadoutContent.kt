@@ -26,8 +26,8 @@ import androidx.window.core.layout.WindowSizeClass
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.AppBackHandler
 import kurou.kodriver.core.designsystem.predictiveBackDetailPane
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.item_flag
 import kurou.kodriver.feature.readoutlist.generated.resources.item_my_best_lap

@@ -17,10 +17,10 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.text.TextLayoutResult
-import kurou.kodriver.domain.model.FeedbackType
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.core.model.FeedbackType
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
+import kurou.kodriver.core.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

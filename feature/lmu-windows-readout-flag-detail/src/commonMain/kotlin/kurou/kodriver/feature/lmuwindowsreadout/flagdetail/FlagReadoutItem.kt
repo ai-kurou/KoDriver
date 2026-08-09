@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.lmuwindowsreadout.flagdetail
 
+import kurou.kodriver.core.model.ReadoutItemKey
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_blue
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.generated.resources.flag_full_course_yellow

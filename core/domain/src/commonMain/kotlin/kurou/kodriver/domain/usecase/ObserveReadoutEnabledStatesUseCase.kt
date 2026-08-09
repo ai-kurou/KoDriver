@@ -2,9 +2,9 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.domain.model.READOUT_ENABLED_STATE_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.ReadoutPreferencesRepository
 
 class ObserveReadoutEnabledStatesUseCase(

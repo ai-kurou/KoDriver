@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.core.model.ReadoutStartSoundType
 
 interface ReadoutStartSoundPreferencesRepository {
     fun observeType(): Flow<ReadoutStartSoundType>

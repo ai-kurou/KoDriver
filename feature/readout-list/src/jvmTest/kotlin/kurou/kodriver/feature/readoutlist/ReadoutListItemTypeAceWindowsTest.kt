@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.engine
 
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutStartSoundType
 
 interface TextToSpeechEngine {
     /** 現在再生中のイベントが属する ReadoutItemKey。再生していない場合は null。 */

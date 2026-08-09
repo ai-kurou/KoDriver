@@ -4,10 +4,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.DebugStateCardKey
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.DebugStateCardKey
+import kurou.kodriver.core.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
+import kurou.kodriver.core.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
 
 /**
  * ReadoutList 画面の表示状態。

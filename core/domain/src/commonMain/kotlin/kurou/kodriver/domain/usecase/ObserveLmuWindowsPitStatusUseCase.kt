@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
+import kurou.kodriver.core.model.LmuWindowsPitStatusData
 import kurou.kodriver.domain.repository.LmuWindowsPitStatusRepository
 
 class ObserveLmuWindowsPitStatusUseCase(

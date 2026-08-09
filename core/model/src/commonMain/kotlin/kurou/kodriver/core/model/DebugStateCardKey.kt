@@ -1,0 +1,19 @@
+package kurou.kodriver.core.model
+
+enum class DebugStateCardKey {
+    SIMULATOR,
+    VEHICLE_CLASS,
+    VEHICLE_LOCATION,
+    FLAG_INFO,
+    GAME_PHASE,
+    SESSION,
+    YELLOW_FLAG_STATE,
+    CURRENT_LAP,
+    SIDE_BY_SIDE_VEHICLES,
+    BEST_LAP,
+    TYRE_TEMPERATURE,
+    TYRE_CARCASS_TEMPERATURE,
+    TYRE_WEAR,
+    FUEL_CONSUMPTION,
+    PIT_TIMING_REMAINING_LAPS,
+}

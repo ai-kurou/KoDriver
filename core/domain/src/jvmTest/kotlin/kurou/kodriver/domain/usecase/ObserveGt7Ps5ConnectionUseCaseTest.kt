@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

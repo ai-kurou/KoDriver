@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.core.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import java.net.HttpURLConnection
 import java.net.URI

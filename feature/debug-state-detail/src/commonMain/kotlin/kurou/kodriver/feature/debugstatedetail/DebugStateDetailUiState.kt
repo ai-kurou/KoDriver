@@ -1,19 +1,19 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.DebugStateCardKey
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.AceWindowsFlagData
+import kurou.kodriver.core.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsStatusData
+import kurou.kodriver.core.model.DebugStateCardKey
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.core.model.LmuWindowsPitStatusData
+import kurou.kodriver.core.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.core.model.LmuWindowsTelemetryData
+import kurou.kodriver.core.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.core.model.LmuWindowsVehicleApproachData
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
+import kurou.kodriver.core.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.core.model.Simulator
 
 internal val defaultDebugStateCardOrder =
     listOf(

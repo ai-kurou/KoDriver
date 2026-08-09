@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsFuelData
 
 /**
  * Assetto Corsa EVO の Windows 共有メモリから燃料情報を読む Repository。

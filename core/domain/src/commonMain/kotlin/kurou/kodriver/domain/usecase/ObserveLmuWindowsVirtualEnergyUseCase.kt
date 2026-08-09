@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.core.model.LmuWindowsVirtualEnergyData
 import kurou.kodriver.domain.repository.LmuWindowsVirtualEnergyRepository
 
 class ObserveLmuWindowsVirtualEnergyUseCase(

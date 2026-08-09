@@ -7,7 +7,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.core.model.MyBestLapVoiceType
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

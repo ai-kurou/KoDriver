@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.telemetryloglist
 
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.core.model.TelemetryLog
 
 /**
  * TelemetryLogList 画面の表示状態。

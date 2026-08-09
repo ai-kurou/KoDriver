@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.core.model.DebugStateCardKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

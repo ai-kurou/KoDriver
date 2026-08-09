@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.RedFlagVoiceType
+import kurou.kodriver.core.model.RedFlagVoiceType
 import kurou.kodriver.domain.repository.LmuWindowsRedFlagPreferencesRepository
 
 class SaveLmuWindowsRedFlagVoiceTypeUseCase(

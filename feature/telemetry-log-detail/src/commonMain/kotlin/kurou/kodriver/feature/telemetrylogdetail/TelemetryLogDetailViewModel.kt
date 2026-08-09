@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.TelemetryLogDetail
+import kurou.kodriver.core.model.TelemetryLogDetail
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 
 internal class TelemetryLogDetailViewModel(

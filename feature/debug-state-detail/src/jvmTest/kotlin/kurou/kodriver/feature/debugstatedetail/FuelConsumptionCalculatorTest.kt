@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

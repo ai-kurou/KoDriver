@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.AceWindowsFlagData
+import kurou.kodriver.core.model.AceWindowsFlagData
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 
 class ObserveAceWindowsFlagUseCase(

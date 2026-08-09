@@ -1,15 +1,15 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsEngineData
-import kurou.kodriver.domain.model.LmuWindowsFuelData
-import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTimingData
-import kurou.kodriver.domain.model.LmuWindowsTyreData
-import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
-import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.core.model.LmuWindowsEngineData
+import kurou.kodriver.core.model.LmuWindowsFuelData
+import kurou.kodriver.core.model.LmuWindowsInputsData
+import kurou.kodriver.core.model.LmuWindowsTelemetryData
+import kurou.kodriver.core.model.LmuWindowsTimingData
+import kurou.kodriver.core.model.LmuWindowsTyreData
+import kurou.kodriver.core.model.LmuWindowsTyreWheelData
+import kurou.kodriver.core.model.LmuWindowsVehicleData
+import kurou.kodriver.core.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.core.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

@@ -2,9 +2,9 @@ package kurou.kodriver.feature.debugstatedetail
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.Gt7Ps5VehicleClassData
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.Gt7Ps5VehicleClassData
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import org.jetbrains.compose.resources.stringResource

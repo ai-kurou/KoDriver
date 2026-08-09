@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsFuelData
 
 data class AceWindowsConnectionState(
     val isConnected: Boolean,

@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.LmuWindowsTyreWheelData
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.core.model.LmuWindowsTyreWheelData
+import kurou.kodriver.core.model.WheelIndex
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -2,9 +2,9 @@ package kurou.kodriver.data
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.Simulator
+import kurou.kodriver.core.model.TelemetryLog
 import java.nio.file.Files
 import kotlin.test.Test
 import kotlin.test.assertEquals

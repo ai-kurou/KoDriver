@@ -116,7 +116,9 @@ subprojects {
 }
 
 moduleGraphAssert {
-    maxHeight = 3
+    // core:model の追加により :app:webApp -> :app:shared -> :feature:* -> :core:domain -> :core:model が
+    // 4段になるため、maxHeight を 3 から 4 に引き上げる。
+    maxHeight = 4
     configurations = setOf(
         // JVM・Android プロジェクトの標準依存関係
         "api",
@@ -173,6 +175,8 @@ moduleGraphAssert {
         ":feature:.* -> :core:designsystem",
         // core:data 系 → core:domain（.*data にマッチ: core:data, core:*-data。core:designsystem は除外される）
         ":core:.*data -> :core:domain",
+        // core:domain → core:model（純粋なドメインモデルの型定義。domain は model を api 経由で公開する）
+        ":core:domain -> :core:model",
         // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
         ":core:.*windows.*data -> :core:windows-shared-memory",
         // narrator系featureモジュール → core:narrator（WAV音声再生・SoundPlayer・WavNarratorEngineの共通基盤。
@@ -475,6 +479,7 @@ kover {
 }
 
 dependencies {
+    kover(project(":core:model"))
     kover(project(":core:domain"))
     kover(project(":core:data"))
     kover(project(":core:lmu-windows-data"))

@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.engine
 
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 
 /**
  * 音声エンジンへ渡す読み上げイベント。

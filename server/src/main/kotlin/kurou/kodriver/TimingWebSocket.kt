@@ -4,8 +4,8 @@ import io.ktor.server.routing.Route
 import io.ktor.server.websocket.webSocket
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.model.KoDriverServerFeature
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.KoDriverServerFeature
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsUseCase
 
 internal fun Route.timingWebSocket(observeLmuWindows: ObserveLmuWindowsUseCase) {

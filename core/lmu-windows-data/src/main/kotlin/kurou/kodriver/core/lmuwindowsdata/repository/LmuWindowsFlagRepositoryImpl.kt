@@ -3,12 +3,12 @@ package kurou.kodriver.core.lmuwindowsdata.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
-import kurou.kodriver.domain.model.CountLapFlag
-import kurou.kodriver.domain.model.LmuWindowsRaceFlagsData
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SectorFlagState
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.core.model.CountLapFlag
+import kurou.kodriver.core.model.LmuWindowsRaceFlagsData
+import kurou.kodriver.core.model.PrimaryFlag
+import kurou.kodriver.core.model.SectorFlagState
+import kurou.kodriver.core.model.SessionPhase
+import kurou.kodriver.core.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import java.nio.ByteBuffer
 

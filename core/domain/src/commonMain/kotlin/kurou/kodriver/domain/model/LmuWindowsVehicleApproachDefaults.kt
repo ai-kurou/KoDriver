@@ -1,5 +1,8 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.core.model.VehicleApproachStartReadoutType
+import kurou.kodriver.core.model.VehicleApproachSustainedReadoutType
+
 const val LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT = 5.0
 const val LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT = 5.0
 const val LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_DURATION_SECONDS_DEFAULT = 7

@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.core.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 
 class ObserveLmuWindowsVehicleDamageUseCase(

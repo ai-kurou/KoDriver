@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

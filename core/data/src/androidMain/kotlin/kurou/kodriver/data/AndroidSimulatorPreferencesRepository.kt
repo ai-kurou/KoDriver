@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.domain.repository.SimulatorPreferencesRepository
 
 internal class AndroidSimulatorPreferencesRepository(

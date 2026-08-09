@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otherthemedetail
 
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 
 internal data class OtherThemeDetailUiState(
     val selectedThemeMode: ThemeMode = ThemeMode.SYSTEM,

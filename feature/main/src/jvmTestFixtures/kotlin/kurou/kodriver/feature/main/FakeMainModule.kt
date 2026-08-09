@@ -3,7 +3,7 @@ package kurou.kodriver.feature.main
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.core.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import org.koin.dsl.module

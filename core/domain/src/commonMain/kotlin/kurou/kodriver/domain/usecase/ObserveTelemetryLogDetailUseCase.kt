@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.TelemetryLogDetail
+import kurou.kodriver.core.model.TelemetryLogDetail
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 
 class ObserveTelemetryLogDetailUseCase(

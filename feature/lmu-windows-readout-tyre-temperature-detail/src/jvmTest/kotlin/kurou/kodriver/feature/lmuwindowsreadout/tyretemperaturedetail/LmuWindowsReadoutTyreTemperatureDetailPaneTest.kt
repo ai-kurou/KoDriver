@@ -13,7 +13,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import kurou.kodriver.core.designsystem.KoDriverTheme
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals

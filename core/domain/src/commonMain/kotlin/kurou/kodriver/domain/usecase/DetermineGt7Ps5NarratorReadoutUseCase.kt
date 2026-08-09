@@ -1,9 +1,9 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.MyBestLapVoiceType
+import kurou.kodriver.core.model.ReadoutItemKey
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.MyBestLapVoiceType
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.readoutEnabled
 
 /**

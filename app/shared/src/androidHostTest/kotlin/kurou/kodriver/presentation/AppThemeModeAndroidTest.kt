@@ -9,7 +9,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import kurou.kodriver.feature.otherthemedetail.FakeThemePreferencesRepository
 import kurou.kodriver.feature.otherthemedetail.fakeOtherThemeDetailModule

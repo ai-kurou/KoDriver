@@ -2,7 +2,7 @@ package kurou.kodriver.feature.telemetryloglist
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.core.model.TelemetryLog
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 
 internal class ObserveSortedTelemetryLogsUseCase(

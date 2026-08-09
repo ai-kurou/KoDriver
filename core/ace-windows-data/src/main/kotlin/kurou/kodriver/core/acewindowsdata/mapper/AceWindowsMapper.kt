@@ -1,11 +1,11 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.AceWindowsFuelData
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.core.model.AceWindowsCarLocation
+import kurou.kodriver.core.model.AceWindowsFlagData
+import kurou.kodriver.core.model.AceWindowsFlagType
+import kurou.kodriver.core.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsStatusData
+import kurou.kodriver.core.model.AceWindowsStatusType
 import java.nio.ByteBuffer
 
 /**

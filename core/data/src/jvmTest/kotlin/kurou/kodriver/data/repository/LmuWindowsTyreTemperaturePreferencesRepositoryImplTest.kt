@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.SessionPhase
 import kurou.kodriver.data.datasource.LmuWindowsTyreTemperaturePreferencesSerializer
 import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.SessionPhase
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test

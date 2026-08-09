@@ -58,7 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kurou.kodriver.core.designsystem.simulatorIcon
-import kurou.kodriver.domain.model.TelemetryLog
+import kurou.kodriver.core.model.TelemetryLog
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
 import kurou.kodriver.feature.telemetryloglist.generated.resources.new_telemetry_logs
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_menu_item

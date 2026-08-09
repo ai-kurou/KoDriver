@@ -7,9 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.core.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.core.model.Simulator
+import kurou.kodriver.core.model.WheelIndex
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_tyre_carcass_temperature_fl

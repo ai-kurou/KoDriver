@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.core.model.DebugStateCardKey
 
 /**
  * 保存済みのカード順序と現在のデフォルト順序を突き合わせ、有効なカード順序を解決する。

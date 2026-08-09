@@ -3,9 +3,9 @@ package kurou.kodriver.feature.debugstatedetail
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.LmuWindowsTelemetryData
+import kurou.kodriver.core.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.feature.debugstatedetail.generated.resources.Res
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_flag_info_unavailable
 import kurou.kodriver.feature.debugstatedetail.generated.resources.debug_state_pit_timing_tyre_wear_remaining_laps

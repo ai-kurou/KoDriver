@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
 
 data class Gt7Ps5ConnectionState(
     val isConnected: Boolean,

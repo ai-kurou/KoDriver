@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otherreadoutstartsounddetail
 
-import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.core.model.ReadoutStartSoundType
 
 internal data class OtherReadoutStartSoundDetailUiState(
     val selectedType: ReadoutStartSoundType = ReadoutStartSoundType.FORMULA_RADIO,

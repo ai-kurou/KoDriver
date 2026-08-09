@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
+import kurou.kodriver.core.model.LmuWindowsTelemetryData
 
 /**
  * LMU の Windows 共有メモリへアクセスする Repository。

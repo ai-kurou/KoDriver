@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.Feedback
+import kurou.kodriver.core.model.Feedback
 import kurou.kodriver.domain.repository.FeedbackRepository
 
 class SendFeedbackUseCase(

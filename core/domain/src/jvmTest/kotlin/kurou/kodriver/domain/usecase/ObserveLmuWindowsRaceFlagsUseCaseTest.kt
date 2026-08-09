@@ -8,9 +8,9 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.PrimaryFlag
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
+import kurou.kodriver.core.model.PrimaryFlag
+import kurou.kodriver.core.model.SessionPhase
+import kurou.kodriver.core.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

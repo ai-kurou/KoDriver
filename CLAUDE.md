@@ -11,7 +11,8 @@ Le Mans Ultimate（LMU）から Windows 共有メモリ経由で、Gran Turismo 
 ```
 KoDriver/
 ├── core/
-│   ├── domain/        ドメインモデル・リポジトリ抽象・ユースケース
+│   ├── model/          純粋なドメインモデルの型定義（ReadoutItemKey・Simulator・TelemetryLog等）
+│   ├── domain/        リポジトリ抽象・ユースケース
 │   ├── data/          DataStore・HTTP/WebSocketクライアント・リポジトリ実装
 │   ├── lmu-windows-data/ LMU Windows共有メモリ読み取り・リポジトリ実装
 │   ├── gt7-ps5-data/  GT7 PS5 UDP テレメトリ読み取り・リポジトリ実装

@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import kurou.kodriver.feature.otherthemedetail.generated.resources.Res
 import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_cancel
 import kurou.kodriver.feature.otherthemedetail.generated.resources.theme_dark

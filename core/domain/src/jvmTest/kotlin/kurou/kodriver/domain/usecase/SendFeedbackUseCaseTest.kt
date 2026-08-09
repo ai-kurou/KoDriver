@@ -6,8 +6,8 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.Feedback
-import kurou.kodriver.domain.model.FeedbackType
+import kurou.kodriver.core.model.Feedback
+import kurou.kodriver.core.model.FeedbackType
 import kurou.kodriver.domain.repository.FeedbackRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

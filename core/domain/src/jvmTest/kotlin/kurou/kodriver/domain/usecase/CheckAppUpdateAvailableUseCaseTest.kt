@@ -6,7 +6,7 @@ import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.AppUpdate
+import kurou.kodriver.core.model.AppUpdate
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

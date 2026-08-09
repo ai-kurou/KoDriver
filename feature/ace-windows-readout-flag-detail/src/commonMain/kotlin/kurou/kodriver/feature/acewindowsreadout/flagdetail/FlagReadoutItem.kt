@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
+import kurou.kodriver.core.model.ReadoutItemKey
 import kurou.kodriver.domain.engine.SpeechEvent
-import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black
 import kurou.kodriver.feature.acewindowsreadout.flagdetail.generated.resources.flag_black_white

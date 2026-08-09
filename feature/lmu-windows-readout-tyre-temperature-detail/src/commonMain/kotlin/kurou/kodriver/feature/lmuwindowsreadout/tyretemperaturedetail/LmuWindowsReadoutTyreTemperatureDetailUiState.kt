@@ -1,9 +1,9 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
+import kurou.kodriver.core.model.LmuWindowsVehicleClassData
+import kurou.kodriver.core.model.SessionPhase
+import kurou.kodriver.core.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
-import kurou.kodriver.domain.model.LmuWindowsVehicleClassData
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
 
 internal data class LmuWindowsReadoutTyreTemperatureDetailUiState(
     val overheatWarningEnabled: Boolean = true,

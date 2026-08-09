@@ -1,8 +1,8 @@
 package kurou.kodriver.feature.debugstatedetail
 
-import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsVirtualEnergyData
+import kurou.kodriver.core.model.Gt7Ps5TelemetryData
+import kurou.kodriver.core.model.LmuWindowsTelemetryData
+import kurou.kodriver.core.model.LmuWindowsVirtualEnergyData
 
 private const val PERCENT_MULTIPLIER = 100.0
 

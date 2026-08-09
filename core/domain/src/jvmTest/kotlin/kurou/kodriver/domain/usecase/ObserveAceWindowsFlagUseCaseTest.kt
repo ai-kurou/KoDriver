@@ -10,8 +10,8 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.AceWindowsFlagData
-import kurou.kodriver.domain.model.AceWindowsFlagType
+import kurou.kodriver.core.model.AceWindowsFlagData
+import kurou.kodriver.core.model.AceWindowsFlagType
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

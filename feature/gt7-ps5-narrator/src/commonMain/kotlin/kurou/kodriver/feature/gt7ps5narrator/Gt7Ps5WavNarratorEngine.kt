@@ -1,10 +1,10 @@
 package kurou.kodriver.feature.gt7ps5narrator
 
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutStartSoundType
 import kurou.kodriver.core.narrator.WavNarratorEngine
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.ReadoutStartSoundType
 
 /**
  * `:core:narrator` の [WavNarratorEngine]（`SpeechEvent` / `ReadoutStartSoundType` / `ReadoutItemKey` を

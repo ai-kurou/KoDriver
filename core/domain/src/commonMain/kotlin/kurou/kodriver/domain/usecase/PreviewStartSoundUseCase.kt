@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
+import kurou.kodriver.core.model.ReadoutStartSoundType
 import kurou.kodriver.domain.engine.TextToSpeechEngine
-import kurou.kodriver.domain.model.ReadoutStartSoundType
 
 class PreviewStartSoundUseCase(
     private val ttsEngine: TextToSpeechEngine,

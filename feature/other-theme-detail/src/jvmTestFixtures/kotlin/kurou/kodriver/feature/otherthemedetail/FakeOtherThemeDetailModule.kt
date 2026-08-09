@@ -3,7 +3,7 @@ package kurou.kodriver.feature.otherthemedetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import kurou.kodriver.domain.repository.ThemePreferencesRepository
 import org.koin.dsl.module
 

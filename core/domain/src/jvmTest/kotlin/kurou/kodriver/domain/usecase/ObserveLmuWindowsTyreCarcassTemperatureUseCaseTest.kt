@@ -10,8 +10,8 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LmuWindowsTyreCarcassTemperatureData
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.core.model.LmuWindowsTyreCarcassTemperatureData
+import kurou.kodriver.core.model.WheelIndex
 import kurou.kodriver.domain.repository.LmuWindowsTyreCarcassTemperatureRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

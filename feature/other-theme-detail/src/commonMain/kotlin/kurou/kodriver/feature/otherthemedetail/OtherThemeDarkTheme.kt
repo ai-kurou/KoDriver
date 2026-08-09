@@ -2,7 +2,7 @@ package kurou.kodriver.feature.otherthemedetail
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import org.koin.compose.viewmodel.koinViewModel
 
 /**

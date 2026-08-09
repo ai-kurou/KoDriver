@@ -1,7 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.runtime.Composable
-import kurou.kodriver.domain.model.ReadoutItemKey
+import kurou.kodriver.core.model.ReadoutItemKey
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.item_ace_black_flag
 import kurou.kodriver.feature.readoutlist.generated.resources.item_ace_black_white_flag

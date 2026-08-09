@@ -10,7 +10,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.LmuWindowsVehicleDamageData
+import kurou.kodriver.core.model.LmuWindowsVehicleDamageData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleDamageRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

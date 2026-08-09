@@ -2,9 +2,9 @@ package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
-import kurou.kodriver.domain.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
+import kurou.kodriver.core.model.SessionPhase
+import kurou.kodriver.core.model.lmuWindowsTyreTemperatureLowWarningDefaultPhases
+import kurou.kodriver.core.model.lmuWindowsTyreTemperatureLowWarningSelectablePhases
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
 // 選択可能なフェーズのうちGARAGEのみデフォルトで無効(false)とする。選択可能なフェーズ自体の定義は

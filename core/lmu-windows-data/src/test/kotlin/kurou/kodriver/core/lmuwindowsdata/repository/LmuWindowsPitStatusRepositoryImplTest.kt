@@ -7,8 +7,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
+import kurou.kodriver.core.model.LmuWindowsPitState
 import kurou.kodriver.core.windowssharedmemory.datasource.SharedMemoryReader
-import kurou.kodriver.domain.model.LmuWindowsPitState
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test

@@ -1,7 +1,7 @@
 package kurou.kodriver.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
-import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsFuelData
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 
 class ObserveAceWindowsFuelUseCase(

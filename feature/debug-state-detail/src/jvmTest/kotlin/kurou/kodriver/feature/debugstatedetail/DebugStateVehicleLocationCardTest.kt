@@ -4,13 +4,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsStatusData
-import kurou.kodriver.domain.model.AceWindowsStatusType
-import kurou.kodriver.domain.model.DebugStateCardKey
-import kurou.kodriver.domain.model.LmuWindowsPitState
-import kurou.kodriver.domain.model.LmuWindowsPitStatusData
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.AceWindowsCarLocation
+import kurou.kodriver.core.model.AceWindowsStatusData
+import kurou.kodriver.core.model.AceWindowsStatusType
+import kurou.kodriver.core.model.DebugStateCardKey
+import kurou.kodriver.core.model.LmuWindowsPitState
+import kurou.kodriver.core.model.LmuWindowsPitStatusData
+import kurou.kodriver.core.model.Simulator
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,8 +1,8 @@
 package kurou.kodriver.core.acewindowsdata.mapper
 
-import kurou.kodriver.domain.model.AceWindowsCarLocation
-import kurou.kodriver.domain.model.AceWindowsFlagType
-import kurou.kodriver.domain.model.AceWindowsStatusType
+import kurou.kodriver.core.model.AceWindowsCarLocation
+import kurou.kodriver.core.model.AceWindowsFlagType
+import kurou.kodriver.core.model.AceWindowsStatusType
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.test.Test

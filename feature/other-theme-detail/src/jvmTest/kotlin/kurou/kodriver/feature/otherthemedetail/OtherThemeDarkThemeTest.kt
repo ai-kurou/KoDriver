@@ -1,6 +1,6 @@
 package kurou.kodriver.feature.otherthemedetail
 
-import kurou.kodriver.domain.model.ThemeMode
+import kurou.kodriver.core.model.ThemeMode
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

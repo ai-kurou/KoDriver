@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
-import kurou.kodriver.domain.model.AceWindowsFuelData
+import kurou.kodriver.core.model.AceWindowsFuelData
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test

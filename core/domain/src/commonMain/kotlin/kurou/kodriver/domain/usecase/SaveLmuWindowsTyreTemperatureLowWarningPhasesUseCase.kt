@@ -1,6 +1,6 @@
 package kurou.kodriver.domain.usecase
 
-import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.core.model.SessionPhase
 import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepository
 
 class SaveLmuWindowsTyreTemperatureLowWarningPhasesUseCase(

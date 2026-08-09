@@ -3,10 +3,12 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kurou.kodriver.core.model.ReadoutItemKey
+import kurou.kodriver.core.model.VehicleApproachStartReadoutType
+import kurou.kodriver.core.model.VehicleApproachSustainedReadoutType
 import kurou.kodriver.data.model.LmuWindowsVehicleApproachPreferences
-import kurou.kodriver.domain.model.ReadoutItemKey
-import kurou.kodriver.domain.model.VehicleApproachStartReadoutType
-import kurou.kodriver.domain.model.VehicleApproachSustainedReadoutType
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
+import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachPreferencesRepository
 
 internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
@@ -19,14 +21,20 @@ internal class LmuWindowsVehicleApproachPreferencesRepositoryImpl(
     }
 
     override fun observeStartReadoutType(): Flow<VehicleApproachStartReadoutType> =
-        dataStore.data.map { VehicleApproachStartReadoutType.fromId(it.startReadoutType) }
+        dataStore.data.map {
+            VehicleApproachStartReadoutType.fromId(it.startReadoutType)
+                ?: LMU_WINDOWS_VEHICLE_APPROACH_START_READOUT_TYPE_DEFAULT
+        }
 
     override suspend fun saveStartReadoutType(type: VehicleApproachStartReadoutType) {
         dataStore.updateData { it.copy(startReadoutType = type.id) }
     }
 
     override fun observeSustainedReadoutType(): Flow<VehicleApproachSustainedReadoutType> =
-        dataStore.data.map { VehicleApproachSustainedReadoutType.fromId(it.sustainedReadoutType) }
+        dataStore.data.map {
+            VehicleApproachSustainedReadoutType.fromId(it.sustainedReadoutType)
+                ?: LMU_WINDOWS_VEHICLE_APPROACH_SUSTAINED_READOUT_TYPE_DEFAULT
+        }
 
     override suspend fun saveSustainedReadoutType(type: VehicleApproachSustainedReadoutType) {
         dataStore.updateData { it.copy(sustainedReadoutType = type.id) }

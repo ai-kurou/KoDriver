@@ -1,5 +1,6 @@
 package kurou.kodriver.domain.model
 
+import kurou.kodriver.core.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

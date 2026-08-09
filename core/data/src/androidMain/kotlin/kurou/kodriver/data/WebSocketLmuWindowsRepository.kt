@@ -7,15 +7,15 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-import kurou.kodriver.domain.model.KoDriverServerFeature
-import kurou.kodriver.domain.model.LmuWindowsEngineData
-import kurou.kodriver.domain.model.LmuWindowsFuelData
-import kurou.kodriver.domain.model.LmuWindowsInputsData
-import kurou.kodriver.domain.model.LmuWindowsTelemetryData
-import kurou.kodriver.domain.model.LmuWindowsTimingData
-import kurou.kodriver.domain.model.LmuWindowsTyreData
-import kurou.kodriver.domain.model.LmuWindowsVehicleData
-import kurou.kodriver.domain.model.Simulator
+import kurou.kodriver.core.model.KoDriverServerFeature
+import kurou.kodriver.core.model.LmuWindowsEngineData
+import kurou.kodriver.core.model.LmuWindowsFuelData
+import kurou.kodriver.core.model.LmuWindowsInputsData
+import kurou.kodriver.core.model.LmuWindowsTelemetryData
+import kurou.kodriver.core.model.LmuWindowsTimingData
+import kurou.kodriver.core.model.LmuWindowsTyreData
+import kurou.kodriver.core.model.LmuWindowsVehicleData
+import kurou.kodriver.core.model.Simulator
 import kurou.kodriver.domain.repository.LmuWindowsRepository
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 

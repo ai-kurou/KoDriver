@@ -8,7 +8,7 @@ import io.mockk.verify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import kurou.kodriver.domain.model.DebugStateCardKey
+import kurou.kodriver.core.model.DebugStateCardKey
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
