@@ -88,16 +88,30 @@ private fun tyreTemperatureDisplayName(readoutItemKeyValue: String): String? =
     }
 
 @Composable
-private fun remainingDisplayName(readoutItemKeyValue: String): String? =
+private fun vehicleDamageDisplayName(readoutItemKeyValue: String): String? =
+    when (readoutItemKeyValue) {
+        "lmu_windows_vehicle_damage" -> stringResource(Res.string.readout_item_vehicle_damage)
+        "lmu_windows_overheat" -> stringResource(Res.string.readout_item_overheat)
+        else -> null
+    }
+
+/** LMU にのみ存在し、サブ項目を持たない単独の設定項目（ピットタイミング・バーチャルエナジー残量・タイヤ摩耗）。 */
+@Composable
+private fun lmuStandaloneDisplayName(readoutItemKeyValue: String): String? =
     when (readoutItemKeyValue) {
         "lmu_windows_pit_timing" -> stringResource(Res.string.readout_item_pit_timing)
         "lmu_windows_remaining_virtual_energy" -> stringResource(Res.string.readout_item_remaining_virtual_energy)
         "lmu_windows_tyre_wear" -> stringResource(Res.string.readout_item_tyre_wear)
+        else -> null
+    }
+
+/** LMU・GT7・ACE をまたいで存在する自己ベストラップ・燃料関連の項目。 */
+@Composable
+private fun bestLapAndFuelDisplayName(readoutItemKeyValue: String): String? =
+    when (readoutItemKeyValue) {
         "lmu_windows_my_best_lap", "gt7_ps5_my_best_lap" -> stringResource(Res.string.readout_item_my_best_lap)
         "gt7_ps5_remaining_fuel_laps" -> stringResource(Res.string.readout_item_remaining_fuel_laps)
         "gt7_ps5_remaining_fuel", "ace_windows_remaining_fuel" -> stringResource(Res.string.readout_item_remaining_fuel)
-        "lmu_windows_vehicle_damage" -> stringResource(Res.string.readout_item_vehicle_damage)
-        "lmu_windows_overheat" -> stringResource(Res.string.readout_item_overheat)
         else -> null
     }
 
@@ -109,6 +123,8 @@ private fun remainingDisplayName(readoutItemKeyValue: String): String? =
 fun readoutItemDisplayName(readoutItemKeyValue: String): String =
     flagDisplayName(readoutItemKeyValue)
         ?: vehicleApproachDisplayName(readoutItemKeyValue)
+        ?: vehicleDamageDisplayName(readoutItemKeyValue)
         ?: tyreTemperatureDisplayName(readoutItemKeyValue)
-        ?: remainingDisplayName(readoutItemKeyValue)
+        ?: lmuStandaloneDisplayName(readoutItemKeyValue)
+        ?: bestLapAndFuelDisplayName(readoutItemKeyValue)
         ?: error("未対応のreadoutItemKeyValue: $readoutItemKeyValue")
