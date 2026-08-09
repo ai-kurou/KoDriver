@@ -120,9 +120,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         private const val OFF_ORI_ROW2_X = 280
         private const val OFF_ORI_ROW2_Z = 296
 
-        fun maxVehicleCount(buffer: ByteBuffer): Int {
-            val headerSize = LmuWindowsMapper.vehicleTelemetryBase(0) + OFF_ORI_ROW2_Z + Double.SIZE_BYTES
-            return maxOf(0, (buffer.limit() - headerSize) / LmuWindowsMapper.VEHICLE_STRIDE)
-        }
+        fun maxVehicleCount(buffer: ByteBuffer): Int =
+            LmuWindowsMapper.maxVehicleCount(buffer, headerSizePerVehicle = OFF_ORI_ROW2_Z + Double.SIZE_BYTES)
     }
 }
