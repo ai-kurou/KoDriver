@@ -219,7 +219,7 @@ private class FakeTelemetryLogDao(
     }
 
     override suspend fun delete(id: Long) {
-        logs.update { it.filterNot { log -> log.id == id } }
+        logs.update { logs -> logs.filterNot { log -> log.id == id } }
     }
 }
 

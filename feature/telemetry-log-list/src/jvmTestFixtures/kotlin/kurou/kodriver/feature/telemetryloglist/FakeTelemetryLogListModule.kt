@@ -62,7 +62,7 @@ class FakeTelemetryLogRepository : TelemetryLogRepository {
     }
 
     override suspend fun deleteTelemetryLog(id: Long) {
-        emit(logs.value.filterNot { it.id == id })
+        logs.update { logs -> logs.filterNot { log -> log.id == id } }
     }
 
     fun emit(value: List<TelemetryLog>) {
