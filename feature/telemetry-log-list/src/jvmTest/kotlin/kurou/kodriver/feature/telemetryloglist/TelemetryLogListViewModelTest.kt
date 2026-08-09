@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
@@ -56,6 +57,7 @@ class TelemetryLogListViewModelTest {
                     ObserveTelemetryLogsUseCase(repository),
                 ),
             resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+            deleteTelemetryLog = DeleteTelemetryLogUseCase(repository),
         )
 
     @Test

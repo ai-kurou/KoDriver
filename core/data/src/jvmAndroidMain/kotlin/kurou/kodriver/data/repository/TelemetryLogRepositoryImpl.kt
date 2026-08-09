@@ -60,4 +60,8 @@ internal class TelemetryLogRepositoryImpl(
     override suspend fun deleteAllTelemetryLogs() {
         dao.deleteAll()
     }
+
+    override suspend fun deleteTelemetryLog(id: Long) {
+        dao.delete(id)
+    }
 }

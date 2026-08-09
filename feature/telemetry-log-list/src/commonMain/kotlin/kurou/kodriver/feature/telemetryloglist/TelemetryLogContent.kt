@@ -35,6 +35,8 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.feature.telemetryloglist.generated.resources.Res
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_failure
+import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_delete_success
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_failure
 import kurou.kodriver.feature.telemetryloglist.generated.resources.telemetry_log_reset_success
 import org.jetbrains.compose.resources.stringResource
@@ -63,6 +65,10 @@ fun TelemetryLogContent(
         onResetConfirm = viewModel::onResetConfirm,
         onResetDismiss = viewModel::onResetDismiss,
         onResetResultConsumed = viewModel::consumeResetResult,
+        onDeleteClick = viewModel::onDeleteClick,
+        onDeleteConfirm = viewModel::onDeleteConfirm,
+        onDeleteDismiss = viewModel::onDeleteDismiss,
+        onDeleteResultConsumed = viewModel::consumeDeleteResult,
         modifier = modifier,
         scaffoldDirective = scaffoldDirective,
         backHandler = backHandler,
@@ -82,6 +88,10 @@ internal fun TelemetryLogContentScaffold(
     onResetConfirm: () -> Unit = {},
     onResetDismiss: () -> Unit = {},
     onResetResultConsumed: () -> Unit = {},
+    onDeleteClick: (Long) -> Unit = {},
+    onDeleteConfirm: () -> Unit = {},
+    onDeleteDismiss: () -> Unit = {},
+    onDeleteResultConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
     scaffoldDirective: PaneScaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()),
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
@@ -143,19 +153,32 @@ internal fun TelemetryLogContentScaffold(
     backHandler(navigator.canNavigateBack(), { predictiveBackProgress = it }) { navigateBack() }
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val successMessage = stringResource(Res.string.telemetry_log_reset_success)
-    val failureMessage = stringResource(Res.string.telemetry_log_reset_failure)
-
-    LaunchedEffect(uiState.resetSucceeded) {
-        val resetSucceeded = uiState.resetSucceeded ?: return@LaunchedEffect
-        snackbarHostState.showSnackbar(if (resetSucceeded) successMessage else failureMessage)
-        onResetResultConsumed()
-    }
+    TelemetryLogResultSnackbarEffect(
+        snackbarHostState = snackbarHostState,
+        succeeded = uiState.resetSucceeded,
+        successMessage = stringResource(Res.string.telemetry_log_reset_success),
+        failureMessage = stringResource(Res.string.telemetry_log_reset_failure),
+        onResultConsumed = onResetResultConsumed,
+    )
+    TelemetryLogResultSnackbarEffect(
+        snackbarHostState = snackbarHostState,
+        succeeded = uiState.deleteSucceeded,
+        successMessage = stringResource(Res.string.telemetry_log_delete_success),
+        failureMessage = stringResource(Res.string.telemetry_log_delete_failure),
+        onResultConsumed = onDeleteResultConsumed,
+    )
 
     if (uiState.showResetConfirmDialog) {
         TelemetryLogResetConfirmDialog(
             onConfirm = onResetConfirm,
             onDismiss = onResetDismiss,
+        )
+    }
+
+    if (uiState.pendingDeleteLogId != null) {
+        TelemetryLogDeleteConfirmDialog(
+            onConfirm = onDeleteConfirm,
+            onDismiss = onDeleteDismiss,
         )
     }
 
@@ -172,6 +195,7 @@ internal fun TelemetryLogContentScaffold(
                     onLogClick = onLogSelected,
                     onResetClick = onResetClick,
                     onFeedbackClick = onFeedbackClick,
+                    onDeleteClick = onDeleteClick,
                     scrollToTopRequest = scrollToTopRequest,
                 )
             },
@@ -187,6 +211,21 @@ internal fun TelemetryLogContentScaffold(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+    }
+}
+
+@Composable
+private fun TelemetryLogResultSnackbarEffect(
+    snackbarHostState: SnackbarHostState,
+    succeeded: Boolean?,
+    successMessage: String,
+    failureMessage: String,
+    onResultConsumed: () -> Unit,
+) {
+    LaunchedEffect(succeeded) {
+        val result = succeeded ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(if (result) successMessage else failureMessage)
+        onResultConsumed()
     }
 }
 

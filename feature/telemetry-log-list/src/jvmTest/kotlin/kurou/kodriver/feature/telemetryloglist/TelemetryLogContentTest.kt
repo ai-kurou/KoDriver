@@ -15,7 +15,6 @@ import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -26,7 +25,6 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -93,24 +91,6 @@ class TelemetryLogContentTest {
 
         rule.onNodeWithText("ログはまだありません").assertExists()
         rule.onNodeWithText("テレメトリを受信すると、ここに新しい順で表示されます。").assertExists()
-    }
-
-    @Test
-    fun `フィードバックボタンをタップするとonFeedbackClickにログIDを渡す`() {
-        var clickedLogId: Long? = null
-        rule.setContent {
-            TelemetryLogContentScaffold(
-                uiState =
-                    TelemetryLogListUiState(
-                        logs = listOf(createTelemetryLog(id = 1)),
-                    ),
-                onFeedbackClick = { clickedLogId = it },
-            )
-        }
-
-        rule.onNodeWithContentDescription("フィードバックを送信").performClick()
-
-        assertEquals(1L, clickedLogId)
     }
 
     @Test
@@ -355,7 +335,7 @@ private fun createTelemetryLogs(): List<TelemetryLog> =
         )
     }
 
-private fun createTelemetryLog(
+internal fun createTelemetryLog(
     id: Long,
     readoutItemKey: ReadoutItemKey = ReadoutItemKey.LmuWindows.Flag.Root,
 ) = TelemetryLog(
