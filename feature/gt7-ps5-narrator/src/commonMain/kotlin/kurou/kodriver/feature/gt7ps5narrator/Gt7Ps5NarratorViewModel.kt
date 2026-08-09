@@ -15,7 +15,6 @@ import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_D
 import kurou.kodriver.domain.model.MY_BEST_LAP_VOICE_TYPE_DEFAULT
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
-import kurou.kodriver.domain.model.readoutEnabled
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorReadoutSettings
 import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
@@ -209,11 +208,6 @@ internal class Gt7Ps5NarratorViewModel(
                 enabledStates = listEnabledStates.value,
                 myBestLapVoiceType = voiceType.value,
                 remainingFuelLapsThreshold = fuelThreshold.value,
-                remainingFuelLapsEnabled =
-                    listEnabledStates.value.readoutEnabled(
-                        ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
-                    ),
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,
-                remainingFuelEnabled = listEnabledStates.value.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
             )
 }

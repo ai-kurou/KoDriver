@@ -20,10 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `core:domain`（`DetermineGt7Ps5NarratorReadoutUseCase.kt:44-49`）, `feature:gt7-ps5-narrator`（`Gt7Ps5NarratorViewModel.kt:210-215`）
-  **課題**: GT7 だけ読み上げのゲート機構が二重になっている。`Gt7Ps5NarratorReadoutSettings` は `enabledStates: Map<ReadoutItemKey, Boolean>` を持ちながら、`remainingFuelLapsEnabled` / `remainingFuelEnabled` という専用の boolean も併存させており、自己ベストラップだけ `enabledStates` 経由・他2つは専用フラグ経由で判定している。LMU / ACE は `enabledStates` に統一されている。CLAUDE.md が警告している「ReadoutItemKey の配線」が壊れやすい形で、項目を増やすたびに二重管理が必要になる。
-  **改善案**: GT7 も `enabledStates` 経由に統一し、専用 boolean を `Gt7Ps5NarratorReadoutSettings` から削除する。あわせて `Determine*NarratorReadoutUseCase` のテストに「その項目を無効にした場合は読み上げられない」ケースを揃える。
-
 - **対象**: `:server`（`FlagWebSocket.kt` ほか WebSocket ルーティング10ファイル）
   **課題**: 各ファイルが `webSocket(path) { flow.distinctUntilChanged().let { sendJsonMessages(it) } }` の写経で、内容の差はパスと UseCase だけ。加えて命名が非対称で、ACE 側は `AceWindowsFlagWebSocket.kt` / `aceWindowsFlagWebSocket()` と接頭辞付きなのに、LMU 側は `FlagWebSocket.kt` / `flagWebSocket()` と無印のまま。シミュレータが3種になった今、無印のファイル名・関数名はどのシムのものか読み取れない。
   **改善案**: `Route.telemetryWebSocket(feature: KoDriverServerFeature, simulator: Simulator, flow: Flow<T>)` のような汎用関数1つに集約する。集約しない場合でも、LMU 側のファイル名・関数名に `lmuWindows` 接頭辞を付けて ACE 側と揃える。

@@ -45,9 +45,7 @@ data class Gt7Ps5NarratorReadoutSettings(
     val enabledStates: Map<ReadoutItemKey, Boolean>,
     val myBestLapVoiceType: MyBestLapVoiceType,
     val remainingFuelLapsThreshold: Int,
-    val remainingFuelLapsEnabled: Boolean,
     val remainingFuelThresholdPercentage: Int,
-    val remainingFuelEnabled: Boolean,
 )
 
 /** GT7 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -136,7 +134,10 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         settings: Gt7Ps5NarratorReadoutSettings,
     ): Gt7Ps5NarratorReadoutDecision {
         val isLow = isLowRemainingFuel(telemetry, settings.remainingFuelThresholdPercentage)
-        val shouldAnnounce = !state.remainingFuelWarned && isLow && settings.remainingFuelEnabled
+        val shouldAnnounce =
+            !state.remainingFuelWarned &&
+                isLow &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning) else emptyList(),
@@ -230,7 +231,9 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         if (remainingLapsFloor == state.lastAnnouncedRemainingLaps) {
             return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
         }
-        if (!settings.remainingFuelLapsEnabled) return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
+        if (!settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)) {
+            return RemainingFuelLapsEvaluation(fuelState.currentLap, null)
+        }
         return RemainingFuelLapsEvaluation(fuelState.currentLap, remainingLapsFloor)
     }
 

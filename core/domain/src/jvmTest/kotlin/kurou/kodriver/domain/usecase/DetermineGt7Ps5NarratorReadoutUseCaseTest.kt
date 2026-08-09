@@ -139,25 +139,26 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
 
     @Test
     fun `燃料残り周回数が無効なら評価済みラップだけ更新して読み上げない`() {
+        val disabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to false)
         val firstLapDecision =
             useCase.determineRemainingFuelLaps(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(lapCount = 1, bestLapTimeMs = 90_000, gasLevel = 100f),
-                settings = settings(remainingFuelLapsEnabled = false),
+                settings = settings(enabledStates = disabledStates),
                 observedAtMs = 0L,
             )
         val nextLapDecision =
             useCase.determineRemainingFuelLaps(
                 state = firstLapDecision.state,
                 telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
-                settings = settings(remainingFuelLapsEnabled = false),
+                settings = settings(enabledStates = disabledStates),
                 observedAtMs = 100_000L,
             )
         val decision =
             useCase.determineRemainingFuelLaps(
                 state = nextLapDecision.state,
                 telemetry = telemetry(lapCount = 2, bestLapTimeMs = 90_000, gasLevel = 10f),
-                settings = settings(remainingFuelLapsEnabled = false),
+                settings = settings(enabledStates = disabledStates),
                 observedAtMs = 160_000L,
             )
 
@@ -318,7 +319,7 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
             useCase.determineRemainingFuel(
                 state = Gt7Ps5NarratorState(),
                 telemetry = telemetry(gasLevel = 20f, gasCapacity = 100f),
-                settings = settings(remainingFuelEnabled = false),
+                settings = settings(enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to false)),
             )
 
         assertTrue(decision.events.isEmpty())
@@ -342,16 +343,12 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
-        remainingFuelLapsEnabled: Boolean = true,
         remainingFuelThresholdPercentage: Int = 30,
-        remainingFuelEnabled: Boolean = true,
     ) = Gt7Ps5NarratorReadoutSettings(
         enabledStates = enabledStates,
         myBestLapVoiceType = myBestLapVoiceType,
         remainingFuelLapsThreshold = remainingFuelLapsThreshold,
-        remainingFuelLapsEnabled = remainingFuelLapsEnabled,
         remainingFuelThresholdPercentage = remainingFuelThresholdPercentage,
-        remainingFuelEnabled = remainingFuelEnabled,
     )
 
     private fun telemetry(
