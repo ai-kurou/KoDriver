@@ -165,7 +165,7 @@ class ApplicationTest {
             }
             val response = client.get("/")
             assertEquals(HttpStatusCode.OK, response.status)
-            assertEquals("Hello, Ktor!", response.bodyAsText())
+            assertEquals("""{"status":"ok"}""", response.bodyAsText())
         }
 
     @Test
@@ -1489,7 +1489,7 @@ class ApplicationTest {
         server.start()
         try {
             val response = URI("http://127.0.0.1:$port/").toURL().readText()
-            assertEquals("Hello, Ktor!", response)
+            assertEquals("""{"status":"ok"}""", response)
         } finally {
             server.stop()
         }

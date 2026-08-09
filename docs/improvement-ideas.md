@@ -20,10 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `:server`（`Application.kt` のルート `get("/")`）
-  **課題**: `get("/") { call.respondText("Hello, Ktor!") }` が Ktor 雛形の残骸のまま残っている。LAN 内に公開されるエンドポイントであり、実運用上の意味を持たない応答を返している。
-  **改善案**: 削除するか、`/version` と同様にサーバーの状態が分かる意味のある応答（稼働確認用のヘルスチェックなど）へ変更する。
-
 - **対象**: `core:data`（`datasource/*Serializer.kt`, `datasource/*DataStoreFactory.kt`, `*RepositoryFactory.kt`, `repository/*RepositoryImpl.kt`）
   **課題**: Preferences 1種類につき Serializer / DataStoreFactory / RepositoryFactory / RepositoryImpl の4点セットが必要で、現在それぞれ 22 / 23 / 25 / 24 ファイル、合計で約94ファイルの定型コードになっている。設定を1つ増やすたびに4ファイル追加と、それぞれのテスト追加が必要。
   **改善案**: `@Serializable` なデータクラスと DataStore ファイル名を渡せば Serializer と DataStore を組み立てられる汎用ファクトリ（例: `jsonPreferencesDataStore<T>(fileName, default)`）を用意し、個別ファイルは差分のみ持つ形にする。RepositoryImpl も `observe` / `save` の定型部分を共通化できる余地がある。

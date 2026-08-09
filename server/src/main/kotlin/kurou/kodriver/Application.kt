@@ -221,7 +221,10 @@ fun Application.module(useCases: KoDriverServerUseCases) {
     }
     routing {
         get("/") {
-            call.respondText("Hello, Ktor!")
+            call.respondText(
+                """{"status":"ok"}""",
+                ContentType.Application.Json,
+            )
         }
         get("/version") {
             call.respondText(
