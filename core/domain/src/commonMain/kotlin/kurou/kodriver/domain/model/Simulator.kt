@@ -23,7 +23,8 @@ sealed class Simulator(
     data object AceWindows : Simulator(id = "ace_windows", requiresKoDriverServer = true)
 
     companion object {
-        private val entries by lazy { listOf(LmuWindows, Gt7Ps5, AceWindows) }
+        /** 全シミュレータの一覧。 */
+        val entries by lazy { listOf(LmuWindows, Gt7Ps5, AceWindows) }
 
         // nullは「まだシミュレーターが選択されていない」という正当な初期状態を表すため、非null化してデフォルト値にフォールバックしてはならない。
 
