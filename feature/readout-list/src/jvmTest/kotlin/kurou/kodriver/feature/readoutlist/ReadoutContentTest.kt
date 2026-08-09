@@ -179,7 +179,7 @@ class ReadoutContentTest {
         var remainingFuelText by mutableStateOf("")
 
         rule.setContent {
-            remainingFuelText = itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+            remainingFuelText = itemDisplayName(ReadoutItemKey.AceWindows.RemainingFuel.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(

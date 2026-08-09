@@ -1,11 +1,12 @@
 package kurou.kodriver.core.designsystem
 
-import androidx.compose.material3.Text
-import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithText
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class ReadoutItemDisplayTest {
@@ -50,15 +51,13 @@ class ReadoutItemDisplayTest {
 
     @Test
     fun `全readoutItemKeyValueを日本語の表示名に変換する`() {
+        var actualDisplayNames by mutableStateOf(emptyList<String>())
+
         composeRule.setContent {
-            expectedDisplayNames.forEach { (value, _) ->
-                Text(readoutItemDisplayName(value))
-            }
+            actualDisplayNames = expectedDisplayNames.map { (value, _) -> readoutItemDisplayName(value) }
         }
 
-        expectedDisplayNames.groupingBy { it.second }.eachCount().forEach { (displayName, count) ->
-            composeRule.onAllNodesWithText(displayName).assertCountEquals(count)
-        }
+        assertEquals(expectedDisplayNames.map { it.second }, actualDisplayNames)
     }
 
     @Test
