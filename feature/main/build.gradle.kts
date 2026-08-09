@@ -43,6 +43,7 @@ kotlin {
             kotlin.srcDir(generatedAppVersionDir)
         }
         commonMain.dependencies {
+            implementation(projects.core.model)
             implementation(libs.kotlinx.coroutinesCore)
         }
         jvmTest.dependencies {
@@ -68,6 +69,7 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(project(":core:model"))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

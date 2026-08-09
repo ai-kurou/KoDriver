@@ -42,6 +42,7 @@ kotlin {
             kotlin.srcDir(generatedAppVersionDir)
         }
         commonMain.dependencies {
+            implementation(projects.core.model)
             implementation(projects.core.designsystem)
             implementation(libs.compose.material.icons.extended)
         }

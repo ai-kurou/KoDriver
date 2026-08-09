@@ -13,6 +13,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.model)
             implementation(projects.core.designsystem)
             implementation(projects.core.domain)
             implementation(libs.compose.material3)
@@ -38,6 +39,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(project(":core:model"))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

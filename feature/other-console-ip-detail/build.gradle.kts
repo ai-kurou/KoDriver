@@ -34,6 +34,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(project(":core:model"))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

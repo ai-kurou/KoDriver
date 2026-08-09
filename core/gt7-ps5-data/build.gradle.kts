@@ -31,6 +31,7 @@ kotlin {
             dependsOn(commonMain.get())
             dependencies {
                 implementation(projects.core.domain)
+                implementation(projects.core.model)
                 implementation(libs.kotlinx.coroutinesCore)
                 implementation(libs.koin.core)
                 implementation(libs.androidx.datastore.core)

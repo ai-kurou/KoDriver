@@ -171,11 +171,15 @@ moduleGraphAssert {
         ":app:shared -> :feature:.*",
         // feature → core:domain
         ":feature:.* -> :core:domain",
+        // feature → core:model（純粋なドメインモデルの型定義を直接参照するため）
+        ":feature:.* -> :core:model",
         // feature → core:designsystem（共通 UI コンポーネントの利用）
         ":feature:.* -> :core:designsystem",
         // core:data 系 → core:domain（.*data にマッチ: core:data, core:*-data。core:designsystem は除外される）
         ":core:.*data -> :core:domain",
-        // core:domain → core:model（純粋なドメインモデルの型定義。domain は model を api 経由で公開する）
+        // core:data 系 → core:model（純粋なドメインモデルの型定義を直接参照するため）
+        ":core:.*data -> :core:model",
+        // core:domain → core:model（純粋なドメインモデルの型定義。domain は model を implementation 経由で利用するのみで再公開しない）
         ":core:domain -> :core:model",
         // Windows共有メモリ系データモジュール → core:windows-shared-memory（Windows共有メモリI/Oの共通基盤）
         ":core:.*windows.*data -> :core:windows-shared-memory",
@@ -183,6 +187,7 @@ moduleGraphAssert {
         // core:narrator自体はcore:domainに依存させず、SpeechEvent等はfeature側が型パラメータとして渡す）
         ":feature:.*narrator -> :core:narrator",
         ":server -> :core:domain",
+        ":server -> :core:model",
     )
     restricted = arrayOf(
         // app エントリーポイント（feature 層・domain 層への直接参照禁止）

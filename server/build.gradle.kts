@@ -37,6 +37,7 @@ kotlin.sourceSets.main {
 
 dependencies {
     api(projects.core.domain)
+    api(project(":core:model"))
     implementation(libs.logback)
     implementation(libs.koin.core)
     implementation(libs.kotlinx.serialization.json)

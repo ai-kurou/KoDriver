@@ -13,6 +13,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.model)
             implementation(projects.core.designsystem)
         }
         jvmTest.dependencies {
@@ -37,6 +38,7 @@ compose.resources {
 
 dependencies {
     testFixturesApi(projects.core.domain)
+    testFixturesApi(project(":core:model"))
     testFixturesImplementation(libs.koin.core)
     testFixturesImplementation(libs.kotlinx.coroutinesCore)
 }

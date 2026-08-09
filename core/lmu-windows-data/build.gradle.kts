@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     implementation(projects.core.domain)
+    implementation(projects.core.model)
     implementation(projects.core.windowsSharedMemory)
     implementation(libs.kotlinx.coroutinesCore)
     implementation(libs.koin.core)

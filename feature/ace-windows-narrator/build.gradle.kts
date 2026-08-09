@@ -10,6 +10,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.model)
             implementation(projects.core.designsystem)
             implementation(projects.core.narrator)
             implementation(libs.kotlinx.coroutinesCore)
