@@ -17,6 +17,7 @@ digraph G {
   ":core:ace-windows-data" -> ":core:domain"
   ":core:ace-windows-data" -> ":core:windows-shared-memory"
   ":core:data" -> ":core:domain"
+  ":core:domain" -> ":core:model"
   ":core:gt7-ps5-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:domain"
   ":core:lmu-windows-data" -> ":core:windows-shared-memory"
