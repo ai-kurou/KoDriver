@@ -290,6 +290,24 @@ class LmuWindowsMapperTest {
     }
 
     @Test
+    fun `maxVehicleCountはバッファサイズと1台あたりのヘッダーサイズから車両数上限を算出する`() {
+        val headerSizePerVehicle = 8
+        val headerSize = vehicleBase(playerIdx = 0) + headerSizePerVehicle
+        val buf = ByteBuffer.allocate(headerSize + VEHICLE_STRIDE * 3).order(ByteOrder.LITTLE_ENDIAN)
+
+        val result = LmuWindowsMapper.maxVehicleCount(buf, headerSizePerVehicle)
+
+        assertEquals(3, result)
+    }
+
+    @Test
+    fun `maxVehicleCountはバッファがヘッダーサイズに満たない場合0を返す`() {
+        val result = LmuWindowsMapper.maxVehicleCount(ByteBuffer.allocate(1), headerSizePerVehicle = 8)
+
+        assertEquals(0, result)
+    }
+
+    @Test
     fun `readCarcassTemperaturesKは4輪ぶんのカーカス温度をKelvinで返す`() {
         val vb = vehicleBase()
         val buf = emptyBuffer()
