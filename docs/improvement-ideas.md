@@ -20,10 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `:server`（`FlagWebSocket.kt` ほか WebSocket ルーティング10ファイル）
-  **課題**: 各ファイルが `webSocket(path) { flow.distinctUntilChanged().let { sendJsonMessages(it) } }` の写経で、内容の差はパスと UseCase だけ。加えて命名が非対称で、ACE 側は `AceWindowsFlagWebSocket.kt` / `aceWindowsFlagWebSocket()` と接頭辞付きなのに、LMU 側は `FlagWebSocket.kt` / `flagWebSocket()` と無印のまま。シミュレータが3種になった今、無印のファイル名・関数名はどのシムのものか読み取れない。
-  **改善案**: `Route.telemetryWebSocket(feature: KoDriverServerFeature, simulator: Simulator, flow: Flow<T>)` のような汎用関数1つに集約する。集約しない場合でも、LMU 側のファイル名・関数名に `lmuWindows` 接頭辞を付けて ACE 側と揃える。
-
 - **対象**: `:server`（`Application.kt` のルート `get("/")`）
   **課題**: `get("/") { call.respondText("Hello, Ktor!") }` が Ktor 雛形の残骸のまま残っている。LAN 内に公開されるエンドポイントであり、実運用上の意味を持たない応答を返している。
   **改善案**: 削除するか、`/version` と同様にサーバーの状態が分かる意味のある応答（稼働確認用のヘルスチェックなど）へ変更する。
