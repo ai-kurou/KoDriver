@@ -2,7 +2,6 @@ package kurou.kodriver.data.repository
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsVehicleApproachThresholdsPreferences
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
 
@@ -10,24 +9,22 @@ internal class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleApproachThresholdsPreferences>,
 ) : LmuWindowsVehicleApproachThresholdsPreferencesRepository {
     override fun observeLongitudinalThresholdMeters(): Flow<Double> =
-        dataStore.data.map { it.longitudinalThresholdMeters }
+        dataStore.observeProperty { it.longitudinalThresholdMeters }
 
-    override fun observeLateralThresholdMeters(): Flow<Double> = dataStore.data.map { it.lateralThresholdMeters }
+    override fun observeLateralThresholdMeters(): Flow<Double> = dataStore.observeProperty { it.lateralThresholdMeters }
 
     override fun observeSustainedApproachDurationSeconds(): Flow<Int> =
-        dataStore.data.map {
-            it.sustainedApproachDurationSeconds
-        }
+        dataStore.observeProperty { it.sustainedApproachDurationSeconds }
 
     override suspend fun saveLongitudinalThresholdMeters(meters: Double) {
-        dataStore.updateData { it.copy(longitudinalThresholdMeters = meters) }
+        dataStore.saveProperty(meters) { prefs, value -> prefs.copy(longitudinalThresholdMeters = value) }
     }
 
     override suspend fun saveLateralThresholdMeters(meters: Double) {
-        dataStore.updateData { it.copy(lateralThresholdMeters = meters) }
+        dataStore.saveProperty(meters) { prefs, value -> prefs.copy(lateralThresholdMeters = value) }
     }
 
     override suspend fun saveSustainedApproachDurationSeconds(seconds: Int) {
-        dataStore.updateData { it.copy(sustainedApproachDurationSeconds = seconds) }
+        dataStore.saveProperty(seconds) { prefs, value -> prefs.copy(sustainedApproachDurationSeconds = value) }
     }
 }
