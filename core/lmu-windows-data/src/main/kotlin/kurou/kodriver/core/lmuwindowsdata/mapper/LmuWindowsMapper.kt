@@ -104,7 +104,7 @@ internal object LmuWindowsMapper {
     private const val OFF_ACTIVE_VEHICLES = 0
     private const val OFF_PLAYER_VEHICLE_IDX = 1
     private const val OFF_TELEM_INFO = 4
-    private const val VEHICLE_STRIDE = 1888
+    internal const val VEHICLE_STRIDE = 1888
 
     private const val OFF_LAP_NUMBER = 20
     private const val OFF_POS_X = 160
@@ -133,8 +133,7 @@ internal object LmuWindowsMapper {
     private const val OFF_WHEEL_TIRE_CARCASS_TEMPERATURE = 204
 
     fun map(buffer: ByteBuffer): LmuWindowsTelemetryData {
-        val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
-        val vehicleBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+        val vehicleBase = vehicleTelemetryBase(readPlayerVehicleIdx(buffer))
         val vehicleScoringBase = findPlayerVehicleScoringBase(buffer)
 
         return LmuWindowsTelemetryData(
@@ -185,11 +184,22 @@ internal object LmuWindowsMapper {
      * 車両が存在しない場合は null を返す。
      */
     internal fun findPlayerVehicleBase(buffer: ByteBuffer): Int? {
-        val activeVehicles = buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF
-        val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
+        val activeVehicles = readActiveVehicleCount(buffer)
+        val playerIdx = readPlayerVehicleIdx(buffer)
         if (activeVehicles == 0 || playerIdx >= activeVehicles) return null
-        return TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+        return vehicleTelemetryBase(playerIdx)
     }
+
+    /** telemetry セグメントの activeVehicles (uint8) を返す。 */
+    internal fun readActiveVehicleCount(buffer: ByteBuffer): Int =
+        buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF
+
+    /** telemetry セグメントの playerVehicleIdx (uint8) を返す。 */
+    internal fun readPlayerVehicleIdx(buffer: ByteBuffer): Int =
+        buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
+
+    /** 指定した車両インデックスの telemInfo 先頭オフセットを返す（範囲チェックなし）。 */
+    internal fun vehicleTelemetryBase(index: Int): Int = TELEMETRY_BASE + OFF_TELEM_INFO + index * VEHICLE_STRIDE
 
     /** プレイヤー車両のバーチャルエナジー残量割合 (0.0-1.0) を返す。 */
     internal fun readVirtualEnergyRatio(

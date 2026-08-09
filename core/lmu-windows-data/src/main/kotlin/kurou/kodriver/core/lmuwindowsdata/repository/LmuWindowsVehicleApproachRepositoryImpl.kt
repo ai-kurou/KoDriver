@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kurou.kodriver.core.lmuwindowsdata.datasource.LmuWindowsSharedMemorySource
+import kurou.kodriver.core.lmuwindowsdata.mapper.LmuWindowsMapper
 import kurou.kodriver.domain.model.LmuWindowsVehicleApproachData
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachRepository
 import kurou.kodriver.domain.repository.LmuWindowsVehicleApproachThresholdsPreferencesRepository
@@ -37,10 +38,8 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
     ): Flow<LmuWindowsVehicleApproachData> =
         source.bufferFlow.mapNotNull { buffer ->
             val maxCount = maxVehicleCount(buffer)
-            val activeVehicles =
-                (buffer.get(TELEMETRY_BASE + OFF_ACTIVE_VEHICLES).toInt() and 0xFF)
-                    .coerceAtMost(maxCount)
-            val playerIdx = buffer.get(TELEMETRY_BASE + OFF_PLAYER_VEHICLE_IDX).toInt() and 0xFF
+            val activeVehicles = LmuWindowsMapper.readActiveVehicleCount(buffer).coerceAtMost(maxCount)
+            val playerIdx = LmuWindowsMapper.readPlayerVehicleIdx(buffer)
             if (activeVehicles > 0 && playerIdx < activeVehicles) {
                 computeVehicleApproach(
                     buffer,
@@ -61,7 +60,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         longitudinalThresholdMeters: Double,
         lateralMaximumMeters: Double,
     ): LmuWindowsVehicleApproachData {
-        val plrBase = TELEMETRY_BASE + OFF_TELEM_INFO + playerIdx * VEHICLE_STRIDE
+        val plrBase = LmuWindowsMapper.vehicleTelemetryBase(playerIdx)
         val plrPosX = buffer.getDouble(plrBase + OFF_POS_X)
         val plrPosY = -buffer.getDouble(plrBase + OFF_POS_Z)
         val plrOriYaw =
@@ -82,7 +81,7 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         for (i in 0 until activeVehicles) {
             if (i == playerIdx) continue
 
-            val optBase = TELEMETRY_BASE + OFF_TELEM_INFO + i * VEHICLE_STRIDE
+            val optBase = LmuWindowsMapper.vehicleTelemetryBase(i)
             val optPosX = buffer.getDouble(optBase + OFF_POS_X)
             val optPosY = -buffer.getDouble(optBase + OFF_POS_Z)
 
@@ -115,13 +114,6 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
     }
 
     companion object {
-        private const val TELEMETRY_BASE = 128_464
-
-        private const val OFF_ACTIVE_VEHICLES = 0
-        private const val OFF_PLAYER_VEHICLE_IDX = 1
-        private const val OFF_TELEM_INFO = 4
-        private const val VEHICLE_STRIDE = 1_888
-
         private const val OFF_POS_X = 160
         private const val OFF_POS_Z = 176
 
@@ -129,8 +121,8 @@ internal class LmuWindowsVehicleApproachRepositoryImpl(
         private const val OFF_ORI_ROW2_Z = 296
 
         fun maxVehicleCount(buffer: ByteBuffer): Int {
-            val headerSize = TELEMETRY_BASE + OFF_TELEM_INFO + OFF_ORI_ROW2_Z + Double.SIZE_BYTES
-            return maxOf(0, (buffer.limit() - headerSize) / VEHICLE_STRIDE)
+            val headerSize = LmuWindowsMapper.vehicleTelemetryBase(0) + OFF_ORI_ROW2_Z + Double.SIZE_BYTES
+            return maxOf(0, (buffer.limit() - headerSize) / LmuWindowsMapper.VEHICLE_STRIDE)
         }
     }
 }
