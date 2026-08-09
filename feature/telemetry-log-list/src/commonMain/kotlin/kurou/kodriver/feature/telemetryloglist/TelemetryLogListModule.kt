@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.telemetryloglist
 
+import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import org.koin.core.module.dsl.viewModelOf
@@ -19,6 +20,7 @@ val telemetryLogListModule =
         // ドメイン UseCase（:core:domain。get() は :core:data の TelemetryLogRepository を解決）
         factory { ObserveTelemetryLogsUseCase(get()) }
         factory { ResetTelemetryLogDatabaseUseCase(get()) }
+        factory { DeleteTelemetryLogUseCase(get()) }
 
         // 一覧表示用 UseCase
         factory { ObserveSortedTelemetryLogsUseCase(get()) }

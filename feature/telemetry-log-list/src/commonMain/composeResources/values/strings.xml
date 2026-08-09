@@ -38,5 +38,12 @@
     <string name="telemetry_log_reset_cancel_button">キャンセル</string>
     <string name="telemetry_log_reset_success">データベースをリセットしました</string>
     <string name="telemetry_log_reset_failure">データベースのリセットに失敗しました</string>
-    <string name="telemetry_log_feedback_button">フィードバックを送信</string>
+    <string name="telemetry_log_more_button">その他の操作</string>
+    <string name="telemetry_log_feedback_menu_item">フィードバック送信</string>
+    <string name="telemetry_log_delete_menu_item">削除</string>
+    <string name="telemetry_log_delete_confirm_title">このログを削除しますか？</string>
+    <string name="telemetry_log_delete_confirm_body">このテレメトリログが削除されます。この操作は元に戻せません。</string>
+    <string name="telemetry_log_delete_confirm_button">削除する</string>
+    <string name="telemetry_log_delete_success">ログを削除しました</string>
+    <string name="telemetry_log_delete_failure">ログの削除に失敗しました</string>
 </resources>

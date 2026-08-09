@@ -20,6 +20,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.repository.TelemetryLogRepository
+import kurou.kodriver.domain.usecase.DeleteTelemetryLogUseCase
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogsUseCase
 import kurou.kodriver.domain.usecase.ResetTelemetryLogDatabaseUseCase
 import kotlin.test.AfterTest
@@ -56,6 +57,7 @@ class TelemetryLogListViewModelTest {
                     ObserveTelemetryLogsUseCase(repository),
                 ),
             resetTelemetryLogDatabase = ResetTelemetryLogDatabaseUseCase(repository),
+            deleteTelemetryLog = DeleteTelemetryLogUseCase(repository),
         )
 
     @Test
@@ -254,6 +256,94 @@ class TelemetryLogListViewModelTest {
             assertNull(viewModel.uiState.first { it.resetSucceeded == null && !it.isResetting }.resetSucceeded)
             verify(exactly = 1) { repository.observeTelemetryLogs() }
             coVerify(exactly = 1) { repository.deleteAllTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onDeleteClickで削除対象のログIDを保持する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
+
+            viewModel.onDeleteClick(1L)
+
+            assertEquals(1L, viewModel.uiState.first { it.pendingDeleteLogId == 1L }.pendingDeleteLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onDeleteDismissで削除対象のログIDを解除する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            val viewModel = createViewModel()
+
+            viewModel.onDeleteClick(1L)
+            viewModel.uiState.first { it.pendingDeleteLogId == 1L }
+            viewModel.onDeleteDismiss()
+
+            assertNull(viewModel.uiState.first { it.pendingDeleteLogId == null }.pendingDeleteLogId)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `onDeleteConfirmで削除対象のログIDを解除してdeleteTelemetryLogを実行する`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteTelemetryLog(1L) } answers { logsFlow.update { emptyList() } }
+            val viewModel = createViewModel()
+
+            logsFlow.update { listOf(telemetryLog(id = 1, createdAt = 100)) }
+            viewModel.uiState.first { it.logs.isNotEmpty() }
+            viewModel.onDeleteClick(1L)
+            viewModel.uiState.first { it.pendingDeleteLogId == 1L }
+
+            viewModel.onDeleteConfirm()
+
+            val state = viewModel.uiState.first { it.deleteSucceeded != null }
+            assertNull(state.pendingDeleteLogId)
+            assertEquals(true, state.deleteSucceeded)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLog(1L) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `deleteTelemetryLogが失敗するとdeleteSucceededがfalseになる`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteTelemetryLog(1L) } throws IllegalStateException("削除に失敗しました")
+            val viewModel = createViewModel()
+
+            viewModel.onDeleteClick(1L)
+            viewModel.uiState.first { it.pendingDeleteLogId == 1L }
+            viewModel.onDeleteConfirm()
+
+            val state = viewModel.uiState.first { it.deleteSucceeded != null }
+            assertEquals(false, state.deleteSucceeded)
+            assertFalse(state.isDeleting)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLog(1L) }
+            confirmVerified(repository)
+        }
+
+    @Test
+    fun `consumeDeleteResultでdeleteSucceededをnullに戻す`() =
+        runTest(dispatcher) {
+            every { repository.observeTelemetryLogs() } returns logsFlow
+            coEvery { repository.deleteTelemetryLog(1L) } answers { logsFlow.update { emptyList() } }
+            val viewModel = createViewModel()
+
+            viewModel.onDeleteClick(1L)
+            viewModel.onDeleteConfirm()
+            viewModel.uiState.first { it.deleteSucceeded != null }
+
+            viewModel.consumeDeleteResult()
+
+            assertNull(viewModel.uiState.first { it.deleteSucceeded == null && !it.isDeleting }.deleteSucceeded)
+            verify(exactly = 1) { repository.observeTelemetryLogs() }
+            coVerify(exactly = 1) { repository.deleteTelemetryLog(1L) }
             confirmVerified(repository)
         }
 }
