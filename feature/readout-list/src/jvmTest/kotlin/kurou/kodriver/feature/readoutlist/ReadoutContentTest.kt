@@ -25,15 +25,6 @@ import androidx.window.core.layout.WindowSizeClass
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
-import kurou.kodriver.feature.readoutlist.generated.resources.item_flag
-import kurou.kodriver.feature.readoutlist.generated.resources.item_my_best_lap
-import kurou.kodriver.feature.readoutlist.generated.resources.item_remaining_fuel
-import kurou.kodriver.feature.readoutlist.generated.resources.item_remaining_fuel_laps
-import kurou.kodriver.feature.readoutlist.generated.resources.item_remaining_virtual_energy
-import kurou.kodriver.feature.readoutlist.generated.resources.item_tyre_temperature
-import kurou.kodriver.feature.readoutlist.generated.resources.item_tyre_wear
-import kurou.kodriver.feature.readoutlist.generated.resources.item_vehicle_approach
-import kurou.kodriver.feature.readoutlist.generated.resources.item_vehicle_damage
 import kurou.kodriver.feature.readoutlist.generated.resources.scroll_to_top
 import kurou.kodriver.feature.readoutlist.generated.resources.simulator_label
 import org.jetbrains.compose.resources.stringResource
@@ -69,13 +60,13 @@ class ReadoutContentTest {
         var selectedItem by mutableStateOf<ReadoutListItemType?>(null)
 
         rule.setContent {
-            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
             itemTexts =
                 listOf(
-                    stringResource(Res.string.item_vehicle_approach),
-                    stringResource(Res.string.item_flag),
-                    stringResource(Res.string.item_vehicle_damage),
-                    stringResource(Res.string.item_my_best_lap),
+                    itemDisplayName(ReadoutItemKey.LmuWindows.VehicleApproach.Root),
+                    itemDisplayName(ReadoutItemKey.LmuWindows.Flag.Root),
+                    itemDisplayName(ReadoutItemKey.LmuWindows.VehicleDamage.Root),
+                    itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root),
                 )
             ReadoutContent(
                 uiState =
@@ -124,7 +115,7 @@ class ReadoutContentTest {
         var tyreWearText by mutableStateOf("")
 
         rule.setContent {
-            tyreWearText = stringResource(Res.string.item_tyre_wear)
+            tyreWearText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreWear.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -154,7 +145,7 @@ class ReadoutContentTest {
         val selected = mutableListOf<ReadoutItemKey>()
 
         rule.setContent {
-            veText = stringResource(Res.string.item_remaining_virtual_energy)
+            veText = itemDisplayName(ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -188,7 +179,7 @@ class ReadoutContentTest {
         var remainingFuelText by mutableStateOf("")
 
         rule.setContent {
-            remainingFuelText = stringResource(Res.string.item_remaining_fuel)
+            remainingFuelText = itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -218,7 +209,7 @@ class ReadoutContentTest {
         val selected = mutableListOf<ReadoutItemKey>()
 
         rule.setContent {
-            remainingFuelText = stringResource(Res.string.item_remaining_fuel)
+            remainingFuelText = itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -254,9 +245,9 @@ class ReadoutContentTest {
         rule.setContent {
             itemTexts =
                 listOf(
-                    stringResource(Res.string.item_remaining_fuel_laps),
-                    stringResource(Res.string.item_remaining_fuel),
-                    stringResource(Res.string.item_my_best_lap),
+                    itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root),
+                    itemDisplayName(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root),
+                    itemDisplayName(ReadoutItemKey.Gt7Ps5.MyBestLap.Root),
                 )
             ReadoutContent(
                 uiState =
@@ -301,7 +292,7 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -353,7 +344,7 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -410,7 +401,7 @@ class ReadoutContentTest {
         var tyreTemperatureText by mutableStateOf("")
 
         rule.setContent {
-            tyreTemperatureText = stringResource(Res.string.item_tyre_temperature)
+            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
             ReadoutContent(
                 uiState =
                     ReadoutListUiState(
@@ -485,7 +476,7 @@ class ReadoutContentTest {
         rule.setContent {
             scrollToTopText = stringResource(Res.string.scroll_to_top)
             simulatorLabelText = stringResource(Res.string.simulator_label)
-            lastItemText = stringResource(Res.string.item_my_best_lap)
+            lastItemText = itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
                     uiState =
@@ -535,7 +526,7 @@ class ReadoutContentTest {
 
         rule.setContent {
             simulatorLabelText = stringResource(Res.string.simulator_label)
-            lastItemText = stringResource(Res.string.item_my_best_lap)
+            lastItemText = itemDisplayName(ReadoutItemKey.LmuWindows.MyBestLap.Root)
             Box(modifier = Modifier.height(240.dp)) {
                 ReadoutListPane(
                     uiState =
