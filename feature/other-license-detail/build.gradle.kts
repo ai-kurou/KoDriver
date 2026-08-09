@@ -16,6 +16,9 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(libs.aboutlibraries.compose.m3)
         }
+        jvmTest.dependencies {
+            implementation(libs.mockk)
+        }
         named("androidHostTest") {
             dependencies {
                 implementation(libs.kotlin.testJunit)

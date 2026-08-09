@@ -128,7 +128,7 @@ class MainActivityTest {
         selectSimulator("Gran Turismo 7（PS5）")
         waitUntilDisplayed("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
         clickItem("ゲーム機・SimHubへ接続するIPアドレスが未設定です")
-        waitUntilDisplayed("ゲーム機またはSimHubを実行しているPCのIPアドレスを入力してください。")
+        waitUntilDisplayed("を実行しているPCのIPアドレスを入力してください。", substring = true)
         navigateBack()
     }
 
@@ -210,9 +210,12 @@ class MainActivityTest {
         clickLastItem(simulatorName)
     }
 
-    private fun waitUntilDisplayed(text: String) {
+    private fun waitUntilDisplayed(
+        text: String,
+        substring: Boolean = false,
+    ) {
         composeTestRule.waitUntil(timeoutMillis = 5_000L) {
-            composeTestRule.onAllNodes(hasText(text)).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodes(hasText(text, substring = substring)).fetchSemanticsNodes().isNotEmpty()
         }
     }
 

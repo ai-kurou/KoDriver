@@ -2,10 +2,14 @@
 
 package kurou.kodriver.feature.otherconsoleipdetail
 
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.TextLayoutResult
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -25,6 +29,7 @@ class OtherConsoleIpDetailPaneContentTest {
         val onDismiss: () -> Unit = {},
         val onBack: () -> Unit = {},
         val onOpenGuide: () -> Unit = {},
+        val onOpenSimHub: () -> Unit = {},
     )
 
     private fun setContent(params: ContentParams = ContentParams()) {
@@ -36,6 +41,7 @@ class OtherConsoleIpDetailPaneContentTest {
                 onDismiss = params.onDismiss,
                 onBack = params.onBack,
                 onOpenGuide = params.onOpenGuide,
+                onOpenSimHub = params.onOpenSimHub,
             )
         }
     }
@@ -93,6 +99,29 @@ class OtherConsoleIpDetailPaneContentTest {
         rule.onNodeWithText("接続設定ガイドを開く").performClick()
 
         assertEquals(1, guideCount)
+    }
+
+    @Test
+    fun `SimHubのリンクをタップするとonOpenSimHubが呼ばれる`() {
+        var openSimHubCount = 0
+        setContent(ContentParams(onOpenSimHub = { openSimHubCount++ }))
+
+        val node = rule.onNodeWithText("ゲーム機または", substring = true)
+        val textLayoutResults = mutableListOf<TextLayoutResult>()
+        node
+            .fetchSemanticsNode()
+            .config[SemanticsActions.GetTextLayoutResult]
+            .action
+            ?.invoke(textLayoutResults)
+        val text =
+            textLayoutResults
+                .first()
+                .layoutInput.text.text
+        val simHubStart = text.indexOf("SimHub")
+        val simHubBoundingBox = textLayoutResults.first().getBoundingBox(simHubStart)
+        node.performTouchInput { click(simHubBoundingBox.center) }
+
+        assertEquals(1, openSimHubCount)
     }
 
     @Test

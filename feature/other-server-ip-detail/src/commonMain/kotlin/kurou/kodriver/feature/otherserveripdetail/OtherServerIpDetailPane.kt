@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -22,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,6 +37,8 @@ import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_description
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovering
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_discovery_show_button
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_guide_description
+import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_guide_link
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_invalid
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_label
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_placeholder
@@ -40,6 +47,9 @@ import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_
 import kurou.kodriver.feature.otherserveripdetail.generated.resources.server_ip_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val WINDOWS_INSTALL_GUIDE_URL =
+    "https://github.com/ai-kurou/KoDriver/blob/main/docs/windows-install.md"
 
 /**
  * OtherServerIpDetail の画面を表示する Composable。
@@ -52,6 +62,7 @@ fun OtherServerIpDetailPane(
 ) {
     val viewModel: OtherServerIpDetailViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
     OtherServerIpDetailPaneContent(
         uiState = uiState,
         onIpChanged = viewModel::onIpChanged,
@@ -62,6 +73,7 @@ fun OtherServerIpDetailPane(
         onDiscoveredServerSelected = viewModel::onDiscoveredServerSelected,
         onDiscoveryDialogConfirm = viewModel::onDiscoveryDialogConfirm,
         onDiscoveryDialogDismiss = viewModel::onDiscoveryDialogDismiss,
+        onOpenGuide = { uriHandler.openUri(WINDOWS_INSTALL_GUIDE_URL) },
         canNavigateBack = canNavigateBack,
         onBack = onBack,
         modifier = modifier,
@@ -82,6 +94,7 @@ fun OtherServerIpDetailPaneContent(
     onDiscoveredServerSelected: (DiscoveredServer) -> Unit = {},
     onDiscoveryDialogConfirm: () -> Unit = {},
     onDiscoveryDialogDismiss: () -> Unit = {},
+    onOpenGuide: () -> Unit = {},
     canNavigateBack: Boolean = true,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -184,6 +197,30 @@ fun OtherServerIpDetailPaneContent(
                         Text(stringResource(Res.string.server_ip_save))
                     }
                 }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(Res.string.server_ip_guide_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable(onClick = onOpenGuide),
+            ) {
+                Text(
+                    text = stringResource(Res.string.server_ip_guide_link),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.size(4.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(12.dp),
+                )
             }
         }
     }
