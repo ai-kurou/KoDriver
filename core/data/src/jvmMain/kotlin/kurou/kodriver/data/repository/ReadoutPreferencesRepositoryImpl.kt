@@ -2,7 +2,6 @@ package kurou.kodriver.data.repository
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.ReadoutPreferences
 import kurou.kodriver.data.model.SimulatorReadoutState
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -12,7 +11,7 @@ internal class ReadoutPreferencesRepositoryImpl(
     private val dataStore: DataStore<ReadoutPreferences>,
 ) : ReadoutPreferencesRepository {
     override fun observeReadoutEnabledStates(simulator: String): Flow<Map<ReadoutItemKey, Boolean>> =
-        dataStore.data.map { prefs ->
+        dataStore.observeProperty { prefs ->
             prefs.simulatorStates
                 .getOrElse(simulator) { SimulatorReadoutState() }
                 .enabledStates
@@ -24,15 +23,15 @@ internal class ReadoutPreferencesRepositoryImpl(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
-        dataStore.updateData { prefs ->
+        dataStore.saveProperty(enabled) { prefs, value ->
             val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
-            val newState = current.copy(enabledStates = current.enabledStates + (key.value to enabled))
+            val newState = current.copy(enabledStates = current.enabledStates + (key.value to value))
             prefs.copy(simulatorStates = prefs.simulatorStates + (simulator to newState))
         }
     }
 
     override fun observeReadoutOrder(simulator: String): Flow<List<ReadoutItemKey>> =
-        dataStore.data.map { prefs ->
+        dataStore.observeProperty { prefs ->
             prefs.simulatorStates
                 .getOrElse(simulator) { SimulatorReadoutState() }
                 .itemOrder
@@ -43,9 +42,9 @@ internal class ReadoutPreferencesRepositoryImpl(
         simulator: String,
         order: List<ReadoutItemKey>,
     ) {
-        dataStore.updateData { prefs ->
+        dataStore.saveProperty(order) { prefs, value ->
             val current = prefs.simulatorStates[simulator] ?: SimulatorReadoutState()
-            val newState = current.copy(itemOrder = order.map { it.value })
+            val newState = current.copy(itemOrder = value.map { it.value })
             prefs.copy(simulatorStates = prefs.simulatorStates + (simulator to newState))
         }
     }

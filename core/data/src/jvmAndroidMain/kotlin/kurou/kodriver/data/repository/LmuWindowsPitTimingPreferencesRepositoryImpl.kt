@@ -2,22 +2,21 @@ package kurou.kodriver.data.repository
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsPitTimingPreferences
 import kurou.kodriver.domain.repository.LmuWindowsPitTimingPreferencesRepository
 
 internal class LmuWindowsPitTimingPreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsPitTimingPreferences>,
 ) : LmuWindowsPitTimingPreferencesRepository {
-    override fun observeVirtualEnergyLaps(): Flow<Int> = dataStore.data.map { it.virtualEnergyLaps }
+    override fun observeVirtualEnergyLaps(): Flow<Int> = dataStore.observeProperty { it.virtualEnergyLaps }
 
     override suspend fun saveVirtualEnergyLaps(laps: Int) {
-        dataStore.updateData { it.copy(virtualEnergyLaps = laps) }
+        dataStore.saveProperty(laps) { prefs, value -> prefs.copy(virtualEnergyLaps = value) }
     }
 
-    override fun observeTyreWearLaps(): Flow<Int> = dataStore.data.map { it.tyreWearLaps }
+    override fun observeTyreWearLaps(): Flow<Int> = dataStore.observeProperty { it.tyreWearLaps }
 
     override suspend fun saveTyreWearLaps(laps: Int) {
-        dataStore.updateData { it.copy(tyreWearLaps = laps) }
+        dataStore.saveProperty(laps) { prefs, value -> prefs.copy(tyreWearLaps = value) }
     }
 }

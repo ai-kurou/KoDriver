@@ -20,9 +20,9 @@
 
 ## 設計・重複
 
-- **対象**: `core:data`（`*RepositoryFactory.kt`, `repository/*RepositoryImpl.kt`）
-  **課題**: Serializer / DataStoreFactory は `protoBufPreferencesSerializer` / `preferencesDataStore` の汎用ファクトリへ共通化済み（`datasource/PreferencesSerializerFactory.kt`, `datasource/PreferencesDataStoreFactory.kt`）。一方 RepositoryFactory（25ファイル）と RepositoryImpl（24ファイル）は、Repository インターフェースが設定ごとに異なるプロパティ単位のメソッド（`observeThresholdPercentage()` / `saveThresholdPercentage()` 等）を持つため、同じパターンでは汎用化できず未着手のまま残っている。
-  **改善案**: RepositoryImpl を共通化するには、まず Repository インターフェース側を `observe(): Flow<T>` / `save(value: T)` のような単一プロパティ操作に統一するか、`DataStore<T>` を薄くラップするだけの共通実装（`observe = dataStore.data`, `save = dataStore::updateData`）に寄せられるか設計から見直す必要がある。インターフェース設計の変更を伴うため、Serializer/DataStoreFactory の共通化とは別の意思決定が必要。
+- **対象**: `core:data`（`*RepositoryFactory.kt`）
+  **課題**: Serializer / DataStoreFactory（`datasource/PreferencesSerializerFactory.kt`, `datasource/PreferencesDataStoreFactory.kt`）に続き、RepositoryImpl も `DataStore<T>` を薄くラップする共通拡張関数（`repository/DataStorePropertyExtensions.kt` の `observeProperty` / `saveProperty`）へ共通化済み。Repository インターフェース自体はプロパティ単位のメソッド（`observeThresholdPercentage()` / `saveThresholdPercentage()` 等）のまま変更していないため、feature 側への影響はない。一方 RepositoryFactory（25ファイル、`create*Repository(directory) = *RepositoryImpl(create*DataStore(directory))` という定型コード）は、Koin モジュール（`DesktopDataModule.kt` / `AndroidDataModule.kt`）から関数名で直接参照されるため、単純に1つの汎用関数へ置き換えると呼び出し側の書き方が変わる。
+  **改善案**: RepositoryFactory を共通化する場合、関数名は現状維持しつつ内部実装だけを薄い共通ヘルパー呼び出しに変える形（Koin 側の呼び出しコードは変更しない）が現実的か検討する。
 
 - **対象**: `core:domain`（`Simulator.kt`）, `feature:readout-list`（`ReadoutListViewModel.kt:27-28`）
   **課題**: `Simulator.entries` が private なため、シミュレータ一覧が必要な `ReadoutListViewModel` が `listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows)` を独自に再定義している。同じ `core:domain` の `ReadoutItemKey.entries` は public で、扱いが割れている。新しいシミュレータを追加したときに追加漏れがコンパイルエラーにならない。

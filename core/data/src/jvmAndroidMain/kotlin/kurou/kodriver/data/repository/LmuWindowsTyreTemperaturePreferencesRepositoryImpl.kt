@@ -2,7 +2,6 @@ package kurou.kodriver.data.repository
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsTyreTemperaturePreferences
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.SessionPhase
@@ -12,14 +11,14 @@ import kurou.kodriver.domain.repository.LmuWindowsTyreTemperaturePreferencesRepo
 internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsTyreTemperaturePreferences>,
 ) : LmuWindowsTyreTemperaturePreferencesRepository {
-    override fun observeHighThresholdCelsius(): Flow<Int> = dataStore.data.map { it.highThresholdCelsius }
+    override fun observeHighThresholdCelsius(): Flow<Int> = dataStore.observeProperty { it.highThresholdCelsius }
 
     override suspend fun saveHighThresholdCelsius(celsius: Int) {
-        dataStore.updateData { it.copy(highThresholdCelsius = celsius) }
+        dataStore.saveProperty(celsius) { prefs, value -> prefs.copy(highThresholdCelsius = value) }
     }
 
     override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
-        dataStore.data.map { prefs ->
+        dataStore.observeProperty { prefs ->
             prefs.enabledStates
                 .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
                 .toMap()
@@ -29,11 +28,16 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
         key: ReadoutItemKey,
         enabled: Boolean,
     ) {
-        dataStore.updateData { it.copy(enabledStates = it.enabledStates + (key.value to enabled)) }
+        dataStore.saveProperty(enabled) { prefs, value ->
+            prefs.copy(
+                enabledStates =
+                    prefs.enabledStates + (key.value to value),
+            )
+        }
     }
 
     override fun observeLowWarningPhases(): Flow<Map<SessionPhase, Boolean>> =
-        dataStore.data.map { prefs ->
+        dataStore.observeProperty { prefs ->
             prefs.lowWarningPhases
                 .mapNotNull { (raw, enabled) ->
                     SessionPhase.fromRaw(raw).takeIf { it != SessionPhase.UNKNOWN }?.let { it to enabled }
@@ -44,6 +48,6 @@ internal class LmuWindowsTyreTemperaturePreferencesRepositoryImpl(
         val explicitPhases =
             lmuWindowsTyreTemperatureLowWarningSelectablePhases
                 .associate { phase -> phase.rawValue to (phase in phases) }
-        dataStore.updateData { it.copy(lowWarningPhases = explicitPhases) }
+        dataStore.saveProperty(explicitPhases) { prefs, value -> prefs.copy(lowWarningPhases = value) }
     }
 }

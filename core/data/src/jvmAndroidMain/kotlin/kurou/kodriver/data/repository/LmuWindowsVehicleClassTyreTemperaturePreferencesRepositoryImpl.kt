@@ -2,7 +2,6 @@ package kurou.kodriver.data.repository
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kurou.kodriver.data.model.LmuWindowsVehicleClassTyreTemperaturePreferences
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_TYRE_TEMPERATURE_SELECTED_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_CLASS_UNKNOWN_KEY
@@ -15,7 +14,7 @@ internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
     private val dataStore: DataStore<LmuWindowsVehicleClassTyreTemperaturePreferences>,
 ) : LmuWindowsVehicleClassTyreTemperaturePreferencesRepository {
     override fun observeHighThresholdCelsius(): Flow<Map<LmuWindowsVehicleClassData, Int>> =
-        dataStore.data.map { prefs ->
+        dataStore.observeProperty { prefs ->
             lmuWindowsAllVehicleClasses.associateWith { vehicleClass ->
                 prefs.highThresholdCelsiusByVehicleClass[keyOf(vehicleClass)]
                     ?: lmuWindowsVehicleClassTyreTemperatureHighThresholdCelsiusDefault(vehicleClass)
@@ -26,14 +25,14 @@ internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
         vehicleClass: LmuWindowsVehicleClassData,
         celsius: Int,
     ) {
-        dataStore.updateData {
-            val updated = it.highThresholdCelsiusByVehicleClass + (keyOf(vehicleClass) to celsius)
-            it.copy(highThresholdCelsiusByVehicleClass = updated)
+        dataStore.saveProperty(celsius) { prefs, value ->
+            val updated = prefs.highThresholdCelsiusByVehicleClass + (keyOf(vehicleClass) to value)
+            prefs.copy(highThresholdCelsiusByVehicleClass = updated)
         }
     }
 
     override fun observeSelectedVehicleClass(): Flow<LmuWindowsVehicleClassData> =
-        dataStore.data.map { prefs ->
+        dataStore.observeProperty { prefs ->
             prefs.selectedVehicleClassKey
                 .takeIf { it.isNotEmpty() }
                 ?.let { LmuWindowsVehicleClassData.fromRawValue(it) }
@@ -41,7 +40,7 @@ internal class LmuWindowsVehicleClassTyreTemperaturePreferencesRepositoryImpl(
         }
 
     override suspend fun saveSelectedVehicleClass(vehicleClass: LmuWindowsVehicleClassData) {
-        dataStore.updateData { it.copy(selectedVehicleClassKey = keyOf(vehicleClass)) }
+        dataStore.saveProperty(keyOf(vehicleClass)) { prefs, value -> prefs.copy(selectedVehicleClassKey = value) }
     }
 
     // Unknown は raw 値によらず1つのしきい値を共有する（未知クラス全体の安全網としての性質上、
