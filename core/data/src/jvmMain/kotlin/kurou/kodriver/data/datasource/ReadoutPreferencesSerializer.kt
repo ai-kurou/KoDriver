@@ -7,5 +7,4 @@ internal val ReadoutPreferencesSerializer: Serializer<ReadoutPreferences> =
     protoBufPreferencesSerializer(
         defaultValue = ReadoutPreferences(),
         kSerializer = ReadoutPreferences.serializer(),
-        typeName = "ReadoutPreferences",
     )

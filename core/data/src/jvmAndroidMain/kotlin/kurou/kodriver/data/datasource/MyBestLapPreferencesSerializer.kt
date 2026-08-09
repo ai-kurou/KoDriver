@@ -7,5 +7,4 @@ internal val MyBestLapPreferencesSerializer: Serializer<MyBestLapPreferences> =
     protoBufPreferencesSerializer(
         defaultValue = MyBestLapPreferences(),
         kSerializer = MyBestLapPreferences.serializer(),
-        typeName = "MyBestLapPreferences",
     )

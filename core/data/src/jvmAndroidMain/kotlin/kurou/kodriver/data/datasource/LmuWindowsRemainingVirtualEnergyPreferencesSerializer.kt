@@ -8,5 +8,4 @@ internal val LmuWindowsRemainingVirtualEnergyPreferencesSerializer:
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsRemainingVirtualEnergyPreferences(),
         kSerializer = LmuWindowsRemainingVirtualEnergyPreferences.serializer(),
-        typeName = "LmuWindowsRemainingVirtualEnergyPreferences",
     )

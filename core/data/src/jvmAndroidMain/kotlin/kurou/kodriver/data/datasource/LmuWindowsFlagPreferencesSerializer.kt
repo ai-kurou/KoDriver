@@ -7,5 +7,4 @@ internal val LmuWindowsFlagPreferencesSerializer: Serializer<LmuWindowsFlagPrefe
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsFlagPreferences(),
         kSerializer = LmuWindowsFlagPreferences.serializer(),
-        typeName = "LmuWindowsFlagPreferences",
     )

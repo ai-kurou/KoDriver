@@ -33,7 +33,10 @@ class ThemePreferencesSerializerTest {
                     ThemePreferencesSerializer.readFrom(ByteArrayInputStream(byteArrayOf(1, 2, 3)))
                 }
 
-            assertEquals("Cannot read ThemePreferences.", exception.message)
+            assertEquals(
+                "Cannot read ${ThemePreferences.serializer().descriptor.serialName}.",
+                exception.message,
+            )
         }
 
     @Test

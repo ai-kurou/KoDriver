@@ -32,7 +32,6 @@ class PreferencesDataStoreFactoryTest {
                 protoBufPreferencesSerializer(
                     defaultValue = FakePreferences(),
                     kSerializer = FakePreferences.serializer(),
-                    typeName = "FakePreferences",
                 )
 
             val dataStore =

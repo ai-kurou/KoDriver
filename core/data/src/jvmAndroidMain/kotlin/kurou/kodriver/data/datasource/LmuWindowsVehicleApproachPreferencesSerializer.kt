@@ -7,5 +7,4 @@ internal val LmuWindowsVehicleApproachPreferencesSerializer: Serializer<LmuWindo
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsVehicleApproachPreferences(),
         kSerializer = LmuWindowsVehicleApproachPreferences.serializer(),
-        typeName = "LmuWindowsVehicleApproachPreferences",
     )

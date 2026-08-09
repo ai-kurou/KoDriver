@@ -7,5 +7,4 @@ internal val QueuePreferencesSerializer: Serializer<QueuePreferences> =
     protoBufPreferencesSerializer(
         defaultValue = QueuePreferences(),
         kSerializer = QueuePreferences.serializer(),
-        typeName = "QueuePreferences",
     )

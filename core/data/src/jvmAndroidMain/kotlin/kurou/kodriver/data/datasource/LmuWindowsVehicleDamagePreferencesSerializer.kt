@@ -7,5 +7,4 @@ internal val LmuWindowsVehicleDamagePreferencesSerializer: Serializer<LmuWindows
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsVehicleDamagePreferences(),
         kSerializer = LmuWindowsVehicleDamagePreferences.serializer(),
-        typeName = "LmuWindowsVehicleDamagePreferences",
     )

@@ -7,5 +7,4 @@ internal val ReadoutStartSoundPreferencesSerializer: Serializer<ReadoutStartSoun
     protoBufPreferencesSerializer(
         defaultValue = ReadoutStartSoundPreferences(),
         kSerializer = ReadoutStartSoundPreferences.serializer(),
-        typeName = "ReadoutStartSoundPreferences",
     )

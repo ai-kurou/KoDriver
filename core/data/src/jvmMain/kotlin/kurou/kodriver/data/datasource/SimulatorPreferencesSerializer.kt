@@ -7,5 +7,4 @@ internal val SimulatorPreferencesSerializer: Serializer<SimulatorPreferences> =
     protoBufPreferencesSerializer(
         defaultValue = SimulatorPreferences(),
         kSerializer = SimulatorPreferences.serializer(),
-        typeName = "SimulatorPreferences",
     )

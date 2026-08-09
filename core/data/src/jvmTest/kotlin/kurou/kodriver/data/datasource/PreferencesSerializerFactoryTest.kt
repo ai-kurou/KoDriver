@@ -19,7 +19,6 @@ class PreferencesSerializerFactoryTest {
         protoBufPreferencesSerializer(
             defaultValue = FakePreferences(),
             kSerializer = FakePreferences.serializer(),
-            typeName = "FakePreferences",
         )
 
     @Test
@@ -47,5 +46,21 @@ class PreferencesSerializerFactoryTest {
             assertFailsWith<CorruptionException> {
                 serializer.readFrom(corrupt)
             }
+        }
+
+    @Test
+    fun `CorruptionExceptionのメッセージにkSerializerのserialNameが含まれる`() =
+        runTest {
+            val corrupt = ByteArrayInputStream(byteArrayOf(0x00, 0xFF.toByte(), 0x42))
+
+            val exception =
+                assertFailsWith<CorruptionException> {
+                    serializer.readFrom(corrupt)
+                }
+
+            assertEquals(
+                "Cannot read ${FakePreferences.serializer().descriptor.serialName}.",
+                exception.message,
+            )
         }
 }

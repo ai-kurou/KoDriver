@@ -7,5 +7,4 @@ internal val SoundVolumePreferencesSerializer: Serializer<SoundVolumePreferences
     protoBufPreferencesSerializer(
         defaultValue = SoundVolumePreferences(),
         kSerializer = SoundVolumePreferences.serializer(),
-        typeName = "SoundVolumePreferences",
     )

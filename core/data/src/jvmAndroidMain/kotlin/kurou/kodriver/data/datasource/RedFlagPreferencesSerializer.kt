@@ -7,5 +7,4 @@ internal val RedFlagPreferencesSerializer: Serializer<RedFlagPreferences> =
     protoBufPreferencesSerializer(
         defaultValue = RedFlagPreferences(),
         kSerializer = RedFlagPreferences.serializer(),
-        typeName = "RedFlagPreferences",
     )

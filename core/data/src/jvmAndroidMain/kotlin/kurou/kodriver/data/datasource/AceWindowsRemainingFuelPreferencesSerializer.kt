@@ -7,5 +7,4 @@ internal val AceWindowsRemainingFuelPreferencesSerializer: Serializer<AceWindows
     protoBufPreferencesSerializer(
         defaultValue = AceWindowsRemainingFuelPreferences(),
         kSerializer = AceWindowsRemainingFuelPreferences.serializer(),
-        typeName = "AceWindowsRemainingFuelPreferences",
     )

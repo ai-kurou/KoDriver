@@ -7,5 +7,4 @@ internal val AceWindowsFlagPreferencesSerializer: Serializer<AceWindowsFlagPrefe
     protoBufPreferencesSerializer(
         defaultValue = AceWindowsFlagPreferences(),
         kSerializer = AceWindowsFlagPreferences.serializer(),
-        typeName = "AceWindowsFlagPreferences",
     )

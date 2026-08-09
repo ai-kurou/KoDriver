@@ -7,5 +7,4 @@ internal val ThemePreferencesSerializer: Serializer<ThemePreferences> =
     protoBufPreferencesSerializer(
         defaultValue = ThemePreferences(),
         kSerializer = ThemePreferences.serializer(),
-        typeName = "ThemePreferences",
     )

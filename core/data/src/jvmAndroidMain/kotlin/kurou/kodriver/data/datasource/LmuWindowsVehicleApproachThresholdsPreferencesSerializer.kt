@@ -8,5 +8,4 @@ internal val LmuWindowsVehicleApproachThresholdsPreferencesSerializer:
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsVehicleApproachThresholdsPreferences(),
         kSerializer = LmuWindowsVehicleApproachThresholdsPreferences.serializer(),
-        typeName = "LmuWindowsVehicleApproachThresholdsPreferences",
     )

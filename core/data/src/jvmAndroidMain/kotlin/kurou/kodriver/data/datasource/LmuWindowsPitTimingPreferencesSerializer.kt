@@ -7,5 +7,4 @@ internal val LmuWindowsPitTimingPreferencesSerializer: Serializer<LmuWindowsPitT
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsPitTimingPreferences(),
         kSerializer = LmuWindowsPitTimingPreferences.serializer(),
-        typeName = "LmuWindowsPitTimingPreferences",
     )

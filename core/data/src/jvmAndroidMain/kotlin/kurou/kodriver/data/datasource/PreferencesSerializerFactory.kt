@@ -15,12 +15,13 @@ import java.io.OutputStream
  *
  * 各 Preferences の Serializer は readFrom / writeTo の実装が同一であるため、
  * このファクトリで [defaultValue] と [kSerializer] だけを渡す形に共通化する。
+ * エラーメッセージの型名は [kSerializer] の `descriptor.serialName` から取得するため、
+ * 別途文字列で渡す必要はない。
  */
 @OptIn(ExperimentalSerializationApi::class)
 internal fun <T> protoBufPreferencesSerializer(
     defaultValue: T,
     kSerializer: KSerializer<T>,
-    typeName: String,
 ): Serializer<T> =
     object : Serializer<T> {
         override val defaultValue: T = defaultValue
@@ -30,7 +31,7 @@ internal fun <T> protoBufPreferencesSerializer(
                 ProtoBuf.decodeFromByteArray(kSerializer, input.readBytes())
             } catch (e: SerializationException) {
                 Sentry.captureException(e)
-                throw CorruptionException("Cannot read $typeName.", e)
+                throw CorruptionException("Cannot read ${kSerializer.descriptor.serialName}.", e)
             }
 
         override suspend fun writeTo(

@@ -7,5 +7,4 @@ internal val Gt7Ps5RemainingFuelLapsPreferencesSerializer: Serializer<Gt7Ps5Rema
     protoBufPreferencesSerializer(
         defaultValue = Gt7Ps5RemainingFuelLapsPreferences(),
         kSerializer = Gt7Ps5RemainingFuelLapsPreferences.serializer(),
-        typeName = "Gt7Ps5RemainingFuelLapsPreferences",
     )

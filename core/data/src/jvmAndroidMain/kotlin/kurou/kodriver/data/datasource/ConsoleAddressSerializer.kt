@@ -7,5 +7,4 @@ internal val ConsoleAddressSerializer: Serializer<ConsoleAddressPreferences> =
     protoBufPreferencesSerializer(
         defaultValue = ConsoleAddressPreferences(),
         kSerializer = ConsoleAddressPreferences.serializer(),
-        typeName = "ConsoleAddressPreferences",
     )

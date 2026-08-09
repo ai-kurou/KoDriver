@@ -7,5 +7,4 @@ internal val DebugStateCardOrderPreferencesSerializer: Serializer<DebugStateCard
     protoBufPreferencesSerializer(
         defaultValue = DebugStateCardOrderPreferences(),
         kSerializer = DebugStateCardOrderPreferences.serializer(),
-        typeName = "DebugStateCardOrderPreferences",
     )

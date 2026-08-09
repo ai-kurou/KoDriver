@@ -7,5 +7,4 @@ internal val LmuWindowsTyreTemperaturePreferencesSerializer: Serializer<LmuWindo
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsTyreTemperaturePreferences(),
         kSerializer = LmuWindowsTyreTemperaturePreferences.serializer(),
-        typeName = "LmuWindowsTyreTemperaturePreferences",
     )

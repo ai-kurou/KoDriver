@@ -7,5 +7,4 @@ internal val LmuWindowsTyreWearPreferencesSerializer: Serializer<LmuWindowsTyreW
     protoBufPreferencesSerializer(
         defaultValue = LmuWindowsTyreWearPreferences(),
         kSerializer = LmuWindowsTyreWearPreferences.serializer(),
-        typeName = "LmuWindowsTyreWearPreferences",
     )
