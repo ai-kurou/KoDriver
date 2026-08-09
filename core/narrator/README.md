@@ -22,6 +22,18 @@ feature 自身の compose resources `Res::readBytes`）・イベントからキ�
 `named("lmu_windows")` / `named("gt7_ps5")` / `named("ace_windows")` のように feature ごとに異なる修飾子を渡すことで、
 `SoundPlayer` の登録が衝突しないようにしています。
 
+`speakWithPriority<KEY>(...)`（`NarratorPriority.kt`）は、3つの narrator feature の `XxxNarratorEventProcessor` が
+共通で利用する優先度判定ロジックです。キュー再生が有効なイベントはそのままキューへ追加し、そうでない場合は現在
+再生中のイベントのキーと `readoutOrder` 上の位置を比較して、優先度の高いイベントのみ現在の再生を止めて読み上げます。
+`WavNarratorEngine` と同様に `:core:domain` の `SpeechEvent` / `ReadoutItemKey` へ依存しないよう、イベントのキーは
+呼び出し側から値として渡し、`speak` / `stop` の実行や現在再生中のキーの取得もラムダで受け取ります。
+
+`TelemetryLogJson`（`TelemetryLogJson.kt`）は、3つの narrator feature が読み上げイベントをテレメトリログとして
+保存する際に使う kotlinx.serialization の共通設定（`encodeDefaults` / `explicitNulls`）です。UDP/共有メモリ由来の
+Float/Double フィールドが NaN/Infinity を取りうる GT7/ACE では、`Json(TelemetryLogJson) { allowSpecialFloatingPointValues
+= true }` のように拡張して利用します。同ファイルの `String.toJsonStringLiteral()` は、`toString()` した状態オブジェクト
+などをログ JSON の値としてそのまま埋め込むための文字列エスケープ関数です。
+
 <!-- MODULE-GRAPH-START -->
 ## Module Dependencies
 
