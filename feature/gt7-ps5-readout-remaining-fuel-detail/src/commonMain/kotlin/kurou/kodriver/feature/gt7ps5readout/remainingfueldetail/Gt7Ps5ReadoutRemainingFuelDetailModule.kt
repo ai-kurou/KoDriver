@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.gt7ps5readout.remainingfueldetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import kurou.kodriver.domain.usecase.SaveGt7Ps5RemainingFuelThresholdPercentageUseCase
 import org.koin.core.module.dsl.factoryOf
@@ -13,7 +14,7 @@ import org.koin.dsl.module
 val gt7Ps5ReadoutRemainingFuelDetailModule =
     module {
         viewModel {
-            Gt7Ps5ReadoutRemainingFuelDetailViewModel(get(), get(), get(named("gt7_ps5")))
+            Gt7Ps5ReadoutRemainingFuelDetailViewModel(get(), get(), get(named(Simulator.Gt7Ps5.id)))
         }
 
         factoryOf(::ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase)
