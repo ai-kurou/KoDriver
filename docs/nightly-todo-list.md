@@ -11,6 +11,8 @@
 
 ## リスト
 
-- プロジェクト全体を見て、バグ、不具合、配線漏れ、仕様不備などがあれば improvement-ideas.md に追記する。
-- アニメーションを付けたほうが良い、色が識別しにくいので変えたほうがよい、GUIの位置を変更したほうがよい、マテリアルデザインに沿ってない等のUI/UXの提案があればimprovement-ideas.mdに追記する。
-- Androidの最新情報をWebで調べてKoDriverが遅れを取っているところがあり、採用しても良いとClaudeが考えたものはimprovement-ideas.mdに追記する。
+- プロジェクト全体を見て、バグ・不具合・配線漏れ（例: ReadoutItemKeyがlistPaneにはあるがNarrator側で未参照など）・仕様不備があれば improvement-ideas.md に追記する。
+- アニメーション付与、識別しにくい配色の変更、GUI配置の見直し、マテリアルデザインからの逸脱など、UI/UXの改善提案があれば improvement-ideas.md に追記する。
+- Androidの最新動向をWebで調査し、KoDriverが取り入れていない・遅れている技術やプラクティスで採用価値があると判断したものがあれば improvement-ideas.md に追記する。
+- `libs.versions.toml` に記載の各ライブラリについて最新安定版をWebで確認し、致命的な不具合がない範囲で更新余地があれば improvement-ideas.md に追記する（CLAUDE.mdの「ライブラリバージョン管理」方針に沿う）。
+- `./gradlew koverXmlReport` の結果を確認し、カバレッジ100%方針から外れているのに除外理由が妥当でない箇所があれば improvement-ideas.md に追記する。
