@@ -16,10 +16,3 @@
   **改善案**: <どう変えたいか>
 ```
 
----
-
-## テスト
-
-- **対象**: `core:designsystem`
-  **課題**: 実装13ファイルに対しテストは3ファイルのみで、`ListPaneCard` はカバレッジ 0%。`DetailPane` / `DetailPaneCard` / `DetailPaneScaffold` / `DetailPaneTopAppBar` / `ThresholdSlider` などアプリ全体で使い回している Composable にスクリーンショットテストが1つもない。共通コンポーネントの見た目が変わっても、各 feature の golden 画像が全部更新されるまで気づけない。
-  **改善案**: designsystem 側に主要コンポーネントのスクリーンショットテストを追加する。
