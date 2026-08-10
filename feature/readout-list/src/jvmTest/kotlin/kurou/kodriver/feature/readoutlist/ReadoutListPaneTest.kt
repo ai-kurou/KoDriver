@@ -262,3 +262,15 @@ class ReadoutListPaneTest {
     private fun hasQueueToggleRole(): SemanticsMatcher =
         SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)
 }
+
+class ReadoutItemStartIndexTest {
+    @Test
+    fun `ACE以外を選択している場合はヘッダー2件分のオフセットを返す`() {
+        assertEquals(2, readoutItemStartIndex(isAceSelected = false))
+    }
+
+    @Test
+    fun `ACEを選択している場合はタイミングヒント分を加えた3件分のオフセットを返す`() {
+        assertEquals(3, readoutItemStartIndex(isAceSelected = true))
+    }
+}
