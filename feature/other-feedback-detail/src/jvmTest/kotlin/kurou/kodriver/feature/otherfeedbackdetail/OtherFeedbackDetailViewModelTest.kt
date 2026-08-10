@@ -235,6 +235,22 @@ class OtherFeedbackDetailViewModelTest {
         }
 
     @Test
+    fun `最大文字数を超えた入力は切り詰められる`() =
+        runTest {
+            val viewModel = createViewModel()
+            val collectionJob = launch(start = CoroutineStart.UNDISPATCHED) { viewModel.uiState.collect() }
+
+            viewModel.onMessageChanged("あ".repeat(FEEDBACK_MESSAGE_MAX_LENGTH + 1))
+            viewModel.onNameChanged("あ".repeat(FEEDBACK_NAME_MAX_LENGTH + 1))
+            viewModel.onEmailChanged("a".repeat(FEEDBACK_EMAIL_MAX_LENGTH + 1))
+
+            assertEquals(FEEDBACK_MESSAGE_MAX_LENGTH, viewModel.uiState.value.message.length)
+            assertEquals(FEEDBACK_NAME_MAX_LENGTH, viewModel.uiState.value.name.length)
+            assertEquals(FEEDBACK_EMAIL_MAX_LENGTH, viewModel.uiState.value.email.length)
+            collectionJob.cancel()
+        }
+
+    @Test
     fun `送信中なら送信できない`() {
         val uiState =
             OtherFeedbackDetailUiState(

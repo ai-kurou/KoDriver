@@ -10,7 +10,7 @@
     <string name="feedback_type_question">質問</string>
     <string name="feedback_type_other">その他</string>
     <string name="feedback_message_label">内容</string>
-    <string name="feedback_message_placeholder">気づいたことや困っていることを入力してください</string>
+    <string name="feedback_message_placeholder">出来る限り詳細に入力してください</string>
     <string name="feedback_message_required">内容を入力してください</string>
     <string name="feedback_name_label">名前</string>
     <string name="feedback_name_required">名前を入力してください</string>
