@@ -19,3 +19,5 @@
 - detekt・ktlintを実行し、エラーには至っていないが閾値（LongMethod・CyclomaticComplexMethod等）に近づいている箇所があれば improvement-ideas.md に追記する。
 - `rg` 等で未使用のクラス・関数や、複数モジュールに散らばった重複実装がないか横断的に確認し、あれば improvement-ideas.md に追記する。
 - 認証・暗号化なしで稼働しているKtorサーバー（`0.0.0.0:8080`）まわりなど、既知の制約以外に新たなセキュリティリスクが増えていないか確認し、あれば improvement-ideas.md に追記する。
+- displayNameやUI文言（表示名・ラベル・エラーメッセージ等）に表記揺れ（全角/半角、送り仮名の違い、用語の不統一など）がないか横断的に確認し、あれば improvement-ideas.md に追記する。
+- `assertModuleGraph` は通っていても、本来分離すべき責務が同一モジュールに混在していないかなど、依存関係グラフの設計面での気になる点があれば improvement-ideas.md に追記する。
