@@ -178,6 +178,8 @@ private fun readoutItemIndex(
     itemCount: Int,
 ): Int = (lazyListIndex - readoutItemStartIndex).coerceIn(0, itemCount - 1)
 
+internal fun readoutItemStartIndex(isAceSelected: Boolean): Int = if (isAceSelected) 3 else 2
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PriorityHintRow(modifier: Modifier = Modifier) {
@@ -252,7 +254,8 @@ internal fun ReadoutListPane(
     var expanded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    val readoutItemStartIndex = 2
+    val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
+    val readoutItemStartIndex = readoutItemStartIndex(isAceSelected)
     val isAtTop by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
@@ -313,7 +316,6 @@ internal fun ReadoutListPane(
                 }
             }
             if (uiState.selectedSimulator != null) {
-                val isAceSelected = uiState.selectedSimulator is Simulator.AceWindows
                 if (isAceSelected) {
                     item(key = "aceReadoutTimingHint") {
                         AceReadoutTimingHintRow(modifier = Modifier.padding(start = 8.dp, top = 16.dp, end = 8.dp))
