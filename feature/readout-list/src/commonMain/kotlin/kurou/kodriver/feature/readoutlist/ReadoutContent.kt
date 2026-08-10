@@ -1,8 +1,6 @@
 package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -63,7 +61,7 @@ fun ReadoutContent(
 }
 
 @Suppress("LongParameterList")
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 internal fun ReadoutContent(
     uiState: ReadoutListUiState,
@@ -152,17 +150,10 @@ internal fun ReadoutContent(
         detailPane = {
             uiState.selectedItem?.let { selectedItem ->
                 Box(modifier = Modifier.predictiveBackDetailPane(predictiveBackProgress)) {
-                    val scrollBehavior =
-                        if (selectedItem is ReadoutListItemType.LmuWindows.TyreTemperature) {
-                            TopAppBarDefaults.enterAlwaysScrollBehavior()
-                        } else {
-                            null
-                        }
                     ReadoutDetailPane(
                         title = itemDisplayName(selectedItem.id),
                         canNavigateBack = navigator.canNavigateBack(),
                         onBack = { navigateBack() },
-                        scrollBehavior = scrollBehavior,
                         content = { detailContent(selectedItem) },
                     )
                 }

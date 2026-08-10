@@ -11,6 +11,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,20 +31,14 @@ internal fun ReadoutDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
+    scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     content: @Composable () -> Unit,
 ) {
     Scaffold(
         modifier =
             modifier
                 .fillMaxSize()
-                .let { scaffoldModifier ->
-                    if (scrollBehavior != null) {
-                        scaffoldModifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-                    } else {
-                        scaffoldModifier
-                    }
-                },
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = { Text(title) },

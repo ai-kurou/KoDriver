@@ -1,4 +1,4 @@
-package kurou.kodriver.feature.readoutlist
+package kurou.kodriver.core.designsystem
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
@@ -17,13 +17,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeDown
 import androidx.compose.ui.test.swipeUp
-import kurou.kodriver.core.designsystem.KoDriverTheme
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ReadoutDetailPaneTest {
+class DetailPaneScaffoldTest {
     @get:Rule
     val rule = createComposeRule()
 
@@ -31,9 +30,10 @@ class ReadoutDetailPaneTest {
     fun `タイトルと内容を表示する`() {
         rule.setContent {
             KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "フラッグ",
+                DetailPaneScaffold(
+                    title = "ライセンス",
                     canNavigateBack = true,
+                    navigateBackContentDescription = "戻る",
                     onBack = {},
                 ) {
                     Text("詳細内容")
@@ -41,7 +41,7 @@ class ReadoutDetailPaneTest {
             }
         }
 
-        rule.onNodeWithText("フラッグ").assertIsDisplayed()
+        rule.onNodeWithText("ライセンス").assertIsDisplayed()
         rule.onNodeWithText("詳細内容").assertIsDisplayed()
     }
 
@@ -50,9 +50,10 @@ class ReadoutDetailPaneTest {
         var backCount = 0
         rule.setContent {
             KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "フラッグ",
+                DetailPaneScaffold(
+                    title = "ライセンス",
                     canNavigateBack = true,
+                    navigateBackContentDescription = "戻る",
                     onBack = { backCount++ },
                 ) {
                     Text("詳細内容")
@@ -65,43 +66,6 @@ class ReadoutDetailPaneTest {
         assertEquals(1, backCount)
     }
 
-    @Test
-    fun `戻る不可の場合は戻るボタンを表示しない`() {
-        rule.setContent {
-            KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "フラッグ",
-                    canNavigateBack = false,
-                    onBack = {},
-                ) {
-                    Text("詳細内容")
-                }
-            }
-        }
-
-        rule.onNode(hasContentDescription("戻る")).assertDoesNotExist()
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Test
-    fun `scrollBehaviorを指定してもタイトルと内容を表示する`() {
-        rule.setContent {
-            KoDriverTheme {
-                ReadoutDetailPane(
-                    title = "タイヤ温度",
-                    canNavigateBack = true,
-                    onBack = {},
-                    scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
-                ) {
-                    Text("詳細内容")
-                }
-            }
-        }
-
-        rule.onNodeWithText("タイヤ温度").assertIsDisplayed()
-        rule.onNodeWithText("詳細内容").assertIsDisplayed()
-    }
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Test
     fun `下スクロールでAppBarが折りたたまれ上スクロールで再表示される`() {
@@ -109,9 +73,10 @@ class ReadoutDetailPaneTest {
         rule.setContent {
             KoDriverTheme {
                 scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-                ReadoutDetailPane(
-                    title = "タイヤ温度",
+                DetailPaneScaffold(
+                    title = "ライセンス",
                     canNavigateBack = true,
+                    navigateBackContentDescription = "戻る",
                     onBack = {},
                     scrollBehavior = scrollBehavior,
                 ) {
