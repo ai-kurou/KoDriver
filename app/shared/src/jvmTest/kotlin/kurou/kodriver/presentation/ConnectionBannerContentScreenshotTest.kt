@@ -114,9 +114,29 @@ class ConnectionBannerContentScreenshotTest {
             onRoot().captureRoboImage()
         }
 
-    private fun DesktopComposeUiTest.setThemedContent(content: @Composable () -> Unit) {
+    @Test
+    fun `SIMULATOR接続待機中 ダークテーマ`() =
+        composeScreenshotTest {
+            setThemedContent(darkTheme = true) {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.DISCONNECTED,
+                            message = "シミュレータ接続待機中",
+                            iconType = ConnectionBannerIconType.SIMULATOR,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
+        }
+
+    private fun DesktopComposeUiTest.setThemedContent(
+        darkTheme: Boolean = false,
+        content: @Composable () -> Unit,
+    ) {
         setContent {
-            AppTheme {
+            AppTheme(darkTheme = darkTheme) {
                 Surface(content = content)
             }
         }
