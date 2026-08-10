@@ -1,0 +1,16 @@
+name: CodeQL Analyze
+description: Java/Kotlin の CodeQL 解析を実行する
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/setup
+
+    - uses: github/codeql-action/init@c54b30b7df092240050e69945842bc67aee0f0f4 # v4.37.3
+      with:
+        languages: java-kotlin
+
+    - run: ./gradlew --no-build-cache --rerun-tasks :app:androidApp:assembleDebug
+      shell: bash
+
+    - uses: github/codeql-action/analyze@c54b30b7df092240050e69945842bc67aee0f0f4 # v4.37.3
