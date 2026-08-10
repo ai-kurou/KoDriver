@@ -72,6 +72,12 @@ kotlin {
             implementation(libs.compose.uiTestJunit4)
             implementation(libs.kotlin.testJunit)
             implementation(compose.desktop.currentOs)
+            implementation(libs.roborazzi.composeDesktop)
+        }
+        jvmTest {
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir("build-logic/src/featureComposeScreenshotJvmTest/kotlin"),
+            )
         }
     }
 }
@@ -84,3 +90,11 @@ compose.resources {
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
+
+tasks.named("compileTestKotlinJvm") {
+    (this as org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>).compilerOptions {
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.test.ExperimentalTestApi")
+    }
+}
+
+apply(from = rootProject.file("gradle/roborazzi.gradle.kts"))
