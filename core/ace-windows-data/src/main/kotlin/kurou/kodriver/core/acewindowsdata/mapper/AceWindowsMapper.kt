@@ -68,7 +68,7 @@ internal object AceWindowsMapper {
     // fuel_liter_current_quantity_percent は実際には 0.0〜1.0 の割合(fraction)で格納されている
     // (フィールド名に反する)。AceWindowsFuelData.remainingPercent の仕様(0.0〜100.0)に合わせて
     // ここで100倍する。
-    fun map(buffer: ByteBuffer): AceWindowsFuelData =
+    fun mapFuel(buffer: ByteBuffer): AceWindowsFuelData =
         AceWindowsFuelData(
             remainingPercent =
                 buffer.getFloat(OFF_FUEL_LITER_CURRENT_QUANTITY_PERCENT).toDouble() * PERCENT_MULTIPLIER,

@@ -38,21 +38,21 @@ class AceWindowsMapperTest {
 
     @Test
     fun `fuel_liter_current_quantity_percent の割合を100倍してremainingPercentとして取得する`() {
-        val result = AceWindowsMapper.map(buffer(0.75f))
+        val result = AceWindowsMapper.mapFuel(buffer(0.75f))
 
         assertEquals(75.0, result.remainingPercent, 0.0001)
     }
 
     @Test
     fun `満タンのとき remainingPercent は100を返す`() {
-        val result = AceWindowsMapper.map(buffer(1.0f))
+        val result = AceWindowsMapper.mapFuel(buffer(1.0f))
 
         assertEquals(100.0, result.remainingPercent, 0.0001)
     }
 
     @Test
     fun `残燃料0のとき remainingPercent は0を返す`() {
-        val result = AceWindowsMapper.map(buffer(0.0f))
+        val result = AceWindowsMapper.mapFuel(buffer(0.0f))
 
         assertEquals(0.0, result.remainingPercent, 0.0001)
     }
