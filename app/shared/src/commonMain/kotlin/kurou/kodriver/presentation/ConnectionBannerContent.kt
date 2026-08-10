@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +43,14 @@ import androidx.compose.ui.unit.dp
 private const val ICON_PULSE_DURATION_MILLIS = 700
 private const val ICON_PULSE_MIN_SCALE = 0.85f
 private const val ICON_PULSE_MIN_ALPHA = 0.45f
+private const val DARK_THEME_SURFACE_LUMINANCE_THRESHOLD = 0.5f
+
+// DISCONNECTED 専用の警告色。CONNECTED（緑系）/UNCHECKED（赤系）と明確に区別できる黄色を保つため、
+// テーマの secondary/tertiary（黄緑系ブランドカラー）ではなくこの専用トークンを使う。
+private val WARNING_CONTAINER_LIGHT = Color(0xFFFFF9C4)
+private val ON_WARNING_CONTAINER_LIGHT = Color(0xFF5F4B00)
+private val WARNING_CONTAINER_DARK = Color(0xFF5C4700)
+private val ON_WARNING_CONTAINER_DARK = Color(0xFFFFE8A3)
 
 private data class BannerColors(
     val background: Color,
@@ -58,9 +68,10 @@ private fun bannerColors(status: ConnectionBannerStatus): BannerColors =
         }
 
         ConnectionBannerStatus.DISCONNECTED -> {
+            val isDarkTheme = MaterialTheme.colorScheme.surface.luminance() < DARK_THEME_SURFACE_LUMINANCE_THRESHOLD
             BannerColors(
-                background = Color(0xFFFFF9C4),
-                content = Color(0xFF5F4B00),
+                background = if (isDarkTheme) WARNING_CONTAINER_DARK else WARNING_CONTAINER_LIGHT,
+                content = if (isDarkTheme) ON_WARNING_CONTAINER_DARK else ON_WARNING_CONTAINER_LIGHT,
             )
         }
 
@@ -117,6 +128,8 @@ fun ConnectionBannerContent(
     onClick: (() -> Unit)? = null,
 ) {
     val colors = bannerColors(uiState.status)
+    val backgroundColor by animateColorAsState(targetValue = colors.background)
+    val contentColor by animateColorAsState(targetValue = colors.content)
     val icon = bannerIcon(uiState.iconType, uiState.isConnected)
     val isTappable = uiState.isTappable && onClick != null
 
@@ -124,7 +137,7 @@ fun ConnectionBannerContent(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(colors.background)
+                .background(backgroundColor)
                 .then(
                     if (isTappable) {
                         Modifier.clickable(role = Role.Button, onClick = onClick!!)
@@ -141,7 +154,7 @@ fun ConnectionBannerContent(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = colors.content,
+                tint = contentColor,
                 modifier =
                     Modifier
                         .size(18.dp)
@@ -151,14 +164,14 @@ fun ConnectionBannerContent(
             Text(
                 text = uiState.message,
                 style = MaterialTheme.typography.labelMedium,
-                color = colors.content,
+                color = contentColor,
             )
         }
         if (isTappable) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                 contentDescription = null,
-                tint = colors.content,
+                tint = contentColor,
                 modifier =
                     Modifier
                         .size(18.dp)

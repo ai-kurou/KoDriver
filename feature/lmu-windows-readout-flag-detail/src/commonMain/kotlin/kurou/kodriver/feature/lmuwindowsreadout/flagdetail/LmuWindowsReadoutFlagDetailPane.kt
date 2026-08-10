@@ -73,7 +73,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                     DetailPaneCardChips(
                         chipLabels = listOf(chipLabel),
                         selectedChipLabels = setOf(chipLabel),
-                        chipEnabled = checked,
+                        chipEnabled = true,
                         onChipClick = { onPreviewClicked(item) },
                     )
                 },
@@ -96,7 +96,7 @@ internal fun LmuWindowsReadoutFlagDetailPaneContent(
                 DetailPaneCardChips(
                     chipLabels = listOf(redFlagLabel, sessionStopLabel),
                     selectedChipLabels = setOf(selectedRedFlagLabel),
-                    chipEnabled = redFlagChecked,
+                    chipEnabled = true,
                     onChipClick = { label ->
                         val type =
                             if (label == redFlagLabel) {

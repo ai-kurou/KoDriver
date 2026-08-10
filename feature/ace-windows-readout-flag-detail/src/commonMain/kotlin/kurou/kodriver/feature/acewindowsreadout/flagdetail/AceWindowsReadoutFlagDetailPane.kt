@@ -62,7 +62,7 @@ internal fun AceWindowsReadoutFlagDetailPaneContent(
                     DetailPaneCardChips(
                         chipLabels = listOf(chipLabel),
                         selectedChipLabels = setOf(chipLabel),
-                        chipEnabled = checked,
+                        chipEnabled = true,
                         onChipClick = { onPreviewClicked(item) },
                     )
                 },
