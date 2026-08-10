@@ -18,9 +18,3 @@
 
 ---
 
-## 設計・重複
-
-- **対象**: `ReadoutItemKey`（`core:domain`）と各 `Determine*NarratorReadoutUseCase`
-  **課題**: `ReadoutItemKey` の配線漏れ（#464, #472）は目視確認に頼っており、機械的な検証手段がない。
-  **改善案**: `ReadoutItemKey` の全定義を列挙し、対応する `Determine{LmuWindows,Gt7Ps5,AceWindows}NarratorReadoutUseCase` のソース内にキーが出現することを検証するテストを追加し、将来の配線漏れを自動検出できるようにする。
-
