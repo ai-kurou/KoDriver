@@ -17,6 +17,8 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -137,6 +139,35 @@ class ReadoutContentTest {
         }
 
         rule.onNodeWithText(tyreWearText).assertExists()
+    }
+
+    @Test
+    fun `tyre_temperatureの項目を選択すると詳細ペインのタイトルにタイヤ温度を表示する`() {
+        var tyreTemperatureText by mutableStateOf("")
+
+        rule.setContent {
+            tyreTemperatureText = itemDisplayName(ReadoutItemKey.LmuWindows.TyreTemperature.Root)
+            ReadoutContent(
+                uiState =
+                    ReadoutListUiState(
+                        simulators = listOf(Simulator.LmuWindows),
+                        selectedSimulator = Simulator.LmuWindows,
+                        items = listOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root),
+                        readoutEnabledStates = mapOf(ReadoutItemKey.LmuWindows.TyreTemperature.Root to true),
+                        selectedItem = ReadoutListItemType.LmuWindows.TyreTemperature,
+                    ),
+                onSimulatorSelected = {},
+                onMove = { _, _ -> },
+                onReadoutEnabledChanged = { _, _ -> },
+                onQueueEnabledChanged = { _, _ -> },
+                onItemSelected = {},
+                onClearSelectedItem = {},
+                scaffoldDirective = singlePaneDirective,
+                windowSizeClass = compactWindowSizeClass,
+            )
+        }
+
+        rule.onAllNodesWithText(tyreTemperatureText).onFirst().assertExists()
     }
 
     @Test

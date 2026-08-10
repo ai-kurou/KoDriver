@@ -11,12 +11,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kurou.kodriver.feature.readoutlist.generated.resources.Res
 import kurou.kodriver.feature.readoutlist.generated.resources.navigate_back
 import org.jetbrains.compose.resources.stringResource
+
+private val READOUT_DETAIL_TOP_APP_BAR_HEIGHT = 56.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,10 +30,20 @@ internal fun ReadoutDetailPane(
     canNavigateBack: Boolean,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     content: @Composable () -> Unit,
 ) {
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .let { scaffoldModifier ->
+                    if (scrollBehavior != null) {
+                        scaffoldModifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                    } else {
+                        scaffoldModifier
+                    }
+                },
         topBar = {
             TopAppBar(
                 title = { Text(title) },
@@ -42,6 +57,8 @@ internal fun ReadoutDetailPane(
                         }
                     }
                 },
+                expandedHeight = READOUT_DETAIL_TOP_APP_BAR_HEIGHT,
+                scrollBehavior = scrollBehavior,
             )
         },
     ) { paddingValues ->

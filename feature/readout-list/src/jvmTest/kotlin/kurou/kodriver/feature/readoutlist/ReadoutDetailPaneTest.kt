@@ -1,6 +1,8 @@
 package kurou.kodriver.feature.readoutlist
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -68,5 +70,25 @@ class ReadoutDetailPaneTest {
         }
 
         rule.onNode(hasContentDescription("戻る")).assertDoesNotExist()
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Test
+    fun `scrollBehaviorを指定してもタイトルと内容を表示する`() {
+        rule.setContent {
+            KoDriverTheme {
+                ReadoutDetailPane(
+                    title = "タイヤ温度",
+                    canNavigateBack = true,
+                    onBack = {},
+                    scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
+                ) {
+                    Text("詳細内容")
+                }
+            }
+        }
+
+        rule.onNodeWithText("タイヤ温度").assertIsDisplayed()
+        rule.onNodeWithText("詳細内容").assertIsDisplayed()
     }
 }
