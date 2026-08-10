@@ -28,12 +28,6 @@
   **課題**: ACE だけ `isLive`（`AceWindowsStatusType.LIVE`）でセッション状態をゲートして、メニュー・リプレイ・ポーズ中は読み上げない仕様になっている（#888）。LMU / GT7 には同等のゲートがない。意図的な差なのか、単に ACE から先に入れただけなのかがコードから読み取れない。
   **改善案**: LMU / GT7 にも同等のセッション状態ゲートが必要かを判断し、必要なら実装、不要ならその理由をコメントか CLAUDE.md に残す。
 
-- **対象**: `core:gt7-ps5-data`（`Gt7Ps5Mapper.kt`）, `core:ace-windows-data`（`AceWindowsMapper.kt`）
-  **課題**: LMU の車両クラス取得（上記）に続き、GT7 / ACE でも同様のデータが取れるか調査した。
-  - GT7: `docs/gt7-ps5-telemetry.md` によると `carCategory[4]`（オフセット `0x16C`、char[4]、"GR3"/"GRX" 等）と `carCode`（オフセット `0x124`、int32の車両ID）が存在するが、`Gt7Ps5Mapper` はいずれも未実装。`carCategory` はLMUの `mVehicleClass` に近い性質だが4文字と短く、GT7独自の車格コードでありレースクラス名としての粒度はLMUと異なる。
-  - ACE: `docs/ace-windows-telemetry.md` を確認したが、Physics/Graphics/Static いずれのブロックにもクラス・カテゴリに相当するフィールドは見当たらない。`car_model`（車種の内部ID文字列）はあるが、レースクラス名の代替にはならない。
-  **改善案**: GT7 は `carCategory`/`carCode` を `Gt7Ps5Mapper` に追加すれば LMU と同様の仕組みが作れる可能性がある（要実機での値の実測確認）。ACE は現状取得手段がないため対応不可。
-
 ---
 
 ## テスト
