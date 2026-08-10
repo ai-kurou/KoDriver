@@ -1,4 +1,4 @@
-# 深夜やることリスト
+# Nightly TODO List
 
 毎晩 JST 午前3時ごろ、Claude Code がこのファイルを読み取り、内容を `docs/improvement-ideas.md` への追記案としてまとめ、下書き PR を作成する運用メモです。
 
@@ -11,4 +11,4 @@
 
 ## リスト
 
-（ここに箇条書きで追記する）
+- プロジェクト全体を見て、バグ、不具合、配線漏れ、仕様不備などがあれば improvement-ideas.md に追記する。
