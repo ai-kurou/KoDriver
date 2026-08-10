@@ -10,7 +10,7 @@ import kurou.kodriver.domain.repository.AceWindowsFuelRepository
 internal class AceWindowsFuelRepositoryImpl(
     private val source: AceWindowsGraphicsSharedMemorySource,
 ) : AceWindowsFuelRepository {
-    override fun fuelStream(): Flow<AceWindowsFuelData> = source.bufferFlow.map { AceWindowsMapper.map(it) }
+    override fun fuelStream(): Flow<AceWindowsFuelData> = source.bufferFlow.map { AceWindowsMapper.mapFuel(it) }
 
     override suspend fun isConnected(): Boolean = source.isConnected()
 }
