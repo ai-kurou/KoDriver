@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -59,8 +60,8 @@ private fun bannerColors(status: ConnectionBannerStatus): BannerColors =
 
         ConnectionBannerStatus.DISCONNECTED -> {
             BannerColors(
-                background = Color(0xFFFFF9C4),
-                content = Color(0xFF5F4B00),
+                background = MaterialTheme.colorScheme.tertiaryContainer,
+                content = MaterialTheme.colorScheme.onTertiaryContainer,
             )
         }
 
@@ -117,6 +118,8 @@ fun ConnectionBannerContent(
     onClick: (() -> Unit)? = null,
 ) {
     val colors = bannerColors(uiState.status)
+    val backgroundColor by animateColorAsState(targetValue = colors.background)
+    val contentColor by animateColorAsState(targetValue = colors.content)
     val icon = bannerIcon(uiState.iconType, uiState.isConnected)
     val isTappable = uiState.isTappable && onClick != null
 
@@ -124,7 +127,7 @@ fun ConnectionBannerContent(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(colors.background)
+                .background(backgroundColor)
                 .then(
                     if (isTappable) {
                         Modifier.clickable(role = Role.Button, onClick = onClick!!)
@@ -141,7 +144,7 @@ fun ConnectionBannerContent(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = colors.content,
+                tint = contentColor,
                 modifier =
                     Modifier
                         .size(18.dp)
@@ -151,14 +154,14 @@ fun ConnectionBannerContent(
             Text(
                 text = uiState.message,
                 style = MaterialTheme.typography.labelMedium,
-                color = colors.content,
+                color = contentColor,
             )
         }
         if (isTappable) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.NavigateNext,
                 contentDescription = null,
-                tint = colors.content,
+                tint = contentColor,
                 modifier =
                     Modifier
                         .size(18.dp)
