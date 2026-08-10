@@ -1032,6 +1032,26 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `ヒステリシス下限まで下がると再度読み上げ可能になる`() {
+        val overheatState =
+            useCase
+                .determineTyreTemperatureOverheat(
+                    state = LmuWindowsNarratorState(),
+                    input = tyreTemperatureInput(fl = 95.0),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+                ).state
+
+        val cooledState =
+            useCase.determineTyreTemperatureOverheat(
+                state = overheatState,
+                input = tyreTemperatureInput(fl = 85.0),
+                settings = settings(tyreTemperatureHighThresholdCelsius = 90),
+            )
+
+        assertEquals(false, cooledState.state.tyreOverheating)
+    }
+
+    @Test
     fun `初回のgamePhase観測では低温でも読み上げない`() {
         val decision =
             useCase.determineTyreTemperatureLow(
