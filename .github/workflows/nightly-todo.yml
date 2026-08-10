@@ -1,0 +1,51 @@
+name: Nightly TODO
+
+on:
+  schedule:
+    - cron: "3 18 * * *" # JST 3:03 (UTC 18:03)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nightly-todo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main
+          token: ${{ secrets.GH_PAT }}
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run nightly batch
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          claude -p "$(cat <<'PROMPT'
+          KoDriverリポジトリの深夜バッチ処理を行ってください。
+
+          1. docs/nightly-todo-list.md を読み、「毎晩実行する項目」と、本日の曜日に対応する「曜日ローテーション項目」だけを対象にする（他の曜日の項目は対象外）。
+          2. 対象項目それぞれについて調査し、KoDriverに追記する価値があると判断した改善案をまとめる。
+          3. 改善案が1件もない場合は、docs/improvement-ideas.md の変更やPR作成を行わずに終了する。
+          4. 改善案がある場合は、リポジトリ直下から新しいブランチ（例: chore/nightly-todo-<日付>）を作成し、docs/improvement-ideas.md に「対象・課題・改善案」がわかる粒度で追記する。既存の記述スタイル・見出し構成に合わせ、重複する項目があれば追記せず既存項目を優先する。
+          5. コミットし、ブランチをプッシュしたうえで、main をベースに日本語のタイトル・説明を付けた下書き（draft）PRを作成する。PR本文に署名やセッションURLは含めない。
+          6. docs/improvement-ideas.md 以外のファイルは変更しない。
+          PROMPT
+          )" \
+            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Bash(git:*),Bash(gh pr create:*)" \
+            --permission-mode acceptEdits
