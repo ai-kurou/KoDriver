@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.lmuwindowsreadout.tyretemperaturedetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsTyreTemperatureLowWarningPhasesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsVehicleClassTyreTemperatureHighThresholdUseCase
@@ -18,11 +19,11 @@ import org.koin.dsl.module
  *
  * 提供: LmuWindowsReadoutTyreTemperatureDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: LmuWindowsTyreTemperaturePreferencesRepository（:core:data）、試聴用の
- *   named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ *   named(Simulator.LmuWindows.id) の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
 val lmuWindowsReadoutTyreTemperatureDetailModule =
     module {
-        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {
             LmuWindowsReadoutTyreTemperatureDetailViewModel(
                 get(),
@@ -33,7 +34,7 @@ val lmuWindowsReadoutTyreTemperatureDetailModule =
                 get(),
                 get(),
                 get(),
-                get(named("lmu_windows")),
+                get(named(Simulator.LmuWindows.id)),
             )
         }
 

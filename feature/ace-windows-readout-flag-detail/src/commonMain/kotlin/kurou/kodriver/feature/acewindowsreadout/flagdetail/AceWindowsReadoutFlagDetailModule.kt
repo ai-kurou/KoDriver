@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.acewindowsreadout.flagdetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.SaveAceWindowsFlagEnabledStateUseCase
 import org.koin.core.module.dsl.viewModel
@@ -11,12 +12,12 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsReadoutFlagDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: AceWindowsFlagPreferencesRepository（:core:data）、試聴用の
- *   named("ace_windows") の PlaySpeechEventUseCase（:feature:ace-windows-narrator で登録）。
+ *   named(Simulator.AceWindows.id) の PlaySpeechEventUseCase（:feature:ace-windows-narrator で登録）。
  */
 val aceWindowsReadoutFlagDetailModule =
     module {
-        // ViewModel（get(named "ace_windows") は narrator モジュールの PlaySpeechEventUseCase を解決）
-        viewModel { AceWindowsReadoutFlagDetailViewModel(get(), get(), get(named("ace_windows"))) }
+        // ViewModel（get(named(Simulator.AceWindows.id)) は narrator モジュールの PlaySpeechEventUseCase を解決）
+        viewModel { AceWindowsReadoutFlagDetailViewModel(get(), get(), get(named(Simulator.AceWindows.id))) }
 
         factory { ObserveAceWindowsFlagEnabledStatesUseCase(get()) }
         factory { SaveAceWindowsFlagEnabledStateUseCase(get()) }

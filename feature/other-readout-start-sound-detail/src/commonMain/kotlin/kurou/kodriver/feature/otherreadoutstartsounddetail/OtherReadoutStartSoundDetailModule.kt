@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherreadoutstartsounddetail
 
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveReadoutStartSoundTypeUseCase
 import kurou.kodriver.domain.usecase.PreviewStartSoundUseCase
 import kurou.kodriver.domain.usecase.SaveReadoutStartSoundTypeUseCase
@@ -12,7 +13,7 @@ import org.koin.dsl.module
  *
  * 提供: OtherReadoutStartSoundDetailViewModel と、それが使うドメイン UseCase。
  * 消費（get で解決）: ReadoutStartSoundPreferencesRepository（:core:data）、および試聴用の
- *   named("lmu_windows") の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
+ *   named(Simulator.LmuWindows.id) の TextToSpeechEngine（:feature:lmu-windows-narrator で登録）。
  */
 val otherReadoutStartSoundDetailModule =
     module {
@@ -23,6 +24,6 @@ val otherReadoutStartSoundDetailModule =
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
         factory { SaveReadoutStartSoundTypeUseCase(get()) }
 
-        // 試聴再生（named "lmu_windows" の TextToSpeechEngine に依存）
-        factory { PreviewStartSoundUseCase(get(named("lmu_windows"))) }
+        // 試聴再生（named(Simulator.LmuWindows.id) の TextToSpeechEngine に依存）
+        factory { PreviewStartSoundUseCase(get(named(Simulator.LmuWindows.id))) }
     }
