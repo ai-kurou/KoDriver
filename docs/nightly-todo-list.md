@@ -16,3 +16,6 @@
 - Androidの最新動向をWebで調査し、KoDriverが取り入れていない・遅れている技術やプラクティスで採用価値があると判断したものがあれば improvement-ideas.md に追記する。
 - `libs.versions.toml` に記載の各ライブラリについて最新安定版をWebで確認し、致命的な不具合がない範囲で更新余地があれば improvement-ideas.md に追記する（CLAUDE.mdの「ライブラリバージョン管理」方針に沿う）。
 - `./gradlew koverXmlReport` の結果を確認し、カバレッジ100%方針から外れているのに除外理由が妥当でない箇所があれば improvement-ideas.md に追記する。
+- detekt・ktlintを実行し、エラーには至っていないが閾値（LongMethod・CyclomaticComplexMethod等）に近づいている箇所があれば improvement-ideas.md に追記する。
+- `rg` 等で未使用のクラス・関数や、複数モジュールに散らばった重複実装がないか横断的に確認し、あれば improvement-ideas.md に追記する。
+- 認証・暗号化なしで稼働しているKtorサーバー（`0.0.0.0:8080`）まわりなど、既知の制約以外に新たなセキュリティリスクが増えていないか確認し、あれば improvement-ideas.md に追記する。
