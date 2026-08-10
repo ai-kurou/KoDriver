@@ -131,6 +131,42 @@ class ConnectionBannerContentScreenshotTest {
             onRoot().captureRoboImage()
         }
 
+    @Test
+    fun `SIMULATOR接続中 ダークテーマ`() =
+        composeScreenshotTest {
+            setThemedContent(darkTheme = true) {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.CONNECTED,
+                            message = "シミュレータに接続中",
+                            iconType = ConnectionBannerIconType.SIMULATOR,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                )
+            }
+            onRoot().captureRoboImage()
+        }
+
+    @Test
+    fun `NETWORK IPアドレス未設定 タップ可能 ダークテーマ`() =
+        composeScreenshotTest {
+            setThemedContent(darkTheme = true) {
+                ConnectionBannerContent(
+                    uiState =
+                        ConnectionBannerUiState(
+                            status = ConnectionBannerStatus.UNCHECKED,
+                            message = "接続先IPアドレスが未設定です",
+                            iconType = ConnectionBannerIconType.NETWORK,
+                            isTappable = true,
+                        ),
+                    modifier = Modifier.requiredWidth(360.dp),
+                    onClick = {},
+                )
+            }
+            onRoot().captureRoboImage()
+        }
+
     private fun DesktopComposeUiTest.setThemedContent(
         darkTheme: Boolean = false,
         content: @Composable () -> Unit,

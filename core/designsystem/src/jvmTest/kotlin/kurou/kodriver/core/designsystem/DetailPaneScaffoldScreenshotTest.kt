@@ -35,6 +35,28 @@ class DetailPaneScaffoldScreenshotTest {
         }
 
     @Test
+    fun `戻るボタンあり ダークテーマ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(1560.dp, 1080.dp)) {
+                            DetailPaneScaffold(
+                                title = "車両接近",
+                                canNavigateBack = true,
+                                navigateBackContentDescription = "戻る",
+                                onBack = {},
+                            ) {
+                                Text("本文")
+                            }
+                        }
+                    }
+                }
+            }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
+        }
+
+    @Test
     fun `戻るボタンなし`() =
         composeScreenshotTest {
             setContent {
