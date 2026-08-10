@@ -215,7 +215,7 @@ GitHub Actions ワークフロー:
 - `release-apps.yml`: 手動でリリースする際に実行。まず `_e2e-android-maestro.yml`（`ref: main`）を実行し、成功した場合のみバージョンバンプ・MSI/APK ビルド・リリース作成に進む。Android APK のビルドは `_build-android-release.yml` を呼び出す
 - `_e2e-android-maestro.yml`: `_build-android-release.yml` で署名付き APK をビルドし、Android エミュレータ上で Maestro（`.maestro/tap-bottom-tabs.yaml`）を実行してボトムナビゲーションの各タブ（読み上げ・ログ・その他）をタップする E2E テスト。`release-apps.yml` から呼び出されるほか、Actions の画面から `ref` を指定して手動実行できる
 - `record-golden-images.yml`: `workflow_dispatch` に加え、PR に `record-golden-images` ラベルが付与された時にも起動し、PR のブランチに対して golden 画像（Roborazzi スクリーンショット）を再記録してコミットする。同一ブランチで新しい実行が開始された場合は、実行中の古い記録処理をキャンセルする
-- `nightly-todo.yml`: 毎日 JST 午前3時ごろ（`workflow_dispatch` でも手動実行可）に起動し、Claude Code CLI（`CLAUDE_CODE_OAUTH_TOKEN` シークレットで認証、Pro/Max サブスクリプション枠を使用）が `docs/nightly-todo-list.md` の「毎晩実行する項目」とその曜日の「曜日ローテーション項目」を調査し、改善案があれば `docs/improvement-ideas.md` への追記のみを行う下書き PR を作成する（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため、直接 main には書き込まない）。GitHub への操作には `GH_PAT` シークレットを使用する（`GITHUB_TOKEN` で作成した PR は後続の CI ワークフローをトリガーしないため）
+- `nightly-todo.yml`: 毎日 JST 午前3時ごろ（`workflow_dispatch` でも手動実行可）に起動する。JST の日付・曜日をシェル側で明示的に算出したうえで、Claude Code CLI（`CLAUDE_CODE_OAUTH_TOKEN` シークレットで認証、Pro/Max サブスクリプション枠を使用）に `docs/nightly-todo-list.md` の「毎晩実行する項目」とその曜日の「曜日ローテーション項目」を調査させ、`docs/improvement-ideas.md` の編集権限のみを与える（`Edit`/`Write` ツールを同ファイルに限定し、`git`/`gh` 操作の権限は与えない）。Claude Code 実行後、ワークフロー側で `docs/improvement-ideas.md` 以外が変更されていないことを検証してから、ブランチ作成・コミット・プッシュ・下書き PR 作成をワークフローの固定処理として行う（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため、直接 main には書き込まない）。GitHub への操作には `GH_PAT` シークレットを使用する（`GITHUB_TOKEN` で作成した PR は後続の CI ワークフローをトリガーしないため）
 
 ---
 
