@@ -70,7 +70,7 @@ class LmuWindowsReadoutTyreWearDetailPaneTest {
         }
 
         rule.onNodeWithText("摩耗閾値").assertIsDisplayed()
-        rule.onNodeWithText("この閾値になると警告を読み上げます").assertIsDisplayed()
+        rule.onNodeWithText("摩耗が50%以上になると警告を読み上げます。").assertIsDisplayed()
         rule.onNodeWithText("50%").assertIsDisplayed()
     }
 

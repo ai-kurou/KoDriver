@@ -84,7 +84,11 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
                     DetailPaneSubtitle(text = stringResource(Res.string.tyre_wear_threshold_subtitle))
-                    DetailPaneBodyText(text = stringResource(Res.string.tyre_wear_threshold_description))
+                    DetailPaneBodyText(
+                        text =
+                            stringResource(Res.string.tyre_wear_threshold_description)
+                                .formatSliderLabel(uiState.thresholdPercentage),
+                    )
                     ThresholdSlider(
                         value = uiState.thresholdPercentage.toFloat(),
                         valueRange = THRESHOLD_MIN..THRESHOLD_MAX,
