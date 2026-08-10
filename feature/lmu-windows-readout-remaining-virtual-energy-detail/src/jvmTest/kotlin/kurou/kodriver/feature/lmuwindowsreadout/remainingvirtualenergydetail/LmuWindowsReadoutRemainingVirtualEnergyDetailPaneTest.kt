@@ -66,7 +66,7 @@ class LmuWindowsReadoutRemainingVirtualEnergyDetailPaneTest {
         }
 
         rule.onNodeWithText("残量閾値").assertIsDisplayed()
-        rule.onNodeWithText("この閾値になると警告を読み上げます").assertIsDisplayed()
+        rule.onNodeWithText("残量が30%以下になると警告を読み上げます").assertIsDisplayed()
         rule.onNodeWithText("30%").assertIsDisplayed()
     }
 

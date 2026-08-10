@@ -3,7 +3,7 @@
     <string name="remaining_virtual_energy_warning_title">残量警告</string>
     <string name="remaining_virtual_energy_warning_chip">バーチャルエナジー残量警告</string>
     <string name="remaining_virtual_energy_threshold_subtitle">残量閾値</string>
-    <string name="remaining_virtual_energy_threshold_description">この閾値になると警告を読み上げます</string>
+    <string name="remaining_virtual_energy_threshold_description">残量が%1$d%%以下になると警告を読み上げます</string>
     <string name="remaining_virtual_energy_threshold_label">%1$s%%</string>
     <string name="remaining_virtual_energy_threshold_reset">デフォルトに戻す</string>
 </resources>
