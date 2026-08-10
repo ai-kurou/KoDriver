@@ -1,10 +1,10 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.model.Feedback
-import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.FeedbackSenderRepository
 
 class SendFeedbackUseCase(
-    private val repository: FeedbackRepository,
+    private val repository: FeedbackSenderRepository,
 ) {
     suspend operator fun invoke(feedback: Feedback): Result<Unit> {
         val normalizedFeedback =

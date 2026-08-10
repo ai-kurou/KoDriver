@@ -6,10 +6,10 @@ import io.sentry.Sentry
 import io.sentry.protocol.SentryId
 import kotlinx.coroutines.CancellationException
 import kurou.kodriver.domain.model.Feedback
-import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import io.sentry.protocol.Feedback as SentryFeedback
 
-internal class SentryFeedbackRepository(
+internal class SentryFeedbackSenderRepository(
     private val captureFeedback: (SentryFeedback, Hint, ScopeCallback) -> SentryId = {
         sentryFeedback,
         hint,
@@ -17,7 +17,7 @@ internal class SentryFeedbackRepository(
         ->
         Sentry.feedback().capture(sentryFeedback, hint, scopeCallback)
     },
-) : FeedbackRepository {
+) : FeedbackSenderRepository {
     override suspend fun send(feedback: Feedback): Result<Unit> =
         try {
             captureFeedback(

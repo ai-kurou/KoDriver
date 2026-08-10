@@ -357,6 +357,7 @@ detekt の主な閾値（`config/detekt/detekt.yml`）:
 
 - **データ取得用**（テレメトリ・走行データなど外部ソースからの読み取り、Flow 配信、バージョン取得など）は接尾辞なしの素の `XxxRepository`（例: `LmuWindowsRepository`, `LmuWindowsFlagRepository`, `Gt7Ps5Repository`, `ServerVersionRepository`）。
 - **設定保存用**（DataStore による永続化）は必ず `XxxPreferencesRepository`（複数値・任意型の設定）または `XxxEnabledRepository`（単一の有効/無効フラグ）の接尾辞を付ける（例: `ThemePreferencesRepository`, `ConsoleAddressPreferencesRepository`, `ServerIpPreferencesRepository`, `KeepScreenOnEnabledRepository`）。設定保存用を素の `XxxRepository` にしてはならない。
+- **送信・実行用**（外部サービスへの送信など、取得・永続化を伴わない書き込み専用のアクション実行）は必ず `XxxSenderRepository` の接尾辞を付ける（例: `FeedbackSenderRepository`）。送信・実行用を素の `XxxRepository` にしてはならない。
 
 ### ViewModel の設計規則
 
