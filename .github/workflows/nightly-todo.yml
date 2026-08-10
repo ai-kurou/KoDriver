@@ -54,7 +54,9 @@ jobs:
           PROMPT
           )" \
             --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
-            --permission-mode acceptEdits
+            --permission-mode acceptEdits \
+            --model sonnet \
+            --effort medium
 
       - name: Verify only improvement-ideas.md changed
         run: |
