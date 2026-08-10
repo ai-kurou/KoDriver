@@ -24,6 +24,6 @@ val otherReadoutStartSoundDetailModule =
         factory { ObserveReadoutStartSoundTypeUseCase(get()) }
         factory { SaveReadoutStartSoundTypeUseCase(get()) }
 
-        // 試聴再生（named "lmu_windows" の TextToSpeechEngine に依存）
+        // 試聴再生（named(Simulator.LmuWindows.id) の TextToSpeechEngine に依存）
         factory { PreviewStartSoundUseCase(get(named(Simulator.LmuWindows.id))) }
     }

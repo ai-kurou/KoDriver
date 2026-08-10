@@ -17,7 +17,7 @@ import org.koin.dsl.module
  */
 val aceWindowsReadoutRemainingFuelDetailModule =
     module {
-        // ViewModel（get(named "ace_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.AceWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {
             AceWindowsReadoutRemainingFuelDetailViewModel(get(), get(), get(named(Simulator.AceWindows.id)))
         }

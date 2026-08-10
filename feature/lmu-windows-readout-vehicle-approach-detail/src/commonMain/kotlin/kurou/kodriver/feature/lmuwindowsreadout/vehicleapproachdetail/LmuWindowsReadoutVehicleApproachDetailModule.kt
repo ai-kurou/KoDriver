@@ -22,7 +22,7 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutVehicleApproachDetailModule =
     module {
-        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {
             LmuWindowsReadoutVehicleApproachDetailViewModel(
                 get(),

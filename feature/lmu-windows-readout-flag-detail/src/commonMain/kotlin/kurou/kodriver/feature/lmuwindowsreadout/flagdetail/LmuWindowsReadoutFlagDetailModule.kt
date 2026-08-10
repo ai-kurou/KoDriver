@@ -19,7 +19,7 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutFlagDetailModule =
     module {
-        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel {
             LmuWindowsReadoutFlagDetailViewModel(
                 get(),

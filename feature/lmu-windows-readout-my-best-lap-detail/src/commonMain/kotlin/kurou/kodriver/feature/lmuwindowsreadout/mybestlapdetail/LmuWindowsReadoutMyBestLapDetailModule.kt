@@ -16,7 +16,7 @@ import org.koin.dsl.module
  */
 val lmuWindowsReadoutMyBestLapDetailModule =
     module {
-        // ViewModel（get(named "lmu_windows") は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.LmuWindows.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel { LmuWindowsReadoutMyBestLapDetailViewModel(get(), get(), get(named(Simulator.LmuWindows.id))) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）

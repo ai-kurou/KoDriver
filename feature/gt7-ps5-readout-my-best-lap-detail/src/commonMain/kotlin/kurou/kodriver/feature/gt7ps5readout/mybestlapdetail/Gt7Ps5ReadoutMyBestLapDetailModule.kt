@@ -16,7 +16,7 @@ import org.koin.dsl.module
  */
 val gt7Ps5ReadoutMyBestLapDetailModule =
     module {
-        // ViewModel（get(named "gt7_ps5") は narrator モジュールの TextToSpeechEngine を解決）
+        // ViewModel（get(named(Simulator.Gt7Ps5.id)) は narrator モジュールの TextToSpeechEngine を解決）
         viewModel { Gt7Ps5ReadoutMyBestLapDetailViewModel(get(), get(), get(named(Simulator.Gt7Ps5.id))) }
 
         // ドメイン UseCase（:core:domain。get() は :core:data の Preferences Repository を解決）
