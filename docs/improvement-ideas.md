@@ -16,10 +16,3 @@
   **改善案**: <どう変えたいか>
 ```
 
----
-
-## 設計・重複
-
-- **対象**: `feature:lmu-windows-narrator` / `feature:gt7-ps5-narrator` / `feature:ace-windows-narrator` の Koin モジュール
-  **課題**: DI 修飾子が `named("lmu_windows")` などの文字列リテラルで、`Simulator.id` と同じ値を別々に書いている。値が一致していることがコンパイル時に保証されない。
-  **改善案**: `named(Simulator.LmuWindows.id)` のように `Simulator` 側の定義を参照する。
