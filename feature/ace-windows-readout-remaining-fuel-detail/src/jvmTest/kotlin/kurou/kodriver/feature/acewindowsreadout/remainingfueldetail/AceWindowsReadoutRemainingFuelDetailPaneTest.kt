@@ -29,7 +29,7 @@ class AceWindowsReadoutRemainingFuelDetailPaneTest {
         rule.onNodeWithText("残り燃料が設定した閾値を下回った場合に、音声でお知らせします。").assertIsDisplayed()
         rule.onNodeWithText("残り燃料警告").assertIsDisplayed()
         rule.onNodeWithText("残量閾値").assertIsDisplayed()
-        rule.onNodeWithText("残り燃料が30%以下になると警告を読み上げます").assertIsDisplayed()
+        rule.onNodeWithText("残り燃料が30%以下になると警告を読み上げます。").assertIsDisplayed()
         rule.onNodeWithText("30%").assertIsDisplayed()
     }
 
