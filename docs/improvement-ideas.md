@@ -20,10 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `core:domain`（`Simulator.kt`）, `feature:readout-list`（`ReadoutListViewModel.kt:27-28`）
-  **課題**: `Simulator.entries` が private なため、シミュレータ一覧が必要な `ReadoutListViewModel` が `listOf(Simulator.LmuWindows, Simulator.Gt7Ps5, Simulator.AceWindows)` を独自に再定義している。同じ `core:domain` の `ReadoutItemKey.entries` は public で、扱いが割れている。新しいシミュレータを追加したときに追加漏れがコンパイルエラーにならない。
-  **改善案**: `Simulator.entries` を public にし、`ReadoutListViewModel` はそれを参照する。
-
 - **対象**: `core:ace-windows-data`（`AceWindowsMapper.kt`）
   **課題**: 燃料の変換だけ `map()` で、他は `mapFlag()` / `mapStatus()`。何を map するのか関数名から分からない。
   **改善案**: `mapFuel()` に改名して他と揃える。
