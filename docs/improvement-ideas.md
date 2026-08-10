@@ -24,7 +24,3 @@
   **課題**: `ReadoutItemKey` の配線漏れ（#464, #472）は目視確認に頼っており、機械的な検証手段がない。
   **改善案**: `ReadoutItemKey` の全定義を列挙し、対応する `Determine{LmuWindows,Gt7Ps5,AceWindows}NarratorReadoutUseCase` のソース内にキーが出現することを検証するテストを追加し、将来の配線漏れを自動検出できるようにする。
 
-- **対象**: `Determine{LmuWindows,Gt7Ps5,AceWindows}NarratorReadoutUseCase`
-  **課題**: 3シミュレータの `Determine*NarratorReadoutUseCase` はいずれも「Root無効なら空リスト、有効ならサブキー判定でSpeechEventをマッピング」という同型パターンを個別に実装しており、ロジックが重複している可能性が高い。
-  **改善案**: シミュレータ間の仕様差（LMUのしきい値ベース判定など）により完全な共通化は難しいが、Root無効時のガード処理や `ReadoutItemKey.Flag.X to SpeechEvent.X` のようなペア列挙を汎用ヘルパー関数化できないか検討する。
-
