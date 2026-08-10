@@ -23,3 +23,4 @@
 - `assertModuleGraph` は通っていても、本来分離すべき責務が同一モジュールに混在していないかなど、依存関係グラフの設計面での気になる点があれば improvement-ideas.md に追記する。
 - GitHub Actionsの実行履歴を確認し、実行時間が長すぎるジョブや、再実行で通ることが多い不安定なテスト（flaky test）があれば improvement-ideas.md に追記する。
 - 例外の握りつぶし、ログレベルの不適切な使用（本来warn/errorであるべきものがinfo等）など、エラーハンドリング・ログ出力の一貫性に問題があれば improvement-ideas.md に追記する。
+- Zenn（https://zenn.dev）でAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する直近の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
