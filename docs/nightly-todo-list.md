@@ -9,11 +9,12 @@
 - 「毎晩実行する項目」「曜日ローテーション項目」は毎晩・毎週繰り返しチェックする恒常的な項目のため、処理後もこのファイルから削除しない。
 - 夜間バッチは `improvement-ideas.md` を直接 main に書き換えず、必ず下書き PR を作成する（`docs/improvement-ideas.md` の変更は事前承認が必要という CLAUDE.md のルールを守るため）。
 - 1晩に実施するのは「毎晩実行する項目」＋「その曜日のローテーション項目」までとし、リスト全体を一度に処理しようとしない（コンテキスト・使用量超過を防ぐため）。
+- Webサイトを元にした改善案を improvement-ideas.md に追記する場合は、参考にしたURLも併記する。
 
 ## 毎晩実行する項目
 
-- Zenn（https://zenn.dev）でAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
-- Androidの最新動向（https://android-developers.googleblog.com を含む）をWebで調査し、KoDriverが取り入れていない・遅れている技術やプラクティスで採用価値があると判断したものがあれば improvement-ideas.md に追記する。
+- Zenn（[https://zenn.dev](https://zenn.dev)）でAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
+- Androidの最新動向（[https://android-developers.googleblog.com](https://android-developers.googleblog.com) を含む）をWebで調査し、KoDriverが取り入れていない・遅れている技術やプラクティスで採用価値があると判断したものがあれば improvement-ideas.md に追記する。
 
 ## 曜日ローテーション項目
 
