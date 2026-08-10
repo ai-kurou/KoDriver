@@ -6,4 +6,4 @@ package kurou.kodriver.domain.model
  * DataStore のデフォルト値（AceWindowsRemainingFuelPreferences）・詳細設定画面のリセット値・
  * Narrator の購読初期値が同じ値を参照できるよう、この一箇所にのみ定義する。
  */
-const val ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE = 30
+const val ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT = 30

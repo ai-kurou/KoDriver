@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
-import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.domain.model.AceWindowsCarLocation
 import kurou.kodriver.domain.model.AceWindowsStatusType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -95,7 +95,7 @@ internal class AceWindowsNarratorViewModel(
     private val remainingFuelThreshold =
         remainingFuelUseCases
             .observeThresholdPercentage()
-            .stateIn(viewModelScope, SharingStarted.Eagerly, ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE)
+            .stateIn(viewModelScope, SharingStarted.Eagerly, ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT)
 
     private var narratorState = AceWindowsNarratorState()
 

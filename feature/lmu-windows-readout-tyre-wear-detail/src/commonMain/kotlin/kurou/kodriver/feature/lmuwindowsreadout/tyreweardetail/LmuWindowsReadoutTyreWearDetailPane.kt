@@ -20,7 +20,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.Res
 import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_description
 import kurou.kodriver.feature.lmuwindowsreadout.tyreweardetail.generated.resources.tyre_wear_threshold_description
@@ -91,7 +91,7 @@ internal fun LmuWindowsReadoutTyreWearDetailPaneContent(
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
-                        defaultValue = LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
+                        defaultValue = LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT.toFloat(),
                         onResetToDefault = onThresholdReset,
                         resetContentDescription = stringResource(Res.string.tyre_wear_threshold_reset),
                     )

@@ -20,7 +20,7 @@ import kurou.kodriver.core.designsystem.DetailPaneDescription
 import kurou.kodriver.core.designsystem.DetailPaneSubtitle
 import kurou.kodriver.core.designsystem.ThresholdSlider
 import kurou.kodriver.core.designsystem.formatSliderLabel
-import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE
+import kurou.kodriver.domain.model.ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.generated.resources.Res
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.generated.resources.remaining_fuel_description
 import kurou.kodriver.feature.acewindowsreadout.remainingfueldetail.generated.resources.remaining_fuel_preview_label
@@ -92,7 +92,7 @@ internal fun AceWindowsReadoutRemainingFuelDetailPaneContent(
                         steps = (THRESHOLD_MAX - THRESHOLD_MIN).toInt() - 1,
                         labelFormatter = { thresholdLabelTemplate.formatSliderLabel(it.roundToInt()) },
                         onValueChangeFinished = { onThresholdChanged(it.roundToInt()) },
-                        defaultValue = ACE_WINDOWS_REMAINING_FUEL_DEFAULT_THRESHOLD_PERCENTAGE.toFloat(),
+                        defaultValue = ACE_WINDOWS_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT.toFloat(),
                         onResetToDefault = onThresholdReset,
                         resetContentDescription = stringResource(Res.string.remaining_fuel_threshold_reset),
                     )

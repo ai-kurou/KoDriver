@@ -6,4 +6,4 @@ package kurou.kodriver.domain.model
  * DataStore のデフォルト値（LmuWindowsTyreWearPreferences）・詳細設定画面のリセット値・
  * Narrator の購読初期値が同じ値を参照できるよう、この一箇所にのみ定義する。
  */
-const val LMU_WINDOWS_TYRE_WEAR_DEFAULT_THRESHOLD_PERCENTAGE = 50
+const val LMU_WINDOWS_TYRE_WEAR_THRESHOLD_PERCENTAGE_DEFAULT = 50
