@@ -20,10 +20,6 @@
 
 ## UI/UX
 
-- **対象**: `feature/readout-list/src/commonMain/kotlin/kurou/kodriver/feature/readoutlist/ReadoutListPane.kt`（`itemsIndexed` によるドラッグ並び替え）、`feature/telemetry-log-list/src/commonMain/kotlin/kurou/kodriver/feature/telemetryloglist/TelemetryLogListPane.kt`（リアルタイムに先頭追加される `items`）
-  **課題**: 選択状態の色変化には `animateColorAsState` を使っているが、リスト内でのアイテムの挿入・削除・並び替え自体には `Modifier.animateItem()` が使われておらず（リポジトリ全体で使用箇所0件）、位置の変化が瞬時に切り替わる。特にテレメトリログ一覧は走行中に先頭へ継続的に追加される性質上、視認性が低い。
-  **改善案**: `LazyColumn`/`LazyRow` の `items`/`itemsIndexed` で返す各アイテムの `Modifier` に `Modifier.animateItem()` を付与し、挿入・削除・並び替え時に位置がアニメーションするようにする。
-
 - **対象**: `app/shared/src/commonMain/kotlin/kurou/kodriver/presentation/AppTheme.kt` と `core/designsystem` の `Color.kt`/`Theme.kt`（`KoDriverTheme`）
   **課題**: 実行時の画面は `AppTheme` を使用する一方、`KoDriverTheme` は主に Preview・スクリーンショットテスト専用になっており、両者が同種の配色値をそれぞれ独自に定義している（意図的な分離である可能性はあるが要確認）。今後 `core/designsystem` 側で配色を修正しても本番アプリ（`AppTheme`）に反映されない構造で、`KoDriverTypography` のような一元管理の設計方針から外れる。
   **改善案**: `AppTheme` が `core/designsystem` の配色定義を参照する構成に統一するか、意図的な分離であればその理由をコメント等に明記する。

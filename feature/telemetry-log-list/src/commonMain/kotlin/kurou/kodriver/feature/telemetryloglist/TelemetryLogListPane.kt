@@ -155,6 +155,7 @@ internal fun TelemetryLogListPane(
                         log = log,
                         isSelected = log.id == uiState.selectedLogId,
                         raceStartedAt = raceStartedAt,
+                        modifier = Modifier.animateItem(),
                         onClick = { onLogClick(log.id) },
                         onFeedbackClick = { onFeedbackClick(log.id) },
                         onDeleteClick = { onDeleteClick(log.id) },
