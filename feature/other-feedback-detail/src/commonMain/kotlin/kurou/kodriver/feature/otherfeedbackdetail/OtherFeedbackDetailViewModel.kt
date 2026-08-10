@@ -60,7 +60,7 @@ internal class OtherFeedbackDetailViewModel(
     fun onMessageChanged(message: String) {
         _uiState.update {
             it.copy(
-                message = message,
+                message = message.take(FEEDBACK_MESSAGE_MAX_LENGTH),
                 isSent = false,
                 sendFailed = false,
                 showMessageError = false,
@@ -69,11 +69,25 @@ internal class OtherFeedbackDetailViewModel(
     }
 
     fun onNameChanged(name: String) {
-        _uiState.update { it.copy(name = name, isSent = false, sendFailed = false, showNameError = false) }
+        _uiState.update {
+            it.copy(
+                name = name.take(FEEDBACK_NAME_MAX_LENGTH),
+                isSent = false,
+                sendFailed = false,
+                showNameError = false,
+            )
+        }
     }
 
     fun onEmailChanged(email: String) {
-        _uiState.update { it.copy(email = email, isSent = false, sendFailed = false, showEmailError = false) }
+        _uiState.update {
+            it.copy(
+                email = email.take(FEEDBACK_EMAIL_MAX_LENGTH),
+                isSent = false,
+                sendFailed = false,
+                showEmailError = false,
+            )
+        }
     }
 
     fun onSend() {
