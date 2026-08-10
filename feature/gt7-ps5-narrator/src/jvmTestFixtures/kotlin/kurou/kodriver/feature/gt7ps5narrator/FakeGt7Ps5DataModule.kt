@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
@@ -26,7 +27,7 @@ val fakeGt7Ps5DataModule =
         single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
         single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
         single<Gt7Ps5RemainingFuelPreferencesRepository> { FakeGt7Ps5RemainingFuelPreferencesRepository() }
-        single<SoundPlayer>(named("gt7_ps5")) { NoOpSoundPlayer() }
+        single<SoundPlayer>(named(Simulator.Gt7Ps5.id)) { NoOpSoundPlayer() }
     }
 
 private class FakeGt7Ps5Repository : Gt7Ps5Repository {

@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineLmuWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveLmuWindowsMyBestLapVoiceTypeUseCase
@@ -53,11 +54,11 @@ import org.koin.dsl.module
  *   （NarratorUseCases / FlagUseCases / VehicleApproachUseCases / VehicleDamageUseCases /
  *   ReadoutListUseCases / TyreTemperatureUseCases / TyreWearUseCases / RemainingVirtualEnergyUseCases /
  *   PitTimingUseCases）、
- *   それらが束ねる各ドメイン UseCase、および named("lmu_windows") の音声再生系
+ *   それらが束ねる各ドメイン UseCase、および named(Simulator.LmuWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:lmu-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
- * 音声系は GT7 と区別するため named("lmu_windows") で登録している。
+ * 音声系は GT7 と区別するため named(Simulator.LmuWindows.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
 val lmuWindowsNarratorModule: Module =
@@ -75,7 +76,7 @@ val lmuWindowsNarratorModule: Module =
         factory { TyreWearUseCases(get(), get()) }
         factory { RemainingVirtualEnergyUseCases(get(), get()) }
         factory { PitTimingUseCases(get(), get()) }
-        factory { LmuWindowsNarratorEventProcessor(get(named("lmu_windows")), get()) }
+        factory { LmuWindowsNarratorEventProcessor(get(named(Simulator.LmuWindows.id)), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:lmu-windows-data / :core:data の Repository を解決）
         factory { DetermineLmuWindowsNarratorReadoutUseCase() }
@@ -109,12 +110,12 @@ val lmuWindowsNarratorModule: Module =
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // 音声再生（named "lmu_windows" で GT7/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
-        factory(named("lmu_windows")) { PlaySpeechEventUseCase(get(named("lmu_windows"))) }
-        includes(platformSoundModule(named("lmu_windows")))
-        single<TextToSpeechEngine>(named("lmu_windows")) {
+        factory(named(Simulator.LmuWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.LmuWindows.id))) }
+        includes(platformSoundModule(named(Simulator.LmuWindows.id)))
+        single<TextToSpeechEngine>(named(Simulator.LmuWindows.id)) {
             LmuWindowsWavNarratorEngine(
                 WavNarratorEngine(
-                    soundPlayer = get(named("lmu_windows")),
+                    soundPlayer = get(named(Simulator.LmuWindows.id)),
                     resources =
                         WavResources(
                             eventToFile = lmuWindowsEventToFile,

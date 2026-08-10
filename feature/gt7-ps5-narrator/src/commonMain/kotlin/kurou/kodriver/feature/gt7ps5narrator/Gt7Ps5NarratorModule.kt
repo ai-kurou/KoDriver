@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
@@ -33,11 +34,11 @@ import org.koin.dsl.module
  * 提供: Gt7Ps5NarratorViewModel、Gt7Ps5NarratorEventProcessor、この feature 内で定義した UseCase 集約 data class
  *   （MyBestLapUseCases / ReadoutListUseCases / RemainingFuelLapsUseCases / RemainingFuelUseCases）、
  *   それらが束ねる
- *   各ドメイン UseCase、および named("gt7_ps5") の音声再生系
+ *   各ドメイン UseCase、および named(Simulator.Gt7Ps5.id) の音声再生系
  *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:gt7-ps5-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
- * 音声系は LMU と区別するため named("gt7_ps5") で登録している。
+ * 音声系は LMU と区別するため named(Simulator.Gt7Ps5.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
 val gt7Ps5NarratorModule: Module =
@@ -50,7 +51,7 @@ val gt7Ps5NarratorModule: Module =
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { RemainingFuelLapsUseCases(get()) }
         factory { RemainingFuelUseCases(get()) }
-        factory { Gt7Ps5NarratorEventProcessor(get(named("gt7_ps5")), get()) }
+        factory { Gt7Ps5NarratorEventProcessor(get(named(Simulator.Gt7Ps5.id)), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:gt7-ps5-data / :core:data の Repository を解決）
         factory { DetermineGt7Ps5NarratorReadoutUseCase() }
@@ -65,11 +66,11 @@ val gt7Ps5NarratorModule: Module =
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // 音声再生（named "gt7_ps5" で LMU/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
-        includes(platformSoundModule(named("gt7_ps5")))
-        single<TextToSpeechEngine>(named("gt7_ps5")) {
+        includes(platformSoundModule(named(Simulator.Gt7Ps5.id)))
+        single<TextToSpeechEngine>(named(Simulator.Gt7Ps5.id)) {
             Gt7Ps5WavNarratorEngine(
                 WavNarratorEngine(
-                    soundPlayer = get(named("gt7_ps5")),
+                    soundPlayer = get(named(Simulator.Gt7Ps5.id)),
                     resources =
                         WavResources(
                             eventToFile = gt7Ps5EventToFile,
@@ -84,7 +85,7 @@ val gt7Ps5NarratorModule: Module =
                 ),
             )
         }
-        factory(named("gt7_ps5")) { PlaySpeechEventUseCase(get(named("gt7_ps5"))) }
+        factory(named(Simulator.Gt7Ps5.id)) { PlaySpeechEventUseCase(get(named(Simulator.Gt7Ps5.id))) }
     }
 
 private val gt7Ps5EventToFile: Map<SpeechEvent, String> =

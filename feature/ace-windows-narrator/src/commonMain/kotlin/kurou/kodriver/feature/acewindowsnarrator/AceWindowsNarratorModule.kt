@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.platformSoundModule
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
 import kurou.kodriver.domain.model.ReadoutStartSoundType
+import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.DetermineAceWindowsNarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveAceWindowsFlagUseCase
@@ -33,11 +34,11 @@ import org.koin.dsl.module
  *
  * 提供: AceWindowsNarratorViewModel、AceWindowsNarratorEventProcessor、この feature 内で定義した
  *   UseCase 集約 data class（RemainingFuelUseCases / ReadoutListUseCases）、それらが束ねる
- *   各ドメイン UseCase、および named("ace_windows") の音声再生系
+ *   各ドメイン UseCase、および named(Simulator.AceWindows.id) の音声再生系
  *   （PlaySpeechEventUseCase・TextToSpeechEngine）。
  * 消費（get で解決）: 各 UseCase の依存 Repository（:core:ace-windows-data / :core:data）、
  *   SoundPlayer（[platformSoundModule]）。
- * 音声系は LMU/GT7 と区別するため named("ace_windows") で登録している。
+ * 音声系は LMU/GT7 と区別するため named(Simulator.AceWindows.id) で登録している。
  */
 @OptIn(ExperimentalResourceApi::class)
 val aceWindowsNarratorModule: Module =
@@ -49,7 +50,7 @@ val aceWindowsNarratorModule: Module =
         factory { RemainingFuelUseCases(get(), get()) }
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { FlagUseCases(get(), get()) }
-        factory { AceWindowsNarratorEventProcessor(get(named("ace_windows")), get()) }
+        factory { AceWindowsNarratorEventProcessor(get(named(Simulator.AceWindows.id)), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:ace-windows-data / :core:data の Repository を解決）
         factory { DetermineAceWindowsNarratorReadoutUseCase() }
@@ -65,11 +66,11 @@ val aceWindowsNarratorModule: Module =
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // 音声再生（named "ace_windows" で LMU/GT7 と分離。SoundPlayer は core:narrator の platformSoundModule が提供）
-        includes(platformSoundModule(named("ace_windows")))
-        single<TextToSpeechEngine>(named("ace_windows")) {
+        includes(platformSoundModule(named(Simulator.AceWindows.id)))
+        single<TextToSpeechEngine>(named(Simulator.AceWindows.id)) {
             AceWindowsWavNarratorEngine(
                 WavNarratorEngine(
-                    soundPlayer = get(named("ace_windows")),
+                    soundPlayer = get(named(Simulator.AceWindows.id)),
                     resources =
                         WavResources(
                             eventToFile = aceWindowsEventToFile,
@@ -84,7 +85,7 @@ val aceWindowsNarratorModule: Module =
                 ),
             )
         }
-        factory(named("ace_windows")) { PlaySpeechEventUseCase(get(named("ace_windows"))) }
+        factory(named(Simulator.AceWindows.id)) { PlaySpeechEventUseCase(get(named(Simulator.AceWindows.id))) }
     }
 
 private val aceWindowsEventToFile: Map<SpeechEvent, String> =
