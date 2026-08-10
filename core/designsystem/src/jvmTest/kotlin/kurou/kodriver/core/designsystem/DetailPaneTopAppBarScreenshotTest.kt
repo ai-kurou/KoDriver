@@ -32,6 +32,26 @@ class DetailPaneTopAppBarScreenshotTest {
         }
 
     @Test
+    fun `戻るボタンあり ダークテーマ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 64.dp)) {
+                            DetailPaneTopAppBar(
+                                title = "車両接近",
+                                canNavigateBack = true,
+                                navigateBackContentDescription = "戻る",
+                                onBack = {},
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
+        }
+
+    @Test
     fun `戻るボタンなし`() =
         composeScreenshotTest {
             setContent {

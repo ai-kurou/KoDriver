@@ -69,6 +69,34 @@ class DetailPaneCardScreenshotTest {
         }
 
     @Test
+    fun `スイッチ付きでOFF ダークテーマ`() =
+        composeScreenshotTest {
+            setContent {
+                KoDriverTheme(darkTheme = true) {
+                    Surface {
+                        Box(modifier = Modifier.requiredSize(360.dp, 160.dp)) {
+                            DetailPaneCard(
+                                title = "車両接近",
+                                checked = false,
+                                onCheckedChange = {},
+                                modifier = Modifier.padding(16.dp),
+                                bottomContent = {
+                                    DetailPaneCardChips(
+                                        chipLabels = listOf("カーレフト", "カーライト"),
+                                        selectedChipLabels = setOf("カーレフト"),
+                                        chipEnabled = false,
+                                        onChipClick = {},
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+            onAllNodes(isRoot()).get(0).captureRoboImage()
+        }
+
+    @Test
     fun `スイッチなし`() =
         composeScreenshotTest {
             setContent {
