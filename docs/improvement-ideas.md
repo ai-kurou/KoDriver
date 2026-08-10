@@ -20,14 +20,6 @@
 
 ## UI/UX
 
-- **対象**: `app/shared/src/commonMain/kotlin/kurou/kodriver/presentation/ConnectionBannerContent.kt`（`bannerColors()`, `ConnectionBannerContent`）
-  **課題**: `CONNECTED`/`UNCHECKED` は `MaterialTheme.colorScheme` のトークン（`secondaryContainer`/`errorContainer`）を参照しているのに対し、`DISCONNECTED` のみ `Color(0xFFFFF9C4)` / `Color(0xFF5F4B00)` をハードコードしており、ダークテーマに切り替えても配色が反転しない。また `Box` の `.background(colors.background)` に `animateColorAsState` を適用していないため、状態遷移時に他画面（`ReadoutListPane` 等の選択色変化）と異なり色が瞬時に切り替わる。
-  **改善案**: `DISCONNECTED` の配色も `core/designsystem` のテーマトークン（または `AppTheme.kt` 側に警告色トークンを追加）で表現し、`bannerColors()` の結果を `animateColorAsState(tween(...))` で滑らかに遷移させる。あわせて `UNCHECKED`（未設定＝非エラー状態）に `errorContainer` を割り当てている点も意味的に適切か要確認。
-
-- **対象**: `core/designsystem/src/commonMain/kotlin/kurou/kodriver/core/designsystem/DetailPaneCard.kt`（`DetailPaneCardLayout` の `bottomContentAlpha`）と、これを使う `feature/lmu-windows-readout-flag-detail/.../LmuWindowsReadoutFlagDetailPane.kt` / `feature/ace-windows-readout-flag-detail/.../AceWindowsReadoutFlagDetailPane.kt`
-  **課題**: `checked=false` のとき `DetailPaneCardLayout` が `bottomContent`（`FlowRow`）全体に `alpha=0.38f` を適用する一方、`DetailPaneCardChips` へは `chipEnabled=checked` も渡しており、Material3 の `FilterChip` 自体も disabled 時に内部でコンテンツの不透明度を下げる。結果として `0.38 × 0.38 ≈ 0.14` まで不透明度が落ち、フラグ読み上げをOFFにした際のチップラベルがほぼ判読できない。
-  **改善案**: `DetailPaneCardLayout` 側の `bottomContentAlpha` と `FilterChip` の disabled 表現のどちらか一方に統一する（`bottomContent` 全体への alpha 適用をやめ `chipEnabled` の disabled 表現のみに任せる、または逆に `chipEnabled` を常に `true` にして `DetailPaneCardLayout` 側の減光のみで表現する）。
-
 - **対象**: `feature/readout-list/src/commonMain/kotlin/kurou/kodriver/feature/readoutlist/ReadoutListPane.kt`（`itemsIndexed` によるドラッグ並び替え）、`feature/telemetry-log-list/src/commonMain/kotlin/kurou/kodriver/feature/telemetryloglist/TelemetryLogListPane.kt`（リアルタイムに先頭追加される `items`）
   **課題**: 選択状態の色変化には `animateColorAsState` を使っているが、リスト内でのアイテムの挿入・削除・並び替え自体には `Modifier.animateItem()` が使われておらず（リポジトリ全体で使用箇所0件）、位置の変化が瞬時に切り替わる。特にテレメトリログ一覧は走行中に先頭へ継続的に追加される性質上、視認性が低い。
   **改善案**: `LazyColumn`/`LazyRow` の `items`/`itemsIndexed` で返す各アイテムの `Modifier` に `Modifier.animateItem()` を付与し、挿入・削除・並び替え時に位置がアニメーションするようにする。
