@@ -3,7 +3,7 @@ package kurou.kodriver.data
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import io.ktor.client.HttpClient
-import kurou.kodriver.data.repository.SentryFeedbackRepository
+import kurou.kodriver.data.repository.SentryFeedbackSenderRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagRepository
 import kurou.kodriver.domain.repository.AceWindowsFuelRepository
@@ -13,7 +13,7 @@ import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
@@ -161,7 +161,7 @@ fun androidDataModule(context: Context) =
         single<DynamicColorEnabledRepository> {
             AndroidDynamicColorEnabledRepository(context.dynamicColorDataStore)
         }
-        single<FeedbackRepository> { SentryFeedbackRepository() }
+        single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
         includes(androidDataModuleAceWindows())
         includes(androidDataModuleThresholdPreferences(context))
         includes(androidDataModuleLmuWindowsPitStatus())

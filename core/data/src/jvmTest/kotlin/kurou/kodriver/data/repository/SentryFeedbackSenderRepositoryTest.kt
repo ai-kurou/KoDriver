@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import io.sentry.protocol.Feedback as SentryFeedback
 
-class SentryFeedbackRepositoryTest {
+class SentryFeedbackSenderRepositoryTest {
     @Test
     fun `Sentryにフィードバックを送信する`() =
         runTest {
@@ -22,7 +22,7 @@ class SentryFeedbackRepositoryTest {
             var captureFeedbackCount = 0
             val scope = Scope(SentryOptions())
             val repository =
-                SentryFeedbackRepository(
+                SentryFeedbackSenderRepository(
                     captureFeedback = { sentryFeedback, hint, configureScope ->
                         captureFeedbackCount += 1
                         capturedFeedback = sentryFeedback
@@ -62,7 +62,7 @@ class SentryFeedbackRepositoryTest {
             val sentryId = SentryId("0123456789abcdef0123456789abcdef")
             val scope = Scope(SentryOptions())
             val repository =
-                SentryFeedbackRepository(
+                SentryFeedbackSenderRepository(
                     captureFeedback = { _, _, configureScope ->
                         configureScope.run(scope)
                         sentryId
@@ -90,7 +90,7 @@ class SentryFeedbackRepositoryTest {
         runTest {
             var captureFeedbackCount = 0
             val repository =
-                SentryFeedbackRepository(
+                SentryFeedbackSenderRepository(
                     captureFeedback = { _, _, _ ->
                         captureFeedbackCount += 1
                         error("failed")

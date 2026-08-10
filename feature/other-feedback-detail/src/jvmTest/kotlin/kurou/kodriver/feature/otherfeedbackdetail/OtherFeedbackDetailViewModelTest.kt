@@ -27,7 +27,7 @@ import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.model.TelemetryLog
 import kurou.kodriver.domain.model.TelemetryLogDetail
-import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveTelemetryLogDetailUseCase
 import kurou.kodriver.domain.usecase.SendFeedbackUseCase
@@ -44,7 +44,7 @@ class OtherFeedbackDetailViewModelTest {
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @MockK
-    private lateinit var repository: FeedbackRepository
+    private lateinit var repository: FeedbackSenderRepository
 
     @MockK
     private lateinit var telemetryLogRepository: TelemetryLogRepository

@@ -1,13 +1,13 @@
 package kurou.kodriver.data
 
-import kurou.kodriver.data.repository.SentryFeedbackRepository
+import kurou.kodriver.data.repository.SentryFeedbackSenderRepository
 import kurou.kodriver.domain.repository.AceWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.AceWindowsRemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.AppUpdateRepository
 import kurou.kodriver.domain.repository.ConsoleAddressPreferencesRepository
 import kurou.kodriver.domain.repository.DebugStateCardOrderPreferencesRepository
 import kurou.kodriver.domain.repository.DynamicColorEnabledRepository
-import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
@@ -127,5 +127,5 @@ val desktopDataModule =
         single<TelemetryLogRepository> {
             createTelemetryLogRepository(directory = kodriverDirectory)
         }
-        single<FeedbackRepository> { SentryFeedbackRepository() }
+        single<FeedbackSenderRepository> { SentryFeedbackSenderRepository() }
     }

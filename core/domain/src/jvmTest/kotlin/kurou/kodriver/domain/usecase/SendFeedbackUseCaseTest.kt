@@ -8,7 +8,7 @@ import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.Feedback
 import kurou.kodriver.domain.model.FeedbackType
-import kurou.kodriver.domain.repository.FeedbackRepository
+import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 
 class SendFeedbackUseCaseTest {
     @MockK
-    private lateinit var repository: FeedbackRepository
+    private lateinit var repository: FeedbackSenderRepository
 
     @BeforeTest
     fun setUp() {

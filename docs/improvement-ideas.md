@@ -20,10 +20,6 @@
 
 ## 設計・重複
 
-- **対象**: `core:data`（`SentryFeedbackRepository.kt`）
-  **課題**: `Repository` の命名規則は「データ取得用（素の `XxxRepository`）」と「設定保存用（`XxxPreferencesRepository`/`XxxEnabledRepository`）」の2系統のみを定義しているが、`SentryFeedbackRepository` はSentryへのフィードバック送信（書き込み専用のアクション実行）であり、どちらにも当てはまらない。命名だけでは「取得用」と誤認しうる。
-  **改善案**: 送信・実行系リポジトリの命名規則（例: `XxxSenderRepository` のような接尾辞を追加するか、現状維持で問題ないか）をCLAUDE.mdに明文化し、他の非取得・非設定系リポジトリとも一貫させる。
-
 - **対象**: `ReadoutItemKey`（`core:domain`）と各 `Determine*NarratorReadoutUseCase`
   **課題**: `ReadoutItemKey` の配線漏れ（#464, #472）は目視確認に頼っており、機械的な検証手段がない。
   **改善案**: `ReadoutItemKey` の全定義を列挙し、対応する `Determine{LmuWindows,Gt7Ps5,AceWindows}NarratorReadoutUseCase` のソース内にキーが出現することを検証するテストを追加し、将来の配線漏れを自動検出できるようにする。
