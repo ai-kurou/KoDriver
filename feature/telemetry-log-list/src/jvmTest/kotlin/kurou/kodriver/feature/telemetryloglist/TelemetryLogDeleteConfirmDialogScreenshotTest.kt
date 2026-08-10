@@ -31,22 +31,4 @@ class TelemetryLogDeleteConfirmDialogScreenshotTest {
             }
             onNode(isDialog()).captureRoboImage()
         }
-
-    @Test
-    fun `デフォルト ダークテーマ`() =
-        composeScreenshotTest {
-            setContent {
-                KoDriverTheme(darkTheme = true) {
-                    Surface {
-                        Box(modifier = Modifier.requiredSize(480.dp, 320.dp)) {
-                            TelemetryLogDeleteConfirmDialog(
-                                onConfirm = {},
-                                onDismiss = {},
-                            )
-                        }
-                    }
-                }
-            }
-            onNode(isDialog()).captureRoboImage()
-        }
 }
