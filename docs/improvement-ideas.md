@@ -34,11 +34,3 @@
   - ACE: `docs/ace-windows-telemetry.md` を確認したが、Physics/Graphics/Static いずれのブロックにもクラス・カテゴリに相当するフィールドは見当たらない。`car_model`（車種の内部ID文字列）はあるが、レースクラス名の代替にはならない。
   **改善案**: GT7 は `carCategory`/`carCode` を `Gt7Ps5Mapper` に追加すれば LMU と同様の仕組みが作れる可能性がある（要実機での値の実測確認）。ACE は現状取得手段がないため対応不可。
 
----
-
-## テスト
-
-- **対象**: `core:designsystem`
-  **課題**: 実装13ファイルに対しテストは3ファイルのみで、`ListPaneCard` はカバレッジ 0%。`DetailPane` / `DetailPaneCard` / `DetailPaneScaffold` / `DetailPaneTopAppBar` / `ThresholdSlider` などアプリ全体で使い回している Composable にスクリーンショットテストが1つもない。共通コンポーネントの見た目が変わっても、各 feature の golden 画像が全部更新されるまで気づけない。
-  **改善案**: designsystem 側に主要コンポーネントのスクリーンショットテストを追加する。
-
