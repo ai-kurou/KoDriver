@@ -1,5 +1,6 @@
 package kurou.kodriver.data
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -30,6 +31,8 @@ internal class GitHubAppReleaseRepository(
                         ?.jsonPrimitive
                         ?.content
                 tagName?.let { AppUpdate(it) }
+            } catch (e: CancellationException) {
+                throw e
             } catch (_: Exception) {
                 null
             }

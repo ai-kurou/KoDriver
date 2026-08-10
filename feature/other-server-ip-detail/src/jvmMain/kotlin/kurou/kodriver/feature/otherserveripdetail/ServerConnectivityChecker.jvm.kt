@@ -1,5 +1,6 @@
 package kurou.kodriver.feature.otherserveripdetail
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.InetAddress
@@ -20,6 +21,8 @@ internal class TcpServerConnectivityChecker(
                     socket.connect(InetSocketAddress(address, port), TIMEOUT_MS)
                     true
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 false
             }

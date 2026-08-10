@@ -1,9 +1,11 @@
 package kurou.kodriver.data
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
 import java.net.URI
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -47,6 +49,14 @@ class GitHubAppReleaseRepositoryTest {
             val repository = GitHubAppReleaseRepository(fetch = { error("network error") })
 
             assertNull(repository.getLatestRelease())
+        }
+
+    @Test
+    fun `fetchがCancellationExceptionをスローするとき再スローする`() =
+        runTest {
+            val repository = GitHubAppReleaseRepository(fetch = { throw CancellationException() })
+
+            assertFailsWith<CancellationException> { repository.getLatestRelease() }
         }
 
     @Test
