@@ -1,0 +1,93 @@
+name: Nightly TODO
+
+on:
+  schedule:
+    - cron: "3 18 * * *" # JST 3:03 (UTC 18:03)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nightly-todo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+
+      - name: Cache global npm directory
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-claude-code-2.1.226
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@2.1.226
+
+      - name: Determine JST date and weekday
+        id: jst
+        run: |
+          echo "date=$(TZ=Asia/Tokyo date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          echo "weekday=$(TZ=Asia/Tokyo date +%A)" >> "$GITHUB_OUTPUT"
+
+      - name: Run Claude Code to draft improvement-ideas.md changes
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          JST_DATE: ${{ steps.jst.outputs.date }}
+          JST_WEEKDAY: ${{ steps.jst.outputs.weekday }}
+        run: |
+          claude -p "$(cat <<PROMPT
+          KoDriverリポジトリの深夜バッチ処理を行ってください。今日の日付は ${JST_DATE}（JSTの曜日: ${JST_WEEKDAY}）です。
+
+          1. docs/nightly-todo-list.md を読み、「毎晩実行する項目」と、上記のJST曜日に対応する「曜日ローテーション項目」だけを対象にする（他の曜日の項目は対象外）。
+          2. 対象項目それぞれについて調査し、KoDriverに追記する価値があると判断した改善案をまとめる。
+          3. 改善案がある場合は、docs/improvement-ideas.md のみを編集し、既存の記述スタイル・見出し構成に合わせて「対象・課題・改善案」がわかる粒度で追記する。重複する項目があれば追記せず既存項目を優先する。
+          4. docs/improvement-ideas.md 以外のファイルは一切変更しない。改善案が1件もない場合は何も変更しない。
+          PROMPT
+          )" \
+            --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
+            --permission-mode acceptEdits
+
+      - name: Verify only improvement-ideas.md changed
+        run: |
+          changed_files="$(git status --porcelain | awk '{print $2}')"
+          if [ -z "$changed_files" ]; then
+            echo "changed=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          if [ "$changed_files" != "docs/improvement-ideas.md" ]; then
+            echo "::error::Unexpected files changed by Claude Code: $changed_files"
+            git checkout -- .
+            exit 1
+          fi
+          echo "changed=true" >> "$GITHUB_ENV"
+
+      - name: Create draft pull request
+        if: env.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          JST_DATE: ${{ steps.jst.outputs.date }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          branch="chore/nightly-todo-${JST_DATE}"
+          git checkout -b "$branch"
+          git add docs/improvement-ideas.md
+          git commit -m "docs: 夜間バッチによるimprovement-ideas.mdの追記案 (${JST_DATE})"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$branch"
+
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --draft \
+            --title "docs: 夜間バッチによるimprovement-ideas.mdの追記案 (${JST_DATE})" \
+            --body "夜間バッチ（nightly-todo.yml）が docs/nightly-todo-list.md を調査し、docs/improvement-ideas.md への追記案をまとめました。内容を確認のうえマージしてください。"
