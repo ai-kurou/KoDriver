@@ -23,3 +23,19 @@
 - **対象**: `app:shared` の画面遷移・ナビゲーション実装
   **課題**: Jetpack Navigation 3 が stable化し（Android Developers Blog, 2025年11月）、Compose Multiplatform 1.10.0 以降で Android/Desktop/iOS/Web 含め非Androidターゲットでも使用可能になった。KoDriverの `app:shared` が既存の Navigation Compose ベースの実装であれば、Android/Desktop で一貫した設計に揃えられる可能性がある。
   **改善案**: 移行コストと Navigation 3 の成熟度（高度なデバイス依存パターンはまだ発展途上）を踏まえたうえで、Navigation 3 への移行余地を調査する。優先度は低め。
+
+## 開発フロー・CI
+
+- **対象**: `.github/workflows/on-pull-request.yml`
+  **課題**: 現状 detekt/ktlint による静的解析はCIにあるが、PR差分に対するAIレビューコメントの仕組みはない。Qiita記事「GitHub ActionsのPR自動レビューを公式claude-code-actionで組む（APIキー課金なし）」（https://qiita.com/itaraiguma/items/3a723688a2fe571c33ec , 2026-07-31）で、`nightly-todo.yml` と同じ `CLAUDE_CODE_OAUTH_TOKEN`（Pro/Maxサブスク枠）を使い、`pull_request` トリガー・Bot生成PR除外（`github.event.sender.type == 'User'`）・`concurrency: cancel-in-progress: true` によるインラインPRレビュー構成が紹介されていた。
+  **改善案**: 既存のdetekt/ktlint/Codacyとの指摘重複やAPIコスト（サブスク枠消費）を踏まえたうえで、`claude_args` で許可ツールを絞ったインラインレビューjobの追加余地を検討する。優先度は低め。
+
+## 重複実装・未使用コード
+
+- **対象**: `feature/gt7-ps5-readout-remaining-fuel-detail/.../Gt7Ps5ReadoutRemainingFuelDetailViewModel.kt` と `feature/ace-windows-readout-remaining-fuel-detail/.../AceWindowsReadoutRemainingFuelDetailViewModel.kt`
+  **課題**: 両ViewModel（各41行）は、UseCase名・デフォルト定数名・`SpeechEvent`種別以外がほぼ同一実装（`observeThresholdPercentage().map{...}.stateIn(...)` の配線、`onThresholdChanged`/`onThresholdReset`/`onPreviewClicked` の構造）。対応する `Pane` 側も同様のパターンと思われる。
+  **改善案**: 「残量閾値を保存・プレビュー再生する詳細画面」共通の抽象（例: UseCase群とSpeechEventを引数に取る共通ViewModel基底・共通Pane Composable）を `core:domain`/`core:designsystem` に切り出せないか調査する。ただし各featureモジュールの独立性（CLAUDE.mdのモジュール構成方針）とのトレードオフを踏まえて検討する。
+
+- **対象**: `core/domain/src/commonMain/kotlin/kurou/kodriver/domain/usecase/DisconnectLmuWindowsUseCase.kt`
+  **課題**: `DisconnectLmuWindowsUseCase` クラスは、自身の定義ファイルと対応するテスト（`DisconnectLmuWindowsUseCaseTest.kt`）以外から参照されていない（Koinモジュール登録・ViewModel等からの呼び出しなし）。ラップ対象の `LmuWindowsRepository.disconnect()` 自体は他所（`WebSocketLmuWindowsRepository` 等）で使われている。
+  **改善案**: 実際に呼び出し元が存在しないことを確認したうえで、UseCaseラッパーとそのテストを削除するか、本来呼び出されるべき箇所（切断操作のUI導線）があるなら配線する。
