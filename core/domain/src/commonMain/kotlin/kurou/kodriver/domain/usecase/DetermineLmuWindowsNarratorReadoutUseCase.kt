@@ -718,13 +718,13 @@ private fun calculatePitTimingRemainingLaps(
     val avgConsumption =
         trackingState.lastValidLapConsumption
             ?: return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
-    if (avgConsumption <= 0.0) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    if (avgConsumption <= 0.0) return PitTimingRemainingLapsEvaluation(trackingState.currentLap, null)
     val remainingLapsFloor = (trackingState.currentValue / avgConsumption).toInt()
     if (remainingLapsFloor < 0 || remainingLapsFloor > threshold) {
-        return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+        return PitTimingRemainingLapsEvaluation(trackingState.currentLap, null)
     }
-    if (remainingLapsFloor == lastAnnouncedLaps) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
-    if (!enabled) return PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)
+    if (remainingLapsFloor == lastAnnouncedLaps) return PitTimingRemainingLapsEvaluation(trackingState.currentLap, null)
+    if (!enabled) return PitTimingRemainingLapsEvaluation(trackingState.currentLap, null)
     return PitTimingRemainingLapsEvaluation(trackingState.currentLap, remainingLapsFloor)
 }
 

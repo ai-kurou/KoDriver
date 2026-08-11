@@ -1244,6 +1244,46 @@ class DetermineLmuWindowsNarratorReadoutUseCaseTest {
     }
 
     @Test
+    fun `ピットタイミング項目が無効でも平均消費量の計算に成功したラップは評価済みとして記録する`() {
+        val firstLapDecision =
+            useCase.determinePitTimingVirtualEnergy(
+                state = LmuWindowsNarratorState(),
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 1.0),
+                settings = settings(enabledStates = pitTimingDisabledStates),
+                observedAtMs = 0L,
+            )
+        val midLap1Decision =
+            useCase.determinePitTimingVirtualEnergy(
+                state = firstLapDecision.state,
+                telemetry = lapTelemetry(currentLap = 1, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.9),
+                settings = settings(enabledStates = pitTimingDisabledStates),
+                observedAtMs = 45_000L,
+            )
+        val lapStartDecision =
+            useCase.determinePitTimingVirtualEnergy(
+                state = midLap1Decision.state,
+                telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.8),
+                settings = settings(enabledStates = pitTimingDisabledStates),
+                observedAtMs = 90_000L,
+            )
+        // 平均消費量(0.1)の計算に成功した後、項目が無効なため読み上げない早期returnに到達する。
+        val decision =
+            useCase.determinePitTimingVirtualEnergy(
+                state = lapStartDecision.state,
+                telemetry = lapTelemetry(currentLap = 2, bestLapTimeMs = 90_000L),
+                virtualEnergy = remainingVirtualEnergy(remainingRatio = 0.05),
+                settings = settings(enabledStates = pitTimingDisabledStates),
+                observedAtMs = 150_000L,
+            )
+
+        assertEquals(emptyList<SpeechEvent>(), decision.events)
+        assertEquals(2, decision.state.lastPitTimingVirtualEnergyEvaluationLap)
+    }
+
+    @Test
     fun `バーチャルエナジー予想残り周回数は読み上げタイミング前なら読み上げない`() {
         val firstLapDecision =
             useCase.determinePitTimingVirtualEnergy(
