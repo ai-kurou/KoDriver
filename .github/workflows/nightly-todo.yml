@@ -51,16 +51,18 @@ jobs:
           2. 対象項目それぞれについて調査し、KoDriverに追記する価値があると判断した改善案をまとめる。
           3. 改善案がある場合は、docs/improvement-ideas.md のみを編集し、既存の記述スタイル・見出し構成に合わせて「対象・課題・改善案」がわかる粒度で追記する。重複する項目があれば追記せず既存項目を優先する。
           4. docs/improvement-ideas.md 以外のファイルは一切変更しない。改善案が1件もない場合は何も変更しない。
+          5. 最後に、調査した各項目について「確認した内容」「追記した/しなかった判断とその理由」を簡潔にまとめて出力する（このまとめはPRの説明欄に転記されるため、改善案の追記有無にかかわらず必ず出力すること）。
           PROMPT
           )" \
             --allowedTools "Read,Grep,Glob,WebSearch,WebFetch,Edit(docs/improvement-ideas.md),Write(docs/improvement-ideas.md)" \
             --permission-mode acceptEdits \
             --model sonnet \
-            --effort medium
+            --effort medium \
+            | tee nightly-todo-summary.txt
 
       - name: Verify only improvement-ideas.md changed
         run: |
-          changed_files="$(git status --porcelain | awk '{print $2}')"
+          changed_files="$(git status --porcelain -- . ':!nightly-todo-summary.txt' | awk '{print $2}')"
           if [ -z "$changed_files" ]; then
             echo "changed=false" >> "$GITHUB_ENV"
             exit 0
@@ -87,9 +89,17 @@ jobs:
           git commit -m "docs: 夜間バッチによるimprovement-ideas.mdの追記案 (${JST_DATE})"
           git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$branch"
 
+          {
+            echo "夜間バッチ（nightly-todo.yml）が docs/nightly-todo-list.md を調査し、docs/improvement-ideas.md への追記案をまとめました。内容を確認のうえマージしてください。"
+            echo
+            echo "## 実行ログの要約"
+            echo
+            cat nightly-todo-summary.txt
+          } > pr-body.md
+
           gh pr create \
             --base main \
             --head "$branch" \
             --draft \
             --title "docs: 夜間バッチによるimprovement-ideas.mdの追記案 (${JST_DATE})" \
-            --body "夜間バッチ（nightly-todo.yml）が docs/nightly-todo-list.md を調査し、docs/improvement-ideas.md への追記案をまとめました。内容を確認のうえマージしてください。"
+            --body-file pr-body.md
