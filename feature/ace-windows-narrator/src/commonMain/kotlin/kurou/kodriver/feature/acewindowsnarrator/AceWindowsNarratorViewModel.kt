@@ -139,7 +139,6 @@ internal class AceWindowsNarratorViewModel(
     private val fuelJob =
         fuelFlow
             .onEach { fuel ->
-                if (!isOnTrack) return@onEach
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -162,6 +161,7 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
+                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 
@@ -169,7 +169,6 @@ internal class AceWindowsNarratorViewModel(
     private val flagJob =
         flagFlow
             .onEach { flag ->
-                if (!isOnTrack) return@onEach
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -192,6 +191,7 @@ internal class AceWindowsNarratorViewModel(
                             settings = settings,
                             finalState = decision.state,
                         ),
+                    isOnTrack = isOnTrack,
                 )
             }.launchIn(viewModelScope)
 }

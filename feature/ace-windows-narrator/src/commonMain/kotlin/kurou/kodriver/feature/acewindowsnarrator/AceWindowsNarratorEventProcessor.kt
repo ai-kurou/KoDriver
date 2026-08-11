@@ -36,23 +36,26 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
+        isOnTrack: Boolean,
     ) {
         val previous = previousFlag
-        events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    telemetryJson =
-                        buildFlagTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = flag,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
+        if (isOnTrack) {
+            events.forEach { event ->
+                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        readoutItemKey = event.readoutItemKey,
+                        telemetryJson =
+                            buildFlagTelemetryLogJson(
+                                state = logContext.state,
+                                previous = previous,
+                                current = flag,
+                                settings = logContext.settings,
+                                observedAtMs = observedAtMs,
+                                finalState = logContext.finalState,
+                            ),
+                    )
+                }
             }
         }
         previousFlag = flag
@@ -65,23 +68,26 @@ internal class AceWindowsNarratorEventProcessor(
         queueEnabledStates: Map<ReadoutItemKey, Boolean>,
         observedAtMs: Long,
         logContext: AceWindowsTelemetryLogContext,
+        isOnTrack: Boolean,
     ) {
         val previous = previousFuel
-        events.forEach { event ->
-            if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
-                saveTelemetryLogSafely(
-                    createdAt = observedAtMs,
-                    readoutItemKey = event.readoutItemKey,
-                    telemetryJson =
-                        buildTelemetryLogJson(
-                            state = logContext.state,
-                            previous = previous,
-                            current = fuel,
-                            settings = logContext.settings,
-                            observedAtMs = observedAtMs,
-                            finalState = logContext.finalState,
-                        ),
-                )
+        if (isOnTrack) {
+            events.forEach { event ->
+                if (speakWithPriority(event, readoutOrder, queueEnabledStates)) {
+                    saveTelemetryLogSafely(
+                        createdAt = observedAtMs,
+                        readoutItemKey = event.readoutItemKey,
+                        telemetryJson =
+                            buildTelemetryLogJson(
+                                state = logContext.state,
+                                previous = previous,
+                                current = fuel,
+                                settings = logContext.settings,
+                                observedAtMs = observedAtMs,
+                                finalState = logContext.finalState,
+                            ),
+                    )
+                }
             }
         }
         previousFuel = fuel

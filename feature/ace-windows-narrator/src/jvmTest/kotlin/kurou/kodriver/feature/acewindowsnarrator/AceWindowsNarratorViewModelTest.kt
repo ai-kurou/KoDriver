@@ -15,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -187,6 +188,49 @@ class AceWindowsNarratorViewModelTest {
         }
 
     @Test
+    fun `コース外滞在中も状態は更新され復帰時に古い状態との差分で誤って読み上げたり読み上げ漏れが発生したりしない`() =
+        runTest(testDispatcher) {
+            val fuelChannel = Channel<AceWindowsFuelData>(Channel.UNLIMITED)
+            val flagChannel = Channel<AceWindowsFlagData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            val statusFlow =
+                MutableStateFlow(
+                    AceWindowsStatusData(status = AceWindowsStatusType.LIVE, carLocation = AceWindowsCarLocation.TRACK),
+                )
+            stubReadoutDefaults(
+                thresholdPercentage = 30,
+                orderOverride =
+                    listOf(ReadoutItemKey.AceWindows.RemainingFuel.Root, ReadoutItemKey.AceWindows.Flag.Root),
+                statusFlowOverride = statusFlow,
+            )
+            createViewModel(fuelChannel = fuelChannel, ttsEngine = ttsEngine, flagChannel = flagChannel)
+
+            // コース上で残量警告(1回目)と旗の初期状態を確定させる。
+            fuelChannel.send(fuel(20.0))
+            flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
+
+            // オフトラック中も状態(previousFlag・残量警告フラグ)は更新される。
+            statusFlow.update { it.copy(carLocation = AceWindowsCarLocation.PITLANE) }
+            flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
+            flagChannel.send(flag(AceWindowsFlagType.WHITE_FLAG))
+            fuelChannel.send(fuel(80.0))
+
+            // 復帰時、旗は同じWHITE_FLAGのままなら誤って読み上げず、給油後に再度残量が減れば読み上げ漏れしない。
+            statusFlow.update { it.copy(carLocation = AceWindowsCarLocation.TRACK) }
+            flagChannel.send(flag(AceWindowsFlagType.WHITE_FLAG))
+            fuelChannel.send(fuel(20.0))
+
+            assertEquals(
+                listOf<SpeechEvent>(
+                    SpeechEvent.AceWindowsRemainingFuelWarning,
+                    SpeechEvent.AceWindowsRemainingFuelWarning,
+                ),
+                spokenTexts,
+            )
+        }
+
+    @Test
     fun `statusがLIVE以外の場合はcarLocationがTRACKでも残量が閾値以下でもフラグが変化しても読み上げない`() =
         runTest(testDispatcher) {
             listOf(
@@ -347,6 +391,7 @@ class AceWindowsNarratorViewModelTest {
         flagEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         carLocation: AceWindowsCarLocation = AceWindowsCarLocation.TRACK,
         status: AceWindowsStatusType = AceWindowsStatusType.LIVE,
+        statusFlowOverride: MutableStateFlow<AceWindowsStatusData>? = null,
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(Simulator.AceWindows)
         every {
@@ -360,9 +405,8 @@ class AceWindowsNarratorViewModelTest {
         } returns MutableStateFlow(thresholdPercentage)
         every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
         every { flagPreferencesRepository.observeFlagEnabledStates() } returns MutableStateFlow(flagEnabledOverrides)
-        every {
-            statusRepository.statusStream()
-        } returns MutableStateFlow(AceWindowsStatusData(status = status, carLocation = carLocation))
+        every { statusRepository.statusStream() } returns
+            (statusFlowOverride ?: MutableStateFlow(AceWindowsStatusData(status = status, carLocation = carLocation)))
         coEvery {
             telemetryLogRepository.saveTelemetryLog(
                 any(),
