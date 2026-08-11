@@ -20,10 +20,6 @@
 
 ## ライブラリ・技術動向
 
-- **対象**: `app:desktopApp` の `hotRun --auto`（ホットリロード）設定、Compose Multiplatform Gradle プラグイン
-  **課題**: Compose Hot Reload が 1.0 で stable 化し、Compose Multiplatform Gradle プラグインにバンドル・デフォルト有効化されている（JetBrains Blog「The Journey to Compose Hot Reload 1.0.0」「Compose Multiplatform 1.10.0」）。KoDriverは CMP 1.11.1 を使用しているが、`hotRun` 周りに個別設定が残っている場合、stable化に伴い不要になっていないか未確認。
-  **改善案**: `app/desktopApp/build.gradle.kts` の `hotRun` 関連設定を、最新の Compose Hot Reload stable版のデフォルト挙動と照らし合わせて簡素化できないか確認する。
-
 - **対象**: `app:shared` の画面遷移・ナビゲーション実装
   **課題**: Jetpack Navigation 3 が stable化し（Android Developers Blog, 2025年11月）、Compose Multiplatform 1.10.0 以降で Android/Desktop/iOS/Web 含め非Androidターゲットでも使用可能になった。KoDriverの `app:shared` が既存の Navigation Compose ベースの実装であれば、Android/Desktop で一貫した設計に揃えられる可能性がある。
   **改善案**: 移行コストと Navigation 3 の成熟度（高度なデバイス依存パターンはまだ発展途上）を踏まえたうえで、Navigation 3 への移行余地を調査する。優先度は低め。
