@@ -228,7 +228,7 @@ GitHub Actions ワークフロー:
 | JNA | 5.19.1 |
 | kotlinx-coroutines | 1.11.0 |
 | androidx-lifecycle | 2.10.0 |
-| Ktor | 3.5.0 |
+| Ktor | 3.5.2 |
 | Dokka | 2.2.0 |
 | ktlint | 1.8.0 |
 
