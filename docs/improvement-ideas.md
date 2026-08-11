@@ -18,12 +18,6 @@
 
 ---
 
-## UI/UX
-
-- **対象**: `app/shared/src/commonMain/kotlin/kurou/kodriver/presentation/AppTheme.kt` と `core/designsystem` の `Color.kt`/`Theme.kt`（`KoDriverTheme`）
-  **課題**: 実行時の画面は `AppTheme` を使用する一方、`KoDriverTheme` は主に Preview・スクリーンショットテスト専用になっており、両者が同種の配色値をそれぞれ独自に定義している（意図的な分離である可能性はあるが要確認）。今後 `core/designsystem` 側で配色を修正しても本番アプリ（`AppTheme`）に反映されない構造で、`KoDriverTypography` のような一元管理の設計方針から外れる。
-  **改善案**: `AppTheme` が `core/designsystem` の配色定義を参照する構成に統一するか、意図的な分離であればその理由をコメント等に明記する。
-
 ## バグ・仕様調査
 
 - **対象**: `core/domain/src/commonMain/kotlin/kurou/kodriver/domain/usecase/DetermineLmuWindowsNarratorReadoutUseCase.kt` の `calculatePitTimingRemainingLaps`
