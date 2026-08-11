@@ -15,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -210,13 +211,13 @@ class AceWindowsNarratorViewModelTest {
             flagChannel.send(flag(AceWindowsFlagType.NO_FLAG))
 
             // オフトラック中も状態(previousFlag・残量警告フラグ)は更新される。
-            statusFlow.value = statusFlow.value.copy(carLocation = AceWindowsCarLocation.PITLANE)
+            statusFlow.update { it.copy(carLocation = AceWindowsCarLocation.PITLANE) }
             flagChannel.send(flag(AceWindowsFlagType.BLUE_FLAG))
             flagChannel.send(flag(AceWindowsFlagType.WHITE_FLAG))
             fuelChannel.send(fuel(80.0))
 
             // 復帰時、旗は同じWHITE_FLAGのままなら誤って読み上げず、給油後に再度残量が減れば読み上げ漏れしない。
-            statusFlow.value = statusFlow.value.copy(carLocation = AceWindowsCarLocation.TRACK)
+            statusFlow.update { it.copy(carLocation = AceWindowsCarLocation.TRACK) }
             flagChannel.send(flag(AceWindowsFlagType.WHITE_FLAG))
             fuelChannel.send(fuel(20.0))
 
