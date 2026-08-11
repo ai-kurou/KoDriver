@@ -55,10 +55,9 @@
   - roborazzi: 1.64.0 → 1.71.0
   - sentry: 8.44.0 → 8.52.0
   - jmdns: 3.6.1 → 3.6.3
-  - aboutLibraries: 14.2.1 → 15.0.4（メジャーバージョン跳躍）
 
-  なお `material3`（`org.jetbrains.compose.material3:material3`）は現行の `1.11.0-alpha07` が Compose Multiplatform 1.11.1 時点でも最新に近いalpha版であり、stable版は未リリースのため更新対象外。
-  **改善案**: 「致命的な不具合がない限り最新安定版を使用する」方針（CLAUDE.md参照）に沿って、上記ライブラリを個別に最新安定版へ更新する。特に `aboutLibraries` は 14→15 のメジャーバージョン跳躍のため移行ガイド・破壊的変更の有無を事前確認すること。`androidx-sqlite` は `androidx-room`（2.8.4）との組み合わせ互換性を確認すること。`roborazzi` は差分が大きいため、更新後にスクリーンショットテストのgolden画像再記録が必要になる可能性がある（CIの `record-golden-images` ワークフローで対応）。
+  なお `material3`（`org.jetbrains.compose.material3:material3`）は現行の `1.11.0-alpha07` が Compose Multiplatform 1.11.1 時点でも最新に近いalpha版であり、stable版は未リリースのため更新対象外。`aboutLibraries` は 14.2.1 → 15.0.4 へ対応済み（PR #1046）。
+  **改善案**: 「致命的な不具合がない限り最新安定版を使用する」方針（CLAUDE.md参照）に沿って、上記ライブラリを個別に最新安定版へ更新する。`androidx-sqlite` は `androidx-room`（2.8.4）との組み合わせ互換性を確認すること。`roborazzi` は差分が大きいため、更新後にスクリーンショットテストのgolden画像再記録が必要になる可能性がある（CIの `record-golden-images` ワークフローで対応）。
 
 - **対象**: `.claude/skills/`（Claude Code運用）
   **課題**: Android Developers Blog（2026年8月6日「Inside Android Skills - Built for deprecation」）によると、AGP 9系・Navigation 3・Perfetto SQL・Wear Compose M3など「SOTAモデルが弱い領域」の知識をAIコーディングエージェントに注入するAndroid Skills（コミュニティ製として `chrisbanes/skills`（Compose向け）、`skydoves/compose-performance-skills` 等）が公開されている。KoDriverはAGP 9系・Compose Multiplatformを使用しており対象領域と重なるが、現状こうした外部知識源をClaude Codeの運用に組み込んでいない。

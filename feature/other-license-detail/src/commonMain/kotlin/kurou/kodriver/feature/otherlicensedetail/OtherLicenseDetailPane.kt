@@ -38,6 +38,8 @@ fun OtherLicenseDetailPane(
         LibrariesContainer(
             libraries = libraries,
             modifier = Modifier.fillMaxSize(),
+            // true を返すと aboutlibraries 標準のライセンス詳細ダイアログ表示を抑制する。website/scm を開けた場合のみ抑制し、
+            // 開けなかった場合は false を返してデフォルト挙動（ライセンス詳細表示）にフォールバックする。
             onLibraryClick = { library -> openLibraryWebsite(library, uriHandler) },
         )
     }
@@ -45,11 +47,13 @@ fun OtherLicenseDetailPane(
 
 /**
  * ライブラリの公式サイト（無ければリポジトリURL）を外部ブラウザで開く。
+ * 開けた場合は true、website・scm ともに未設定で何も開けなかった場合は false を返す。
  */
 internal fun openLibraryWebsite(
     library: Library,
     uriHandler: UriHandler,
-) {
+): Boolean {
     val url = library.website?.takeIf { it.isNotBlank() } ?: library.scm?.url?.takeIf { it.isNotBlank() }
     url?.let(uriHandler::openUri)
+    return url != null
 }
