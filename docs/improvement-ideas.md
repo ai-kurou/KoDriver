@@ -48,10 +48,9 @@
   **課題**: 2026-08-11時点のWeb調査で、以下のライブラリに現行バージョンより新しい安定版が存在することを確認した。
   - AGP: 9.2.1 → 9.3.1
   - Ktor: 3.5.0 → 3.5.2
-  - androidx-sqlite: 2.6.2 → 2.7.0
   - roborazzi: 1.64.0 → 1.71.0
 
-  なお `material3`（`org.jetbrains.compose.material3:material3`）は現行の `1.11.0-alpha07` が Compose Multiplatform 1.11.1 時点でも最新に近いalpha版であり、stable版は未リリースのため更新対象外。`aboutLibraries` は 14.2.1 → 15.0.4 へ対応済み（PR #1046）。mockk（1.14.3 → 1.14.11）・kover（0.9.8 → 0.9.9）・jmdns（3.6.1 → 3.6.3）は破壊的変更のないパッチ更新のため対応済み（PR #1047）。KSP（2.3.9 → 2.3.11）・sentry（8.44.0 → 8.52.0）も対応済み（PR #1049）。
-  **改善案**: 「致命的な不具合がない限り最新安定版を使用する」方針（CLAUDE.md参照）に沿って、上記ライブラリを個別に最新安定版へ更新する。`androidx-sqlite` は `androidx-room`（2.8.4）との組み合わせ互換性を確認すること。`roborazzi` は差分が大きいため、更新後にスクリーンショットテストのgolden画像再記録が必要になる可能性がある（CIの `record-golden-images` ワークフローで対応）。
+  なお `material3`（`org.jetbrains.compose.material3:material3`）は現行の `1.11.0-alpha07` が Compose Multiplatform 1.11.1 時点でも最新に近いalpha版であり、stable版は未リリースのため更新対象外。`aboutLibraries` は 14.2.1 → 15.0.4 へ対応済み（PR #1046）。mockk（1.14.3 → 1.14.11）・kover（0.9.8 → 0.9.9）・jmdns（3.6.1 → 3.6.3）は破壊的変更のないパッチ更新のため対応済み（PR #1047）。KSP（2.3.9 → 2.3.11）・sentry（8.44.0 → 8.52.0）も対応済み（PR #1049）。androidx-sqlite（2.6.2 → 2.7.0）は`androidx-room`（2.8.4）との組み合わせ互換性を確認のうえ対応済み（PR #1052）。
+  **改善案**: 「致命的な不具合がない限り最新安定版を使用する」方針（CLAUDE.md参照）に沿って、上記ライブラリを個別に最新安定版へ更新する。`roborazzi` は差分が大きいため、更新後にスクリーンショットテストのgolden画像再記録が必要になる可能性がある（CIの `record-golden-images` ワークフローで対応）。
 
 
