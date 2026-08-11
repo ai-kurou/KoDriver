@@ -7,6 +7,10 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+// app:shared は moduleGraphAssert で core:.* への依存が禁止されているため、
+// core:designsystem の KoDriverTheme（Color.kt/Theme.kt）と同じ配色値をここに複製している。
+// 配色を変更する場合は両方を同期させること。
+
 private val AppYellow10 = Color(0xFF121900)
 private val AppYellow20 = Color(0xFF253300)
 private val AppYellow30 = Color(0xFF384D00)
