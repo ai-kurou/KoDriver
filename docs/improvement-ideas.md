@@ -20,10 +20,6 @@
 
 ## バグ・仕様調査
 
-- **対象**: `core/domain/src/commonMain/kotlin/kurou/kodriver/domain/usecase/DetermineLmuWindowsNarratorReadoutUseCase.kt` の `calculatePitTimingRemainingLaps`
-  **課題**: `remainingLapsFloor == lastAnnouncedLaps` や `!enabled` で早期returnする際に `PitTimingRemainingLapsEvaluation(lastEvaluationLap, null)`（`evaluatedLap` を進めない）を返しており、同一ラップ内で以降のtickも `trackingState.currentLap == lastEvaluationLap` の早期returnに到達できず、計算済みのラップでも毎tick再計算され続ける。GT7版の `DetermineGt7Ps5NarratorReadoutUseCase.calculateRemainingFuelLaps` は同等の分岐で `fuelState.currentLap`（今回のラップ）を返して以降のtickをスキップしており、実装が非対称になっている。読み上げ結果自体への影響はない想定だが、無駄な再計算が発生する。
-  **改善案**: LMU版も、平均消費量の算出に成功した以降の早期return（`remainingLapsFloor == lastAnnouncedLaps` / `!enabled`）では `trackingState.currentLap` を返すようにし、GT7版と同じくラップ内の再計算を1回に抑える。
-
 - **対象**: `feature/ace-windows-narrator/src/commonMain/kotlin/kurou/kodriver/feature/acewindowsnarrator/AceWindowsNarratorViewModel.kt` の `fuelJob`/`flagJob`（`isOnTrack` ガード）
   **課題**: `isOnTrack`（LIVEかつTRACK上）が `false` の間は `fuelFlow`/`flagFlow` の `onEach` が `return@onEach` するため、`determineFlag`/`determineRemainingFuel` が呼ばれず `narratorState`（`previousFlag` 等）が更新されない。ピットレーン滞在中に旗状態が変化した場合、コース復帰後の最初のtickで「コース外にいる間に古い状態のまま止まっていた previous」と「現在の状態」を比較することになり、意図しないアナウンスが即座に発火する可能性がある（要確認）。
   **改善案**: コース外にいる間も状態（`previousFlag` 等）の更新自体は行い、アナウンスの発火（`eventProcessor` 呼び出し）だけを `isOnTrack` でガードする形に分離できないか検討する。LMU側の同等実装との差異も含めて仕様として意図的か確認する。
