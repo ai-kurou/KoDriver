@@ -139,7 +139,6 @@ internal class AceWindowsNarratorViewModel(
     private val fuelJob =
         fuelFlow
             .onEach { fuel ->
-                if (!isOnTrack) return@onEach
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -150,6 +149,7 @@ internal class AceWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
+                if (!isOnTrack) return@onEach
                 eventProcessor.processRemainingFuel(
                     fuel = fuel,
                     events = decision.events,
@@ -169,7 +169,6 @@ internal class AceWindowsNarratorViewModel(
     private val flagJob =
         flagFlow
             .onEach { flag ->
-                if (!isOnTrack) return@onEach
                 val observedAtMs = currentTimeMs()
                 val state = narratorState
                 val settings = currentSettings
@@ -180,6 +179,7 @@ internal class AceWindowsNarratorViewModel(
                         settings = settings,
                     )
                 narratorState = decision.state
+                if (!isOnTrack) return@onEach
                 eventProcessor.processFlag(
                     flag = flag,
                     events = decision.events,

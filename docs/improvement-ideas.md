@@ -18,12 +18,6 @@
 
 ---
 
-## バグ・仕様調査
-
-- **対象**: `feature/ace-windows-narrator/src/commonMain/kotlin/kurou/kodriver/feature/acewindowsnarrator/AceWindowsNarratorViewModel.kt` の `fuelJob`/`flagJob`（`isOnTrack` ガード）
-  **課題**: `isOnTrack`（LIVEかつTRACK上）が `false` の間は `fuelFlow`/`flagFlow` の `onEach` が `return@onEach` するため、`determineFlag`/`determineRemainingFuel` が呼ばれず `narratorState`（`previousFlag` 等）が更新されない。ピットレーン滞在中に旗状態が変化した場合、コース復帰後の最初のtickで「コース外にいる間に古い状態のまま止まっていた previous」と「現在の状態」を比較することになり、意図しないアナウンスが即座に発火する可能性がある（要確認）。
-  **改善案**: コース外にいる間も状態（`previousFlag` 等）の更新自体は行い、アナウンスの発火（`eventProcessor` 呼び出し）だけを `isOnTrack` でガードする形に分離できないか検討する。LMU側の同等実装との差異も含めて仕様として意図的か確認する。
-
 ## ライブラリ・技術動向
 
 - **対象**: `app:desktopApp` の `hotRun --auto`（ホットリロード）設定、Compose Multiplatform Gradle プラグイン
