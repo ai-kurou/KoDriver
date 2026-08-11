@@ -34,7 +34,7 @@ mockk = "1.14.3"
 material3 = "1.11.0-alpha07"
 compose-material-icons-extended = "1.7.3"
 reorderable = "3.1.0"
-aboutLibraries = "14.2.1"
+aboutLibraries = "15.0.4"
 sentry = "8.44.0"
 dokka = "2.2.0"
 

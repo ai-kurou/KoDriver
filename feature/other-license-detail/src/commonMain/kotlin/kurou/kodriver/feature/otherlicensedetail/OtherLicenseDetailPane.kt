@@ -38,7 +38,11 @@ fun OtherLicenseDetailPane(
         LibrariesContainer(
             libraries = libraries,
             modifier = Modifier.fillMaxSize(),
-            onLibraryClick = { library -> openLibraryWebsite(library, uriHandler) },
+            // true を返すと aboutlibraries 標準のライセンス詳細ダイアログ表示を抑制し、website/scm を直接開く独自挙動のみにする。
+            onLibraryClick = { library ->
+                openLibraryWebsite(library, uriHandler)
+                true
+            },
         )
     }
 }
