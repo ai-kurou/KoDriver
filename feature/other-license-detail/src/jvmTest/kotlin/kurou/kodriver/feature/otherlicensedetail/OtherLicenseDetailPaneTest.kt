@@ -50,7 +50,7 @@ class OtherLicenseDetailPaneTest {
     }
 
     @Test
-    fun `websiteが設定されている場合はwebsiteを開く`() {
+    fun `websiteが設定されている場合はwebsiteを開いてtrueを返す`() {
         every { uriHandler.openUri(any()) } returns Unit
         val library =
             testLibrary(
@@ -58,14 +58,15 @@ class OtherLicenseDetailPaneTest {
                 scmUrl = "https://example.com/scm",
             )
 
-        openLibraryWebsite(library, uriHandler)
+        val opened = openLibraryWebsite(library, uriHandler)
 
+        assertEquals(true, opened)
         verify(exactly = 1) { uriHandler.openUri("https://example.com/website") }
         confirmVerified(uriHandler)
     }
 
     @Test
-    fun `websiteが未設定の場合はscmのURLを開く`() {
+    fun `websiteが未設定の場合はscmのURLを開いてtrueを返す`() {
         every { uriHandler.openUri(any()) } returns Unit
         val library =
             testLibrary(
@@ -73,18 +74,20 @@ class OtherLicenseDetailPaneTest {
                 scmUrl = "https://example.com/scm",
             )
 
-        openLibraryWebsite(library, uriHandler)
+        val opened = openLibraryWebsite(library, uriHandler)
 
+        assertEquals(true, opened)
         verify(exactly = 1) { uriHandler.openUri("https://example.com/scm") }
         confirmVerified(uriHandler)
     }
 
     @Test
-    fun `websiteもscmのURLも未設定の場合は何も開かない`() {
+    fun `websiteもscmのURLも未設定の場合は何も開かずfalseを返す`() {
         val library = testLibrary(website = null, scmUrl = null)
 
-        openLibraryWebsite(library, uriHandler)
+        val opened = openLibraryWebsite(library, uriHandler)
 
+        assertEquals(false, opened)
         verify(exactly = 0) { uriHandler.openUri(any()) }
         confirmVerified(uriHandler)
     }
