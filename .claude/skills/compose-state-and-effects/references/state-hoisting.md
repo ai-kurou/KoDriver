@@ -1,49 +1,49 @@
-# Compose state hoisting
+# Compose の state hoisting
 
-## Core principle
+## 基本原則
 
-Hoist state only as far as the logic needs it. Keep simple UI element state local, move shared UI element state to the lowest common composable owner, extract a plain state holder when UI-only behavior becomes a concept, and use a screen state holder when business logic or app data is involved. At the screen boundary, keep state-holder wiring separate from plain state-driven UI rendering.
+stateはロジックが必要とする範囲までしかhoist（引き上げ）しない。単純なUI要素のstateはローカルに留め、共有されるUI要素のstateは最も低い共通の親composableへ移動し、UI専用の挙動が1つの概念になった時点で純粋なstate holderを抽出し、ビジネスロジックやアプリデータが関わる場合は画面のstate holderを使う。画面境界では、state holderの配線と、純粋なstate駆動のUIレンダリングを分離しておく。
 
-## Review procedure
+## レビュー手順
 
-1. List the state, operations, app dependencies, event streams, and imperative effects involved.
-2. Assign each item to the lowest owner that needs to read or change it using the decision guide below.
-3. Extract a plain state holder only when coordinated UI-only behavior has become a concept.
-4. When a screen mixes app wiring with layout, keep a small state-holder composable and move rendering to a plain state-driven composable.
-5. Pass immutable UI state and explicit event callbacks across that boundary; keep UI mechanics in composition unless business logic needs their values.
-6. Load focused effect, testing, focus, or deferred-read skills when those concerns need deeper treatment.
-7. Finish when the UI can be previewed and tested without app dependencies, business work remains in the screen state holder, and no state has been hoisted farther than its logic requires.
+1. 関係するstate、操作、アプリ依存、イベントストリーム、命令的なエフェクトを列挙する。
+2. 下記の判断基準を使い、読み取り・変更を必要とする最小の所有者に各項目を割り当てる。
+3. 協調するUI専用の挙動が1つの概念になった場合のみ、純粋なstate holderを抽出する。
+4. 画面がアプリの配線とレイアウトを混在させている場合は、小さなstate-holder composableを残しつつ、レンダリングを純粋なstate駆動のcomposableへ移す。
+5. immutableなUI stateと明示的なイベントコールバックをその境界を越えて渡す。ビジネスロジックがその値を必要としない限り、UIの仕組みはcomposition側に留める。
+6. これらの関心事がより深い扱いを必要とする場合は、焦点を絞ったエフェクト・テスト・フォーカス・遅延読み取りのskillを読み込む。
+7. UIがアプリ依存なしにプレビュー・テスト可能になり、ビジネス処理が画面のstate holderに残り、必要以上にstateがhoistされていない状態になったら完了とする。
 
-## Decision guide
+## 判断ガイド
 
-| Situation | Owner |
+| 状況 | 所有者 |
 |---|---|
-| One composable reads/writes simple state | Keep local with `remember` / `rememberSaveable` |
-| Sibling or parent composables need to read/write it | Hoist state and events to their lowest common composable ancestor |
-| Related UI element state plus UI logic is making a composable hard to read, preview, or test | Extract a plain state holder class remembered in composition |
-| Repository calls, persistence, business rules, or screen UI state production are involved | Use a screen-level state holder such as a `ViewModel` or component |
-| A screen composable collects app state/effects and also owns most layout | Keep a small wiring composable and extract a plain UI composable that takes immutable state and callbacks |
+| 1つのcomposableだけが単純なstateを読み書きする | `remember` / `rememberSaveable` でローカルに保つ |
+| 兄弟または親のcomposableが読み書きする必要がある | stateとイベントを最も低い共通の親composableへhoistする |
+| 関連するUI要素のstateとUIロジックによりcomposableが読みにくく、プレビュー・テストしにくくなっている | compositionでrememberされる純粋なstate holderクラスを抽出する |
+| リポジトリ呼び出し、永続化、ビジネスルール、画面UI stateの生成が関わる | `ViewModel` やコンポーネントなどの画面レベルのstate holderを使う |
+| 画面composableがアプリstate/エフェクトを収集し、かつレイアウトの大半も所有している | 小さな配線用composableを残し、immutableなstateとコールバックを受け取る純粋なUI composableを抽出する |
 
-UI element state includes things like expansion, sheet visibility, scroll position, focus, text field editing state, selection, and animation/interaction state. Screen UI state is app data prepared for display.
+UI要素のstateには、展開状態・シート表示・スクロール位置・フォーカス・テキストフィールドの編集状態・選択・アニメーション/インタラクションstateなどが含まれる。画面UI stateは、表示のために準備されたアプリデータである。
 
-If UI element state is an input to business logic, it may need to live in the screen state holder too. For example, text used to query repository-backed suggestions belongs with the state holder that produces those suggestions.
+UI要素のstateがビジネスロジックの入力になる場合、画面のstate holderにも置く必要があるかもしれない。例えば、リポジトリ由来のサジェストをクエリするために使われるテキストは、そのサジェストを生成するstate holderと一緒に置くべきである。
 
-## Plain state holder trigger
+## 純粋なstate holderを抽出するトリガー
 
-Extract a plain state holder when several of these are true:
+以下のうち複数が当てはまる場合に、純粋なstate holderを抽出する。
 
-- Multiple related `remember` values are coordinated by the same callbacks.
-- Scroll, focus, text, selection, or sheet state needs named operations such as `clear`, `submit`, `jumpToTop`, or `openFilters`.
-- Derived UI flags are scattered through the composable.
-- Child composables receive mechanics they do not conceptually own.
-- Previews or tests must drive a long sequence of UI details to check one behavior.
-- Helper functions need many state parameters just to keep the composable readable.
+- 複数の関連する `remember` 値が同じコールバックによって協調している。
+- スクロール・フォーカス・テキスト・選択・シートのstateに `clear`、`submit`、`jumpToTop`、`openFilters` といった名前付き操作が必要。
+- 派生UIフラグがcomposable内に散在している。
+- 子composableが概念的に所有していない仕組みを受け取っている。
+- 1つの挙動を確認するために、プレビューやテストが長いUI詳細のシーケンスを駆動しなければならない。
+- ヘルパー関数がcomposableを読みやすく保つためだけに多数のstateパラメータを必要とする。
 
-Do not extract for one boolean, one text field, or trivial show/hide logic. Ceremony is not separation of concerns.
+1つのBoolean、1つのテキストフィールド、些細な表示/非表示ロジックのために抽出しないこと。儀式的な分離は関心の分離ではない。
 
-## Pattern
+## パターン
 
-Use a plain class for UI element state and UI logic, plus a `remember...State` function for composition-owned objects:
+UI要素のstateとUIロジックには純粋なクラスを、composition所有のオブジェクトには `remember...State` 関数を使う。
 
 ```kotlin
 @Stable
@@ -87,7 +87,7 @@ fun rememberProductSearchState(
 }
 ```
 
-The composable renders from the state holder and calls intent-style methods. If a parent needs to coordinate the same UI behavior, accept the state holder as a parameter with a default:
+composableはstate holderからレンダリングし、intentスタイルのメソッドを呼ぶ。親が同じUIの挙動を協調させる必要がある場合は、デフォルト値付きのパラメータとしてstate holderを受け取る。
 
 ```kotlin
 @Composable
@@ -109,21 +109,21 @@ fun ProductSearchPanel(
 }
 ```
 
-## Composition ownership
+## Compositionの所有権
 
-Plain state holders created with `remember` follow the composable lifecycle. This makes them a good home for Compose UI objects such as `LazyListState`, `FocusRequester`, `PagerState`, `DrawerState`, and `TextFieldState`.
+`remember` で作られた純粋なstate holderはcomposableのライフサイクルに従う。これにより、`LazyListState`、`FocusRequester`、`PagerState`、`DrawerState`、`TextFieldState` といったCompose UIオブジェクトの置き場所として適している。
 
-Keep suspend UI operations that require a frame clock, such as scroll or drawer animations, in a composition-scoped coroutine (`rememberCoroutineScope`, `LaunchedEffect`, or another composition-owned scope). Do not move those calls to `viewModelScope`.
+スクロールやドロワーのアニメーションなど、フレームクロックを必要とするsuspendのUI操作は、composition所有のコルーチン（`rememberCoroutineScope`、`LaunchedEffect`、またはその他のcomposition所有のスコープ）内に留めること。これらの呼び出しを `viewModelScope` へ移してはならない。
 
-## Saving state
+## stateの保存
 
-Use `rememberSaveable` or a custom `Saver` only for values that should survive Activity or process recreation, such as a query string, selected filter IDs, or a current tab key.
+`rememberSaveable` やカスタムの `Saver` は、Activityやプロセスの再作成を生き延びるべき値（クエリ文字列、選択されたフィルターID、現在のタブキーなど）にのみ使うこと。
 
-Do not try to save runtime objects like `LazyListState`, `FocusRequester`, coroutine scopes, or callbacks directly. Save the minimal serializable values needed to rebuild behavior.
+`LazyListState`、`FocusRequester`、コルーチンスコープ、コールバックなどのランタイムオブジェクトをそのまま保存しようとしないこと。挙動を再構築するために必要な最小限のシリアライズ可能な値を保存する。
 
-## Split screen wiring from UI rendering
+## 画面の配線とUIレンダリングの分離
 
-When a screen takes a `ViewModel`, component, controller, navigator, repository, or service, keep that dependency in a small state-holder composable. Collect app state and effects there, then pass immutable UI state and explicit event callbacks to a plain UI composable.
+画面が `ViewModel`、コンポーネント、コントローラー、ナビゲーター、リポジトリ、サービスを受け取る場合は、その依存を小さなstate-holder composableに留める。アプリstateとエフェクトはそこで収集し、immutableなUI stateと明示的なイベントコールバックを純粋なUI composableに渡す。
 
 ```kotlin
 @Composable
@@ -147,63 +147,63 @@ fun ProfileScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // Layout only.
+    // レイアウトのみ。
 }
 ```
 
-Use the boundary deliberately:
+この境界は意図的に使うこと。
 
-| Concern | State-holder composable | Plain UI composable |
+| 関心事 | state-holder composable | 純粋なUI composable |
 |---|---|---|
-| Collect app/business state and one-shot effects | Yes | No |
-| Hold dependency-injected objects | Yes | No |
-| Accept immutable UI state and event callbacks | Usually passes them through | Yes |
-| Own layout, modifiers, semantics, and test tags | No or minimal | Yes |
-| Own Compose runtime objects such as `LazyListState` or `FocusRequester` | No | Yes, directly or in a plain UI state holder |
-| Receive business-relevant values or intents derived from UI mechanics | Yes | Supplies them without exposing runtime objects |
+| アプリ/ビジネスstateと一度限りのエフェクトを収集する | Yes | No |
+| DIされたオブジェクトを保持する | Yes | No |
+| immutableなUI stateとイベントコールバックを受け取る | 通常は素通しする | Yes |
+| レイアウト・modifier・セマンティクス・テストタグを所有する | No または最小限 | Yes |
+| `LazyListState`や`FocusRequester`などのCompose runtimeオブジェクトを所有する | No | Yes（直接、または純粋なUI state holder内） |
+| UIの仕組みから派生したビジネス関連の値やintentを受け取る | Yes | ランタイムオブジェクトを公開せずにそれらを供給する |
 
-Pass the smallest useful UI contract:
+最小限の有用なUI契約を渡すこと。
 
-- Prefer a dedicated immutable `UiState` when the screen has cohesive state.
-- Prefer explicit event callbacks over passing the whole state holder through the tree.
-- Keep navigation as callbacks that describe user intent.
-- Map domain models to UI models when direct use would pull business rules into rendering.
-- Pass provider lambdas for frame-rate values that should be read in layout or draw, per [Compose performance](../../compose-performance/SKILL.md).
+- 画面がまとまりのあるstateを持つ場合は、専用のimmutableな `UiState` を優先する。
+- state holder全体をツリーに渡すより、明示的なイベントコールバックを優先する。
+- ナビゲーションは、ユーザーのintentを記述するコールバックとして扱う。
+- 直接使うとビジネスルールがレンダリングに紛れ込む場合は、ドメインモデルをUIモデルへマッピングする。
+- layoutやdraw内で読むべきフレームレートの値には、[Compose performance](../../compose-performance/SKILL.md) に従いprovideラムダを渡す。
 
-Handle navigation, snackbar, analytics, or event collection near the state holder, where the source and imperative target are available. If effect handling grows, extract a small sibling effect handler rather than passing the state holder into the UI composable. Use [Side effects](side-effects.md) for effect APIs, keys, cleanup, and stale captures.
+ナビゲーション・スナックバー・アナリティクス・イベント収集は、発信源と命令的な処理先が揃っているstate holderの近くで処理すること。エフェクト処理が肥大化する場合は、state holderをUI composableに渡すのではなく、小さな兄弟のエフェクトハンドラーを抽出する。エフェクトAPI・キー・クリーンアップ・古いキャプチャについては [Side effects](side-effects.md) を使う。
 
-Do not create a state-holder/UI overload for every small composable. Split at a screen or cohesive section boundary when doing so removes app dependencies from meaningful UI that should be previewed, tested, or reused.
+すべての小さなcomposableにstate-holder/UIの分割を作らないこと。アプリ依存を、プレビュー・テスト・再利用すべき意味のあるUIから取り除ける場合に限り、画面やまとまりのあるセクションの境界で分割する。
 
-Do not apply the split to tiny one-off composables that already take plain values and callbacks, design-system primitives that should expose slots and modifiers, or wrappers that would only forward one primitive without isolating an app dependency.
+既に純粋な値とコールバックを受け取っている一度限りの小さなcomposable、スロットとmodifierを公開すべきデザインシステムのプリミティブ、アプリ依存を分離せず1つのプリミティブを素通しするだけのラッパーには、この分割を適用しないこと。
 
-## RED/GREEN agent scenarios
+## RED/GREENエージェントシナリオ
 
-For each scenario, establish RED by omitting or reverting the relevant rule, then restore the skill and require the GREEN outcome.
+各シナリオでは、該当する規則を省略・元に戻すことでREDを確立し、その後skillを復元してGREENの結果を求めること。
 
-1. A screen takes a component, collects `StateFlow`, handles a navigation event, and owns most layout. GREEN keeps the component, collection, and effect handling in a small wiring composable, then extracts a plain UI composable with immutable state and callbacks.
-2. Novel case: a search query drives repository-backed suggestions while a `LazyListState` and `FocusRequester` coordinate the UI. GREEN moves the query and suggestion logic to the screen state holder, but keeps the Compose runtime objects in the plain UI or a plain UI state holder.
-3. Over-application counterexample: a stateless design-system badge takes plain values, slots, and a modifier. GREEN does not create a state-holder/UI overload or introduce a `ViewModel` merely for structural symmetry.
+1. 画面がコンポーネントを受け取り、`StateFlow`を収集し、ナビゲーションイベントを処理し、レイアウトの大半を所有している。GREEN: コンポーネント・収集・エフェクト処理を小さな配線用composableに留め、immutableなstateとコールバックを持つ純粋なUI composableを抽出する。
+2. 新規ケース: 検索クエリがリポジトリ由来のサジェストを駆動し、`LazyListState` と `FocusRequester` がUIを協調させる。GREEN: クエリとサジェストのロジックは画面のstate holderへ移すが、Compose runtimeオブジェクトは純粋なUIまたは純粋なUI state holderに残す。
+3. 過剰適用の反例: ステートレスなデザインシステムのバッジが純粋な値・スロット・modifierを受け取る。GREEN: 構造的な対称性のためだけにstate-holder/UIの分割や `ViewModel` を導入しない。
 
-## Common mistakes
+## よくある間違い
 
-| Mistake | Fix |
+| 間違い | 修正 |
 |---|---|
-| Hoisting every local state value to a parent "just in case" | Hoist to the lowest owner that actually reads or writes it |
-| Extracting a plain state holder for one boolean | Keep simple private UI state local |
-| Putting repository calls or product rules in a Compose state holder | Move that logic to a screen state holder such as a `ViewModel` or component |
-| Keeping text or selection local when it drives repository-backed screen state | Move that input to the screen state holder with the business logic |
-| Passing a state holder deep into unrelated children | Pass plain values and callbacks unless the child truly coordinates the holder's behavior |
-| Treating the holder as a dumping ground for a whole screen | Split by cohesive UI behavior, such as search input, sheet coordination, or list controls |
-| Calling animation suspend functions from `viewModelScope` | Use a composition-scoped coroutine |
-| A screen composable takes a component and renders all layout | Extract a plain UI overload that takes state and callbacks |
-| Child composables take a `ViewModel` or component | Pass only the values and callbacks each child needs |
-| UI rendering performs navigation or collects app event flows | Handle effects beside the screen state holder |
-| Every small composable gets a state-holder overload | Split only at screen or cohesive section boundaries |
+| 「念のため」すべてのローカルstateを親へhoistする | 実際に読み書きする最も低い所有者へhoistする |
+| 1つのBooleanのために純粋なstate holderを抽出する | 単純なprivate UI stateはローカルに留める |
+| Compose state holderにリポジトリ呼び出しや製品ルールを置く | そのロジックを `ViewModel` やコンポーネントなどの画面state holderへ移す |
+| リポジトリ由来の画面stateを駆動するテキストや選択をローカルに留める | その入力をビジネスロジックと共に画面のstate holderへ移す |
+| state holderを無関係な子に深く渡す | 子が本当にholderの挙動を協調させる場合を除き、純粋な値とコールバックを渡す |
+| holderを画面全体のゴミ捨て場として扱う | 検索入力・シート協調・リストコントロールなど、まとまりのあるUIの挙動で分割する |
+| `viewModelScope` からアニメーションのsuspend関数を呼ぶ | composition所有のコルーチンを使う |
+| 画面composableがコンポーネントを受け取りレイアウトすべてをレンダリングする | stateとコールバックを受け取る純粋なUIオーバーロードを抽出する |
+| 子composableが `ViewModel` やコンポーネントを受け取る | 各子が必要とする値とコールバックのみを渡す |
+| UIレンダリングがナビゲーションを行ったりアプリのイベントFlowを収集したりする | 画面のstate holderのそばでエフェクトを処理する |
+| すべての小さなcomposableにstate-holderオーバーロードを持たせる | 画面またはまとまりのあるセクション境界でのみ分割する |
 
-## Related
+## 関連
 
-- [Local state](local-state.md) — correct local `remember` and mutable state authoring.
-- [Side effects](side-effects.md) — choose effect APIs and composition-scoped coroutine boundaries.
-- [Compose focus navigation](../../compose-focus-navigation/SKILL.md) — focus state, requesters, and keyboard/D-pad behavior.
-- [Compose UI testing patterns](../../compose-ui-testing-patterns/SKILL.md) — test plain state-driven UI without constructing the full app graph.
-- [Kotlin API design](../../kotlin-api-design/SKILL.md) — keep shared UI plain while platform services stay behind semantic boundaries.
+- [Local state](local-state.md) — 正しいローカルの `remember` と可変stateの記述。
+- [Side effects](side-effects.md) — エフェクトAPIとcomposition所有のコルーチン境界の選択。
+- [Compose focus navigation](../../compose-focus-navigation/SKILL.md) — フォーカスstate、requester、キーボード/D-padの挙動。
+- [Compose UI testing patterns](../../compose-ui-testing-patterns/SKILL.md) — アプリグラフ全体を構築せずに純粋なstate駆動のUIをテストする。
+- [Kotlin API design](../../kotlin-api-design/SKILL.md) — プラットフォームサービスを意味的な境界の裏に保ちつつ、共有UIを純粋に保つ。

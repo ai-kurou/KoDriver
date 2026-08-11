@@ -1,53 +1,50 @@
-# Compose state authoring
+# Compose stateの記述
 
-Not every `remember { … }` belongs here. This reference covers **local UI
-state** (`remember { mutableStateOf(…) }`, `mutableStateListOf` /
-`mutableStateMapOf`). Other remembered APIs live elsewhere:
+すべての `remember { … }` がここに該当するわけではない。このリファレンスは**ローカルUI state**（`remember { mutableStateOf(…) }`、`mutableStateListOf` / `mutableStateMapOf`）を扱う。その他のremember系APIは別のリファレンスで扱う。
 
 - **`rememberCoroutineScope` / `rememberUpdatedState`** → [Side effects](side-effects.md)
-- **`rememberLazyListState` / `rememberScrollState`** used for frame-rate reads → [Compose performance](../../compose-performance/SKILL.md)
-- **Focus navigation, focus state, `FocusRequester` ownership, behavior** → [Compose focus navigation](../../compose-focus-navigation/SKILL.md)
+- **フレームレート読み取りに使う `rememberLazyListState` / `rememberScrollState`** → [Compose performance](../../compose-performance/SKILL.md)
+- **フォーカスナビゲーション、フォーカスstate、`FocusRequester`の所有権・挙動** → [Compose focus navigation](../../compose-focus-navigation/SKILL.md)
 
-## Core principle
+## 基本原則
 
-A `@Composable` is a function the runtime re-runs whenever its inputs change.
-Writing local state correctly asks one question:
+`@Composable` はランタイムが入力の変化ごとに再実行する関数である。ローカルstateを正しく書くには1つの問いに答えればよい。
 
-1. **Mutable local state** — does my `var` survive recomposition *and* trigger it? If not, it silently resets on every recompose and writes are invisible.
+1. **可変なローカルstate** — この `var` はrecompositionを生き延び、かつrecompositionを引き起こすか？そうでなければ、recomposeのたびに黙って初期化され、書き込みも見えなくなる。
 
-Get it wrong and state vanishes or writes become invisible.
+これを誤ると、stateが消えたり書き込みが反映されなくなったりする。
 
-## When to use this skill
+## このskillを使う場面
 
-You're writing or reviewing Compose code and you see any of these:
+Composeのコードを書く・レビューする際に、以下のいずれかを見かけたとき。
 
-- `var x = …` inside a `@Composable fun` or any composable lambda (`Column { var x = … }`)
-- A composable whose visible state mysteriously resets on rotation, theme change, or recomposition
+- `@Composable fun` 内や任意のcomposableラムダ（`Column { var x = … }`）内の `var x = …`
+- 回転・テーマ変更・recompositionのたびに表示上のstateが謎にリセットされるcomposable
 
-## 1. `var` in a composable must be State-backed
+## 1. composable内の `var` はStateに裏打ちされている必要がある
 
-Recomposition re-executes the composable from the top. A local `var` is *re-initialized* on every pass — last recompose's value is gone, and writing to it doesn't tell the runtime to recompose.
+recompositionはcomposableをトップから再実行する。ローカルな `var` はパスごとに*再初期化*される — 直前のrecomposeの値は失われ、書き込んでもランタイムに再合成を伝えない。
 
 ```kotlin
-// ❌ BAD — counter resets on every recomposition; clicks never update the UI
+// ❌ NG — カウンターがrecomposeのたびにリセットされ、クリックがUIに反映されない
 @Composable
 fun Counter() {
     var count = 0
     Button(onClick = { count++ }) { Text("$count") }
 }
 
-// ❌ ALSO BAD — same rule applies inside composable content lambdas
+// ❌ これもNG — composableのコンテンツラムダ内でも同じ規則が適用される
 @Composable
 fun Wrapper() {
     Row {
-        var count = 0         // Row's content lambda is @Composable too
+        var count = 0         // Rowのcontentラムダも@Composableである
         // …
     }
 }
 ```
 
 ```kotlin
-// ✅ GOOD — `remember` survives recomposition, `mutableStateOf` triggers it
+// ✅ OK — `remember`がrecompositionを生き延び、`mutableStateOf`が再合成を引き起こす
 @Composable
 fun Counter() {
     var count by remember { mutableStateOf(0) }
@@ -55,74 +52,65 @@ fun Counter() {
 }
 ```
 
-Two pieces and both matter:
+重要な要素は2つ。
 
-- `remember { … }` — *survives recomposition*. Without it the value is re-created each time.
-- `mutableStateOf(…)` — *triggers recomposition*. Without it, mutations are invisible to the runtime.
+- `remember { … }` — *recompositionを生き延びる*。これがなければ値は毎回作り直される。
+- `mutableStateOf(…)` — *recompositionを引き起こす*。これがなければ変更はランタイムから見えない。
 
-For collections, prefer `mutableStateListOf` / `mutableStateMapOf` (also `remember`-ed). They emit Snapshot reads on every read and Snapshot writes on every mutation. A `remember { mutableStateOf(mutableListOf<X>()) }` followed by `list.add(x)` will *not* recompose, because `MutableList.add` doesn't go through the State setter — you'd have to replace the value (`state = state + x`).
+コレクションには `mutableStateListOf` / `mutableStateMapOf`（これらも`remember`される）を優先する。これらは読み取りのたびにSnapshot readを、変更のたびにSnapshot writeを発行する。`remember { mutableStateOf(mutableListOf<X>()) }` に続けて `list.add(x)` してもrecomposeは*起きない*。`MutableList.add` はStateのsetterを経由しないためである — 値そのものを置き換える必要がある（`state = state + x`）。
 
-### Back-writing snapshot state during composition
+### composition中のsnapshot stateへのback-writing
 
-**Back-writing** means writing observable state in a phase that triggers invalidation of an earlier (or the current) phase. Mutating `mutableState*` from the composable body back-writes into the same composition pass and schedules another. Do not rebuild derived data this way:
+**Back-writing** とは、以前の（または現在の）フェーズの無効化を引き起こすフェーズでobservable stateを書き込むことを指す。composableのbody内で `mutableState*` を変更すると、同じcompositionパスへback-writeされ、別のパスがスケジュールされる。派生データをこの方法で再構築してはならない。
 
 ```kotlin
-// ❌ BAD — clear + putAll on every composition
+// ❌ NG — composeのたびにclear + putAll
 val merged = remember { mutableStateMapOf<Key, ViewState>() }
 merged.clear()
 merged.putAll(parent)
 merged.putAll(overlay)
 
-// ✅ GOOD — immutable snapshot remembered from inputs
+// ✅ OK — 入力からimmutableなsnapshotをrememberする
 val merged = remember(parent, overlay) {
     if (overlay.isEmpty()) parent else parent + overlay
 }
 ```
 
-If the result is read-only for the current inputs, `remember(keys) { … }` is
-enough. See [Compose performance](../../compose-performance/SKILL.md) for
-cross-row measurement and measure-phase fixes.
+現在の入力に対して結果が読み取り専用であれば `remember(keys) { … }` で十分。行をまたぐ計測やmeasureフェーズでの修正については [Compose performance](../../compose-performance/SKILL.md) を参照。
 
-### When this rule does NOT apply
+### このルールが適用されない場合
 
-- **Inside `remember { … }`'s producer block.** That runs once per key change, not on every recompose. A local `var` there is fine: `val builder = remember { mutableListOf<X>().apply { var n = 0; … } }`.
-- **In non-`@Composable` lambdas passed *out* of a composable.** `onClick = { var a = 0; … }` is a plain `() -> Unit`. Local vars there are normal Kotlin.
-- **In plain (non-`@Composable`) helper functions.** Only composable scopes are affected.
+- **`remember { … }` のproducerブロック内。** これはキーが変わるたびに一度だけ実行され、recomposeのたびには実行されない。ここでのローカル `var` は問題ない: `val builder = remember { mutableListOf<X>().apply { var n = 0; … } }`。
+- **composableから*外に*渡される非`@Composable`ラムダ内。** `onClick = { var a = 0; … }` は単なる `() -> Unit`。ここでのローカル変数は通常のKotlinと同じ。
+- **通常の（非`@Composable`な）ヘルパー関数内。** composableスコープのみが対象。
 
-## Related
+## 関連
 
-If a composable needs `LaunchedEffect`, `DisposableEffect`, `SideEffect`,
-`rememberCoroutineScope`, `rememberUpdatedState`, `snapshotFlow`,
-snackbar/navigation handling, analytics, or Flow collection, use [Side
-effects](side-effects.md).
+composableに `LaunchedEffect`、`DisposableEffect`、`SideEffect`、`rememberCoroutineScope`、`rememberUpdatedState`、`snapshotFlow`、スナックバー/ナビゲーション処理、アナリティクス、Flow収集が必要な場合は [Side effects](side-effects.md) を使うこと。
 
-Focus splits by question: **navigation, focus state, `FocusRequester`
-ownership, behavior** → [Compose focus
-navigation](../../compose-focus-navigation/SKILL.md); **when** to call
-imperative `requestFocus` (effect timing, lifecycle, keys, API choice) →
-[Side effects](side-effects.md).
+フォーカスは問いによって分かれる: **ナビゲーション、フォーカスstate、`FocusRequester`の所有権・挙動** → [Compose focus navigation](../../compose-focus-navigation/SKILL.md)、命令的な `requestFocus` を呼ぶ**タイミング**（エフェクトのタイミング、ライフサイクル、キー、API選択） → [Side effects](side-effects.md)。
 
-This skill is about authoring Compose state correctly. `rememberUpdatedState` is effect capture state, not a general replacement for `remember { mutableStateOf(...) }`. Side effects have separate lifecycle and keying rules, and keeping them in one focused skill avoids two sources of truth.
+このskillはCompose stateを正しく記述することが目的である。`rememberUpdatedState` はエフェクトのキャプチャstateであり、`remember { mutableStateOf(...) }` の一般的な代替ではない。副作用には別のライフサイクル・キー付け規則があり、それを1つの焦点を絞ったskillにまとめることで、情報源が2つに分かれることを避けている。
 
-## Quick reference
+## クイックリファレンス
 
-| Symptom | Diagnosis | Fix |
+| 症状 | 診断 | 修正 |
 |---|---|---|
-| `var x = …` inside `@Composable fun` body | Not recomposition-safe (§1) | `var x by remember { mutableStateOf(…) }` |
-| `var x = …` inside `Column { … }` / `Row { … }` content lambda | Same — content lambdas are `@Composable` (§1) | Same fix |
-| `remember { mutableStateOf(list) }` then `.add(x)` not recomposing | Mutation bypasses State setter | Use `mutableStateListOf`, or replace the value: `state = state + x` |
-| `stateMap.clear(); stateMap.putAll(...)` in composable body | Back-writing composition → composition | `remember(keys) { derivedSnapshot }` |
+| `@Composable fun` のbody内の `var x = …` | recomposition-safeでない（§1） | `var x by remember { mutableStateOf(…) }` |
+| `Column { … }` / `Row { … }` のcontentラムダ内の `var x = …` | 同上 — contentラムダも `@Composable`（§1） | 同じ修正 |
+| `remember { mutableStateOf(list) }` の後 `.add(x)` してもrecomposeしない | 変更がStateのsetterを迂回している | `mutableStateListOf` を使うか、値を置き換える: `state = state + x` |
+| composableのbody内の `stateMap.clear(); stateMap.putAll(...)` | composition → compositionへのback-writing | `remember(keys) { derivedSnapshot }` |
 
-## When NOT to apply
+## 適用しない場合
 
-- **Tests** with `composeTestRule.setContent { … }` follow the same rules — they're production composables.
-- **`produceState`** has its own producer block that runs in a coroutine; you don't need `LaunchedEffect` *inside* it.
-- **`derivedStateOf`** has its own concerns around stability and equality — out of scope here; it's about *preventing* recomposition, not authoring state.
+- **`composeTestRule.setContent { … }` を使うテスト** も同じ規則に従う — これらは本番相当のcomposableである。
+- **`produceState`** はコルーチン内で動く独自のproducerブロックを持つため、内部で `LaunchedEffect` は不要。
+- **`derivedStateOf`** は安定性・等価性に関する独自の関心事があり、ここでは対象外。state記述ではなくrecompositionの*抑制*が目的。
 
-## Red flags during review
+## レビュー時の危険信号
 
-| Thought | Reality |
+| 思考 | 実際 |
 |---|---|
-| "It's a small composable, the bare `var` is fine" | Recomposition can fire at any time. The reset is non-deterministic by design — and a single bug report later. |
-| "I always reach for `LaunchedEffect` because it's the one I know" | Use [Side effects](side-effects.md); effect API choice depends on lifecycle and keys. |
-| "I'll just `.add()` to the remembered list" | A `mutableStateOf(List)` doesn't observe internal mutation — use `mutableStateListOf` or replace the value. |
+| 「小さいcomposableだから素の`var`でいい」 | recompositionはいつでも発生しうる。リセットは設計上非決定的であり、後日バグ報告が来る。 |
+| 「いつも知っている`LaunchedEffect`を使う」 | [Side effects](side-effects.md) を使うこと。エフェクトAPIの選択はライフサイクルとキーに依存する。 |
+| 「rememberしたリストに`.add()`すればいい」 | `mutableStateOf(List)` は内部の変更を観測しない — `mutableStateListOf` を使うか値を置き換える。 |

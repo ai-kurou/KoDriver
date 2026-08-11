@@ -1,42 +1,42 @@
-# Kotlin Flow: state and event modeling
+# Kotlin Flow: stateとイベントのモデリング
 
-## Core principle
+## 基本原則
 
-**Pick the primitive that matches replay, fan-out, and synchronous-read requirements.** `StateFlow`, `SharedFlow`, `Channel`-backed flows, and cold `Flow` differ in buffering, who sees each emission, and whether `.value` exists. Wrong choices drop events, leak sharing coroutines, or force fake domain sentinels into state.
+**リプレイ・ファンアウト・同期読み取りの要件に合ったプリミティブを選ぶこと。** `StateFlow`、`SharedFlow`、`Channel`裏付けのFlow、cold `Flow` はバッファリング、各emissionを誰が見るか、`.value` が存在するかという点で異なる。選択を誤ると、イベントの消失、共有コルーチンのリーク、stateへの偽のドメインsentinelの混入を引き起こす。
 
-## When to use this skill
+## このskillを使う場面
 
-You're writing or reviewing Kotlin code involving:
+以下を含むKotlinコードを書く・レビューする際。
 
-- `MutableStateFlow<T>(SomeSentinel)` — `NoUser`, `Empty`, `Loading`, etc. — because the real value is async
-- `.stateIn(...)` called inside a function rather than assigned to a property
-- `SharingStarted.WhileSubscribed(...)` on a flow whose `.value` is read synchronously and must stay fresh
-- `MutableSharedFlow` for navigation events, snackbars, or other one-shot emissions where loss would be a bug
-- `.map { }` on a `StateFlow` when consumers still need synchronous `.value`
-- `MutableStateFlow.value = _state.value.copy(...)` or update code that builds expensive objects inside `update { ... }`
+- `MutableStateFlow<T>(SomeSentinel)` — `NoUser`、`Empty`、`Loading` など — 実際の値が非同期であるため
+- 関数内で `.stateIn(...)` を呼び、プロパティに代入していない
+- `.value` を同期的に読み取り常に最新である必要があるFlowに `SharingStarted.WhileSubscribed(...)` を使っている
+- ナビゲーションやスナックバーなど、消失がバグになる一度限りのemissionに `MutableSharedFlow` を使っている
+- コンシューマーがまだ同期的な `.value` を必要としているのに `StateFlow` に `.map { }` している
+- `MutableStateFlow.value = _state.value.copy(...)`、または `update { ... }` の中で高コストなオブジェクトを構築している
 
-## SharedFlow for single-consumer fire-once events
+## 単一コンシューマー・一度限りのイベントには `SharedFlow`
 
-`SharedFlow` defaults have no replay buffer. If nothing is collecting at the exact instant of emission, the event is gone. For a **single UI consumer** handling exactly-once events such as navigation or snackbars, a buffered `Channel` exposed as a `Flow` often matches the semantics better:
+`SharedFlow` のデフォルトにはリプレイバッファがない。emissionの瞬間に誰も収集していなければ、そのイベントは失われる。ナビゲーションやスナックバーのように**単一のUIコンシューマー**が厳密に一度だけ処理すべきイベントには、Flowとして公開されるバッファ付きの `Channel` の方がセマンティクスに合うことが多い。
 
 ```kotlin
-// ❌ BAD
+// ❌ NG
 private val _navEvents = MutableSharedFlow<NavigationEvent>()
 val navEvents: SharedFlow<NavigationEvent> = _navEvents.asSharedFlow()
 
-// ✅ GOOD
+// ✅ OK
 private val _navEvents = Channel<NavigationEvent>(Channel.BUFFERED)
 val navEvents: Flow<NavigationEvent> = _navEvents.receiveAsFlow()
 ```
 
-`Channel.receiveAsFlow()` is **fan-out, not broadcast**: with multiple collectors, each event is delivered to **one** collector. `Channel.BUFFERED` is bounded, so sends can suspend and `trySend` can fail. If multiple observers must all see the same event, use explicit state, durable storage, or a deliberately configured `SharedFlow` instead.
+`Channel.receiveAsFlow()` は**ファンアウトであり、ブロードキャストではない**: 複数のコレクターがいる場合、各イベントは**1つ**のコレクターにのみ配信される。`Channel.BUFFERED` は有界であるため、sendがsuspendすることがあり、`trySend` が失敗することもある。複数のオブザーバー全員が同じイベントを見る必要がある場合は、明示的なstate・永続ストレージ・意図的に構成された `SharedFlow` を代わりに使うこと。
 
-## StateFlow polluted with invalid sentinel defaults
+## 無効なsentinelデフォルト値で汚染された `StateFlow`
 
-`StateFlow` forces an initial value. When the real value is async, developers sometimes invent fake domain values — `NoUser`, `EmptyUser`, placeholder IDs — and every consumer is forced to treat that sentinel as real data.
+`StateFlow` は初期値を強制する。実際の値が非同期である場合、開発者は時に `NoUser`、`EmptyUser`、プレースホルダーIDのような偽のドメイン値を発明し、すべてのコンシューマーがそのsentinelを実データとして扱うことを強いられる。
 
 ```kotlin
-// ❌ BAD — sentinel leaks into the type
+// ❌ NG — sentinelが型に漏れ出している
 class UserSession(private val db: Db) {
     private val _user = MutableStateFlow<User>(NoUser)
     val user: StateFlow<User> = _user.asStateFlow()
@@ -44,10 +44,10 @@ class UserSession(private val db: Db) {
 }
 ```
 
-One fix is **phasing**: don't expose the `StateFlow` until the real value exists.
+1つの解決策は**フェーズ分け**である: 実際の値が存在するまで `StateFlow` を公開しない。
 
 ```kotlin
-// ✅ GOOD — bootstrap suspends; observers only see real users
+// ✅ OK — bootstrapがsuspendし、オブザーバーは実在するユーザーしか見ない
 class UserSession(private val db: Db) {
     private var _user: MutableStateFlow<User>? = null
     val user: StateFlow<User>
@@ -59,20 +59,20 @@ class UserSession(private val db: Db) {
 }
 ```
 
-If absence, loading, or error is a real state, model it explicitly (`User?`, `sealed interface UserUiState`, `Result`, etc.). The bug is a fake domain value masquerading as real data, not every initial value.
+不在・ローディング・エラーが実際のstateであるなら、明示的にモデリングすること（`User?`、`sealed interface UserUiState`、`Result` など）。バグは「あらゆる初期値」ではなく、実データを装った偽のドメイン値そのものである。
 
-## Mutate MutableStateFlow with `update { ... }`
+## `MutableStateFlow` は `update { ... }` で変更する
 
-Prefer `MutableStateFlow.update { current -> ... }` over reading `.value` and writing it back. `update` applies the transform atomically against the latest state, which avoids lost updates when multiple coroutines mutate the same state.
+`.value` を読み書きするより、`MutableStateFlow.update { current -> ... }` を優先する。`update` は最新のstateに対してアトミックに変換を適用するため、複数のコルーチンが同じstateを変更する際の更新ロストを避けられる。
 
 ```kotlin
-// BAD — read/modify/write can lose concurrent updates.
+// NG — 読み取り/変更/書き込みは並行更新をロストしうる
 _state.value = _state.value.copy(
     selectedId = id,
     details = details,
 )
 
-// GOOD — transform starts from the latest state.
+// OK — 変換は最新のstateから開始する
 _state.update { current ->
     current.copy(
         selectedId = id,
@@ -81,98 +81,98 @@ _state.update { current ->
 }
 ```
 
-Keep object creation outside the `update` block unless it needs the current state. The update lambda can be retried, so expensive work or side effects inside it may run more than once:
+現在のstateを必要としない限り、オブジェクトの生成は `update` ブロックの外で行うこと。updateのラムダはリトライされることがあるため、その中の高コストな処理や副作用は複数回実行される可能性がある。
 
 ```kotlin
-// GOOD — details does not depend on current state, so build it once.
+// OK — detailsは現在のstateに依存しないので一度だけ構築する
 val details = Details.from(response)
 _state.update { current ->
     current.copy(details = details)
 }
 
-// GOOD — derived value depends on current state, so compute it inside.
+// OK — 派生値が現在のstateに依存するので内部で計算する
 _state.update { current ->
     val nextItems = current.items.replaceById(updatedItem)
     current.copy(items = nextItems)
 }
 ```
 
-The block should be a pure, fast state transformation: no network calls, database writes, logging side effects, random IDs, or time reads unless those values were captured before the block.
+このブロックは純粋で高速なstate変換であるべきで、ブロック実行前にキャプチャした値でない限り、ネットワーク呼び出し・データベース書き込み・ログ出力の副作用・ランダムID・時刻の読み取りを含めてはならない。
 
-## `stateIn()` inside a function
+## 関数内での `stateIn()`
 
 ```kotlin
-// ❌ BAD — new sharing coroutine every call
+// ❌ NG — 呼び出しごとに新しい共有コルーチンが作られる
 fun getPreferences(): StateFlow<Prefs> =
     repo.prefsFlow.stateIn(scope, SharingStarted.Eagerly, Prefs.Default)
 ```
 
-Every call to `getPreferences()` launches a fresh coroutine on `scope` that never completes. Performance dies fast under repeated reads.
+`getPreferences()` を呼ぶたびに、`scope` 上で決して完了しない新しいコルーチンが起動される。繰り返し読み取ると性能はすぐに悪化する。
 
 ```kotlin
-// ✅ GOOD — one shared instance, computed once
+// ✅ OK — 単一の共有インスタンスを一度だけ計算する
 val preferences: StateFlow<Prefs> =
     repo.prefsFlow.stateIn(viewModelScope, SharingStarted.Eagerly, Prefs.Default)
 ```
 
-## `WhileSubscribed` with synchronous `.value`
+## `WhileSubscribed` と同期的な `.value`
 
-`SharingStarted.WhileSubscribed(timeout)` disconnects the upstream when there are no active collectors. While disconnected, `.value` returns the last cached value, which may be stale or still the initial value.
+`SharingStarted.WhileSubscribed(timeout)` は、アクティブなコレクターがいなくなると上流を切断する。切断中は `.value` が最後のキャッシュ値を返すが、これは古いか初期値のままかもしれない。
 
-**Rule:** if `.value` must be fresh or initialized without an active collector, use `SharingStarted.Eagerly` or explicit initialization. `WhileSubscribed` is fine when stale/cached values are acceptable and consumers primarily collect asynchronously.
+**ルール:** `.value` がアクティブなコレクターなしに常に最新・初期化済みである必要があるなら、`SharingStarted.Eagerly` または明示的な初期化を使うこと。古い/キャッシュされた値が許容でき、コンシューマーが主に非同期に収集するなら `WhileSubscribed` で問題ない。
 
-## `.map` on `StateFlow` loses `.value`
+## `StateFlow` への `.map` は `.value` を失う
 
 ```kotlin
-// ❌ BAD — `name.value` won't compile; it's now a plain Flow
+// ❌ NG — `name.value`はコンパイルできない。これは単なるFlowになっている
 val name: Flow<String> = userState.map { it.name }
 ```
 
-If you need synchronous `.value`, terminate the chain with `.stateIn(...)`:
+同期的な `.value` が必要なら、チェーンを `.stateIn(...)` で終端すること。
 
 ```kotlin
-// ✅ GOOD
+// ✅ OK
 val name: StateFlow<String> = userState
     .map { it.name }
     .stateIn(viewModelScope, SharingStarted.Eagerly, userState.value.name)
 ```
 
-Community “derived state flow” utilities run the transform on every `.value` read — only acceptable for fast, idempotent transforms. Default to `.stateIn(...)`.
+コミュニティの「derived state flow」ユーティリティは `.value` を読むたびに変換を実行する — 高速で冪等な変換にのみ許容できる。デフォルトは `.stateIn(...)` にすること。
 
-## Decision: which Flow type?
+## 判断: どのFlow型を使うか
 
-| Need | Primitive |
+| 必要なこと | プリミティブ |
 |------|-----------|
-| State that always has a value, read by both async collectors **and** synchronous code | `StateFlow`, often with `SharingStarted.Eagerly` when `.value` matters |
-| Hot stream, multiple subscribers, **no** requirement for synchronous `.value` | `SharedFlow` |
-| Discrete events for **one** consumer, exactly-once handoff | Consider `Channel(BUFFERED).receiveAsFlow()` |
-| Cold stream, one consumer per collection | Plain `Flow` |
+| 常に値を持ち、非同期のコレクターと同期コードの**両方**から読まれるstate | `StateFlow`（`.value`が重要なら`SharingStarted.Eagerly`が多い） |
+| ホットストリーム、複数のsubscriber、同期的な`.value`が**不要** | `SharedFlow` |
+| **1つの**コンシューマー向けの個別イベント、厳密に一度だけの受け渡し | `Channel(BUFFERED).receiveAsFlow()` を検討 |
+| coldストリーム、収集ごとに1コンシューマー | 通常の `Flow` |
 
-If you're tempted to reach for `SharedFlow`, ask: would dropping an emission be a bug, and how many consumers must see it? If one consumer must handle it exactly once, a `Channel` may fit. If every observer must see it, model durable state or configure a broadcast stream deliberately.
+`SharedFlow` に手が伸びそうになったら、こう問うこと: emissionを落とすことはバグか、何人のコンシューマーが見る必要があるか。1つのコンシューマーが厳密に一度処理する必要があるなら `Channel` が合うかもしれない。すべてのオブザーバーが見る必要があるなら、永続的なstateをモデリングするか、ブロードキャストストリームを意図的に構成すること。
 
-## Quick reference
+## クイックリファレンス
 
-| Symptom | Problem | Fix |
+| 症状 | 問題 | 修正 |
 |---------|---------|-----|
-| `MutableStateFlow<X>(FakeDomainValue)` | Invalid placeholder default | Model absence explicitly or use phase initialization |
-| `MutableSharedFlow<Event>` for single-consumer nav/snackbar | Lossy default event stream | Consider `Channel(BUFFERED).receiveAsFlow()` |
-| `fun foo() = flow.stateIn(...)` | Per-call sharing coroutine | Make it a `val` / shared instance |
-| `WhileSubscribed` + `.value` must be fresh/initialized | Stale or initial data | `SharingStarted.Eagerly` or explicit initialization |
-| `stateFlow.map { ... }` consumed as state | Lost `.value` | Terminate with `.stateIn(...)` |
-| `_state.value = _state.value.copy(...)` | Non-atomic read/modify/write | `_state.update { it.copy(...) }` |
-| Expensive object creation inside `update { ... }` that doesn't use current state | Work can repeat if update retries | Build before `update`; keep only current-state transforms inside |
+| `MutableStateFlow<X>(FakeDomainValue)` | 無効なプレースホルダーのデフォルト | 不在を明示的にモデリングするか、フェーズ初期化を使う |
+| 単一コンシューマーのnav/スナックバーに `MutableSharedFlow<Event>` | 消失しうるデフォルトのイベントストリーム | `Channel(BUFFERED).receiveAsFlow()` を検討 |
+| `fun foo() = flow.stateIn(...)` | 呼び出しごとの共有コルーチン | `val` / 共有インスタンスにする |
+| `WhileSubscribed` + `.value` が常に最新/初期化済みである必要 | 古い、または初期のデータ | `SharingStarted.Eagerly` または明示的な初期化 |
+| stateとして消費される `stateFlow.map { ... }` | `.value` の消失 | `.stateIn(...)` で終端する |
+| `_state.value = _state.value.copy(...)` | 非アトミックな読み取り/変更/書き込み | `_state.update { it.copy(...) }` |
+| 現在のstateを使わない高コストなオブジェクト生成を `update { ... }` の中で行う | updateがリトライすると処理が繰り返される可能性 | `update` の前に構築し、内部には現在のstateに依存する変換だけを残す |
 
-## Red flags during review
+## レビュー時の危険信号
 
-| Thought | Reality |
+| 思考 | 実際 |
 |---------|---------|
-| "We need `SharedFlow` because there are multiple subscribers" | Multiple subscribers change the semantics. `Channel.receiveAsFlow()` is not broadcast; choose the event model deliberately. |
-| "We'll use `WhileSubscribed` to save resources" | Only if stale/initial `.value` reads are acceptable. Verify before applying. |
-| "I'll use a sentinel until real data loads" | Consumers treat it as real domain; prefer explicit UI/state modeling or phasing. |
-| "I'll construct the new object inside `update` because it's convenient" | The lambda may retry. Construct outside unless it depends on the current state. |
+| 「複数のsubscriberがいるから`SharedFlow`が必要」 | 複数subscriberはセマンティクスを変える。`Channel.receiveAsFlow()`はブロードキャストではない。イベントモデルを意図的に選ぶこと。 |
+| 「リソース節約のために`WhileSubscribed`を使う」 | 古い/初期の`.value`読み取りが許容できる場合のみ。適用前に検証すること。 |
+| 「実データがロードされるまでsentinelを使う」 | コンシューマーはそれを実際のドメインとして扱う。明示的なUI/stateモデリングかフェーズ分けを優先する。 |
+| 「都合がいいので`update`の中で新しいオブジェクトを構築する」 | ラムダはリトライされる可能性がある。現在のstateに依存しない限り外で構築する。 |
 
-## Related
+## 関連
 
-- [Kotlin control flow](../../kotlin-control-flow/SKILL.md) — choosing `when`, guard conditions, exhaustiveness, smart casts, and early returns when modeling state and events.
-- [Structured concurrency](structured-concurrency.md) — scope ownership, init launches, fire-and-forget boundaries, cancellation, `runBlocking`
-- [Compose state and effects](../../compose-state-and-effects/SKILL.md) — collecting event flows and wiring state holders to plain state-driven UI
+- [Kotlin control flow](../../kotlin-control-flow/SKILL.md) — stateとイベントをモデリングする際の `when`、ガード条件、網羅性、スマートキャスト、早期returnの選択。
+- [Structured concurrency](structured-concurrency.md) — スコープの所有権、init内のlaunch、fire-and-forget境界、キャンセル、`runBlocking`
+- [Compose state and effects](../../compose-state-and-effects/SKILL.md) — イベントFlowの収集と、純粋なstate駆動のUIへのstate holderの配線

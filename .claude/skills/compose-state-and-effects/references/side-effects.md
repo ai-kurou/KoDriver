@@ -1,44 +1,44 @@
-# Compose: side effects
+# Compose: 副作用（side effects）
 
-## Core principle
+## 基本原則
 
-Composable bodies describe UI. They can be recomposed, skipped, or abandoned. Work that changes the outside world belongs in an effect API whose lifecycle matches the work.
+composableのbodyはUIを記述するものであり、recomposeされたり、スキップされたり、破棄されたりしうる。外の世界を変更する処理は、その処理のライフサイクルに合ったエフェクトAPIに置くこと。
 
-## Pick the smallest effect
+## 最小のエフェクトを選ぶ
 
-| Need | API |
+| 必要なこと | API |
 |---|---|
-| Publish Compose state to non-Compose code after every successful recomposition | `SideEffect` |
-| Register/unregister a listener, callback, observer, or resource | `DisposableEffect(keys...)` |
-| Run suspending, deferred, or keyed one-shot work | `LaunchedEffect(keys...)` |
-| Launch suspending work from a user event callback | `rememberCoroutineScope()` |
-| Convert Compose snapshot reads into a Flow inside a coroutine | `snapshotFlow { ... }` inside `LaunchedEffect` |
+| recomposeが成功するたびに、Compose stateをCompose外のコードへ公開する | `SideEffect` |
+| リスナー・コールバック・オブザーバー・リソースの登録/解除 | `DisposableEffect(keys...)` |
+| suspendする、遅延する、キー付けされた一度限りの処理を実行する | `LaunchedEffect(keys...)` |
+| ユーザーイベントのコールバックからsuspend処理を起動する | `rememberCoroutineScope()` |
+| コルーチン内でCompose snapshotの読み取りをFlowに変換する | `LaunchedEffect` 内の `snapshotFlow { ... }` |
 
-## Effect keys
+## エフェクトのキー
 
-Keys define restart identity. When any key changes, the old effect is cancelled/disposed and a new one starts.
+キーは再起動の識別子を定義する。いずれかのキーが変わると、古いエフェクトはキャンセル/破棄され、新しいエフェクトが開始する。
 
 ```kotlin
-// ✅ Restart collection when userId changes
+// ✅ userIdが変わったら収集を再起動する
 LaunchedEffect(userId) {
     repository.events(userId).collect { event -> handle(event) }
 }
 
-// ❌ Unit hides a changing input; collection keeps using the first userId
+// ❌ Unitが変化する入力を隠してしまい、収集は最初のuserIdを使い続ける
 LaunchedEffect(Unit) {
     repository.events(userId).collect { event -> handle(event) }
 }
 ```
 
-Use stable, semantic keys:
+安定した意味のあるキーを使うこと。
 
-- Use the thing whose lifecycle the effect follows: `userId`, `screenId`, `lifecycleOwner`, `focusRequester`.
-- Do not use broad objects (`state`, `viewModel`) when only one property matters.
-- Do not add changing lambdas as keys unless you really want restarts on every lambda change.
+- エフェクトが従うべきライフサイクルを持つもの: `userId`、`screenId`、`lifecycleOwner`、`focusRequester`。
+- 1つのプロパティしか関係しない場合に、広いオブジェクト（`state`、`viewModel`）を使わない。
+- 変化するラムダをキーに追加しない。ただしラムダが変わるたびに本当に再起動したい場合を除く。
 
-## Avoid stale captures
+## 古いキャプチャ（stale capture）を避ける
 
-For long-running effects that should not restart but need the latest callback or value, use `rememberUpdatedState`.
+再起動すべきではないが最新のコールバックや値を必要とする長生きのエフェクトには `rememberUpdatedState` を使う。
 
 ```kotlin
 @Composable
@@ -52,62 +52,62 @@ fun Timeout(onTimeout: () -> Unit) {
 }
 ```
 
-Use this when the lifecycle is "start once" but the invoked lambda should stay fresh. Common cases:
+これは、ライフサイクルは「一度だけ開始」だが、呼び出されるラムダは常に最新であるべき場合に使う。よくあるケース:
 
-- A timeout or splash effect should not restart when `onTimeout` changes, but it should call the latest callback.
-- A lifecycle observer should stay registered to the same owner, but invoke the latest `onStart` / `onStop` lambdas.
-- A long-running collector should keep its collection lifecycle, but call the latest event handler.
+- タイムアウトやスプラッシュのエフェクトは `onTimeout` が変わっても再起動すべきではないが、最新のコールバックを呼ぶべき。
+- ライフサイクルオブザーバーは同じownerに登録され続けるべきだが、最新の `onStart` / `onStop` ラムダを呼ぶべき。
+- 長生きのコレクターは収集のライフサイクルを維持すべきだが、最新のイベントハンドラーを呼ぶべき。
 
-Do not use `rememberUpdatedState` to avoid choosing proper keys. If the changed value should restart the work, make it a key instead:
+適切なキーを選ぶことを避けるために `rememberUpdatedState` を使わないこと。変化した値が処理を再起動すべきなら、代わりにそれをキーにする。
 
 ```kotlin
-// BAD: userId changes should restart the collection, not update a captured value.
+// NG: userIdの変化は収集を再起動すべきであり、キャプチャした値を更新するだけでは不十分
 val latestUserId by rememberUpdatedState(userId)
 LaunchedEffect(Unit) {
     repository.events(latestUserId).collect { event -> handle(event) }
 }
 
-// GOOD: the collection lifecycle follows userId.
+// OK: 収集のライフサイクルがuserIdに従う
 LaunchedEffect(userId) {
     repository.events(userId).collect { event -> handle(event) }
 }
 ```
 
-### `rememberUpdatedState` values are stale inside `remember {}` blocks
+### `remember {}` ブロック内では `rememberUpdatedState` の値は古いまま
 
-`rememberUpdatedState` returns a `State` object whose `.value` is updated on every recomposition. The "latest" behavior only helps when the State is **read lazily** — inside an effect body or a lambda that runs later — not when the value is captured eagerly.
+`rememberUpdatedState` は、recomposeのたびに `.value` が更新される `State` オブジェクトを返す。「最新」という挙動は、そのStateが**遅延して読み取られる**場合 — エフェクトのbodyや後で実行されるラムダの中 — にのみ機能し、値が即座にキャプチャされる場合には機能しない。
 
-Inside a `remember {}` block the producer lambda runs once. Reading the delegate there snapshots the current `.value` into the remembered object — future State updates never reach it:
+`remember {}` ブロック内ではproducerラムダは一度だけ実行される。そこでdelegateを読み取ると、現在の `.value` がrememberされたオブジェクトにスナップショットされる — 以降のState更新はそこに届かない。
 
 ```kotlin
 val latestChannelId by rememberUpdatedState(channelId)
 
-// ❌ BAD — channelId is read once when remember's lambda executes;
-// the destination holds the initial value forever
+// ❌ NG — channelIdはrememberのラムダが実行される時に一度だけ読まれる。
+// destinationは初期値を永遠に保持し続ける
 val destination = remember {
     Destination(channelId = latestChannelId)
 }
 
-// ✅ GOOD — skip rememberUpdatedState; key remember on the changing value
+// ✅ OK — rememberUpdatedStateを使わず、変化する値でrememberをキー付けする
 val destination = remember(channelId) {
     Destination(channelId = channelId)
 }
 
-// ✅ ALSO GOOD — wrapping lambda defers the read to each invocation
+// ✅ これもOK — ラップしたラムダで各呼び出し時に読み取りを遅延させる
 val destination = remember {
     Destination(channelId = { latestChannelId })
 }
 ```
 
-The same trap applies anywhere a `rememberUpdatedState` delegate is **read eagerly** rather than deferred behind a lambda or effect body: data classes constructed in `remember`, objects built once in `DisposableEffect`'s setup block, or any expression evaluated at creation time.
+同じ罠は、`rememberUpdatedState` のdelegateがラムダやエフェクトのbodyの背後に遅延されず**即座に読み取られる**あらゆる場所で発生する: `remember` 内で構築されるdata class、`DisposableEffect` のセットアップブロックで一度だけ構築されるオブジェクト、作成時に評価される任意の式。
 
-When the captured value should trigger recreation of the remembered object, make it a `remember` key and skip `rememberUpdatedState` entirely. Reserve `rememberUpdatedState` for values that must stay fresh inside a long-lived scope (effect coroutine, event callback) **without** restarting that scope.
+キャプチャした値がrememberされたオブジェクトの再作成を引き起こすべき場合は、それを `remember` のキーにし、`rememberUpdatedState` は使わないこと。`rememberUpdatedState` は、そのスコープを再起動**せずに**、長生きのスコープ（エフェクトのコルーチン、イベントコールバック）内で値を常に最新に保つ必要がある場合のために取っておく。
 
-`rememberUpdatedState` also does not make render state "non-recomposing." If the UI needs to display a changing value, read normal `State` in composition or use [Compose performance](../../compose-performance/SKILL.md) for frame-rate values.
+`rememberUpdatedState` はレンダリングstateを「recomposeしないもの」にするわけでもない。UIが変化する値を表示する必要があるなら、composition内で通常の `State` を読むか、フレームレートの値には [Compose performance](../../compose-performance/SKILL.md) を使うこと。
 
-## Collecting Flow
+## Flowの収集
 
-Use `LaunchedEffect` for **side-effect/event flows**: snackbars, navigation events, analytics events, focus commands, or other streams where each emission triggers imperative work.
+**副作用/イベントFlow**（スナックバー、ナビゲーションイベント、アナリティクスイベント、フォーカスコマンドなど、各emissionが命令的な処理を引き起こすストリーム）には `LaunchedEffect` を使う。
 
 ```kotlin
 LaunchedEffect(events) {
@@ -117,11 +117,11 @@ LaunchedEffect(events) {
 }
 ```
 
-Do not collect render state imperatively just to mutate local state. For UI state, collect near the state holder and pass plain values into the UI composable—the **state-holder vs UI split**, `collectAsStateWithLifecycle()` / `collectAsState()`, and preview-friendly wiring are covered in [State hoisting](state-hoisting.md). Do not duplicate that architecture here.
+ローカルstateを変更するためだけにレンダリングstateを命令的に収集しないこと。UI stateについては、state holderの近くで収集し、純粋な値をUI composableに渡す — **state holder と UI の分離**、`collectAsStateWithLifecycle()` / `collectAsState()`、プレビューしやすい配線については [State hoisting](state-hoisting.md) で扱う。ここでそのアーキテクチャを重複させないこと。
 
-On Android, prefer lifecycle-aware collection where available; use `collectAsState()` on targets without lifecycle-aware APIs.
+Android上では、可能であればlifecycle-awareな収集を優先する。lifecycle-aware APIがないターゲットでは `collectAsState()` を使う。
 
-For Compose state reads, use `snapshotFlow`:
+Compose stateの読み取りには `snapshotFlow` を使う。
 
 ```kotlin
 LaunchedEffect(listState) {
@@ -131,11 +131,11 @@ LaunchedEffect(listState) {
 }
 ```
 
-`snapshotFlow { ... }.map { ... }` without a terminal `collect` does nothing.
+終端の `collect` がない `snapshotFlow { ... }.map { ... }` は何も行わない。
 
-## User events
+## ユーザーイベント
 
-Use `rememberCoroutineScope()` when a click or gesture starts suspending work:
+クリックやジェスチャーがsuspend処理を開始する場合は `rememberCoroutineScope()` を使う。
 
 ```kotlin
 @Composable
@@ -154,11 +154,11 @@ fun SaveButton(snackbarHostState: SnackbarHostState) {
 }
 ```
 
-Avoid "event flag" state just to trigger a `LaunchedEffect`. The click already is the event.
+`LaunchedEffect` を発火させるためだけの「イベントフラグ」stateは避けること。クリック自体が既にイベントである。
 
-## Registration and cleanup
+## 登録とクリーンアップ
 
-Use `DisposableEffect` for paired setup/teardown:
+対になったセットアップ/ティアダウンには `DisposableEffect` を使う。
 
 ```kotlin
 @Composable
@@ -172,33 +172,33 @@ fun ObserveLifecycle(owner: LifecycleOwner, observer: LifecycleObserver) {
 }
 ```
 
-Every registration path should have a matching `onDispose` cleanup path.
+すべての登録パスには対応する `onDispose` によるクリーンアップパスがあるべき。
 
-## Common mistakes
+## よくある間違い
 
-| Mistake | Diagnosis | Fix |
+| 間違い | 診断 | 修正 |
 |---|---|---|
-| Network request directly in the composable body | Side work in composition | Usually move to a ViewModel/state holder; use `LaunchedEffect` only for UI-owned keyed work |
-| Analytics property written from the composable body | Side work in composition | Use `SideEffect` when it should publish after every successful recomposition |
-| Impression/event logged from the composable body | Side work in composition | Use `LaunchedEffect(key)` when it should run once for that key |
-| `LaunchedEffect(Unit)` captures changing `id` | Missing key | Key by `id`, or use `rememberUpdatedState` if it must not restart |
-| `rememberUpdatedState(id)` used so `LaunchedEffect(Unit)` keeps running after `id` changes | Hidden lifecycle bug | Key the effect by `id` |
-| Long-lived effect invokes an old callback after recomposition | Stale capture | Wrap the callback with `rememberUpdatedState` and call the wrapper inside the effect |
-| `rememberUpdatedState` delegate read directly in `remember {}` (e.g. `Destination(id = latestId)`) | Value captured once, never refreshed | Make the value a `remember` key: `remember(id) { Destination(id = id) }` |
-| `LaunchedEffect(state) { ... }` restarts too often | Overly broad key | Key by the specific property |
-| `LaunchedEffect(...) { nonSuspendSetter() }` | Wrong effect type | Usually `SideEffect`; keep `LaunchedEffect` only for keyed one-shot/deferred work |
-| Listener added in `LaunchedEffect` with no cleanup | Missing disposal | Use `DisposableEffect` |
-| Launching from click by setting `shouldShowSnackbar = true` | Event flag anti-pattern | Use `rememberCoroutineScope()` in the click callback |
-| `if (isFocused) { … }` or focus read in composable body for side work | Side work during composition | `LaunchedEffect(focused) { … }` or `snapshotFlow` |
-| `onSizeChanged { heightState = it.height }` on measured composable | Layout → composition back-write if a sibling reads `heightState` in composition | Siblings must consume height in measure phase, not `Modifier.height(state.dp)` in composition |
+| composableのbody内で直接ネットワークリクエストを行う | composition内での副作用 | 通常はViewModel/state holderへ移動。UIが所有するキー付き処理にのみ `LaunchedEffect` を使う |
+| composableのbodyからアナリティクスプロパティを書き込む | composition内での副作用 | recomposeが成功するたびに公開すべきなら `SideEffect` を使う |
+| composableのbodyからインプレッション/イベントをログ出力する | composition内での副作用 | そのキーで一度だけ実行すべきなら `LaunchedEffect(key)` を使う |
+| `LaunchedEffect(Unit)` が変化する `id` をキャプチャしている | キー漏れ | `id` でキー付けするか、再起動すべきでないなら `rememberUpdatedState` を使う |
+| `id` 変更後も `LaunchedEffect(Unit)` を動かし続けるために `rememberUpdatedState(id)` を使っている | 隠れたライフサイクルバグ | エフェクトを `id` でキー付けする |
+| 長生きのエフェクトがrecomposition後に古いコールバックを呼ぶ | 古いキャプチャ | コールバックを `rememberUpdatedState` でラップし、エフェクト内でラッパーを呼ぶ |
+| `remember {}` 内で直接 `rememberUpdatedState` のdelegateを読む（例: `Destination(id = latestId)`） | 値が一度だけキャプチャされ更新されない | 値を `remember` のキーにする: `remember(id) { Destination(id = id) }` |
+| `LaunchedEffect(state) { ... }` が頻繁に再起動しすぎる | キーが広すぎる | 特定のプロパティでキー付けする |
+| `LaunchedEffect(...) { nonSuspendSetter() }` | エフェクトの種類が間違っている | 通常は `SideEffect`。`LaunchedEffect` はキー付きの一度限り/遅延処理にのみ使う |
+| `LaunchedEffect` 内でリスナーを追加してクリーンアップがない | 破棄漏れ | `DisposableEffect` を使う |
+| クリックで `shouldShowSnackbar = true` をセットして起動する | イベントフラグのアンチパターン | クリックコールバック内で `rememberCoroutineScope()` を使う |
+| composableのbody内で副作用のために `if (isFocused) { … }` やフォーカス読み取りを行う | composition中の副作用 | `LaunchedEffect(focused) { … }` または `snapshotFlow` |
+| measureされたcomposableで `onSizeChanged { heightState = it.height }` | 兄弟がcomposition内で`heightState`を読むと、layout→compositionのback-writeになる | 兄弟はcomposition内で `Modifier.height(state.dp)` するのではなく、measureフェーズで高さを消費すべき |
 
-## Focus and measurement
+## フォーカスと計測
 
-**Focus:** Reading focus in the composable body to drive **side work** (preloading, analytics, toasts) runs that work during composition. Observe focus in an effect instead:
+**フォーカス:** composableのbody内でフォーカスを読み取り**副作用**（プリロード、アナリティクス、トースト）を駆動すると、その処理はcomposition中に実行される。代わりにエフェクト内でフォーカスを監視すること。
 
 ```kotlin
-// ❌ BAD — side work runs during composition every time `focused` is true,
-// including transient focus passes; `SideEffect` re-runs after every successful recomposition
+// ❌ NG — `focused`がtrueになるたびcomposition中に副作用が実行され、
+// 一時的なフォーカス通過も含まれる。`SideEffect`はrecomposeが成功するたびに再実行される
 @Composable
 fun Preloader(interactionSource: MutableInteractionSource) {
     val focused by interactionSource.collectIsFocusedAsState()
@@ -207,7 +207,7 @@ fun Preloader(interactionSource: MutableInteractionSource) {
     }
 }
 
-// ✅ GOOD — side work in a keyed effect
+// ✅ OK — キー付きエフェクト内で副作用を実行する
 @Composable
 fun Preloader(interactionSource: MutableInteractionSource) {
     val focused by interactionSource.collectIsFocusedAsState()
@@ -217,15 +217,15 @@ fun Preloader(interactionSource: MutableInteractionSource) {
 }
 ```
 
-Use `snapshotFlow { … }` inside `LaunchedEffect` when you need to sample multiple snapshot reads or debounce rapid changes without keying the effect on every derived value. For TV/D-pad focus navigation semantics, see [Compose focus navigation](../../compose-focus-navigation/SKILL.md).
+複数のsnapshot readをサンプリングしたり、すべての派生値でエフェクトをキー付けせずに急な変化をdebounceしたりする必要がある場合は、`LaunchedEffect` 内で `snapshotFlow { … }` を使う。TV/D-padのフォーカスナビゲーションのセマンティクスについては [Compose focus navigation](../../compose-focus-navigation/SKILL.md) を参照。
 
-**Measurement:** `onSizeChanged` / `onGloballyPositioned` are valid **callbacks**, but they fire during the layout phase. Writing snapshot state there is only safe if no earlier phase reads it. If a sibling reads that state in composition, layout is back-writing into composition and the sibling will recompose every measure pass. Apply captured dimensions in `Modifier.layout` (see [Compose component design](../../compose-component-design/SKILL.md) and [Compose performance](../../compose-performance/SKILL.md)).
+**計測:** `onSizeChanged` / `onGloballyPositioned` は有効な**コールバック**だが、layoutフェーズで発火する。そこでsnapshot stateに書き込むのは、それより前のフェーズが読まない場合にのみ安全。兄弟がcomposition内でそのstateを読む場合、layoutがcompositionへback-writeしていることになり、measureのたびに兄弟がrecomposeする。キャプチャした寸法は `Modifier.layout` に適用すること（[Compose component design](../../compose-component-design/SKILL.md) と [Compose performance](../../compose-performance/SKILL.md) を参照）。
 
-## Red flags during review
+## レビュー時の危険信号
 
-- "This only runs once" about code in a composable body.
-- `LaunchedEffect(Unit)` in a function with changing parameters.
-- A flow chain inside an effect with no terminal collection.
-- Effects whose keys are chosen to silence lint instead of model lifecycle.
-- Callback lambdas used from long-lived effects without either a key or `rememberUpdatedState`.
-- `rememberUpdatedState` delegate read eagerly inside a `remember {}` block or object constructor — the value is captured once and never refreshes.
+- composableのbody内のコードについて「これは一度しか実行されない」という思い込み
+- パラメータが変化する関数内の `LaunchedEffect(Unit)`
+- 終端の収集がないエフェクト内のFlowチェーン
+- ライフサイクルをモデリングするためではなくlintを黙らせるために選ばれたキー
+- キーも `rememberUpdatedState` もなしに、長生きのエフェクトから使われるコールバックラムダ
+- `remember {}` ブロックやオブジェクトのコンストラクタ内で即座に読み取られる `rememberUpdatedState` のdelegate — 値が一度だけキャプチャされ二度と更新されない

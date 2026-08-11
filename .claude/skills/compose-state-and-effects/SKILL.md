@@ -1,51 +1,36 @@
 ---
 name: compose-state-and-effects
-description: Use when writing or reviewing Jetpack Compose state ownership, remember state, state hoisting, screen state holders, LaunchedEffect, DisposableEffect, SideEffect, Flow collection, navigation, snackbar, analytics, or focus requests.
+description: Jetpack Composeの状態所有権、remember state、state hoisting、画面のstate holder、LaunchedEffect、DisposableEffect、SideEffect、Flow収集、ナビゲーション、スナックバー、アナリティクス、フォーカス要求を記述・レビューする際に使用する。
 ---
 
-# Compose state and effects
+# Compose の状態とエフェクト
 
-## Core principle
+## 基本原則
 
-Give every piece of UI state one lowest responsible owner, then run imperative
-work through the effect whose lifecycle follows that owner. Composition renders;
-state and effects make rendering change safely.
+すべてのUI stateに「最も責務の小さい所有者」を1つ与え、その所有者のライフサイクルに従うエフェクトを通じて命令的な処理を実行すること。Compositionはレンダリングを担い、stateとエフェクトはレンダリングを安全に変化させる。
 
-## Procedure
+## 手順
 
-1. Inventory mutable UI state, app state, event streams, app dependencies, and
-   imperative work in the affected screen or component.
-2. Place each state value at its lowest necessary owner: local UI state,
-   hoisted state, a plain UI state holder, or a screen state holder.
-3. Keep app wiring and business state at the screen boundary; expose plain UI
-   state and explicit callbacks to previewable rendering.
-4. Choose an effect API whose lifecycle matches the work, and key it by the
-   semantic input that should restart or dispose it.
-5. Load the focused reference for every material concern below. Do not use a
-   reference merely because its topic is adjacent.
-6. Route frame-rate reads, cross-phase back-writing, and
-   `@ReadOnlyComposable` contracts to [Compose performance](../compose-performance/SKILL.md).
-7. Finish when every state value has one owner, every effect has a justified
-   lifecycle and key, and the UI can be previewed and tested without app
-   dependencies.
+1. 対象の画面・コンポーネントにおける、可変UI state・アプリstate・イベントストリーム・アプリ依存・命令的処理を洗い出す。
+2. 各stateを、必要とする最小限の所有者（ローカルUI state、hoistされたstate、単純なUI state holder、または画面のstate holder）に配置する。
+3. アプリの配線（wiring）とビジネスstateは画面境界に留め、プレビュー可能なレンダリングには純粋なUI stateと明示的なコールバックのみを渡す。
+4. 実行される処理のライフサイクルに合ったエフェクトAPIを選び、そのエフェクトを再起動・破棄すべき意味的な入力でキー付けする。
+5. 下記の各関心事について、該当するリファレンスのみを読み込む。トピックが近いというだけでリファレンスを読まないこと。
+6. フレームレートの読み取り、フェーズをまたぐback-writing、`@ReadOnlyComposable`の契約は [Compose performance](../compose-performance/SKILL.md) に委ねる。
+7. すべてのstateが単一の所有者を持ち、すべてのエフェクトが妥当なライフサイクルとキーを持ち、UIがアプリ依存なしにプレビュー・テスト可能になった時点で完了とする。
 
-## Topic router
+## トピックルーター
 
-| Signal | Read |
+| シグナル | 参照先 |
 |---|---|
-| Bare local `var`, `remember { mutableStateOf(...) }`, state lists/maps, or reset state | [Local state](references/local-state.md) |
-| State shared by siblings, UI state holders, ViewModel/component wiring, or previewable screen boundaries | [State hoisting](references/state-hoisting.md) |
-| `LaunchedEffect`, `DisposableEffect`, `SideEffect`, `snapshotFlow`, `rememberCoroutineScope`, `rememberUpdatedState`, `produceState`, imperative `requestFocus`, callbacks, event Flow collection, snackbar, navigation, or analytics | [Side effects](references/side-effects.md) |
-| Focus ownership and keyboard/TV/D-pad behavior | [Compose focus navigation](../compose-focus-navigation/SKILL.md) |
-| Tests or previews for the resulting UI contract | [Compose UI testing patterns](../compose-ui-testing-patterns/SKILL.md) |
+| 素の `var`、`remember { mutableStateOf(...) }`、state list/map、stateのリセット | [Local state](references/local-state.md) |
+| 兄弟間で共有されるstate、UI state holder、ViewModel/コンポーネントの配線、プレビュー可能な画面境界 | [State hoisting](references/state-hoisting.md) |
+| `LaunchedEffect`、`DisposableEffect`、`SideEffect`、`snapshotFlow`、`rememberCoroutineScope`、`rememberUpdatedState`、`produceState`、命令的な `requestFocus`、コールバック、イベントFlowの収集、スナックバー、ナビゲーション、アナリティクス | [Side effects](references/side-effects.md) |
+| フォーカスの所有権とキーボード/TV/D-padの挙動 | [Compose focus navigation](../compose-focus-navigation/SKILL.md) |
+| 結果として得られるUI契約のテストやプレビュー | [Compose UI testing patterns](../compose-ui-testing-patterns/SKILL.md) |
 
-## RED/GREEN agent scenarios
+## RED/GREENエージェントシナリオ
 
-1. RED keeps a component, collected `StateFlow`, navigation event, and screen
-   layout in one composable. GREEN leaves wiring and effects at the screen
-   boundary and gives plain rendering immutable state plus callbacks.
-2. Novel case: a query drives repository suggestions while a list state and
-   focus requester coordinate UI behavior. GREEN puts query and suggestions in
-   the screen state holder, but keeps Compose runtime objects in plain UI state.
-3. Counterexample: a one-off expandable badge has one private Boolean. GREEN
-   keeps it local and does not introduce a state holder or an effect.
+1. RED: コンポーネント、収集した `StateFlow`、ナビゲーションイベント、画面レイアウトを1つのcomposableにまとめてしまっている。GREEN: 配線とエフェクトを画面境界に残し、純粋なレンダリングにはimmutableなstateとコールバックのみを渡す。
+2. 新規ケース: クエリがリポジトリのサジェストを駆動しつつ、list stateとfocus requesterがUIの挙動を協調させる。GREEN: クエリとサジェストは画面のstate holderに置くが、Compose runtimeオブジェクトは純粋なUI state側に保つ。
+3. 反例: 一度限りの展開バッジは1つのprivate Booleanで十分。GREEN: state holderやエフェクトを導入せず、ローカルに留める。
