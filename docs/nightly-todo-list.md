@@ -17,6 +17,7 @@
 ## 毎晩実行する項目
 
 - Zenn（[https://zenn.dev](https://zenn.dev)）でAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
+- Qiita（[https://qiita.com](https://qiita.com)）でも同様に、AIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
 - Androidの最新動向（[https://android-developers.googleblog.com](https://android-developers.googleblog.com) を含む）をWebで調査し、KoDriverが取り入れていない・遅れている技術やプラクティスで採用価値があると判断したものがあれば improvement-ideas.md に追記する。
 
 ## 曜日ローテーション項目
