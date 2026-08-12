@@ -114,6 +114,7 @@ class ObserveReadoutEnabledStatesUseCaseTest {
                 mapOf<ReadoutItemKey, Boolean>(
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root to true,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root to true,
+                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to true,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true,
                 ),
                 useCase("gt7_ps5").first(),

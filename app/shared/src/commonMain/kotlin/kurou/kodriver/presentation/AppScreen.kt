@@ -566,6 +566,15 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 @Composable
 internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
     when (itemType) {
+        is ReadoutListItemType.LmuWindows -> LmuWindowsReadoutItemDetailContent(itemType)
+        is ReadoutListItemType.Gt7Ps5 -> Gt7Ps5ReadoutItemDetailContent(itemType)
+        is ReadoutListItemType.AceWindows -> AceWindowsReadoutItemDetailContent(itemType)
+    }
+}
+
+@Composable
+private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.LmuWindows) {
+    when (itemType) {
         ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
         ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
         ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
@@ -574,9 +583,33 @@ internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
         ReadoutListItemType.LmuWindows.TyreWear -> LmuWindowsReadoutTyreWearDetailPane()
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
-        ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
-        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
-        ReadoutListItemType.Gt7Ps5.RemainingFuel -> Gt7Ps5ReadoutRemainingFuelDetailPane()
+    }
+}
+
+@Composable
+private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5) {
+    when (itemType) {
+        ReadoutListItemType.Gt7Ps5.MyBestLap -> {
+            Gt7Ps5ReadoutMyBestLapDetailPane()
+        }
+
+        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
+            Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
+        }
+
+        ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
+            Gt7Ps5ReadoutRemainingFuelDetailPane()
+        }
+
+        ReadoutListItemType.Gt7Ps5.TyreTemperature -> {
+            // detailPane は未実装。listPane のタップでは何も表示しない。
+        }
+    }
+}
+
+@Composable
+private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
+    when (itemType) {
         ReadoutListItemType.AceWindows.Flag -> AceWindowsReadoutFlagDetailPane()
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
     }

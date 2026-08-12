@@ -136,9 +136,18 @@ class ReadoutListItemTypeFromIdTest {
             listOf(
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
             ),
             ReadoutListItemType.defaultOrder(Simulator.Gt7Ps5),
+        )
+    }
+
+    @Test
+    fun `gt7_ps5 の tyre_temperature は Gt7Ps5_TyreTemperature を返す`() {
+        assertEquals(
+            ReadoutListItemType.Gt7Ps5.TyreTemperature,
+            ReadoutListItemType.fromId(Simulator.Gt7Ps5, ReadoutItemKey.Gt7Ps5.TyreTemperature.Root),
         )
     }
 }
