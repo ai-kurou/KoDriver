@@ -18,12 +18,6 @@
 
 ---
 
-## ライブラリ・技術動向
-
-- **対象**: `app:shared` の画面遷移・ナビゲーション実装
-  **課題**: Jetpack Navigation 3 が stable化し（Android Developers Blog, 2025年11月）、Compose Multiplatform 1.10.0 以降で Android/Desktop/iOS/Web 含め非Androidターゲットでも使用可能になった。KoDriverの `app:shared` が既存の Navigation Compose ベースの実装であれば、Android/Desktop で一貫した設計に揃えられる可能性がある。
-  **改善案**: 移行コストと Navigation 3 の成熟度（高度なデバイス依存パターンはまだ発展途上）を踏まえたうえで、Navigation 3 への移行余地を調査する。優先度は低め。
-
 ## 開発フロー・CI
 
 - **対象**: `.github/workflows/on-pull-request.yml`
