@@ -1,8 +1,5 @@
 package kurou.kodriver.data.datasource
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import java.nio.file.Files
@@ -10,7 +7,6 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PreferencesDataStoreFactoryTest {
     @Serializable
     private data class FakePreferences(
@@ -18,7 +14,6 @@ class PreferencesDataStoreFactoryTest {
     )
 
     private val tempDir = Files.createTempDirectory("kodriver_preferences_data_store_factory_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
     fun tearDown() {
@@ -27,7 +22,7 @@ class PreferencesDataStoreFactoryTest {
 
     @Test
     fun `指定したファイル名でDataStoreが作成される`() =
-        testScope.runTest {
+        runTest {
             val serializer =
                 protoBufPreferencesSerializer(
                     defaultValue = FakePreferences(),

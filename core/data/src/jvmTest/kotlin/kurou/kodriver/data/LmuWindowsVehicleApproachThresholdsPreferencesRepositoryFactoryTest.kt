@@ -1,9 +1,6 @@
 package kurou.kodriver.data
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LATERAL_THRESHOLD_METERS_DEFAULT
 import kurou.kodriver.domain.model.LMU_WINDOWS_VEHICLE_APPROACH_LONGITUDINAL_THRESHOLD_METERS_DEFAULT
@@ -12,13 +9,11 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
     private val tempDir =
         Files
             .createTempDirectory("kodriver_lmu_windows_vehicle_approach_thresholds_preferences_repository_factory_test")
             .toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
     fun tearDown() {
@@ -27,7 +22,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
 
     @Test
     fun `デフォルト値は縦方向5m・横方向5m`() =
-        testScope.runTest {
+        runTest {
             val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
             assertEquals(
@@ -42,7 +37,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
 
     @Test
     fun `保存した閾値を読み出せる`() =
-        testScope.runTest {
+        runTest {
             val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
             repository.saveLongitudinalThresholdMeters(0.5)
@@ -54,7 +49,7 @@ class LmuWindowsVehicleApproachThresholdsPreferencesRepositoryFactoryTest {
 
     @Test
     fun `縦横の閾値は独立して保持される`() =
-        testScope.runTest {
+        runTest {
             val repository = createLmuWindowsVehicleApproachThresholdsPreferencesRepository(tempDir.absolutePath)
 
             repository.saveLongitudinalThresholdMeters(0.3)
