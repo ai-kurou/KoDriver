@@ -48,14 +48,4 @@ class Gt7Ps5ReadoutTyreTemperatureDetailViewModelTest {
                 viewModel.uiState.first().highThresholdCelsius,
             )
         }
-
-    @Test
-    fun `onLowWarningEnabledChangedを呼ぶとuiStateのlowWarningEnabledが更新される`() =
-        runTest {
-            val viewModel = Gt7Ps5ReadoutTyreTemperatureDetailViewModel()
-
-            viewModel.onLowWarningEnabledChanged(false)
-
-            assertEquals(false, viewModel.uiState.first().lowWarningEnabled)
-        }
 }

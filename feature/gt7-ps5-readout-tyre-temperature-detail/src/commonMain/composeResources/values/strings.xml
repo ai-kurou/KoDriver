@@ -5,5 +5,4 @@
     <string name="tyre_temperature_high_threshold_subtitle">高温閾値設定</string>
     <string name="tyre_temperature_high_threshold_label">高温閾値: %1$s°C</string>
     <string name="tyre_temperature_high_threshold_reset">デフォルトに戻す</string>
-    <string name="tyre_temperature_low_warning_card_title">低温警告</string>
 </resources>

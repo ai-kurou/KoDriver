@@ -30,7 +30,6 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("高温閾値設定").assertIsDisplayed()
         rule.onNodeWithText("高温閾値: 100°C").assertIsDisplayed()
-        rule.onNodeWithText("低温警告").assertIsDisplayed()
     }
 
     @Test
@@ -46,23 +45,6 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
         }
 
         rule.onNodeWithText("過熱警告").performClick()
-
-        assertEquals(false, enabled)
-    }
-
-    @Test
-    fun `低温警告カードのスイッチをタップするとonLowWarningEnabledChangedが呼ばれる`() {
-        var enabled: Boolean? = null
-        rule.setContent {
-            KoDriverTheme {
-                Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
-                    uiState = Gt7Ps5ReadoutTyreTemperatureDetailUiState(lowWarningEnabled = true),
-                    onLowWarningEnabledChanged = { enabled = it },
-                )
-            }
-        }
-
-        rule.onNodeWithText("低温警告").performClick()
 
         assertEquals(false, enabled)
     }

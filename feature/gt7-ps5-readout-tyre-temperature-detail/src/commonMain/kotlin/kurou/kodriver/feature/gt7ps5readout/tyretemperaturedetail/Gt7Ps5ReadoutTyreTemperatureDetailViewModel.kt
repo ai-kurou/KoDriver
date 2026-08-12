@@ -28,8 +28,4 @@ internal class Gt7Ps5ReadoutTyreTemperatureDetailViewModel : ViewModel() {
     fun onHighThresholdReset() {
         onHighThresholdChanged(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
     }
-
-    fun onLowWarningEnabledChanged(enabled: Boolean) {
-        _uiState.update { it.copy(lowWarningEnabled = enabled) }
-    }
 }

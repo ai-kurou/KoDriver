@@ -23,7 +23,6 @@ import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.reso
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_label
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_reset
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_high_threshold_subtitle
-import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_low_warning_card_title
 import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.generated.resources.tyre_temperature_overheat_warning_card_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -44,7 +43,6 @@ fun Gt7Ps5ReadoutTyreTemperatureDetailPane(modifier: Modifier = Modifier) {
         onOverheatWarningEnabledChanged = viewModel::onOverheatWarningEnabledChanged,
         onHighThresholdChanged = viewModel::onHighThresholdChanged,
         onHighThresholdReset = viewModel::onHighThresholdReset,
-        onLowWarningEnabledChanged = viewModel::onLowWarningEnabledChanged,
         modifier = modifier,
     )
 }
@@ -55,7 +53,6 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
     onOverheatWarningEnabledChanged: (Boolean) -> Unit = {},
     onHighThresholdChanged: (Int) -> Unit = {},
     onHighThresholdReset: () -> Unit = {},
-    onLowWarningEnabledChanged: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val labelTemplate = stringResource(Res.string.tyre_temperature_high_threshold_label)
@@ -89,13 +86,6 @@ internal fun Gt7Ps5ReadoutTyreTemperatureDetailPaneContent(
                     )
                 }
             },
-        )
-        DetailPaneCard(
-            title = stringResource(Res.string.tyre_temperature_low_warning_card_title),
-            checked = uiState.lowWarningEnabled,
-            onCheckedChange = onLowWarningEnabledChanged,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            bottomContent = {},
         )
     }
 }
