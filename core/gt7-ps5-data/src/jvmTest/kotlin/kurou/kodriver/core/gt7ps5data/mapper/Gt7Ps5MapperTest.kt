@@ -12,8 +12,19 @@ class Gt7Ps5MapperTest {
         const val BEST_LAP_TIME_OFFSET = 0x78
         const val GAS_LEVEL_OFFSET = 0x44
         const val GAS_CAPACITY_OFFSET = 0x48
+        const val TYRE_TEMP_FRONT_LEFT_OFFSET = 0x60
+        const val TYRE_TEMP_FRONT_RIGHT_OFFSET = 0x64
+        const val TYRE_TEMP_REAR_LEFT_OFFSET = 0x68
+        const val TYRE_TEMP_REAR_RIGHT_OFFSET = 0x6C
         const val CAR_CATEGORY_OFFSET = 0x16C
         const val PACKET_SIZE = 0x170
+
+        data class TyreTemps(
+            val frontLeft: Float = 0f,
+            val frontRight: Float = 0f,
+            val rearLeft: Float = 0f,
+            val rearRight: Float = 0f,
+        )
 
         fun packetWith(
             lapCount: Short = 0,
@@ -21,6 +32,7 @@ class Gt7Ps5MapperTest {
             bestLapTimeMs: Int = -1,
             gasLevel: Float = 0f,
             gasCapacity: Float = 100f,
+            tyreTemps: TyreTemps = TyreTemps(),
             carCategory: String? = null,
         ): ByteBuffer {
             val buf = ByteBuffer.allocate(PACKET_SIZE).order(ByteOrder.LITTLE_ENDIAN)
@@ -29,6 +41,10 @@ class Gt7Ps5MapperTest {
             buf.putInt(BEST_LAP_TIME_OFFSET, bestLapTimeMs)
             buf.putFloat(GAS_LEVEL_OFFSET, gasLevel)
             buf.putFloat(GAS_CAPACITY_OFFSET, gasCapacity)
+            buf.putFloat(TYRE_TEMP_FRONT_LEFT_OFFSET, tyreTemps.frontLeft)
+            buf.putFloat(TYRE_TEMP_FRONT_RIGHT_OFFSET, tyreTemps.frontRight)
+            buf.putFloat(TYRE_TEMP_REAR_LEFT_OFFSET, tyreTemps.rearLeft)
+            buf.putFloat(TYRE_TEMP_REAR_RIGHT_OFFSET, tyreTemps.rearRight)
             carCategory?.let { value ->
                 value.forEachIndexed { index, char -> buf.put(CAR_CATEGORY_OFFSET + index, char.code.toByte()) }
             }
@@ -87,6 +103,7 @@ class Gt7Ps5MapperTest {
                 bestLapTimeMs = 85_432,
                 gasLevel = 30.2f,
                 gasCapacity = 80f,
+                tyreTemps = TyreTemps(frontLeft = 82.1f, frontRight = 83.4f, rearLeft = 78.5f, rearRight = 79.9f),
                 carCategory = "GR3",
             )
         val result = Gt7Ps5Mapper.map(packet)
@@ -95,7 +112,39 @@ class Gt7Ps5MapperTest {
         assertEquals(85_432, result.bestLapTimeMs)
         assertEquals(30.2f, result.gasLevel)
         assertEquals(80f, result.gasCapacity)
+        assertEquals(82.1f, result.tyreTemperature.frontLeftCelsius)
+        assertEquals(83.4f, result.tyreTemperature.frontRightCelsius)
+        assertEquals(78.5f, result.tyreTemperature.rearLeftCelsius)
+        assertEquals(79.9f, result.tyreTemperature.rearRightCelsius)
         assertEquals("GR3", result.carCategory)
+    }
+
+    @Test
+    fun `TyreTemperatureFLを正しくマッピングする`() {
+        val packet = packetWith(tyreTemps = TyreTemps(frontLeft = 90.5f))
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals(90.5f, result.tyreTemperature.frontLeftCelsius)
+    }
+
+    @Test
+    fun `TyreTemperatureFRを正しくマッピングする`() {
+        val packet = packetWith(tyreTemps = TyreTemps(frontRight = 91.5f))
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals(91.5f, result.tyreTemperature.frontRightCelsius)
+    }
+
+    @Test
+    fun `TyreTemperatureRLを正しくマッピングする`() {
+        val packet = packetWith(tyreTemps = TyreTemps(rearLeft = 85.5f))
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals(85.5f, result.tyreTemperature.rearLeftCelsius)
+    }
+
+    @Test
+    fun `TyreTemperatureRRを正しくマッピングする`() {
+        val packet = packetWith(tyreTemps = TyreTemps(rearRight = 86.5f))
+        val result = Gt7Ps5Mapper.map(packet)
+        assertEquals(86.5f, result.tyreTemperature.rearRightCelsius)
     }
 
     @Test

@@ -17,6 +17,7 @@ import kurou.kodriver.domain.repository.FeedbackSenderRepository
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
+import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.KeepScreenOnEnabledRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagPreferencesRepository
 import kurou.kodriver.domain.repository.LmuWindowsFlagRepository
@@ -82,6 +83,9 @@ fun androidDataModule(context: Context) =
         }
         single<Gt7Ps5RemainingFuelPreferencesRepository> {
             createGt7Ps5RemainingFuelPreferencesRepository(context.filesDir.absolutePath)
+        }
+        single<Gt7Ps5TyreTemperaturePreferencesRepository> {
+            createGt7Ps5TyreTemperaturePreferencesRepository(context.filesDir.absolutePath)
         }
         // LMU 走行データの取得元（Android は KoDriver サーバーへの WebSocket クライアント実装）。
         // HttpClient は全リポジトリで単一インスタンスを共有する。

@@ -9,6 +9,7 @@ digraph G {
   ":feature:gt7-ps5-readout-my-best-lap-detail" -> ":core:designsystem"
   ":feature:gt7-ps5-readout-remaining-fuel-detail" -> ":core:designsystem"
   ":feature:gt7-ps5-readout-remaining-fuel-laps-detail" -> ":core:designsystem"
+  ":feature:gt7-ps5-readout-tyre-temperature-detail" -> ":core:designsystem"
   ":feature:lmu-windows-narrator" -> ":core:designsystem"
   ":feature:lmu-windows-readout-flag-detail" -> ":core:designsystem"
   ":feature:lmu-windows-readout-my-best-lap-detail" -> ":core:designsystem"

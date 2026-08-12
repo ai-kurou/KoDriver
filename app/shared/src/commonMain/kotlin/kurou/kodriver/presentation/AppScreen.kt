@@ -58,6 +58,7 @@ import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPane
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.Gt7Ps5ReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.Gt7Ps5ReadoutRemainingFuelDetailPane
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.Gt7Ps5ReadoutRemainingFuelLapsDetailPane
+import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.Gt7Ps5ReadoutTyreTemperatureDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.LmuWindowsReadoutFlagDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.mybestlapdetail.LmuWindowsReadoutMyBestLapDetailPane
 import kurou.kodriver.feature.lmuwindowsreadout.pittimingdetail.LmuWindowsReadoutPitTimingDetailPane
@@ -534,6 +535,15 @@ internal fun WindowSizeClass.resolveNavigationSuiteType(): NavigationSuiteType =
 @Composable
 internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
     when (itemType) {
+        is ReadoutListItemType.LmuWindows -> LmuWindowsReadoutItemDetailContent(itemType)
+        is ReadoutListItemType.Gt7Ps5 -> Gt7Ps5ReadoutItemDetailContent(itemType)
+        is ReadoutListItemType.AceWindows -> AceWindowsReadoutItemDetailContent(itemType)
+    }
+}
+
+@Composable
+private fun LmuWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.LmuWindows) {
+    when (itemType) {
         ReadoutListItemType.LmuWindows.VehicleApproach -> LmuWindowsReadoutVehicleApproachDetailPane()
         ReadoutListItemType.LmuWindows.Flag -> LmuWindowsReadoutFlagDetailPane()
         ReadoutListItemType.LmuWindows.VehicleDamage -> LmuWindowsReadoutVehicleDamageDetailPane()
@@ -542,9 +552,33 @@ internal fun ReadoutItemDetailContent(itemType: ReadoutListItemType) {
         ReadoutListItemType.LmuWindows.RemainingVirtualEnergy -> LmuWindowsReadoutRemainingVirtualEnergyDetailPane()
         ReadoutListItemType.LmuWindows.TyreWear -> LmuWindowsReadoutTyreWearDetailPane()
         ReadoutListItemType.LmuWindows.MyBestLap -> LmuWindowsReadoutMyBestLapDetailPane()
-        ReadoutListItemType.Gt7Ps5.MyBestLap -> Gt7Ps5ReadoutMyBestLapDetailPane()
-        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
-        ReadoutListItemType.Gt7Ps5.RemainingFuel -> Gt7Ps5ReadoutRemainingFuelDetailPane()
+    }
+}
+
+@Composable
+private fun Gt7Ps5ReadoutItemDetailContent(itemType: ReadoutListItemType.Gt7Ps5) {
+    when (itemType) {
+        ReadoutListItemType.Gt7Ps5.MyBestLap -> {
+            Gt7Ps5ReadoutMyBestLapDetailPane()
+        }
+
+        ReadoutListItemType.Gt7Ps5.RemainingFuelLaps -> {
+            Gt7Ps5ReadoutRemainingFuelLapsDetailPane()
+        }
+
+        ReadoutListItemType.Gt7Ps5.RemainingFuel -> {
+            Gt7Ps5ReadoutRemainingFuelDetailPane()
+        }
+
+        ReadoutListItemType.Gt7Ps5.TyreTemperature -> {
+            Gt7Ps5ReadoutTyreTemperatureDetailPane()
+        }
+    }
+}
+
+@Composable
+private fun AceWindowsReadoutItemDetailContent(itemType: ReadoutListItemType.AceWindows) {
+    when (itemType) {
         ReadoutListItemType.AceWindows.Flag -> AceWindowsReadoutFlagDetailPane()
         ReadoutListItemType.AceWindows.RemainingFuel -> AceWindowsReadoutRemainingFuelDetailPane()
     }

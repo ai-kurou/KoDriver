@@ -145,6 +145,17 @@ sealed interface ReadoutItemKey {
                 override val supportsQueue = true
             }
         }
+
+        sealed interface TyreTemperature : Gt7Ps5 {
+            data object Root : TyreTemperature, TopLevel {
+                override val value = "gt7_ps5_tyre_temperature"
+                override val supportsQueue = true
+            }
+
+            data object OverheatWarning : TyreTemperature {
+                override val value = "gt7_ps5_tyre_temperature_overheat_warning"
+            }
+        }
     }
 
     sealed interface AceWindows : ReadoutItemKey {
@@ -231,6 +242,8 @@ sealed interface ReadoutItemKey {
                 Gt7Ps5.MyBestLap.Root,
                 Gt7Ps5.RemainingFuelLaps.Root,
                 Gt7Ps5.RemainingFuel.Root,
+                Gt7Ps5.TyreTemperature.Root,
+                Gt7Ps5.TyreTemperature.OverheatWarning,
                 AceWindows.Flag.Root,
                 AceWindows.Flag.WhiteFlag,
                 AceWindows.Flag.GreenFlag,

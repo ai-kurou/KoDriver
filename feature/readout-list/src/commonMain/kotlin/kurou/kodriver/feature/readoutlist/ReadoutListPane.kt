@@ -157,6 +157,13 @@ private fun ExposedDropdownMenuBoxScope.SimulatorSelectorAnchor(
 
 private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
     when (itemId) {
+        is ReadoutItemKey.LmuWindows -> lmuWindowsItemIcon(itemId)
+        is ReadoutItemKey.Gt7Ps5 -> gt7Ps5ItemIcon(itemId)
+        is ReadoutItemKey.AceWindows -> aceWindowsItemIcon(itemId)
+    }
+
+private fun lmuWindowsItemIcon(itemId: ReadoutItemKey.LmuWindows): ImageVector =
+    when (itemId) {
         is ReadoutItemKey.LmuWindows.VehicleApproach -> Icons.Filled.DirectionsCar
         is ReadoutItemKey.LmuWindows.Flag -> Icons.Filled.Flag
         is ReadoutItemKey.LmuWindows.VehicleDamage -> Icons.Filled.Build
@@ -165,9 +172,18 @@ private fun itemIcon(itemId: ReadoutItemKey): ImageVector =
         is ReadoutItemKey.LmuWindows.RemainingVirtualEnergy.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.LmuWindows.TyreWear.Root -> Icons.Filled.DonutLarge
         is ReadoutItemKey.LmuWindows.MyBestLap.Root -> Icons.Filled.Timer
+    }
+
+private fun gt7Ps5ItemIcon(itemId: ReadoutItemKey.Gt7Ps5): ImageVector =
+    when (itemId) {
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Icons.Filled.LocalGasStation
+        is ReadoutItemKey.Gt7Ps5.TyreTemperature -> Icons.Filled.DeviceThermostat
+    }
+
+private fun aceWindowsItemIcon(itemId: ReadoutItemKey.AceWindows): ImageVector =
+    when (itemId) {
         is ReadoutItemKey.AceWindows.Flag -> Icons.Filled.Flag
         is ReadoutItemKey.AceWindows.RemainingFuel.Root -> Icons.Filled.LocalGasStation
     }

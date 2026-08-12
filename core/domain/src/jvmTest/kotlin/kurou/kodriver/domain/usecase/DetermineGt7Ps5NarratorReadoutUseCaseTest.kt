@@ -1,13 +1,16 @@
 package kurou.kodriver.domain.usecase
 
 import kurou.kodriver.domain.engine.SpeechEvent
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@Suppress("TooManyFunctions")
 class DetermineGt7Ps5NarratorReadoutUseCaseTest {
     private val useCase = DetermineGt7Ps5NarratorReadoutUseCase()
 
@@ -339,16 +342,125 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         assertEquals(false, decision.state.remainingFuelWarned)
     }
 
+    @Test
+    fun `タイヤ温度が高温閾値以上になると読み上げる`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+            )
+
+        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat), decision.events)
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `過熱状態が継続しても再度読み上げない`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(tyreOverheating = true),
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `ヒステリシス範囲内に留まる間は過熱状態を維持する`() {
+        val overheatedState =
+            useCase
+                .determineTyreTemperature(
+                    state = Gt7Ps5NarratorState(),
+                    telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                ).state
+        val decision =
+            useCase.determineTyreTemperature(
+                state = overheatedState,
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(92f, 90f, 90f, 90f)),
+                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `ヒステリシスを下回るまで冷えると再度読み上げ可能になる`() {
+        val overheatedState =
+            useCase
+                .determineTyreTemperature(
+                    state = Gt7Ps5NarratorState(),
+                    telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                ).state
+        val cooledState =
+            useCase
+                .determineTyreTemperature(
+                    state = overheatedState,
+                    telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(85f, 85f, 85f, 85f)),
+                    settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+                ).state
+        val decision =
+            useCase.determineTyreTemperature(
+                state = cooledState,
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                settings = settings(tyreTemperatureHighThresholdCelsius = 95),
+            )
+
+        assertEquals(false, cooledState.tyreOverheating)
+        assertEquals(listOf(SpeechEvent.Gt7Ps5TyreOverheat), decision.events)
+    }
+
+    @Test
+    fun `タイヤ温度の読み上げが無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                settings =
+                    settings(
+                        enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to false),
+                        tyreTemperatureHighThresholdCelsius = 95,
+                    ),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
+    @Test
+    fun `過熱警告の読み上げが無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                settings =
+                    settings(
+                        enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                        tyreTemperatureHighThresholdCelsius = 95,
+                    ),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
     private fun settings(
         enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,
         remainingFuelLapsThreshold: Int = 3,
         remainingFuelThresholdPercentage: Int = 30,
+        tyreTemperatureHighThresholdCelsius: Int = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
     ) = Gt7Ps5NarratorReadoutSettings(
         enabledStates = enabledStates,
         myBestLapVoiceType = myBestLapVoiceType,
         remainingFuelLapsThreshold = remainingFuelLapsThreshold,
         remainingFuelThresholdPercentage = remainingFuelThresholdPercentage,
+        tyreTemperatureHighThresholdCelsius = tyreTemperatureHighThresholdCelsius,
     )
 
     private fun telemetry(
@@ -357,11 +469,13 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         bestLapTimeMs: Int = 90_000,
         gasLevel: Float = 100f,
         gasCapacity: Float = 100f,
+        tyreTemperature: Gt7Ps5TyreTemperatureData = Gt7Ps5TyreTemperatureData(0f, 0f, 0f, 0f),
     ) = Gt7Ps5TelemetryData(
         lapCount = lapCount,
         lapsInRace = lapsInRace,
         bestLapTimeMs = bestLapTimeMs,
         gasLevel = gasLevel,
         gasCapacity = gasCapacity,
+        tyreTemperature = tyreTemperature,
     )
 }

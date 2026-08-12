@@ -10,6 +10,7 @@ import kurou.kodriver.feature.gt7ps5narrator.gt7Ps5NarratorModule
 import kurou.kodriver.feature.gt7ps5readout.mybestlapdetail.gt7Ps5ReadoutMyBestLapDetailModule
 import kurou.kodriver.feature.gt7ps5readout.remainingfueldetail.gt7Ps5ReadoutRemainingFuelDetailModule
 import kurou.kodriver.feature.gt7ps5readout.remainingfuellapsdetail.gt7Ps5ReadoutRemainingFuelLapsDetailModule
+import kurou.kodriver.feature.gt7ps5readout.tyretemperaturedetail.gt7Ps5ReadoutTyreTemperatureDetailModule
 import kurou.kodriver.feature.lmuwindowsconnection.lmuWindowsConnectionModule
 import kurou.kodriver.feature.lmuwindowsnarrator.lmuWindowsNarratorModule
 import kurou.kodriver.feature.lmuwindowsreadout.flagdetail.lmuWindowsReadoutFlagDetailModule
@@ -75,6 +76,7 @@ val featureModules: List<Module> =
         gt7Ps5ReadoutMyBestLapDetailModule,
         gt7Ps5ReadoutRemainingFuelDetailModule,
         gt7Ps5ReadoutRemainingFuelLapsDetailModule,
+        gt7Ps5ReadoutTyreTemperatureDetailModule,
         aceWindowsReadoutRemainingFuelDetailModule,
         aceWindowsReadoutFlagDetailModule,
         debugStateDetailModule,

@@ -7,6 +7,7 @@ import kurou.kodriver.core.narrator.speakWithPriority
 import kurou.kodriver.core.narrator.toJsonStringLiteral
 import kurou.kodriver.domain.engine.SpeechEvent
 import kurou.kodriver.domain.engine.TextToSpeechEngine
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.ReadoutItemKey
@@ -43,6 +44,7 @@ internal class Gt7Ps5NarratorEventProcessor(
                         myBestLapVoiceType = MyBestLapVoiceType.FORMAL,
                         remainingFuelLapsThreshold = 0,
                         remainingFuelThresholdPercentage = 0,
+                        tyreTemperatureHighThresholdCelsius = GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT,
                     ),
                 finalState = Gt7Ps5NarratorState(),
             ),

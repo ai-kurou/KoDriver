@@ -35,6 +35,8 @@ sealed class ReadoutListItemType(
         data object RemainingFuelLaps : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root)
 
         data object RemainingFuel : Gt7Ps5(ReadoutItemKey.Gt7Ps5.RemainingFuel.Root)
+
+        data object TyreTemperature : Gt7Ps5(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
     }
 
     sealed class AceWindows(
@@ -81,6 +83,7 @@ sealed class ReadoutListItemType(
                 ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Gt7Ps5.MyBestLap
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Gt7Ps5.RemainingFuelLaps
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Gt7Ps5.RemainingFuel
+                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root -> Gt7Ps5.TyreTemperature
                 else -> null
             }
 
@@ -130,7 +133,8 @@ sealed class ReadoutListItemType(
             when (key) {
                 ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> 0
                 ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> 1
-                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 2
+                ReadoutItemKey.Gt7Ps5.TyreTemperature.Root -> 2
+                ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> 3
             }
 
         private fun aceWindowsOrderIndex(key: ReadoutItemKey.AceWindows.TopLevel): Int =

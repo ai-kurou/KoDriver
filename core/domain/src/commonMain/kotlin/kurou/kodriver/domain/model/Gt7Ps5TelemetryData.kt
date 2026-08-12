@@ -22,4 +22,6 @@ data class Gt7Ps5TelemetryData(
     val gasCapacity: Float,
     /** 車両カテゴリ（例: "GR3", "GRX"）。取得できない場合は空文字列。 */
     val carCategory: String = "",
+    /** 各タイヤの温度。取得できない場合は全て 0f。 */
+    val tyreTemperature: Gt7Ps5TyreTemperatureData = Gt7Ps5TyreTemperatureData(0f, 0f, 0f, 0f),
 )
