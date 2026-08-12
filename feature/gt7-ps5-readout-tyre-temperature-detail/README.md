@@ -5,8 +5,8 @@ GT7 PS5 のタイヤ温度アナウンス詳細設定を提供する feature モ
 
 ## Responsibilities
 
-- `Gt7Ps5ReadoutTyreTemperatureDetailPane` でタイトル・説明を表示する
-- 現状は静的な説明表示のみで、閾値設定などのユースケース連携は未実装（今後追加予定）
+- `Gt7Ps5ReadoutTyreTemperatureDetailPane` でタイトル・説明・過熱警告の有効/無効・高温閾値の設定 UI を表示する
+- 高温閾値（スライダー）・過熱警告の有効/無効はいずれも DataStore に永続化され、Narrator の読み上げ判定にも反映される
 
 ## Related Modules
 

@@ -8,6 +8,7 @@ import kurou.kodriver.core.narrator.SoundPlayer
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
@@ -81,11 +82,21 @@ private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuel
 
 private class FakeGt7Ps5TyreTemperaturePreferencesRepository : Gt7Ps5TyreTemperaturePreferencesRepository {
     private val flow = MutableStateFlow(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+    private val enabledStatesFlow = MutableStateFlow<Map<ReadoutItemKey, Boolean>>(emptyMap())
 
     override fun observeHighThresholdCelsius(): Flow<Int> = flow
 
     override suspend fun saveHighThresholdCelsius(celsius: Int) {
         flow.update { celsius }
+    }
+
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> = enabledStatesFlow
+
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
+        enabledStatesFlow.update { it + (key to enabled) }
     }
 }
 

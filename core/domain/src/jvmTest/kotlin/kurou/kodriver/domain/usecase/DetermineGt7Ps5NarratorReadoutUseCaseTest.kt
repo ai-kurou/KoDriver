@@ -432,6 +432,23 @@ class DetermineGt7Ps5NarratorReadoutUseCaseTest {
         assertEquals(true, decision.state.tyreOverheating)
     }
 
+    @Test
+    fun `過熱警告の読み上げが無効なら読み上げない`() {
+        val decision =
+            useCase.determineTyreTemperature(
+                state = Gt7Ps5NarratorState(),
+                telemetry = telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)),
+                settings =
+                    settings(
+                        enabledStates = mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                        tyreTemperatureHighThresholdCelsius = 95,
+                    ),
+            )
+
+        assertTrue(decision.events.isEmpty())
+        assertEquals(true, decision.state.tyreOverheating)
+    }
+
     private fun settings(
         enabledStates: Map<ReadoutItemKey, Boolean> = mapOf(ReadoutItemKey.Gt7Ps5.MyBestLap.Root to true),
         myBestLapVoiceType: MyBestLapVoiceType = MyBestLapVoiceType.FORMAL,

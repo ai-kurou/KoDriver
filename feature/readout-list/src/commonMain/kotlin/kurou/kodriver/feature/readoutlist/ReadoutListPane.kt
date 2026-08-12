@@ -179,7 +179,7 @@ private fun gt7Ps5ItemIcon(itemId: ReadoutItemKey.Gt7Ps5): ImageVector =
         is ReadoutItemKey.Gt7Ps5.MyBestLap.Root -> Icons.Filled.Timer
         is ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root -> Icons.Filled.LocalGasStation
         is ReadoutItemKey.Gt7Ps5.RemainingFuel.Root -> Icons.Filled.LocalGasStation
-        is ReadoutItemKey.Gt7Ps5.TyreTemperature.Root -> Icons.Filled.DeviceThermostat
+        is ReadoutItemKey.Gt7Ps5.TyreTemperature -> Icons.Filled.DeviceThermostat
     }
 
 private fun aceWindowsItemIcon(itemId: ReadoutItemKey.AceWindows): ImageVector =
