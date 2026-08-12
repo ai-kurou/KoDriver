@@ -1,6 +1,7 @@
 package kurou.kodriver.core.gt7ps5data.mapper
 
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
+import kurou.kodriver.domain.model.Gt7Ps5TyreTemperatureData
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
@@ -10,6 +11,10 @@ import java.nio.charset.StandardCharsets
  * オフセットは SimulatorInterface パケット仕様（GT7 / PS5）に基づく:
  *   0x44 (68)  : GasLevel        float  (リットル)
  *   0x48 (72)  : GasCapacity     float  (リットル、非燃料車は 100.0)
+ *   0x60 (96)  : TyreTempFL      float  (摂氏)
+ *   0x64 (100) : TyreTempFR      float  (摂氏)
+ *   0x68 (104) : TyreTempRL      float  (摂氏)
+ *   0x6C (108) : TyreTempRR      float  (摂氏)
  *   0x74 (116) : LapCount        int16
  *   0x76 (118) : LapsInRace      int16  (0 = フリー走行・予選)
  *   0x78 (120) : BestLapTimeMs   int32  (-1 = ベストラップなし)
@@ -24,6 +29,15 @@ internal object Gt7Ps5Mapper {
             gasLevel = packet.getFloat(GAS_LEVEL_OFFSET),
             gasCapacity = packet.getFloat(GAS_CAPACITY_OFFSET),
             carCategory = readCarCategory(packet),
+            tyreTemperature = readTyreTemperature(packet),
+        )
+
+    private fun readTyreTemperature(packet: ByteBuffer) =
+        Gt7Ps5TyreTemperatureData(
+            frontLeftCelsius = packet.getFloat(TYRE_TEMP_FRONT_LEFT_OFFSET),
+            frontRightCelsius = packet.getFloat(TYRE_TEMP_FRONT_RIGHT_OFFSET),
+            rearLeftCelsius = packet.getFloat(TYRE_TEMP_REAR_LEFT_OFFSET),
+            rearRightCelsius = packet.getFloat(TYRE_TEMP_REAR_RIGHT_OFFSET),
         )
 
     private fun readCarCategory(packet: ByteBuffer): String {
@@ -37,6 +51,10 @@ internal object Gt7Ps5Mapper {
 
     private const val GAS_LEVEL_OFFSET = 0x44
     private const val GAS_CAPACITY_OFFSET = 0x48
+    private const val TYRE_TEMP_FRONT_LEFT_OFFSET = 0x60
+    private const val TYRE_TEMP_FRONT_RIGHT_OFFSET = 0x64
+    private const val TYRE_TEMP_REAR_LEFT_OFFSET = 0x68
+    private const val TYRE_TEMP_REAR_RIGHT_OFFSET = 0x6C
     private const val LAP_COUNT_OFFSET = 0x74
     private const val LAPS_IN_RACE_OFFSET = 0x76
     private const val BEST_LAP_TIME_OFFSET = 0x78
