@@ -16,7 +16,7 @@
 
 ## 毎晩実行する項目
 
-- Zenn（[https://zenn.dev](https://zenn.dev)）でAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
+- Zennで直近の記事を確認する場合、`WebSearch`はZennの新着記事のインデックス反映が遅く投稿直後の記事を拾えないことが分かっているため使わない。代わりに `WebFetch` で `https://zenn.dev/api/articles?order=latest&count=50` （Zennが公開している新着記事一覧のJSON API）を取得し、`published_at` が過去24時間以内でタイトルがAIコーディング・Compose Multiplatform・Android・Claude・Codex等に関連するものを絞り込む。該当記事があり、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
 - Qiita（[https://qiita.com](https://qiita.com)）でも同様に、AIコーディング・Compose Multiplatform・Android・Claude・Codex等に関する過去24時間以内の記事をWebで確認し、KoDriverに導入する価値があるとClaudeが判断したものがあれば improvement-ideas.md に追記する。
 - Androidの最新動向（[https://android-developers.googleblog.com](https://android-developers.googleblog.com) を含む）をWebで調査し、KoDriverが取り入れていない・遅れている技術やプラクティスで採用価値があると判断したものがあれば improvement-ideas.md に追記する。
 
