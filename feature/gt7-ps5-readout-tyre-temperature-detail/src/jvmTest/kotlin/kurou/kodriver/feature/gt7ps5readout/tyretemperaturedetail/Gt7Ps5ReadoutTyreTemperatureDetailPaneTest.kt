@@ -29,7 +29,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
         rule.onNodeWithText("タイヤの温度状況を音声でお知らせします。").assertIsDisplayed()
         rule.onNodeWithText("過熱警告").assertIsDisplayed()
         rule.onNodeWithText("高温閾値設定").assertIsDisplayed()
-        rule.onNodeWithText("高温閾値: 100°C").assertIsDisplayed()
+        rule.onNodeWithText("高温閾値: 95°C").assertIsDisplayed()
     }
 
     @Test
@@ -62,7 +62,7 @@ class Gt7Ps5ReadoutTyreTemperatureDetailPaneTest {
 
         rule
             .onNode(
-                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 100f, range = 90f..110f, steps = 19)),
+                hasProgressBarRangeInfo(ProgressBarRangeInfo(current = 95f, range = 90f..110f, steps = 19)),
             ).performSemanticsAction(SemanticsActions.SetProgress) {
                 it(105f)
             }
