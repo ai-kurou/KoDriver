@@ -1,10 +1,57 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import org.junit.Rule
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AppNavigationStateTest {
+    @get:Rule
+    val rule = createComposeRule()
+
+    @Test
+    fun `rememberAppNavigationStateはデフォルトでReadoutを初期値とする`() {
+        lateinit var navigationState: AppNavigationState
+
+        rule.setContent {
+            navigationState = rememberAppNavigationState()
+        }
+
+        rule.runOnIdle {
+            assertEquals(AppDestination.Readout, navigationState.current)
+        }
+    }
+
+    @Test
+    fun `rememberAppNavigationStateはinitialに渡した宛先を初期値とする`() {
+        lateinit var navigationState: AppNavigationState
+
+        rule.setContent {
+            navigationState = rememberAppNavigationState(initial = AppDestination.Log)
+        }
+
+        rule.runOnIdle {
+            assertEquals(AppDestination.Log, navigationState.current)
+        }
+    }
+
+    @Test
+    fun `rememberAppNavigationStateが返すインスタンスでnavigateToするとcurrentが切り替わる`() {
+        lateinit var navigationState: AppNavigationState
+
+        rule.setContent {
+            navigationState = rememberAppNavigationState()
+        }
+        rule.runOnIdle {
+            navigationState.navigateTo(AppDestination.More)
+        }
+
+        rule.runOnIdle {
+            assertEquals(AppDestination.More, navigationState.current)
+        }
+    }
+
     @Test
     fun `初期状態はinitialで渡した宛先になる`() {
         val state = AppNavigationState(mutableStateOf(AppDestination.Log))
