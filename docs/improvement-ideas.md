@@ -24,6 +24,12 @@
   **課題**: 現状 detekt/ktlint による静的解析はCIにあるが、PR差分に対するAIレビューコメントの仕組みはない。Qiita記事「GitHub ActionsのPR自動レビューを公式claude-code-actionで組む（APIキー課金なし）」（https://qiita.com/itaraiguma/items/3a723688a2fe571c33ec , 2026-07-31）で、`nightly-todo.yml` と同じ `CLAUDE_CODE_OAUTH_TOKEN`（Pro/Maxサブスク枠）を使い、`pull_request` トリガー・Bot生成PR除外（`github.event.sender.type == 'User'`）・`concurrency: cancel-in-progress: true` によるインラインPRレビュー構成が紹介されていた。
   **改善案**: 既存のdetekt/ktlint/Codacyとの指摘重複やAPIコスト（サブスク枠消費）を踏まえたうえで、`claude_args` で許可ツールを絞ったインラインレビューjobの追加余地を検討する。優先度は低め。
 
+## 設計・アーキテクチャ
+
+- **対象**: `ReadoutNavigationState.kt`（`feature:readout-list`）・`OtherNavigationState.kt`（`app:shared`）・`TelemetryLogNavigationState.kt`（`feature:telemetry-log-list`）
+  **課題**: list/detailペインの切り替え状態を`NavBackStack<NavKey>`で保持しているが、`clear()`→`add()`による「1要素の置き換え」としてのみ使っており、Navigation3本来の想定（`NavDisplay`によるレンダリング、pushによる複数エントリの積み上げ、戻る操作での自動pop）は利用していない。実際の画面遷移制御はMaterial3 Adaptiveの`rememberListDetailPaneScaffoldNavigator`/`ListDetailPaneScaffoldRole`が担っており、`NavBackStack`はそれと並行して「現在どちらのペインを表示しているか」を表す状態変数として存在するのみ。
+  **改善案**: Navigation3のサンプル・公式ドキュメントにあるMaterial3 AdaptiveとNavDisplayの統合パターン（両者で単一のバックスタックを共有する設計）への寄せ替えを検討する。ただし現状の実装（PR #1069, #1075, #1077, #1078）で機能的な不具合は出ていないため、優先度は低め。
+
 ## 重複実装・未使用コード
 
 - **対象**: `feature/gt7-ps5-readout-remaining-fuel-detail/.../Gt7Ps5ReadoutRemainingFuelDetailViewModel.kt` と `feature/ace-windows-readout-remaining-fuel-detail/.../AceWindowsReadoutRemainingFuelDetailViewModel.kt`
