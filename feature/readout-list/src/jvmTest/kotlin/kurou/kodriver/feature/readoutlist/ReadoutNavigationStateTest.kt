@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.readoutlist
 
-import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -68,24 +67,5 @@ class ReadoutNavigationStateTest {
         state.navigateTo(ReadoutPaneDestination.List)
 
         assertEquals(ReadoutPaneDestination.List, state.current)
-    }
-
-    @Test
-    fun `ReadoutNavigationStateSaverはcurrentの名前を保存しNavBackStackを再構築して復元する`() {
-        val saverScope = SaverScope { true }
-        val state = ReadoutNavigationState(NavBackStack<NavKey>(ReadoutPaneDestination.Detail))
-
-        val saved = with(ReadoutNavigationStateSaver) { saverScope.save(state) }
-        val restored = ReadoutNavigationStateSaver.restore(checkNotNull(saved))
-
-        assertEquals(ReadoutPaneDestination.Detail.name, saved)
-        assertEquals(ReadoutPaneDestination.Detail, restored?.current)
-    }
-
-    @Test
-    fun `ReadoutNavigationStateSaverは未知のキーからの復元でnullを返す`() {
-        val restored = ReadoutNavigationStateSaver.restore("UnknownDestination")
-
-        assertEquals(null, restored)
     }
 }

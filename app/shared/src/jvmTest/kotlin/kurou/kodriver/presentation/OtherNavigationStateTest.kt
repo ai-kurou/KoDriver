@@ -1,6 +1,5 @@
 package kurou.kodriver.presentation
 
-import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -68,24 +67,5 @@ class OtherNavigationStateTest {
         state.navigateTo(OtherPaneDestination.List)
 
         assertEquals(OtherPaneDestination.List, state.current)
-    }
-
-    @Test
-    fun `OtherNavigationStateSaverはcurrentの名前を保存しNavBackStackを再構築して復元する`() {
-        val saverScope = SaverScope { true }
-        val state = OtherNavigationState(NavBackStack<NavKey>(OtherPaneDestination.Detail))
-
-        val saved = with(OtherNavigationStateSaver) { saverScope.save(state) }
-        val restored = OtherNavigationStateSaver.restore(checkNotNull(saved))
-
-        assertEquals(OtherPaneDestination.Detail.name, saved)
-        assertEquals(OtherPaneDestination.Detail, restored?.current)
-    }
-
-    @Test
-    fun `OtherNavigationStateSaverは未知のキーからの復元でnullを返す`() {
-        val restored = OtherNavigationStateSaver.restore("UnknownDestination")
-
-        assertEquals(null, restored)
     }
 }

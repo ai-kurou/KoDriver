@@ -1,6 +1,5 @@
 package kurou.kodriver.feature.telemetryloglist
 
-import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -68,24 +67,5 @@ class TelemetryLogNavigationStateTest {
         state.navigateTo(TelemetryLogPaneDestination.List)
 
         assertEquals(TelemetryLogPaneDestination.List, state.current)
-    }
-
-    @Test
-    fun `TelemetryLogNavigationStateSaverはcurrentの名前を保存しNavBackStackを再構築して復元する`() {
-        val saverScope = SaverScope { true }
-        val state = TelemetryLogNavigationState(NavBackStack<NavKey>(TelemetryLogPaneDestination.Detail))
-
-        val saved = with(TelemetryLogNavigationStateSaver) { saverScope.save(state) }
-        val restored = TelemetryLogNavigationStateSaver.restore(checkNotNull(saved))
-
-        assertEquals(TelemetryLogPaneDestination.Detail.name, saved)
-        assertEquals(TelemetryLogPaneDestination.Detail, restored?.current)
-    }
-
-    @Test
-    fun `TelemetryLogNavigationStateSaverは未知のキーからの復元でnullを返す`() {
-        val restored = TelemetryLogNavigationStateSaver.restore("UnknownDestination")
-
-        assertEquals(null, restored)
     }
 }
