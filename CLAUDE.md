@@ -130,15 +130,15 @@ LAN 内の Android 端末からは `ws://<Windows PC のローカル IP>:8080/ws
 
 類似コードが存在する場合は、その構成・依存関係・テスト方針を優先し、独自の実装スタイルを持ち込まないこと。既存パターンから外れる設計にする場合は、理由を説明してから実装すること。
 
-### Narrator系詳細画面ViewModelの共通化はしない
+### NarratorViewModel は共通化しない
 
-`feature:gt7-ps5-readout-remaining-fuel-detail` の `Gt7Ps5ReadoutRemainingFuelDetailViewModel` と `feature:ace-windows-readout-remaining-fuel-detail` の `AceWindowsReadoutRemainingFuelDetailViewModel` のように、閾値を保存してプレビュー再生するだけの detailPane ViewModel は、UseCase名・デフォルト定数名・`SpeechEvent`種別以外がほぼ同一の実装（`observeThresholdPercentage().map{...}.stateIn(...)` の配線、`onThresholdChanged`/`onThresholdReset`/`onPreviewClicked` の構造）になりやすい。この種の重複を理由に `core:domain`/`core:designsystem` へ共通ViewModel基底・共通Pane Composableとして切り出すことはしない。
+`Gt7Ps5NarratorViewModel`（`feature:gt7-ps5-narrator`）・`LmuWindowsNarratorViewModel`（`feature:lmu-windows-narrator`）・`AceWindowsNarratorViewModel`（`feature:ace-windows-narrator`）は、いずれも「テレメトリFlowを購読し、`Determine*NarratorReadoutUseCase` で読み上げ判定した結果を `NarratorEventProcessor` 系のクラスへ渡す」という共通の骨格を持つが、シミュレーターごとに `ReadoutItemKey` の種類・判定対象のテレメトリ項目・購読するUseCase群が異なる。この骨格の類似を理由に、共通ViewModel基底やシミュレーター横断の共通購読ロジックへ切り出すことはしない。
 
-- 各featureモジュールの独立性（本ファイルの「[モジュール構成](#モジュール構成)」を参照）を優先する。共通基底に切り出すと、UseCase名・デフォルト定数・`SpeechEvent`種別という「各featureの責務そのもの」を型パラメータやコールバック注入で表現することになり、素直な `stateIn` の配線より可読性が落ちやすい。
-- 将来featureが増えて構造がわずかにズレた場合（分岐条件の追加など）に、無理に共通基底へ合わせ込む歪みが生じやすい。
-- 各ViewModelを独立させておくことで、モックが単純なテストのまま保てる。共通基底化すると基底クラス側のテストとサブクラス固有のテストの両方が必要になり、テストの複雑さが増す。
+- 各featureモジュールの独立性（本ファイルの「[モジュール構成](#モジュール構成)」を参照）を優先する。共通基底に切り出すと、シミュレーターごとに異なるUseCase群・判定対象・`ReadoutItemKey`を型パラメータやコールバック注入で表現することになり、素直な `flatMapLatest`/`onEach` の配線より可読性が落ちやすい。
+- シミュレーターが増える・読み上げ項目が増えるたびに各NarratorViewModelの構造が微妙にズレていくため（[ReadoutItemKey の配線](#readoutitemkey-の配線listpane--detailpane-とnarratorの読み上げ判定の一致)も参照）、無理に共通基底へ合わせ込むと将来の項目追加のたびに歪みが生じやすい。
+- 各NarratorViewModelを独立させておくことで、モックが単純なテストのまま保てる。共通基底化すると基底クラス側のテストとサブクラス固有のテストの両方が必要になり、テストの複雑さが増す。
 
-新しい詳細画面ViewModelを実装する際は、既存の類似ViewModel（[実装前の類似コード確認](#実装前の類似コード確認)を参照）の構成をそのままコピーして書いてよい。
+新しいシミュレーター向けのNarratorViewModelを実装する際は、既存の類似ViewModel（[実装前の類似コード確認](#実装前の類似コード確認)を参照）の構成をそのままコピーして書いてよい。
 
 ### ユーザー設定のデフォルト値
 
