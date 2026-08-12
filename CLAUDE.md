@@ -48,6 +48,7 @@ KoDriver/
 │   ├── gt7-ps5-readout-my-best-lap-detail/      GT7自己ベストラップアナウンスの詳細設定
 │   ├── gt7-ps5-readout-remaining-fuel-detail/      GT7燃料残量アナウンスの詳細設定
 │   ├── gt7-ps5-readout-remaining-fuel-laps-detail/ GT7燃料残り周回数アナウンスの詳細設定
+│   ├── gt7-ps5-readout-tyre-temperature-detail/ GT7タイヤ温度アナウンスの詳細設定
 │   ├── ace-windows-connection/           ACE (Assetto Corsa EVO) 接続状態の監視
 │   ├── ace-windows-narrator/             ACE (Assetto Corsa EVO) WAV 音声再生とアナウンス制御
 │   ├── ace-windows-readout-remaining-fuel-detail/ ACE燃料残量アナウンスの詳細設定
