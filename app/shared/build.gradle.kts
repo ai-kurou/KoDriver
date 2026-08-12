@@ -94,6 +94,7 @@ kotlin {
             implementation(libs.compose.material3.adaptive.navigation.suite)
             implementation(libs.compose.material3.adaptive.layout)
             implementation(libs.compose.material3.adaptive.navigation)
+            implementation(libs.navigation3.ui)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
