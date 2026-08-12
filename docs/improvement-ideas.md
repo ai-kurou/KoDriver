@@ -35,7 +35,3 @@
 - **対象**: `feature/gt7-ps5-readout-remaining-fuel-detail/.../Gt7Ps5ReadoutRemainingFuelDetailViewModel.kt` と `feature/ace-windows-readout-remaining-fuel-detail/.../AceWindowsReadoutRemainingFuelDetailViewModel.kt`
   **課題**: 両ViewModel（各41行）は、UseCase名・デフォルト定数名・`SpeechEvent`種別以外がほぼ同一実装（`observeThresholdPercentage().map{...}.stateIn(...)` の配線、`onThresholdChanged`/`onThresholdReset`/`onPreviewClicked` の構造）。対応する `Pane` 側も同様のパターンと思われる。
   **改善案**: 「残量閾値を保存・プレビュー再生する詳細画面」共通の抽象（例: UseCase群とSpeechEventを引数に取る共通ViewModel基底・共通Pane Composable）を `core:domain`/`core:designsystem` に切り出せないか調査する。ただし各featureモジュールの独立性（CLAUDE.mdのモジュール構成方針）とのトレードオフを踏まえて検討する。
-
-- **対象**: `core/domain/src/commonMain/kotlin/kurou/kodriver/domain/usecase/DisconnectLmuWindowsUseCase.kt`
-  **課題**: `DisconnectLmuWindowsUseCase` クラスは、自身の定義ファイルと対応するテスト（`DisconnectLmuWindowsUseCaseTest.kt`）以外から参照されていない（Koinモジュール登録・ViewModel等からの呼び出しなし）。ラップ対象の `LmuWindowsRepository.disconnect()` 自体は他所（`WebSocketLmuWindowsRepository` 等）で使われている。
-  **改善案**: 実際に呼び出し元が存在しないことを確認したうえで、UseCaseラッパーとそのテストを削除するか、本来呼び出されるべき箇所（切断操作のUI導線）があるなら配線する。
