@@ -112,6 +112,10 @@ sealed interface SpeechEvent {
         override val readoutItemKey = ReadoutItemKey.Gt7Ps5.RemainingFuel.Root
     }
 
+    data object Gt7Ps5TyreOverheat : SpeechEvent {
+        override val readoutItemKey = ReadoutItemKey.Gt7Ps5.TyreTemperature.Root
+    }
+
     /** LMU のバーチャルエナジーまたはタイヤ摩耗から推定したピット目安周回数を読み上げるイベント。 */
     data class PitTimingWarning(
         val laps: Int,

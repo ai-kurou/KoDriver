@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kurou.kodriver.core.narrator.SoundPlayer
+import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
 import kurou.kodriver.domain.model.Gt7Ps5TelemetryData
 import kurou.kodriver.domain.model.MyBestLapVoiceType
 import kurou.kodriver.domain.model.Simulator
@@ -12,6 +13,7 @@ import kurou.kodriver.domain.repository.Gt7Ps5MyBestLapPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelLapsPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5RemainingFuelPreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5Repository
+import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 import kurou.kodriver.domain.repository.Gt7Ps5UdpPortPreferencesRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -27,6 +29,7 @@ val fakeGt7Ps5DataModule =
         single<Gt7Ps5MyBestLapPreferencesRepository> { FakeGt7Ps5MyBestLapPreferencesRepository() }
         single<Gt7Ps5RemainingFuelLapsPreferencesRepository> { FakeGt7Ps5RemainingFuelLapsPreferencesRepository() }
         single<Gt7Ps5RemainingFuelPreferencesRepository> { FakeGt7Ps5RemainingFuelPreferencesRepository() }
+        single<Gt7Ps5TyreTemperaturePreferencesRepository> { FakeGt7Ps5TyreTemperaturePreferencesRepository() }
         single<SoundPlayer>(named(Simulator.Gt7Ps5.id)) { NoOpSoundPlayer() }
     }
 
@@ -73,6 +76,16 @@ private class FakeGt7Ps5RemainingFuelPreferencesRepository : Gt7Ps5RemainingFuel
 
     override suspend fun saveThresholdPercentage(percentage: Int) {
         flow.update { percentage }
+    }
+}
+
+private class FakeGt7Ps5TyreTemperaturePreferencesRepository : Gt7Ps5TyreTemperaturePreferencesRepository {
+    private val flow = MutableStateFlow(GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT)
+
+    override fun observeHighThresholdCelsius(): Flow<Int> = flow
+
+    override suspend fun saveHighThresholdCelsius(celsius: Int) {
+        flow.update { celsius }
     }
 }
 

@@ -19,6 +19,7 @@ data class Gt7Ps5NarratorState(
     val lastFuelEvaluationLap: Int = -1,
     val remainingFuelWarned: Boolean = false,
     val fuelTrackingState: Gt7Ps5FuelTrackingState = Gt7Ps5FuelTrackingState(),
+    val tyreOverheating: Boolean = false,
 )
 
 /**
@@ -46,6 +47,7 @@ data class Gt7Ps5NarratorReadoutSettings(
     val myBestLapVoiceType: MyBestLapVoiceType,
     val remainingFuelLapsThreshold: Int,
     val remainingFuelThresholdPercentage: Int,
+    val tyreTemperatureHighThresholdCelsius: Int,
 )
 
 /** GT7 向け読み上げ判定の結果。次回へ渡す状態と、今回再生すべきイベントを含む。 */
@@ -55,11 +57,7 @@ data class Gt7Ps5NarratorReadoutDecision(
 )
 
 /**
- * GT7 のテレメトリから、自己ベスト・燃料残量・残り燃料周回数の読み上げを決定する UseCase。
- *
- * [ReadoutItemKey.Gt7Ps5.TyreTemperature.Root] は listPane の項目としてのみ先行実装済みで、
- * GT7 側のタイヤ温度読み上げ機能自体が未実装のため、このクラスの判定ロジックには現時点では含めていない。
- * タイヤ温度アナウンスを実装する際は、この UseCase に判定メソッドを追加すること。
+ * GT7 のテレメトリから、自己ベスト・燃料残量・残り燃料周回数・タイヤ温度の読み上げを決定する UseCase。
  */
 class DetermineGt7Ps5NarratorReadoutUseCase {
     fun determineMyBestLap(
@@ -145,6 +143,37 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(remainingFuelWarned = isLow),
             events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5RemainingFuelWarning) else emptyList(),
+        )
+    }
+
+    fun determineTyreTemperature(
+        state: Gt7Ps5NarratorState,
+        telemetry: Gt7Ps5TelemetryData,
+        settings: Gt7Ps5NarratorReadoutSettings,
+    ): Gt7Ps5NarratorReadoutDecision {
+        val wheels =
+            listOf(
+                telemetry.tyreTemperature.frontLeftCelsius,
+                telemetry.tyreTemperature.frontRightCelsius,
+                telemetry.tyreTemperature.rearLeftCelsius,
+                telemetry.tyreTemperature.rearRightCelsius,
+            )
+        val hotThreshold = settings.tyreTemperatureHighThresholdCelsius.toFloat()
+        val coolThreshold = hotThreshold - TYRE_OVERHEAT_HYSTERESIS_CELSIUS
+        val anyHot = wheels.any { it >= hotThreshold }
+        val allCool = wheels.all { it <= coolThreshold }
+        val nextOverheating =
+            when {
+                anyHot -> true
+                allCool -> false
+                else -> state.tyreOverheating
+            }
+        val shouldAnnounce =
+            !state.tyreOverheating && nextOverheating &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
+        return Gt7Ps5NarratorReadoutDecision(
+            state = state.copy(tyreOverheating = nextOverheating),
+            events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5TyreOverheat) else emptyList(),
         )
     }
 
@@ -252,6 +281,7 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
     private companion object {
         const val REMAINING_FUEL_LAPS_READOUT_BEFORE_BEST_LAP_MS = 30_000
         const val CURRENT_LAP_CONSUMPTION_WEIGHT = 0.9f
+        const val TYRE_OVERHEAT_HYSTERESIS_CELSIUS = 5f
     }
 }
 
