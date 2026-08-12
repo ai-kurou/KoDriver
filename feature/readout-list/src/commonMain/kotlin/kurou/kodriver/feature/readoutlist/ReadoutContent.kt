@@ -78,6 +78,10 @@ internal fun ReadoutContent(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (ReadoutListItemType) -> Unit = {},
 ) {
+    val navigationState =
+        rememberReadoutNavigationState(
+            initial = if (uiState.selectedItem != null) ReadoutPaneDestination.Detail else ReadoutPaneDestination.List,
+        )
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
             scaffoldDirective =
@@ -110,6 +114,7 @@ internal fun ReadoutContent(
     val navigateBack = {
         predictiveBackProgress = 0f
         scope.launch { navigator.navigateBack() }
+        navigationState.navigateTo(ReadoutPaneDestination.List)
         onClearSelectedItem()
     }
     val paneExpansionState =
@@ -119,8 +124,15 @@ internal fun ReadoutContent(
         )
 
     LaunchedEffect(uiState.selectedItem) {
-        navigator.navigateTo(
+        navigationState.navigateTo(
             if (uiState.selectedItem != null) {
+                ReadoutPaneDestination.Detail
+            } else {
+                ReadoutPaneDestination.List
+            },
+        )
+        navigator.navigateTo(
+            if (navigationState.current == ReadoutPaneDestination.Detail) {
                 ListDetailPaneScaffoldRole.Detail
             } else {
                 ListDetailPaneScaffoldRole.List
