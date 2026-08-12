@@ -49,10 +49,13 @@ internal class AppNavigationState(
     }
 }
 
-internal val AppNavigationStateSaver: Saver<AppNavigationState, Int> =
+internal val AppNavigationStateSaver: Saver<AppNavigationState, String> =
     Saver(
-        save = { it.current.ordinal },
-        restore = { ordinal -> AppNavigationState(NavBackStack(AppDestination.entries[ordinal])) },
+        save = { it.current.name },
+        restore = { name ->
+            val destination = AppDestination.entries.find { it.name == name } ?: return@Saver null
+            AppNavigationState(NavBackStack(destination))
+        },
     )
 
 @Composable

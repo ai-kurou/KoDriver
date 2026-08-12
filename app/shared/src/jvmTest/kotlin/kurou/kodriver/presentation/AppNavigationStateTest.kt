@@ -102,14 +102,21 @@ class AppNavigationStateTest {
     }
 
     @Test
-    fun `AppNavigationStateSaverはcurrentのordinalを保存しNavBackStackを再構築して復元する`() {
+    fun `AppNavigationStateSaverはcurrentの名前を保存しNavBackStackを再構築して復元する`() {
         val saverScope = SaverScope { true }
         val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.More))
 
         val saved = with(AppNavigationStateSaver) { saverScope.save(state) }
         val restored = AppNavigationStateSaver.restore(checkNotNull(saved))
 
-        assertEquals(AppDestination.More.ordinal, saved)
+        assertEquals(AppDestination.More.name, saved)
         assertEquals(AppDestination.More, restored?.current)
+    }
+
+    @Test
+    fun `AppNavigationStateSaverは未知のキーからの復元でnullを返す`() {
+        val restored = AppNavigationStateSaver.restore("UnknownDestination")
+
+        assertEquals(null, restored)
     }
 }
