@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketVirtualEnergyRepositoryTest {
+class WebSocketLmuWindowsVirtualEnergyRepositoryTest {
     private lateinit var server: MockWebServer
     private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVirtualEnergy
 

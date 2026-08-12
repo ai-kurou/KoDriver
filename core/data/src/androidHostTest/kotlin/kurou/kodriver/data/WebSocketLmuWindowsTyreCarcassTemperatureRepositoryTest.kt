@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketTyreCarcassTemperatureRepositoryTest {
+class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
     private lateinit var server: MockWebServer
     private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForTyreCarcassTemperature
 
