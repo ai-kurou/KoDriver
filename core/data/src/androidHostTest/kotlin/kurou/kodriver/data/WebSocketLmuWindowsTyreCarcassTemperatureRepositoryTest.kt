@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
+import kurou.kodriver.domain.model.WheelIndex
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -22,15 +23,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketVirtualEnergyRepositoryTest {
+class WebSocketLmuWindowsTyreCarcassTemperatureRepositoryTest {
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVirtualEnergy
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForTyreCarcassTemperature
 
     @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpPreferencesRepositoryForVirtualEnergy(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForTyreCarcassTemperature(null)
     }
 
     @AfterTest
@@ -42,24 +43,24 @@ class WebSocketVirtualEnergyRepositoryTest {
     }
 
     private fun buildRepository(retryDelayMs: Long = 0L) =
-        WebSocketLmuWindowsVirtualEnergyRepository(
+        WebSocketLmuWindowsTyreCarcassTemperatureRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
             retryDelayMs = retryDelayMs,
         )
 
     @Test
-    fun `ipがnullのときvirtualEnergyStreamは何もemitしない`() =
+    fun `ipがnullのときtyreCarcassTemperatureStreamは何もemitしない`() =
         runTest {
             val result =
                 withTimeoutOrNull(300) {
-                    buildRepository().virtualEnergyStream().first()
+                    buildRepository().tyreCarcassTemperatureStream().first()
                 }
             assertNull(result)
         }
 
     @Test
-    fun `有効なJSONフレームを受信したときLmuWindowsVirtualEnergyDataをemitする`() =
+    fun `有効なJSONフレームを受信したときTyreCarcassTemperatureDataをemitする`() =
         runTest {
             server.enqueue(
                 MockResponse().withWebSocketUpgrade(
@@ -68,7 +69,7 @@ class WebSocketVirtualEnergyRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(VIRTUAL_ENERGY_JSON)
+                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -76,10 +77,13 @@ class WebSocketVirtualEnergyRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().virtualEnergyStream().first()
+            val result = buildRepository().tyreCarcassTemperatureStream().first()
 
-            assertEquals(0.5, result.remainingRatio)
-            assertEquals("/ws/lmu_windows/virtual_energy", server.takeRequest().path)
+            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(82.0, result.wheels[WheelIndex.FRONT_RIGHT])
+            assertEquals(85.0, result.wheels[WheelIndex.REAR_LEFT])
+            assertEquals(87.0, result.wheels[WheelIndex.REAR_RIGHT])
+            assertEquals("/ws/lmu_windows/tyre_carcass_temperature", server.takeRequest().path)
         }
 
     @Test
@@ -93,7 +97,7 @@ class WebSocketVirtualEnergyRepositoryTest {
                             response: Response,
                         ) {
                             webSocket.send("invalid json")
-                            webSocket.send(VIRTUAL_ENERGY_JSON)
+                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -101,10 +105,10 @@ class WebSocketVirtualEnergyRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().virtualEnergyStream().first()
+            val result = buildRepository().tyreCarcassTemperatureStream().first()
 
             assertNotNull(result)
-            assertEquals(0.5, result.remainingRatio)
+            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
         }
 
     @Test
@@ -114,7 +118,7 @@ class WebSocketVirtualEnergyRepositoryTest {
             server.shutdown()
             fakeIpRepository.setIp("127.0.0.1")
             val repository =
-                WebSocketLmuWindowsVirtualEnergyRepository(
+                WebSocketLmuWindowsTyreCarcassTemperatureRepository(
                     serverIpRepository = fakeIpRepository,
                     port = closedPort,
                     retryDelayMs = 0L,
@@ -122,7 +126,7 @@ class WebSocketVirtualEnergyRepositoryTest {
 
             val result =
                 withTimeoutOrNull(300) {
-                    repository.virtualEnergyStream().first()
+                    repository.tyreCarcassTemperatureStream().first()
                 }
 
             assertNull(result)
@@ -150,7 +154,7 @@ class WebSocketVirtualEnergyRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(VIRTUAL_ENERGY_JSON)
+                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -158,13 +162,13 @@ class WebSocketVirtualEnergyRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository(retryDelayMs = 0L).virtualEnergyStream().first()
+            val result = buildRepository(retryDelayMs = 0L).tyreCarcassTemperatureStream().first()
 
-            assertEquals(0.5, result.remainingRatio)
+            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
         }
 }
 
-private class FakeServerIpPreferencesRepositoryForVirtualEnergy(
+private class FakeServerIpPreferencesRepositoryForTyreCarcassTemperature(
     initialIp: String?,
 ) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
@@ -180,9 +184,14 @@ private class FakeServerIpPreferencesRepositoryForVirtualEnergy(
     }
 }
 
-private val VIRTUAL_ENERGY_JSON =
+private val TYRE_CARCASS_TEMPERATURE_JSON =
     """
     {
-        "remainingRatio": 0.5
+        "wheels": {
+            "FRONT_LEFT": 80.0,
+            "FRONT_RIGHT": 82.0,
+            "REAR_LEFT": 85.0,
+            "REAR_RIGHT": 87.0
+        }
     }
     """.trimIndent()

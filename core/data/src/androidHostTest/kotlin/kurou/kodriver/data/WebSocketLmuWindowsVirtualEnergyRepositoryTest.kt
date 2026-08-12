@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -21,41 +22,44 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketVehicleDamageRepositoryTest {
+class WebSocketLmuWindowsVirtualEnergyRepositoryTest {
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForDamage
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVirtualEnergy
 
     @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpPreferencesRepositoryForDamage(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForVirtualEnergy(null)
     }
 
     @AfterTest
     fun tearDown() {
-        server.shutdown()
+        try {
+            server.shutdown()
+        } catch (_: IllegalStateException) {
+        }
     }
 
     private fun buildRepository(retryDelayMs: Long = 0L) =
-        WebSocketLmuWindowsVehicleDamageRepository(
+        WebSocketLmuWindowsVirtualEnergyRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
             retryDelayMs = retryDelayMs,
         )
 
     @Test
-    fun `ipがnullのときvehicleDamageStreamは何もemitしない`() =
+    fun `ipがnullのときvirtualEnergyStreamは何もemitしない`() =
         runTest {
             val result =
                 withTimeoutOrNull(300) {
-                    buildRepository().vehicleDamageStream().first()
+                    buildRepository().virtualEnergyStream().first()
                 }
             assertNull(result)
         }
 
     @Test
-    fun `有効なJSONフレームを受信したときVehicleDamageDataをemitする`() =
+    fun `有効なJSONフレームを受信したときLmuWindowsVirtualEnergyDataをemitする`() =
         runTest {
             server.enqueue(
                 MockResponse().withWebSocketUpgrade(
@@ -64,7 +68,7 @@ class WebSocketVehicleDamageRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(DAMAGE_JSON)
+                            webSocket.send(VIRTUAL_ENERGY_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -72,12 +76,10 @@ class WebSocketVehicleDamageRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().vehicleDamageStream().first()
+            val result = buildRepository().virtualEnergyStream().first()
 
-            assertEquals(true, result.overheating)
-            assertEquals(false, result.partDetached)
-            assertEquals(0.5, result.lastImpactMagnitude)
-            assertEquals("/ws/lmu_windows/damage", server.takeRequest().path)
+            assertEquals(0.5, result.remainingRatio)
+            assertEquals("/ws/lmu_windows/virtual_energy", server.takeRequest().path)
         }
 
     @Test
@@ -91,7 +93,7 @@ class WebSocketVehicleDamageRepositoryTest {
                             response: Response,
                         ) {
                             webSocket.send("invalid json")
-                            webSocket.send(DAMAGE_JSON)
+                            webSocket.send(VIRTUAL_ENERGY_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -99,10 +101,31 @@ class WebSocketVehicleDamageRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().vehicleDamageStream().first()
+            val result = buildRepository().virtualEnergyStream().first()
 
             assertNotNull(result)
-            assertEquals(true, result.overheating)
+            assertEquals(0.5, result.remainingRatio)
+        }
+
+    @Test
+    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
+        runTest {
+            val closedPort = server.port
+            server.shutdown()
+            fakeIpRepository.setIp("127.0.0.1")
+            val repository =
+                WebSocketLmuWindowsVirtualEnergyRepository(
+                    serverIpRepository = fakeIpRepository,
+                    port = closedPort,
+                    retryDelayMs = 0L,
+                )
+
+            val result =
+                withTimeoutOrNull(300) {
+                    repository.virtualEnergyStream().first()
+                }
+
+            assertNull(result)
         }
 
     @Test
@@ -127,7 +150,7 @@ class WebSocketVehicleDamageRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(DAMAGE_JSON)
+                            webSocket.send(VIRTUAL_ENERGY_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -135,33 +158,31 @@ class WebSocketVehicleDamageRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository(retryDelayMs = 0L).vehicleDamageStream().first()
+            val result = buildRepository(retryDelayMs = 0L).virtualEnergyStream().first()
 
-            assertEquals(true, result.overheating)
+            assertEquals(0.5, result.remainingRatio)
         }
 }
 
-private class FakeServerIpPreferencesRepositoryForDamage(
+private class FakeServerIpPreferencesRepositoryForVirtualEnergy(
     initialIp: String?,
 ) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {
-        _ip.value = ip
+        _ip.update { ip }
     }
 
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
 
     override suspend fun saveServerIp(ip: String) {
-        _ip.value = ip
+        _ip.update { ip }
     }
 }
 
-private val DAMAGE_JSON =
+private val VIRTUAL_ENERGY_JSON =
     """
     {
-        "overheating": true,
-        "partDetached": false,
-        "lastImpactMagnitude": 0.5
+        "remainingRatio": 0.5
     }
     """.trimIndent()

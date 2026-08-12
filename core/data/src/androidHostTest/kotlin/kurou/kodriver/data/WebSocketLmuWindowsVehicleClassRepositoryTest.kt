@@ -6,10 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
-import kurou.kodriver.domain.model.SessionPhase
-import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -20,43 +19,47 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketFlagRepositoryTest {
+class WebSocketLmuWindowsVehicleClassRepositoryTest {
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepository
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVehicleClass
 
     @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpPreferencesRepository(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForVehicleClass(null)
     }
 
     @AfterTest
     fun tearDown() {
-        server.shutdown()
+        try {
+            server.shutdown()
+        } catch (_: IllegalStateException) {
+        }
     }
 
     private fun buildRepository(retryDelayMs: Long = 0L) =
-        WebSocketLmuWindowsFlagRepository(
+        WebSocketLmuWindowsVehicleClassRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
             retryDelayMs = retryDelayMs,
         )
 
     @Test
-    fun `ipがnullのときflagStreamは何もemitしない`() =
+    fun `ipがnullのときvehicleClassStreamは何もemitしない`() =
         runTest {
             val result =
                 withTimeoutOrNull(300) {
-                    buildRepository().flagStream().first()
+                    buildRepository().vehicleClassStream().first()
                 }
             assertNull(result)
         }
 
     @Test
-    fun `有効なJSONフレームを受信したときRaceFlagsDataをemitする`() =
+    fun `有効なJSONフレームを受信したときLmuWindowsVehicleClassDataをemitする`() =
         runTest {
             server.enqueue(
                 MockResponse().withWebSocketUpgrade(
@@ -65,7 +68,7 @@ class WebSocketFlagRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(GREEN_FLAG_JSON)
+                            webSocket.send(VEHICLE_CLASS_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -73,11 +76,10 @@ class WebSocketFlagRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().flagStream().first()
+            val result = buildRepository().vehicleClassStream().first()
 
-            assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
-            assertEquals(SessionYellowFlagState.NONE, result.yellowFlagState)
-            assertEquals("/ws/lmu_windows/flags", server.takeRequest().path)
+            assertEquals("Hypercar", result.name)
+            assertEquals("/ws/lmu_windows/vehicle_class", server.takeRequest().path)
         }
 
     @Test
@@ -91,7 +93,7 @@ class WebSocketFlagRepositoryTest {
                             response: Response,
                         ) {
                             webSocket.send("invalid json")
-                            webSocket.send(GREEN_FLAG_JSON)
+                            webSocket.send(VEHICLE_CLASS_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -99,9 +101,31 @@ class WebSocketFlagRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().flagStream().first()
+            val result = buildRepository().vehicleClassStream().first()
 
-            assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
+            assertNotNull(result)
+            assertEquals("Hypercar", result.name)
+        }
+
+    @Test
+    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
+        runTest {
+            val closedPort = server.port
+            server.shutdown()
+            fakeIpRepository.setIp("127.0.0.1")
+            val repository =
+                WebSocketLmuWindowsVehicleClassRepository(
+                    serverIpRepository = fakeIpRepository,
+                    port = closedPort,
+                    retryDelayMs = 0L,
+                )
+
+            val result =
+                withTimeoutOrNull(300) {
+                    repository.vehicleClassStream().first()
+                }
+
+            assertNull(result)
         }
 
     @Test
@@ -126,7 +150,7 @@ class WebSocketFlagRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(GREEN_FLAG_JSON)
+                            webSocket.send(VEHICLE_CLASS_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -134,80 +158,31 @@ class WebSocketFlagRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository(retryDelayMs = 0L).flagStream().first()
+            val result = buildRepository(retryDelayMs = 0L).vehicleClassStream().first()
 
-            assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
-        }
-
-    @Test
-    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
-        runTest {
-            server.enqueue(
-                MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onOpen(
-                            webSocket: WebSocket,
-                            response: Response,
-                        ) {
-                            webSocket.send(RED_FLAG_JSON)
-                            webSocket.close(1000, "done")
-                        }
-                    },
-                ),
-            )
-
-            fakeIpRepository.setIp(null)
-            val repository = buildRepository()
-
-            val noEmit = withTimeoutOrNull(300) { repository.flagStream().first() }
-            assertNull(noEmit)
-
-            fakeIpRepository.setIp("127.0.0.1")
-            val result = repository.flagStream().first()
-            assertEquals(SessionPhase.RED_FLAG, result.gamePhase)
+            assertEquals("Hypercar", result.name)
         }
 }
 
-private class FakeServerIpPreferencesRepository(
+private class FakeServerIpPreferencesRepositoryForVehicleClass(
     initialIp: String?,
 ) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {
-        _ip.value = ip
+        _ip.update { ip }
     }
 
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
 
     override suspend fun saveServerIp(ip: String) {
-        _ip.value = ip
+        _ip.update { ip }
     }
 }
 
-private val GREEN_FLAG_JSON =
+private val VEHICLE_CLASS_JSON =
     """
     {
-        "gamePhase": "GREEN_FLAG",
-        "yellowFlagState": "NONE",
-        "sectorFlags": [],
-        "startLight": 0,
-        "numRedLights": 0,
-        "playerFlag": "GREEN",
-        "playerUnderYellow": false,
-        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
-    }
-    """.trimIndent()
-
-private val RED_FLAG_JSON =
-    """
-    {
-        "gamePhase": "RED_FLAG",
-        "yellowFlagState": "NONE",
-        "sectorFlags": [],
-        "startLight": 0,
-        "numRedLights": 0,
-        "playerFlag": "GREEN",
-        "playerUnderYellow": false,
-        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
+        "name": "Hypercar"
     }
     """.trimIndent()

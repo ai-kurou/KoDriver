@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
@@ -22,44 +21,41 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketVehicleClassRepositoryTest {
+class WebSocketLmuWindowsVehicleApproachRepositoryTest {
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVehicleClass
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForVehicleApproach
 
     @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpPreferencesRepositoryForVehicleClass(null)
+        fakeIpRepository = FakeServerIpPreferencesRepositoryForVehicleApproach(null)
     }
 
     @AfterTest
     fun tearDown() {
-        try {
-            server.shutdown()
-        } catch (_: IllegalStateException) {
-        }
+        server.shutdown()
     }
 
     private fun buildRepository(retryDelayMs: Long = 0L) =
-        WebSocketLmuWindowsVehicleClassRepository(
+        WebSocketLmuWindowsVehicleApproachRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
             retryDelayMs = retryDelayMs,
         )
 
     @Test
-    fun `ipがnullのときvehicleClassStreamは何もemitしない`() =
+    fun `ipがnullのときvehicleApproachStreamは何もemitしない`() =
         runTest {
             val result =
                 withTimeoutOrNull(300) {
-                    buildRepository().vehicleClassStream().first()
+                    buildRepository().vehicleApproachStream().first()
                 }
             assertNull(result)
         }
 
     @Test
-    fun `有効なJSONフレームを受信したときLmuWindowsVehicleClassDataをemitする`() =
+    fun `有効なJSONフレームを受信したときVehicleApproachDataをemitする`() =
         runTest {
             server.enqueue(
                 MockResponse().withWebSocketUpgrade(
@@ -68,7 +64,7 @@ class WebSocketVehicleClassRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(VEHICLE_CLASS_JSON)
+                            webSocket.send(VEHICLE_APPROACH_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -76,10 +72,11 @@ class WebSocketVehicleClassRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().vehicleClassStream().first()
+            val result = buildRepository().vehicleApproachStream().first()
 
-            assertEquals("Hypercar", result.name)
-            assertEquals("/ws/lmu_windows/vehicle_class", server.takeRequest().path)
+            assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
+            assertEquals(emptySet(), result.sideBySideRightVehicleIds)
+            assertEquals("/ws/lmu_windows/vehicle_approach", server.takeRequest().path)
         }
 
     @Test
@@ -93,7 +90,7 @@ class WebSocketVehicleClassRepositoryTest {
                             response: Response,
                         ) {
                             webSocket.send("invalid json")
-                            webSocket.send(VEHICLE_CLASS_JSON)
+                            webSocket.send(VEHICLE_APPROACH_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -101,31 +98,10 @@ class WebSocketVehicleClassRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().vehicleClassStream().first()
+            val result = buildRepository().vehicleApproachStream().first()
 
             assertNotNull(result)
-            assertEquals("Hypercar", result.name)
-        }
-
-    @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
-        runTest {
-            val closedPort = server.port
-            server.shutdown()
-            fakeIpRepository.setIp("127.0.0.1")
-            val repository =
-                WebSocketLmuWindowsVehicleClassRepository(
-                    serverIpRepository = fakeIpRepository,
-                    port = closedPort,
-                    retryDelayMs = 0L,
-                )
-
-            val result =
-                withTimeoutOrNull(300) {
-                    repository.vehicleClassStream().first()
-                }
-
-            assertNull(result)
+            assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
         }
 
     @Test
@@ -150,7 +126,7 @@ class WebSocketVehicleClassRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(VEHICLE_CLASS_JSON)
+                            webSocket.send(VEHICLE_APPROACH_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -158,31 +134,34 @@ class WebSocketVehicleClassRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository(retryDelayMs = 0L).vehicleClassStream().first()
+            val result = buildRepository(retryDelayMs = 0L).vehicleApproachStream().first()
 
-            assertEquals("Hypercar", result.name)
+            assertEquals(setOf(3), result.sideBySideLeftVehicleIds)
         }
 }
 
-private class FakeServerIpPreferencesRepositoryForVehicleClass(
+private class FakeServerIpPreferencesRepositoryForVehicleApproach(
     initialIp: String?,
 ) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {
-        _ip.update { ip }
+        _ip.value = ip
     }
 
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
 
     override suspend fun saveServerIp(ip: String) {
-        _ip.update { ip }
+        _ip.value = ip
     }
 }
 
-private val VEHICLE_CLASS_JSON =
+private val VEHICLE_APPROACH_JSON =
     """
     {
-        "name": "Hypercar"
+        "sideBySideLeftVehicleIds": [3],
+        "sideBySideRightVehicleIds": [],
+        "lateralDistanceLeftMeters": 1.5,
+        "lateralDistanceRightMeters": 1.7976931348623157E308
     }
     """.trimIndent()

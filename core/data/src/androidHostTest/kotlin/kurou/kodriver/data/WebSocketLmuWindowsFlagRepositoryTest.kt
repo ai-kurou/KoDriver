@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
-import kurou.kodriver.domain.model.WheelIndex
+import kurou.kodriver.domain.model.SessionPhase
+import kurou.kodriver.domain.model.SessionYellowFlagState
 import kurou.kodriver.domain.repository.ServerIpPreferencesRepository
 import okhttp3.Response
 import okhttp3.WebSocket
@@ -20,47 +20,43 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class WebSocketTyreCarcassTemperatureRepositoryTest {
+class WebSocketLmuWindowsFlagRepositoryTest {
     private lateinit var server: MockWebServer
-    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepositoryForTyreCarcassTemperature
+    private lateinit var fakeIpRepository: FakeServerIpPreferencesRepository
 
     @BeforeTest
     fun setUp() {
         server = MockWebServer()
         server.start()
-        fakeIpRepository = FakeServerIpPreferencesRepositoryForTyreCarcassTemperature(null)
+        fakeIpRepository = FakeServerIpPreferencesRepository(null)
     }
 
     @AfterTest
     fun tearDown() {
-        try {
-            server.shutdown()
-        } catch (_: IllegalStateException) {
-        }
+        server.shutdown()
     }
 
     private fun buildRepository(retryDelayMs: Long = 0L) =
-        WebSocketLmuWindowsTyreCarcassTemperatureRepository(
+        WebSocketLmuWindowsFlagRepository(
             serverIpRepository = fakeIpRepository,
             port = server.port,
             retryDelayMs = retryDelayMs,
         )
 
     @Test
-    fun `ipがnullのときtyreCarcassTemperatureStreamは何もemitしない`() =
+    fun `ipがnullのときflagStreamは何もemitしない`() =
         runTest {
             val result =
                 withTimeoutOrNull(300) {
-                    buildRepository().tyreCarcassTemperatureStream().first()
+                    buildRepository().flagStream().first()
                 }
             assertNull(result)
         }
 
     @Test
-    fun `有効なJSONフレームを受信したときTyreCarcassTemperatureDataをemitする`() =
+    fun `有効なJSONフレームを受信したときRaceFlagsDataをemitする`() =
         runTest {
             server.enqueue(
                 MockResponse().withWebSocketUpgrade(
@@ -69,7 +65,7 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
+                            webSocket.send(GREEN_FLAG_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -77,13 +73,11 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().tyreCarcassTemperatureStream().first()
+            val result = buildRepository().flagStream().first()
 
-            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
-            assertEquals(82.0, result.wheels[WheelIndex.FRONT_RIGHT])
-            assertEquals(85.0, result.wheels[WheelIndex.REAR_LEFT])
-            assertEquals(87.0, result.wheels[WheelIndex.REAR_RIGHT])
-            assertEquals("/ws/lmu_windows/tyre_carcass_temperature", server.takeRequest().path)
+            assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
+            assertEquals(SessionYellowFlagState.NONE, result.yellowFlagState)
+            assertEquals("/ws/lmu_windows/flags", server.takeRequest().path)
         }
 
     @Test
@@ -97,7 +91,7 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
                             response: Response,
                         ) {
                             webSocket.send("invalid json")
-                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
+                            webSocket.send(GREEN_FLAG_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -105,31 +99,9 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository().tyreCarcassTemperatureStream().first()
+            val result = buildRepository().flagStream().first()
 
-            assertNotNull(result)
-            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
-        }
-
-    @Test
-    fun `接続に失敗した場合は例外を捕捉してリトライする`() =
-        runTest {
-            val closedPort = server.port
-            server.shutdown()
-            fakeIpRepository.setIp("127.0.0.1")
-            val repository =
-                WebSocketLmuWindowsTyreCarcassTemperatureRepository(
-                    serverIpRepository = fakeIpRepository,
-                    port = closedPort,
-                    retryDelayMs = 0L,
-                )
-
-            val result =
-                withTimeoutOrNull(300) {
-                    repository.tyreCarcassTemperatureStream().first()
-                }
-
-            assertNull(result)
+            assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
         }
 
     @Test
@@ -154,7 +126,7 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
                             webSocket: WebSocket,
                             response: Response,
                         ) {
-                            webSocket.send(TYRE_CARCASS_TEMPERATURE_JSON)
+                            webSocket.send(GREEN_FLAG_JSON)
                             webSocket.close(1000, "done")
                         }
                     },
@@ -162,36 +134,80 @@ class WebSocketTyreCarcassTemperatureRepositoryTest {
             )
             fakeIpRepository.setIp("127.0.0.1")
 
-            val result = buildRepository(retryDelayMs = 0L).tyreCarcassTemperatureStream().first()
+            val result = buildRepository(retryDelayMs = 0L).flagStream().first()
 
-            assertEquals(80.0, result.wheels[WheelIndex.FRONT_LEFT])
+            assertEquals(SessionPhase.GREEN_FLAG, result.gamePhase)
+        }
+
+    @Test
+    fun `IPがnullになるとemitが止まり再設定すると再接続してデータをemitする`() =
+        runTest {
+            server.enqueue(
+                MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onOpen(
+                            webSocket: WebSocket,
+                            response: Response,
+                        ) {
+                            webSocket.send(RED_FLAG_JSON)
+                            webSocket.close(1000, "done")
+                        }
+                    },
+                ),
+            )
+
+            fakeIpRepository.setIp(null)
+            val repository = buildRepository()
+
+            val noEmit = withTimeoutOrNull(300) { repository.flagStream().first() }
+            assertNull(noEmit)
+
+            fakeIpRepository.setIp("127.0.0.1")
+            val result = repository.flagStream().first()
+            assertEquals(SessionPhase.RED_FLAG, result.gamePhase)
         }
 }
 
-private class FakeServerIpPreferencesRepositoryForTyreCarcassTemperature(
+private class FakeServerIpPreferencesRepository(
     initialIp: String?,
 ) : ServerIpPreferencesRepository {
     private val _ip = MutableStateFlow(initialIp)
 
     fun setIp(ip: String?) {
-        _ip.update { ip }
+        _ip.value = ip
     }
 
     override fun serverIp(): Flow<String?> = _ip.asStateFlow()
 
     override suspend fun saveServerIp(ip: String) {
-        _ip.update { ip }
+        _ip.value = ip
     }
 }
 
-private val TYRE_CARCASS_TEMPERATURE_JSON =
+private val GREEN_FLAG_JSON =
     """
     {
-        "wheels": {
-            "FRONT_LEFT": 80.0,
-            "FRONT_RIGHT": 82.0,
-            "REAR_LEFT": 85.0,
-            "REAR_RIGHT": 87.0
-        }
+        "gamePhase": "GREEN_FLAG",
+        "yellowFlagState": "NONE",
+        "sectorFlags": [],
+        "startLight": 0,
+        "numRedLights": 0,
+        "playerFlag": "GREEN",
+        "playerUnderYellow": false,
+        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
+    }
+    """.trimIndent()
+
+private val RED_FLAG_JSON =
+    """
+    {
+        "gamePhase": "RED_FLAG",
+        "yellowFlagState": "NONE",
+        "sectorFlags": [],
+        "startLight": 0,
+        "numRedLights": 0,
+        "playerFlag": "GREEN",
+        "playerUnderYellow": false,
+        "playerCountLapFlag": "DO_NOT_COUNT_LAP_OR_TIME"
     }
     """.trimIndent()
