@@ -85,6 +85,7 @@ kotlin {
             implementation(projects.feature.gt7Ps5ReadoutMyBestLapDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelDetail)
             implementation(projects.feature.gt7Ps5ReadoutRemainingFuelLapsDetail)
+            implementation(projects.feature.gt7Ps5ReadoutTyreTemperatureDetail)
             implementation(projects.feature.aceWindowsReadoutRemainingFuelDetail)
             implementation(projects.feature.aceWindowsReadoutFlagDetail)
             implementation(libs.koin.core)
