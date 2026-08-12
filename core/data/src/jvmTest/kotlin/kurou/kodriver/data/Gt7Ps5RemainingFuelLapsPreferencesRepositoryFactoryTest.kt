@@ -1,9 +1,6 @@
 package kurou.kodriver.data
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.GT7_PS5_REMAINING_FUEL_LAPS_DEFAULT
 import java.nio.file.Files
@@ -11,14 +8,12 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
     private val tempDir =
         Files
             .createTempDirectory(
                 "kodriver_gt7_remaining_fuel_laps_preferences_repository_factory_test",
             ).toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
     fun tearDown() {
@@ -27,7 +22,7 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
 
     @Test
     fun `デフォルト値は3周`() =
-        testScope.runTest {
+        runTest {
             val repository =
                 createGt7Ps5RemainingFuelLapsPreferencesRepository(
                     directory = tempDir.absolutePath,
@@ -38,7 +33,7 @@ class Gt7Ps5RemainingFuelLapsPreferencesRepositoryFactoryTest {
 
     @Test
     fun `保存した燃料残り周回数を読み出せる`() =
-        testScope.runTest {
+        runTest {
             val repository =
                 createGt7Ps5RemainingFuelLapsPreferencesRepository(
                     directory = tempDir.absolutePath,

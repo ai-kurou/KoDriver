@@ -2,10 +2,7 @@
 
 package kurou.kodriver.data
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
@@ -13,14 +10,12 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
     private val tempDir =
         Files
             .createTempDirectory(
                 "kodriver_lmu_windows_vehicle_damage_preferences_repository_factory_test",
             ).toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
     fun tearDown() {
@@ -29,7 +24,7 @@ class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
 
     @Test
     fun `デフォルト値は enabledStates が空Map`() =
-        testScope.runTest {
+        runTest {
             val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
             assertEquals(emptyMap(), repository.observeEnabledStates().first())
@@ -37,7 +32,7 @@ class LmuWindowsVehicleDamagePreferencesRepositoryFactoryTest {
 
     @Test
     fun `保存した enabledStates を読み出せる`() =
-        testScope.runTest {
+        runTest {
             val repository = createLmuWindowsVehicleDamagePreferencesRepository(tempDir.absolutePath)
 
             repository.saveEnabledState(ReadoutItemKey.LmuWindows.VehicleDamage.Overheat, true)

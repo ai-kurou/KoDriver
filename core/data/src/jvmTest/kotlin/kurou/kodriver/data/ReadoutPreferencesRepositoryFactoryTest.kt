@@ -1,9 +1,6 @@
 package kurou.kodriver.data
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
@@ -11,10 +8,8 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutPreferencesRepositoryFactoryTest {
     private val tempDir = Files.createTempDirectory("kodriver_readout_repo_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
     fun tearDown() {
@@ -23,7 +18,7 @@ class ReadoutPreferencesRepositoryFactoryTest {
 
     @Test
     fun `readout設定が正しいファイルに書き込まれる`() =
-        testScope.runTest {
+        runTest {
             val repository = createReadoutPreferencesRepository(tempDir.absolutePath)
             repository.saveReadoutEnabledState("lmu_windows", ReadoutItemKey.LmuWindows.VehicleApproach.Root, true)
 

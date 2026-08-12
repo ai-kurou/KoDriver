@@ -1,9 +1,6 @@
 package kurou.kodriver.data
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.domain.model.ReadoutStartSoundType
 import java.nio.file.Files
@@ -12,10 +9,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ReadoutStartSoundPreferencesRepositoryTest {
     private val tempDir = Files.createTempDirectory("kodriver_readout_start_sound_test").toFile()
-    private val testScope = TestScope(UnconfinedTestDispatcher())
 
     @AfterTest
     fun tearDown() {
@@ -24,7 +19,7 @@ class ReadoutStartSoundPreferencesRepositoryTest {
 
     @Test
     fun `デフォルト値は FORMULA_RADIO`() =
-        testScope.runTest {
+        runTest {
             val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
             assertEquals(ReadoutStartSoundType.FORMULA_RADIO, repository.observeType().first())
@@ -32,7 +27,7 @@ class ReadoutStartSoundPreferencesRepositoryTest {
 
     @Test
     fun `saveType した値を observeType で取得できる`() =
-        testScope.runTest {
+        runTest {
             val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
             repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
@@ -42,7 +37,7 @@ class ReadoutStartSoundPreferencesRepositoryTest {
 
     @Test
     fun `readout_start_sound_preferences_pb に書き込まれる`() =
-        testScope.runTest {
+        runTest {
             val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
             repository.saveType(ReadoutStartSoundType.ELECTRONIC_NOISE)
             repository.observeType().first()
@@ -52,7 +47,7 @@ class ReadoutStartSoundPreferencesRepositoryTest {
 
     @Test
     fun `異なる種別を連続して保存できる`() =
-        testScope.runTest {
+        runTest {
             val repository = createReadoutStartSoundPreferencesRepository(tempDir.absolutePath)
 
             repository.saveType(ReadoutStartSoundType.FORMULA_RADIO)
