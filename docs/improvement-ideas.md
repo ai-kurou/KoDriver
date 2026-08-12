@@ -30,8 +30,3 @@
   **課題**: list/detailペインの切り替え状態を`NavBackStack<NavKey>`で保持しているが、`clear()`→`add()`による「1要素の置き換え」としてのみ使っており、Navigation3本来の想定（`NavDisplay`によるレンダリング、pushによる複数エントリの積み上げ、戻る操作での自動pop）は利用していない。実際の画面遷移制御はMaterial3 Adaptiveの`rememberListDetailPaneScaffoldNavigator`/`ListDetailPaneScaffoldRole`が担っており、`NavBackStack`はそれと並行して「現在どちらのペインを表示しているか」を表す状態変数として存在するのみ。
   **改善案**: Navigation3のサンプル・公式ドキュメントにあるMaterial3 AdaptiveとNavDisplayの統合パターン（両者で単一のバックスタックを共有する設計）への寄せ替えを検討する。ただし現状の実装（PR #1069, #1075, #1077, #1078）で機能的な不具合は出ていないため、優先度は低め。
 
-## 重複実装・未使用コード
-
-- **対象**: `feature/gt7-ps5-readout-remaining-fuel-detail/.../Gt7Ps5ReadoutRemainingFuelDetailViewModel.kt` と `feature/ace-windows-readout-remaining-fuel-detail/.../AceWindowsReadoutRemainingFuelDetailViewModel.kt`
-  **課題**: 両ViewModel（各41行）は、UseCase名・デフォルト定数名・`SpeechEvent`種別以外がほぼ同一実装（`observeThresholdPercentage().map{...}.stateIn(...)` の配線、`onThresholdChanged`/`onThresholdReset`/`onPreviewClicked` の構造）。対応する `Pane` 側も同様のパターンと思われる。
-  **改善案**: 「残量閾値を保存・プレビュー再生する詳細画面」共通の抽象（例: UseCase群とSpeechEventを引数に取る共通ViewModel基底・共通Pane Composable）を `core:domain`/`core:designsystem` に切り出せないか調査する。ただし各featureモジュールの独立性（CLAUDE.mdのモジュール構成方針）とのトレードオフを踏まえて検討する。
