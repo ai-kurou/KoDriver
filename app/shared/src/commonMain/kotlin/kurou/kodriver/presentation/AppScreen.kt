@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.HeadsetMic
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DividerDefaults
@@ -49,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
@@ -122,24 +117,6 @@ internal fun ConnectionBannerNavigationTarget.toOtherListItemType(): OtherListIt
         ConnectionBannerNavigationTarget.ServerIp -> OtherListItemType.ServerIp
     }
 
-private fun handleTabClick(
-    dest: AppDestination,
-    currentDestination: AppDestination,
-    onReadoutTabReselected: () -> Unit,
-    onLogTabReselected: () -> Unit,
-    onOtherTabReselected: () -> Unit,
-    setCurrentDestination: (AppDestination) -> Unit,
-) {
-    if (currentDestination == dest) {
-        when (dest) {
-            AppDestination.Readout -> onReadoutTabReselected()
-            AppDestination.Log -> onLogTabReselected()
-            AppDestination.More -> onOtherTabReselected()
-        }
-    }
-    setCurrentDestination(dest)
-}
-
 @Composable
 private fun AppDestinationContent(
     destination: AppDestination,
@@ -152,14 +129,6 @@ private fun AppDestinationContent(
         AppDestination.Log -> telemetryLogContent()
         AppDestination.More -> otherContent()
     }
-}
-
-private enum class AppDestination(
-    val icon: ImageVector,
-) {
-    Readout(Icons.Default.HeadsetMic),
-    Log(Icons.Default.Description),
-    More(Icons.Default.MoreHoriz),
 }
 
 @Composable
@@ -394,14 +363,14 @@ internal fun AppScreenContent(
     otherContent: @Composable (scrollToTopRequest: Int) -> Unit = {},
     otherListScrollToTopRequest: Int = 0,
 ) {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestination.Readout) }
+    val navigationState = rememberAppNavigationState()
     val onBannerTapWithTabSwitch =
         withTabSwitch(onBannerTap) {
-            currentDestination = AppDestination.More
+            navigationState.navigateTo(AppDestination.More)
         }
     val onFeedbackClickWithTabSwitch =
         withTabSwitchWithArg(onFeedbackClick) {
-            currentDestination = AppDestination.More
+            navigationState.navigateTo(AppDestination.More)
         }
 
     AppTheme(darkTheme = darkTheme, dynamicColor = dynamicColorEnabled) {
@@ -457,16 +426,15 @@ internal fun AppScreenContent(
                                     Text(dest.label())
                                 }
                             },
-                            selected = currentDestination == dest,
+                            selected = navigationState.current == dest,
                             onClick = {
-                                handleTabClick(
-                                    dest = dest,
-                                    currentDestination = currentDestination,
-                                    onReadoutTabReselected = onReadoutTabReselected,
-                                    onLogTabReselected = onLogTabReselected,
-                                    onOtherTabReselected = onOtherTabReselected,
-                                    setCurrentDestination = { currentDestination = it },
-                                )
+                                navigationState.handleTabClick(dest) { reselected ->
+                                    when (reselected) {
+                                        AppDestination.Readout -> onReadoutTabReselected()
+                                        AppDestination.Log -> onLogTabReselected()
+                                        AppDestination.More -> onOtherTabReselected()
+                                    }
+                                }
                             },
                             modifier = itemModifier,
                         )
@@ -514,7 +482,7 @@ internal fun AppScreenContent(
                         )
                     }
                     AnimatedContent(
-                        targetState = currentDestination,
+                        targetState = navigationState.current,
                         transitionSpec = { fadeIn() togetherWith fadeOut() },
                         modifier = Modifier.weight(1f),
                     ) { destination ->
