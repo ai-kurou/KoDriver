@@ -1,5 +1,6 @@
 package kurou.kodriver.presentation
 
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -89,5 +90,26 @@ class AppNavigationStateTest {
 
         assertEquals(null, reselected)
         assertEquals(AppDestination.Log, state.current)
+    }
+
+    @Test
+    fun `現在の宛先と同じ宛先をnavigateToしてもcurrentは変わらない`() {
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.Readout))
+
+        state.navigateTo(AppDestination.Readout)
+
+        assertEquals(AppDestination.Readout, state.current)
+    }
+
+    @Test
+    fun `AppNavigationStateSaverはcurrentのordinalを保存しNavBackStackを再構築して復元する`() {
+        val saverScope = SaverScope { true }
+        val state = AppNavigationState(NavBackStack<NavKey>(AppDestination.More))
+
+        val saved = with(AppNavigationStateSaver) { saverScope.save(state) }
+        val restored = AppNavigationStateSaver.restore(checkNotNull(saved))
+
+        assertEquals(AppDestination.More.ordinal, saved)
+        assertEquals(AppDestination.More, restored?.current)
     }
 }

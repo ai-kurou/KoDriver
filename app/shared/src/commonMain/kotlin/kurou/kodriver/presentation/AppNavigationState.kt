@@ -49,7 +49,7 @@ internal class AppNavigationState(
     }
 }
 
-private val AppNavigationStateSaver: Saver<AppNavigationState, Int> =
+internal val AppNavigationStateSaver: Saver<AppNavigationState, Int> =
     Saver(
         save = { it.current.ordinal },
         restore = { ordinal -> AppNavigationState(NavBackStack(AppDestination.entries[ordinal])) },
