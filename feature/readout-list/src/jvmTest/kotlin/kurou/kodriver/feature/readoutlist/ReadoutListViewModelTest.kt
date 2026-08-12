@@ -433,6 +433,7 @@ class ReadoutListViewModelTest {
                 listOf(
                     ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root,
                     ReadoutItemKey.Gt7Ps5.RemainingFuel.Root,
+                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
                     ReadoutItemKey.Gt7Ps5.MyBestLap.Root,
                 ),
                 state.items,

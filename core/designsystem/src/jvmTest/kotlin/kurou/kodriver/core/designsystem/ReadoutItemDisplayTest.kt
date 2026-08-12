@@ -35,6 +35,7 @@ class ReadoutItemDisplayTest {
             "gt7_ps5_my_best_lap" to "自己ベストラップ",
             "gt7_ps5_remaining_fuel_laps" to "燃料残り周回数",
             "gt7_ps5_remaining_fuel" to "燃料残量",
+            "gt7_ps5_tyre_temperature" to "タイヤ温度",
             "ace_windows_flag" to "フラッグ",
             "ace_windows_white_flag" to "ホワイトフラッグ",
             "ace_windows_green_flag" to "グリーンフラッグ",

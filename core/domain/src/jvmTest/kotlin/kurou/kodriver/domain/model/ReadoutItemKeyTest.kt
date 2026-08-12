@@ -59,6 +59,10 @@ class ReadoutItemKeyTest {
             ReadoutItemKey.fromValue("gt7_ps5_remaining_fuel"),
         )
         assertEquals(
+            ReadoutItemKey.Gt7Ps5.TyreTemperature.Root,
+            ReadoutItemKey.fromValue("gt7_ps5_tyre_temperature"),
+        )
+        assertEquals(
             ReadoutItemKey.AceWindows.RemainingFuel.Root,
             ReadoutItemKey.fromValue("ace_windows_remaining_fuel"),
         )
@@ -112,6 +116,7 @@ class ReadoutItemKeyTest {
         assertEquals(true, ReadoutItemKey.Gt7Ps5.MyBestLap.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.Gt7Ps5.RemainingFuelLaps.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.Gt7Ps5.RemainingFuel.Root.supportsQueue)
+        assertEquals(true, ReadoutItemKey.Gt7Ps5.TyreTemperature.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.RemainingFuel.Root.supportsQueue)
         assertEquals(true, ReadoutItemKey.AceWindows.Flag.Root.supportsQueue)
     }

@@ -56,6 +56,10 @@ data class Gt7Ps5NarratorReadoutDecision(
 
 /**
  * GT7 のテレメトリから、自己ベスト・燃料残量・残り燃料周回数の読み上げを決定する UseCase。
+ *
+ * [ReadoutItemKey.Gt7Ps5.TyreTemperature.Root] は listPane の項目としてのみ先行実装済みで、
+ * GT7 側のタイヤ温度読み上げ機能自体が未実装のため、このクラスの判定ロジックには現時点では含めていない。
+ * タイヤ温度アナウンスを実装する際は、この UseCase に判定メソッドを追加すること。
  */
 class DetermineGt7Ps5NarratorReadoutUseCase {
     fun determineMyBestLap(
