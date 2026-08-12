@@ -535,6 +535,7 @@ class Gt7Ps5NarratorViewModelTest {
                     telemetryJsons.single(),
                 )
             }
+            confirmVerified(telemetryLogRepository)
         }
 
     @Test
