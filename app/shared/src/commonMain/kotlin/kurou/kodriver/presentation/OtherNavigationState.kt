@@ -1,8 +1,7 @@
 package kurou.kodriver.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
@@ -30,19 +29,10 @@ internal class OtherNavigationState(
     }
 }
 
-internal val OtherNavigationStateSaver: Saver<OtherNavigationState, String> =
-    Saver(
-        save = { it.current.name },
-        restore = { name ->
-            val destination = OtherPaneDestination.entries.find { it.name == name } ?: return@Saver null
-            OtherNavigationState(NavBackStack(destination))
-        },
-    )
-
 @Composable
 internal fun rememberOtherNavigationState(
     initial: OtherPaneDestination = OtherPaneDestination.List,
 ): OtherNavigationState =
-    rememberSaveable(saver = OtherNavigationStateSaver) {
+    remember {
         OtherNavigationState(NavBackStack(initial))
     }

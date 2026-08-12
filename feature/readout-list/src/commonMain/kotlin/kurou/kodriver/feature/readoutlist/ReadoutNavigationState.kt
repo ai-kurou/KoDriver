@@ -1,8 +1,7 @@
 package kurou.kodriver.feature.readoutlist
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
@@ -30,19 +29,10 @@ internal class ReadoutNavigationState(
     }
 }
 
-internal val ReadoutNavigationStateSaver: Saver<ReadoutNavigationState, String> =
-    Saver(
-        save = { it.current.name },
-        restore = { name ->
-            val destination = ReadoutPaneDestination.entries.find { it.name == name } ?: return@Saver null
-            ReadoutNavigationState(NavBackStack(destination))
-        },
-    )
-
 @Composable
 internal fun rememberReadoutNavigationState(
     initial: ReadoutPaneDestination = ReadoutPaneDestination.List,
 ): ReadoutNavigationState =
-    rememberSaveable(saver = ReadoutNavigationStateSaver) {
+    remember {
         ReadoutNavigationState(NavBackStack(initial))
     }
