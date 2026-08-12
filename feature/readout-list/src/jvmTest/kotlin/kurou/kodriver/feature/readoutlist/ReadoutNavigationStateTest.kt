@@ -46,6 +46,13 @@ class ReadoutNavigationStateTest {
     }
 
     @Test
+    fun `backStackが空の場合はListにフォールバックする`() {
+        val state = ReadoutNavigationState(NavBackStack())
+
+        assertEquals(ReadoutPaneDestination.List, state.current)
+    }
+
+    @Test
     fun `navigateToを呼ぶとcurrentが切り替わる`() {
         val state = ReadoutNavigationState(NavBackStack<NavKey>(ReadoutPaneDestination.List))
 
