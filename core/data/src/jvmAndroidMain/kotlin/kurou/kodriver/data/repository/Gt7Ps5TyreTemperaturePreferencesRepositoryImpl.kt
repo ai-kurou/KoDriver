@@ -3,6 +3,7 @@ package kurou.kodriver.data.repository
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.Flow
 import kurou.kodriver.data.model.Gt7Ps5TyreTemperaturePreferences
+import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.repository.Gt7Ps5TyreTemperaturePreferencesRepository
 
 internal class Gt7Ps5TyreTemperaturePreferencesRepositoryImpl(
@@ -12,5 +13,24 @@ internal class Gt7Ps5TyreTemperaturePreferencesRepositoryImpl(
 
     override suspend fun saveHighThresholdCelsius(celsius: Int) {
         dataStore.saveProperty(celsius) { prefs, value -> prefs.copy(highThresholdCelsius = value) }
+    }
+
+    override fun observeEnabledStates(): Flow<Map<ReadoutItemKey, Boolean>> =
+        dataStore.observeProperty { prefs ->
+            prefs.enabledStates
+                .mapNotNull { (key, enabled) -> ReadoutItemKey.fromValue(key)?.let { it to enabled } }
+                .toMap()
+        }
+
+    override suspend fun saveEnabledState(
+        key: ReadoutItemKey,
+        enabled: Boolean,
+    ) {
+        dataStore.saveProperty(enabled) { prefs, value ->
+            prefs.copy(
+                enabledStates =
+                    prefs.enabledStates + (key.value to value),
+            )
+        }
     }
 }

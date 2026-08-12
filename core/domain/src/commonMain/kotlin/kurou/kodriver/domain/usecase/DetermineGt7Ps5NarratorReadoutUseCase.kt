@@ -170,7 +170,8 @@ class DetermineGt7Ps5NarratorReadoutUseCase {
             }
         val shouldAnnounce =
             !state.tyreOverheating && nextOverheating &&
-                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root)
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root) &&
+                settings.enabledStates.readoutEnabled(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning)
         return Gt7Ps5NarratorReadoutDecision(
             state = state.copy(tyreOverheating = nextOverheating),
             events = if (shouldAnnounce) listOf(SpeechEvent.Gt7Ps5TyreOverheat) else emptyList(),

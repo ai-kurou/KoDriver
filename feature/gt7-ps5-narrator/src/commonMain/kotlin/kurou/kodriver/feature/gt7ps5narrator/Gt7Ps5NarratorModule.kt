@@ -12,6 +12,7 @@ import kurou.kodriver.domain.usecase.DetermineGt7Ps5NarratorReadoutUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -52,7 +53,7 @@ val gt7Ps5NarratorModule: Module =
         factory { ReadoutListUseCases(get(), get(), get(), get()) }
         factory { RemainingFuelLapsUseCases(get()) }
         factory { RemainingFuelUseCases(get()) }
-        factory { TyreTemperatureUseCases(get()) }
+        factory { TyreTemperatureUseCases(get(), get()) }
         factory { Gt7Ps5NarratorEventProcessor(get(named(Simulator.Gt7Ps5.id)), get()) }
 
         // ドメイン UseCase（:core:domain。get() は :core:gt7-ps5-data / :core:data の Repository を解決）
@@ -66,6 +67,7 @@ val gt7Ps5NarratorModule: Module =
         factory { ObserveGt7Ps5RemainingFuelLapsUseCase(get()) }
         factory { ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase(get()) }
         factory { ObserveGt7Ps5TyreTemperatureHighThresholdUseCase(get()) }
+        factory { ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(get()) }
         factory { ObserveQueueEnabledStatesUseCase(get()) }
 
         // 音声再生（named "gt7_ps5" で LMU/ACE と分離。SoundPlayer は core:narrator の platformSoundModule が提供）

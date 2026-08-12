@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -22,6 +23,7 @@ import kurou.kodriver.domain.usecase.Gt7Ps5NarratorState
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -53,6 +55,7 @@ internal data class RemainingFuelUseCases(
 
 internal data class TyreTemperatureUseCases(
     val observeHighThresholdCelsius: ObserveGt7Ps5TyreTemperatureHighThresholdUseCase,
+    val observeTyreTemperatureEnabledStates: ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
@@ -73,12 +76,22 @@ internal class Gt7Ps5NarratorViewModel(
             .observeSelectedSimulator()
             .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    // GT7にはdetailPaneのサブトグルが存在しないため、listPaneの状態のみで完結する。
-    private val listEnabledStates =
-        selectedSimulator
-            .flatMapLatest { simulator ->
-                if (simulator == null) emptyFlow() else readoutListUseCases.observeReadoutEnabledStates(simulator.id)
-            }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+    // listPane（readoutStates）とdetailPane（tyreTemperatureStates）を統合した、
+    // Narratorの読み上げ判定に実際に使う唯一のenabledStates。
+    private val mergedEnabledStates =
+        combine(
+            selectedSimulator
+                .flatMapLatest { simulator ->
+                    if (simulator == null) {
+                        emptyFlow<Map<ReadoutItemKey, Boolean>>()
+                    } else {
+                        readoutListUseCases.observeReadoutEnabledStates(simulator.id)
+                    }
+                },
+            tyreTemperatureUseCases.observeTyreTemperatureEnabledStates(),
+        ) { readoutStates, tyreTemperatureStates ->
+            readoutStates + tyreTemperatureStates
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val readoutOrder =
         selectedSimulator
@@ -248,7 +261,7 @@ internal class Gt7Ps5NarratorViewModel(
     private val currentSettings: Gt7Ps5NarratorReadoutSettings
         get() =
             Gt7Ps5NarratorReadoutSettings(
-                enabledStates = listEnabledStates.value,
+                enabledStates = mergedEnabledStates.value,
                 myBestLapVoiceType = voiceType.value,
                 remainingFuelLapsThreshold = fuelThreshold.value,
                 remainingFuelThresholdPercentage = remainingFuelThreshold.value,

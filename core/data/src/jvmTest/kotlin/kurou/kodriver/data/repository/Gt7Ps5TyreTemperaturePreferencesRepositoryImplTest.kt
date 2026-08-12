@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kurou.kodriver.data.datasource.Gt7Ps5TyreTemperaturePreferencesSerializer
 import kurou.kodriver.domain.model.GT7_PS5_TYRE_TEMPERATURE_HIGH_THRESHOLD_CELSIUS_DEFAULT
+import kurou.kodriver.domain.model.ReadoutItemKey
 import java.nio.file.Files
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -54,5 +55,61 @@ class Gt7Ps5TyreTemperaturePreferencesRepositoryImplTest {
             repository.saveHighThresholdCelsius(105)
 
             assertEquals(105, repository.observeHighThresholdCelsius().first())
+        }
+
+    @Test
+    fun `enabledStates の初期値は空Map`() =
+        testScope.runTest {
+            assertEquals(emptyMap(), repository.observeEnabledStates().first())
+        }
+
+    @Test
+    fun `saveEnabledState で保存した値を observeEnabledStates で取得できる`() =
+        testScope.runTest {
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `saveEnabledState を複数回呼ぶと最後の値で上書きされる`() =
+        testScope.runTest {
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, true)
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `異なるキーで保存した値がすべて保持される`() =
+        testScope.runTest {
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, true)
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.Root, false)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(
+                    ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to true,
+                    ReadoutItemKey.Gt7Ps5.TyreTemperature.Root to false,
+                ),
+                repository.observeEnabledStates().first(),
+            )
+        }
+
+    @Test
+    fun `saveEnabledState後にsaveHighThresholdCelsiusを呼んでもenabledStatesは保持される`() =
+        testScope.runTest {
+            repository.saveEnabledState(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning, false)
+            repository.saveHighThresholdCelsius(100)
+
+            assertEquals(
+                mapOf<ReadoutItemKey, Boolean>(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                repository.observeEnabledStates().first(),
+            )
         }
 }

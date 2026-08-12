@@ -41,6 +41,7 @@ import kurou.kodriver.domain.repository.TelemetryLogRepository
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5MyBestLapVoiceTypeUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelLapsUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5RemainingFuelThresholdPercentageUseCase
+import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5TyreTemperatureHighThresholdUseCase
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5UseCase
 import kurou.kodriver.domain.usecase.ObserveQueueEnabledStatesUseCase
@@ -134,6 +135,8 @@ class Gt7Ps5NarratorViewModelTest {
                 TyreTemperatureUseCases(
                     observeHighThresholdCelsius =
                         ObserveGt7Ps5TyreTemperatureHighThresholdUseCase(tyreTemperaturePreferencesRepository),
+                    observeTyreTemperatureEnabledStates =
+                        ObserveGt7Ps5TyreTemperatureEnabledStatesUseCase(tyreTemperaturePreferencesRepository),
                 ),
             eventProcessor =
                 Gt7Ps5NarratorEventProcessor(
@@ -162,6 +165,7 @@ class Gt7Ps5NarratorViewModelTest {
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(30)
             every { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns MutableStateFlow(95)
+            every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
 
@@ -480,6 +484,25 @@ class Gt7Ps5NarratorViewModelTest {
         }
 
     @Test
+    fun `過熱警告が無効のときは読み上げない`() =
+        runTest(testDispatcher) {
+            val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
+            val spokenTexts = mutableListOf<SpeechEvent>()
+            val ttsEngine = mockTts(spokenTexts)
+            stubReadoutDefaults(
+                tyreTemperatureEnabledOverrides =
+                    mapOf(ReadoutItemKey.Gt7Ps5.TyreTemperature.OverheatWarning to false),
+                tyreTemperatureHighThresholdCelsius = 95,
+            )
+            createViewModel(telemetryChannel = channel, ttsEngine = ttsEngine)
+
+            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(90f, 90f, 90f, 90f)))
+            channel.send(gt7Telemetry(tyreTemperature = Gt7Ps5TyreTemperatureData(95f, 90f, 90f, 90f)))
+
+            assertEquals(emptyList<SpeechEvent>(), spokenTexts)
+        }
+
+    @Test
     fun `タイヤ温度の読み上げが発生したら現在と直前のテレメトリを保存する`() =
         runTest(testDispatcher) {
             val channel = Channel<Gt7Ps5TelemetryData>(Channel.UNLIMITED)
@@ -665,6 +688,7 @@ class Gt7Ps5NarratorViewModelTest {
             every { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() } returns MutableStateFlow(3)
             every { remainingFuelPreferencesRepository.observeThresholdPercentage() } returns MutableStateFlow(0)
             every { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() } returns MutableStateFlow(95)
+            every { tyreTemperaturePreferencesRepository.observeEnabledStates() } returns MutableStateFlow(emptyMap())
             every { queuePreferencesRepository.observeQueueEnabledStates() } returns MutableStateFlow(emptyMap())
             val telemetryJsons = mutableListOf<String>()
             coEvery {
@@ -693,6 +717,7 @@ class Gt7Ps5NarratorViewModelTest {
             verify(exactly = 1) { remainingFuelLapsPreferencesRepository.observeRemainingFuelLaps() }
             verify(exactly = 1) { remainingFuelPreferencesRepository.observeThresholdPercentage() }
             verify(exactly = 1) { tyreTemperaturePreferencesRepository.observeHighThresholdCelsius() }
+            verify(exactly = 1) { tyreTemperaturePreferencesRepository.observeEnabledStates() }
             verify(exactly = 1) { queuePreferencesRepository.observeQueueEnabledStates() }
             coVerify(exactly = 1) {
                 telemetryLogRepository.saveTelemetryLog(
@@ -727,6 +752,7 @@ class Gt7Ps5NarratorViewModelTest {
         fuelThreshold: Int = 3,
         remainingFuelThresholdPercentage: Int = 0,
         tyreTemperatureHighThresholdCelsius: Int = 95,
+        tyreTemperatureEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
         queueEnabledOverrides: Map<ReadoutItemKey, Boolean> = emptyMap(),
     ) {
         every { simulatorPreferencesRepository.selectedSimulator() } returns MutableStateFlow(simulator)
@@ -746,6 +772,9 @@ class Gt7Ps5NarratorViewModelTest {
         every {
             tyreTemperaturePreferencesRepository.observeHighThresholdCelsius()
         } returns MutableStateFlow(tyreTemperatureHighThresholdCelsius)
+        every {
+            tyreTemperaturePreferencesRepository.observeEnabledStates()
+        } returns MutableStateFlow(tyreTemperatureEnabledOverrides)
         every {
             queuePreferencesRepository.observeQueueEnabledStates()
         } returns MutableStateFlow(queueEnabledOverrides)
