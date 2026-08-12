@@ -125,6 +125,10 @@ internal fun OtherContent(
     scrollToTopRequest: Int = 0,
     detailContent: @Composable (OtherListItemType, Boolean, () -> Unit, Long?, Long) -> Unit = { _, _, _, _, _ -> },
 ) {
+    val navigationState =
+        rememberOtherNavigationState(
+            initial = if (uiState.selectedItem != null) OtherPaneDestination.Detail else OtherPaneDestination.List,
+        )
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
             scaffoldDirective =
@@ -156,10 +160,9 @@ internal fun OtherContent(
     var predictiveBackProgress by remember { mutableFloatStateOf(0f) }
     val navigateBack = {
         predictiveBackProgress = 0f
-        scope.launch {
-            navigator.navigateBack()
-            onClearSelectedItem()
-        }
+        scope.launch { navigator.navigateBack() }
+        navigationState.navigateTo(OtherPaneDestination.List)
+        onClearSelectedItem()
         Unit
     }
     val paneExpansionState =
@@ -169,8 +172,15 @@ internal fun OtherContent(
         )
 
     LaunchedEffect(uiState.selectedItem) {
-        navigator.navigateTo(
+        navigationState.navigateTo(
             if (uiState.selectedItem != null) {
+                OtherPaneDestination.Detail
+            } else {
+                OtherPaneDestination.List
+            },
+        )
+        navigator.navigateTo(
+            if (navigationState.current == OtherPaneDestination.Detail) {
                 ListDetailPaneScaffoldRole.Detail
             } else {
                 ListDetailPaneScaffoldRole.List
