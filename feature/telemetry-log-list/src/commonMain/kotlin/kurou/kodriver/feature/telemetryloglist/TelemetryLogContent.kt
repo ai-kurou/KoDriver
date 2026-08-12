@@ -100,6 +100,17 @@ internal fun TelemetryLogContentScaffold(
     onFeedbackClick: (Long) -> Unit = {},
     detailContent: @Composable (Long) -> Unit = {},
 ) {
+    val navigationState =
+        rememberTelemetryLogNavigationState(
+            initial =
+                if (uiState.selectedLogId !=
+                    null
+                ) {
+                    TelemetryLogPaneDestination.Detail
+                } else {
+                    TelemetryLogPaneDestination.List
+                },
+        )
     val navigator =
         rememberListDetailPaneScaffoldNavigator<Nothing>(
             scaffoldDirective =
@@ -137,12 +148,20 @@ internal fun TelemetryLogContentScaffold(
     val navigateBack = {
         predictiveBackProgress = 0f
         scope.launch { navigator.navigateBack() }
+        navigationState.navigateTo(TelemetryLogPaneDestination.List)
         onClearSelectedLog()
     }
 
     LaunchedEffect(uiState.selectedLogId) {
-        navigator.navigateTo(
+        navigationState.navigateTo(
             if (uiState.selectedLogId != null) {
+                TelemetryLogPaneDestination.Detail
+            } else {
+                TelemetryLogPaneDestination.List
+            },
+        )
+        navigator.navigateTo(
+            if (navigationState.current == TelemetryLogPaneDestination.Detail) {
                 ListDetailPaneScaffoldRole.Detail
             } else {
                 ListDetailPaneScaffoldRole.List
