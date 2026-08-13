@@ -8,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.ui.Modifier
 import com.github.takahirom.roborazzi.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.defaultRoborazziOptions
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailUiState
 import kurou.kodriver.feature.otherlist.OtherListItemType

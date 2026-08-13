@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
+import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
+import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
 import org.junit.Test
 
 class VersionMismatchBottomSheetScreenshotTest {
