@@ -30,9 +30,3 @@
   **課題**: list/detailペインの切り替え状態を`NavBackStack<NavKey>`で保持しているが、`clear()`→`add()`による「1要素の置き換え」としてのみ使っており、Navigation3本来の想定（`NavDisplay`によるレンダリング、pushによる複数エントリの積み上げ、戻る操作での自動pop）は利用していない。実際の画面遷移制御はMaterial3 Adaptiveの`rememberListDetailPaneScaffoldNavigator`/`ListDetailPaneScaffoldRole`が担っており、`NavBackStack`はそれと並行して「現在どちらのペインを表示しているか」を表す状態変数として存在するのみ。
   **改善案**: Navigation3のサンプル・公式ドキュメントにあるMaterial3 AdaptiveとNavDisplayの統合パターン（両者で単一のバックスタックを共有する設計）への寄せ替えを検討する。ただし現状の実装（PR #1069, #1075, #1077, #1078）で機能的な不具合は出ていないため、優先度は低め。
 
-## セキュリティ
-
-- **対象**: `server/src/main/kotlin/kurou/kodriver/Application.kt`（`Application.module`）・`server/src/main/kotlin/kurou/kodriver/TelemetryWebSocket.kt`
-  **課題**: `install(WebSockets) { ... }` および各 `webSocket(...)` ルートで `Origin` ヘッダの検証（Ktorの`WebSockets`プラグインが持つ`CheckOrigin`相当の仕組み）を一切行っていない。ブラウザはWebSocket接続に対してXHR/fetchのようなCORS（Same-Origin Policy）を強制しないため、信頼できないLAN内の別端末で開かれた悪意あるWebページのJavaScriptから `ws://<Windows PC のローカルIP>:8080/ws/<Simulator.id>/<feature>` へ接続され、走行中のテレメトリ情報（車両接近・タイヤ状態等）を外部にWebSocket越しに読み取られる恐れがある（CSWSH: Cross-Site WebSocket Hijacking）。CLAUDE.mdの「現時点では認証・暗号化を実装していないため、信頼できるLAN内でのみ使用すること」はネットワークレベルの信頼を前提にした記述だが、CSWSHはLAN内の（利用者本人が操作する）ブラウザがLAN外の悪意あるページを閲覧しただけでも成立し得る点で別種のリスク。
-  **改善案**: `install(WebSockets)`に`Origin`検証（許可するOriginが存在しない/不明な場合の扱いを含む）を追加するか、少なくとも既知の制約として本ファイル・READMEに明記する。認証・暗号化の実装（別途検討中）とは独立して対応可能。
-
