@@ -39,7 +39,7 @@ class DebugStateBestLapCardTest {
             }
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+        rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 
@@ -61,7 +61,7 @@ class DebugStateBestLapCardTest {
                 }
             }
 
-            rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+            rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
             rule.onNodeWithText("未取得").assertIsDisplayed()
         }
     }
@@ -83,7 +83,7 @@ class DebugStateBestLapCardTest {
             }
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+        rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("1:23.456").assertIsDisplayed()
     }
 
@@ -104,7 +104,7 @@ class DebugStateBestLapCardTest {
             }
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+        rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("1:30.000").assertIsDisplayed()
     }
 
@@ -126,7 +126,7 @@ class DebugStateBestLapCardTest {
             }
         }
 
-        rule.onNodeWithText("ベストラップ").assertIsDisplayed()
+        rule.onNodeWithText("自己ベストラップ").assertIsDisplayed()
         rule.onNodeWithText("未取得").assertIsDisplayed()
     }
 

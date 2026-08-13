@@ -52,7 +52,7 @@
     <string name="debug_state_side_by_side_none">並走車両なし</string>
     <string name="debug_state_side_by_side_left">左%1$sm</string>
     <string name="debug_state_side_by_side_right">右%1$sm</string>
-    <string name="debug_state_best_lap_title">ベストラップ</string>
+    <string name="debug_state_best_lap_title">自己ベストラップ</string>
     <string name="debug_state_tyre_temperature_title">タイヤ表面温度</string>
     <string name="debug_state_tyre_temperature_fl">FL %1$s℃</string>
     <string name="debug_state_tyre_temperature_fr">FR %1$s℃</string>
