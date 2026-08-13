@@ -1,8 +1,8 @@
-package kurou.kodriver.feature.otherreadoutstartsounddetail
+package kurou.kodriver.buildlogic.screenshottest
 
 import com.github.takahirom.roborazzi.RoborazziOptions
 
-internal val defaultRoborazziOptions =
+val defaultRoborazziOptions =
     RoborazziOptions(
         compareOptions =
             RoborazziOptions.CompareOptions(
