@@ -18,12 +18,6 @@
 
 ---
 
-## 開発フロー・CI
-
-- **対象**: `.github/workflows/on-pull-request.yml`
-  **課題**: 現状 detekt/ktlint による静的解析はCIにあるが、PR差分に対するAIレビューコメントの仕組みはない。Qiita記事「GitHub ActionsのPR自動レビューを公式claude-code-actionで組む（APIキー課金なし）」（https://qiita.com/itaraiguma/items/3a723688a2fe571c33ec , 2026-07-31）で、`nightly-todo.yml` と同じ `CLAUDE_CODE_OAUTH_TOKEN`（Pro/Maxサブスク枠）を使い、`pull_request` トリガー・Bot生成PR除外（`github.event.sender.type == 'User'`）・`concurrency: cancel-in-progress: true` によるインラインPRレビュー構成が紹介されていた。
-  **改善案**: 既存のdetekt/ktlint/Codacyとの指摘重複やAPIコスト（サブスク枠消費）を踏まえたうえで、`claude_args` で許可ツールを絞ったインラインレビューjobの追加余地を検討する。優先度は低め。
-
 ## 設計・アーキテクチャ
 
 - **対象**: `ReadoutNavigationState.kt`（`feature:readout-list`）・`OtherNavigationState.kt`（`app:shared`）・`TelemetryLogNavigationState.kt`（`feature:telemetry-log-list`）
