@@ -41,7 +41,4 @@
 - **対象**: `feature/ace-windows-readout-remaining-fuel-detail`・`feature/gt7-ps5-readout-remaining-fuel-detail` の `strings.xml`（`remaining_fuel_title`, `remaining_fuel_preview_label`）と `core/designsystem/.../ReadoutItemDisplay.kt`（`readout_item_remaining_fuel`）
   **課題**: 読み上げ項目一覧（`core/designsystem`の`readout_item_remaining_fuel` = 「燃料残量」）およびGT7版detail画面のタイトル・プレビュー文言は「燃料残量」で統一されているのに対し、ACE版detail画面（`feature/ace-windows-readout-remaining-fuel-detail/src/commonMain/composeResources/values/strings.xml`）のみ「残り燃料」「残り燃料警告」という別表記になっている。`ReadoutItemDisplay.kt`では`"gt7_ps5_remaining_fuel"`と`"ace_windows_remaining_fuel"`が同じ`readout_item_remaining_fuel`（「燃料残量」）にマッピングされているため、一覧画面とACEのdetail画面とで同一機能の呼び方が食い違って見える。
   **改善案**: ACE版detail画面の文言を「燃料残量」「燃料残量警告」に統一する（GT7版detail画面の文言をそのまま踏襲する）。
-- **対象**: `core/designsystem/.../strings.xml`（`readout_item_my_best_lap` = 「自己ベストラップ」）と `feature/debug-state-detail/src/commonMain/composeResources/values/strings.xml`（`debug_state_best_lap_title` = 「ベストラップ」）
-  **課題**: 読み上げ項目一覧および`feature/lmu-windows-readout-my-best-lap-detail`・`feature/gt7-ps5-readout-my-best-lap-detail`では「自己ベストラップ」表記だが、`feature/debug-state-detail`のデバッグ表示ラベルのみ「自己」が付かない「ベストラップ」表記になっている。
-  **改善案**: `debug_state_best_lap_title`を「自己ベストラップ」に揃えるか、意図的に短縮している場合はその理由をコメントで残す。
 
