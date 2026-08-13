@@ -106,10 +106,6 @@ internal fun Gt7Ps5ReadoutRemainingFuelDetailPaneContent(
     }
 }
 
-internal data class Gt7Ps5ReadoutRemainingFuelDetailUiState(
-    val thresholdPercentage: Int = GT7_PS5_REMAINING_FUEL_THRESHOLD_PERCENTAGE_DEFAULT,
-)
-
 @Preview(showBackground = true)
 @Composable
 private fun Gt7Ps5ReadoutRemainingFuelDetailPanePreview() {
