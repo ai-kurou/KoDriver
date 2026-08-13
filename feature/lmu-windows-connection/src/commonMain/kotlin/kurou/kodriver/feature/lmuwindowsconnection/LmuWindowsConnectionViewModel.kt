@@ -15,22 +15,6 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.CheckLmuWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
-internal data class LmuWindowsConnectionUiState(
-    val connectionStatus: LmuWindowsConnectionStatus = LmuWindowsConnectionStatus.UNCHECKED,
-) {
-    val isConnected: Boolean get() = connectionStatus == LmuWindowsConnectionStatus.CONNECTED
-    val isConnectionChecked: Boolean get() = connectionStatus != LmuWindowsConnectionStatus.UNCHECKED
-}
-
-/**
- * LmuWindowsConnection の接続状態を表す表示用ステータス。
- */
-enum class LmuWindowsConnectionStatus {
-    UNCHECKED,
-    CONNECTED,
-    DISCONNECTED,
-}
-
 internal class LmuWindowsConnectionViewModel(
     private val checkLmuWindowsConnection: CheckLmuWindowsConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,

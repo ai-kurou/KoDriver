@@ -13,26 +13,6 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveGt7Ps5ConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
-internal data class Gt7Ps5ConnectionUiState(
-    val connectionStatus: Gt7Ps5ConnectionStatus = Gt7Ps5ConnectionStatus.UNCHECKED,
-    val fuelLevel: Float? = null,
-    val fuelCapacity: Float? = null,
-    val currentLap: Int? = null,
-    val totalLaps: Int? = null,
-) {
-    val isConnected: Boolean get() = connectionStatus == Gt7Ps5ConnectionStatus.CONNECTED
-    val isConnectionChecked: Boolean get() = connectionStatus != Gt7Ps5ConnectionStatus.UNCHECKED
-}
-
-/**
- * Gt7Ps5Connection の接続状態を表す表示用ステータス。
- */
-enum class Gt7Ps5ConnectionStatus {
-    UNCHECKED,
-    CONNECTED,
-    DISCONNECTED,
-}
-
 internal class Gt7Ps5ConnectionViewModel(
     private val observeGt7Ps5Connection: ObserveGt7Ps5ConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,

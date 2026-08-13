@@ -13,23 +13,6 @@ import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.ObserveAceWindowsConnectionUseCase
 import kurou.kodriver.domain.usecase.ObserveSelectedSimulatorUseCase
 
-internal data class AceWindowsConnectionUiState(
-    val connectionStatus: AceWindowsConnectionStatus = AceWindowsConnectionStatus.UNCHECKED,
-    val fuelRemainingPercent: Double? = null,
-) {
-    val isConnected: Boolean get() = connectionStatus == AceWindowsConnectionStatus.CONNECTED
-    val isConnectionChecked: Boolean get() = connectionStatus != AceWindowsConnectionStatus.UNCHECKED
-}
-
-/**
- * AceWindowsConnection の接続状態を表す表示用ステータス。
- */
-enum class AceWindowsConnectionStatus {
-    UNCHECKED,
-    CONNECTED,
-    DISCONNECTED,
-}
-
 internal class AceWindowsConnectionViewModel(
     private val observeAceWindowsConnection: ObserveAceWindowsConnectionUseCase,
     private val observeSelectedSimulator: ObserveSelectedSimulatorUseCase,
