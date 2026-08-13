@@ -11,33 +11,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kurou.kodriver.domain.model.Simulator
 import kurou.kodriver.domain.usecase.KoDriverServerConnectionStatus
 import kurou.kodriver.domain.usecase.ObserveKoDriverServerConnectionUseCase
-
-/**
- * ServerConnection の接続状態を表す表示用ステータス。
- */
-enum class ServerConnectionStatus { NOT_CONFIGURED, CHECKING, CONNECTED, DISCONNECTED }
-
-/**
- * ServerConnection 画面の表示状態。
- */
-data class ServerConnectionUiState(
-    val connectionStatus: ServerConnectionStatus = ServerConnectionStatus.NOT_CONFIGURED,
-    val requiresKoDriverServer: Boolean = false,
-    val selectedSimulator: Simulator? = null,
-    val serverVersion: String? = null,
-    val showVersionMismatchBottomSheet: Boolean = false,
-    val appVersion: String = "",
-) {
-    val isConnected: Boolean get() = connectionStatus == ServerConnectionStatus.CONNECTED
-    val isConnectionChecked: Boolean
-        get() =
-            connectionStatus != ServerConnectionStatus.NOT_CONFIGURED &&
-                connectionStatus != ServerConnectionStatus.CHECKING
-    val isIpConfigured: Boolean get() = connectionStatus != ServerConnectionStatus.NOT_CONFIGURED
-}
 
 /**
  * ServerConnection 画面の状態管理とユーザー操作を扱う ViewModel。
