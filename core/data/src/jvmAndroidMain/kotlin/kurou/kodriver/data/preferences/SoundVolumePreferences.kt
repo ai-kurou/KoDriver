@@ -1,0 +1,12 @@
+package kurou.kodriver.data.preferences
+
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.protobuf.ProtoNumber
+import kurou.kodriver.domain.model.SOUND_VOLUME_DEFAULT
+
+@OptIn(ExperimentalSerializationApi::class)
+@Serializable
+internal data class SoundVolumePreferences(
+    @ProtoNumber(1) val volume: Int = SOUND_VOLUME_DEFAULT,
+)
