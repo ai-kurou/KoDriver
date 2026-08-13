@@ -22,10 +22,10 @@
 
 ## 曜日ローテーション項目
 
-- 月: プロジェクト全体を見て、バグ・不具合・配線漏れ（例: ReadoutItemKeyがlistPaneにはあるがNarrator側で未参照など）・仕様不備があれば improvement-ideas.md に追記する。 / アニメーション付与、識別しにくい配色の変更、GUI配置の見直し、マテリアルデザインからの逸脱など、UI/UXの改善提案があれば improvement-ideas.md に追記する。
+- 月: プロジェクト全体を見て、バグ・不具合・配線漏れ（例: ReadoutItemKeyがlistPaneにはあるがNarrator側で未参照など）・仕様不備があれば improvement-ideas.md に追記する。 / アニメーション付与、識別しにくい配色の変更、GUI配置の見直し、マテリアルデザインからの逸脱など、UI/UXの改善提案があれば improvement-ideas.md に追記する。 / `AndroidDataModule.kt`（`core:data`）・`DesktopDataModule.kt`（`core:data`）等のKoin DIモジュールを確認し、新設したRepository/UseCaseの`single { }`バインディングが漏れていないか（片方だけ実装してもう片方への配線を忘れる、ReadoutItemKeyの配線漏れと同種のバグパターン）があれば improvement-ideas.md に追記する。
 - 火: `libs.versions.toml` に記載の各ライブラリについて最新安定版をWebで確認し、致命的な不具合がない範囲で更新余地があれば improvement-ideas.md に追記する（CLAUDE.mdの「ライブラリバージョン管理」方針に沿う）。 / `./gradlew koverXmlReport` の結果を確認し、カバレッジ100%方針から外れているのに除外理由が妥当でない箇所があれば improvement-ideas.md に追記する。
-- 水: detekt・ktlintを実行し、エラーには至っていないが閾値（LongMethod・CyclomaticComplexMethod等）に近づいている箇所があれば improvement-ideas.md に追記する。 / `rg` 等で未使用のクラス・関数や、複数モジュールに散らばった重複実装がないか横断的に確認し、あれば improvement-ideas.md に追記する。
+- 水: detekt・ktlintを実行し、エラーには至っていないが閾値（LongMethod・CyclomaticComplexMethod等）に近づいている箇所があれば improvement-ideas.md に追記する。 / `rg` 等で未使用のクラス・関数や、複数モジュールに散らばった重複実装がないか横断的に確認し、あれば improvement-ideas.md に追記する。 / `@Composable` 関数で不要な再コンポジションを招きやすい実装（`remember`/`derivedStateOf` の使い所、`Stable`/`Immutable` の付与漏れ、ラムダ・オブジェクトの再生成など）がないか確認し、あれば improvement-ideas.md に追記する。
 - 木: 認証・暗号化なしで稼働しているKtorサーバー（`0.0.0.0:8080`）まわりなど、既知の制約以外に新たなセキュリティリスクが増えていないか確認し、あれば improvement-ideas.md に追記する。 / displayNameやUI文言（表示名・ラベル・エラーメッセージ等）に表記揺れ（全角/半角、送り仮名の違い、用語の不統一など）がないか横断的に確認し、あれば improvement-ideas.md に追記する。
-- 金: `assertModuleGraph` は通っていても、本来分離すべき責務が同一モジュールに混在していないかなど、依存関係グラフの設計面での気になる点があれば improvement-ideas.md に追記する。
+- 金: `assertModuleGraph` は通っていても、本来分離すべき責務が同一モジュールに混在していないかなど、依存関係グラフの設計面での気になる点があれば improvement-ideas.md に追記する。 / ルートの `CLAUDE.md`（モジュール構成表など）や各モジュールの `README.md` が実際の実装から乖離していないか（モジュール追加・分割・パッケージ再編後の記述漏れ等）を確認し、あれば improvement-ideas.md に追記する。
 - 土: GitHub Actionsの実行履歴を確認し、実行時間が長すぎるジョブや、再実行で通ることが多い不安定なテスト（flaky test）があれば improvement-ideas.md に追記する。
 - 日: 例外の握りつぶし、ログレベルの不適切な使用（本来warn/errorであるべきものがinfo等）など、エラーハンドリング・ログ出力の一貫性に問題があれば improvement-ideas.md に追記する。
