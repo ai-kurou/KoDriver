@@ -8,11 +8,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 
 /**
  * DetailPaneScaffold を提供する公開関数。
+ *
+ * TopAppBar は Haze により、背後の [content] をすりガラス調にぼかして表示する。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +31,7 @@ fun DetailPaneScaffold(
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(),
     content: @Composable () -> Unit,
 ) {
+    val hazeState = remember { HazeState() }
     Scaffold(
         modifier =
             modifier
@@ -39,10 +45,11 @@ fun DetailPaneScaffold(
                 onBack = onBack,
                 navigationIconModifier = navigationIconModifier,
                 scrollBehavior = scrollBehavior,
+                hazeState = hazeState,
             )
         },
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        Box(modifier = Modifier.padding(paddingValues).hazeSource(state = hazeState)) {
             content()
         }
     }

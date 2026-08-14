@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.compose.material.icons.extended)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.components.resources)
+            implementation(libs.haze)
+            implementation(libs.haze.materials)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

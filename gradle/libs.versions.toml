@@ -39,6 +39,7 @@ aboutLibraries = "15.0.4"
 sentry = "8.52.0"
 dokka = "2.2.0"
 navigation3 = "1.1.1"
+haze = "1.7.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -109,6 +110,8 @@ sentry-bom = { module = "io.sentry:sentry-bom", version.ref = "sentry" }
 sentry-android = { module = "io.sentry:sentry-android" }
 sentry = { module = "io.sentry:sentry" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
