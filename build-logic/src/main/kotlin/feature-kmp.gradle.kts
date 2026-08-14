@@ -38,6 +38,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:domain"))
             implementation(libs.findLibrary("androidx-lifecycle-viewmodelCompose").get())
+            implementation(project.dependencies.platform(libs.findLibrary("koin-bom").get()))
             implementation(libs.findLibrary("koin-compose-viewmodel").get())
         }
         commonTest.dependencies {

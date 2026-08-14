@@ -34,5 +34,6 @@ compose.resources {
 
 dependencies {
     testFixturesImplementation(projects.core.domain)
+    testFixturesImplementation(platform(libs.koin.bom))
     testFixturesImplementation(libs.koin.core)
 }
