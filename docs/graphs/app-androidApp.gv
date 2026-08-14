@@ -1,5 +1,10 @@
 digraph G {
   rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":app:androidApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=2.5]
+  ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":core:gt7-ps5-data" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:gt7-ps5-data"

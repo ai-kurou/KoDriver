@@ -1,5 +1,9 @@
 digraph G {
   rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":app:shared" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":feature:server-connection" [fillcolor="#C8E6C9", color="#43A047", penwidth=2.5]
   ":app:shared" -> ":feature:server-connection"
   ":feature:server-connection" -> ":core:domain"
 }

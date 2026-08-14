@@ -1,5 +1,9 @@
 digraph G {
   rankdir=TB
+  node [shape=box, style="rounded,filled"]
+  ":app:desktopApp" [fillcolor="#FFE0B2", color="#FB8C00", penwidth=1]
+  ":core:domain" [fillcolor="#BBDEFB", color="#1E88E5", penwidth=1]
+  ":server" [fillcolor="#F8BBD0", color="#D81B60", penwidth=2.5]
   ":server" -> ":core:domain"
   ":app:desktopApp" -> ":server"
 }
