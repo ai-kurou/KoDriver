@@ -16,6 +16,7 @@ import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.core.acewindowsdata.aceWindowsDataModule
+import kurou.kodriver.core.devicevolumedata.deviceVolumeDataModule
 import kurou.kodriver.data.desktopDataModule
 import kurou.kodriver.domain.model.ReadoutItemKey
 import kurou.kodriver.domain.model.Simulator
@@ -55,7 +56,7 @@ class AppTest {
                 // :core:lmu-windows-data の lmuWindowsDataModule は含めない。LMU/GT7の各Repositoryは
                 // fakeLmuWindowsNarratorModule / fakeGt7Ps5DataModule が最後に上書きするため実質未使用になる。
                 modules(
-                    listOf(desktopDataModule, aceWindowsDataModule) + featureModules +
+                    listOf(desktopDataModule, aceWindowsDataModule, deviceVolumeDataModule) + featureModules +
                         listOf(
                             fakeGt7Ps5DataModule,
                             fakeLmuWindowsNarratorModule,

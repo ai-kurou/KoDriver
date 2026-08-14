@@ -19,10 +19,12 @@ digraph G {
   "feature" [label="feature\n35 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
+  ":app:androidApp" -> ":core:device-volume-data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":app:shared"
   ":app:desktopApp" -> ":core:ace-windows-data"
   ":app:desktopApp" -> ":core:data"
+  ":app:desktopApp" -> ":core:device-volume-data"
   ":app:desktopApp" -> ":core:gt7-ps5-data"
   ":app:desktopApp" -> ":core:lmu-windows-data"
   ":app:desktopApp" -> ":server"
