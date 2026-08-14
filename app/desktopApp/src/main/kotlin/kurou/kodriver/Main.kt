@@ -45,7 +45,7 @@ fun main() {
     var server: KoDriverServer? = null
     try {
         application {
-            val windowState = rememberWindowState(size = DpSize(800.dp, 500.dp))
+            val windowState = rememberWindowState(size = DpSize(1000.dp, 600.dp))
             Window(
                 onCloseRequest = { exitApplication() },
                 title = "KoDriver",
