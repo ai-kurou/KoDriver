@@ -95,11 +95,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * NavigationBar がコンテンツに重ねて浮かぶレイアウト時、コンテンツ末尾がバーの裏に完全に
- * 隠れないよう確保する下部余白。NavigationBar のデフォルト高さ（80.dp）よりわずかに小さくし、
- * バーの裏にコンテンツの一部が透けて見える余地（Hazeでぼかす対象）を残す。
+ * NavigationBar がコンテンツに重ねて浮かぶレイアウト時に、コンテンツ側へ確保する下部余白。
+ * NavigationBar は透過して見えても実際のタップ判定はバーの矩形全体で消費するため、この値を
+ * NavigationBar のデフォルト高さ（80.dp）以上にし、リストの項目がバーの裏に実際にスクロール
+ * されて重なる（＝タップ不能になる）ことがないようにする。この結果、Hazeが常にぼかせるのは
+ * バーの背景色のみで、コンテンツそのものが透けて見えることはない。
  */
-private val FloatingNavigationBarContentBottomPadding = 64.dp
+private val FloatingNavigationBarContentBottomPadding = 80.dp
 
 private fun withTabSwitch(
     action: (() -> Unit)?,
