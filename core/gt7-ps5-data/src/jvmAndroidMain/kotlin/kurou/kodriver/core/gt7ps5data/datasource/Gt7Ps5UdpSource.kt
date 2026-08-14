@@ -20,6 +20,7 @@ import java.net.DatagramPacket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.time.Clock
 
 private fun ByteArray.readIntLE(offset: Int): Int =
     (this[offset].toInt() and 0xFF) or
@@ -46,7 +47,7 @@ internal class Gt7Ps5UdpSource(
         RealUdpSocket(listenPort = port, timeoutMs = SOCKET_TIMEOUT_MS)
     },
     scope: CoroutineScope,
-    private val currentTimeMillis: () -> Long = System::currentTimeMillis,
+    private val currentTimeMillis: () -> Long = { Clock.System.now().toEpochMilliseconds() },
 ) : Gt7Ps5PacketSource {
     private val _lastPacketReceivedAt = AtomicLong(0L)
 

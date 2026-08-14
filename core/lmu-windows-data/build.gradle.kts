@@ -8,6 +8,7 @@ dependencies {
     implementation(projects.core.windowsSharedMemory)
     implementation(platform(libs.kotlinx.coroutines.bom))
     implementation(libs.kotlinx.coroutinesCore)
+    implementation(libs.kotlinx.datetime)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
 
