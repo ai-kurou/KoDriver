@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.buildlogic.screenshottest.twoPaneDirective
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailPaneContent
 import kurou.kodriver.feature.debugstatedetail.DebugStateDetailUiState
 import kurou.kodriver.feature.otherconsoleipdetail.OtherConsoleIpDetailPaneContent

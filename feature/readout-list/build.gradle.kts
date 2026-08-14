@@ -25,6 +25,11 @@ kotlin {
             implementation(libs.kotlinx.coroutinesTest)
             implementation(libs.mockk)
         }
+        jvmTest {
+            kotlin.srcDir(
+                rootProject.layout.projectDirectory.dir("build-logic/src/paneDirectiveJvmTest/kotlin"),
+            )
+        }
     }
 }
 

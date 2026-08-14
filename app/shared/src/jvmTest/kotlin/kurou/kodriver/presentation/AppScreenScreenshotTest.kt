@@ -24,6 +24,7 @@ import kurou.kodriver.app.shared.generated.resources.nav_log
 import kurou.kodriver.app.shared.generated.resources.nav_more
 import kurou.kodriver.buildlogic.screenshottest.captureRoboImage
 import kurou.kodriver.buildlogic.screenshottest.composeScreenshotTest
+import kurou.kodriver.buildlogic.screenshottest.singlePaneDirective
 import kurou.kodriver.feature.otherlist.OtherListUiState
 import kurou.kodriver.feature.readoutlist.ReadoutContent
 import kurou.kodriver.feature.readoutlist.fakeReadoutListModule
