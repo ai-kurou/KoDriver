@@ -1,8 +1,21 @@
 digraph G {
   rankdir=TB
   graph [ranksep=1.2, nodesep=0.6]
-  node [shape=box, style=rounded]
-  "feature" [label="feature\n35 modules"]
+  node [shape=box, style="rounded,filled"]
+  ":app:androidApp" [label=":app:androidApp", fillcolor="#FFE0B2", color="#FB8C00"]
+  ":app:desktopApp" [label=":app:desktopApp", fillcolor="#FFE0B2", color="#FB8C00"]
+  ":app:shared" [label=":app:shared", fillcolor="#FFE0B2", color="#FB8C00"]
+  ":app:webApp" [label=":app:webApp", fillcolor="#FFE0B2", color="#FB8C00"]
+  ":core:ace-windows-data" [label=":core:ace-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:data" [label=":core:data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:designsystem" [label=":core:designsystem", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:domain" [label=":core:domain", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:gt7-ps5-data" [label=":core:gt7-ps5-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:lmu-windows-data" [label=":core:lmu-windows-data", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:narrator" [label=":core:narrator", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":core:windows-shared-memory" [label=":core:windows-shared-memory", fillcolor="#BBDEFB", color="#1E88E5"]
+  ":server" [label=":server", fillcolor="#F8BBD0", color="#D81B60"]
+  "feature" [label="feature\n35 modules", fillcolor="#C8E6C9", color="#43A047"]
   ":app:androidApp" -> ":app:shared"
   ":app:androidApp" -> ":core:data"
   ":app:androidApp" -> ":core:gt7-ps5-data"
