@@ -18,6 +18,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)
     implementation(libs.koin.core)
+    implementation(platform(libs.sentry.bom))
     implementation(libs.sentry)
 
     testImplementation(libs.kotlin.testJunit)
